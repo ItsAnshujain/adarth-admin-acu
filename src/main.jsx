@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { MantineProvider } from '@mantine/core';
 import App from './App';
-import './index.scss';
+import './styles/index.scss';
 
 /**
  * To use tailwindcss with Mantine, we need to set the emotionOptions as given below
