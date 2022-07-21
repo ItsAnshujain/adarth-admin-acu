@@ -1,5 +1,13 @@
-import { Button } from '@mantine/core';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
 
-const App = () => <Button>Hi</Button>;
+const App = () => (
+  <Router>
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/login" element={<Login />} />
+    </Routes>
+  </Router>
+);
 
 export default App;
