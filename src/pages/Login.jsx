@@ -30,7 +30,7 @@ const Login = () => {
   // TODO: add data as and argument to function while integration
   const onSubmitHandler = () => {
     reset(initialValues);
-    navigate('/dashboard');
+    navigate('/inventory');
   };
 
   return (
@@ -54,7 +54,7 @@ const Login = () => {
             render={({ field }) => <TextInput {...field} size="lg" placeholder="Your Email" />}
           />
 
-          <p className="text-sm text-orange mb-3">{errors.email?.message}</p>
+          <p className="text-sm text-orange-450 mb-3">{errors.email?.message}</p>
 
           <Text color="gray" className="my-4 mt-6 opacity-50">
             Password
@@ -68,7 +68,7 @@ const Login = () => {
             )}
           />
 
-          <p className="mb-3 text-sm text-orange">{errors.password?.message}</p>
+          <p className="mb-3 text-sm text-orange-450">{errors.password?.message}</p>
 
           <Button
             className="mt-2 width-full"
@@ -90,7 +90,7 @@ const Login = () => {
         <Text className="mt-4">
           Don&apos;t have an account ?
           <Link to="/signup">
-            <span className="text-purple ml-1 cursor-pointer"> Create Account </span>
+            <span className="text-purple-450 ml-1 cursor-pointer"> Create Account </span>
           </Link>
         </Text>
       </div>
