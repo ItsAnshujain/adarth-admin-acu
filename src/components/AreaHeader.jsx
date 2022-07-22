@@ -70,13 +70,13 @@ const AreaHeader = ({ text }) => {
             <img className="mr-2" src={down} alt="down" /> Filter
           </Button>
         </div>
-        <div className="mr-2">
+        <div>
           <button
             variant="default"
             className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
             type="button"
           >
-            <img className="inline mr-2" src={add} alt="Add" /> Add Space
+            <img className="inline" src={add} alt="Add" /> Add Space
           </button>
         </div>
       </div>

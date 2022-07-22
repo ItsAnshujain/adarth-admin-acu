@@ -27,7 +27,9 @@ const SidebarExpandableButton = ({ item }) => (
     <Accordion.Item label={<AccordionLabel {...item} />}>
       <div className="ml-7">
         {item.content.map(text => (
-          <Text size="sm">{text}</Text>
+          <Text key={Math.random() * 1000000000} size="sm">
+            {text}
+          </Text>
         ))}
       </div>
     </Accordion.Item>
