@@ -5,25 +5,35 @@ import down from '../assets/down.svg';
 import calendar from '../assets/data-table.svg';
 import Grid from '../assets/Icons/Grid';
 import List from '../assets/Icons/Server';
+import DateRange from './DateRange';
 
 const initialState = {
-  grid: { stroke: true, fill: false },
-  list: { stroke: false, fill: true },
+  grid: { stroke: false, fill: true },
+  list: { stroke: true, fill: false },
 };
-const AreaHeader = ({ text }) => {
+const AreaHeader = ({ text, setView }) => {
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [color, setColor] = useState(initialState);
   const handleListClick = () => {
     setColor({
       grid: { stroke: false, fill: true },
       list: { stroke: true, fill: false },
     });
+    setView('list');
   };
+
   const handleGridClick = () => {
     setColor({
       grid: { stroke: true, fill: false },
       list: { stroke: false, fill: true },
     });
+    setView('grid');
   };
+
+  const openDatePicker = () => {
+    setShowDatePicker(!showDatePicker);
+  };
+
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center">
       <div className="pl-5">
@@ -60,10 +70,15 @@ const AreaHeader = ({ text }) => {
             />
           </button>
         </div>
-        <div className="mr-2">
-          <Button variant="default" type="button">
+        <div className="mr-2 relative">
+          <Button onClick={openDatePicker} variant="default" type="button">
             <img src={calendar} className="h-5" alt="calendar" />
           </Button>
+          {showDatePicker && (
+            <div className="absolute z-20 -translate-x-1/2 bg-white -top-0.3">
+              <DateRange handleClose={openDatePicker} />
+            </div>
+          )}
         </div>
         <div className="mr-2">
           <Button variant="default" type="button">
