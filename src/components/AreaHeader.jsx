@@ -6,6 +6,7 @@ import calendar from '../assets/data-table.svg';
 import Grid from '../assets/Icons/Grid';
 import List from '../assets/Icons/Server';
 import DateRange from './DateRange';
+import Filter from './Filter';
 
 const initialState = {
   grid: { stroke: false, fill: true },
@@ -13,6 +14,7 @@ const initialState = {
 };
 const AreaHeader = ({ text, setView }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
   const [color, setColor] = useState(initialState);
   const handleListClick = () => {
     setColor({
@@ -81,9 +83,10 @@ const AreaHeader = ({ text, setView }) => {
           )}
         </div>
         <div className="mr-2">
-          <Button variant="default" type="button">
+          <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
             <img className="mr-2" src={down} alt="down" /> Filter
           </Button>
+          {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
         </div>
         <div>
           <button
