@@ -64,7 +64,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       position="right"
       opened={isOpened}
       title="Filters"
-      onClose={() => setShowFilter()}
+      onClose={() => setShowFilter(false)}
     >
       <div className="flex text-gray-400 flex-col gap-4">
         <div className="flex flex-col border p-4 pt-2 gap-2 rounded-xl ">
@@ -121,7 +121,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
                       setFilterData(prevData => {
                         const newData = { ...prevData };
                         newData[data][items[0]] = !items[1];
-
                         return newData;
                       })
                     }

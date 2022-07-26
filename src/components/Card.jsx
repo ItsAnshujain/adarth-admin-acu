@@ -1,6 +1,6 @@
 import { Text } from '@mantine/core';
-import unsplash from '../assets/unsplash.svg';
-import Badge from './Badge';
+import unsplash from '../assets/unsplash.png';
+import Badge from './shared/Badge';
 import toIndianCurrency from '../utils/currencyFormat';
 
 const Card = ({

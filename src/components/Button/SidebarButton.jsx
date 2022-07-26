@@ -1,10 +1,10 @@
+import classNames from 'classnames';
 import { useNavigate } from 'react-router-dom';
 import SidebarExpandableButton from './SidebarExpandableButton';
 import Mail from '../../assets/Icons/Mail';
 
 const SidebarButton = ({ text, index, color, clickHandler }) => {
   const navigate = useNavigate();
-
   if (index === 4 || index === 6 || index === 7) {
     const dataObj = { content: ['Hey', 'Dude', 'Whatsupp'], label: text };
     return (
@@ -21,9 +21,10 @@ const SidebarButton = ({ text, index, color, clickHandler }) => {
           clickHandler(index);
           navigate(`/${text.toLowerCase()}`);
         }}
-        className={`p-2 border-gray-450 border flex sm:w-auto md:w-44 ${
-          index % 2 === 0 && color[index] ? 'text-purple-450' : ''
-        }`}
+        className={classNames(
+          'p-2 border-gray-450 border flex sm:w-auto md:w-44',
+          color[index] ? 'text-purple-450' : '',
+        )}
         type="button"
       >
         <div className="mr-2">

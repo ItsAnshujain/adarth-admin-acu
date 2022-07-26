@@ -28,7 +28,7 @@ const RowsPerPage = ({ setCount }) => (
         defaultValue="20"
         data={data}
         sx={styles}
-        onChange={val => setCount(val)}
+        onChange={setCount}
         styles={{ rightSection: { pointerEvents: 'none' } }}
         rightSection={<img src={down} alt="down-arrow" className="h-4 p-0 m-0" />}
       />
