@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Card from './Card';
 import data from '../Dummydata/CardData';
 
-const GridView = ({ count, page }) => {
+// TODO : Add pagination
+const GridView = ({ count, page = 1, selectAll }) => {
   const state = new Array(100).fill(false);
   const [checkbox, setCheckbox] = useState(state);
   const newData = data.slice(count * page, count * page + count);
@@ -13,6 +14,14 @@ const GridView = ({ count, page }) => {
       return newState;
     });
   };
+  useEffect(() => {
+    if (selectAll) {
+      setCheckbox(state.fill(true));
+    } else {
+      setCheckbox(state.fill(false));
+    }
+  }, [selectAll]);
+
   return (
     <div className="flex flex-wrap mx-5 justify-between gap-y-8 ">
       {newData.map((each, index) => (

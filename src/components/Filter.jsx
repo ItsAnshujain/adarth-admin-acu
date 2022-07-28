@@ -53,7 +53,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
   return (
     <Drawer
-      className="overflow-auto bg-transparent"
+      className="overflow-auto"
       overlayOpacity={0.1}
       overlayBlur={0}
       size="lg"

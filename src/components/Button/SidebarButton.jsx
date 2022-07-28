@@ -6,7 +6,7 @@ import Mail from '../../assets/Icons/Mail';
 const SidebarButton = ({ text, index, color, clickHandler }) => {
   const navigate = useNavigate();
   if (index === 4 || index === 6 || index === 7) {
-    const dataObj = { content: ['Hey', 'Dude', 'Whatsupp'], label: text };
+    const dataObj = { content: ['Hey', 'Dude', 'Whatsup'], label: text };
     return (
       <div className="ml-4 p-0 w-44 border">
         <SidebarExpandableButton item={dataObj} />

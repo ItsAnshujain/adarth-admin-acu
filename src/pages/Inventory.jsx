@@ -1,36 +1,41 @@
-import { useEffect, useState } from 'react';
-import { Pagination } from '@mantine/core';
+import { useState } from 'react';
+import Table from '../components/Table/Table';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import AreaHeader from '../components/AreaHeader';
+import AreaHeader from '../components/InventoryAreaHeader';
 import RowsPerPage from '../components/RowsPerPage';
 import Search from '../components/Search';
 import GridView from '../components/GridView';
 
 const Inventory = () => {
-  const [activePage, setPage] = useState(1);
+  const [search, setSearch] = useState('');
   const [count, setCount] = useState(20);
   const [view, setView] = useState('list');
+  const [selectAll, setSelectAll] = useState(false);
 
-  useEffect(() => {}, [count, activePage]);
   return (
     <>
       <Header title="Inventory" />
       <div className="grid grid-cols-12">
         <Sidebar />
-        <div className="col-span-10 border-gray-450 border-l">
-          <AreaHeader text="List of spaces" setView={setView} />
+        <div className="col-span-10 border-gray-450 border-l ">
+          <AreaHeader
+            selectAll={selectAll}
+            setSelectAll={setSelectAll}
+            text="List of spaces"
+            setView={setView}
+          />
           <div className="flex justify-between h-20 items-center">
             <RowsPerPage setCount={setCount} />
-            <Search />
+            <Search search={search} setSearch={setSearch} />
           </div>
-          {view === 'grid' ? <GridView count={count} page={activePage} /> : null}
-          <Pagination
-            className="absolute right-0 mx-5 mt-2"
-            page={activePage}
-            onChange={setPage}
-            total={10}
-          />
+          {view === 'grid' ? (
+            <GridView selectAll={selectAll} count={count} />
+          ) : view === 'list' ? (
+            <Table />
+          ) : (
+            'null'
+          )}
         </div>
       </div>
     </>

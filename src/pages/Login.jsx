@@ -71,11 +71,11 @@ const Login = () => {
           <p className="mb-3 text-sm text-orange-450">{errors.password?.message}</p>
 
           <Button
-            className="mt-2 width-full"
+            className="mt-2 width-full bg-purple-450"
+            color="primary"
             type="submit"
             styles={() => ({
               root: {
-                backgroundColor: '#4B0DAF',
                 width: '100%',
                 height: '40px',
                 '&:hover': {

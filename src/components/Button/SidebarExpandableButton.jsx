@@ -18,23 +18,28 @@ const SidebarExpandableButton = ({ item }) => {
     <Accordion
       sx={theme => ({
         backgroundColor: theme.colors.gray[0],
-        'div h3 button': {
+        'button': {
           paddingTop: 4,
           paddingBottom: 4,
           paddingLeft: 8,
           paddingRight: 3,
         },
       })}
-      iconPosition="right"
+      chevronPosition="right"
     >
-      <Accordion.Item label={<AccordionLabel {...item} />}>
-        <div className="ml-7">
-          {item.content.map(text => (
-            <Text key={id} size="sm">
-              {text}
-            </Text>
-          ))}
-        </div>
+      <Accordion.Item value={id}>
+        <Accordion.Control>
+          <AccordionLabel {...item} />
+        </Accordion.Control>
+        <Accordion.Panel>
+          <div className="ml-5">
+            {item.content.map(text => (
+              <Text key={id} size="sm">
+                {text}
+              </Text>
+            ))}
+          </div>
+        </Accordion.Panel>
       </Accordion.Item>
     </Accordion>
   );
