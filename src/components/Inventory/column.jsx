@@ -75,7 +75,10 @@ const COLUMNS = [
             <MenuIcon />
             {showMenu && (
               <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
-                <div onClick={() => navigate(`view/${id}`)} className="bg-white">
+                <div
+                  onClick={() => navigate(`/inventory/space-details/${id}`)}
+                  className="bg-white"
+                >
                   View Details
                 </div>
                 <div className="bg-white">Edit</div>
