@@ -4,7 +4,7 @@ import Booking from './Booking';
 import BasicInfo from './BasicInformation';
 
 const Main = () => {
-  const [isBooking, setIsBooking] = useState(false);
+  const [isBasicInfo, setIsBasicInfo] = useState(true);
   const [isUnderMaintenance, setIsUnderMaintenance] = useState(false);
 
   return (
@@ -12,10 +12,10 @@ const Main = () => {
       <Header
         isUnderMaintenance={isUnderMaintenance}
         setIsUnderMaintenance={setIsUnderMaintenance}
-        isBooking={isBooking}
-        setIsBooking={setIsBooking}
+        isBasicInfo={isBasicInfo}
+        setIsBasicInfo={setIsBasicInfo}
       />
-      {isBooking ? <BasicInfo /> : <Booking />}
+      {isBasicInfo ? <BasicInfo /> : <Booking />}
     </>
   );
 };

@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { useNavigate } from 'react-router-dom';
 import arrowLeft from '../../../assets/arrow-left.svg';
 
-const Header = ({ isBooking, setIsBooking, isUnderMaintenance, setIsUnderMaintenance }) => {
+const Header = ({ isBasicInfo, setIsBasicInfo, isUnderMaintenance, setIsUnderMaintenance }) => {
   const navigate = useNavigate();
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center">
@@ -13,10 +13,10 @@ const Header = ({ isBooking, setIsBooking, isUnderMaintenance, setIsUnderMainten
         </button>
         <button
           type="button"
-          onClick={() => setIsBooking(true)}
+          onClick={() => setIsBasicInfo(true)}
           className={classNames(
             `${
-              isBooking
+              isBasicInfo
                 ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-8  after:bg-purple-450'
                 : ''
             }`,
@@ -25,10 +25,10 @@ const Header = ({ isBooking, setIsBooking, isUnderMaintenance, setIsUnderMainten
           Basic Information
         </button>
         <button
-          onClick={() => setIsBooking(false)}
+          onClick={() => setIsBasicInfo(false)}
           className={classNames(
             `${
-              !isBooking
+              !isBasicInfo
                 ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-8  after:bg-purple-450'
                 : ''
             }`,
@@ -39,14 +39,16 @@ const Header = ({ isBooking, setIsBooking, isUnderMaintenance, setIsUnderMainten
         </button>
       </div>
       <div className="flex pr-7 gap-6">
-        <div className="flex gap-2">
-          <Text>Under Maintenance</Text>
-          <Switch
-            checked={isUnderMaintenance}
-            onChange={e => setIsUnderMaintenance(e.currentTarget.checked)}
-            size="lg"
-          />
-        </div>
+        {isBasicInfo && (
+          <div className="flex gap-2">
+            <Text>Under Maintenance</Text>
+            <Switch
+              checked={isUnderMaintenance}
+              onChange={e => setIsUnderMaintenance(e.currentTarget.checked)}
+              size="lg"
+            />
+          </div>
+        )}
         <div>
           <Button className="bg-purple-450" type="button">
             Edit Space
