@@ -25,9 +25,20 @@ const multiSelectStyles = () => ({
     color: 'white',
   },
 });
-const Specification = () => {
+const Specification = ({ formData, setFormData }) => {
   const [minImpressions, setMinImpressions] = useState(200);
   const [maxImpressions, setMaxImpressions] = useState(800);
+  const [previousBrands, setPreviousBrands] = useState([]);
+  const [tags, setTags] = useState([]);
+
+  const handleChange = e => {
+    const { name, value } = e.target;
+
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
   const data = [
     { value: 'react', label: 'React' },
     { value: 'ng', label: 'Angular' },
@@ -52,6 +63,8 @@ const Specification = () => {
       <div className="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
         <div>
           <NativeSelect
+            value={formData.illumination}
+            onChange={handleChange}
             styles={styles}
             name="illumination"
             className="mb-7"
@@ -65,6 +78,8 @@ const Specification = () => {
             ]}
           />
           <TextInput
+            value={formData.resolutions}
+            onChange={handleChange}
             styles={styles}
             name="resolutions"
             placeholder="Write"
@@ -72,6 +87,8 @@ const Specification = () => {
             label="Resolutions"
           />
           <TextInput
+            value={formData.healthstatus}
+            onChange={handleChange}
             styles={styles}
             name="healthstatus"
             placeholder="Write"
@@ -81,6 +98,8 @@ const Specification = () => {
         </div>
         <div>
           <NativeSelect
+            value={formData.unit}
+            onChange={handleChange}
             styles={styles}
             name="unit"
             className="mb-7"
@@ -95,6 +114,8 @@ const Specification = () => {
           />
           <div className="grid grid-cols-2 gap-4">
             <NativeSelect
+              value={formData.width}
+              onChange={handleChange}
               styles={styles}
               name="width"
               className="mb-7"
@@ -108,6 +129,8 @@ const Specification = () => {
               ]}
             />
             <NativeSelect
+              value={formData.height}
+              onChange={handleChange}
               styles={styles}
               name="height"
               className="mb-7"
@@ -141,7 +164,10 @@ const Specification = () => {
           <input className="border w-24" type="text" readOnly value={maxImpressions} />
         </div>
         <MultiSelect
-          className="mb-5"
+          className="mb-5 mt-4"
+          name="previousbrands"
+          onChange={setPreviousBrands}
+          value={previousBrands}
           styles={multiSelectStyles}
           data={data}
           label="Previous brands"
@@ -149,6 +175,9 @@ const Specification = () => {
         />
         <MultiSelect
           styles={multiSelectStyles}
+          value={tags}
+          onChange={setTags}
+          name="tags"
           data={data}
           label="Tags"
           placeholder="Pick all that you like"

@@ -42,7 +42,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           Basic Information
         </Text>
         <TextInput
-          value={[formData.spacename]}
+          value={formData.spacename}
           name="spacename"
           onChange={handleChange}
           placeholder="Write"
@@ -50,7 +50,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           label="Space Name"
         />
         <NativeSelect
-          value={[formData.landlord]}
+          value={formData.landlord}
           onChange={handleChange}
           name="landlord"
           className="mb-7"
@@ -64,7 +64,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           ]}
         />
         <NativeSelect
-          value={[formData.category]}
+          value={formData.category}
           onChange={handleChange}
           name="category"
           className="mb-7"
@@ -78,7 +78,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           ]}
         />
         <NativeSelect
-          value={[formData.mediatype]}
+          value={formData.mediatype}
           onChange={handleChange}
           name="mediatype"
           className="mb-7"
@@ -92,7 +92,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           ]}
         />
         <NativeSelect
-          value={[formData.supportedmedia]}
+          value={formData.supportedmedia}
           onChange={handleChange}
           name="supportedmedia"
           className="mb-7"
@@ -107,14 +107,14 @@ const BasicInfo = ({ formData, setFormData }) => {
         />
         <TextInput
           name="price"
-          value={[formData.price]}
+          value={formData.price}
           onChange={handleChange}
           placeholder="Write"
           className="mb-7"
           label="Price"
         />
         <Textarea
-          value={[formData.description]}
+          value={formData.description}
           onChange={handleChange}
           name="description"
           className="mb-7"

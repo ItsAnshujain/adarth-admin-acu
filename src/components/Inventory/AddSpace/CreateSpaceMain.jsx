@@ -11,20 +11,37 @@ import right from '../../../assets/front.svg';
 import Preview from './Preview';
 
 const initialState = ['Basic Information', 'Specifications', 'Location'];
+const formInitialState = {
+  spacename: '',
+  landlord: '',
+  category: '',
+  mediatype: '',
+  supportedmedia: '',
+  price: '',
+  description: '',
+  illumination: '',
+  resolutions: '',
+  healthstatus: '',
+  unit: '',
+  width: '',
+  height: '',
+  impression: [],
+  previousbrands: [],
+  tags: [],
+  address: '',
+  state: '',
+  latitute: '',
+  landmark: '',
+  city: '',
+  zip: '',
+  longitude: '',
+};
 
 const MainArea = () => {
   const navigate = useNavigate();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formPage, setFormPage] = useState(1);
-  const [formData, setFormData] = useState({
-    spacename: '',
-    landlord: '',
-    category: '',
-    mediatype: '',
-    supportedmedia: '',
-    price: '',
-    description: '',
-  });
+  const [formData, setFormData] = useState(formInitialState);
 
   const getForm = () =>
     formPage === 1 ? (
