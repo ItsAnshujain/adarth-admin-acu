@@ -75,7 +75,14 @@ const MainArea = () => {
           <form>{getForm()}</form>
         </div>
       </div>
-      <SuccessModal open={openSuccessModal} setOpenSuccessModal={setOpenSuccessModal} id={1} />
+      <SuccessModal
+        title="Inventory Successfully Added"
+        text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+        prompt="Go to inventory"
+        open={openSuccessModal}
+        setOpenSuccessModal={setOpenSuccessModal}
+        id={1}
+      />
     </>
   );
 };

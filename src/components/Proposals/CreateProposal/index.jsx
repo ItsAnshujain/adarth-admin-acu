@@ -19,7 +19,14 @@ const Main = () => {
         />
       </div>
       <form>{getForm()}</form>
-      <SuccessModal open={openSuccessModal} setOpenSuccessModal={setOpenSuccessModal} id={1} />
+      <SuccessModal
+        title="Proposal Successfully Created"
+        text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+        prompt="Visit Proposals"
+        open={openSuccessModal}
+        setOpenSuccessModal={setOpenSuccessModal}
+        id={1}
+      />
     </>
   );
 };
