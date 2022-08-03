@@ -34,7 +34,7 @@ const Inventory = () => {
           {view === 'grid' ? (
             <GridView selectAll={selectAll} count={count} />
           ) : view === 'list' ? (
-            <Table COLUMNS={COLUMNS} dummy={dummy} />
+            <Table COLUMNS={COLUMNS} dummy={dummy} count={count} allowRowsSelect />
           ) : (
             'null'
           )}

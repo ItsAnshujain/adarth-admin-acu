@@ -8,7 +8,7 @@ import Table from '../../Table/Table';
 import dummy from '../../../Dummydata/BOOKING_DATA.json';
 import COLUMNS from './column';
 
-const Booking = () => {
+const Booking = ({ count }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const openDatePicker = () => {
@@ -39,7 +39,7 @@ const Booking = () => {
           </div>
         </div>
       </div>
-      <Table dummy={dummy} COLUMNS={COLUMNS} />
+      <Table dummy={dummy} COLUMNS={COLUMNS} count={count} allowRowsSelect />
     </div>
   );
 };

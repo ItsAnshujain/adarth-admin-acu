@@ -1,16 +1,17 @@
 /* eslint-disable */
 import { useMemo, useState } from 'react';
 import { useTable, useSortBy, useRowSelect, usePagination } from 'react-table';
+import IndeterminateCheckbox from './Checkbox';
 import Ascending from '../../assets/Icons/Ascending';
 import Descending from '../../assets/Icons/Descending';
-import IndeterminateCheckbox from './Checkbox';
 import { Pagination } from '@mantine/core';
 
 // REMINDER : selectedFlatRows.original gives array of all selected rows and selectedRowIds contains all the data from id field
-const Table = ({ COLUMNS, dummy }) => {
+const Table = ({ COLUMNS, dummy, count, allowRowsSelect = false }) => {
   const [activePage, setPage] = useState();
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => dummy, []);
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -38,18 +39,19 @@ const Table = ({ COLUMNS, dummy }) => {
     useSortBy,
     usePagination,
     useRowSelect,
-    hooks => {
-      hooks.visibleColumns.push(columns => [
-        {
-          id: 'selection',
-          Header: ({ getToggleAllRowsSelectedProps }) => (
-            <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-          ),
-          Cell: ({ row }) => <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />,
-        },
-        ...columns,
-      ]);
-    },
+    allowRowsSelect &&
+      (hooks => {
+        hooks.visibleColumns.push(columns => [
+          {
+            id: 'selection',
+            Header: ({ getToggleAllRowsSelectedProps }) => (
+              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+            ),
+            Cell: ({ row }) => <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />,
+          },
+          ...columns,
+        ]);
+      }),
   );
 
   return (

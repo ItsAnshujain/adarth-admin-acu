@@ -1,17 +1,17 @@
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import MainArea from '../components/Inventory/CreateSpace';
+import Main from '../components/Proposals/CreateProposal';
 
-const CreateSpace = () => (
+const CreateProposals = () => (
   <>
     <Header title="Create Space" />
     <div className="grid grid-cols-12">
       <Sidebar />
       <div className="col-span-10 border-gray-450 border-l">
-        <MainArea />
+        <Main />
       </div>
     </div>
   </>
 );
 
-export default CreateSpace;
+export default CreateProposals;

@@ -20,21 +20,19 @@ const queryClient = new QueryClient({
  */
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <MantineProvider
-      emotionOptions={{ key: 'mantine', prepend: false }}
-      withGlobalStyles
-      withNormalizeCSS
-      theme={{
-        colors: {
-          brand: ['#DAC4FF', '#C7A5FF', '#B387FA', '#9A69EA', '#824DD8', '#692FC7', '#4B0DAF'],
-        },
-        primaryColor: 'brand',
-      }}
-    >
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
-    </MantineProvider>
-  </React.StrictMode>,
+  <MantineProvider
+    emotionOptions={{ key: 'mantine', prepend: false }}
+    withGlobalStyles
+    withNormalizeCSS
+    theme={{
+      colors: {
+        brand: ['#DAC4FF', '#C7A5FF', '#B387FA', '#9A69EA', '#824DD8', '#692FC7', '#4B0DAF'],
+      },
+      primaryColor: 'brand',
+    }}
+  >
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  </MantineProvider>,
 );
