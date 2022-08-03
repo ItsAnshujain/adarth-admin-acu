@@ -2,6 +2,7 @@ import create from 'zustand';
 
 const initialValues = new Array(9).fill(false);
 initialValues[0] = true;
+
 const useSideBarState = create(set => ({
   color: initialValues,
   setColor: index =>
@@ -12,4 +13,5 @@ const useSideBarState = create(set => ({
       return { color: newColor };
     }),
 }));
+
 export default useSideBarState;
