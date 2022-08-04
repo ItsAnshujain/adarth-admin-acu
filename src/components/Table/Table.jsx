@@ -7,7 +7,7 @@ import Descending from '../../assets/Icons/Descending';
 import { Pagination } from '@mantine/core';
 
 // REMINDER : selectedFlatRows.original gives array of all selected rows and selectedRowIds contains all the data from id field
-const Table = ({ COLUMNS, dummy, count, allowRowsSelect = false }) => {
+const Table = ({ COLUMNS, dummy, allowRowsSelect = false }) => {
   const [activePage, setPage] = useState();
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => dummy, []);

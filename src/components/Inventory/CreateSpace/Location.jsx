@@ -34,7 +34,7 @@ const Location = ({ formData, setFormData }) => {
             label="Address"
           />
           <TextInput
-            value={formData.address}
+            value={formData.state}
             onChange={handleChange}
             styles={styles}
             name="state"

@@ -9,6 +9,7 @@ import Users from './pages/Users';
 import CreateSpace from './pages/CreateSpace';
 import SpaceDetails from './pages/SpacesDetails';
 import CreateProposals from './pages/CreateProposals';
+import ViewProposal from './pages/ProposalDetails';
 
 const App = () => (
   <Router>
@@ -23,6 +24,7 @@ const App = () => (
       <Route path="/landlords" element={<Landlords />} />
       <Route path="/proposals" element={<Proposals />} />
       <Route path="/proposals/create-proposals" element={<CreateProposals />} />
+      <Route path="/proposals/view-details/:id" element={<ViewProposal />} />
       <Route path="/users" element={<Users />} />
     </Routes>
   </Router>
