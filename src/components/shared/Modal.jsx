@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Modal, Text, Button } from '@mantine/core';
 import check from '../../assets/check.svg';
 
-const SuccessModal = ({ open, setOpenSuccessModal, id, title, text, prompt }) => {
+const SuccessModal = ({ open, setOpenSuccessModal, title, text, prompt, path }) => {
   const navigate = useNavigate();
   return (
     <Modal opened={open} centered onClose={() => setOpenSuccessModal(false)} /* ...other props */>
@@ -15,7 +15,7 @@ const SuccessModal = ({ open, setOpenSuccessModal, id, title, text, prompt }) =>
         <Button
           className="bg-purple-450 text-white mb-2"
           type="button"
-          onClick={() => navigate(`/inventory/view-details/${id}`)}
+          onClick={() => navigate(`/${path}`)}
         >
           {prompt}
         </Button>

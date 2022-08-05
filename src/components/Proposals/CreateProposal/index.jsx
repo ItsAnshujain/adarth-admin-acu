@@ -25,7 +25,7 @@ const Main = () => {
         prompt="Visit Proposals"
         open={openSuccessModal}
         setOpenSuccessModal={setOpenSuccessModal}
-        id={1}
+        path="proposals"
       />
     </>
   );

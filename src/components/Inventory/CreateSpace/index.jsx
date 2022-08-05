@@ -81,7 +81,7 @@ const MainArea = () => {
         prompt="Go to inventory"
         open={openSuccessModal}
         setOpenSuccessModal={setOpenSuccessModal}
-        id={1}
+        path="inventory"
       />
     </>
   );
