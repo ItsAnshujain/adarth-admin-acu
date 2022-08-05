@@ -2,7 +2,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login';
 import Inventory from './pages/Inventory';
 import Bookings from './pages/Bookings';
-import Campaigns from './pages/Campaigns';
+import Campaigns from './pages/Campaign/Campaigns';
+import CampaignHome from './pages/Campaign/Home';
+import CampaignCreate from './pages/Campaign/Create';
 import Landlords from './pages/Landlords';
 import Proposals from './pages/Proposals';
 import Users from './pages/Users';
@@ -20,7 +22,10 @@ const App = () => (
       <Route path="/inventory/create-space" element={<CreateSpace />} />
       <Route path="/inventory/view-details/:id" element={<SpaceDetails />} />
       <Route path="/bookings" element={<Bookings />} />
-      <Route path="/campaigns" element={<Campaigns />} />
+      <Route path="/campaigns" element={<Campaigns />}>
+        <Route path="" element={<CampaignHome />} />
+        <Route path="create-campaign" element={<CampaignCreate />} />
+      </Route>
       <Route path="/landlords" element={<Landlords />} />
       <Route path="/proposals" element={<Proposals />} />
       <Route path="/proposals/create-proposals" element={<CreateProposals />} />

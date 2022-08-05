@@ -1,12 +1,12 @@
 /* eslint-disable */
 import { useState } from 'react';
 import { Text } from '@mantine/core';
-import dummy0 from '../../../assets/unsplash.png';
-import dummy1 from '../../../assets/dummy1.png';
-import dummy2 from '../../../assets/dummy2.png';
-import dummy3 from '../../../assets/dummy3.png';
-import toIndianCurrency from '../../../utils/currencyFormat';
-import Badge from '../../shared/Badge';
+import dummy0 from '../../assets/unsplash.png';
+import dummy1 from '../../assets/dummy1.png';
+import dummy2 from '../../assets/dummy2.png';
+import dummy3 from '../../assets/dummy3.png';
+import toIndianCurrency from '../../utils/currencyFormat';
+import Badge from './Badge';
 
 const badgeData = ['School', 'Youth', 'Student', 'College Students'];
 const imageUrl = [dummy1, dummy2, dummy0, dummy2, dummy1, dummy0];
@@ -139,35 +139,6 @@ const Preview = () => {
             </div>
           </div>
         </div>
-      </div>
-      <div className="flex gap-8 mb-2 p-4 col-span-2 mt-4 border rounded-md flex-1">
-        <div className="flex-1 ">
-          <Text color="gray" size="xs" weight="300">
-            Address
-          </Text>
-          <Text className="mb-4">
-            Melvin Porter P.O. Box 132 1599 Curabitur Rd. Bandera South Dakota 45149
-          </Text>
-          <div className="grid grid-cols-2">
-            <div>
-              <Text color="gray" size="xs" weight="300">
-                District
-              </Text>
-              <Text className="mb-4">Some District</Text>
-            </div>
-            <div>
-              <Text color="gray" size="xs" weight="300">
-                State
-              </Text>
-              <Text className="mb-4">Some State</Text>
-            </div>
-          </div>
-          <Text color="gray" size="xs" weight="300">
-            Pin Code
-          </Text>
-          <Text className="mb-4">1574516</Text>
-        </div>
-        <div className="flex-1">Map Place holder</div>
       </div>
     </div>
   );

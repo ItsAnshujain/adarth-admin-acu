@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import BasicInfo from './BasicInfo';
-import Spaces from './Spaces';
+import Spaces from '../../shared/Spaces';
 import SuccessModal from '../../shared/Modal';
 import Header from './Header';
+import column from '../shared/column';
+import data from '../../../Dummydata/CREATE_PROPOSAL_DATA.json';
 
 const Main = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
-  const getForm = () => (formStep === 1 ? <BasicInfo /> : <Spaces />);
+  const getForm = () => (formStep === 1 ? <BasicInfo /> : <Spaces column={column} data={data} />);
 
   return (
     <>

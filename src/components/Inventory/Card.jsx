@@ -1,7 +1,7 @@
 import { Text } from '@mantine/core';
-import unsplash from '../assets/unsplash.png';
-import Badge from './shared/Badge';
-import toIndianCurrency from '../utils/currencyFormat';
+import unsplash from '../../assets/unsplash.png';
+import Badge from '../shared/Badge';
+import toIndianCurrency from '../../utils/currencyFormat';
 
 const Card = ({
   data: { title, category, impression, cost, status, subtitle },

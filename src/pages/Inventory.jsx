@@ -2,12 +2,13 @@ import { useState } from 'react';
 import Table from '../components/Table/Table';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import AreaHeader from '../components/Inventory/InventoryHeader';
+import AreaHeader from '../components/Inventory/AreaHeader';
 import RowsPerPage from '../components/RowsPerPage';
 import Search from '../components/Search';
 import GridView from '../components/GridView';
 import COLUMNS from '../components/Inventory/column';
 import dummy from '../Dummydata/Inventory.json';
+import Card from '../components/Inventory/Card';
 
 const Inventory = () => {
   const [search, setSearch] = useState('');
@@ -32,7 +33,7 @@ const Inventory = () => {
             <Search search={search} setSearch={setSearch} />
           </div>
           {view === 'grid' ? (
-            <GridView selectAll={selectAll} count={count} />
+            <GridView selectAll={selectAll} count={count} Card={Card} />
           ) : view === 'list' ? (
             <Table COLUMNS={COLUMNS} dummy={dummy} count={count} allowRowsSelect />
           ) : (

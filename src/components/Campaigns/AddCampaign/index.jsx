@@ -1,39 +1,25 @@
 import { useEffect, useState } from 'react';
 import BasicInfo from './BasicInformation';
-import Specification from './Specification';
-import Location from './Location';
 import SuccessModal from '../../shared/Modal';
-import Preview from '../../shared/Preview';
-import PreviewLocation from './PreviewLocation';
+import Preview from './Preview';
+import CoverImage from './CoverImage';
 import Header from './Header';
+import Spaces from '../../shared/Spaces';
+import data from '../../../Dummydata/CAMPAIGN_SPACES.json';
+import column from './column';
 
 const formInitialState = {
-  spacename: '',
-  landlord: '',
-  category: '',
-  mediatype: '',
-  supportedmedia: '',
+  campaignname: '',
   price: '',
-  description: '',
-  illumination: '',
-  resolutions: '',
   healthstatus: '',
-  unit: '',
-  width: '',
-  height: '',
-  impression: [],
+  description: '',
+  featured: false,
   previousbrands: [],
+  impression: [],
   tags: [],
-  address: '',
-  state: '',
-  latitute: '',
-  landmark: '',
-  city: '',
-  zip: '',
-  longitude: '',
 };
 
-const MainArea = () => {
+const Create = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const [formData, setFormData] = useState(formInitialState);
@@ -42,18 +28,15 @@ const MainArea = () => {
     formStep === 1 ? (
       <BasicInfo formData={formData} setFormData={setFormData} />
     ) : formStep === 2 ? (
-      <Specification formData={formData} setFormData={setFormData} />
+      <Spaces formData={formData} setFormData={setFormData} data={data} column={column} />
     ) : formStep === 3 ? (
-      <Location formData={formData} setFormData={setFormData} />
+      <CoverImage />
     ) : (
-      <>
-        <Preview formData={formData} />
-        <PreviewLocation />
-      </>
+      <Preview />
     );
 
   useEffect(() => {
-    const draft = JSON.parse(localStorage.getItem('inv-drafts'));
+    const draft = JSON.parse(localStorage.getItem('camp-drafts'));
 
     if (draft) {
       setFormData(draft);
@@ -61,9 +44,9 @@ const MainArea = () => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('inv-drafts', JSON.stringify(formData));
+    localStorage.setItem('camp-drafts', JSON.stringify(formData));
     return () => {
-      localStorage.removeItem('inv-drafts', JSON.stringify(formData));
+      localStorage.removeItem('camp-drafts', JSON.stringify(formData));
     };
   }, [formStep]);
 
@@ -80,15 +63,15 @@ const MainArea = () => {
         </div>
       </div>
       <SuccessModal
-        title="Inventory Successfully Added"
+        title="Campaign Successfully Added"
         text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-        prompt="Go to inventory"
+        prompt="Go to campaign"
         open={openSuccessModal}
         setOpenSuccessModal={setOpenSuccessModal}
-        path="inventory"
+        path="campaign"
       />
     </>
   );
 };
 
-export default MainArea;
+export default Create;

@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import Card from './Card';
 import data from '../Dummydata/CardData';
 
 // TODO : Add pagination
-const GridView = ({ count, page = 1, selectAll }) => {
+const GridView = ({ count, page = 1, selectAll, Card }) => {
   const state = new Array(100).fill(false);
   const [checkbox, setCheckbox] = useState(state);
   const newData = data.slice(count * page, count * page + count);
