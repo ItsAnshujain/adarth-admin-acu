@@ -1,8 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { MantineProvider } from '@mantine/core';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './styles/index.scss';
+
+const queryClient = new QueryClient();
 
 /**
  * To use tailwindcss with Mantine, we need to set the emotionOptions as given below
@@ -16,8 +19,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       emotionOptions={{ key: 'mantine', prepend: false }}
       withGlobalStyles
       withNormalizeCSS
+      theme={{
+        colors: {
+          brand: ['#DAC4FF', '#C7A5FF', '#B387FA', '#9A69EA', '#824DD8', '#692FC7', '#4B0DAF'],
+        },
+        primaryColor: 'brand',
+      }}
     >
-      <App />
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
     </MantineProvider>
   </React.StrictMode>,
 );

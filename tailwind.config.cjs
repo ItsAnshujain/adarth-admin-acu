@@ -2,8 +2,13 @@
 module.exports = {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
-    colors: { 'purple': '#4B0DAF', 'orange': 'rgb(194 65 12)' },
-    extend: {},
+    extend: {
+      colors: {
+        purple: { 450: '#4B0DAF' },
+        orange: { 450: '#C2410C' },
+        gray: { 450: '#E5E7EB' },
+      },
+    },
   },
   plugins: [],
 };
