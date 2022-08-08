@@ -55,7 +55,7 @@ const Table = () => {
   );
 
   return (
-    <div className="mr-7 max-w-[1180px] overflow-scroll">
+    <div className="mr-7 max-w-screen overflow-scroll">
       <table className="w-screen " {...getTableProps()}>
         <thead className="bg-gray-100">
           {headerGroups.map(headerGroup => (

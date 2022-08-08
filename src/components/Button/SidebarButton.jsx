@@ -22,7 +22,7 @@ const SidebarButton = ({ text, index, color, clickHandler }) => {
           navigate(`/${text.toLowerCase()}`);
         }}
         className={classNames(
-          'p-2 border-gray-450 border flex sm:w-auto md:w-44',
+          'p-2 border-gray-450 border flex w-auto sm:w-44',
           color[index] ? 'text-purple-450' : '',
         )}
         type="button"
