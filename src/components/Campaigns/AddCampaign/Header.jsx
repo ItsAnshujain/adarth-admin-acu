@@ -55,7 +55,7 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
         <Button
           onClick={() => {
             if (formStep === 1) {
-              navigate('/inventory');
+              navigate(-1);
             } else {
               setFormStep(formStep - 1);
             }
@@ -80,7 +80,11 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
           {formStep === 3 ? 'Preview' : formStep === 4 ? 'Save' : 'Next'}
           {formStep < 3 && <img className="ml-1" src={front} alt="right-arrow" />}
         </Button>
-        {formStep === 4 && <Button className="bg-purple-450">Save &amp; Publish</Button>}
+        {formStep === 4 && (
+          <Button onClick={() => setOpenSuccessModal(true)} className="bg-purple-450">
+            Save &amp; Publish
+          </Button>
+        )}
       </div>
     </div>
   );

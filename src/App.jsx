@@ -5,6 +5,7 @@ import Bookings from './pages/Bookings';
 import Campaigns from './pages/Campaign/Campaigns';
 import CampaignHome from './pages/Campaign/Home';
 import CampaignCreate from './pages/Campaign/Create';
+import CampaignView from './pages/Campaign/View';
 import Landlords from './pages/Landlords';
 import Proposals from './pages/Proposals';
 import Users from './pages/Users';
@@ -25,6 +26,8 @@ const App = () => (
       <Route path="/campaigns" element={<Campaigns />}>
         <Route path="" element={<CampaignHome />} />
         <Route path="create-campaign" element={<CampaignCreate />} />
+        <Route path="edit-campaign/:id" element={<CampaignCreate />} />
+        <Route path="view-details/:id" element={<CampaignView />} />
       </Route>
       <Route path="/landlords" element={<Landlords />} />
       <Route path="/proposals" element={<Proposals />} />

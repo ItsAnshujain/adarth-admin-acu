@@ -1,5 +1,5 @@
 import { Group, Text, Accordion } from '@mantine/core';
-import { useId } from '@mantine/hooks';
+import { useId } from 'react';
 import Mail from '../../assets/Icons/Mail';
 
 const AccordionLabel = ({ label }) => (
@@ -34,7 +34,7 @@ const SidebarExpandableButton = ({ item }) => {
         <Accordion.Panel>
           <div className="ml-5">
             {item.content.map(text => (
-              <Text key={id} size="sm">
+              <Text key={text} size="sm">
                 {text}
               </Text>
             ))}

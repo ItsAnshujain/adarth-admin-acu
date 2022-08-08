@@ -55,8 +55,8 @@ const Table = ({ COLUMNS, dummy, allowRowsSelect = false }) => {
   );
 
   return (
-    <div className="mr-7 max-w-[1180px] overflow-scroll">
-      <table className="w-screen " {...getTableProps()}>
+    <div className="mr-7 max-w-screen overflow-scroll">
+      <table className="w-screen" {...getTableProps()}>
         <thead className="bg-gray-100">
           {headerGroups.map(headerGroup => (
             <tr {...headerGroup.getHeaderGroupProps()}>

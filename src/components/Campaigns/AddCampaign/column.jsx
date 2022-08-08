@@ -18,7 +18,7 @@ const COLUMNS = [
       const color =
         status === 'Available' ? 'green' : status === 'Unavailable' ? 'orange' : 'primary';
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 cursor-pointer">
           <div className="bg-white border rounded-md">
             <img className="h-8 mx-auto" src={photo} alt="banner" />
           </div>

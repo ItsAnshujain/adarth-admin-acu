@@ -68,7 +68,7 @@ const Create = () => {
         prompt="Go to campaign"
         open={openSuccessModal}
         setOpenSuccessModal={setOpenSuccessModal}
-        path="campaign"
+        path="campaigns"
       />
     </>
   );

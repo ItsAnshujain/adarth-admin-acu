@@ -18,6 +18,16 @@ const styles = () => ({
   },
 });
 
+const textAreaStyles = () => ({
+  label: {
+    fontWeight: 'bold',
+    marginBottom: '10px',
+  },
+  input: {
+    height: '127px',
+  },
+});
+
 const sliderStyle = () => ({
   bar: {
     backgroundColor: 'black',
@@ -97,7 +107,11 @@ const BasicInformation = ({ formData, setFormData }) => {
             placeholder="Write"
           />
         </div>
-        <Textarea label="Description" placeholder="Maximum 200 characters" />
+        <Textarea
+          styles={textAreaStyles}
+          label="Description"
+          placeholder="Maximum 200 characters"
+        />
         <Checkbox label="Set as featured campaign" />
       </div>
       <MultiSelect
