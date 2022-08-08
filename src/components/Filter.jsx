@@ -92,7 +92,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
               <div>
                 <RangeSlider
-                  onChangeEnd={val => {
+                  onChange={val => {
                     setMinPrice(val[0], setMaxPrice(val[1]));
                   }}
                   min={100}

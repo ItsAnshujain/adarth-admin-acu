@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Text, Button } from '@mantine/core';
 import classNames from 'classnames';
-import add from '../assets/add.svg';
-import down from '../assets/down.svg';
-import calendar from '../assets/data-table.svg';
-import Map from '../assets/Icons/Map';
-import Grid from '../assets/Icons/Grid';
-import List from '../assets/Icons/List';
-import DateRange from './DateRange';
-import Filter from './Filter';
+import add from '../../assets/add.svg';
+import down from '../../assets/down.svg';
+import calendar from '../../assets/data-table.svg';
+import Map from '../../assets/Icons/Map';
+import Grid from '../../assets/Icons/Grid';
+import List from '../../assets/Icons/List';
+import DateRange from '../DateRange';
+import Filter from '../Filter';
 
 const initialState = {
   grid: { stroke: false, fill: true },
@@ -52,35 +52,6 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
     setShowDatePicker(!showDatePicker);
   };
 
-  const btnList = classNames({
-    'px-4': true,
-    'border-gray-300': true,
-    border: true,
-    'rounded-md': true,
-    'bg-white': color.list.fill,
-    'bg-black': !color.list.fill,
-  });
-
-  const btnGrid = classNames({
-    'text-white': true,
-    'border-gray-300': true,
-    'border': true,
-    'px-4': true,
-    'rounded-md': true,
-    'bg-white': color.grid.fill,
-    'bg-black': !color.grid.fill,
-  });
-
-  const btnMap = classNames({
-    'text-white': true,
-    'border-gray-300': true,
-    'border': true,
-    'px-4': true,
-    'rounded-md': true,
-    'bg-white': color.map.fill,
-    'bg-black': !color.map.fill,
-  });
-
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center">
       <div className="pl-5">
@@ -98,19 +69,42 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
           </div>
         )}
         <div className="mr-2 flex ">
-          <button className={btnList} onClick={handleListClick} variant="default" type="button">
+          <button
+            className={classNames(
+              `px-4 border-gray-300 border rounded-md ${color.list.fill ? 'bg-white' : 'bg-black'}`,
+            )}
+            onClick={handleListClick}
+            variant="default"
+            type="button"
+          >
             <List
               fill={color.list.fill ? 'white' : 'black'}
               stroke={color.list.stroke ? 'white' : 'black'}
             />
           </button>
-          <button className={btnGrid} onClick={handleGridClick} variant="default" type="button">
+          <button
+            className={classNames(
+              `text-white border-gray-300 border px-4 rounded-md ${
+                color.grid.fill ? 'bg-white' : 'bg-black'
+              }`,
+            )}
+            onClick={handleGridClick}
+            variant="default"
+            type="button"
+          >
             <Grid
               fill={color.grid.fill ? 'white' : 'black'}
               stroke={color.grid.stroke ? 'white' : 'black'}
             />
           </button>
-          <button className={btnMap} onClick={handleMapClick} variant="default" type="button">
+          <button
+            className={classNames(
+              `px-4 border-gray-300 border rounded-md ${color.map.fill ? 'bg-white' : 'bg-black'}`,
+            )}
+            onClick={handleMapClick}
+            variant="default"
+            type="button"
+          >
             <Map
               fill={color.map.fill ? 'white' : 'black'}
               stroke={color.map.stroke ? 'white' : 'black'}

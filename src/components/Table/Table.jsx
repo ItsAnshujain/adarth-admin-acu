@@ -1,15 +1,13 @@
 /* eslint-disable */
 import { useMemo, useState } from 'react';
 import { useTable, useSortBy, useRowSelect, usePagination } from 'react-table';
-import dummy from '../../Dummydata/Inventory.json';
-import COLUMNS from './column';
 import Ascending from '../../assets/Icons/Ascending';
 import Descending from '../../assets/Icons/Descending';
 import IndeterminateCheckbox from './Checkbox';
 import { Pagination } from '@mantine/core';
 
 // REMINDER : selectedFlatRows.original gives array of all selected rows and selectedRowIds contains all the data from id field
-const Table = () => {
+const Table = ({ COLUMNS, dummy }) => {
   const [activePage, setPage] = useState();
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => dummy, []);
@@ -62,8 +60,8 @@ const Table = () => {
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(header => (
                 <th className="text-sm" {...header.getHeaderProps(header.getSortByToggleProps())}>
-                  <div className="flex align-center text-left pl-2 text-gray-500 hover:text-black py-2 text-xs">
-                    <div>{header.render('Header')}</div>
+                  <div className="flex w-fit align-center text-left pl-2 text-gray-500 hover:text-black py-2 text-xs">
+                    <div className="w-fit">{header.render('Header')}</div>
                     <div className="ml-2 gap-1 flex flex-col">
                       {header.isSorted ? (
                         header.isSortedDesc ? (
@@ -111,7 +109,7 @@ const Table = () => {
         page={activePage}
         onChange={nextPage}
         onClick={nextPage}
-        total={3}
+        total={dummy.length}
       />
     </div>
   );
