@@ -13,11 +13,15 @@ const COLUMNS = [
     Header: 'SPACE NAME & PHOTO',
     accessor: 'space_name_and_photo',
     Cell: tableProps => {
-      const { status, photo, space_name } = tableProps.row.original;
+      const navigate = useNavigate();
+      const { status, photo, space_name, id } = tableProps.row.original;
       const color =
         status === 'Available' ? 'green' : status === 'Unavailable' ? 'orange' : 'primary';
       return (
-        <div className="flex items-center gap-2">
+        <div
+          onClick={() => navigate(`view-details/${id}`)}
+          className="flex items-center gap-2 cursor-pointer"
+        >
           <div className="bg-white border rounded-md">
             <img className="h-8 mx-auto" src={photo} alt="banner" />
           </div>
@@ -75,11 +79,19 @@ const COLUMNS = [
             <MenuIcon />
             {showMenu && (
               <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
-                <div onClick={() => navigate(`/inventory/view-details/${id}`)} className="bg-white">
+                <div
+                  onClick={() => navigate(`view-details/${id}`)}
+                  className="bg-white cursor-pointer"
+                >
                   View Details
                 </div>
-                <div className="bg-white">Edit</div>
-                <div className="bg-white">Delete</div>
+                <div
+                  onClick={() => navigate(`edit-details/${id}`)}
+                  className="bg-white cursor-pointer"
+                >
+                  Edit
+                </div>
+                <div className="bg-white cursor-pointer">Delete</div>
               </div>
             )}
           </div>

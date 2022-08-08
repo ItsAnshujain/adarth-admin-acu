@@ -1,9 +1,12 @@
 import { Switch, Text, Button } from '@mantine/core';
 import classNames from 'classnames';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import arrowLeft from '../../../assets/arrow-left.svg';
 
 const Header = ({ isBasicInfo, setIsBasicInfo, isUnderMaintenance, setIsUnderMaintenance }) => {
+  const { pathname } = useLocation();
+  const id = pathname.split('/')[3];
+
   const navigate = useNavigate();
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center">
@@ -50,7 +53,11 @@ const Header = ({ isBasicInfo, setIsBasicInfo, isUnderMaintenance, setIsUnderMai
           </div>
         )}
         <div>
-          <Button className="bg-purple-450" type="button">
+          <Button
+            onClick={() => navigate(`/inventory/edit-details/${id}`)}
+            className="bg-purple-450"
+            type="button"
+          >
             Edit Space
           </Button>
         </div>
