@@ -1,24 +1,24 @@
-import { Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Landlords from './pages/Landlords';
 import Users from './pages/Users';
 import Bookings from './pages/Bookings';
 
-const LazyInventoryHome = lazy(() => import('./pages/Inventory/Home'));
-const LazyInventory = lazy(() => import('./pages/Inventory/Inventorys'));
-const LazyCreateSpace = lazy(() => import('./pages/Inventory/Create'));
-const LazySpaceDetails = lazy(() => import('./pages/Inventory/View'));
+const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
+const Inventory = lazy(() => import('./pages/Inventory/Inventorys'));
+const CreateSpace = lazy(() => import('./pages/Inventory/Create'));
+const SpaceDetails = lazy(() => import('./pages/Inventory/View'));
 
-const LazyCampaignHome = lazy(() => import('./pages/Campaign/Home'));
-const LazyCampaigns = lazy(() => import('./pages/Campaign/Campaigns'));
-const LazyCampaignCreate = lazy(() => import('./pages/Campaign/Create'));
-const LazyCampaignView = lazy(() => import('./pages/Campaign/View'));
+const CampaignHome = lazy(() => import('./pages/Campaign/Home'));
+const Campaigns = lazy(() => import('./pages/Campaign/Campaigns'));
+const CampaignCreate = lazy(() => import('./pages/Campaign/Create'));
+const CampaignView = lazy(() => import('./pages/Campaign/View'));
 
-const LazyProposalsHome = lazy(() => import('./pages/Proposal/Home'));
-const LazyProposals = lazy(() => import('./pages/Proposal/Proposals'));
-const LazyCreateProposals = lazy(() => import('./pages/Proposal/Create'));
-const LazyViewProposal = lazy(() => import('./pages/Proposal/View'));
+const ProposalsHome = lazy(() => import('./pages/Proposal/Home'));
+const Proposals = lazy(() => import('./pages/Proposal/Proposals'));
+const CreateProposals = lazy(() => import('./pages/Proposal/Create'));
+const ViewProposal = lazy(() => import('./pages/Proposal/View'));
 
 const App = () => (
   <Router>
@@ -29,7 +29,7 @@ const App = () => (
         path="/inventory"
         element={
           <Suspense fallback="Loading ...">
-            <LazyInventory />
+            <Inventory />
           </Suspense>
         }
       >
@@ -37,7 +37,7 @@ const App = () => (
           path=""
           element={
             <Suspense fallback="Loading ...">
-              <LazyInventoryHome />
+              <InventoryHome />
             </Suspense>
           }
         />
@@ -45,7 +45,7 @@ const App = () => (
           path="create-space"
           element={
             <Suspense fallback="Loading ...">
-              <LazyCreateSpace />
+              <CreateSpace />
             </Suspense>
           }
         />
@@ -53,7 +53,7 @@ const App = () => (
           path="edit-details/:id"
           element={
             <Suspense fallback="Loading ...">
-              <LazyCreateSpace />
+              <CreateSpace />
             </Suspense>
           }
         />
@@ -61,7 +61,7 @@ const App = () => (
           path="view-details/:id"
           element={
             <Suspense fallback="Loading ...">
-              <LazySpaceDetails />
+              <SpaceDetails />
             </Suspense>
           }
         />
@@ -70,7 +70,7 @@ const App = () => (
         path="/campaigns"
         element={
           <Suspense fallback="Loading ...">
-            <LazyCampaigns />
+            <Campaigns />
           </Suspense>
         }
       >
@@ -78,7 +78,7 @@ const App = () => (
           path=""
           element={
             <Suspense fallback="Loading ...">
-              <LazyCampaignHome />
+              <CampaignHome />
             </Suspense>
           }
         />
@@ -86,7 +86,7 @@ const App = () => (
           path="create-campaign"
           element={
             <Suspense fallback="Loading ...">
-              <LazyCampaignCreate />
+              <CampaignCreate />
             </Suspense>
           }
         />
@@ -94,7 +94,7 @@ const App = () => (
           path="edit-details/:id"
           element={
             <Suspense fallback="Loading ...">
-              <LazyCampaignCreate />
+              <CampaignCreate />
             </Suspense>
           }
         />
@@ -102,7 +102,7 @@ const App = () => (
           path="view-details/:id"
           element={
             <Suspense fallback="Loading ...">
-              <LazyCampaignView />
+              <CampaignView />
             </Suspense>
           }
         />
@@ -111,7 +111,7 @@ const App = () => (
         path="/proposals"
         element={
           <Suspense fallback="Loading ...">
-            <LazyProposals />
+            <Proposals />
           </Suspense>
         }
       >
@@ -119,7 +119,7 @@ const App = () => (
           path=""
           element={
             <Suspense fallback="Loading ...">
-              <LazyProposalsHome />
+              <ProposalsHome />
             </Suspense>
           }
         />
@@ -127,7 +127,7 @@ const App = () => (
           path="create-proposals"
           element={
             <Suspense fallback="Loading ...">
-              <LazyCreateProposals />
+              <CreateProposals />
             </Suspense>
           }
         />
@@ -135,7 +135,7 @@ const App = () => (
           path="edit-details/:id"
           element={
             <Suspense fallback="Loading ...">
-              <LazyCreateProposals />
+              <CreateProposals />
             </Suspense>
           }
         />
@@ -143,7 +143,7 @@ const App = () => (
           path="view-details/:id"
           element={
             <Suspense fallback="Loading ...">
-              <LazyViewProposal />
+              <ViewProposal />
             </Suspense>
           }
         />
