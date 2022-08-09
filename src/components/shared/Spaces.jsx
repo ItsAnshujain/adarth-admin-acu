@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { Text, Button } from '@mantine/core';
-import Filter from '../../Filter';
-import DateRange from '../../DateRange';
-import Search from '../../Search';
-import down from '../../../assets/down.svg';
-import calendar from '../../../assets/data-table.svg';
-import toIndianCurrency from '../../../utils/currencyFormat';
-import Table from '../../Table/Table';
-import column from '../shared/column';
-import data from '../../../Dummydata/CREATE_PROPOSAL_DATA.json';
+import Filter from '../Filter';
+import DateRange from '../DateRange';
+import Search from '../Search';
+import down from '../../assets/down.svg';
+import calendar from '../../assets/data-table.svg';
+import toIndianCurrency from '../../utils/currencyFormat';
+import Table from '../Table/Table';
 
-const Spaces = () => {
+const Spaces = ({ data, column }) => {
   const [search, setSearch] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);

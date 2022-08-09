@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { useState } from 'react';
-import Badge from '../shared/Badge';
-import MenuIcon from '../Menu';
+import Badge from '../../shared/Badge';
+import MenuIcon from '../../Menu';
 import { useNavigate } from 'react-router-dom';
 
 const COLUMNS = [
@@ -34,33 +34,21 @@ const COLUMNS = [
     },
   },
   {
-    Header: 'LANDLORD NAME',
-    accessor: 'landlord_name',
-    Cell: tableProps => <div className="w-fit">{tableProps.row.original['landlord_name']}</div>,
-  },
-  {
-    Header: 'PEER',
-    accessor: 'peer',
-  },
-  {
     Header: 'SPACE TYPE',
     accessor: 'space_type',
   },
   {
-    Header: 'DIMENSION',
-    accessor: 'dimension',
+    Header: 'LANDLORD NAME',
+    accessor: 'landlord_name',
+    Cell: tableProps => <div className="w-fit">{tableProps.row.original['landlord_name']}</div>,
   },
   {
     Header: 'IMPRESSION',
     accessor: 'impression',
   },
   {
-    Header: 'HEALTH',
-    accessor: 'health',
-  },
-  {
-    Header: 'LOCATION',
-    accessor: 'location',
+    Header: 'MEDIA TYPE',
+    accessor: 'media_type',
   },
   {
     Header: 'PRICING',

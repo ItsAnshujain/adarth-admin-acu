@@ -4,7 +4,8 @@ const structuredCardData = {
   impression: '2300000000',
   cost: 250000,
   status: 'Available',
-  subtitle: 'M G Road TOI Building Towards ',
+  subtitle: 'MG Road TOI Building',
+  type: 'Featured',
 };
 
 const cardData = new Array(100).fill(structuredCardData);

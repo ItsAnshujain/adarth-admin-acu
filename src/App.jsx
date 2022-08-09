@@ -1,31 +1,156 @@
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
-import Inventory from './pages/Inventory';
-import Bookings from './pages/Bookings';
-import Campaigns from './pages/Campaigns';
 import Landlords from './pages/Landlords';
-import Proposals from './pages/Proposals';
 import Users from './pages/Users';
-import CreateSpace from './pages/CreateSpace';
-import SpaceDetails from './pages/SpacesDetails';
-import CreateProposals from './pages/CreateProposals';
-import ViewProposal from './pages/ProposalDetails';
+import Bookings from './pages/Bookings';
+
+const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
+const Inventory = lazy(() => import('./pages/Inventory/Inventorys'));
+const CreateSpace = lazy(() => import('./pages/Inventory/Create'));
+const SpaceDetails = lazy(() => import('./pages/Inventory/View'));
+
+const CampaignHome = lazy(() => import('./pages/Campaign/Home'));
+const Campaigns = lazy(() => import('./pages/Campaign/Campaigns'));
+const CampaignCreate = lazy(() => import('./pages/Campaign/Create'));
+const CampaignView = lazy(() => import('./pages/Campaign/View'));
+
+const ProposalsHome = lazy(() => import('./pages/Proposal/Home'));
+const Proposals = lazy(() => import('./pages/Proposal/Proposals'));
+const CreateProposals = lazy(() => import('./pages/Proposal/Create'));
+const ViewProposal = lazy(() => import('./pages/Proposal/View'));
 
 const App = () => (
   <Router>
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/inventory" element={<Inventory />} />
-      <Route path="/inventory/create-space" element={<CreateSpace />} />
-      <Route path="/inventory/view-details/:id" element={<SpaceDetails />} />
-      <Route path="/bookings" element={<Bookings />} />
-      <Route path="/campaigns" element={<Campaigns />} />
+      <Route
+        path="/inventory"
+        element={
+          <Suspense fallback="Loading ...">
+            <Inventory />
+          </Suspense>
+        }
+      >
+        <Route
+          path=""
+          element={
+            <Suspense fallback="Loading ...">
+              <InventoryHome />
+            </Suspense>
+          }
+        />
+        <Route
+          path="create-space"
+          element={
+            <Suspense fallback="Loading ...">
+              <CreateSpace />
+            </Suspense>
+          }
+        />
+        <Route
+          path="edit-details/:id"
+          element={
+            <Suspense fallback="Loading ...">
+              <CreateSpace />
+            </Suspense>
+          }
+        />
+        <Route
+          path="view-details/:id"
+          element={
+            <Suspense fallback="Loading ...">
+              <SpaceDetails />
+            </Suspense>
+          }
+        />
+      </Route>
+      <Route
+        path="/campaigns"
+        element={
+          <Suspense fallback="Loading ...">
+            <Campaigns />
+          </Suspense>
+        }
+      >
+        <Route
+          path=""
+          element={
+            <Suspense fallback="Loading ...">
+              <CampaignHome />
+            </Suspense>
+          }
+        />
+        <Route
+          path="create-campaign"
+          element={
+            <Suspense fallback="Loading ...">
+              <CampaignCreate />
+            </Suspense>
+          }
+        />
+        <Route
+          path="edit-details/:id"
+          element={
+            <Suspense fallback="Loading ...">
+              <CampaignCreate />
+            </Suspense>
+          }
+        />
+        <Route
+          path="view-details/:id"
+          element={
+            <Suspense fallback="Loading ...">
+              <CampaignView />
+            </Suspense>
+          }
+        />
+      </Route>
+      <Route
+        path="/proposals"
+        element={
+          <Suspense fallback="Loading ...">
+            <Proposals />
+          </Suspense>
+        }
+      >
+        <Route
+          path=""
+          element={
+            <Suspense fallback="Loading ...">
+              <ProposalsHome />
+            </Suspense>
+          }
+        />
+        <Route
+          path="create-proposals"
+          element={
+            <Suspense fallback="Loading ...">
+              <CreateProposals />
+            </Suspense>
+          }
+        />
+        <Route
+          path="edit-details/:id"
+          element={
+            <Suspense fallback="Loading ...">
+              <CreateProposals />
+            </Suspense>
+          }
+        />
+        <Route
+          path="view-details/:id"
+          element={
+            <Suspense fallback="Loading ...">
+              <ViewProposal />
+            </Suspense>
+          }
+        />
+      </Route>
       <Route path="/landlords" element={<Landlords />} />
-      <Route path="/proposals" element={<Proposals />} />
-      <Route path="/proposals/create-proposals" element={<CreateProposals />} />
-      <Route path="/proposals/view-details/:id" element={<ViewProposal />} />
       <Route path="/users" element={<Users />} />
+      <Route path="/bookings" element={<Bookings />} />
     </Routes>
   </Router>
 );

@@ -11,7 +11,7 @@ const styles = () => ({
 
 const RowsPerPage = ({ setCount }) => (
   <div className="pl-5">
-    <p className="flex items-center gap-3 text-sm text-gray-6">
+    <div className="flex items-center gap-3 text-sm text-gray-6">
       Rows Per Page :{' '}
       <Select
         variant="unstyled"
@@ -21,7 +21,7 @@ const RowsPerPage = ({ setCount }) => (
         styles={styles}
         rightSection={<img src={down} alt="down-arrow" className="h-4 p-0 m-0" />}
       />
-    </p>
+    </div>
   </div>
 );
 

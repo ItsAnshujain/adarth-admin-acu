@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '../Menu';
@@ -10,6 +11,20 @@ const COLUMNS = [
   {
     Header: 'PROPOSAL NAME',
     accessor: 'proposal_name',
+    Cell: tableProps => {
+      const navigate = useNavigate();
+      const {
+        row: {
+          original: { id, proposal_name },
+        },
+      } = tableProps;
+
+      return (
+        <div className="cursor-pointer" onClick={() => navigate(`view-details/${id}`)}>
+          {proposal_name}
+        </div>
+      );
+    },
   },
   {
     Header: 'STATUS',
@@ -39,7 +54,7 @@ const COLUMNS = [
         },
       } = tableProps;
       return (
-        <button type="button" onClick={() => setShowMenu(!showMenu)}>
+        <div type="button" onClick={() => setShowMenu(!showMenu)}>
           <div className="relative">
             <MenuIcon />
             {showMenu && (
@@ -51,12 +66,17 @@ const COLUMNS = [
                 >
                   View
                 </button>
-                <div className="bg-white">Edit</div>
-                <div className="bg-white">Delete</div>
+                <div
+                  onClick={() => navigate(`/proposals/edit-details/${id}`)}
+                  className="bg-white cursor-pointer"
+                >
+                  Edit
+                </div>
+                <div className="bg-white cursor-pointer">Delete</div>
               </div>
             )}
           </div>
-        </button>
+        </div>
       );
     },
   },
