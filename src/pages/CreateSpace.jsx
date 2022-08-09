@@ -1,6 +1,6 @@
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import MainArea from '../components/Inventory/AddSpace/CreateSpaceMain';
+import MainArea from '../components/Inventory/CreateSpace';
 
 const CreateSpace = () => (
   <>
