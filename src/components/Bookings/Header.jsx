@@ -1,0 +1,60 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Text, Button } from '@mantine/core';
+import add from '../../assets/add.svg';
+import down from '../../assets/down.svg';
+import calendar from '../../assets/data-table.svg';
+import DateRange from '../DateRange';
+import Filter from '../Filter';
+
+const AreaHeader = ({ text }) => {
+  const navigate = useNavigate();
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+
+  const openDatePicker = () => {
+    setShowDatePicker(!showDatePicker);
+  };
+
+  return (
+    <div className="h-20 border-b border-gray-450 flex justify-between items-center">
+      <div className="pl-5">
+        <Text size="lg" weight="bold">
+          {text}
+        </Text>
+      </div>
+      <div className="flex justify-around mr-7">
+        <div className="mr-2 relative">
+          <Button onClick={openDatePicker} variant="default" type="button">
+            <img src={calendar} className="h-5" alt="calendar" />
+          </Button>
+          {showDatePicker && (
+            <div className="absolute z-20 -translate-x-1/2 bg-white -top-0.3">
+              <DateRange handleClose={openDatePicker} />
+            </div>
+          )}
+        </div>
+        <div className="mr-2">
+          <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
+            <img className="mr-2" src={down} alt="down" /> Filter
+          </Button>
+          {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
+        </div>
+        <div className="relative">
+          <button
+            onClick={() => {
+              navigate('create-order');
+            }}
+            variant="default"
+            className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
+            type="button"
+          >
+            <img className="inline" src={add} alt="Add" /> Create Order
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AreaHeader;

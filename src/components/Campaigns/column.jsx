@@ -6,13 +6,6 @@ import MenuIcon from '../Menu';
 import { useNavigate } from 'react-router-dom';
 import down from '../../assets/down.svg';
 
-const styles = () => ({
-  rightSection: { pointerEvents: 'none' },
-  wrapper: {
-    width: '62%',
-  },
-});
-
 const COLUMNS = [
   {
     Header: '#',
@@ -67,7 +60,12 @@ const COLUMNS = [
           value={value}
           onChange={e => setValue(e.target.value)}
           data={['Published', 'Unpublished']}
-          styles={styles}
+          styles={{
+            rightSection: { pointerEvents: 'none' },
+            wrapper: {
+              width: '62%',
+            },
+          }}
           rightSection={<img src={down} alt="down" height="12px" />}
           rightSectionWidth={40}
         />

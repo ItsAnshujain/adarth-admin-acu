@@ -9,16 +9,16 @@ const Campaigns = () => {
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {
-    setColor(5);
+    setColor(1);
   }, []);
 
   let headerTitle = '';
   if (pathname.includes('view')) {
-    headerTitle = 'Campaign Details';
+    headerTitle = 'Order Details';
   } else if (pathname.includes('create')) {
-    headerTitle = 'Create Campaign';
+    headerTitle = 'Create Order';
   } else {
-    headerTitle = 'Campaign';
+    headerTitle = 'Bookings';
   }
 
   return (

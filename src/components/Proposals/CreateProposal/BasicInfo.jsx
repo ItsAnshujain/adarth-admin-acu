@@ -1,14 +1,14 @@
 import { Text, TextInput, Textarea } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 
-const textAreaStyles = () => ({
+const textAreaStyles = {
   label: {
     fontWeight: 'bold',
   },
   input: {
     height: '127px',
   },
-});
+};
 
 const BasicInfo = () => (
   <div className="flex gap-4 pt-4 flex-col pl-5 pr-7">

@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Text, NativeSelect, RangeSlider, MultiSelect, TextInput } from '@mantine/core';
 
-const styles = () => ({
+const styles = {
   label: {
     marginBottom: '10px',
     fontWeight: 'bold',
   },
-});
+};
 
-const multiSelectStyles = () => ({
+const multiSelectStyles = {
   label: {
     marginBottom: '10px',
     fontWeight: 'bold',
@@ -24,7 +24,7 @@ const multiSelectStyles = () => ({
   icon: {
     color: 'white',
   },
-});
+};
 const Specification = ({ formData, setFormData }) => {
   const [minImpressions, setMinImpressions] = useState(200);
   const [maxImpressions, setMaxImpressions] = useState(800);

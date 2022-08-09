@@ -1,11 +1,11 @@
 import { Text, TextInput } from '@mantine/core';
 
-const styles = () => ({
+const styles = {
   label: {
     marginBottom: '10px',
     fontWeight: 'bold',
   },
-});
+};
 const Location = ({ formData, setFormData }) => {
   const handleChange = e => {
     const { name, value } = e.target;

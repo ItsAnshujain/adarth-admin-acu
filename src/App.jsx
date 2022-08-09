@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login';
 import Landlords from './pages/Landlords';
 import Users from './pages/Users';
-import Bookings from './pages/Bookings';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventorys'));
@@ -19,6 +18,9 @@ const ProposalsHome = lazy(() => import('./pages/Proposal/Home'));
 const Proposals = lazy(() => import('./pages/Proposal/Proposals'));
 const CreateProposals = lazy(() => import('./pages/Proposal/Create'));
 const ViewProposal = lazy(() => import('./pages/Proposal/View'));
+
+const BookingHome = lazy(() => import('./pages/Booking/Home'));
+const Booking = lazy(() => import('./pages/Booking/Bookings'));
 
 const App = () => (
   <Router>
@@ -148,9 +150,25 @@ const App = () => (
           }
         />
       </Route>
+      <Route
+        path="/bookings"
+        element={
+          <Suspense fallback="Loading ...">
+            <Booking />
+          </Suspense>
+        }
+      >
+        <Route
+          path=""
+          element={
+            <Suspense fallback="Loading ...">
+              <BookingHome />
+            </Suspense>
+          }
+        />
+      </Route>
       <Route path="/landlords" element={<Landlords />} />
       <Route path="/users" element={<Users />} />
-      <Route path="/bookings" element={<Bookings />} />
     </Routes>
   </Router>
 );

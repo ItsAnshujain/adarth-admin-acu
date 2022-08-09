@@ -4,9 +4,9 @@ import { NativeSelect } from '@mantine/core';
 import MenuIcon from '../../Menu';
 import { useNavigate } from 'react-router-dom';
 import down from '../../../assets/down.svg';
-const styles = () => ({
+const styles = {
   rightSection: { pointerEvents: 'none' },
-});
+};
 
 const COLUMNS = [
   {
