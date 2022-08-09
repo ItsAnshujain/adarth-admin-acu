@@ -1,0 +1,55 @@
+import { useState } from 'react';
+import { Text, Button } from '@mantine/core';
+import RowsPerPage from '../../RowsPerPage';
+import Search from '../../Search';
+import calendar from '../../../assets/data-table.svg';
+import DateRange from '../../DateRange';
+import add from '../../../assets/add.svg';
+import Table from '../../Table/Table';
+
+const TotalBookings = ({ data, columns }) => {
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [search, setSearch] = useState('');
+  const [count, setCount] = useState(20);
+  const openDatePicker = () => {
+    setShowDatePicker(!showDatePicker);
+  };
+  return (
+    <>
+      <div className="mt-5 pl-5 pr-7 flex justify-between">
+        <Text>Booking History of the campaign</Text>
+        <div className="flex">
+          <div className="mr-2 relative">
+            <Button onClick={openDatePicker} variant="default" type="button">
+              <img src={calendar} className="h-5" alt="calendar" />
+            </Button>
+            {showDatePicker && (
+              <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
+                <DateRange handleClose={openDatePicker} />
+              </div>
+            )}
+          </div>
+          <div>
+            <button
+              onClick={() => {}}
+              variant="default"
+              className="bg-purple-450 flex items-center align-center py-2 text-white rounded-md px-4"
+              type="button"
+            >
+              <img className="inline mr-1" src={add} alt="Add" /> Add Space
+            </button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div className="flex justify-between h-20 items-center">
+          <RowsPerPage setCount={setCount} count={count} />
+          <Search search={search} setSearch={setSearch} />
+        </div>
+        <Table dummy={data} COLUMNS={columns} allowRowsSelect />
+      </div>
+    </>
+  );
+};
+
+export default TotalBookings;

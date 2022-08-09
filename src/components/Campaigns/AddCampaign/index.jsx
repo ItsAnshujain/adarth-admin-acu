@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import BasicInfo from './BasicInformation';
 import SuccessModal from '../../shared/Modal';
-import Preview from './Preview';
+import Preview from '../shared/Preview';
 import CoverImage from './CoverImage';
 import Header from './Header';
 import Spaces from '../../shared/Spaces';

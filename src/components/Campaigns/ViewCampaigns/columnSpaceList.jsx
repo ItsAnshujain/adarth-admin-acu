@@ -1,17 +1,8 @@
 /* eslint-disable */
 import { useState } from 'react';
-import { NativeSelect } from '@mantine/core';
-import Badge from '../shared/Badge';
-import MenuIcon from '../Menu';
+import Badge from '../../shared/Badge';
+import MenuIcon from '../../Menu';
 import { useNavigate } from 'react-router-dom';
-import down from '../../assets/down.svg';
-
-const styles = () => ({
-  rightSection: { pointerEvents: 'none' },
-  wrapper: {
-    width: '62%',
-  },
-});
 
 const COLUMNS = [
   {
@@ -19,8 +10,8 @@ const COLUMNS = [
     accessor: 'id',
   },
   {
-    Header: 'CAMPAIGN NAME',
-    accessor: 'space_name',
+    Header: 'SPACE NAME & PHOTO',
+    accessor: 'space_name_and_photo',
     Cell: tableProps => {
       const navigate = useNavigate();
       const { status, photo, space_name, id } = tableProps.row.original;
@@ -29,13 +20,13 @@ const COLUMNS = [
       return (
         <div
           onClick={() => navigate(`view-details/${id}`)}
-          className="flex items-center cursor-pointer"
+          className="flex items-center gap-2 cursor-pointer"
         >
           <div className="bg-white border rounded-md">
             <img className="h-8 mx-auto" src={photo} alt="banner" />
           </div>
-          <p className="flex-1 mx-2">{space_name}</p>
-          <div className="grow">
+          <p className="flex-1">{space_name}</p>
+          <div className="flex-1">
             <Badge radius="xl" text={status} color={color} variant="filled" size="sm" />
           </div>
         </div>
@@ -43,40 +34,21 @@ const COLUMNS = [
     },
   },
   {
-    Header: 'TYPE',
-    accessor: 'type',
+    Header: 'SPACE TYPE',
+    accessor: 'space_type',
   },
   {
-    Header: 'HEALTH',
-    accessor: 'health',
+    Header: 'LANDLORD NAME',
+    accessor: 'landlord_name',
+    Cell: tableProps => <div className="w-fit">{tableProps.row.original['landlord_name']}</div>,
   },
   {
-    Header: 'STATUS',
-    accessor: 'status',
-    Cell: tableProps => {
-      const {
-        row: {
-          original: { pricing },
-        },
-      } = tableProps;
-
-      const [value, setValue] = useState(pricing);
-
-      return (
-        <NativeSelect
-          value={value}
-          onChange={e => setValue(e.target.value)}
-          data={['Published', 'Unpublished']}
-          styles={styles}
-          rightSection={<img src={down} alt="down" height="12px" />}
-          rightSectionWidth={40}
-        />
-      );
-    },
+    Header: 'IMPRESSION',
+    accessor: 'impression',
   },
   {
-    Header: 'TOTAL PLACES',
-    accessor: 'total_places',
+    Header: 'MEDIA TYPE',
+    accessor: 'media_type',
   },
   {
     Header: 'PRICING',
@@ -99,7 +71,7 @@ const COLUMNS = [
                   onClick={() => navigate(`view-details/${id}`)}
                   className="bg-white cursor-pointer"
                 >
-                  View
+                  View Details
                 </div>
                 <div
                   onClick={() => navigate(`edit-details/${id}`)}
@@ -108,7 +80,6 @@ const COLUMNS = [
                   Edit
                 </div>
                 <div className="bg-white cursor-pointer">Delete</div>
-                <div className="bg-white cursor-pointer">Set as Featured</div>
               </div>
             )}
           </div>

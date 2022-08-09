@@ -3,7 +3,7 @@ import { Text, Pagination } from '@mantine/core';
 import Preview from '../../shared/Preview';
 import map from '../../../assets/mapplaceholder.png';
 import dummya from '../../../assets/dummya.png';
-import Places from './UI/Places';
+import Places from '../AddCampaign/UI/Places';
 
 const dummyDataObj = {
   img: dummya,
@@ -25,7 +25,7 @@ const PreviewCampaign = () => {
   const [activePage, setPage] = useState(1);
 
   return (
-    <div className="relative pb-12 mb-16">
+    <>
       <Preview />
       <div className="pl-5 pr-7 flex flex-col">
         <Text size="lg" weight="bold">
@@ -57,7 +57,7 @@ const PreviewCampaign = () => {
         total={1}
         color="dark"
       />
-    </div>
+    </>
   );
 };
 

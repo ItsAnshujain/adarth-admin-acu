@@ -1,8 +1,8 @@
 /* eslint-disable */
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Badge from '../../shared/Badge';
 import MenuIcon from '../../Menu';
-import { useNavigate } from 'react-router-dom';
 
 const COLUMNS = [
   {
@@ -13,8 +13,12 @@ const COLUMNS = [
     Header: 'SPACE NAME & PHOTO',
     accessor: 'space_name_and_photo',
     Cell: tableProps => {
-      const { status, photo, space_name } = tableProps.row.original;
-      console.log(status);
+      const {
+        row: {
+          original: { status, photo, space_name },
+        },
+      } = tableProps;
+
       const color =
         status === 'Available' ? 'green' : status === 'Unavailable' ? 'orange' : 'primary';
       return (
@@ -33,7 +37,14 @@ const COLUMNS = [
   {
     Header: 'LANDLORD NAME',
     accessor: 'landlord_name',
-    Cell: tableProps => <div className="w-fit">{tableProps.row.original['landlord_name']}</div>,
+    Cell: tableProps => {
+      const {
+        row: {
+          original: { landlord_name },
+        },
+      } = tableProps;
+      return <div className="w-fit">{landlord_name}</div>;
+    },
   },
   {
     Header: 'SPACE TYPE',
@@ -69,7 +80,11 @@ const COLUMNS = [
     Cell: tableProps => {
       const [showMenu, setShowMenu] = useState(false);
       const navigate = useNavigate();
-      const { id } = tableProps.row.original;
+      const {
+        row: {
+          original: { id },
+        },
+      } = tableProps;
       return (
         <div onClick={() => setShowMenu(!showMenu)}>
           <div className="relative">

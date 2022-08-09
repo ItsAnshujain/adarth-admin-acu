@@ -91,7 +91,7 @@ const App = () => (
           }
         />
         <Route
-          path="edit-campaign/:id"
+          path="edit-details/:id"
           element={
             <Suspense fallback="Loading ...">
               <LazyCampaignCreate />
