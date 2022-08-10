@@ -34,7 +34,7 @@ const Proposals = () => {
   }, []);
 
   return (
-    <div className="col-span-10 border-gray-450 border-l">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <AreaHeader text="Order" />
       <div className="pr-7">
         <div className="mt-5 pl-5">

@@ -1,7 +1,7 @@
 import { Button } from '@mantine/core';
 import classNames from 'classnames';
+import { ArrowLeft } from 'react-feather';
 import { useLocation, useNavigate } from 'react-router-dom';
-import arrowLeft from '../../../assets/arrow-left.svg';
 
 const Header = ({ tabs, setTabs }) => {
   const { pathname } = useLocation();
@@ -12,7 +12,7 @@ const Header = ({ tabs, setTabs }) => {
     <div className="h-20 border-b border-gray-450 flex justify-between items-center">
       <div className="flex pl-5 gap-6 items-center">
         <button onClick={() => navigate(-1)} className="mr-4" type="button">
-          <img src={arrowLeft} alt="back-arrow" />
+          <ArrowLeft />
         </button>
         <button
           type="button"

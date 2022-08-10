@@ -1,13 +1,13 @@
 /* eslint-disable */
 import { useState } from 'react';
 import { Button, Text } from '@mantine/core';
+import { ChevronDown } from 'react-feather';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import Header from './Header';
 import Details from './Details';
 import Filter from '../../Filter';
 import DateRange from '../../DateRange';
-import down from '../../../assets/down.svg';
 import calendar from '../../../assets/data-table.svg';
 import Table from '../../Table/Table';
 import COLUMNS from '../shared/column';
@@ -44,7 +44,7 @@ const ProposalDetails = () => {
           </div>
           <div>
             <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
-              <img className="mr-2" src={down} alt="down" /> Filter
+              <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
             {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
           </div>

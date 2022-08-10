@@ -1,9 +1,10 @@
 /* eslint-disable */
 import { useState } from 'react';
 import { NativeSelect } from '@mantine/core';
-import MenuIcon from '../../Menu';
+import { ChevronDown } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
-import down from '../../../assets/down.svg';
+import MenuIcon from '../../Menu';
+
 const styles = {
   rightSection: { pointerEvents: 'none' },
 };
@@ -75,7 +76,7 @@ const COLUMNS = [
           onChange={e => setValue(e.target.value)}
           data={['1000', '2000', '5000', '10000']}
           styles={styles}
-          rightSection={<img src={down} alt="down" height="12px" />}
+          rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
           rightSectionWidth={40}
         />
       );

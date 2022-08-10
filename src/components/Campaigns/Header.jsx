@@ -2,17 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Text, Button } from '@mantine/core';
 import classNames from 'classnames';
-import add from '../../assets/add.svg';
-import down from '../../assets/down.svg';
+import { Plus, ChevronDown, Server, Grid } from 'react-feather';
 import calendar from '../../assets/data-table.svg';
-import Grid from '../../assets/Icons/Grid';
-import List from '../../assets/Icons/List';
 import DateRange from '../DateRange';
 import Filter from '../Filter';
 
 const initialState = {
-  grid: { stroke: false, fill: true },
-  list: { stroke: true, fill: false },
+  grid: { fill: true },
+  list: { fill: false },
 };
 const AreaHeader = ({ text, setView }) => {
   const navigate = useNavigate();
@@ -21,16 +18,16 @@ const AreaHeader = ({ text, setView }) => {
   const [color, setColor] = useState(initialState);
   const handleListClick = () => {
     setColor({
-      grid: { stroke: false, fill: true },
-      list: { stroke: true, fill: false },
+      grid: { fill: true },
+      list: { fill: false },
     });
     setView('list');
   };
 
   const handleGridClick = () => {
     setColor({
-      grid: { stroke: true, fill: false },
-      list: { stroke: false, fill: true },
+      grid: { fill: false },
+      list: { fill: true },
     });
     setView('grid');
   };
@@ -56,9 +53,9 @@ const AreaHeader = ({ text, setView }) => {
             variant="default"
             type="button"
           >
-            <List
-              fill={color.list.fill ? 'white' : 'black'}
-              stroke={color.list.stroke ? 'white' : 'black'}
+            <Server
+              strokeWidth="3px"
+              className={`h-5 ${classNames(color.list.fill ? 'text-black' : 'text-white')}`}
             />
           </button>
           <button
@@ -72,8 +69,8 @@ const AreaHeader = ({ text, setView }) => {
             type="button"
           >
             <Grid
-              fill={color.grid.fill ? 'white' : 'black'}
-              stroke={color.grid.stroke ? 'white' : 'black'}
+              strokeWidth="3px"
+              className={`h-5 ${classNames(color.grid.fill ? 'text-black' : 'text-white')}`}
             />
           </button>
         </div>
@@ -94,7 +91,7 @@ const AreaHeader = ({ text, setView }) => {
             type="button"
             className="font-medium"
           >
-            <img className="mr-2" src={down} alt="down" /> Filter
+            <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
           </Button>
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
         </div>
@@ -107,7 +104,7 @@ const AreaHeader = ({ text, setView }) => {
             className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
             type="button"
           >
-            <img className="inline" src={add} alt="Add" /> Add Campaign
+            <Plus size={16} className="mt-[1px] mr-1" /> Add Campaign
           </button>
         </div>
       </div>

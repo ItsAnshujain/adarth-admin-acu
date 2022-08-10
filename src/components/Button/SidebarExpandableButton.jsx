@@ -1,10 +1,10 @@
 import { Accordion } from '@mantine/core';
 import { useId } from 'react';
-import Mail from '../../assets/Icons/Mail';
+import { Mail } from 'react-feather';
 
 const AccordionLabel = ({ label }) => (
   <div className="flex">
-    <Mail stroke="#969EA1" />
+    <Mail className="h-5 text-[#969EA1]" />
     <span className="text-gray-400 font-medium text-sm ml-2">{label}</span>{' '}
   </div>
 );

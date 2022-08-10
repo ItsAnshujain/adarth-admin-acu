@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Text, Button } from '@mantine/core';
-import add from '../../assets/add.svg';
-import down from '../../assets/down.svg';
+import { Plus, ChevronDown } from 'react-feather';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import Filter from '../Filter';
@@ -36,7 +35,7 @@ const AreaHeader = ({ text }) => {
         </div>
         <div className="mr-2">
           <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
-            <img className="mr-2" src={down} alt="down" /> Filter
+            <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
           </Button>
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
         </div>
@@ -49,7 +48,7 @@ const AreaHeader = ({ text }) => {
             className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
             type="button"
           >
-            <img className="inline" src={add} alt="Add" /> Create Order
+            <Plus size={16} className="mt-[1px] mr-1" /> Create Order
           </button>
         </div>
       </div>

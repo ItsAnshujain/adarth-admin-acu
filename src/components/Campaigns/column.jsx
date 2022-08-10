@@ -4,7 +4,7 @@ import { NativeSelect } from '@mantine/core';
 import Badge from '../shared/Badge';
 import MenuIcon from '../Menu';
 import { useNavigate } from 'react-router-dom';
-import down from '../../assets/down.svg';
+import { ChevronDown } from 'react-feather';
 
 const COLUMNS = [
   {
@@ -66,7 +66,7 @@ const COLUMNS = [
               width: '62%',
             },
           }}
-          rightSection={<img src={down} alt="down" height="12px" />}
+          rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
           rightSectionWidth={40}
         />
       );

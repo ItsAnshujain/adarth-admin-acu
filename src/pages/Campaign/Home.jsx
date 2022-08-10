@@ -13,7 +13,7 @@ const Home = () => {
   const [count, setCount] = useState(20);
   const [view, setView] = useState('list');
   return (
-    <div className="col-span-10 border-gray-450 border-l">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <AreaHeader text="Campaign List" setView={setView} />
       <div className="flex justify-between h-20 items-center">
         <RowsPerPage setCount={setCount} />

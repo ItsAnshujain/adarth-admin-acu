@@ -1,7 +1,7 @@
 import classNames from 'classnames';
+import { Mail } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import SidebarExpandableButton from './SidebarExpandableButton';
-import Mail from '../../assets/Icons/Mail';
 
 const SidebarButton = ({ text, index, color, clickHandler }) => {
   const navigate = useNavigate();
@@ -25,7 +25,9 @@ const SidebarButton = ({ text, index, color, clickHandler }) => {
         type="button"
       >
         <div className="mr-2">
-          <Mail stroke={`${color[index] ? '#914EFB' : '#969EA1'}`} />
+          <Mail
+            className={classNames(`h-5 ${color[index] ? 'text-[#914EFB]' : 'text-[#969EA1]'}`)}
+          />
         </div>
         <span
           className={classNames(
