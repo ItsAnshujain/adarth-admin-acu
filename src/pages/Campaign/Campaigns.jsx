@@ -13,6 +13,7 @@ const Campaigns = () => {
   }, []);
 
   let headerTitle = '';
+
   if (pathname.includes('view')) {
     headerTitle = 'Campaign Details';
   } else if (pathname.includes('create')) {

@@ -8,6 +8,9 @@ module.exports = {
         orange: { 450: '#C2410C', 350: '#FF900E' },
         gray: { 450: '#E5E7EB' },
       },
+      screens: {
+        '2xl': '1440px',
+      },
     },
   },
   plugins: [],

@@ -5,7 +5,7 @@ import Landlords from './pages/Landlords';
 import Users from './pages/Users';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
-const Inventory = lazy(() => import('./pages/Inventory/Inventorys'));
+const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
 const CreateSpace = lazy(() => import('./pages/Inventory/Create'));
 const SpaceDetails = lazy(() => import('./pages/Inventory/View'));
 

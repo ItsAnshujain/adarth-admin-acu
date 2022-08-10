@@ -13,15 +13,17 @@ const Header = ({ title }) => (
         </Text>
       </div>
       <div className="flex items-center mr-7">
-        <Button variant="subtle" color="gray">
+        <Button variant="subtle" color="gray" className="font-medium">
           Notifications
         </Button>
-        <Button variant="subtle" color="gray">
+        <Button variant="subtle" color="gray" className="font-medium">
           Settings
         </Button>
         <Button variant="default">
           <img className="w-8 h-8 mr-2" src={logo} alt="logo" />
-          <Text size="sm">Profile</Text>
+          <Text size="sm" className="font-medium">
+            Profile
+          </Text>
         </Button>
       </div>
     </div>

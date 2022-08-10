@@ -88,7 +88,12 @@ const AreaHeader = ({ text, setView }) => {
           )}
         </div>
         <div className="mr-2">
-          <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
+          <Button
+            onClick={() => setShowFilter(!showFilter)}
+            variant="default"
+            type="button"
+            className="font-medium"
+          >
             <img className="mr-2" src={down} alt="down" /> Filter
           </Button>
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
