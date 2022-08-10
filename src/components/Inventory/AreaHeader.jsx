@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Text, Button } from '@mantine/core';
 import classNames from 'classnames';
-import add from '../../assets/add.svg';
+import { Plus } from 'react-feather';
 import down from '../../assets/down.svg';
 import calendar from '../../assets/data-table.svg';
 import Map from '../../assets/Icons/Map';
@@ -122,7 +122,12 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
           )}
         </div>
         <div className="mr-2">
-          <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
+          <Button
+            onClick={() => setShowFilter(!showFilter)}
+            variant="default"
+            type="button"
+            className="font-medium"
+          >
             <img className="mr-2" src={down} alt="down" /> Filter
           </Button>
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
@@ -131,13 +136,13 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
           <button
             onClick={() => setAddDetails(!addDetailsClicked)}
             variant="default"
-            className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
+            className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"
             type="button"
           >
-            <img className="inline" src={add} alt="Add" /> Add Space
+            <Plus size={16} className="mt-[1px] mr-1" /> Add Space
           </button>
           {addDetailsClicked && (
-            <div className="absolute text-sm z-20 bg-white shadow-lg px-2 right-7  w-36 py-4">
+            <div className="absolute text-sm z-20 bg-white shadow-lg p-4 right-7 w-36">
               <Link to="create-space">
                 <div className="mb-2 cursor-pointer">Single Entry</div>
               </Link>

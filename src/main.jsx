@@ -26,6 +26,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       withGlobalStyles
       withNormalizeCSS
       theme={{
+        fontFamily: 'Dm Sans, sans-serif',
         colors: {
           brand: ['#DAC4FF', '#C7A5FF', '#B387FA', '#9A69EA', '#824DD8', '#692FC7', '#4B0DAF'],
         },

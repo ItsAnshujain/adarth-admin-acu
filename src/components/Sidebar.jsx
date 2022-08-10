@@ -20,7 +20,7 @@ const Sidebar = () => {
   }));
 
   return (
-    <div className="h-screen col-span-2 mt-4">
+    <div className="hidden lg:block lg:col-span-2 mt-4">
       <div className="flex flex-col items-start gap-2">
         {sidebarText.map((text, index) => (
           <SidebarButton

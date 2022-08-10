@@ -33,7 +33,7 @@ const SpacesList = ({ data, columns }) => {
             <button
               onClick={() => {}}
               variant="default"
-              className="bg-purple-450 flex items-center align-center py-2 text-white rounded-md px-4"
+              className="bg-purple-450 flex items-center align-center py-2 text-white rounded-md px-4 text-sm"
               type="button"
             >
               <img className="inline mr-1" src={add} alt="Add" /> Add Space
