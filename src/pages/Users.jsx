@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import useSideBarState from '../store/sidebar.the.store';
+import useSideBarState from '../store/sidebar.store';
 
 const Users = () => {
   const setColor = useSideBarState(state => state.setColor);
