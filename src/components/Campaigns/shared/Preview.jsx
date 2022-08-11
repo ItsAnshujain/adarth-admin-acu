@@ -3,7 +3,7 @@ import { Text, Pagination } from '@mantine/core';
 import Preview from '../../shared/Preview';
 import map from '../../../assets/mapplaceholder.png';
 import dummya from '../../../assets/dummya.png';
-import Places from '../AddCampaign/UI/Places';
+import Places from '../ViewCampaigns/UI/Places';
 
 const dummyDataObj = {
   img: dummya,

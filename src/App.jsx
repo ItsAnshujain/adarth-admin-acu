@@ -21,6 +21,7 @@ const ViewProposal = lazy(() => import('./pages/Proposal/View'));
 
 const BookingHome = lazy(() => import('./pages/Booking/Home'));
 const Booking = lazy(() => import('./pages/Booking/Bookings'));
+const ViewBooking = lazy(() => import('./pages/Booking/View'));
 
 const App = () => (
   <Router>
@@ -163,6 +164,14 @@ const App = () => (
           element={
             <Suspense fallback="Loading ...">
               <BookingHome />
+            </Suspense>
+          }
+        />
+        <Route
+          path="view-details/:id"
+          element={
+            <Suspense fallback="Loading ...">
+              <ViewBooking />
             </Suspense>
           }
         />
