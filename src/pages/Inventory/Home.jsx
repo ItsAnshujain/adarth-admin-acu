@@ -15,7 +15,7 @@ const Inventory = () => {
   const [selectAll, setSelectAll] = useState(false);
 
   return (
-    <div className="col-span-10 border-gray-450 border-l ">
+    <div className="md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <AreaHeader
         selectAll={selectAll}
         setSelectAll={setSelectAll}
@@ -30,9 +30,7 @@ const Inventory = () => {
         <GridView selectAll={selectAll} count={count} Card={Card} />
       ) : view === 'list' ? (
         <Table COLUMNS={COLUMNS} dummy={dummy} count={count} allowRowsSelect />
-      ) : (
-        'null'
-      )}
+      ) : null}
     </div>
   );
 };

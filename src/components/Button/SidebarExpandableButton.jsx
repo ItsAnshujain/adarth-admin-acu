@@ -1,28 +1,35 @@
-import { Group, Text, Accordion } from '@mantine/core';
+import { Accordion } from '@mantine/core';
 import { useId } from 'react';
 import Mail from '../../assets/Icons/Mail';
 
 const AccordionLabel = ({ label }) => (
-  <Group noWrap>
+  <div className="flex">
     <Mail stroke="#969EA1" />
-    <div>
-      <Text>{label}</Text>
-    </div>
-  </Group>
+    <span className="text-gray-400 font-medium text-sm ml-2">{label}</span>{' '}
+  </div>
 );
 
-// TODO add Links to text field in Accordion Item
+// TODO: add Links to text field in Accordion Item
 const SidebarExpandableButton = ({ item }) => {
   const id = useId();
   return (
     <Accordion
+      styles={theme => ({
+        item: {
+          border: 'none',
+        },
+        chevron: {
+          color: theme.colors.gray[5],
+        },
+      })}
       sx={theme => ({
-        backgroundColor: theme.colors.gray[0],
+        backgroundColor: theme.colors.white,
         'button': {
-          paddingTop: 4,
-          paddingBottom: 4,
-          paddingLeft: 8,
-          paddingRight: 3,
+          padding: '8px',
+        },
+        width: '213px',
+        '@media (max-width: 1024px)': {
+          width: '138px',
         },
       })}
       chevronPosition="right"
@@ -34,9 +41,9 @@ const SidebarExpandableButton = ({ item }) => {
         <Accordion.Panel>
           <div className="ml-5">
             {item.content.map(text => (
-              <Text key={text} size="sm">
+              <p key={text} className="text-gray-400 font-medium text-sm">
                 {text}
-              </Text>
+              </p>
             ))}
           </div>
         </Accordion.Panel>
