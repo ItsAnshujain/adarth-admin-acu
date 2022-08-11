@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Text, Button } from '@mantine/core';
+import { Plus } from 'react-feather';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
-import add from '../../../assets/add.svg';
 import Table from '../../Table/Table';
 
 const TotalBookings = ({ data, columns }) => {
@@ -36,7 +36,7 @@ const TotalBookings = ({ data, columns }) => {
               className="bg-purple-450 flex items-center align-center py-2 text-white rounded-md px-4"
               type="button"
             >
-              <img className="inline mr-1" src={add} alt="Add" /> Add Space
+              <Plus size={16} className="mt-[1px] mr-1" /> Add Space
             </button>
           </div>
         </div>

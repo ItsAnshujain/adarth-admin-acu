@@ -20,13 +20,15 @@ const COLUMNS = [
       return (
         <div
           onClick={() => navigate(`view-details/${id}`)}
-          className="flex items-center gap-2 cursor-pointer"
+          className="grid grid-cols-2 gap-2 items-center cursor-pointer"
         >
-          <div className="bg-white border rounded-md">
-            <img className="h-8 mx-auto" src={photo} alt="banner" />
+          <div className="flex flex-1 gap-2 items-center w-44">
+            <div className="bg-white h-8 w-8 border rounded-md">
+              <img className="h-8 w-8 mx-auto" src={photo} alt="banner" />
+            </div>
+            <p>{space_name}</p>
           </div>
-          <p className="flex-1">{space_name}</p>
-          <div className="flex-1">
+          <div className="w-fit">
             <Badge radius="xl" text={status} color={color} variant="filled" size="sm" />
           </div>
         </div>

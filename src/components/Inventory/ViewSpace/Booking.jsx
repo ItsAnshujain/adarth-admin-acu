@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Text, Button } from '@mantine/core';
+import { ChevronDown } from 'react-feather';
 import DateRange from '../../DateRange';
 import Filter from '../../Filter';
-import down from '../../../assets/down.svg';
 import calendar from '../../../assets/data-table.svg';
 import Table from '../../Table/Table';
 import dummy from '../../../Dummydata/BOOKING_DATA.json';
@@ -33,7 +33,7 @@ const Booking = ({ count }) => {
           </div>
           <div className="mr-2">
             <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
-              <img className="mr-2" src={down} alt="down" /> Filter
+              <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
             {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
           </div>

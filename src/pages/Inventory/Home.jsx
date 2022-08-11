@@ -15,14 +15,14 @@ const Inventory = () => {
   const [selectAll, setSelectAll] = useState(false);
 
   return (
-    <div className="md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <AreaHeader
         selectAll={selectAll}
         setSelectAll={setSelectAll}
         text="List of spaces"
         setView={setView}
       />
-      <div className="flex justify-between h-20 items-center">
+      <div className="flex justify-between h-20 items-center pr-7">
         <RowsPerPage setCount={setCount} />
         <Search search={search} setSearch={setSearch} />
       </div>

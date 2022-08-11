@@ -11,14 +11,14 @@ const data = [
   { value: 'blitz', label: 'Blitz.js' },
 ];
 
-const styles = () => ({
+const styles = {
   label: {
     marginBottom: '10px',
     fontWeight: 'bold',
   },
-});
+};
 
-const textAreaStyles = () => ({
+const textAreaStyles = {
   label: {
     fontWeight: 'bold',
     marginBottom: '10px',
@@ -26,9 +26,9 @@ const textAreaStyles = () => ({
   input: {
     height: '127px',
   },
-});
+};
 
-const sliderStyle = () => ({
+const sliderStyle = {
   bar: {
     backgroundColor: 'black',
   },
@@ -36,9 +36,9 @@ const sliderStyle = () => ({
     backgroundColor: 'black',
     border: 'black',
   },
-});
+};
 
-const multiSelectStyles = () => ({
+const multiSelectStyles = {
   label: {
     marginBottom: '10px',
     fontWeight: 'bold',
@@ -54,7 +54,7 @@ const multiSelectStyles = () => ({
   icon: {
     color: 'white',
   },
-});
+};
 const BasicInformation = ({ formData, setFormData }) => {
   const [brands, setBrands] = useState([]);
   const [tags, setTags] = useState([]);

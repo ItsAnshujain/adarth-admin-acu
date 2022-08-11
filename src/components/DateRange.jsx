@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Button, Text } from '@mantine/core';
 import { RangeCalendar, DatePicker } from '@mantine/dates';
-import cal from '../assets/calendar.svg';
+import { Calendar } from 'react-feather';
 
 const DateRange = ({ handleClose }) => {
   const navigate = useNavigate();
@@ -80,14 +80,14 @@ const DateRange = ({ handleClose }) => {
             onChange={handleSetStartDate}
             value={startDate}
             label="Date From"
-            icon={<img className="absolute left-[500%]" src={cal} alt="calendar" />}
+            icon={<Calendar className="text-black absolute left-[500%]" />}
           />
           <DatePicker
             clearable={false}
             onChange={handleSetEndDate}
             value={endDate}
             label="Date To"
-            icon={<img className="absolute left-[500%]" src={cal} alt="calendar" />}
+            icon={<Calendar className="text-black absolute left-[500%]" />}
           />
         </div>
       </div>

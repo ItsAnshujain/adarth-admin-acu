@@ -1,13 +1,7 @@
 import { Select } from '@mantine/core';
-import down from '../assets/down.svg';
+import { ChevronDown } from 'react-feather';
 
 const data = ['10', '20', '40', '80', '100'];
-const styles = () => ({
-  rightSection: { pointerEvents: 'none' },
-  wrapper: {
-    width: '60px',
-  },
-});
 
 const RowsPerPage = ({ setCount }) => (
   <div className="pl-5">
@@ -18,8 +12,13 @@ const RowsPerPage = ({ setCount }) => (
         defaultValue="10"
         data={data}
         onChange={setCount}
-        styles={styles}
-        rightSection={<img src={down} alt="down-arrow" className="h-4 p-0 m-0" />}
+        styles={{
+          rightSection: { pointerEvents: 'none' },
+          wrapper: {
+            width: '60px',
+          },
+        }}
+        rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
       />
     </div>
   </div>

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Text, Button } from '@mantine/core';
+import { ChevronDown } from 'react-feather';
 import Filter from '../Filter';
 import DateRange from '../DateRange';
 import Search from '../Search';
-import down from '../../assets/down.svg';
 import calendar from '../../assets/data-table.svg';
 import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
@@ -35,7 +35,7 @@ const Spaces = ({ data, column }) => {
               )}
             </div>
             <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
-              <img className="mr-2" src={down} alt="down" /> Filter
+              <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
             {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
           </div>

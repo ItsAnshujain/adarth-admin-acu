@@ -1,6 +1,6 @@
 import { Text } from '@mantine/core';
+import { Calendar } from 'react-feather';
 import CustomBadge from '../../../shared/Badge';
-import calendar from '../../../../assets/calendar.svg';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 
 const Places = ({ data }) => (
@@ -20,11 +20,11 @@ const Places = ({ data }) => (
 
         <div className="flex gap-2">
           <div className="flex gap-2 border p-2 rounded-md">
-            <img src={calendar} alt="calendar" />
+            <Calendar />
             <span> {data.from_date}</span>
           </div>
           <div className="flex gap-2 border p-2 rounded-md">
-            <img src={calendar} alt="calendar" />
+            <Calendar />
             <span>{data.to_date}</span>
           </div>
         </div>

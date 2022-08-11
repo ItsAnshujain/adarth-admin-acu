@@ -1,8 +1,7 @@
 import { Chip, Button } from '@mantine/core';
 import classNames from 'classnames';
+import { ChevronLeft, ChevronRight } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
-import back from '../../../assets/back.svg';
-import front from '../../../assets/front.svg';
 
 const initialState = ['Basic Information', 'Specifications'];
 
@@ -58,7 +57,7 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
           }}
           className="bg-black"
         >
-          <img className="mr-2" src={back} alt="back-arrow" />
+          <ChevronLeft className="mr-2 h-4" />
           Back
         </Button>
         <Button
@@ -71,7 +70,7 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
           className="bg-purple-450 order-3"
         >
           {formStep === 2 ? 'Save' : 'Next'}
-          {formStep < 2 && <img className="ml-1" src={front} alt="right-arrow" />}
+          {formStep < 2 && <ChevronRight className="ml-1 h-4" />}
         </Button>
       </div>
     </div>

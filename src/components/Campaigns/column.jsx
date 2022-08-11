@@ -4,14 +4,7 @@ import { NativeSelect } from '@mantine/core';
 import Badge from '../shared/Badge';
 import MenuIcon from '../Menu';
 import { useNavigate } from 'react-router-dom';
-import down from '../../assets/down.svg';
-
-const styles = () => ({
-  rightSection: { pointerEvents: 'none' },
-  wrapper: {
-    width: '62%',
-  },
-});
+import { ChevronDown } from 'react-feather';
 
 const COLUMNS = [
   {
@@ -29,13 +22,15 @@ const COLUMNS = [
       return (
         <div
           onClick={() => navigate(`view-details/${id}`)}
-          className="flex items-center cursor-pointer"
+          className="flex gap-2 items-center cursor-pointer"
         >
-          <div className="bg-white border rounded-md">
-            <img className="h-8 mx-auto" src={photo} alt="banner" />
+          <div className="flex flex-1 gap-2 items-center w-44">
+            <div className="bg-white h-8 w-8 border rounded-md">
+              <img className="h-8 w-8 mx-auto" src={photo} alt="banner" />
+            </div>
+            <p>{space_name}</p>
           </div>
-          <p className="flex-1 mx-2">{space_name}</p>
-          <div className="grow">
+          <div>
             <Badge radius="xl" text={status} color={color} variant="filled" size="sm" />
           </div>
         </div>
@@ -67,8 +62,10 @@ const COLUMNS = [
           value={value}
           onChange={e => setValue(e.target.value)}
           data={['Published', 'Unpublished']}
-          styles={styles}
-          rightSection={<img src={down} alt="down" height="12px" />}
+          styles={{
+            rightSection: { pointerEvents: 'none' },
+          }}
+          rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
           rightSectionWidth={40}
         />
       );
