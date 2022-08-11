@@ -1,4 +1,5 @@
 import { Accordion } from '@mantine/core';
+import classNames from 'classnames';
 import { useId } from 'react';
 import { Mail } from 'react-feather';
 
@@ -9,11 +10,15 @@ const AccordionLabel = ({ label }) => (
   </div>
 );
 
-// TODO: add Links to text field in Accordion Item
-const SidebarExpandableButton = ({ item }) => {
+// TODO : add Links to text field in Accordion Item
+const SidebarExpandableButton = ({ item, setOpened }) => {
   const id = useId();
+
   return (
     <Accordion
+      className={classNames(
+        `${setOpened ? 'w-[207px]' : 'w-[213px]'} lg:max-w-[139px] xl:max-w-[213px]`,
+      )}
       styles={theme => ({
         item: {
           border: 'none',
@@ -27,10 +32,6 @@ const SidebarExpandableButton = ({ item }) => {
         'button': {
           padding: '8px',
         },
-        width: '213px',
-        '@media (max-width: 1024px)': {
-          width: '138px',
-        },
       })}
       chevronPosition="right"
     >
@@ -41,9 +42,14 @@ const SidebarExpandableButton = ({ item }) => {
         <Accordion.Panel>
           <div className="ml-5">
             {item.content.map(text => (
-              <p key={text} className="text-gray-400 font-medium text-sm">
+              <button
+                type="button"
+                onClick={() => setOpened && setOpened(false)}
+                key={text}
+                className="text-gray-400 font-medium text-sm block"
+              >
                 {text}
-              </p>
+              </button>
             ))}
           </div>
         </Accordion.Panel>

@@ -1,12 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Text } from '@mantine/core';
+import Table from '../../components/Table/Table';
+import RowsPerPage from '../../components/RowsPerPage';
+import Search from '../../components/Search';
 import AreaHeader from '../../components/Bookings/Header';
 import useSideBarState from '../../store/sidebar.the.store';
 import ongoing from '../../assets/ongoing.svg';
 import completed from '../../assets/completed.svg';
 import upcoming from '../../assets/upcoming.svg';
+import dummy from '../../Dummydata/ORDER_DATA.json';
+import column from '../../components/Bookings/column';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -28,6 +33,8 @@ const config = {
 
 const Proposals = () => {
   const setColor = useSideBarState(state => state.setColor);
+  const [search, setSearch] = useState('');
+  const [count, setCount] = useState(20);
 
   useEffect(() => {
     setColor(1);
@@ -41,7 +48,7 @@ const Proposals = () => {
           <Text className="mb-2" weight="bolder" size="xl">
             Stats
           </Text>
-          <div className="flex justify-between gap-4">
+          <div className="flex justify-between gap-4 flex-wrap">
             <div className="flex gap-4 p-4 border rounded-md items-center">
               <div className="w-32">
                 <Doughnut options={config.options} data={config.data} />
@@ -74,7 +81,7 @@ const Proposals = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-4 justify-between">
+            <div className="flex gap-4 justify-between flex-wrap">
               <div className="border rounded p-8  pr-20">
                 <img src={ongoing} alt="ongoing" />
                 <Text className="my-2" size="sm" weight="200">
@@ -99,7 +106,12 @@ const Proposals = () => {
             </div>
           </div>
         </div>
+        <div className="flex justify-between h-20 items-center">
+          <RowsPerPage setCount={setCount} count={count} />
+          <Search search={search} setSearch={setSearch} />
+        </div>
       </div>
+      <Table dummy={dummy} COLUMNS={column} />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { Chip, Button } from '@mantine/core';
 import classNames from 'classnames';
-import { ArrowDown, ChevronRight } from 'react-feather';
+import { ChevronLeft, ChevronRight } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Basic Information', 'Specifications', 'Location'];
@@ -61,7 +61,7 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
           }}
           className="bg-black"
         >
-          <ArrowDown className="mr-2" />
+          <ChevronLeft className="mr-2 h-4" />
           Back
         </Button>
 
@@ -77,7 +77,7 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
           className="bg-purple-450 order-3"
         >
           {formStep === 3 ? 'Preview' : formStep === 4 ? 'Save' : 'Next'}
-          {formStep < 3 && <ChevronRight className="ml-1 h-3" />}
+          {formStep < 3 && <ChevronRight className="ml-1 h-4" />}
         </Button>
       </div>
     </div>

@@ -22,7 +22,7 @@ const Inventory = () => {
         text="List of spaces"
         setView={setView}
       />
-      <div className="flex justify-between h-20 items-center">
+      <div className="flex justify-between h-20 items-center pr-7">
         <RowsPerPage setCount={setCount} />
         <Search search={search} setSearch={setSearch} />
       </div>
