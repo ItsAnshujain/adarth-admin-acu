@@ -5,7 +5,7 @@ import Search from '../../components/Search';
 import Table from '../../components/Table/Table';
 import DATA from '../../Dummydata/PROPOSAL_DATA.json';
 import columns from '../../components/Proposals/column';
-import useSideBarState from '../../store/sidebar.the.store';
+import useSideBarState from '../../store/sidebar.store';
 
 const Proposals = () => {
   const [search, setSearch] = useState('');

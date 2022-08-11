@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Main from '../../components/Proposals/ViewProposal';
-import useSideBarState from '../../store/sidebar.the.store';
+import useSideBarState from '../../store/sidebar.store';
 
 const ProposalDetails = () => {
   const setColor = useSideBarState(state => state.setColor);
