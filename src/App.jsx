@@ -22,6 +22,8 @@ const ViewProposal = lazy(() => import('./pages/Proposal/View'));
 const BookingHome = lazy(() => import('./pages/Booking/Home'));
 const Booking = lazy(() => import('./pages/Booking/Bookings'));
 const ViewBooking = lazy(() => import('./pages/Booking/View'));
+const Generate = lazy(() => import('./pages/Booking/Generate'));
+const CreateOrder = lazy(() => import('./pages/Booking/Create'));
 
 const App = () => (
   <Router>
@@ -172,6 +174,38 @@ const App = () => (
           element={
             <Suspense fallback="Loading ...">
               <ViewBooking />
+            </Suspense>
+          }
+        />
+        <Route
+          path="generate-purchase-order/:id"
+          element={
+            <Suspense fallback="Loading ...">
+              <Generate />
+            </Suspense>
+          }
+        />
+        <Route
+          path="generate-release-order/:id"
+          element={
+            <Suspense fallback="Loading ...">
+              <Generate />
+            </Suspense>
+          }
+        />
+        <Route
+          path="generate-invoice/:id"
+          element={
+            <Suspense fallback="Loading ...">
+              <Generate />
+            </Suspense>
+          }
+        />
+        <Route
+          path="create-order"
+          element={
+            <Suspense fallback="Loading ...">
+              <CreateOrder />
             </Suspense>
           }
         />
