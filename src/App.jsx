@@ -2,7 +2,6 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Landlords from './pages/Landlords';
-import Users from './pages/Users';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -24,6 +23,9 @@ const Booking = lazy(() => import('./pages/Booking/Bookings'));
 const ViewBooking = lazy(() => import('./pages/Booking/View'));
 const Generate = lazy(() => import('./pages/Booking/Generate'));
 const CreateOrder = lazy(() => import('./pages/Booking/Create'));
+
+const UserHome = lazy(() => import('./pages/User/Home'));
+const User = lazy(() => import('./pages/User/Users'));
 
 const App = () => (
   <Router>
@@ -210,8 +212,10 @@ const App = () => (
           }
         />
       </Route>
+      <Route path="/" element={<User />}>
+        <Route path="users" element={<UserHome />} />
+      </Route>
       <Route path="/landlords" element={<Landlords />} />
-      <Route path="/users" element={<Users />} />
     </Routes>
   </Router>
 );

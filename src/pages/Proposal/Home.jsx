@@ -10,10 +10,12 @@ import useSideBarState from '../../store/sidebar.the.store';
 const Proposals = () => {
   const [search, setSearch] = useState('');
   const [count, setCount] = useState(20);
+
   const setColor = useSideBarState(state => state.setColor);
   useEffect(() => {
     setColor(2);
   }, []);
+
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <AreaHeader text="Proposals List" />
