@@ -25,7 +25,7 @@ const paginationStyles = {
 
 const Inventory = () => {
   const [search, setSearch] = useState('');
-  const [count, setCount] = useState(20);
+  const [_, setCount] = useState(20);
   const [activePage, setPage] = useState(1);
 
   const setColor = useSideBarState(state => state.setColor);
