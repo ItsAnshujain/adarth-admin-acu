@@ -1,5 +1,5 @@
 const UserCard = ({ name, designation, company, email, phone, image }) => (
-  <div className="border rounded-md p-4 mb-10 cursor-pointer">
+  <div className="mr-[19px] border rounded-md p-4 mb-10 cursor-pointer">
     <div className="flex gap-4">
       <div className="border-radius-full">
         <img src={image} alt="profile pic" />

@@ -40,7 +40,7 @@ const Inventory = () => {
         <RowsPerPage setCount={setCount} />
         <Search search={search} setSearch={setSearch} />
       </div>
-      <div className="flex justify-between flex-wrap pr-7 pl-5 relative mb-10">
+      <div className="flex  flex-wrap pr-7 pl-5 relative mb-10">
         {CardData.map(data => (
           <Card {...data} />
         ))}
