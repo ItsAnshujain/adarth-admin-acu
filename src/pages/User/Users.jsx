@@ -20,6 +20,7 @@ const Campaigns = () => {
   } else {
     headerTitle = 'Users';
   }
+
   return (
     <>
       <Header title={headerTitle} />

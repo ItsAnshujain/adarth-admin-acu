@@ -27,6 +27,7 @@ const CreateOrder = lazy(() => import('./pages/Booking/Create'));
 const UserHome = lazy(() => import('./pages/User/Home'));
 const User = lazy(() => import('./pages/User/Users'));
 const CreateUser = lazy(() => import('./pages/User/Create'));
+const ViewUser = lazy(() => import('./pages/User/View'));
 
 const App = () => (
   <Router>
@@ -234,6 +235,14 @@ const App = () => (
           element={
             <Suspense fallback="Loading ...">
               <CreateUser />
+            </Suspense>
+          }
+        />
+        <Route
+          path="users/view-details/:id"
+          element={
+            <Suspense fallback="Loading ...">
+              <ViewUser />
             </Suspense>
           }
         />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Pagination } from '@mantine/core';
 import AreaHeader from '../../components/Users/Header';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -41,8 +42,10 @@ const Inventory = () => {
         <Search search={search} setSearch={setSearch} />
       </div>
       <div className="flex  flex-wrap pr-7 pl-5 relative mb-10">
-        {CardData.map(data => (
-          <Card {...data} />
+        {CardData.map((data, index) => (
+          <Link to={`view-details/${index}`}>
+            <Card {...data} />
+          </Link>
         ))}
         <Pagination
           styles={paginationStyles}
