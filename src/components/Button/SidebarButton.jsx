@@ -11,8 +11,8 @@ const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
       label: text,
     };
     return (
-      <div aria-hidden className="ml-4 p-0 border">
-        <SidebarExpandableButton item={dataObj} setOpened={setOpened} />
+      <div className="ml-4 p-0 border">
+        <SidebarExpandableButton sidebarText={text} item={dataObj} setOpened={setOpened} />
       </div>
     );
   }

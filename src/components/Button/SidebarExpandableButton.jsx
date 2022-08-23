@@ -1,7 +1,8 @@
+import { useId, useState } from 'react';
 import { Accordion } from '@mantine/core';
 import classNames from 'classnames';
-import { useId, useState } from 'react';
 import { Mail } from 'react-feather';
+import { useNavigate } from 'react-router-dom';
 
 const AccordionLabel = ({ label }) => (
   <div className="flex">
@@ -11,9 +12,11 @@ const AccordionLabel = ({ label }) => (
 );
 
 // TODO : add Links to text field in Accordion Item
-const SidebarExpandableButton = ({ item, setOpened }) => {
+const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
   const id = useId();
+
   const [itemOpened, setItemOpened] = useState(0);
+  const navigate = useNavigate();
 
   return (
     <Accordion
@@ -47,6 +50,14 @@ const SidebarExpandableButton = ({ item, setOpened }) => {
                 type="button"
                 onClick={() => {
                   setItemOpened(index);
+                  if (index === 0 && sidebarText === 'Reports') {
+                    navigate(`/${sidebarText.toLowerCase()}/campaign`);
+                  } else if (index === 1 && sidebarText === 'Reports') {
+                    navigate(`/${sidebarText.toLowerCase()}/revenue`);
+                  } else if (index === 2 && sidebarText === 'Reports') {
+                    navigate(`/${sidebarText.toLowerCase()}/inventory`);
+                  }
+                  // Used in smaller screens only
                   if (setOpened) setOpened(false);
                 }}
                 key={text}

@@ -29,6 +29,11 @@ const User = lazy(() => import('./pages/User/Users'));
 const CreateUser = lazy(() => import('./pages/User/Create'));
 const ViewUser = lazy(() => import('./pages/User/View'));
 
+const ReportHome = lazy(() => import('./pages/Report/Report'));
+const ReportInventory = lazy(() => import('./pages/Report/Inventory'));
+const ReportRevenue = lazy(() => import('./pages/Report/Revenue'));
+const ReportCampaign = lazy(() => import('./pages/Report/Campaign'));
+
 const App = () => (
   <Router>
     <Routes>
@@ -243,6 +248,39 @@ const App = () => (
           element={
             <Suspense fallback="Loading ...">
               <ViewUser />
+            </Suspense>
+          }
+        />
+      </Route>
+      <Route
+        path="/reports"
+        element={
+          <Suspense fallback="Loading ...">
+            <ReportHome />
+          </Suspense>
+        }
+      >
+        <Route
+          path="inventory"
+          element={
+            <Suspense fallback="Loading ...">
+              <ReportInventory />
+            </Suspense>
+          }
+        />
+        <Route
+          path="revenue"
+          element={
+            <Suspense fallback="Loading ...">
+              <ReportRevenue />
+            </Suspense>
+          }
+        />
+        <Route
+          path="campaign"
+          element={
+            <Suspense fallback="Loading ...">
+              <ReportCampaign />
             </Suspense>
           }
         />
