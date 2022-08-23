@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Mail } from 'react-feather';
 import { NativeSelect } from '@mantine/core';
-import MenuIcon from '../Menu';
+import MenuIcon from '../../Menu';
 
 const COLUMNS = [
   {
@@ -44,7 +44,7 @@ const COLUMNS = [
     },
   },
   {
-    Header: 'BOOKING TYPE',
+    Header: 'ORDER TYPE',
     accessor: 'booking_type',
   },
   {
@@ -213,13 +213,13 @@ const COLUMNS = [
       const navigate = useNavigate();
       const { id } = tableProps.row.original;
       return (
-        <div className="absolute z-50" onClick={() => setShowMenu(!showMenu)}>
+        <div onClick={() => setShowMenu(!showMenu)}>
           <div className="relative mx-2">
             <MenuIcon />
             {showMenu && (
-              <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-50  items-start right-4 top-0 bg-white py-4 px-2">
+              <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
                 <div
-                  onClick={() => navigate(`view-details/${id}`)}
+                  onClick={() => navigate(`/bookings/view-details/${id}`)}
                   className="bg-white cursor-pointer"
                 >
                   <Mail className="mr-1 text-gray-400 inline h-5" />
