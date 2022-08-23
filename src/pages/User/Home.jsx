@@ -4,7 +4,7 @@ import { Pagination } from '@mantine/core';
 import AreaHeader from '../../components/Users/Header';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import useSideBarState from '../../store/sidebar.the.store';
+import useSideBarState from '../../store/sidebar.store';
 import user from '../../assets/user.png';
 import Card from '../../components/Users/UI/Card';
 

@@ -6,7 +6,7 @@ import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import AreaHeader from '../../components/Bookings/Header';
-import useSideBarState from '../../store/sidebar.the.store';
+import useSideBarState from '../../store/sidebar.store';
 import ongoing from '../../assets/ongoing.svg';
 import completed from '../../assets/completed.svg';
 import upcoming from '../../assets/upcoming.svg';

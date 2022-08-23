@@ -1,4 +1,4 @@
-import useSideBarState from '../store/sidebar.the.store';
+import useSideBarState from '../store/sidebar.store';
 import SidebarButton from './Button/SidebarButton';
 
 const sidebarText = [

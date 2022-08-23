@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Main from '../../components/Users/View';
-import useSideBarState from '../../store/sidebar.the.store';
+import useSideBarState from '../../store/sidebar.store';
 
 const UserDetails = () => {
   const setColor = useSideBarState(state => state.setColor);
