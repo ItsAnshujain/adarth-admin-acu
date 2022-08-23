@@ -6,9 +6,12 @@ import SidebarExpandableButton from './SidebarExpandableButton';
 const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
   const navigate = useNavigate();
   if (index === 4 || index === 6 || index === 7) {
-    const dataObj = { content: ['Hey', 'Dude', 'Whatsup'], label: text };
+    const dataObj = {
+      content: ['Campaign Report', 'Revenue Reports', 'Inventory Report'],
+      label: text,
+    };
     return (
-      <div className="ml-4 p-0 border">
+      <div aria-hidden className="ml-4 p-0 border">
         <SidebarExpandableButton item={dataObj} setOpened={setOpened} />
       </div>
     );

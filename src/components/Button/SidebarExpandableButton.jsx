@@ -1,6 +1,6 @@
 import { Accordion } from '@mantine/core';
 import classNames from 'classnames';
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { Mail } from 'react-feather';
 
 const AccordionLabel = ({ label }) => (
@@ -13,6 +13,7 @@ const AccordionLabel = ({ label }) => (
 // TODO : add Links to text field in Accordion Item
 const SidebarExpandableButton = ({ item, setOpened }) => {
   const id = useId();
+  const [itemOpened, setItemOpened] = useState(0);
 
   return (
     <Accordion
@@ -41,12 +42,19 @@ const SidebarExpandableButton = ({ item, setOpened }) => {
         </Accordion.Control>
         <Accordion.Panel>
           <div className="ml-5">
-            {item.content.map(text => (
+            {item.content.map((text, index) => (
               <button
                 type="button"
-                onClick={() => setOpened && setOpened(false)}
+                onClick={() => {
+                  setItemOpened(index);
+                  if (setOpened) setOpened(false);
+                }}
                 key={text}
-                className="text-gray-400 font-medium text-sm block"
+                className={classNames(
+                  ` font-medium text-xs block mt-0.5 ${
+                    itemOpened === index ? 'text-black' : 'text-gray-400'
+                  }`,
+                )}
               >
                 {text}
               </button>
