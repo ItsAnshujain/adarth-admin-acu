@@ -132,7 +132,7 @@ const BasicInfo = () => {
           <div className="flex gap-2 mb-8">
             {badgeData.map(data => (
               <Badge
-                className="text-purple-450 bg-purple-100"
+                className="text-purple-450 bg-purple-100 capitalize"
                 text={data}
                 size="lg"
                 variant="filled"

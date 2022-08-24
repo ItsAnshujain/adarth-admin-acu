@@ -11,8 +11,12 @@ const initialValues = {
 };
 
 const schema = yup.object().shape({
-  email: yup.string().email('Invalid Email').required(),
-  password: yup.string().min(6).max(32).required(),
+  email: yup.string().required('Email is required').email('Invalid Email'),
+  password: yup
+    .string()
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters long')
+    .max(32, 'Password must be at most 32 characters long'),
 });
 
 const Login = () => {
@@ -41,7 +45,7 @@ const Login = () => {
 
       <div className="my-auto w-[31%]">
         <Title className="mb-8">Login to Adarth</Title>
-        <Text className="mb-8">Please use registered phone number for login</Text>
+        <Text className="mb-8">Please use registered email for login</Text>
 
         <form onSubmit={handleSubmit(onSubmitHandler)}>
           <Text color="gray" className="mb-4 opacity-50">

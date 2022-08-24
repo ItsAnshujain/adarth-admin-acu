@@ -35,13 +35,21 @@ const BasicInfo = ({ formData, setFormData }) => {
     </li>
   ));
 
+  const labelStyle = {
+    label: {
+      marginBottom: '4px',
+      fontWeight: '600',
+      fontSize: '15px',
+      letterSpacing: '0.5px',
+    },
+  };
+
   return (
     <div className="flex gap-8 pt-4">
       <div className="flex-1 pl-5">
-        <Text className="mb-7" size="lg">
-          Basic Information
-        </Text>
+        <p className="mb-7 text-xl font-bold">Basic Information</p>
         <TextInput
+          styles={labelStyle}
           value={formData.spacename}
           name="spacename"
           onChange={handleChange}
@@ -50,12 +58,13 @@ const BasicInfo = ({ formData, setFormData }) => {
           label="Space Name"
         />
         <NativeSelect
+          styles={labelStyle}
           value={formData.landlord}
           onChange={handleChange}
           name="landlord"
           className="mb-7"
           label="Landlord"
-          placeholder="Pick one"
+          placeholder="Select one"
           data={[
             { value: 'react', label: 'React' },
             { value: 'ng', label: 'Angular' },
@@ -64,12 +73,13 @@ const BasicInfo = ({ formData, setFormData }) => {
           ]}
         />
         <NativeSelect
-          value={formData.category}
+          styles={labelStyle}
+          value={formData.inventoryowner}
           onChange={handleChange}
-          name="category"
+          name="inventoryowner"
           className="mb-7"
           label="Category"
-          placeholder="Pick one"
+          placeholder="Select one"
           data={[
             { value: 'react', label: 'React' },
             { value: 'ng', label: 'Angular' },
@@ -78,12 +88,43 @@ const BasicInfo = ({ formData, setFormData }) => {
           ]}
         />
         <NativeSelect
+          styles={labelStyle}
+          value={formData.spacetype}
+          onChange={handleChange}
+          name="spacetype"
+          className="mb-7"
+          label="Space Type"
+          placeholder="Select one"
+          data={[
+            { value: 'react', label: 'React' },
+            { value: 'ng', label: 'Angular' },
+            { value: 'svelte', label: 'Svelte' },
+            { value: 'vue', label: 'Vue' },
+          ]}
+        />
+        <NativeSelect
+          styles={labelStyle}
+          value={formData.subcategory}
+          onChange={handleChange}
+          name="subcategory"
+          className="mb-7"
+          label="Sub Category"
+          placeholder="Select one"
+          data={[
+            { value: 'react', label: 'React' },
+            { value: 'ng', label: 'Angular' },
+            { value: 'svelte', label: 'Svelte' },
+            { value: 'vue', label: 'Vue' },
+          ]}
+        />
+        <NativeSelect
+          styles={labelStyle}
           value={formData.mediatype}
           onChange={handleChange}
           name="mediatype"
           className="mb-7"
           label="Media Type"
-          placeholder="Pick one"
+          placeholder="Select one"
           data={[
             { value: 'react', label: 'React' },
             { value: 'ng', label: 'Angular' },
@@ -92,12 +133,13 @@ const BasicInfo = ({ formData, setFormData }) => {
           ]}
         />
         <NativeSelect
+          styles={labelStyle}
           value={formData.supportedmedia}
           onChange={handleChange}
           name="supportedmedia"
           className="mb-7"
           label="Supported Media"
-          placeholder="Pick one"
+          placeholder="Select one"
           data={[
             { value: 'react', label: 'React' },
             { value: 'ng', label: 'Angular' },
@@ -106,6 +148,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           ]}
         />
         <TextInput
+          styles={labelStyle}
           name="price"
           value={formData.price}
           onChange={handleChange}
@@ -113,7 +156,35 @@ const BasicInfo = ({ formData, setFormData }) => {
           className="mb-7"
           label="Price"
         />
+        <TextInput
+          styles={labelStyle}
+          name="footfall"
+          value={formData.footfall}
+          onChange={handleChange}
+          placeholder="Write"
+          className="mb-7"
+          label="Footfall"
+        />
+        <TextInput
+          styles={labelStyle}
+          name="audience"
+          value={formData.audience}
+          onChange={handleChange}
+          placeholder="Write"
+          className="mb-7"
+          label="Audience"
+        />
+        <TextInput
+          styles={labelStyle}
+          name="demographics"
+          value={formData.demographics}
+          onChange={handleChange}
+          placeholder="Write"
+          className="mb-7"
+          label="Demographics"
+        />
         <Textarea
+          styles={labelStyle}
           value={formData.description}
           onChange={handleChange}
           name="description"
@@ -124,7 +195,7 @@ const BasicInfo = ({ formData, setFormData }) => {
       </div>
       <div className="flex flex-col gap-24 flex-1 pr-7">
         <div className="flex-1">
-          <Text size="lg">Photos</Text>
+          <p className="text-xl font-bold">Photos</p>
           <Text className="text-gray-500 my-2" size="md">
             Lorem ipsum atque quibusdam quos eius corrupti modi maiores.
           </Text>
@@ -153,7 +224,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           </div>
         </div>
         <div className="flex-1 mb-7">
-          <Text size="lg">Photos</Text>
+          <p className="text-xl font-bold">Other Images</p>
           <Text className="text-gray-400 mb-2" size="md">
             Lorem ipsum atque quibusdam quos eius corrupti modi maiores.
           </Text>

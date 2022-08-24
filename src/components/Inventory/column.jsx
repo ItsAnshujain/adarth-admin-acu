@@ -1,8 +1,10 @@
 /* eslint-disable */
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Badge from '../shared/Badge';
 import MenuIcon from '../Menu';
 import { useNavigate } from 'react-router-dom';
+import { Mail } from 'react-feather';
+import useOutsideClick from '../../hooks/useOutsideClick';
 
 const COLUMNS = [
   {
@@ -73,27 +75,34 @@ const COLUMNS = [
     accessor: 'details',
     Cell: tableProps => {
       const [showMenu, setShowMenu] = useState(false);
+      const menuRef = useOutsideClick(setShowMenu);
       const navigate = useNavigate();
       const { id } = tableProps.row.original;
+
       return (
-        <div onClick={() => setShowMenu(!showMenu)}>
-          <div className="relative">
+        <div ref={menuRef}>
+          <div onClick={() => setShowMenu(!showMenu)} className="relative ">
             <MenuIcon />
             {showMenu && (
-              <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
+              <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-50  items-start right-4 top-0 bg-white py-4 px-2">
                 <div
                   onClick={() => navigate(`view-details/${id}`)}
-                  className="bg-white cursor-pointer"
+                  className="bg-white cursor-pointer flex items-center gap-1"
                 >
-                  View Details
+                  <Mail className="h-4" />
+                  <span className="ml-1">View Details</span>
                 </div>
                 <div
                   onClick={() => navigate(`edit-details/${id}`)}
-                  className="bg-white cursor-pointer"
+                  className="bg-white cursor-pointer flex items-center gap-1"
                 >
-                  Edit
+                  <Mail className="h-4" />
+                  <span className="ml-1">Edit</span>
                 </div>
-                <div className="bg-white cursor-pointer">Delete</div>
+                <div className="bg-white cursor-pointer flex items-center gap-1">
+                  <Mail className="h-4" />
+                  <span className="ml-1">Delete</span>
+                </div>
               </div>
             )}
           </div>

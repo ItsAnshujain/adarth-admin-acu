@@ -27,6 +27,7 @@ const GridView = ({ count, page = 1, selectAll, Card }) => {
         <Card
           key={Math.random() * 100000000000000000}
           data={each}
+          id={index}
           checkbox={checkbox[index]}
           handleCheckbox={() => handleCheckboxClick(index)}
         />

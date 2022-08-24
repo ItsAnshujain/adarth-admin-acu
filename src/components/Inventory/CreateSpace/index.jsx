@@ -10,7 +10,9 @@ import Header from './Header';
 const formInitialState = {
   spacename: '',
   landlord: '',
-  category: '',
+  inventoryowner: '',
+  spacetype: '',
+  subcategory: '',
   mediatype: '',
   supportedmedia: '',
   price: '',
@@ -31,6 +33,8 @@ const formInitialState = {
   city: '',
   zip: '',
   longitude: '',
+  zone: '',
+  facing: '',
 };
 
 const MainArea = () => {

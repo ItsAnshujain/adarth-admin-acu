@@ -16,9 +16,7 @@ const Header = ({ title }) => {
         </div>
         <div className="flex justify-between items-center col-span-10 border-l border-gray-450">
           <div className="pl-5">
-            <Text size="lg" weight="700">
-              {title}
-            </Text>
+            <p className="text-2xl font-bold">{title}</p>
           </div>
           <div className="flex items-center mr-7">
             <Button variant="subtle" color="gray" className="font-medium">

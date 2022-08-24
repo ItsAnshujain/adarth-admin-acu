@@ -3,7 +3,9 @@ import { Text, TextInput } from '@mantine/core';
 const styles = {
   label: {
     marginBottom: '10px',
-    fontWeight: 'bold',
+    fontWeight: '600',
+    fontSize: '15px',
+    letterSpacing: '0.5px',
   },
 };
 const Location = ({ formData, setFormData }) => {
@@ -14,8 +16,9 @@ const Location = ({ formData, setFormData }) => {
       [name]: value,
     }));
   };
+
   return (
-    <div className="flex flex-col pl-5 pr-7 pt-4">
+    <div className="flex flex-col pl-5 pr-7 pt-4 mb-10">
       <Text size="md" weight="bold">
         Location
       </Text>
@@ -52,13 +55,22 @@ const Location = ({ formData, setFormData }) => {
             label="Latitude"
           />
           <TextInput
-            value={formData.landmark}
+            value={formData.zone}
             onChange={handleChange}
             styles={styles}
-            name="landmark"
+            name="zone"
             placeholder="Write"
             className="mb-7"
-            label="Landmark"
+            label="Zone"
+          />
+          <TextInput
+            value={formData.facing}
+            onChange={handleChange}
+            styles={styles}
+            name="facing"
+            placeholder="Write"
+            className="mb-7"
+            label="Facing"
           />
         </div>
         <div>
@@ -88,6 +100,15 @@ const Location = ({ formData, setFormData }) => {
             placeholder="Write"
             className="mb-7"
             label="Longitude"
+          />
+          <TextInput
+            value={formData.landmark}
+            onChange={handleChange}
+            styles={styles}
+            name="landmark"
+            placeholder="Write"
+            className="mb-7"
+            label="Landmark"
           />
         </div>
       </div>
