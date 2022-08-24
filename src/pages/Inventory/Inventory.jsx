@@ -4,7 +4,7 @@ import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import useSideBarState from '../../store/sidebar.store';
 
-const Campaigns = () => {
+const Inventory = () => {
   const { pathname } = useLocation();
   const setColor = useSideBarState(state => state.setColor);
 
@@ -33,4 +33,4 @@ const Campaigns = () => {
   );
 };
 
-export default Campaigns;
+export default Inventory;
