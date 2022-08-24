@@ -64,6 +64,7 @@ const barDataState = {
     {
       data: [10, 20, 30, 70, 50, 40, 90, 90, 40, 90, 90],
       backgroundColor: '#914EFB',
+      cubicInterpolationMode: 'monotone',
     },
   ],
 };
@@ -87,7 +88,7 @@ const labels = [
   'Dec',
 ];
 
-const data = {
+const lineData = {
   labels,
   datasets: [
     {
@@ -95,6 +96,7 @@ const data = {
       data: [10, 0, 23, 23, 31, 23, 5, 21, 22, 12, 3, 4],
       borderColor: '#914EFB',
       backgroundColor: '#914EFB',
+      cubicInterpolationMode: 'monotone',
     },
   ],
 };
@@ -168,7 +170,7 @@ const Revenue = () => {
               </div>
             </div>
           </div>
-          <Line height="80" data={data} options={options} />
+          <Line height="80" data={lineData} options={options} />
           <div className="my-10">
             <div className="flex justify-between">
               <p className="font-bold">Industry wise revenue graph</p>

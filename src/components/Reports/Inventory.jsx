@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import moment from 'moment';
+import { useEffect, useState, useRef } from 'react';
+import * as dayjs from 'dayjs';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -49,21 +49,23 @@ const options = {
 
 const labels = [];
 for (let i = 0; i < 6; i += 1) {
-  labels.push(moment().subtract(i, 'months').format('MMMM'));
+  labels.push(dayjs().subtract(i, 'months').format('MMMM'));
 }
 labels.reverse();
 
-const areaData = {
-  labels,
-  datasets: [
-    {
-      label: 'Revenue',
-      data: [10, 0, 23, 23, 31, 23, 5, 21, 22, 12, 3, 4],
-      borderColor: '#914EFB',
-      backgroundColor: '#914EFB',
-    },
-  ],
-};
+function createGradient(ctx, area) {
+  const colorStart = '#000';
+  const colorMid = '#1a1a1a';
+  const colorEnd = '#12ff3a';
+
+  const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);
+
+  gradient.addColorStop(0, colorStart);
+  gradient.addColorStop(0.5, colorMid);
+  gradient.addColorStop(1, colorEnd);
+
+  return gradient;
+}
 
 // Doughnut
 const data = {
@@ -89,6 +91,32 @@ const Inventory = () => {
   const [count, setCount] = useState(20);
   const [view, setView] = useState('list');
   const [selectAll, setSelectAll] = useState(false);
+  const [areaData, setAreaData] = useState({ datasets: [] });
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    const chart = chartRef.current;
+
+    if (!chart) {
+      return;
+    }
+
+    const newLineData = {
+      labels,
+      datasets: [
+        {
+          label: 'Revenue',
+          data: [10, 0, 23, 23, 31, 23, 5, 21, 22, 12, 3, 4],
+          borderColor: '#914EFB',
+          // backgroundColor: createGradient(chart.ctx, chart.chartArea),
+          cubicInterpolationMode: 'monotone',
+          // fill: true,
+        },
+      ],
+    };
+
+    setAreaData(newLineData);
+  }, []);
 
   const openDatePicker = () => {
     setShowDatePicker(!showDatePicker);
@@ -156,7 +184,7 @@ const Inventory = () => {
                 </div>
               </div>
             </div>
-            <Line height="120" data={areaData} options={options} />
+            <Line height="120" data={areaData} options={options} ref={chartRef} />
           </div>
 
           <div className="w-[30%] flex gap-8 h-[50%] p-4 border rounded-md">
