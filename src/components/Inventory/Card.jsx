@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useClickOutside } from '@mantine/hooks';
 import { Text } from '@mantine/core';
-import { Mail } from 'react-feather';
+import { Eye, Edit2, Trash } from 'react-feather';
 import unsplash from '../../assets/unsplash.png';
 import Badge from '../shared/Badge';
 import toIndianCurrency from '../../utils/currencyFormat';
-import useOutsideClick from '../../hooks/useOutsideClick';
 import MenuIcon from '../Menu';
 
 const Card = ({
@@ -15,7 +15,7 @@ const Card = ({
   id,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
-  const menuRef = useOutsideClick(setShowMenu);
+  const menuRef = useClickOutside(setShowMenu);
   const navigate = useNavigate();
 
   return (
@@ -65,7 +65,7 @@ const Card = ({
                     onClick={() => navigate(`view-details/${id}`)}
                     className="bg-white cursor-pointer flex items-center gap-1"
                   >
-                    <Mail className="h-4" />
+                    <Eye className="h-4" />
                     <span className="ml-1">View Details</span>
                   </div>
                   <div
@@ -73,11 +73,11 @@ const Card = ({
                     onClick={() => navigate(`edit-details/${id}`)}
                     className="bg-white cursor-pointer flex items-center gap-1"
                   >
-                    <Mail className="h-4" />
+                    <Edit2 className="h-4" />
                     <span className="ml-1">Edit</span>
                   </div>
                   <div className="bg-white cursor-pointer flex items-center gap-1">
-                    <Mail className="h-4" />
+                    <Trash className="h-4" />
                     <span className="ml-1">Delete</span>
                   </div>
                 </div>

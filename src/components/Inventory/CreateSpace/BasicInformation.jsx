@@ -38,7 +38,7 @@ const BasicInfo = ({ formData, setFormData }) => {
   const labelStyle = {
     label: {
       marginBottom: '4px',
-      fontWeight: '600',
+      fontWeight: 700,
       fontSize: '15px',
       letterSpacing: '0.5px',
     },

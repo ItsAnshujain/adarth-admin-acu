@@ -3,8 +3,8 @@ import { useState, useRef, useEffect } from 'react';
 import Badge from '../shared/Badge';
 import MenuIcon from '../Menu';
 import { useNavigate } from 'react-router-dom';
-import { Mail } from 'react-feather';
-import useOutsideClick from '../../hooks/useOutsideClick';
+import { Eye, Edit2, Trash } from 'react-feather';
+import { useClickOutside } from '@mantine/hooks';
 
 const COLUMNS = [
   {
@@ -75,7 +75,7 @@ const COLUMNS = [
     accessor: 'details',
     Cell: tableProps => {
       const [showMenu, setShowMenu] = useState(false);
-      const menuRef = useOutsideClick(setShowMenu);
+      const menuRef = useClickOutside(() => setShowMenu(false));
       const navigate = useNavigate();
       const { id } = tableProps.row.original;
 
@@ -89,18 +89,18 @@ const COLUMNS = [
                   onClick={() => navigate(`view-details/${id}`)}
                   className="bg-white cursor-pointer flex items-center gap-1"
                 >
-                  <Mail className="h-4" />
+                  <Eye className="h-4" />
                   <span className="ml-1">View Details</span>
                 </div>
                 <div
                   onClick={() => navigate(`edit-details/${id}`)}
                   className="bg-white cursor-pointer flex items-center gap-1"
                 >
-                  <Mail className="h-4" />
+                  <Edit2 className="h-4" />
                   <span className="ml-1">Edit</span>
                 </div>
                 <div className="bg-white cursor-pointer flex items-center gap-1">
-                  <Mail className="h-4" />
+                  <Trash className="h-4" />
                   <span className="ml-1">Delete</span>
                 </div>
               </div>

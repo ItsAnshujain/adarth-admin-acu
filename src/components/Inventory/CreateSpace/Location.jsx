@@ -3,7 +3,7 @@ import { Text, TextInput } from '@mantine/core';
 const styles = {
   label: {
     marginBottom: '10px',
-    fontWeight: '600',
+    fontWeight: 700,
     fontSize: '15px',
     letterSpacing: '0.5px',
   },

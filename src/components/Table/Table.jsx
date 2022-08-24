@@ -46,7 +46,7 @@ const Table = ({ COLUMNS, dummy, allowRowsSelect = false }) => {
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(header => (
                   <th className="text-sm" {...header.getHeaderProps(header.getSortByToggleProps())}>
-                    <div className="w-max flex align-center text-left pl-2 text-gray-500 hover:text-black py-2 text-xs">
+                    <div className="w-max flex align-center text-left pl-2 text-gray-400 hover:text-black py-2 text-xs">
                       <div className="w-fit">{header.render('Header')}</div>
                       <div className="ml-2 gap-1 flex flex-col">
                         {header.isSorted ? (

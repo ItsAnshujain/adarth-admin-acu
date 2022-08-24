@@ -4,7 +4,7 @@ import { Text, NativeSelect, RangeSlider, MultiSelect, TextInput } from '@mantin
 const styles = {
   label: {
     marginBottom: '4px',
-    fontWeight: '600',
+    fontWeight: 700,
     fontSize: '15px',
     letterSpacing: '0.5px',
   },
@@ -13,7 +13,7 @@ const styles = {
 const multiSelectStyles = {
   label: {
     marginBottom: '4px',
-    fontWeight: '600',
+    fontWeight: 700,
     fontSize: '15px',
     letterSpacing: '0.5px',
   },

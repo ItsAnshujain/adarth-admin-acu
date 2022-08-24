@@ -1,5 +1,5 @@
 import { Button } from '@mantine/core';
-import moment from 'moment';
+import * as dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { Doughnut, Bar } from 'react-chartjs-2';
@@ -28,7 +28,7 @@ const options = {
 
 const labels = [];
 for (let i = 0; i < 6; i += 1) {
-  labels.push(moment().subtract(i, 'months').format('MMMM'));
+  labels.push(dayjs().subtract(i, 'months').format('MMMM'));
 }
 
 labels.reverse();

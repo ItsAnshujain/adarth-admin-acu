@@ -1,7 +1,8 @@
 /* eslint-disable */
 import { useState } from 'react';
+import { useClickOutside } from '@mantine/hooks';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Mail } from 'react-feather';
+import { ChevronDown, Eye, Edit2, Trash } from 'react-feather';
 import { NativeSelect } from '@mantine/core';
 import MenuIcon from '../Menu';
 
@@ -212,28 +213,30 @@ const COLUMNS = [
       const [showMenu, setShowMenu] = useState(false);
       const navigate = useNavigate();
       const { id } = tableProps.row.original;
+      const ref = useClickOutside(() => setShowMenu(false));
+
       return (
-        <div className="absolute z-50" onClick={() => setShowMenu(!showMenu)}>
-          <div className="relative mx-2">
+        <div ref={ref}>
+          <div onClick={() => setShowMenu(!showMenu)} className="relative mx-2 mr-5">
             <MenuIcon />
             {showMenu && (
               <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-50  items-start right-4 top-0 bg-white py-4 px-2">
                 <div
                   onClick={() => navigate(`view-details/${id}`)}
-                  className="bg-white cursor-pointer"
+                  className="bg-white cursor-pointer flex items-center"
                 >
-                  <Mail className="mr-1 text-gray-400 inline h-5" />
+                  <Eye className="mr-1 text-gray-400 inline h-5" />
                   <span>View Details</span>
                 </div>
                 <div
                   onClick={() => navigate(`edit-details/${id}`)}
-                  className="bg-white cursor-pointer"
+                  className="bg-white cursor-pointer flex items-center"
                 >
-                  <Mail className="mr-1 text-gray-400 inline h-5" />
+                  <Edit2 className="mr-1 text-gray-400 inline h-5" />
                   <span>Edit</span>
                 </div>
-                <div className="bg-white cursor-pointer">
-                  <Mail className="mr-1 text-gray-400 inline h-5" />
+                <div className="bg-white cursor-pointer flex items-center">
+                  <Trash className="mr-1 text-gray-400 inline h-5" />
                   <span>Delete</span>
                 </div>
               </div>
