@@ -55,7 +55,7 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
     <div className="h-20 border-b border-gray-450 flex justify-between items-center">
       <div className="pl-5">
         <Text size="lg" weight="bold">
-          {pathname.includes('reports') ? text : 'Inventory Report'}
+          {!pathname.includes('reports') ? text : 'Inventory Report'}
         </Text>
       </div>
       <div className="flex justify-around mr-7">
