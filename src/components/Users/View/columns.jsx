@@ -1,8 +1,9 @@
 /* eslint-disable */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail } from 'react-feather';
+import { Edit2, Eye, Trash } from 'react-feather';
 import MenuIcon from '../../Menu';
+import { useClickOutside } from '@mantine/hooks';
 
 const COLUMNS = [
   {
@@ -38,11 +39,12 @@ const COLUMNS = [
     accessor: 'details',
     Cell: tableProps => {
       const [showMenu, setShowMenu] = useState(false);
+      const ref = useClickOutside(() => setShowMenu(false));
       const navigate = useNavigate();
       const { id } = tableProps.row.original;
 
       return (
-        <div onClick={() => setShowMenu(!showMenu)}>
+        <div ref={ref} onClick={() => setShowMenu(!showMenu)}>
           <div className="relative mx-2">
             <MenuIcon />
             {showMenu && (
@@ -51,18 +53,18 @@ const COLUMNS = [
                   onClick={() => navigate(`/proposals/view-details/${id}`)}
                   className="bg-white cursor-pointer"
                 >
-                  <Mail className="mr-1 text-gray-400 inline h-5" />
+                  <Eye className="mr-1 text-gray-400 inline h-5" />
                   <span>View Details</span>
                 </div>
                 <div
                   onClick={() => navigate(`edit-details/${id}`)}
                   className="bg-white cursor-pointer"
                 >
-                  <Mail className="mr-1 text-gray-400 inline h-5" />
+                  <Edit2 className="mr-1 text-gray-400 inline h-5" />
                   <span>Edit</span>
                 </div>
                 <div className="bg-white cursor-pointer">
-                  <Mail className="mr-1 text-gray-400 inline h-5" />
+                  <Trash className="mr-1 text-gray-400 inline h-5" />
                   <span>Delete</span>
                 </div>
               </div>

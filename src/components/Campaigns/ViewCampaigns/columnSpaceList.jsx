@@ -3,6 +3,8 @@ import { useState } from 'react';
 import Badge from '../../shared/Badge';
 import MenuIcon from '../../Menu';
 import { useNavigate } from 'react-router-dom';
+import { useClickOutside } from '@mantine/hooks';
+import { Edit2, Trash, Eye } from 'react-feather';
 
 const COLUMNS = [
   {
@@ -59,27 +61,33 @@ const COLUMNS = [
     accessor: 'details',
     Cell: tableProps => {
       const [showMenu, setShowMenu] = useState(false);
+      const ref = useClickOutside(() => setShowMenu(false));
       const navigate = useNavigate();
       const { id } = tableProps.row.original;
       return (
-        <div onClick={() => setShowMenu(!showMenu)}>
+        <div ref={ref} onClick={() => setShowMenu(!showMenu)}>
           <div className="relative">
             <MenuIcon />
             {showMenu && (
               <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
                 <div
                   onClick={() => navigate(`view-details/${id}`)}
-                  className="bg-white cursor-pointer"
+                  className="bg-white cursor-pointer flex items-center"
                 >
-                  View Details
+                  <Eye className="h-4 mr-2" />
+                  <span>View Details</span>
                 </div>
                 <div
                   onClick={() => navigate(`edit-details/${id}`)}
-                  className="bg-white cursor-pointer"
+                  className="bg-white cursor-pointer flex items-center"
                 >
-                  Edit
+                  <Edit2 className="h-4 mr-2" />
+                  <span>Edit</span>
                 </div>
-                <div className="bg-white cursor-pointer">Delete</div>
+                <div className="bg-white cursor-pointer flex items-center">
+                  <Trash className="h-4 mr-2" />
+                  <span>Delete</span>
+                </div>
               </div>
             )}
           </div>

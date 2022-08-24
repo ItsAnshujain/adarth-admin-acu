@@ -26,7 +26,7 @@ const Header = ({ pageNumber, setPageNumber }) => {
   const navigate = useNavigate();
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center flex-wrap">
-      <div className="flex pl-5 gap-3 items-center">
+      <div className="flex pl-5 gap-3 items-center font-medium">
         <button onClick={() => navigate(-1)} className="mr-4" type="button">
           <ArrowLeft />
         </button>

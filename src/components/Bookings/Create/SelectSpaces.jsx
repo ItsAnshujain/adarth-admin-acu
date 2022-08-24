@@ -16,7 +16,7 @@ const SelectSpace = ({ data, column }) => {
       <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
         <div className="flex justify-between items-center">
           <Text size="lg" weight="bold">
-            Select Place for Proposal
+            Select Place for Order
           </Text>
           <div>
             <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">

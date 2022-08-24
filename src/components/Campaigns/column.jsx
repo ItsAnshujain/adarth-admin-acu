@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronDown } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
 import { Trash, Edit2, Eye, Bookmark } from 'react-feather';
+import classNames from 'classnames';
 
 const COLUMNS = [
   {
@@ -38,6 +39,21 @@ const COLUMNS = [
   {
     Header: 'TYPE',
     accessor: 'type',
+    Cell: tableProps => {
+      const {
+        row: {
+          original: { type },
+        },
+      } = tableProps;
+      console.log(type);
+      return (
+        <div
+          className={classNames(`w-fit ${type === 'Featured' ? 'text-purple-450' : 'text-black'}`)}
+        >
+          {type}
+        </div>
+      );
+    },
   },
   {
     Header: 'HEALTH',

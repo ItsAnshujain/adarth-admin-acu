@@ -4,6 +4,8 @@ import { NativeSelect } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '../../Menu';
+import { useClickOutside } from '@mantine/hooks';
+import { Eye, Trash } from 'react-feather';
 
 const styles = {
   rightSection: { pointerEvents: 'none' },
@@ -87,19 +89,27 @@ const COLUMNS = [
     accessor: 'details',
     Cell: tableProps => {
       const [showMenu, setShowMenu] = useState(false);
+      const ref = useClickOutside(() => setShowMenu(false));
       const navigate = useNavigate();
       const { id } = tableProps.row.original;
       return (
-        <div onClick={() => setShowMenu(!showMenu)}>
+        <div ref={ref} onClick={() => setShowMenu(!showMenu)}>
           <div className="relative">
             <MenuIcon />
             {showMenu && (
               <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
-                <div onClick={() => navigate(`/inventory/view-details/${id}`)} className="bg-white">
-                  View Details
+                <div
+                  onClick={() => navigate(`/inventory/view-details/${id}`)}
+                  className="bg-white flex items-center"
+                >
+                  <Eye className="mr-2 h-4" />
+                  <span> View Details</span>
                 </div>
 
-                <div className="bg-white">Remove</div>
+                <div className="bg-white flex items-center">
+                  <Trash className="mr-2 h-4" />
+                  <span>Remove</span>
+                </div>
               </div>
             )}
           </div>

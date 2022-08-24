@@ -21,7 +21,7 @@ const Spaces = ({ data, column }) => {
       <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
         <div className="flex justify-between items-center">
           <Text size="lg" weight="bold">
-            Select Place for Proposal
+            Select Place for Campaign
           </Text>
           <div className="flex items-center gap-2">
             <div className="relative">

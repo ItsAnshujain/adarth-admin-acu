@@ -51,7 +51,7 @@ const Create = () => {
   }, [formStep]);
 
   return (
-    <>
+    <div className="mb-24">
       <Header
         setFormStep={setFormStep}
         formStep={formStep}
@@ -70,7 +70,7 @@ const Create = () => {
         setOpenSuccessModal={setOpenSuccessModal}
         path="campaigns"
       />
-    </>
+    </div>
   );
 };
 

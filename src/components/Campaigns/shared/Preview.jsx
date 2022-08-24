@@ -39,7 +39,7 @@ const PreviewCampaign = () => {
         </div>
 
         <Text size="lg" weight="bolder">
-          Places in the campaign
+          Places In The Campaign
         </Text>
         <Text text="sm" weight="lighter">
           All the places been cover by this campaign

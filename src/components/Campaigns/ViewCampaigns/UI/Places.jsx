@@ -34,37 +34,27 @@ const Places = ({ data }) => (
           <Text weight="bolder" className="mb-2">
             {data.name}
           </Text>
-          <Text className="mb-2" size="sm" weight="300">
-            {data.address}
-          </Text>
+          <p className="text-slate-400 text-sm mb-2 tracking-wide">{data.address}</p>
           <Text weight="bolder">{toIndianCurrency(data.cost)}</Text>
         </div>
         <div>
           <div className="mb-4">
-            <Text size="sm" weight="300">
-              Dimension
-            </Text>
-            <Text>{data.dimensions}</Text>
+            <p className="text-slate-400 text-sm tracking-wide">Dimension</p>
+            <p className="font-normal">{data.dimensions}</p>
           </div>
           <div>
-            <Text size="sm" weight="300">
-              Impression
-            </Text>
-            <Text>{data.impression}</Text>
+            <p className="text-slate-400 text-sm tracking-wide">Impression</p>
+            <p className="font-normal">{data.impression}</p>
           </div>
         </div>
         <div>
           <div className="mb-4">
-            <Text size="sm" weight="300">
-              Format Support
-            </Text>
-            <Text>{data.format}</Text>
+            <p className="text-slate-400 text-sm tracking-wide">Format Support</p>
+            <p className="font-normal">{data.format}</p>
           </div>
           <div>
-            <Text size="sm" weight="300">
-              Lighting/Non Lighting
-            </Text>
-            <Text>{data.lighting}</Text>
+            <p className="text-slate-400 text-sm tracking-wide">Lighting/Non Lighting</p>
+            <p className="font-normal">{data.lighting}</p>
           </div>
         </div>
       </div>

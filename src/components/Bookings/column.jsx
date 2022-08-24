@@ -207,7 +207,7 @@ const COLUMNS = [
     Cell: () => <div className="text-purple-450 cursor-pointer">Download</div>,
   },
   {
-    Header: '',
+    Header: 'ACTION',
     accessor: 'details',
     Cell: tableProps => {
       const [showMenu, setShowMenu] = useState(false);
@@ -217,7 +217,7 @@ const COLUMNS = [
 
       return (
         <div ref={ref}>
-          <div onClick={() => setShowMenu(!showMenu)} className="relative mx-2 mr-5">
+          <div onClick={() => setShowMenu(!showMenu)} className="relative mx-2">
             <MenuIcon />
             {showMenu && (
               <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-50  items-start right-4 top-0 bg-white py-4 px-2">
