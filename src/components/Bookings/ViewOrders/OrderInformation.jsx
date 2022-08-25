@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { NativeSelect } from '@mantine/core';
+import { Select } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import completed from '../../../assets/completed.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -81,10 +81,10 @@ const OrderInformation = () => {
             </div>
             <div>
               <p className="text-slate-400">Printing Status</p>
-              <NativeSelect
+              <Select
                 className="mr-2"
                 value={printingStatus}
-                onChange={e => setPrintingStatus(e.target.value)}
+                onChange={setPrintingStatus}
                 data={['Completed', 'Pending']}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
@@ -95,10 +95,10 @@ const OrderInformation = () => {
             </div>
             <div>
               <p className="text-slate-400">Mounting Status</p>
-              <NativeSelect
+              <Select
                 className="mr-2"
                 value={mountingStatus}
-                onChange={e => setMountingStatus(e.target.value)}
+                onChange={setMountingStatus}
                 data={['Completed', 'Pending']}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
@@ -126,10 +126,10 @@ const OrderInformation = () => {
             </div>
             <div>
               <p className="text-slate-400">Campaing Incharge</p>
-              <NativeSelect
+              <Select
                 className="mr-2"
                 value={campaignIncharge}
-                onChange={e => setCampaignIncharge(e.target.value)}
+                onChange={setCampaignIncharge}
                 data={['Completed', 'Pending']}
                 styles={{
                   rightSection: { pointerEvents: 'none' },

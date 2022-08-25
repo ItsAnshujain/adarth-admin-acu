@@ -4,7 +4,7 @@ import SuccessModal from '../../shared/Modal';
 import Preview from '../shared/Preview';
 import CoverImage from './CoverImage';
 import Header from './Header';
-import Spaces from '../../shared/Spaces';
+import Spaces from './Spaces';
 import data from '../../../Dummydata/CAMPAIGN_SPACES.json';
 import column from './column';
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Line, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { Button } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
+import { useClickOutside } from '@mantine/hooks';
 import Header from './Header';
 import orangeFolder from '../../assets/upcoming.svg';
 import greenFolder from '../../assets/ongoing.svg';
@@ -102,12 +103,15 @@ const lineData = {
 };
 
 const Revenue = () => {
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showFilter, setShowFilter] = useState(false);
+  const [showDatePickerRevenue, setShowDatePickerRevenue] = useState(false);
+  const [showDateIndustry, setShowDateIndustry] = useState(false);
+  const [showDateCity, setShowDateCity] = useState(false);
 
-  const openDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
+  const revenueRef = useClickOutside(() => setShowDatePickerRevenue(false));
+  const dateIndustryRef = useClickOutside(() => setShowDateIndustry(false));
+  const dateCityRef = useClickOutside(() => setShowDateCity(false));
+
+  const [showFilter, setShowFilter] = useState(false);
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {
@@ -115,10 +119,10 @@ const Revenue = () => {
   }, []);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto w-screen lg:w-[calc(100vw-230px)]">
       <Header text="Revenue Report" />
-      <div className="flex flex-col pr-7 pl-5 mt-5 mb-10">
-        <div className="flex flex-1 justify-between gap-4 flex-wrap mb-8">
+      <div className="mr-7 pl-5 mt-5 mb-10">
+        <div className="flex flex-1 justify-between gap-4 flex-wrap mb-8 ">
           <div className="border rounded p-8 flex-1">
             <img src={orangeFolder} alt="folder" />
             <p className="my-2 text-xs font-light text-slate-400">Total Revenue</p>
@@ -147,13 +151,17 @@ const Revenue = () => {
           <div className="flex justify-between">
             <p className="font-bold">Revenue Graph</p>
             <div className="flex justify-around">
-              <div className="mr-2 relative">
-                <Button onClick={openDatePicker} variant="default" type="button">
+              <div ref={revenueRef} className="mr-2 relative">
+                <Button
+                  onClick={() => setShowDatePickerRevenue(!showDatePickerRevenue)}
+                  variant="default"
+                  type="button"
+                >
                   <img src={calendar} className="h-5" alt="calendar" />
                 </Button>
-                {showDatePicker && (
+                {showDatePickerRevenue && (
                   <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
-                    <DateRange handleClose={openDatePicker} />
+                    <DateRange handleClose={() => setShowDatePickerRevenue(false)} />
                   </div>
                 )}
               </div>
@@ -175,13 +183,17 @@ const Revenue = () => {
             <div className="flex justify-between">
               <p className="font-bold">Industry wise revenue graph</p>
               <div className="flex justify-around">
-                <div className="mr-2 relative">
-                  <Button onClick={openDatePicker} variant="default" type="button">
+                <div ref={dateIndustryRef} className="mr-2 relative">
+                  <Button
+                    onClick={() => setShowDateIndustry(!showDateIndustry)}
+                    variant="default"
+                    type="button"
+                  >
                     <img src={calendar} className="h-5" alt="calendar" />
                   </Button>
-                  {showDatePicker && (
+                  {showDateIndustry && (
                     <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
-                      <DateRange handleClose={openDatePicker} />
+                      <DateRange handleClose={() => setShowDateIndustry(false)} />
                     </div>
                   )}
                 </div>
@@ -204,13 +216,17 @@ const Revenue = () => {
             <div className="flex justify-between">
               <p className="font-bold">Industry wise revenue graph</p>
               <div className="flex justify-around">
-                <div className="mr-2 relative">
-                  <Button onClick={openDatePicker} variant="default" type="button">
+                <div ref={dateCityRef} className="mr-2 relative">
+                  <Button
+                    onClick={() => setShowDateCity(!showDateCity)}
+                    variant="default"
+                    type="button"
+                  >
                     <img src={calendar} className="h-5" alt="calendar" />
                   </Button>
-                  {showDatePicker && (
+                  {showDateCity && (
                     <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
-                      <DateRange handleClose={openDatePicker} />
+                      <DateRange handleClose={() => setShowDateCity(false)} />
                     </div>
                   )}
                 </div>

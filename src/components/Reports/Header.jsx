@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Text, Button } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
+import { useClickOutside } from '@mantine/hooks';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import Filter from '../Filter';
@@ -8,6 +9,7 @@ import Filter from '../Filter';
 const Header = ({ text }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+  const ref = useClickOutside(() => setShowDatePicker(false));
 
   const openDatePicker = () => {
     setShowDatePicker(!showDatePicker);
@@ -21,7 +23,7 @@ const Header = ({ text }) => {
         </Text>
       </div>
       <div className="flex justify-around mr-7">
-        <div className="mr-2 relative">
+        <div ref={ref} className="mr-2 relative">
           <Button onClick={openDatePicker} variant="default" type="button">
             <img src={calendar} className="h-5" alt="calendar" />
           </Button>

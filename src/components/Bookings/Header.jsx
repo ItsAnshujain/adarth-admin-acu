@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Text, Button } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { Plus, ChevronDown } from 'react-feather';
+import { useClickOutside } from '@mantine/hooks';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import Filter from '../Filter';
@@ -10,6 +11,7 @@ const AreaHeader = ({ text }) => {
   const navigate = useNavigate();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+  const ref = useClickOutside(() => setShowDatePicker(false));
 
   const openDatePicker = () => {
     setShowDatePicker(!showDatePicker);
@@ -18,12 +20,10 @@ const AreaHeader = ({ text }) => {
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center">
       <div className="pl-5">
-        <Text size="lg" weight="bold">
-          {text}
-        </Text>
+        <p className="text-lg font-bold">{text}</p>
       </div>
       <div className="flex justify-around mr-7">
-        <div className="mr-2 relative">
+        <div ref={ref} className="mr-2 relative">
           <Button onClick={openDatePicker} variant="default" type="button">
             <img src={calendar} className="h-5" alt="calendar" />
           </Button>

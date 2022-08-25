@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, NativeSelect, RangeSlider, MultiSelect, TextInput } from '@mantine/core';
+import { Text, Select, RangeSlider, MultiSelect, TextInput } from '@mantine/core';
 
 const styles = {
   label: {
@@ -67,7 +67,7 @@ const Specification = ({ formData, setFormData }) => {
     { value: 800, label: '80%' },
   ];
   return (
-    <div className="flex flex-col pl-5 pr-7 pt-4 mb-12">
+    <div className="flex flex-col pl-5 pr-7 pt-4 mb-12 w-screen lg:w-[calc(100vw-230px)]">
       <Text size="md" weight="bold">
         Space Specifications
       </Text>
@@ -76,7 +76,7 @@ const Specification = ({ formData, setFormData }) => {
       </Text>
       <div className="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
         <div>
-          <NativeSelect
+          <Select
             value={formData.illumination}
             onChange={handleChange}
             styles={styles}
@@ -111,7 +111,7 @@ const Specification = ({ formData, setFormData }) => {
           />
         </div>
         <div>
-          <NativeSelect
+          <Select
             value={formData.unit}
             onChange={handleChange}
             styles={styles}
@@ -127,7 +127,7 @@ const Specification = ({ formData, setFormData }) => {
             ]}
           />
           <div className="grid grid-cols-2 gap-4">
-            <NativeSelect
+            <Select
               value={formData.width}
               onChange={handleChange}
               styles={styles}
@@ -142,7 +142,7 @@ const Specification = ({ formData, setFormData }) => {
                 { value: 'vue', label: 'Vue' },
               ]}
             />
-            <NativeSelect
+            <Select
               value={formData.height}
               onChange={handleChange}
               styles={styles}

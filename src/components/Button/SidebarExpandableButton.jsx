@@ -3,19 +3,51 @@ import { Accordion } from '@mantine/core';
 import classNames from 'classnames';
 import { Mail } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
+import useSideBarState from '../../store/sidebar.store';
 
-const AccordionLabel = ({ label }) => (
-  <div className="flex">
-    <Mail className="h-5 text-[#969EA1]" />
-    <span className="text-gray-400 font-medium text-sm ml-2">{label}</span>{' '}
-  </div>
-);
+const AccordionLabel = props => {
+  const { label, sidebarText, color, setColor } = props;
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (label === 'Reports') {
+      navigate(`/${sidebarText.toLowerCase()}/campaign`);
+      setColor(6);
+    } else if (label === 'Masters') {
+      navigate(`/${sidebarText.toLowerCase()}/category`);
+      setColor(4);
+    }
+  };
+  return (
+    <div aria-hidden onClick={handleClick} className="flex">
+      <Mail
+        className={classNames(
+          `h-5 ${
+            (sidebarText === 'Reports' && color[6]) || (sidebarText === 'Masters' && color[4])
+              ? 'text-purple-450'
+              : 'text-[#969EA1]'
+          }`,
+        )}
+      />
+      <span className="text-gray-400 font-medium text-sm ml-2">{label}</span>{' '}
+    </div>
+  );
+};
 
 // TODO : add Links to text field in Accordion Item
 const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
   const id = useId();
+  const { reports, masters, setReportColor, setMasterColor, setColor, color } = useSideBarState(
+    state => ({
+      reports: state.reports,
+      masters: state.masters,
+      setReportColor: state.setReportColor,
+      setMasterColor: state.setMasterColor,
+      color: state.color,
+      setColor: state.setColor,
+    }),
+  );
 
-  const [itemOpened, setItemOpened] = useState(0);
   const navigate = useNavigate();
 
   return (
@@ -29,10 +61,12 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
         },
         chevron: {
           color: theme.colors.gray[5],
+          padding: '0px',
+          margin: '0px',
         },
       })}
       sx={theme => ({
-        backgroundColor: theme.colors.white,
+        backgroundColor: sidebarText === 'Reports' && color[6] ? '#F9FAFD' : theme.colors.white,
         'button': {
           padding: '8px',
         },
@@ -41,7 +75,7 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
     >
       <Accordion.Item value={id}>
         <Accordion.Control>
-          <AccordionLabel {...item} />
+          <AccordionLabel {...item} sidebarText={sidebarText} color={color} setColor={setColor} />
         </Accordion.Control>
         <Accordion.Panel>
           <div className="ml-5">
@@ -49,7 +83,12 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
               <button
                 type="button"
                 onClick={() => {
-                  setItemOpened(index);
+                  if (sidebarText === 'Reports') {
+                    setReportColor(index);
+                  } else if (sidebarText === 'Masters') {
+                    setMasterColor(index);
+                  }
+
                   if (index === 0 && sidebarText === 'Reports') {
                     navigate(`/${sidebarText.toLowerCase()}/campaign`);
                   } else if (index === 1 && sidebarText === 'Reports') {
@@ -63,7 +102,10 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
                 key={text}
                 className={classNames(
                   ` font-medium text-xs block mt-0.5 ${
-                    itemOpened === index ? 'text-black' : 'text-gray-400'
+                    (sidebarText === 'Reports' && reports[index]) ||
+                    (sidebarText === 'Masters' && masters[index])
+                      ? 'text-black'
+                      : 'text-gray-400'
                   }`,
                 )}
               >

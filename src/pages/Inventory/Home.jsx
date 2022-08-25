@@ -30,7 +30,9 @@ const Inventory = () => {
         <GridView selectAll={selectAll} count={count} Card={Card} />
       ) : view === 'list' ? (
         <Table COLUMNS={COLUMNS} dummy={dummy} count={count} allowRowsSelect />
-      ) : null}
+      ) : (
+        <div className="w-screen lg:w-[calc(100vw-230px)]">MAP</div>
+      )}
     </div>
   );
 };
