@@ -16,7 +16,7 @@ const BasicInfo = () => {
   const [showNotesTwo, setShowNotesTwo] = useState(false);
 
   return (
-    <div className="flex gap-4 pt-4 flex-col pl-5 pr-7 w-screen lg:w-[calc(100vw-230px)]">
+    <div className="flex gap-4 pt-4 flex-col pl-5 pr-7">
       <Text size="md" weight="bold">
         Basic Information
       </Text>

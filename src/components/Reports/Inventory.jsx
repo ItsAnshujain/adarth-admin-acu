@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import {
   Chart as ChartJS,
   CategoryScale,

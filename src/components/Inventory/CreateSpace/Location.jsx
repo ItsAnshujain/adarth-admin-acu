@@ -18,7 +18,7 @@ const Location = ({ formData, setFormData }) => {
   };
 
   return (
-    <div className="flex flex-col pl-5 pr-7 pt-4 mb-10 w-screen lg:w-[calc(100vw-220px)]">
+    <div className="flex flex-col pl-5 pr-7 pt-4 mb-10">
       <Text size="md" weight="bold">
         Location
       </Text>
