@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Text, Button } from '@mantine/core';
 import { Plus, ChevronDown } from 'react-feather';
-import Filter from '../Filter';
+import Filter from './Filter';
 
 const Header = ({ text }) => {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import { Button } from '@mantine/core';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { Doughnut, Bar } from 'react-chartjs-2';
@@ -85,7 +85,7 @@ const Campaign = () => {
   }, []);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto w-screen lg:w-[calc(100vw-230px)] ">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
       <Header text="Campaign Report" />
       <div className="pr-7 pl-5 mt-5 mb-10">
         <div className="flex justify-between gap-4 flex-wrap mb-8">
@@ -148,13 +148,13 @@ const Campaign = () => {
             </div>
           </div>
           <div className="flex flex-col w-1/3 gap-4 ">
-            <div className="flex gap-4 p-4 border rounded-md items-center flex-1">
+            <div className="flex gap-4 p-4 border rounded-md items-center flex-1 flex-wrap-reverse">
               <div className="w-32">
                 <Doughnut options={config.options} data={config.data} />
               </div>
               <div>
                 <p className="font-medium">Printing Status</p>
-                <div className="flex gap-8 mt-6">
+                <div className="flex gap-8 mt-6 flex-wrap">
                   <div className="flex gap-2 items-center">
                     <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                     <div>
@@ -172,13 +172,13 @@ const Campaign = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-4 p-4 border rounded-md items-center flex-1">
+            <div className="flex gap-4 p-4 border rounded-md items-center flex-1 flex-wrap-reverse">
               <div className="w-32">
                 <Doughnut options={config.options} data={config.data} />
               </div>
               <div>
                 <p className="font-medium">Mounting Status</p>
-                <div className="flex gap-8 mt-6">
+                <div className="flex gap-8 mt-6 flex-wrap">
                   <div className="flex gap-2 items-center">
                     <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                     <div>

@@ -5,7 +5,7 @@ import { Plus, ChevronDown } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
-import Filter from '../Filter';
+import Filter from './Filter';
 
 const AreaHeader = ({ text }) => {
   const navigate = useNavigate();

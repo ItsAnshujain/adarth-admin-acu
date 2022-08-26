@@ -67,7 +67,7 @@ const Specification = ({ formData, setFormData }) => {
     { value: 800, label: '80%' },
   ];
   return (
-    <div className="flex flex-col pl-5 pr-7 pt-4 mb-12 w-screen lg:w-[calc(100vw-230px)]">
+    <div className="flex flex-col pl-5 pr-7 pt-4 mb-12">
       <Text size="md" weight="bold">
         Space Specifications
       </Text>

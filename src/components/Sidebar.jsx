@@ -26,7 +26,7 @@ const Sidebar = () => {
   );
   if (pathname.includes('login')) return null;
   return (
-    <div className="hidden lg:block lg:col-span-2 mt-4 relative top-20 z-50 w-[16.66%]">
+    <div className="hidden lg:block lg:col-span-2 mt-4">
       <div className="flex flex-col items-start gap-2">
         {sidebarText.map((text, index) => (
           <SidebarButton

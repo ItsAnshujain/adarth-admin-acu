@@ -2,7 +2,8 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Landlords from './pages/Landlords';
-import Sidebar from './components/Sidebar';
+import Header from './Loader/Header';
+import Loader from './Loader';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -37,14 +38,13 @@ const ReportCampaign = lazy(() => import('./pages/Report/Campaign'));
 
 const App = () => (
   <Router>
-    <Sidebar />
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
       <Route
         path="/inventory"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense fallback={<Header />}>
             <Inventory />
           </Suspense>
         }
@@ -52,7 +52,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <InventoryHome />
             </Suspense>
           }
@@ -85,7 +85,7 @@ const App = () => (
       <Route
         path="/campaigns"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense fallback={<Header />}>
             <Campaigns />
           </Suspense>
         }
@@ -93,7 +93,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <CampaignHome />
             </Suspense>
           }
@@ -126,7 +126,7 @@ const App = () => (
       <Route
         path="/proposals"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense fallback={<Header />}>
             <Proposals />
           </Suspense>
         }
@@ -134,7 +134,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <ProposalsHome />
             </Suspense>
           }
@@ -167,7 +167,7 @@ const App = () => (
       <Route
         path="/bookings"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense fallback={<Header />}>
             <Booking />
           </Suspense>
         }
@@ -175,7 +175,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <BookingHome />
             </Suspense>
           }
@@ -224,7 +224,7 @@ const App = () => (
       <Route
         path="/"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense fallback={<Header />}>
             <User />
           </Suspense>
         }
@@ -232,7 +232,7 @@ const App = () => (
         <Route
           path="users"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <UserHome />
             </Suspense>
           }
@@ -257,7 +257,7 @@ const App = () => (
       <Route
         path="/reports"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense fallback={<Header />}>
             <ReportHome />
           </Suspense>
         }
@@ -265,7 +265,7 @@ const App = () => (
         <Route
           path="inventory"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <ReportInventory />
             </Suspense>
           }

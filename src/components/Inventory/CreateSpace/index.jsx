@@ -78,11 +78,9 @@ const MainArea = () => {
         formStep={formStep}
         setOpenSuccessModal={setOpenSuccessModal}
       />
-      <div>
-        <div>
-          <form>{getForm()}</form>
-        </div>
-      </div>
+
+      <form>{getForm()}</form>
+
       <SuccessModal
         title="Inventory Successfully Added"
         text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
