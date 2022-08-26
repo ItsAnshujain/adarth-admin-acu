@@ -1,4 +1,3 @@
-import { Text } from '@mantine/core';
 import unsplash from '../../assets/unsplash.png';
 import Badge from '../shared/Badge';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -18,12 +17,12 @@ const Card = ({ data: { category, impression, cost, status, subtitle, type } }) 
           text={status}
           size="xs"
         />
-        <Text className="flex gap-1 text-xs items-center ml-2 text-purple-450">{type}</Text>
+        <p className="flex gap-1 text-xs items-center ml-2 text-purple-450">{type}</p>
       </div>
 
-      <Text size="lg" className="mt-2" weight="bold">
+      <p size="lg" className="mt-2 font-bold text-lg" weight="bold">
         {subtitle}
-      </Text>
+      </p>
       <div className="grid grid-cols-2 justify-between">
         <div className="mt-2">
           <p className="text-sm text-gray-400" weight="200">
@@ -38,9 +37,7 @@ const Card = ({ data: { category, impression, cost, status, subtitle, type } }) 
           <p className="text-sm mt-1">{impression}</p>
         </div>
       </div>
-      <Text size="lg" className="mt-4" weight="bolder">
-        {toIndianCurrency(cost)}
-      </Text>
+      <p className="mt-4 font-extrabold text-lg">{toIndianCurrency(cost)}</p>
     </div>
   </div>
 );

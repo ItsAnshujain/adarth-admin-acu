@@ -1,11 +1,11 @@
 /* eslint-disable */
 import { useState } from 'react';
-import { NativeSelect } from '@mantine/core';
+import { NativeSelect, Menu } from '@mantine/core';
 import MenuIcon from '../Menu';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown } from 'react-feather';
-import { useClickOutside } from '@mantine/hooks';
 import { Trash, Edit2, Eye, Bookmark } from 'react-feather';
+import classNames from 'classnames';
 
 const COLUMNS = [
   {
@@ -38,6 +38,21 @@ const COLUMNS = [
   {
     Header: 'TYPE',
     accessor: 'type',
+    Cell: tableProps => {
+      const {
+        row: {
+          original: { type },
+        },
+      } = tableProps;
+      console.log(type);
+      return (
+        <div
+          className={classNames(`w-fit ${type === 'Featured' ? 'text-purple-450' : 'text-black'}`)}
+        >
+          {type}
+        </div>
+      );
+    },
   },
   {
     Header: 'HEALTH',
@@ -80,43 +95,51 @@ const COLUMNS = [
   {
     Header: '',
     accessor: 'details',
+    disableSortBy: true,
     Cell: tableProps => {
-      const [showMenu, setShowMenu] = useState(false);
-      const ref = useClickOutside(() => setShowMenu(false));
       const navigate = useNavigate();
       const { id } = tableProps.row.original;
       return (
-        <div ref={ref} onClick={() => setShowMenu(!showMenu)}>
-          <div className="relative">
-            <MenuIcon />
-            {showMenu && (
-              <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
-                <div
-                  onClick={() => navigate(`view-details/${id}`)}
-                  className="bg-white cursor-pointer flex items-center"
-                >
-                  <Eye className="h-4 mr-2" />
-                  <span>View</span>
-                </div>
-                <div
-                  onClick={() => navigate(`edit-details/${id}`)}
-                  className="bg-white cursor-pointer flex items-center "
-                >
-                  <Edit2 className="h-4 mr-2" />
-                  <span>Edit</span>
-                </div>
-                <div className="bg-white cursor-pointer flex items-center ">
-                  <Trash className="h-4 mr-2" />
-                  <span>Delete</span>
-                </div>
-                <div className="bg-white cursor-pointer flex items-center ">
-                  <Bookmark className="h-4 mr-2" />
-                  <span>Set as Featured</span>
-                </div>
+        <Menu shadow="md" width={150}>
+          <Menu.Target>
+            <button>
+              <MenuIcon />
+            </button>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Item>
+              <div
+                onClick={() => navigate(`view-details/${id}`)}
+                className="cursor-pointer flex items-center gap-1"
+              >
+                <Eye className="h-4" />
+                <span className="ml-1">View Details</span>
               </div>
-            )}
-          </div>
-        </div>
+            </Menu.Item>
+            <Menu.Item>
+              <div
+                onClick={() => navigate(`edit-details/${id}`)}
+                className="cursor-pointer flex items-center gap-1"
+              >
+                <Edit2 className="h-4" />
+                <span className="ml-1">Edit</span>
+              </div>
+            </Menu.Item>
+            <Menu.Item>
+              <div className="cursor-pointer flex items-center gap-1">
+                <Trash className="h-4" />
+                <span className="ml-1">Delete</span>
+              </div>
+            </Menu.Item>
+            <Menu.Item>
+              <div className="bg-white cursor-pointer flex items-center ">
+                <Bookmark className="h-4 mr-2" />
+                <span>Set as Featured</span>
+              </div>
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       );
     },
   },

@@ -1,5 +1,5 @@
 import { useDropzone } from 'react-dropzone';
-import { NativeSelect, Text, TextInput, Textarea } from '@mantine/core';
+import { Select, Text, TextInput, Textarea } from '@mantine/core';
 import placeholder from '../../../assets/placeholder.png';
 import image from '../../../assets/image.png';
 
@@ -57,7 +57,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           className="mb-7"
           label="Space Name"
         />
-        <NativeSelect
+        <Select
           styles={labelStyle}
           value={formData.landlord}
           onChange={handleChange}
@@ -72,7 +72,7 @@ const BasicInfo = ({ formData, setFormData }) => {
             { value: 'vue', label: 'Vue' },
           ]}
         />
-        <NativeSelect
+        <Select
           styles={labelStyle}
           value={formData.inventoryowner}
           onChange={handleChange}
@@ -87,7 +87,7 @@ const BasicInfo = ({ formData, setFormData }) => {
             { value: 'vue', label: 'Vue' },
           ]}
         />
-        <NativeSelect
+        <Select
           styles={labelStyle}
           value={formData.spacetype}
           onChange={handleChange}
@@ -102,7 +102,7 @@ const BasicInfo = ({ formData, setFormData }) => {
             { value: 'vue', label: 'Vue' },
           ]}
         />
-        <NativeSelect
+        <Select
           styles={labelStyle}
           value={formData.subcategory}
           onChange={handleChange}
@@ -117,7 +117,7 @@ const BasicInfo = ({ formData, setFormData }) => {
             { value: 'vue', label: 'Vue' },
           ]}
         />
-        <NativeSelect
+        <Select
           styles={labelStyle}
           value={formData.mediatype}
           onChange={handleChange}
@@ -132,7 +132,7 @@ const BasicInfo = ({ formData, setFormData }) => {
             { value: 'vue', label: 'Vue' },
           ]}
         />
-        <NativeSelect
+        <Select
           styles={labelStyle}
           value={formData.supportedmedia}
           onChange={handleChange}

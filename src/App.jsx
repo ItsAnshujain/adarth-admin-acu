@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Landlords from './pages/Landlords';
+import Sidebar from './components/Sidebar';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -36,6 +37,7 @@ const ReportCampaign = lazy(() => import('./pages/Report/Campaign'));
 
 const App = () => (
   <Router>
+    <Sidebar />
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />

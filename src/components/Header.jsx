@@ -1,4 +1,4 @@
-import { Button, Text } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { useState } from 'react';
 import { Menu } from 'react-feather';
 import logo from '../assets/logo.svg';
@@ -27,9 +27,7 @@ const Header = ({ title }) => {
             </Button>
             <Button variant="default">
               <img className="w-8 h-8 mr-2" src={logo} alt="logo" />
-              <Text size="sm" className="font-medium">
-                Profile
-              </Text>
+              <p className="font-medium text-sm">Profile</p>
             </Button>
           </div>
         </div>

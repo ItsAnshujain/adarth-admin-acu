@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Drawer, Text, RangeSlider, TextInput } from '@mantine/core';
+import { Drawer, RangeSlider, TextInput } from '@mantine/core';
 
 const inititalFilterData = {
   'Cities': {
@@ -81,7 +81,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       <div className="flex text-gray-400 flex-col gap-4">
         <div className="flex flex-col border p-4 pt-2 gap-2 rounded-xl">
           <div className="border-b py-2 flex justify-between items-center">
-            <Text size="lg">Cities</Text>
+            <p className="text-lg">Cities</p>
             <ChevronDown className="h-4" />
           </div>
           <div className="mt-2">
@@ -99,7 +99,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                     })
                   }
                 />
-                <Text size="md">{items[0]}</Text>
+                <p>{items[0]}</p>
               </div>
             ))}
           </div>
@@ -109,7 +109,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
           data === 'Cities' ? (
             <div className="flex flex-col border p-4 pt-2 gap-2 rounded-xl">
               <div className="border-b py-2 flex justify-between items-center">
-                <Text size="lg">Price</Text>
+                <p className="text-lg">Price</p>
                 <ChevronDown className="h-4" />
               </div>
               <div className="mt-2">
@@ -150,7 +150,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
           ) : (
             <div className="flex flex-col border p-4 pt-2 gap-2 rounded-xl">
               <div className="border-b py-2 flex justify-between items-center">
-                <Text size="lg">{data}</Text>
+                <p className="text-lg">{data}</p>
                 <ChevronDown className="h-4" />
               </div>
               <div className="mt-2">
@@ -168,7 +168,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                         })
                       }
                     />
-                    <Text size="md">{items[0]}</Text>
+                    <p>{items[0]}</p>
                   </div>
                 ))}
               </div>

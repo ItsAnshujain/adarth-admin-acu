@@ -5,6 +5,7 @@ const styles = {
     fontWeight: 'bold',
     marginBottom: 8,
     fontSize: 16,
+    letterSpacing: '0.5px',
   },
   input: {
     borderRadius: 0,
@@ -12,18 +13,18 @@ const styles = {
   },
 };
 const BasicInfo = () => (
-  <div className="pl-5 pr-7 mt-4">
+  <div className="pl-5 pr-7 mt-4 w-screen lg:w-[calc(100vw-230px)]">
     <p className="text-xl font-bold">Basic Information</p>
     <div className="grid grid-cols-2 gap-8 mt-4">
       <div className="flex flex-col gap-4">
-        <TextInput styles={styles} label="Company Name" />
-        <TextInput styles={styles} label="Client Email" />
-        <TextInput styles={styles} label="Client Pan Number" />
+        <TextInput styles={styles} label="Company Name" placeholder="Write..." />
+        <TextInput styles={styles} label="Client Email" placeholder="Write..." />
+        <TextInput styles={styles} label="Client Pan Number" placeholder="Write..." />
       </div>
       <div className="flex flex-col gap-4">
-        <TextInput styles={styles} label="Client Name" />
-        <TextInput styles={styles} label="Client Contact Number" />
-        <TextInput styles={styles} label="Client GST Number" />
+        <TextInput styles={styles} label="Client Name" placeholder="Write..." />
+        <TextInput styles={styles} label="Client Contact Number" placeholder="Write..." />
+        <TextInput styles={styles} label="Client GST Number" placeholder="Write..." />
       </div>
     </div>
   </div>

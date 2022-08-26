@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Text, Button } from '@mantine/core';
 import classNames from 'classnames';
 import { Plus, ChevronDown, Server, Grid, MapPin } from 'react-feather';
+import { useClickOutside } from '@mantine/hooks';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import Filter from '../Filter';
@@ -15,11 +16,12 @@ const initialState = {
 
 const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
   const { pathname } = useLocation();
-
   const [addDetailsClicked, setAddDetails] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [color, setColor] = useState(initialState);
+  const ref = useClickOutside(() => setShowDatePicker(false));
+
   const handleListClick = () => {
     setColor({
       grid: { fill: true },
@@ -110,7 +112,7 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
             />
           </button>
         </div>
-        <div className="mr-2 relative">
+        <div ref={ref} className="mr-2 relative">
           <Button onClick={openDatePicker} variant="default" type="button">
             <img src={calendar} className="h-5" alt="calendar" />
           </Button>

@@ -18,7 +18,6 @@ import { ChevronDown } from 'react-feather';
 import Header from './Header';
 import greenFolder from '../../assets/ongoing.svg';
 import blueFolder from '../../assets/completed.svg';
-import useSideBarState from '../../store/sidebar.store';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import Filter from '../Filter';
@@ -30,6 +29,7 @@ import GridView from '../GridView';
 import COLUMNS from '../Inventory/column';
 import dummy from '../../Dummydata/Inventory.json';
 import Card from '../Inventory/Card';
+import useSideBarState from '../../store/sidebar.store';
 
 ChartJS.register(
   ArcElement,
@@ -121,6 +121,7 @@ const Inventory = () => {
   const openDatePicker = () => {
     setShowDatePicker(!showDatePicker);
   };
+
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {

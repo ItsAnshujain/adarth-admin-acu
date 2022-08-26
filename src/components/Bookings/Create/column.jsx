@@ -101,7 +101,7 @@ const COLUMNS = [
     },
   },
   {
-    Header: '',
+    Header: 'ACTION',
     accessor: 'details',
     Cell: tableProps => {
       const [showMenu, setShowMenu] = useState(false);

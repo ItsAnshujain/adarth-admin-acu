@@ -85,7 +85,7 @@ const Campaign = () => {
   }, []);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto w-screen lg:w-[calc(100vw-230px)] ">
       <Header text="Campaign Report" />
       <div className="pr-7 pl-5 mt-5 mb-10">
         <div className="flex justify-between gap-4 flex-wrap mb-8">
@@ -115,7 +115,7 @@ const Campaign = () => {
             <p className="font-bold">386387</p>
           </div>
         </div>
-        <div className="flex gap-4 h-full">
+        <div className="flex gap-4">
           <div className="w-2/3">
             <div className="flex justify-between">
               <p>Campaign Report</p>

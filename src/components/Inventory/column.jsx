@@ -1,10 +1,9 @@
 /* eslint-disable */
-import { useState, useRef, useEffect } from 'react';
 import Badge from '../shared/Badge';
 import MenuIcon from '../Menu';
 import { useNavigate } from 'react-router-dom';
 import { Eye, Edit2, Trash } from 'react-feather';
-import { useClickOutside } from '@mantine/hooks';
+import { Menu } from '@mantine/core';
 
 const COLUMNS = [
   {
@@ -73,40 +72,46 @@ const COLUMNS = [
   {
     Header: '',
     accessor: 'details',
+    disableSortBy: true,
     Cell: tableProps => {
-      const [showMenu, setShowMenu] = useState(false);
-      const menuRef = useClickOutside(() => setShowMenu(false));
       const navigate = useNavigate();
       const { id } = tableProps.row.original;
 
       return (
-        <div ref={menuRef}>
-          <div onClick={() => setShowMenu(!showMenu)} className="relative ">
-            <MenuIcon />
-            {showMenu && (
-              <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-50  items-start right-4 top-0 bg-white py-4 px-2">
-                <div
-                  onClick={() => navigate(`view-details/${id}`)}
-                  className="bg-white cursor-pointer flex items-center gap-1"
-                >
-                  <Eye className="h-4" />
-                  <span className="ml-1">View Details</span>
-                </div>
-                <div
-                  onClick={() => navigate(`edit-details/${id}`)}
-                  className="bg-white cursor-pointer flex items-center gap-1"
-                >
-                  <Edit2 className="h-4" />
-                  <span className="ml-1">Edit</span>
-                </div>
-                <div className="bg-white cursor-pointer flex items-center gap-1">
-                  <Trash className="h-4" />
-                  <span className="ml-1">Delete</span>
-                </div>
+        <Menu shadow="md" width={150}>
+          <Menu.Target>
+            <button>
+              <MenuIcon />
+            </button>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Item>
+              <div
+                onClick={() => navigate(`view-details/${id}`)}
+                className="cursor-pointer flex items-center gap-1"
+              >
+                <Eye className="h-4" />
+                <span className="ml-1">View Details</span>
               </div>
-            )}
-          </div>
-        </div>
+            </Menu.Item>
+            <Menu.Item>
+              <div
+                onClick={() => navigate(`edit-details/${id}`)}
+                className="cursor-pointer flex items-center gap-1"
+              >
+                <Edit2 className="h-4" />
+                <span className="ml-1">Edit</span>
+              </div>
+            </Menu.Item>
+            <Menu.Item>
+              <div className="cursor-pointer flex items-center gap-1">
+                <Trash className="h-4" />
+                <span className="ml-1">Delete</span>
+              </div>
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       );
     },
   },

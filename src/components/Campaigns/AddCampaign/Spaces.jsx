@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Text, Button } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import Filter from '../Filter';
-import DateRange from '../DateRange';
-import Search from '../Search';
-import calendar from '../../assets/data-table.svg';
-import toIndianCurrency from '../../utils/currencyFormat';
-import Table from '../Table/Table';
+import Filter from '../../Filter';
+import DateRange from '../../DateRange';
+import Search from '../../Search';
+import calendar from '../../../assets/data-table.svg';
+import toIndianCurrency from '../../../utils/currencyFormat';
+import Table from '../../Table/Table';
 
 const Spaces = ({ data, column }) => {
   const [search, setSearch] = useState('');

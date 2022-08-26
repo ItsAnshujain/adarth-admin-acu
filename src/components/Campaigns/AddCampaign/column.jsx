@@ -1,8 +1,5 @@
 /* eslint-disable */
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Badge from '../../shared/Badge';
-import MenuIcon from '../../Menu';
 
 const COLUMNS = [
   {
@@ -73,35 +70,6 @@ const COLUMNS = [
   {
     Header: 'PRICING',
     accessor: 'pricing',
-  },
-  {
-    Header: '',
-    accessor: 'details',
-    Cell: tableProps => {
-      const [showMenu, setShowMenu] = useState(false);
-      const navigate = useNavigate();
-      const {
-        row: {
-          original: { id },
-        },
-      } = tableProps;
-      return (
-        <div onClick={() => setShowMenu(!showMenu)}>
-          <div className="relative">
-            <MenuIcon />
-            {showMenu && (
-              <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
-                <div onClick={() => navigate(`/inventory/view-details/${id}`)} className="bg-white">
-                  View Details
-                </div>
-                <div className="bg-white">Edit</div>
-                <div className="bg-white">Delete</div>
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    },
   },
 ];
 

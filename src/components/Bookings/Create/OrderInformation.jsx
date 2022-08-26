@@ -6,6 +6,7 @@ const styles = {
     fontWeight: 'bold',
     marginBottom: 8,
     fontSize: 16,
+    letterSpacing: '0.5px',
   },
   input: {
     borderRadius: 0,
@@ -18,6 +19,7 @@ const textAreaStyles = {
     fontWeight: 'bold',
     marginBottom: 8,
     fontSize: 16,
+    letterSpacing: '0.5px',
   },
   input: {
     borderRadius: 0,
@@ -27,11 +29,11 @@ const textAreaStyles = {
 };
 
 const OrderInfo = () => (
-  <div className="pl-5 pr-7 mt-4">
+  <div className="pl-5 pr-7 mt-4 w-screen lg:w-[calc(100vw-230px)]">
     <p className="text-xl font-bold">Order Information</p>
     <div className="grid grid-cols-2 gap-8 mt-4">
       <div className="flex flex-col gap-4">
-        <TextInput styles={styles} label="Campaign Name" />
+        <TextInput styles={styles} label="Campaign Name" placeholder="Write..." />
         <p className="font-bold">Upload Media</p>
         <div className="w-full border flex items-center cursor-pointer border-slate-300">
           <button

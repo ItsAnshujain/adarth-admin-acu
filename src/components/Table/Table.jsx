@@ -38,35 +38,37 @@ const Table = ({ COLUMNS, dummy, allowRowsSelect = false }) => {
   );
 
   return (
-    <div>
+    <>
       <div className="mr-7 max-w-screen overflow-x-scroll">
-        <table className="w-screen" {...getTableProps()}>
+        <table className="w-screen overflow-y-visible relative z-10" {...getTableProps()}>
           <thead className="bg-gray-100">
             {headerGroups.map(headerGroup => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(header => (
                   <th className="text-sm" {...header.getHeaderProps(header.getSortByToggleProps())}>
-                    <div className="w-max flex align-center text-left pl-2 text-gray-400 hover:text-black py-2 text-xs">
+                    <div className="w-max flex align-center text-left pl-2 text-gray-400 hover:text-black py-2 text-xs font-medium">
                       <div className="w-fit">{header.render('Header')}</div>
                       <div className="ml-2 gap-1 flex flex-col">
-                        {header.isSorted ? (
-                          header.isSortedDesc ? (
-                            <>
-                              <Ascending fill="#A1A9B8" />
-                              <Descending fill="black" />
-                            </>
+                        {header.canSort ? (
+                          header.isSorted ? (
+                            header.isSortedDesc ? (
+                              <>
+                                <Ascending fill="#A1A9B8" />
+                                <Descending fill="black" />
+                              </>
+                            ) : (
+                              <>
+                                <Ascending fill="black" />
+                                <Descending fill="#A1A9B8" />
+                              </>
+                            )
                           ) : (
                             <>
-                              <Ascending fill="black" />
+                              <Ascending fill="#A1A9B8" />
                               <Descending fill="#A1A9B8" />
                             </>
                           )
-                        ) : (
-                          <>
-                            <Ascending fill="#A1A9B8" />
-                            <Descending fill="#A1A9B8" />
-                          </>
-                        )}
+                        ) : null}
                       </div>
                     </div>
                   </th>
@@ -78,7 +80,7 @@ const Table = ({ COLUMNS, dummy, allowRowsSelect = false }) => {
             {page.map(row => {
               prepareRow(row);
               return (
-                <tr className="text-left border border-l-0" {...row.getRowProps()}>
+                <tr className="text-left border border-l-0 overflow-visible" {...row.getRowProps()}>
                   {row.cells.map(cell => (
                     <td className="pl-2 py-2" {...cell.getCellProps()}>
                       <div className="w-max">{cell.render('Cell')}</div>
@@ -105,7 +107,7 @@ const Table = ({ COLUMNS, dummy, allowRowsSelect = false }) => {
           total={dummy.length}
         />
       </div>
-    </div>
+    </>
   );
 };
 

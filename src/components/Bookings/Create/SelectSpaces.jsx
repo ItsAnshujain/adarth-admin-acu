@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, Button } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import Filter from '../../Filter';
 import Search from '../../Search';
@@ -15,9 +15,7 @@ const SelectSpace = ({ data, column }) => {
     <>
       <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
         <div className="flex justify-between items-center">
-          <Text size="lg" weight="bold">
-            Select Place for Proposal
-          </Text>
+          <p className="text-lg font-bold">Select Place for Order</p>
           <div>
             <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
@@ -27,19 +25,19 @@ const SelectSpace = ({ data, column }) => {
         </div>
         <div className="flex gap-4">
           <div>
-            <Text color="gray">Selected Places</Text>
-            <Text weight="bold">12</Text>
+            <p className="text-slate-400">Selected Places</p>
+            <p className="font-bold">12</p>
           </div>
           <div>
-            <Text color="gray">Total Price</Text>
-            <Text weight="bold">{toIndianCurrency(20000)}</Text>
+            <p className="text-slate-400">Total Price</p>
+            <p className="font-bold">{toIndianCurrency(20000)}</p>
           </div>
         </div>
         <div className="flex justify-between mb-4 items-center">
-          <Text size="sm" className="text-purple-450">
+          <p className="text-purple-450 text-sm">
             Total Places{' '}
             <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">12</span>
-          </Text>
+          </p>
 
           <Search search={search} setSearch={setSearch} />
         </div>
