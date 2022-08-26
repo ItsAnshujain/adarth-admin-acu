@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Landlords from './pages/Landlords';
 import Header from './Loader/Header';
 import Loader from './Loader';
+import CustomLoader from './Loader/Loader';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -44,7 +45,7 @@ const App = () => (
       <Route
         path="/inventory"
         element={
-          <Suspense fallback={<Header />}>
+          <Suspense fallback="Loading ...">
             <Inventory />
           </Suspense>
         }
@@ -52,7 +53,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback={<Loader />}>
+            <Suspense fallback="Loading ...">
               <InventoryHome />
             </Suspense>
           }
@@ -60,7 +61,7 @@ const App = () => (
         <Route
           path="create-space"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CreateSpace />
             </Suspense>
           }
@@ -68,7 +69,7 @@ const App = () => (
         <Route
           path="edit-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CreateSpace />
             </Suspense>
           }
@@ -76,7 +77,7 @@ const App = () => (
         <Route
           path="view-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <SpaceDetails />
             </Suspense>
           }
@@ -85,7 +86,7 @@ const App = () => (
       <Route
         path="/campaigns"
         element={
-          <Suspense fallback={<Header />}>
+          <Suspense fallback="Loading ...">
             <Campaigns />
           </Suspense>
         }
@@ -93,7 +94,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback={<Loader />}>
+            <Suspense fallback="Loading ...">
               <CampaignHome />
             </Suspense>
           }
@@ -101,7 +102,7 @@ const App = () => (
         <Route
           path="create-campaign"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CampaignCreate />
             </Suspense>
           }
@@ -109,7 +110,7 @@ const App = () => (
         <Route
           path="edit-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CampaignCreate />
             </Suspense>
           }
@@ -117,7 +118,7 @@ const App = () => (
         <Route
           path="view-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CampaignView />
             </Suspense>
           }
@@ -126,7 +127,7 @@ const App = () => (
       <Route
         path="/proposals"
         element={
-          <Suspense fallback={<Header />}>
+          <Suspense fallback="Loading ...">
             <Proposals />
           </Suspense>
         }
@@ -134,7 +135,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback={<Loader />}>
+            <Suspense fallback="Loading ...">
               <ProposalsHome />
             </Suspense>
           }
@@ -142,7 +143,7 @@ const App = () => (
         <Route
           path="create-proposals"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CreateProposals />
             </Suspense>
           }
@@ -150,7 +151,7 @@ const App = () => (
         <Route
           path="edit-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CreateProposals />
             </Suspense>
           }
@@ -158,7 +159,7 @@ const App = () => (
         <Route
           path="view-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <ViewProposal />
             </Suspense>
           }
@@ -167,7 +168,7 @@ const App = () => (
       <Route
         path="/bookings"
         element={
-          <Suspense fallback={<Header />}>
+          <Suspense fallback="Loading ...">
             <Booking />
           </Suspense>
         }
@@ -175,7 +176,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback={<Loader />}>
+            <Suspense fallback="Loading ...">
               <BookingHome />
             </Suspense>
           }
@@ -183,7 +184,7 @@ const App = () => (
         <Route
           path="view-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <ViewBooking />
             </Suspense>
           }
@@ -191,7 +192,7 @@ const App = () => (
         <Route
           path="generate-purchase-order/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <Generate />
             </Suspense>
           }
@@ -199,7 +200,7 @@ const App = () => (
         <Route
           path="generate-release-order/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <Generate />
             </Suspense>
           }
@@ -207,7 +208,7 @@ const App = () => (
         <Route
           path="generate-invoice/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <Generate />
             </Suspense>
           }
@@ -215,7 +216,7 @@ const App = () => (
         <Route
           path="create-order"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CreateOrder />
             </Suspense>
           }
@@ -240,7 +241,7 @@ const App = () => (
         <Route
           path="users/create-user"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CreateUser />
             </Suspense>
           }
@@ -248,7 +249,7 @@ const App = () => (
         <Route
           path="users/view-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <ViewUser />
             </Suspense>
           }
@@ -273,7 +274,7 @@ const App = () => (
         <Route
           path="revenue"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <ReportRevenue />
             </Suspense>
           }
@@ -281,7 +282,7 @@ const App = () => (
         <Route
           path="campaign"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <ReportCampaign />
             </Suspense>
           }
