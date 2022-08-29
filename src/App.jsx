@@ -38,6 +38,10 @@ const ReportInventory = lazy(() => import('./pages/Report/Inventory'));
 const ReportRevenue = lazy(() => import('./pages/Report/Revenue'));
 const ReportCampaign = lazy(() => import('./pages/Report/Campaign'));
 
+const MasterHome = lazy(() => import('./pages/Master/Master'));
+const MasterBrand = lazy(() => import('./pages/Master/Brands'));
+const MasterCategory = lazy(() => import('./pages/Master/Category'));
+
 const App = () => (
   <Router>
     <Routes>
@@ -331,6 +335,40 @@ const App = () => (
           }
         />
       </Route>
+
+      <Route
+        path="/masters"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <MasterHome />
+          </Suspense>
+        }
+      >
+        <Route
+          path="category"
+          element={
+            <Suspense fallback={<Loader />}>
+              <MasterCategory />
+            </Suspense>
+          }
+        />
+        <Route
+          path="brand"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <MasterBrand />
+            </Suspense>
+          }
+        />
+      </Route>
+
       <Route path="/landlords" element={<Landlords />} />
     </Routes>
   </Router>
