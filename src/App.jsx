@@ -188,7 +188,7 @@ const App = () => (
         />
       </Route>
       <Route
-        path="/"
+        path="/bookings"
         element={
           <Suspense
             fallback={
@@ -203,7 +203,7 @@ const App = () => (
         }
       >
         <Route
-          path="bookings"
+          path=""
           element={
             <Suspense fallback={<Loader />}>
               <BookingHome />
