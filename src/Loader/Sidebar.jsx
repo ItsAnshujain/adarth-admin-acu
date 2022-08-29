@@ -4,7 +4,7 @@ const sidebarText = new Array(10).fill(false);
 const height = 24;
 
 const Sidebar = () => (
-  <div className="hidden lg:block lg:col-span-2 mt-4 border border-r border-slate-400 w-[16.66%] h-full">
+  <div className="hidden lg:block lg:col-span-2 pt-4  border-r border-slate-300 w-[16.66%] h-screen">
     <div className="flex flex-col items-start gap-4">
       {sidebarText.map(_ => (
         <div className="ml-4 flex w-full">
