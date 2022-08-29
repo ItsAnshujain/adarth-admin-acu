@@ -5,6 +5,7 @@ import Landlords from './pages/Landlords';
 import Header from './Loader/Header';
 import Loader from './Loader';
 import CustomLoader from './Loader/Loader';
+import Sidebar from './Loader/Sidebar';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -45,7 +46,14 @@ const App = () => (
       <Route
         path="/inventory"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
             <Inventory />
           </Suspense>
         }
@@ -53,7 +61,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <InventoryHome />
             </Suspense>
           }
@@ -86,7 +94,14 @@ const App = () => (
       <Route
         path="/campaigns"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
             <Campaigns />
           </Suspense>
         }
@@ -94,7 +109,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <CampaignHome />
             </Suspense>
           }
@@ -127,7 +142,14 @@ const App = () => (
       <Route
         path="/proposals"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
             <Proposals />
           </Suspense>
         }
@@ -135,7 +157,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <ProposalsHome />
             </Suspense>
           }
@@ -166,17 +188,24 @@ const App = () => (
         />
       </Route>
       <Route
-        path="/bookings"
+        path="/"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
             <Booking />
           </Suspense>
         }
       >
         <Route
-          path=""
+          path="bookings"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <BookingHome />
             </Suspense>
           }
@@ -225,7 +254,14 @@ const App = () => (
       <Route
         path="/"
         element={
-          <Suspense fallback={<Header />}>
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
             <User />
           </Suspense>
         }
@@ -258,7 +294,14 @@ const App = () => (
       <Route
         path="/reports"
         element={
-          <Suspense fallback={<Header />}>
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
             <ReportHome />
           </Suspense>
         }

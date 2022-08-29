@@ -39,8 +39,8 @@ const Table = ({ COLUMNS, dummy, allowRowsSelect = false }) => {
 
   return (
     <>
-      <div className="mr-7 max-w-screen overflow-x-scroll">
-        <table className="w-screen overflow-y-visible relative z-10" {...getTableProps()}>
+      <div className="mr-7 max-w-screen overflow-x-auto">
+        <table className="w-full overflow-y-visible relative z-10" {...getTableProps()}>
           <thead className="bg-gray-100">
             {headerGroups.map(headerGroup => (
               <tr {...headerGroup.getHeaderGroupProps()}>
@@ -80,7 +80,7 @@ const Table = ({ COLUMNS, dummy, allowRowsSelect = false }) => {
             {page.map(row => {
               prepareRow(row);
               return (
-                <tr className="text-left border border-l-0 overflow-visible" {...row.getRowProps()}>
+                <tr className="text-left border border-l-0 overflow-auto" {...row.getRowProps()}>
                   {row.cells.map(cell => (
                     <td className="pl-2 py-2" {...cell.getCellProps()}>
                       <div className="w-max">{cell.render('Cell')}</div>
