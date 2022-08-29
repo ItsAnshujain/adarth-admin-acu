@@ -44,7 +44,6 @@ const COLUMNS = [
           original: { type },
         },
       } = tableProps;
-      console.log(type);
       return (
         <div
           className={classNames(`w-fit ${type === 'Featured' ? 'text-purple-450' : 'text-black'}`)}
