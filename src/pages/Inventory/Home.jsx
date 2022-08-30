@@ -7,6 +7,7 @@ import GridView from '../../components/GridView';
 import COLUMNS from '../../components/Inventory/column';
 import dummy from '../../Dummydata/Inventory.json';
 import Card from '../../components/Inventory/Card';
+import MapView from '../../components/Inventory/MapView';
 
 const Inventory = () => {
   const [search, setSearch] = useState('');
@@ -31,7 +32,9 @@ const Inventory = () => {
       ) : view === 'list' ? (
         <Table COLUMNS={COLUMNS} dummy={dummy} count={count} allowRowsSelect />
       ) : (
-        <div className="w-screen lg:w-[calc(100vw-230px)]">MAP</div>
+        <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+          <MapView />
+        </div>
       )}
     </div>
   );
