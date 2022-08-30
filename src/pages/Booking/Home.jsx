@@ -34,7 +34,7 @@ const config = {
 const Proposals = () => {
   const setColor = useSideBarState(state => state.setColor);
   const [search, setSearch] = useState('');
-  const [count, setCount] = useState(20);
+  const [count, setCount] = useState('20');
 
   useEffect(() => {
     setColor(1);

@@ -25,7 +25,7 @@ const PreviewCampaign = () => {
   const [activePage, setPage] = useState(1);
 
   return (
-    <>
+    <div className="relative pb-10">
       <Preview />
       <div className="pl-5 pr-7 flex flex-col">
         <Text size="lg" weight="bold">
@@ -57,7 +57,7 @@ const PreviewCampaign = () => {
         total={1}
         color="dark"
       />
-    </>
+    </div>
   );
 };
 

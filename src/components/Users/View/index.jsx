@@ -26,7 +26,7 @@ const Header = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [search, setSearch] = useState('');
-  const [count, setCount] = useState(20);
+  const [count, setCount] = useState('20');
 
   const navigate = useNavigate();
   const { pathname } = useLocation();

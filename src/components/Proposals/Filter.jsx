@@ -17,6 +17,7 @@ const styles = {
 const sliderStyle = {
   label: {
     '&::after': { content: '"k"' },
+    backgroundColor: '#4B0DAF',
   },
   markLabel: {
     display: 'none',
