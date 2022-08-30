@@ -9,7 +9,8 @@ import Sidebar from './Loader/Sidebar';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
-const CreateSpace = lazy(() => import('./pages/Inventory/Create'));
+const CreateSpaceSingle = lazy(() => import('./pages/Inventory/Create'));
+const CreateSpaceBulk = lazy(() => import('./pages/Inventory/CreateBulk'));
 const SpaceDetails = lazy(() => import('./pages/Inventory/View'));
 
 const CampaignHome = lazy(() => import('./pages/Campaign/Home'));
@@ -71,10 +72,18 @@ const App = () => (
           }
         />
         <Route
-          path="create-space"
+          path="create-space/single"
           element={
             <Suspense fallback={<CustomLoader />}>
-              <CreateSpace />
+              <CreateSpaceSingle />
+            </Suspense>
+          }
+        />
+        <Route
+          path="create-space/bulk"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <CreateSpaceBulk />
             </Suspense>
           }
         />
@@ -82,7 +91,7 @@ const App = () => (
           path="edit-details/:id"
           element={
             <Suspense fallback={<CustomLoader />}>
-              <CreateSpace />
+              <CreateSpaceSingle />
             </Suspense>
           }
         />

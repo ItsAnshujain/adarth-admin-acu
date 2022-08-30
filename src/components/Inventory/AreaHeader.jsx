@@ -145,10 +145,12 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
             </button>
             {addDetailsClicked && (
               <div className="absolute text-sm z-20 bg-white shadow-lg p-4 right-7 w-36">
-                <Link to="create-space">
+                <Link to="create-space/single">
                   <div className="mb-2 cursor-pointer">Single Entry</div>
                 </Link>
-                <div className="cursor-pointer">Bulk/CSV Upload</div>
+                <Link to="create-space/bulk">
+                  <div className="cursor-pointer">Bulk/CSV Upload</div>
+                </Link>
               </div>
             )}
           </div>
