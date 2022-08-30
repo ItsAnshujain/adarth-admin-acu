@@ -95,7 +95,16 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
                     navigate(`/${sidebarText.toLowerCase()}/revenue`);
                   } else if (index === 2 && sidebarText === 'Reports') {
                     navigate(`/${sidebarText.toLowerCase()}/inventory`);
+                  } else if (index === 0 && sidebarText === 'Masters') {
+                    navigate(`/${sidebarText.toLowerCase()}/category`);
+                  } else if (index === 1 && sidebarText === 'Masters') {
+                    navigate(`/${sidebarText.toLowerCase()}/brand`);
                   }
+                  // } else if (index === 2 && sidebarText === 'Masters') {
+                  //   navigate(`/${sidebarText.toLowerCase()}/industry`);
+                  // } else if (index === 3 && sidebarText === 'Masters') {
+                  //   navigate(`/${sidebarText.toLowerCase()}/illumination`);
+                  // }
                   // Used in smaller screens only
                   if (setOpened) setOpened(false);
                 }}

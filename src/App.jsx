@@ -9,7 +9,8 @@ import Sidebar from './Loader/Sidebar';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
-const CreateSpace = lazy(() => import('./pages/Inventory/Create'));
+const CreateSpaceSingle = lazy(() => import('./pages/Inventory/Create'));
+const CreateSpaceBulk = lazy(() => import('./pages/Inventory/CreateBulk'));
 const SpaceDetails = lazy(() => import('./pages/Inventory/View'));
 
 const CampaignHome = lazy(() => import('./pages/Campaign/Home'));
@@ -37,6 +38,10 @@ const ReportHome = lazy(() => import('./pages/Report/Report'));
 const ReportInventory = lazy(() => import('./pages/Report/Inventory'));
 const ReportRevenue = lazy(() => import('./pages/Report/Revenue'));
 const ReportCampaign = lazy(() => import('./pages/Report/Campaign'));
+
+const MasterHome = lazy(() => import('./pages/Master/Master'));
+const MasterBrand = lazy(() => import('./pages/Master/Brands'));
+const MasterCategory = lazy(() => import('./pages/Master/Category'));
 
 const App = () => (
   <Router>
@@ -67,10 +72,18 @@ const App = () => (
           }
         />
         <Route
-          path="create-space"
+          path="create-space/single"
           element={
             <Suspense fallback={<CustomLoader />}>
-              <CreateSpace />
+              <CreateSpaceSingle />
+            </Suspense>
+          }
+        />
+        <Route
+          path="create-space/bulk"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <CreateSpaceBulk />
             </Suspense>
           }
         />
@@ -78,7 +91,7 @@ const App = () => (
           path="edit-details/:id"
           element={
             <Suspense fallback={<CustomLoader />}>
-              <CreateSpace />
+              <CreateSpaceSingle />
             </Suspense>
           }
         />
@@ -339,6 +352,40 @@ const App = () => (
           }
         />
       </Route>
+
+      <Route
+        path="/masters"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <MasterHome />
+          </Suspense>
+        }
+      >
+        <Route
+          path="category"
+          element={
+            <Suspense fallback={<Loader />}>
+              <MasterCategory />
+            </Suspense>
+          }
+        />
+        <Route
+          path="brand"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <MasterBrand />
+            </Suspense>
+          }
+        />
+      </Route>
+
       <Route path="/landlords" element={<Landlords />} />
     </Routes>
   </Router>
