@@ -30,9 +30,9 @@ const BasicInfo = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-6 mt-4 mb-12">
-        <TextInput styles={styles} label="Name" required />
-        <TextInput styles={styles} label="Organization" required />
-        <TextInput styles={styles} label="Phone Number" required />
+        <TextInput placeholder="Write" styles={styles} label="Name" required />
+        <TextInput placeholder="Write" styles={styles} label="Organization" required />
+        <TextInput placeholder="Write" styles={styles} label="Phone Number" required />
         <Select
           styles={styles}
           value={state}
@@ -40,8 +40,15 @@ const BasicInfo = () => {
           data={['Admin', 'Super User']}
           label="State"
           required
+          placeholder="Select"
         />
-        <TextInput className="col-span-2" styles={styles} label="Address" required />
+        <TextInput
+          placeholder="Write"
+          className="col-span-2"
+          styles={styles}
+          label="Address"
+          required
+        />
         <Select
           styles={styles}
           value={city}
@@ -49,11 +56,18 @@ const BasicInfo = () => {
           data={['Admin', 'Super User']}
           label="State"
           required
+          placeholder="Select"
         />
-        <TextInput styles={styles} label="Pin" required />
-        <TextInput styles={styles} label="Aadhar Number" required />
-        <TextInput styles={styles} label="Pan Number" required />
-        <TextInput className="col-span-2" styles={styles} label="About" required />
+        <TextInput placeholder="Write" styles={styles} label="Pin" required />
+        <TextInput placeholder="Write" styles={styles} label="Aadhar Number" required />
+        <TextInput placeholder="Write" styles={styles} label="Pan Number" required />
+        <TextInput
+          placeholder="Write"
+          className="col-span-2"
+          styles={styles}
+          label="About"
+          required
+        />
         <Select
           styles={styles}
           value={peer}
@@ -61,6 +75,7 @@ const BasicInfo = () => {
           data={['Admin', 'Super User']}
           label="Select Peer"
           required
+          placeholder="Select"
         />
       </div>
     </div>

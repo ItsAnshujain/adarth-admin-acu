@@ -1,8 +1,7 @@
-/* eslint-disable */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Eye, Edit2, Trash } from 'react-feather';
-import { NativeSelect } from '@mantine/core';
+import { NativeSelect, Menu } from '@mantine/core';
 import MenuIcon from '../../Menu';
 
 const COLUMNS = [
@@ -31,7 +30,8 @@ const COLUMNS = [
       } = tableProps;
 
       return (
-        <div
+        <button
+          type="button"
           onClick={() => navigate(`view-details/${id}`)}
           className="flex items-center gap-2 cursor-pointer"
         >
@@ -39,7 +39,7 @@ const COLUMNS = [
             <img className="h-6 w-6 mx-auto" src={photo} alt="banner" />
           </div>
           <p className="flex-1">{campaign_name}</p>
-        </div>
+        </button>
       );
     },
   },
@@ -211,33 +211,39 @@ const COLUMNS = [
     disableSortBy: true,
     Cell: tableProps => {
       const navigate = useNavigate();
-      const { id } = tableProps.row.original;
+      const {
+        row: {
+          original: { id },
+        },
+      } = tableProps;
       return (
         <Menu shadow="md" width={150}>
           <Menu.Target>
-            <button>
+            <button type="button">
               <MenuIcon />
             </button>
           </Menu.Target>
 
           <Menu.Dropdown>
             <Menu.Item>
-              <div
+              <button
+                type="button"
                 onClick={() => navigate(`/bookings/view-details/${id}`)}
                 className="cursor-pointer flex items-center gap-1"
               >
                 <Eye className="h-4" />
                 <span className="ml-1">View Details</span>
-              </div>
+              </button>
             </Menu.Item>
             <Menu.Item>
-              <div
+              <button
+                type="button"
                 onClick={() => navigate(`edit-details/${id}`)}
                 className="cursor-pointer flex items-center gap-1"
               >
                 <Edit2 className="h-4" />
                 <span className="ml-1">Edit</span>
-              </div>
+              </button>
             </Menu.Item>
             <Menu.Item>
               <div className="cursor-pointer flex items-center gap-1">

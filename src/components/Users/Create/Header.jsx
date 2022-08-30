@@ -54,7 +54,7 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
         <Button
           onClick={() => {
             if (formStep === 1) {
-              navigate('/inventory');
+              navigate(-1);
             } else {
               setFormStep(formStep - 1);
             }
