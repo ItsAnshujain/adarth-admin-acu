@@ -64,7 +64,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           name="landlord"
           className="mb-7"
           label="Landlord"
-          placeholder="Select one"
+          placeholder="Select"
           data={[
             { value: 'react', label: 'React' },
             { value: 'ng', label: 'Angular' },
@@ -78,8 +78,8 @@ const BasicInfo = ({ formData, setFormData }) => {
           onChange={handleChange}
           name="inventoryowner"
           className="mb-7"
-          label="Category"
-          placeholder="Select one"
+          label="Inventory Owner"
+          placeholder="Select"
           data={[
             { value: 'react', label: 'React' },
             { value: 'ng', label: 'Angular' },
@@ -94,7 +94,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           name="spacetype"
           className="mb-7"
           label="Space Type"
-          placeholder="Select one"
+          placeholder="Select"
           data={[
             { value: 'react', label: 'React' },
             { value: 'ng', label: 'Angular' },
@@ -109,7 +109,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           name="subcategory"
           className="mb-7"
           label="Sub Category"
-          placeholder="Select one"
+          placeholder="Select"
           data={[
             { value: 'react', label: 'React' },
             { value: 'ng', label: 'Angular' },
@@ -124,7 +124,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           name="mediatype"
           className="mb-7"
           label="Media Type"
-          placeholder="Select one"
+          placeholder="Select"
           data={[
             { value: 'react', label: 'React' },
             { value: 'ng', label: 'Angular' },
@@ -139,7 +139,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           name="supportedmedia"
           className="mb-7"
           label="Supported Media"
-          placeholder="Select one"
+          placeholder="Select"
           data={[
             { value: 'react', label: 'React' },
             { value: 'ng', label: 'Angular' },

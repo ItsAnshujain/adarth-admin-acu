@@ -252,7 +252,7 @@ const App = () => (
         />
       </Route>
       <Route
-        path="/"
+        path="users"
         element={
           <Suspense
             fallback={
@@ -267,7 +267,7 @@ const App = () => (
         }
       >
         <Route
-          path="users"
+          path=""
           element={
             <Suspense fallback={<Loader />}>
               <UserHome />
@@ -275,7 +275,7 @@ const App = () => (
           }
         />
         <Route
-          path="users/create-user"
+          path="create-user"
           element={
             <Suspense fallback={<CustomLoader />}>
               <CreateUser />
@@ -283,7 +283,15 @@ const App = () => (
           }
         />
         <Route
-          path="users/view-details/:id"
+          path="edit-details/:id"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <CreateUser />
+            </Suspense>
+          }
+        />
+        <Route
+          path="view-details/:id"
           element={
             <Suspense fallback={<CustomLoader />}>
               <ViewUser />

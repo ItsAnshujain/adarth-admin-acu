@@ -11,7 +11,17 @@ const inititalFilterData = {
     'Iteration In Progress': false,
   },
 };
-const styles = { title: { fontWeight: 'bold' } };
+const styles = {
+  title: { fontWeight: 'bold' },
+};
+const sliderStyle = {
+  label: {
+    '&::after': { content: '"k"' },
+  },
+  markLabel: {
+    display: 'none',
+  },
+};
 
 const Filter = ({ isOpened, setShowFilter }) => {
   const [filterData, setFilterData] = useState(inititalFilterData);
@@ -98,6 +108,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                   }}
                   min={100}
                   max={1000}
+                  styles={sliderStyle}
                   value={[minPrice, maxPrice]}
                   defaultValue={[200, 1000]}
                   marks={marks}
