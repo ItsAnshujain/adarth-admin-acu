@@ -44,6 +44,7 @@ const MasterBrand = lazy(() => import('./pages/Master/Brands'));
 const MasterCategory = lazy(() => import('./pages/Master/Category'));
 
 const Notifications = lazy(() => import('./pages/Notification'));
+const Settings = lazy(() => import('./pages/Setting/Home'));
 
 const App = () => (
   <Router>
@@ -400,6 +401,22 @@ const App = () => (
             }
           >
             <Notifications />
+          </Suspense>
+        }
+      />
+
+      <Route
+        path="/setting"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <Settings />
           </Suspense>
         }
       />
