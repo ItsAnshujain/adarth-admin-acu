@@ -63,7 +63,7 @@ const BasicInfo = ({ formData, setFormData }) => {
           onChange={handleChange}
           name="landlord"
           className="mb-7"
-          label="Landlord"
+          label="Landlord Name"
           placeholder="Select"
           data={[
             { value: 'react', label: 'React' },
@@ -74,11 +74,11 @@ const BasicInfo = ({ formData, setFormData }) => {
         />
         <Select
           styles={labelStyle}
-          value={formData.inventoryowner}
+          value={formData.mediaowner}
           onChange={handleChange}
-          name="inventoryowner"
+          name="mediaowner"
           className="mb-7"
-          label="Inventory Owner"
+          label="Media Owner Name"
           placeholder="Select"
           data={[
             { value: 'react', label: 'React' },
@@ -89,11 +89,11 @@ const BasicInfo = ({ formData, setFormData }) => {
         />
         <Select
           styles={labelStyle}
-          value={formData.spacetype}
+          value={formData.category}
           onChange={handleChange}
-          name="spacetype"
+          name="category"
           className="mb-7"
-          label="Space Type"
+          label="Category"
           placeholder="Select"
           data={[
             { value: 'react', label: 'React' },
@@ -102,6 +102,7 @@ const BasicInfo = ({ formData, setFormData }) => {
             { value: 'vue', label: 'Vue' },
           ]}
         />
+
         <Select
           styles={labelStyle}
           value={formData.subcategory}
@@ -146,6 +147,15 @@ const BasicInfo = ({ formData, setFormData }) => {
             { value: 'svelte', label: 'Svelte' },
             { value: 'vue', label: 'Vue' },
           ]}
+        />
+        <TextInput
+          styles={labelStyle}
+          name="price"
+          value={formData.resolution}
+          onChange={handleChange}
+          placeholder="Write"
+          className="mb-7"
+          label="Resolution"
         />
         <TextInput
           styles={labelStyle}
