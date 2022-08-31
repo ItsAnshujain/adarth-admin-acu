@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Eye, Edit2, Trash } from 'react-feather';
+import { ChevronDown, Eye, Download, Trash } from 'react-feather';
 import { NativeSelect, Menu } from '@mantine/core';
 import MenuIcon from '../../Menu';
 
@@ -238,11 +238,11 @@ const COLUMNS = [
             <Menu.Item>
               <button
                 type="button"
-                onClick={() => navigate(`edit-details/${id}`)}
+                onClick={() => {}}
                 className="cursor-pointer flex items-center gap-1"
               >
-                <Edit2 className="h-4" />
-                <span className="ml-1">Edit</span>
+                <Download className="h-4" />
+                <span className="ml-1">Download</span>
               </button>
             </Menu.Item>
             <Menu.Item>

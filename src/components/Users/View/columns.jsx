@@ -66,7 +66,7 @@ const COLUMNS = [
             <Menu.Item>
               <button
                 type="button"
-                onClick={() => navigate(`edit-details/${id}`)}
+                onClick={() => navigate(`/proposals/edit-details/${id}`)}
                 className="cursor-pointer flex items-center gap-1"
               >
                 <Edit2 className="h-4" />
