@@ -99,7 +99,7 @@ const Header = () => {
                 <p className="font-semibold">43455513</p>
               </div>
               <div>
-                <p className="text-slate-400">Pin</p>
+                <p className="text-slate-400">Pan</p>
                 <p className="font-semibold">ABCD1234561</p>
               </div>
               <div>

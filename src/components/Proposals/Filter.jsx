@@ -23,6 +23,14 @@ const sliderStyle = {
     display: 'none',
   },
 };
+const totalPlacesSlider = {
+  label: {
+    backgroundColor: '#4B0DAF',
+  },
+  markLabel: {
+    display: 'none',
+  },
+};
 
 const Filter = ({ isOpened, setShowFilter }) => {
   const [filterData, setFilterData] = useState(inititalFilterData);
@@ -150,6 +158,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                   }}
                   min={100}
                   max={1000}
+                  styles={totalPlacesSlider}
                   value={[minPlace, maxPlace]}
                   defaultValue={[200, 1000]}
                   marks={marks}
