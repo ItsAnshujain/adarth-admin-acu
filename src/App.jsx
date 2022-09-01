@@ -43,6 +43,8 @@ const MasterHome = lazy(() => import('./pages/Master/Master'));
 const MasterBrand = lazy(() => import('./pages/Master/Brands'));
 const MasterCategory = lazy(() => import('./pages/Master/Category'));
 
+const Notifications = lazy(() => import('./pages/Notification'));
+
 const App = () => (
   <Router>
     <Routes>
@@ -385,6 +387,22 @@ const App = () => (
           }
         />
       </Route>
+
+      <Route
+        path="/notification"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <Notifications />
+          </Suspense>
+        }
+      />
 
       <Route path="/landlords" element={<Landlords />} />
     </Routes>

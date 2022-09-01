@@ -1,6 +1,7 @@
 import { Button } from '@mantine/core';
 import { useState } from 'react';
 import { Menu } from 'react-feather';
+import { Link } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 import DrawerSidebar from './DrawerSidebar';
 
@@ -16,12 +17,14 @@ const Header = ({ title }) => {
         </div>
         <div className="flex justify-between items-center col-span-10 border-l border-gray-450">
           <div className="pl-5">
-            <p className="text-2xl font-bold">{title}</p>
+            <p className="text-2xl font-bold tracking-wide">{title}</p>
           </div>
           <div className="flex items-center mr-7">
-            <Button variant="subtle" color="gray" className="font-medium">
-              Notifications
-            </Button>
+            <Link to="/notification">
+              <Button variant="subtle" color="gray" className="font-medium">
+                Notifications
+              </Button>
+            </Link>
             <Button variant="subtle" color="gray" className="font-medium">
               Settings
             </Button>
