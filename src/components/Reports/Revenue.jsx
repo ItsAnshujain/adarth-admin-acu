@@ -214,7 +214,7 @@ const Revenue = () => {
           </div>
           <div className="my-10">
             <div className="flex justify-between">
-              <p className="font-bold">Industry wise revenue graph</p>
+              <p className="font-bold">City Or State</p>
               <div className="flex justify-around">
                 <div ref={dateCityRef} className="mr-2 relative">
                   <Button

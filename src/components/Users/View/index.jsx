@@ -26,7 +26,7 @@ const Header = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [search, setSearch] = useState('');
-  const [count, setCount] = useState(20);
+  const [count, setCount] = useState('20');
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -99,7 +99,7 @@ const Header = () => {
                 <p className="font-semibold">43455513</p>
               </div>
               <div>
-                <p className="text-slate-400">Pin</p>
+                <p className="text-slate-400">Pan</p>
                 <p className="font-semibold">ABCD1234561</p>
               </div>
               <div>

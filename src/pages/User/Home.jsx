@@ -26,7 +26,7 @@ const paginationStyles = {
 
 const Inventory = () => {
   const [search, setSearch] = useState('');
-  const [_, setCount] = useState(20);
+  const [count, setCount] = useState('20');
   const [activePage, setPage] = useState(1);
 
   const setColor = useSideBarState(state => state.setColor);
@@ -38,18 +38,20 @@ const Inventory = () => {
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <AreaHeader text="Team" />
       <div className="flex justify-between h-20 items-center pr-7">
-        <RowsPerPage setCount={setCount} />
+        <RowsPerPage setCount={setCount} count={count} />
         <Search search={search} setSearch={setSearch} />
       </div>
-      <div className="flex  flex-wrap pr-7 pl-5 relative mb-10">
-        {CardData.map((data, index) => (
-          <Link to={`view-details/${index}`}>
-            <Card {...data} />
-          </Link>
-        ))}
+      <div className="relative pb-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 md:gap-3 pr-7 pl-5 relative mb-20">
+          {CardData.map((data, index) => (
+            <Link to={`view-details/${index}`}>
+              <Card {...data} />
+            </Link>
+          ))}
+        </div>
         <Pagination
           styles={paginationStyles}
-          className="absolute bottom-0 right-10 text-sm"
+          className="absolute bottom-0 right-10 text-sm mb-10"
           page={activePage}
           onChange={setPage}
           total={2}

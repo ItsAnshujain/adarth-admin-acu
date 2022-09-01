@@ -47,6 +47,7 @@ const styles = { title: { fontWeight: 'bold' } };
 const sliderStyle = {
   label: {
     '&::after': { content: '"k"' },
+    backgroundColor: '#4B0DAF',
   },
   markLabel: {
     display: 'none',

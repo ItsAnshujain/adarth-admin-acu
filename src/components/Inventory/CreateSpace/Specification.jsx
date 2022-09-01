@@ -83,7 +83,7 @@ const Specification = ({ formData, setFormData }) => {
             name="illumination"
             className="mb-7"
             label="Illumination"
-            placeholder="Select one"
+            placeholder="Select"
             data={[
               { value: 'react', label: 'React' },
               { value: 'ng', label: 'Angular' },
@@ -118,7 +118,7 @@ const Specification = ({ formData, setFormData }) => {
             name="unit"
             className="mb-7"
             label="Unit"
-            placeholder="Select one"
+            placeholder="Select"
             data={[
               { value: 'react', label: 'React' },
               { value: 'ng', label: 'Angular' },
@@ -134,7 +134,7 @@ const Specification = ({ formData, setFormData }) => {
               name="width"
               className="mb-7"
               label="Width"
-              placeholder="Select one"
+              placeholder="Select"
               data={[
                 { value: 'react', label: 'React' },
                 { value: 'ng', label: 'Angular' },
@@ -149,7 +149,7 @@ const Specification = ({ formData, setFormData }) => {
               name="height"
               className="mb-7"
               label="Height"
-              placeholder="Select one"
+              placeholder="Select"
               data={[
                 { value: 'react', label: 'React' },
                 { value: 'ng', label: 'Angular' },

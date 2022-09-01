@@ -15,7 +15,7 @@ import dummy from '../../../Dummydata/CREATE_PROPOSAL_DATA.json';
 
 const ProposalDetails = () => {
   const [search, setSearch] = useState('');
-  const [count, setCount] = useState(20);
+  const [count, setCount] = useState('20');
   const [showShare, setShowShare] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -52,7 +52,7 @@ const ProposalDetails = () => {
       </div>
 
       <div className="flex justify-between h-20 items-center">
-        <RowsPerPage setCount={setCount} />
+        <RowsPerPage setCount={setCount} count={count} />
         <Search search={search} setSearch={setSearch} />
       </div>
       <div>

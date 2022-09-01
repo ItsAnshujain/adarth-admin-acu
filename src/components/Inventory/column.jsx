@@ -37,7 +37,7 @@ const COLUMNS = [
     },
   },
   {
-    Header: 'LANDLORD NAME',
+    Header: 'MEDIA OWNER NAME',
     accessor: 'landlord_name',
     Cell: tableProps => <div className="w-fit">{tableProps.row.original['landlord_name']}</div>,
   },
@@ -88,7 +88,7 @@ const COLUMNS = [
           <Menu.Dropdown>
             <Menu.Item>
               <div
-                onClick={() => navigate(`view-details/${id}`)}
+                onClick={() => navigate(`/inventory/view-details/${id}`)}
                 className="cursor-pointer flex items-center gap-1"
               >
                 <Eye className="h-4" />
@@ -97,7 +97,7 @@ const COLUMNS = [
             </Menu.Item>
             <Menu.Item>
               <div
-                onClick={() => navigate(`edit-details/${id}`)}
+                onClick={() => navigate(`/inventory/edit-details/${id}`)}
                 className="cursor-pointer flex items-center gap-1"
               >
                 <Edit2 className="h-4" />

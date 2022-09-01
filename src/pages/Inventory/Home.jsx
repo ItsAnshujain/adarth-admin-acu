@@ -11,7 +11,7 @@ import MapView from '../../components/Inventory/MapView';
 
 const Inventory = () => {
   const [search, setSearch] = useState('');
-  const [count, setCount] = useState(20);
+  const [count, setCount] = useState('20');
   const [view, setView] = useState('list');
   const [selectAll, setSelectAll] = useState(false);
 
@@ -24,7 +24,7 @@ const Inventory = () => {
         setView={setView}
       />
       <div className="flex justify-between h-20 items-center pr-7">
-        <RowsPerPage setCount={setCount} />
+        <RowsPerPage setCount={setCount} count={count} />
         <Search search={search} setSearch={setSearch} />
       </div>
       {view === 'grid' ? (

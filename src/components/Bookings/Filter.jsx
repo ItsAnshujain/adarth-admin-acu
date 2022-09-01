@@ -3,6 +3,15 @@ import { ChevronDown } from 'react-feather';
 import { Drawer, RangeSlider, TextInput } from '@mantine/core';
 
 // TODO: Campaign Incharge in filter
+const sliderStyle = {
+  label: {
+    '&::after': { content: '"k"' },
+    backgroundColor: '#4B0DAF',
+  },
+  markLabel: {
+    display: 'none',
+  },
+};
 
 const inititalFilterData = {
   'Booking Type': { 'Online': false, 'Offline': false },
@@ -71,6 +80,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                   onChange={val => {
                     setMinPrice(val[0], setMaxPrice(val[1]));
                   }}
+                  styles={sliderStyle}
                   min={100}
                   max={1000}
                   value={[minPrice, maxPrice]}

@@ -118,7 +118,7 @@ const Campaign = () => {
         <div className="flex gap-4">
           <div className="w-2/3">
             <div className="flex justify-between">
-              <p>Campaign Report</p>
+              <p className="font-bold tracking-wide">Campaign Report</p>
               <div className="flex justify-around">
                 <div className="mr-2 relative">
                   <Button onClick={openDatePicker} variant="default" type="button">

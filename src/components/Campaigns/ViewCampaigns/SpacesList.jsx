@@ -10,7 +10,7 @@ import Table from '../../Table/Table';
 const SpacesList = ({ data, columns }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [search, setSearch] = useState('');
-  const [count, setCount] = useState(20);
+  const [count, setCount] = useState('20');
   const openDatePicker = () => {
     setShowDatePicker(!showDatePicker);
   };

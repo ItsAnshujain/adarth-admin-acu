@@ -88,7 +88,7 @@ const Inventory = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [search, setSearch] = useState('');
-  const [count, setCount] = useState(20);
+  const [count, setCount] = useState('20');
   const [view, setView] = useState('list');
   const [selectAll, setSelectAll] = useState(false);
   const [areaData, setAreaData] = useState({ datasets: [] });
@@ -130,7 +130,7 @@ const Inventory = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <Header text="Campaign Report" />
+      <Header text="Inventory Report" />
       <div className="pr-7 pl-5 mt-5 mb-10">
         <div className="flex justify-between gap-4 flex-wrap mb-8">
           <div className="border rounded p-8  flex-1">
@@ -193,19 +193,19 @@ const Inventory = () => {
               <Doughnut options={config.options} data={config.data} />
             </div>
             <div className="flex flex-col">
-              <p className="font-medium">Printing Status</p>
+              <p className="font-medium">Health Status</p>
               <div className="flex flex-col gap-8 mt-6">
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                   <div>
-                    <p className="my-2 text-xs font-light text-slate-400">Ongoing</p>
+                    <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
                     <p className="font-bold text-lg">1233</p>
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                   <div>
-                    <p className="my-2 text-xs font-light text-slate-400">Completed</p>
+                    <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
                     <p className="font-bold text-lg">1233</p>
                   </div>
                 </div>
@@ -221,7 +221,7 @@ const Inventory = () => {
             setView={setView}
           />
           <div className="flex justify-between h-20 items-center pr-7">
-            <RowsPerPage setCount={setCount} />
+            <RowsPerPage setCount={setCount} count={count} />
             <Search search={search} setSearch={setSearch} />
           </div>
           {view === 'grid' ? (
