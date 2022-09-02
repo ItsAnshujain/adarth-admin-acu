@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId } from 'react';
 import { Accordion } from '@mantine/core';
 import classNames from 'classnames';
 import { Mail } from 'react-feather';
@@ -12,10 +12,10 @@ const AccordionLabel = props => {
   const handleClick = () => {
     if (label === 'Reports') {
       navigate(`/${sidebarText.toLowerCase()}/campaign`);
-      setColor(6);
+      setColor(7);
     } else if (label === 'Masters') {
       navigate(`/${sidebarText.toLowerCase()}/category`);
-      setColor(4);
+      setColor(5);
     }
   };
   return (
@@ -23,7 +23,7 @@ const AccordionLabel = props => {
       <Mail
         className={classNames(
           `h-5 ${
-            (sidebarText === 'Reports' && color[6]) || (sidebarText === 'Masters' && color[4])
+            (sidebarText === 'Reports' && color[7]) || (sidebarText === 'Masters' && color[5])
               ? 'text-purple-450'
               : 'text-[#969EA1]'
           }`,

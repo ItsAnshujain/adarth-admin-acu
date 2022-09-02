@@ -5,7 +5,7 @@ import SidebarExpandableButton from './SidebarExpandableButton';
 
 const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
   const navigate = useNavigate();
-  if (index === 4) {
+  if (index === 5) {
     const dataObj = {
       content: ['Category', 'Brands', 'Industry', 'Illumination'],
       label: text,
@@ -17,7 +17,7 @@ const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
     );
   }
 
-  if (index === 6) {
+  if (index === 7) {
     const dataObj = {
       content: ['Campaign Report', 'Revenue Reports', 'Inventory Report'],
       label: text,

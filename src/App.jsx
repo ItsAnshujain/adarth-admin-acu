@@ -43,6 +43,7 @@ const MasterHome = lazy(() => import('./pages/Master/Master'));
 const MasterBrand = lazy(() => import('./pages/Master/Brands'));
 const MasterCategory = lazy(() => import('./pages/Master/Category'));
 
+const HomePage = lazy(() => import('./pages/Home'));
 const Notifications = lazy(() => import('./pages/Notification'));
 const Settings = lazy(() => import('./pages/Setting/Home'));
 
@@ -51,6 +52,21 @@ const App = () => (
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
+      <Route
+        path="/home"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <HomePage />
+          </Suspense>
+        }
+      />
       <Route
         path="/inventory"
         element={
