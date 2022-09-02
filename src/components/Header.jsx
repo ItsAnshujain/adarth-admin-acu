@@ -25,9 +25,11 @@ const Header = ({ title }) => {
                 Notifications
               </Button>
             </Link>
-            <Button variant="subtle" color="gray" className="font-medium">
-              Settings
-            </Button>
+            <Link to="/setting">
+              <Button variant="subtle" color="gray" className="font-medium">
+                Settings
+              </Button>
+            </Link>
             <Button variant="default">
               <img className="w-8 h-8 mr-2" src={logo} alt="logo" />
               <p className="font-medium text-sm">Profile</p>
