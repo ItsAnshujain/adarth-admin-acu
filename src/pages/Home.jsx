@@ -85,36 +85,40 @@ const HomePage = () => (
       <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
         <AreaHeader text="Hello, Adarth" />
         <div className="pr-7 pl-5 mt-5 mb-10">
-          <div className="flex justify-between gap-4 flex-wrap mb-8">
-            <div className="border rounded p-8 flex-1">
-              <img src={orangeFolder} alt="folder" />
-              <p className="my-2 text-xs font-light text-slate-400">Total Campaign(Overall)</p>
-              <p className="font-bold">386387</p>
+          <div className="grid grid-rows-2 mb-8 gap-y-4">
+            <div className="grid grid-cols-3 gap-8">
+              <div className="border rounded p-8 flex-1">
+                <img src={orangeFolder} alt="folder" />
+                <p className="my-2 text-xs font-light text-slate-400">Total Campaign(Overall)</p>
+                <p className="font-bold">386387</p>
+              </div>
+              <div className="border rounded p-8  flex-1">
+                <img src={blueFolder} alt="folder" />
+                <p className="my-2 text-xs font-light text-slate-400">Total Ongoing Campaign</p>
+                <p className="font-bold">386387</p>
+              </div>
+              <div className="border rounded p-8  flex-1">
+                <img src={greenFolder} alt="folder" />
+                <p className="my-2 text-xs font-light text-slate-400">Upcoming Campaign</p>
+                <p className="font-bold">386387</p>
+              </div>
             </div>
-            <div className="border rounded p-8  flex-1">
-              <img src={blueFolder} alt="folder" />
-              <p className="my-2 text-xs font-light text-slate-400">Total Ongoing Campaign</p>
-              <p className="font-bold">386387</p>
-            </div>
-            <div className="border rounded p-8  flex-1">
-              <img src={greenFolder} alt="folder" />
-              <p className="my-2 text-xs font-light text-slate-400">Upcoming Campaign</p>
-              <p className="font-bold">386387</p>
-            </div>
-            <div className="border rounded p-8 flex-1">
-              <img src={greenFolder} alt="folder" />
-              <p className="my-2 text-xs font-light text-slate-400">Completed Campaign</p>
-              <p className="font-bold">386387</p>
-            </div>
-            <div className="border rounded p-8 flex-1">
-              <img src={greenFolder} alt="folder" />
-              <p className="my-2 text-xs font-light text-slate-400">Vacant</p>
-              <p className="font-bold">386387</p>
-            </div>
-            <div className="border rounded p-8  flex-1">
-              <img src={blueFolder} alt="folder" />
-              <p className="my-2 text-xs font-light text-slate-400">Occupied</p>
-              <p className="font-bold">386387</p>
+            <div className="grid grid-cols-3 gap-8">
+              <div className="border rounded p-8 flex-1">
+                <img src={greenFolder} alt="folder" />
+                <p className="my-2 text-xs font-light text-slate-400">Completed Campaign</p>
+                <p className="font-bold">386387</p>
+              </div>
+              <div className="border rounded p-8 flex-1">
+                <img src={greenFolder} alt="folder" />
+                <p className="my-2 text-xs font-light text-slate-400">Vacant</p>
+                <p className="font-bold">386387</p>
+              </div>
+              <div className="border rounded p-8  flex-1">
+                <img src={blueFolder} alt="folder" />
+                <p className="my-2 text-xs font-light text-slate-400">Occupied</p>
+                <p className="font-bold">386387</p>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-4 pr-7">
