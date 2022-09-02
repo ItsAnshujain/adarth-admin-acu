@@ -8,7 +8,7 @@ const Master = () => {
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {
-    setColor(4);
+    setColor(5);
   }, []);
 
   return (

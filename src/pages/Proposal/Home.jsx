@@ -15,8 +15,9 @@ const Proposals = () => {
   const [view, setView] = useState('list');
 
   const setColor = useSideBarState(state => state.setColor);
+
   useEffect(() => {
-    setColor(2);
+    setColor(3);
   }, []);
 
   return (

@@ -125,7 +125,7 @@ const Inventory = () => {
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {
-    setColor(6);
+    setColor(7);
   }, []);
 
   return (
