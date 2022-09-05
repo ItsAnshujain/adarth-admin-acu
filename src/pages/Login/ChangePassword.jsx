@@ -75,20 +75,20 @@ const Home = () => {
         <p className="mb-3 text-sm text-orange-450">{errors.confirmPassword?.message}</p>
 
         <Button
-          className="mt-2 width-full bg-purple-450"
+          className="mt-2 width-full bg-purple-450 border-rounded-xl"
           color="primary"
           type="submit"
           styles={() => ({
             root: {
               width: '100%',
-              height: '40px',
+              height: '44px',
               '&:hover': {
                 backgroundColor: '#4B0DAF',
               },
             },
           })}
         >
-          Login
+          Save
         </Button>
       </form>
       <Text className="mt-4">
