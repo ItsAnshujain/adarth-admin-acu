@@ -73,29 +73,20 @@ const Preview = () => {
                 </span>
               )}
             </Text>
-            <Text weight="bold" className="my-2">
-              {toIndianCurrency(270000)}
-            </Text>
-            <div className="flex gap-2 mb-3">
-              {badgeData.map(data => (
-                <Badge
-                  className="text-purple-450 bg-purple-100 capitalize"
-                  text={data}
-                  size="lg"
-                  variant="filled"
-                  radius="md"
-                />
-              ))}
-            </div>
-            <div className="mb-6">
-              <Text weight="300" color="gray">
-                Previously advertised brands
+            <div className="flex gap-3 items-center">
+              <Text weight="bold" className="my-2">
+                {toIndianCurrency(270000)}
               </Text>
-              {['Nike', 'Adidas', 'Puma'].map(data => (
-                <Text className="inline">{data + ','}</Text>
-              ))}
+
+              <Badge
+                className="text-purple-450 bg-purple-100 capitalize"
+                text="1000+ Total Impressions"
+                size="lg"
+                variant="filled"
+                radius="md"
+              />
             </div>
-            <div>
+            <div className="mt-12">
               <Text>Specifications</Text>
               <Text color="gray" className="mb-2">
                 All the related details regarding campaign

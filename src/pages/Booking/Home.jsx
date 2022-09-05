@@ -37,7 +37,7 @@ const Proposals = () => {
   const [count, setCount] = useState('20');
 
   useEffect(() => {
-    setColor(1);
+    setColor(2);
   }, []);
 
   return (
