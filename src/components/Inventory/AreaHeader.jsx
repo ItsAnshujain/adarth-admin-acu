@@ -117,7 +117,7 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
             <img src={calendar} className="h-5" alt="calendar" />
           </Button>
           {showDatePicker && (
-            <div className="absolute z-20 -translate-x-1/2 bg-white -top-0.3">
+            <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
               <DateRange handleClose={openDatePicker} />
             </div>
           )}

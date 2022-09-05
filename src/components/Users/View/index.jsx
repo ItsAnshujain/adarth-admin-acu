@@ -203,30 +203,30 @@ const Header = () => {
             </div>
           </div>
           <div className="pl-5 pr-7 flex justify-between mt-8 mb-8">
-            <div className="flex gap-8 justify-between flex-wrap">
+            <div className="flex gap-3  flex-wrap">
               <div className="border rounded p-8  pr-20">
                 <img src={purplefolder} alt="folder" />
-                <p className="my-2 text-slate-400 text-xs">Ongoing Orders</p>
+                <p className="my-2 text-slate-400 text-sm">Ongoing Orders</p>
                 <p weight="bold">325</p>
               </div>
               <div className="border rounded p-8 pr-20">
                 <img src={orangefolder} alt="folder" />
-                <p className="my-2 text-slate-400 text-xs">Upcoming Orders</p>
+                <p className="my-2 text-slate-400 text-sm">Upcoming Orders</p>
                 <p weight="bold">325</p>
               </div>
               <div className="border rounded p-8 pr-20">
                 <img src={bluefolder} alt="folder" />
-                <p className="my-2 text-slate-400 text-xs">Completed Orders</p>
+                <p className="my-2 text-slate-400 text-sm">Completed Orders</p>
                 <p weight="bold">325</p>
               </div>
               <div className="border rounded p-8 pr-20">
                 <img src={redfolder} alt="folder" />
-                <p className="my-2 text-slate-400 text-xs">Total Proposal</p>
+                <p className="my-2 text-slate-400 text-sm">Total Proposal</p>
                 <p weight="bold">325</p>
               </div>
               <div className="border rounded p-8 pr-20">
                 <img src={greenfolder} alt="folder" />
-                <p className="my-2 text-slate-400 text-xs">Total Campaign</p>
+                <p className="my-2 text-slate-400 text-sm">Total Campaign</p>
                 <p weight="bold">325</p>
               </div>
             </div>

@@ -1,11 +1,10 @@
-import { ChevronDown, FilePlus } from 'react-feather';
+import { FilePlus } from 'react-feather';
 
 const BulkUpload = () => (
   <>
     <header className="h-20 border-b border-gray-450 flex justify-between items-center pl-5 pr-7">
       <p className="text-xl font-bold">Upload Space CSV</p>
       <button className="flex gap-1 border rounded-md p-2" type="button">
-        <ChevronDown className="h-4" />
         <span>Close</span>
       </button>
     </header>
