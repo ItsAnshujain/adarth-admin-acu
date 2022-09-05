@@ -85,7 +85,7 @@ const Campaign = () => {
   }, []);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto pb-28">
       <Header text="Campaign Report" />
       <div className="pr-7 pl-5 mt-5 mb-10">
         <div className="flex justify-between gap-4 flex-wrap mb-8">

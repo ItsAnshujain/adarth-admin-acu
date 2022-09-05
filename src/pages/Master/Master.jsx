@@ -13,7 +13,7 @@ const Master = () => {
 
   return (
     <div className="absolute top-0">
-      <Header title="Reports" />
+      <Header title="Masters" />
       <div className="grid grid-cols-12">
         <Sidebar />
         <Outlet />

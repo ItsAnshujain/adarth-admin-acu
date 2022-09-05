@@ -89,29 +89,29 @@ const HomePage = () => (
             <div className="grid grid-cols-3 gap-8">
               <div className="border rounded p-8 flex-1">
                 <img src={orangeFolder} alt="folder" />
-                <p className="my-2 text-xs font-light text-slate-400">Total Campaign(Overall)</p>
+                <p className="my-2 text-sm font-light text-slate-400">Total Campaign(Overall)</p>
                 <p className="font-bold">386387</p>
               </div>
               <div className="border rounded p-8  flex-1">
                 <img src={blueFolder} alt="folder" />
-                <p className="my-2 text-xs font-light text-slate-400">Total Ongoing Campaign</p>
+                <p className="my-2 text-sm font-light text-slate-400">Total Ongoing Campaign</p>
                 <p className="font-bold">386387</p>
               </div>
               <div className="border rounded p-8  flex-1">
                 <img src={greenFolder} alt="folder" />
-                <p className="my-2 text-xs font-light text-slate-400">Upcoming Campaign</p>
+                <p className="my-2 text-sm font-light text-slate-400">Upcoming Campaign</p>
                 <p className="font-bold">386387</p>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-8">
               <div className="border rounded p-8 flex-1">
                 <img src={greenFolder} alt="folder" />
-                <p className="my-2 text-xs font-light text-slate-400">Completed Campaign</p>
+                <p className="my-2 text-sm font-light text-slate-400">Completed Campaign</p>
                 <p className="font-bold">386387</p>
               </div>
               <div className="border rounded p-8 flex-1">
                 <img src={greenFolder} alt="folder" />
-                <p className="my-2 text-xs font-light text-slate-400">Vacant</p>
+                <p className="my-2 text-sm font-light text-slate-400">Vacant</p>
                 <p className="font-bold">386387</p>
               </div>
               <div className="border rounded p-8  flex-1">

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Eye, Edit2, Trash } from 'react-feather';
-import { NativeSelect, Menu } from '@mantine/core';
+import { NativeSelect, Menu, Progress } from '@mantine/core';
 import MenuIcon from '../Menu';
 
 const COLUMNS = [
