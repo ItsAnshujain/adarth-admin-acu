@@ -159,6 +159,27 @@ const COLUMNS = [
     Header: 'CAMPAIGN INCHARGE',
     accessor: 'campaign_incharge',
   },
+  {
+    Header: 'HEALTH STATUS',
+    accessor: 'health_status',
+    Cell: tableProps => {
+      const {
+        row: {
+          original: { total_spaces },
+        },
+      } = tableProps;
+      return (
+        <div className="w-24">
+          <Progress
+            sections={[
+              { value: total_spaces, color: 'green' },
+              { value: 100 - total_spaces, color: 'red' },
+            ]}
+          />
+        </div>
+      );
+    },
+  },
 
   {
     Header: 'PAYMENT TYPE',
@@ -181,6 +202,28 @@ const COLUMNS = [
         </div>
       );
     },
+  },
+  {
+    Header: 'UPLOADED MEDIA',
+    accessor: 'uploaded_media',
+    Cell: tableProps => {
+      const {
+        row: {
+          original: { photo },
+        },
+      } = tableProps;
+
+      return (
+        <div className="bg-white border rounded-md">
+          <img className="h-10 mx-auto" src={photo} alt="banner" />
+        </div>
+      );
+    },
+  },
+  {
+    Header: 'DOWNLOAD UPLOADED MEDIA',
+    accessor: '',
+    Cell: () => <div className="text-purple-450 cursor-pointer">Download</div>,
   },
   {
     Header: 'TOTAL SPACES',
