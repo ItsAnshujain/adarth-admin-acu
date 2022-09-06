@@ -1,20 +1,27 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Text, Button } from '@mantine/core';
+import { Button, Select } from '@mantine/core';
 import { Plus, ChevronDown } from 'react-feather';
 import Filter from '../Filter';
 
-const AreaHeader = ({ text }) => {
+const AreaHeader = () => {
   const navigate = useNavigate();
-
+  const [value, setValue] = useState('Team');
   const [showFilter, setShowFilter] = useState(false);
 
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center">
       <div className="pl-5">
-        <Text size="lg" weight="bold">
-          {text}
-        </Text>
+        <Select
+          value={value}
+          onChange={setValue}
+          data={['Team', 'Peers']}
+          styles={{
+            rightSection: { pointerEvents: 'none' },
+          }}
+          rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+          required
+        />
       </div>
       <div className="flex justify-around mr-7">
         <div className="mr-2">
