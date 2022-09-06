@@ -24,6 +24,7 @@ const dummyDataObj = {
   ligting: 'Lighting',
   from_date: '02/12/2022',
   to_date: '02/12/2022',
+  media: dummy3,
 };
 
 const dummyData = new Array(3).fill(dummyDataObj);
