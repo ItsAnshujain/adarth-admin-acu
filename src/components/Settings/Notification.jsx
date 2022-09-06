@@ -63,7 +63,7 @@ const Notification = () => (
       <TextInput
         styles={inputStyles}
         className="w-4/12 mt-2 text-slate-400"
-        placeholder="Your name"
+        placeholder="Your phone number"
         label="Whatsapp Number"
       />
     </div>

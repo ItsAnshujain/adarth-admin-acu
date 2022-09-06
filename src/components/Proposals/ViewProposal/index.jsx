@@ -51,7 +51,7 @@ const ProposalDetails = () => {
         </div>
       </div>
 
-      <div className="flex justify-between h-20 items-center">
+      <div className="flex justify-between h-20 items-center pr-7">
         <RowsPerPage setCount={setCount} count={count} />
         <Search search={search} setSearch={setSearch} />
       </div>

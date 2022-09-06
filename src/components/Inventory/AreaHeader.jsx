@@ -69,49 +69,55 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
             <input type="checkbox" checked={selectAll} onChange={() => setSelectAll(!selectAll)} />
           </div>
         )}
-        <div className="mr-2 flex ">
-          <button
-            className={classNames(
-              `px-4 border-gray-300 border rounded-md ${color.list.fill ? 'bg-white' : 'bg-black'}`,
-            )}
-            onClick={handleListClick}
-            variant="default"
-            type="button"
-          >
-            <Server
-              strokeWidth="3px"
-              className={`max-h-5 ${classNames(color.list.fill ? 'text-black' : 'text-white')}`}
-            />
-          </button>
-          <button
-            className={classNames(
-              `text-white border-gray-300 border px-4 rounded-md ${
-                color.grid.fill ? 'bg-white' : 'bg-black'
-              }`,
-            )}
-            onClick={handleGridClick}
-            variant="default"
-            type="button"
-          >
-            <Grid
-              strokeWidth="3px"
-              className={`max-h-5 ${classNames(color.grid.fill ? 'text-black' : 'text-white')}`}
-            />
-          </button>
-          <button
-            className={classNames(
-              `px-4 border-gray-300 border rounded-md ${color.map.fill ? 'bg-white' : 'bg-black'}`,
-            )}
-            onClick={handleMapClick}
-            variant="default"
-            type="button"
-          >
-            <MapPin
-              strokeWidth="3px"
-              className={`max-h-5 ${classNames(color.map.fill ? 'text-black' : 'text-white')}`}
-            />
-          </button>
-        </div>
+        {!pathname.includes('reports') && (
+          <div className="mr-2 flex ">
+            <button
+              className={classNames(
+                `px-4 border-gray-300 border rounded-md ${
+                  color.list.fill ? 'bg-white' : 'bg-black'
+                }`,
+              )}
+              onClick={handleListClick}
+              variant="default"
+              type="button"
+            >
+              <Server
+                strokeWidth="3px"
+                className={`max-h-5 ${classNames(color.list.fill ? 'text-black' : 'text-white')}`}
+              />
+            </button>
+            <button
+              className={classNames(
+                `text-white border-gray-300 border px-4 rounded-md ${
+                  color.grid.fill ? 'bg-white' : 'bg-black'
+                }`,
+              )}
+              onClick={handleGridClick}
+              variant="default"
+              type="button"
+            >
+              <Grid
+                strokeWidth="3px"
+                className={`max-h-5 ${classNames(color.grid.fill ? 'text-black' : 'text-white')}`}
+              />
+            </button>
+            <button
+              className={classNames(
+                `px-4 border-gray-300 border rounded-md ${
+                  color.map.fill ? 'bg-white' : 'bg-black'
+                }`,
+              )}
+              onClick={handleMapClick}
+              variant="default"
+              type="button"
+            >
+              <MapPin
+                strokeWidth="3px"
+                className={`max-h-5 ${classNames(color.map.fill ? 'text-black' : 'text-white')}`}
+              />
+            </button>
+          </div>
+        )}
         <div ref={ref} className="mr-2 relative">
           <Button onClick={openDatePicker} variant="default" type="button">
             <img src={calendar} className="h-5" alt="calendar" />
