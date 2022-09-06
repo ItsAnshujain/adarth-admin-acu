@@ -17,6 +17,8 @@ const dummyDataObj = {
   lighting: 'lighting',
   from_date: '02/12/2022',
   to_date: '02/12/2022',
+  resolution: '1080 x 1920',
+  illumination: 'lit',
 };
 
 const dummyData = new Array(3).fill(dummyDataObj);
@@ -25,7 +27,7 @@ const PreviewCampaign = () => {
   const [activePage, setPage] = useState(1);
 
   return (
-    <>
+    <div className="relative pb-10">
       <Preview />
       <div className="pl-5 pr-7 flex flex-col">
         <Text size="lg" weight="bold">
@@ -39,7 +41,7 @@ const PreviewCampaign = () => {
         </div>
 
         <Text size="lg" weight="bolder">
-          Places in the campaign
+          Places In The Campaign
         </Text>
         <Text text="sm" weight="lighter">
           All the places been cover by this campaign
@@ -57,7 +59,7 @@ const PreviewCampaign = () => {
         total={1}
         color="dark"
       />
-    </>
+    </div>
   );
 };
 

@@ -6,7 +6,7 @@ const UserDetails = () => {
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {
-    setColor(3);
+    setColor(4);
   }, []);
 
   return (

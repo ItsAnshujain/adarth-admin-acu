@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { NativeSelect } from '@mantine/core';
+import { Select } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import completed from '../../../assets/completed.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
+import upload from '../../../assets/upload.svg';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -66,7 +67,7 @@ const OrderInformation = () => {
         </div>
         <div>
           <p className="font-bold text-lg mb-2">Order Info</p>
-          <div className="flex p-4 justify-between border flex-wrap">
+          <div className="flex p-4 gap-12 border flex-wrap">
             <div>
               <p className="text-slate-400">Order Id</p>
               <p className="font-bold">#347894743</p>
@@ -80,11 +81,19 @@ const OrderInformation = () => {
               <p className="font-bold">{toIndianCurrency(648764)}</p>
             </div>
             <div>
+              <p className="text-slate-400">Start Date</p>
+              <p className="font-bold">15 May 2037</p>
+            </div>
+            <div>
+              <p className="text-slate-400">End Date</p>
+              <p className="font-bold">15 May 2037</p>
+            </div>
+            <div>
               <p className="text-slate-400">Printing Status</p>
-              <NativeSelect
+              <Select
                 className="mr-2"
                 value={printingStatus}
-                onChange={e => setPrintingStatus(e.target.value)}
+                onChange={setPrintingStatus}
                 data={['Completed', 'Pending']}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
@@ -94,11 +103,25 @@ const OrderInformation = () => {
               />
             </div>
             <div>
+              <p className="text-slate-400">Upload Media</p>
+              <button
+                type="button"
+                className="py-1.5 px-2 ml-1  flex items-center gap-2 border border-slate-400 rounded"
+              >
+                <span className="text-sm">Upload</span>
+                <img src={upload} alt="Upload" className="mr-1 h-3" />
+              </button>
+            </div>
+            <div>
+              <p className="text-slate-400">Booking Type</p>
+              <p className="font-bold">Online</p>
+            </div>
+            <div>
               <p className="text-slate-400">Mounting Status</p>
-              <NativeSelect
+              <Select
                 className="mr-2"
                 value={mountingStatus}
-                onChange={e => setMountingStatus(e.target.value)}
+                onChange={setMountingStatus}
                 data={['Completed', 'Pending']}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
@@ -111,7 +134,7 @@ const OrderInformation = () => {
         </div>
         <div>
           <p className="font-bold text-lg mb-2">Campaign Info</p>
-          <div className="flex p-4 sm:gap-y-4 gap-x-32 border gap-y-4 flex-wrap">
+          <div className="flex p-4 gap-8 border  flex-wrap">
             <div>
               <p className="text-slate-400">Campaign Id</p>
               <p className="font-bold">#347894743</p>
@@ -121,15 +144,15 @@ const OrderInformation = () => {
               <p className="font-bold">Kolkata South City and New Town Campaign</p>
             </div>
             <div>
-              <p className="text-slate-400">Campaign Type</p>
-              <p className="font-bold">Predefined</p>
+              <p className="text-slate-400">Booking Status</p>
+              <p className="font-bold">Booked</p>
             </div>
             <div>
               <p className="text-slate-400">Campaing Incharge</p>
-              <NativeSelect
+              <Select
                 className="mr-2"
                 value={campaignIncharge}
-                onChange={e => setCampaignIncharge(e.target.value)}
+                onChange={setCampaignIncharge}
                 data={['Completed', 'Pending']}
                 styles={{
                   rightSection: { pointerEvents: 'none' },

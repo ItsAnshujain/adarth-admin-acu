@@ -10,13 +10,16 @@ import Header from './Header';
 const formInitialState = {
   spacename: '',
   landlord: '',
+  mediaowner: '',
+  spacetype: '',
+  subcategory: '',
   category: '',
   mediatype: '',
   supportedmedia: '',
   price: '',
   description: '',
   illumination: '',
-  resolutions: '',
+  resolution: '',
   healthstatus: '',
   unit: '',
   width: '',
@@ -31,6 +34,8 @@ const formInitialState = {
   city: '',
   zip: '',
   longitude: '',
+  zone: '',
+  facing: '',
 };
 
 const MainArea = () => {
@@ -74,11 +79,9 @@ const MainArea = () => {
         formStep={formStep}
         setOpenSuccessModal={setOpenSuccessModal}
       />
-      <div>
-        <div>
-          <form>{getForm()}</form>
-        </div>
-      </div>
+
+      <form>{getForm()}</form>
+
       <SuccessModal
         title="Inventory Successfully Added"
         text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."

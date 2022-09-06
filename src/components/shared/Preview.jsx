@@ -73,29 +73,20 @@ const Preview = () => {
                 </span>
               )}
             </Text>
-            <Text weight="bold" className="my-2">
-              {toIndianCurrency(270000)}
-            </Text>
-            <div className="flex gap-2 mb-3">
-              {badgeData.map(data => (
-                <Badge
-                  className="text-purple-450 bg-purple-100"
-                  text={data}
-                  size="lg"
-                  variant="filled"
-                  radius="md"
-                />
-              ))}
-            </div>
-            <div className="mb-6">
-              <Text weight="300" color="gray">
-                Previously advertised brands
+            <div className="flex gap-3 items-center">
+              <Text weight="bold" className="my-2">
+                {toIndianCurrency(270000)}
               </Text>
-              {['Nike', 'Adidas', 'Puma'].map(data => (
-                <Text className="inline">{data + ','}</Text>
-              ))}
+
+              <Badge
+                className="text-purple-450 bg-purple-100 capitalize"
+                text="1000+ Total Impressions"
+                size="lg"
+                variant="filled"
+                radius="md"
+              />
             </div>
-            <div>
+            <div className="mt-12">
               <Text>Specifications</Text>
               <Text color="gray" className="mb-2">
                 All the related details regarding campaign
@@ -103,33 +94,33 @@ const Preview = () => {
               <div className="flex flex-col ">
                 <div className="grid grid-cols-2 p-4 border rounded-md mb-4 flex-1">
                   <div>
-                    <Text color="gray" size="xs" weight="300">
+                    <Text color="gray" size="md" weight="300">
                       Media Type
                     </Text>
                     <Text className="mb-4">Bill Board</Text>
-                    <Text color="gray" size="xs" weight="300">
+                    <Text color="gray" size="md" weight="300">
                       Size
                     </Text>
                     <Text className="mb-4">W X H</Text>
-                    <Text color="gray" size="xs" weight="300">
+                    <Text color="gray" size="md" weight="300">
                       Impression
                     </Text>
                     <Text className="mb-4">26982673</Text>
-                    <Text color="gray" size="xs" weight="300">
+                    <Text color="gray" size="md" weight="300">
                       Resolution
                     </Text>
                     <Text>1080px</Text>
                   </div>
                   <div>
-                    <Text color="gray" size="xs" weight="300">
+                    <Text color="gray" size="md" weight="300">
                       Illumination
                     </Text>
                     <Text className="mb-4">Lit</Text>
-                    <Text color="gray" size="xs" weight="300">
+                    <Text color="gray" size="md" weight="300">
                       Unit
                     </Text>
                     <Text className="mb-4">1</Text>
-                    <Text color="gray" size="xs" weight="300">
+                    <Text color="gray" size="md" weight="300">
                       Supported Media
                     </Text>
                     <Text>MPR</Text>

@@ -3,13 +3,13 @@ import { ChevronDown } from 'react-feather';
 
 const data = ['10', '20', '40', '80', '100'];
 
-const RowsPerPage = ({ setCount }) => (
+const RowsPerPage = ({ setCount, count }) => (
   <div className="pl-5">
     <div className="flex items-center gap-3 text-sm text-gray-6">
       Rows Per Page :{' '}
       <Select
         variant="unstyled"
-        defaultValue="10"
+        defaultValue={count}
         data={data}
         onChange={setCount}
         styles={{

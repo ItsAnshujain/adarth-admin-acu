@@ -1,17 +1,21 @@
 import { useState } from 'react';
-import { Text, NativeSelect, RangeSlider, MultiSelect, TextInput } from '@mantine/core';
+import { Text, Select, RangeSlider, MultiSelect, TextInput } from '@mantine/core';
 
 const styles = {
   label: {
-    marginBottom: '10px',
-    fontWeight: 'bold',
+    marginBottom: '4px',
+    fontWeight: 700,
+    fontSize: '15px',
+    letterSpacing: '0.5px',
   },
 };
 
 const multiSelectStyles = {
   label: {
-    marginBottom: '10px',
-    fontWeight: 'bold',
+    marginBottom: '4px',
+    fontWeight: 700,
+    fontSize: '15px',
+    letterSpacing: '0.5px',
   },
   value: {
     backgroundColor: 'black',
@@ -25,6 +29,16 @@ const multiSelectStyles = {
     color: 'white',
   },
 };
+
+const sliderStyle = {
+  bar: {
+    backgroundColor: 'black',
+  },
+  thumb: {
+    backgroundColor: 'black',
+  },
+};
+
 const Specification = ({ formData, setFormData }) => {
   const [minImpressions, setMinImpressions] = useState(200);
   const [maxImpressions, setMaxImpressions] = useState(800);
@@ -53,7 +67,7 @@ const Specification = ({ formData, setFormData }) => {
     { value: 800, label: '80%' },
   ];
   return (
-    <div className="flex flex-col pl-5 pr-7 pt-4">
+    <div className="flex flex-col pl-5 pr-7 pt-4 mb-44">
       <Text size="md" weight="bold">
         Space Specifications
       </Text>
@@ -62,14 +76,14 @@ const Specification = ({ formData, setFormData }) => {
       </Text>
       <div className="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
         <div>
-          <NativeSelect
+          <Select
             value={formData.illumination}
             onChange={handleChange}
             styles={styles}
             name="illumination"
             className="mb-7"
             label="Illumination"
-            placeholder="Pick one"
+            placeholder="Select"
             data={[
               { value: 'react', label: 'React' },
               { value: 'ng', label: 'Angular' },
@@ -97,14 +111,14 @@ const Specification = ({ formData, setFormData }) => {
           />
         </div>
         <div>
-          <NativeSelect
+          <Select
             value={formData.unit}
             onChange={handleChange}
             styles={styles}
             name="unit"
             className="mb-7"
             label="Unit"
-            placeholder="Pick one"
+            placeholder="Select"
             data={[
               { value: 'react', label: 'React' },
               { value: 'ng', label: 'Angular' },
@@ -113,14 +127,14 @@ const Specification = ({ formData, setFormData }) => {
             ]}
           />
           <div className="grid grid-cols-2 gap-4">
-            <NativeSelect
+            <Select
               value={formData.width}
               onChange={handleChange}
               styles={styles}
               name="width"
               className="mb-7"
               label="Width"
-              placeholder="Pick one"
+              placeholder="Select"
               data={[
                 { value: 'react', label: 'React' },
                 { value: 'ng', label: 'Angular' },
@@ -128,14 +142,14 @@ const Specification = ({ formData, setFormData }) => {
                 { value: 'vue', label: 'Vue' },
               ]}
             />
-            <NativeSelect
+            <Select
               value={formData.height}
               onChange={handleChange}
               styles={styles}
               name="height"
               className="mb-7"
               label="Height"
-              placeholder="Pick one"
+              placeholder="Select"
               data={[
                 { value: 'react', label: 'React' },
                 { value: 'ng', label: 'Angular' },
@@ -149,7 +163,10 @@ const Specification = ({ formData, setFormData }) => {
       <div>
         <Text weight="bold">Impressions</Text>
         <div className="flex gap-4 items-center">
-          <input className="border w-24 py-1 px-1" type="text" readOnly value={minImpressions} />
+          <div>
+            <input className="border w-24 py-1 px-1" type="text" readOnly value={minImpressions} />
+            <p className="text-slate-400">Min</p>
+          </div>
           <RangeSlider
             onChange={val => {
               setMinImpressions(val[0], setMaxImpressions(val[1]));
@@ -157,11 +174,15 @@ const Specification = ({ formData, setFormData }) => {
             className="mb-5 flex-auto"
             min={100}
             max={1000}
+            styles={sliderStyle}
             value={[minImpressions, maxImpressions]}
             defaultValue={[200, 1000]}
             marks={marks}
           />
-          <input className="border w-24" type="text" readOnly value={maxImpressions} />
+          <div>
+            <input className="border w-24" type="text" readOnly value={maxImpressions} />
+            <p className="text-right text-slate-400">Max</p>
+          </div>
         </div>
         <MultiSelect
           className="mb-5 mt-4"
@@ -171,7 +192,7 @@ const Specification = ({ formData, setFormData }) => {
           styles={multiSelectStyles}
           data={data}
           label="Previous brands"
-          placeholder="Pick all that you like"
+          placeholder="Select all that you like"
         />
         <MultiSelect
           styles={multiSelectStyles}
@@ -180,7 +201,7 @@ const Specification = ({ formData, setFormData }) => {
           name="tags"
           data={data}
           label="Tags"
-          placeholder="Pick all that you like"
+          placeholder="Select all that you like"
         />
       </div>
     </div>

@@ -9,7 +9,7 @@ const Campaigns = () => {
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {
-    setColor(5);
+    setColor(6);
   }, []);
 
   let headerTitle = '';
@@ -23,13 +23,13 @@ const Campaigns = () => {
   }
 
   return (
-    <>
+    <div className="absolute top-0">
       <Header title={headerTitle} />
       <div className="grid grid-cols-12">
         <Sidebar />
         <Outlet />
       </div>
-    </>
+    </div>
   );
 };
 

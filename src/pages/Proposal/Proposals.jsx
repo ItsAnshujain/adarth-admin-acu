@@ -7,9 +7,11 @@ import useSideBarState from '../../store/sidebar.store';
 const Campaigns = () => {
   const { pathname } = useLocation();
   const setColor = useSideBarState(state => state.setColor);
+
   useEffect(() => {
-    setColor(2);
+    setColor(3);
   }, []);
+
   let headerTitle = '';
   if (pathname.includes('view')) {
     headerTitle = 'Proposal Details';
@@ -19,13 +21,13 @@ const Campaigns = () => {
     headerTitle = 'Proposals';
   }
   return (
-    <>
+    <div className="absolute top-0">
       <Header title={headerTitle} />
       <div className="grid grid-cols-12">
         <Sidebar />
         <Outlet />
       </div>
-    </>
+    </div>
   );
 };
 

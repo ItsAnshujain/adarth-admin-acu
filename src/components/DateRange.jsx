@@ -1,8 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { Button, Text } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { RangeCalendar, DatePicker } from '@mantine/dates';
 import { Calendar } from 'react-feather';
+
+const styles = {
+  label: {
+    fontSize: '16',
+    fontWeight: 'bold',
+  },
+};
 
 const DateRange = ({ handleClose }) => {
   const navigate = useNavigate();
@@ -45,9 +52,7 @@ const DateRange = ({ handleClose }) => {
     <div className="flex flex-col w-[605px] p-8 shadow-2xl">
       <div className="flex justify-between pb-4 border-b">
         <div>
-          <Text size="xl" weight="700">
-            Date Range
-          </Text>
+          <p className="text-2xl font-bold">Date Range</p>
         </div>
         <div className="flex gap-2">
           <Button className="hover:bg-white" onClick={handleClear} variant="outline" color="dark">
@@ -72,14 +77,13 @@ const DateRange = ({ handleClose }) => {
           <RangeCalendar value={value} onChange={handleRangeSetting} />
         </div>
         <div className="flex-1 flex flex-col gap-2">
-          <Text size="lg" font="bold">
-            Picked Date
-          </Text>
+          <p className="text-lg font-bold">Picked Date</p>
           <DatePicker
             clearable={false}
             onChange={handleSetStartDate}
             value={startDate}
             label="Date From"
+            styles={styles}
             icon={<Calendar className="text-black absolute left-[500%]" />}
           />
           <DatePicker
@@ -87,6 +91,7 @@ const DateRange = ({ handleClose }) => {
             onChange={handleSetEndDate}
             value={endDate}
             label="Date To"
+            styles={styles}
             icon={<Calendar className="text-black absolute left-[500%]" />}
           />
         </div>

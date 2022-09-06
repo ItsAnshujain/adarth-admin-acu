@@ -27,6 +27,7 @@ const Credentials = () => {
             data={['Admin', 'Super User']}
             label="Role"
             required
+            placeholder="Select"
           />
           <TextInput styles={styles} label="Password" required />
         </div>

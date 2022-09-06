@@ -5,6 +5,7 @@ const styles = {
     fontWeight: 'bold',
     marginBottom: 8,
     fontSize: 16,
+    letterSpacing: '0.5px',
   },
   input: {
     borderRadius: 0,
@@ -19,11 +20,13 @@ const BasicInfo = () => (
         <TextInput styles={styles} label="Company Name" />
         <TextInput styles={styles} label="Client Email" />
         <TextInput styles={styles} label="Client Pan Number" />
+        <TextInput styles={styles} label="Payment Type" />
       </div>
       <div className="flex flex-col gap-4">
         <TextInput styles={styles} label="Client Name" />
         <TextInput styles={styles} label="Client Contact Number" />
         <TextInput styles={styles} label="Client GST Number" />
+        <TextInput styles={styles} label="Payment Reference Number" />
       </div>
     </div>
   </div>

@@ -4,8 +4,9 @@ import useSideBarState from '../../store/sidebar.store';
 
 const ProposalDetails = () => {
   const setColor = useSideBarState(state => state.setColor);
+
   useEffect(() => {
-    setColor(2);
+    setColor(3);
   }, []);
 
   return (

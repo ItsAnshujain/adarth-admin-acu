@@ -73,12 +73,12 @@ const MainArea = () => {
         </div>
       </div>
       <SuccessModal
-        title="Inventory Successfully Added"
+        title="Profile Created Successfully"
         text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-        prompt="Go to inventory"
+        prompt="Visit User List"
         open={openSuccessModal}
         setOpenSuccessModal={setOpenSuccessModal}
-        path="inventory"
+        path="users"
       />
     </>
   );

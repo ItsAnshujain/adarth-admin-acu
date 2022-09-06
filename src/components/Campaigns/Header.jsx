@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Text, Button } from '@mantine/core';
+import { Button } from '@mantine/core';
 import classNames from 'classnames';
 import { Plus, ChevronDown, Server, Grid } from 'react-feather';
+import { useClickOutside } from '@mantine/hooks';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import Filter from '../Filter';
@@ -11,11 +12,14 @@ const initialState = {
   grid: { fill: true },
   list: { fill: false },
 };
+
 const AreaHeader = ({ text, setView }) => {
   const navigate = useNavigate();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [color, setColor] = useState(initialState);
+  const ref = useClickOutside(() => setShowDatePicker(false));
+
   const handleListClick = () => {
     setColor({
       grid: { fill: true },
@@ -39,9 +43,7 @@ const AreaHeader = ({ text, setView }) => {
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center">
       <div className="pl-5">
-        <Text size="lg" weight="bold">
-          {text}
-        </Text>
+        <p className="text-lg text-bold">{text}</p>
       </div>
       <div className="flex justify-around mr-7">
         <div className="mr-2 flex ">
@@ -74,7 +76,7 @@ const AreaHeader = ({ text, setView }) => {
             />
           </button>
         </div>
-        <div className="mr-2 relative">
+        <div ref={ref} className="mr-2 relative">
           <Button onClick={openDatePicker} variant="default" type="button">
             <img src={calendar} className="h-5" alt="calendar" />
           </Button>

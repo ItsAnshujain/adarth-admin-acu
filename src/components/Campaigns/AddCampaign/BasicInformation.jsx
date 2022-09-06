@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, TextInput, Textarea, Checkbox, MultiSelect, RangeSlider } from '@mantine/core';
+import { TextInput, Textarea, Checkbox, MultiSelect, RangeSlider, Select } from '@mantine/core';
 
 const data = [
   { value: 'react', label: 'React' },
@@ -60,6 +60,8 @@ const BasicInformation = ({ formData, setFormData }) => {
   const [tags, setTags] = useState([]);
   const [minImpressions, setMinImpressions] = useState(200);
   const [maxImpressions, setMaxImpressions] = useState(800);
+  const [healthTag, setHealthTag] = useState([]);
+
   const marks = [
     { value: 200, label: '20%' },
     { value: 800, label: '80%' },
@@ -76,10 +78,8 @@ const BasicInformation = ({ formData, setFormData }) => {
   };
 
   return (
-    <div className="mt-4 pl-5 pr-7 flex flex-col gap-4">
-      <Text size="md" weight="bold">
-        Basic Information
-      </Text>
+    <div className="mt-4 pl-5 pr-7 flex flex-col gap-4 pb-20">
+      <p className="text-md font-bold">Basic Information</p>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4">
         <div className="flex flex-col gap-y-4">
           <TextInput
@@ -121,15 +121,11 @@ const BasicInformation = ({ formData, setFormData }) => {
         onChange={setBrands}
         data={data}
       />
-      <Text size="sm" weight="bolder">
-        Impressions
-      </Text>
+      <p className="text-sm font-bolder">Impressions</p>
       <div className="flex gap-4 items-center">
         <div>
           <input className="border w-24 py-1 px-1" type="text" readOnly value={minImpressions} />
-          <Text size="sm" weight="100">
-            Min
-          </Text>
+          <p className="text-sm font-thin">Min</p>
         </div>
         <RangeSlider
           onChange={val => {
@@ -145,9 +141,9 @@ const BasicInformation = ({ formData, setFormData }) => {
         />
         <div className="text-right">
           <input className="border w-24" type="text" readOnly value={maxImpressions} />
-          <Text size="sm" weight="100">
+          <p className="text-sm font-thin" size="sm" weight="100">
             Max
-          </Text>
+          </p>
         </div>
       </div>
       <MultiSelect
@@ -156,6 +152,16 @@ const BasicInformation = ({ formData, setFormData }) => {
         value={tags}
         onChange={setTags}
         data={data}
+      />
+      <Select
+        styles={styles}
+        label="Health Tag"
+        value={healthTag}
+        onChange={setHealthTag}
+        data={[
+          { value: 'healthy', label: 'Healthy' },
+          { value: 'unhealthy', label: 'Unhealthy' },
+        ]}
       />
     </div>
   );

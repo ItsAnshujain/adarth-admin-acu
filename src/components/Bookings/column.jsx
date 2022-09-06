@@ -1,8 +1,8 @@
 /* eslint-disable */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Mail } from 'react-feather';
-import { NativeSelect } from '@mantine/core';
+import { ChevronDown, Eye, Edit2, Trash } from 'react-feather';
+import { NativeSelect, Menu, Progress } from '@mantine/core';
 import MenuIcon from '../Menu';
 
 const COLUMNS = [
@@ -159,6 +159,27 @@ const COLUMNS = [
     Header: 'CAMPAIGN INCHARGE',
     accessor: 'campaign_incharge',
   },
+  {
+    Header: 'HEALTH STATUS',
+    accessor: 'health_status',
+    Cell: tableProps => {
+      const {
+        row: {
+          original: { total_spaces },
+        },
+      } = tableProps;
+      return (
+        <div className="w-24">
+          <Progress
+            sections={[
+              { value: total_spaces, color: 'green' },
+              { value: 100 - total_spaces, color: 'red' },
+            ]}
+          />
+        </div>
+      );
+    },
+  },
 
   {
     Header: 'PAYMENT TYPE',
@@ -181,6 +202,28 @@ const COLUMNS = [
         </div>
       );
     },
+  },
+  {
+    Header: 'UPLOADED MEDIA',
+    accessor: 'uploaded_media',
+    Cell: tableProps => {
+      const {
+        row: {
+          original: { photo },
+        },
+      } = tableProps;
+
+      return (
+        <div className="bg-white border rounded-md">
+          <img className="h-10 mx-auto" src={photo} alt="banner" />
+        </div>
+      );
+    },
+  },
+  {
+    Header: 'DOWNLOAD UPLOADED MEDIA',
+    accessor: '',
+    Cell: () => <div className="text-purple-450 cursor-pointer">Download</div>,
   },
   {
     Header: 'TOTAL SPACES',
@@ -206,40 +249,48 @@ const COLUMNS = [
     Cell: () => <div className="text-purple-450 cursor-pointer">Download</div>,
   },
   {
-    Header: '',
+    Header: 'ACTION',
     accessor: 'details',
+    disableSortBy: true,
     Cell: tableProps => {
-      const [showMenu, setShowMenu] = useState(false);
       const navigate = useNavigate();
       const { id } = tableProps.row.original;
+
       return (
-        <div className="absolute z-50" onClick={() => setShowMenu(!showMenu)}>
-          <div className="relative mx-2">
-            <MenuIcon />
-            {showMenu && (
-              <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-50  items-start right-4 top-0 bg-white py-4 px-2">
-                <div
-                  onClick={() => navigate(`view-details/${id}`)}
-                  className="bg-white cursor-pointer"
-                >
-                  <Mail className="mr-1 text-gray-400 inline h-5" />
-                  <span>View Details</span>
-                </div>
-                <div
-                  onClick={() => navigate(`edit-details/${id}`)}
-                  className="bg-white cursor-pointer"
-                >
-                  <Mail className="mr-1 text-gray-400 inline h-5" />
-                  <span>Edit</span>
-                </div>
-                <div className="bg-white cursor-pointer">
-                  <Mail className="mr-1 text-gray-400 inline h-5" />
-                  <span>Delete</span>
-                </div>
+        <Menu shadow="md" width={150}>
+          <Menu.Target>
+            <button>
+              <MenuIcon />
+            </button>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Item>
+              <div
+                onClick={() => navigate(`view-details/${id}`)}
+                className="cursor-pointer flex items-center gap-1"
+              >
+                <Eye className="h-4" />
+                <span className="ml-1">View Details</span>
               </div>
-            )}
-          </div>
-        </div>
+            </Menu.Item>
+            <Menu.Item>
+              <div
+                onClick={() => navigate(`edit-details/${id}`)}
+                className="cursor-pointer flex items-center gap-1"
+              >
+                <Edit2 className="h-4" />
+                <span className="ml-1">Edit</span>
+              </div>
+            </Menu.Item>
+            <Menu.Item>
+              <div className="cursor-pointer flex items-center gap-1">
+                <Trash className="h-4" />
+                <span className="ml-1">Delete</span>
+              </div>
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       );
     },
   },

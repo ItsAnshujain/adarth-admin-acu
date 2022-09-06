@@ -2,10 +2,15 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Landlords from './pages/Landlords';
+import Header from './Loader/Header';
+import Loader from './Loader';
+import CustomLoader from './Loader/Loader';
+import Sidebar from './Loader/Sidebar';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
-const CreateSpace = lazy(() => import('./pages/Inventory/Create'));
+const CreateSpaceSingle = lazy(() => import('./pages/Inventory/Create'));
+const CreateSpaceBulk = lazy(() => import('./pages/Inventory/CreateBulk'));
 const SpaceDetails = lazy(() => import('./pages/Inventory/View'));
 
 const CampaignHome = lazy(() => import('./pages/Campaign/Home'));
@@ -29,15 +34,50 @@ const User = lazy(() => import('./pages/User/Users'));
 const CreateUser = lazy(() => import('./pages/User/Create'));
 const ViewUser = lazy(() => import('./pages/User/View'));
 
+const ReportHome = lazy(() => import('./pages/Report/Report'));
+const ReportInventory = lazy(() => import('./pages/Report/Inventory'));
+const ReportRevenue = lazy(() => import('./pages/Report/Revenue'));
+const ReportCampaign = lazy(() => import('./pages/Report/Campaign'));
+
+const MasterHome = lazy(() => import('./pages/Master/Master'));
+const MasterBrand = lazy(() => import('./pages/Master/Brands'));
+const MasterCategory = lazy(() => import('./pages/Master/Category'));
+
+const HomePage = lazy(() => import('./pages/Home'));
+const Notifications = lazy(() => import('./pages/Notification'));
+const Settings = lazy(() => import('./pages/Setting/Home'));
+
 const App = () => (
   <Router>
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
       <Route
+        path="/home"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <HomePage />
+          </Suspense>
+        }
+      />
+      <Route
         path="/inventory"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
             <Inventory />
           </Suspense>
         }
@@ -45,31 +85,39 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <InventoryHome />
             </Suspense>
           }
         />
         <Route
-          path="create-space"
+          path="create-space/single"
           element={
-            <Suspense fallback="Loading ...">
-              <CreateSpace />
+            <Suspense fallback={<CustomLoader />}>
+              <CreateSpaceSingle />
+            </Suspense>
+          }
+        />
+        <Route
+          path="create-space/bulk"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <CreateSpaceBulk />
             </Suspense>
           }
         />
         <Route
           path="edit-details/:id"
           element={
-            <Suspense fallback="Loading ...">
-              <CreateSpace />
+            <Suspense fallback={<CustomLoader />}>
+              <CreateSpaceSingle />
             </Suspense>
           }
         />
         <Route
           path="view-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <SpaceDetails />
             </Suspense>
           }
@@ -78,7 +126,14 @@ const App = () => (
       <Route
         path="/campaigns"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
             <Campaigns />
           </Suspense>
         }
@@ -86,7 +141,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <CampaignHome />
             </Suspense>
           }
@@ -94,7 +149,7 @@ const App = () => (
         <Route
           path="create-campaign"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CampaignCreate />
             </Suspense>
           }
@@ -102,7 +157,7 @@ const App = () => (
         <Route
           path="edit-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CampaignCreate />
             </Suspense>
           }
@@ -110,7 +165,7 @@ const App = () => (
         <Route
           path="view-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CampaignView />
             </Suspense>
           }
@@ -119,7 +174,14 @@ const App = () => (
       <Route
         path="/proposals"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
             <Proposals />
           </Suspense>
         }
@@ -127,7 +189,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <ProposalsHome />
             </Suspense>
           }
@@ -135,7 +197,7 @@ const App = () => (
         <Route
           path="create-proposals"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CreateProposals />
             </Suspense>
           }
@@ -143,7 +205,7 @@ const App = () => (
         <Route
           path="edit-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CreateProposals />
             </Suspense>
           }
@@ -151,7 +213,7 @@ const App = () => (
         <Route
           path="view-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <ViewProposal />
             </Suspense>
           }
@@ -160,7 +222,14 @@ const App = () => (
       <Route
         path="/bookings"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
             <Booking />
           </Suspense>
         }
@@ -168,7 +237,7 @@ const App = () => (
         <Route
           path=""
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <BookingHome />
             </Suspense>
           }
@@ -176,7 +245,7 @@ const App = () => (
         <Route
           path="view-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <ViewBooking />
             </Suspense>
           }
@@ -184,7 +253,7 @@ const App = () => (
         <Route
           path="generate-purchase-order/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <Generate />
             </Suspense>
           }
@@ -192,7 +261,7 @@ const App = () => (
         <Route
           path="generate-release-order/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <Generate />
             </Suspense>
           }
@@ -200,7 +269,7 @@ const App = () => (
         <Route
           path="generate-invoice/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <Generate />
             </Suspense>
           }
@@ -208,45 +277,166 @@ const App = () => (
         <Route
           path="create-order"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CreateOrder />
             </Suspense>
           }
         />
       </Route>
       <Route
-        path="/"
+        path="users"
         element={
-          <Suspense fallback="Loading ...">
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
             <User />
           </Suspense>
         }
       >
         <Route
-          path="users"
+          path=""
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<Loader />}>
               <UserHome />
             </Suspense>
           }
         />
         <Route
-          path="users/create-user"
+          path="create-user"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
               <CreateUser />
             </Suspense>
           }
         />
         <Route
-          path="users/view-details/:id"
+          path="edit-details/:id"
           element={
-            <Suspense fallback="Loading ...">
+            <Suspense fallback={<CustomLoader />}>
+              <CreateUser />
+            </Suspense>
+          }
+        />
+        <Route
+          path="view-details/:id"
+          element={
+            <Suspense fallback={<CustomLoader />}>
               <ViewUser />
             </Suspense>
           }
         />
       </Route>
+      <Route
+        path="/reports"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <ReportHome />
+          </Suspense>
+        }
+      >
+        <Route
+          path="inventory"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ReportInventory />
+            </Suspense>
+          }
+        />
+        <Route
+          path="revenue"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <ReportRevenue />
+            </Suspense>
+          }
+        />
+        <Route
+          path="campaign"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <ReportCampaign />
+            </Suspense>
+          }
+        />
+      </Route>
+
+      <Route
+        path="/masters"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <MasterHome />
+          </Suspense>
+        }
+      >
+        <Route
+          path="category"
+          element={
+            <Suspense fallback={<Loader />}>
+              <MasterCategory />
+            </Suspense>
+          }
+        />
+        <Route
+          path="brand"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <MasterBrand />
+            </Suspense>
+          }
+        />
+      </Route>
+
+      <Route
+        path="/notification"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <Notifications />
+          </Suspense>
+        }
+      />
+
+      <Route
+        path="/setting"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <Settings />
+          </Suspense>
+        }
+      />
+
       <Route path="/landlords" element={<Landlords />} />
     </Routes>
   </Router>

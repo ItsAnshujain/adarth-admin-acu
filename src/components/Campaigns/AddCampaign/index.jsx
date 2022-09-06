@@ -4,7 +4,7 @@ import SuccessModal from '../../shared/Modal';
 import Preview from '../shared/Preview';
 import CoverImage from './CoverImage';
 import Header from './Header';
-import Spaces from '../../shared/Spaces';
+import Spaces from './Spaces';
 import data from '../../../Dummydata/CAMPAIGN_SPACES.json';
 import column from './column';
 
@@ -51,7 +51,7 @@ const Create = () => {
   }, [formStep]);
 
   return (
-    <>
+    <div className="mb-24">
       <Header
         setFormStep={setFormStep}
         formStep={formStep}
@@ -70,7 +70,7 @@ const Create = () => {
         setOpenSuccessModal={setOpenSuccessModal}
         path="campaigns"
       />
-    </>
+    </div>
   );
 };
 
