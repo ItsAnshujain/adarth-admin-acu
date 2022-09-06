@@ -1,8 +1,7 @@
-/* eslint-disable */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Eye, Edit2, Trash } from 'react-feather';
-import { NativeSelect, Menu } from '@mantine/core';
+import { NativeSelect, Menu, Progress } from '@mantine/core';
 import MenuIcon from '../Menu';
 
 const COLUMNS = [
@@ -32,6 +31,8 @@ const COLUMNS = [
 
       return (
         <div
+          aria-hidden
+          type="button"
           onClick={() => navigate(`view-details/${id}`)}
           className="flex items-center gap-2 cursor-pointer"
         >
@@ -159,6 +160,27 @@ const COLUMNS = [
     Header: 'CAMPAIGN INCHARGE',
     accessor: 'campaign_incharge',
   },
+  {
+    Header: 'HEALTH STATUS',
+    accessor: 'health_status',
+    Cell: tableProps => {
+      const {
+        row: {
+          original: { total_spaces },
+        },
+      } = tableProps;
+      return (
+        <div className="w-24">
+          <Progress
+            sections={[
+              { value: total_spaces, color: 'green' },
+              { value: 100 - total_spaces, color: 'red' },
+            ]}
+          />
+        </div>
+      );
+    },
+  },
 
   {
     Header: 'PAYMENT TYPE',
@@ -181,6 +203,28 @@ const COLUMNS = [
         </div>
       );
     },
+  },
+  {
+    Header: 'UPLOADED MEDIA',
+    accessor: 'uploaded_media',
+    Cell: tableProps => {
+      const {
+        row: {
+          original: { photo },
+        },
+      } = tableProps;
+
+      return (
+        <div className="bg-white border rounded-md">
+          <img className="h-10 mx-auto" src={photo} alt="banner" />
+        </div>
+      );
+    },
+  },
+  {
+    Header: 'DOWNLOAD UPLOADED MEDIA',
+    accessor: '',
+    Cell: () => <div className="text-purple-450 cursor-pointer">Download</div>,
   },
   {
     Header: 'TOTAL SPACES',
@@ -211,34 +255,40 @@ const COLUMNS = [
     disableSortBy: true,
     Cell: tableProps => {
       const navigate = useNavigate();
-      const { id } = tableProps.row.original;
+      const {
+        row: {
+          original: { id },
+        },
+      } = tableProps;
 
       return (
         <Menu shadow="md" width={150}>
           <Menu.Target>
-            <button>
+            <button type="button">
               <MenuIcon />
             </button>
           </Menu.Target>
 
           <Menu.Dropdown>
             <Menu.Item>
-              <div
+              <button
+                type="button"
                 onClick={() => navigate(`view-details/${id}`)}
-                className="cursor-pointer flex items-center gap-1"
+                className="cursor-pointer flex items-center gap-1 w-full"
               >
                 <Eye className="h-4" />
                 <span className="ml-1">View Details</span>
-              </div>
+              </button>
             </Menu.Item>
             <Menu.Item>
-              <div
+              <button
+                type="button"
                 onClick={() => navigate(`edit-details/${id}`)}
-                className="cursor-pointer flex items-center gap-1"
+                className="cursor-pointer flex items-center gap-1 w-full"
               >
                 <Edit2 className="h-4" />
                 <span className="ml-1">Edit</span>
-              </div>
+              </button>
             </Menu.Item>
             <Menu.Item>
               <div className="cursor-pointer flex items-center gap-1">

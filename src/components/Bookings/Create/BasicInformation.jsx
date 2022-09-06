@@ -17,14 +17,16 @@ const BasicInfo = () => (
     <p className="text-xl font-bold">Basic Information</p>
     <div className="grid grid-cols-2 gap-8 mt-4">
       <div className="flex flex-col gap-4">
-        <TextInput styles={styles} label="Company Name" placeholder="Write..." />
-        <TextInput styles={styles} label="Client Email" placeholder="Write..." />
-        <TextInput styles={styles} label="Client Pan Number" placeholder="Write..." />
+        <TextInput styles={styles} label="Company Name" />
+        <TextInput styles={styles} label="Client Email" />
+        <TextInput styles={styles} label="Client Pan Number" />
+        <TextInput styles={styles} label="Payment Type" />
       </div>
       <div className="flex flex-col gap-4">
-        <TextInput styles={styles} label="Client Name" placeholder="Write..." />
-        <TextInput styles={styles} label="Client Contact Number" placeholder="Write..." />
-        <TextInput styles={styles} label="Client GST Number" placeholder="Write..." />
+        <TextInput styles={styles} label="Client Name" />
+        <TextInput styles={styles} label="Client Contact Number" />
+        <TextInput styles={styles} label="Client GST Number" />
+        <TextInput styles={styles} label="Payment Reference Number" />
       </div>
     </div>
   </div>

@@ -1,6 +1,9 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
+import Login from './pages/Login/Login';
+import Home from './pages/Login/Home';
+import ChangePassword from './pages/Login/ChangePassword';
+import ForgotPassword from './pages/Login/ForgotPassword';
 import Landlords from './pages/Landlords';
 import Header from './Loader/Header';
 import Loader from './Loader';
@@ -51,7 +54,11 @@ const App = () => (
   <Router>
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Login />}>
+        <Route path="login" element={<Home />} />
+        <Route path="change-password" element={<ChangePassword />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+      </Route>
       <Route
         path="/home"
         element={
