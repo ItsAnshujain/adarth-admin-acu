@@ -17,6 +17,8 @@ const dummyDataObj = {
   lighting: 'lighting',
   from_date: '02/12/2022',
   to_date: '02/12/2022',
+  resolution: '1080 x 1920',
+  illumination: 'lit',
 };
 
 const dummyData = new Array(3).fill(dummyDataObj);

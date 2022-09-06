@@ -1,6 +1,9 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
+import Login from './pages/Login/Login';
+import Home from './pages/Login/Home';
+import ChangePassword from './pages/Login/ChangePassword';
+import ForgotPassword from './pages/Login/ForgotPassword';
 import Landlords from './pages/Landlords';
 import Header from './Loader/Header';
 import Loader from './Loader';
@@ -43,14 +46,38 @@ const MasterHome = lazy(() => import('./pages/Master/Master'));
 const MasterBrand = lazy(() => import('./pages/Master/Brands'));
 const MasterCategory = lazy(() => import('./pages/Master/Category'));
 
+const HomePage = lazy(() => import('./pages/Home'));
 const Notifications = lazy(() => import('./pages/Notification'));
 const Settings = lazy(() => import('./pages/Setting/Home'));
+
+const Profile = lazy(() => import('./pages/Profile/Profile'));
+const ProfileHome = lazy(() => import('./pages/Profile/Home'));
+const ProfileEdit = lazy(() => import('./pages/Profile/Edit'));
 
 const App = () => (
   <Router>
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Login />}>
+        <Route path="login" element={<Home />} />
+        <Route path="change-password" element={<ChangePassword />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+      </Route>
+      <Route
+        path="/home"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <HomePage />
+          </Suspense>
+        }
+      />
       <Route
         path="/inventory"
         element={
@@ -420,7 +447,38 @@ const App = () => (
           </Suspense>
         }
       />
-
+      <Route
+        path="/"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <Profile />
+          </Suspense>
+        }
+      >
+        <Route
+          path="profile"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <ProfileHome />
+            </Suspense>
+          }
+        />
+        <Route
+          path="edit-profile"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <ProfileEdit />
+            </Suspense>
+          }
+        />
+      </Route>
       <Route path="/landlords" element={<Landlords />} />
     </Routes>
   </Router>

@@ -10,7 +10,7 @@ const COLUMNS = [
     accessor: 'id',
   },
   {
-    Header: 'COMPANY NAME',
+    Header: 'NAME',
     accessor: 'company_name',
   },
   {
@@ -33,14 +33,14 @@ const COLUMNS = [
                 <button
                   type="button"
                   onClick={() => setOpened(true)}
-                  className="cursor-pointer flex items-center gap-1"
+                  className="cursor-pointer flex items-center gap-1 w-full"
                 >
                   <Edit2 className="h-4" />
                   <span className="ml-1">Edit</span>
                 </button>
               </Menu.Item>
               <Menu.Item>
-                <button type="button" className="cursor-pointer flex items-center gap-1">
+                <button type="button" className="cursor-pointer flex items-center gap-1 w-full">
                   <Trash className="h-4" />
                   <span className="ml-1">Delete</span>
                 </button>

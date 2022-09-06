@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Badge from '../../shared/Badge';
-
+// TODO: Change landlord name to media owner name
 const COLUMNS = [
   {
     Header: '#',
@@ -32,7 +32,7 @@ const COLUMNS = [
     },
   },
   {
-    Header: 'LANDLORD NAME',
+    Header: 'MEDIA OWNER NAME',
     accessor: 'landlord_name',
     Cell: tableProps => {
       const {

@@ -4,6 +4,7 @@ import useSideBarState from '../store/sidebar.store';
 import SidebarButton from './Button/SidebarButton';
 
 const sidebarText = [
+  'Home',
   'Inventory',
   'Bookings',
   'Proposals',

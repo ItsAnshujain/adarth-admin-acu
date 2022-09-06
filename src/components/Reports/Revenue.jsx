@@ -115,11 +115,11 @@ const Revenue = () => {
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {
-    setColor(6);
+    setColor(7);
   }, []);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto pb-32">
       <Header text="Revenue Report" />
       <div className="mr-7 pl-5 mt-5 mb-10">
         <div className="flex flex-1 justify-between gap-4 flex-wrap mb-8 ">
@@ -160,7 +160,7 @@ const Revenue = () => {
                   <img src={calendar} className="h-5" alt="calendar" />
                 </Button>
                 {showDatePickerRevenue && (
-                  <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
+                  <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
                     <DateRange handleClose={() => setShowDatePickerRevenue(false)} />
                   </div>
                 )}
@@ -192,7 +192,7 @@ const Revenue = () => {
                     <img src={calendar} className="h-5" alt="calendar" />
                   </Button>
                   {showDateIndustry && (
-                    <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
+                    <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
                       <DateRange handleClose={() => setShowDateIndustry(false)} />
                     </div>
                   )}
@@ -225,7 +225,7 @@ const Revenue = () => {
                     <img src={calendar} className="h-5" alt="calendar" />
                   </Button>
                   {showDateCity && (
-                    <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
+                    <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
                       <DateRange handleClose={() => setShowDateCity(false)} />
                     </div>
                   )}

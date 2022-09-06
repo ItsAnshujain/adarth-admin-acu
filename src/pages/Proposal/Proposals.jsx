@@ -9,7 +9,7 @@ const Campaigns = () => {
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {
-    setColor(2);
+    setColor(3);
   }, []);
 
   let headerTitle = '';

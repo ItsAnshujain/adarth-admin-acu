@@ -23,16 +23,18 @@ const Inventory = () => {
         text="List of spaces"
         setView={setView}
       />
-      <div className="flex justify-between h-20 items-center pr-7">
-        <RowsPerPage setCount={setCount} count={count} />
-        <Search search={search} setSearch={setSearch} />
-      </div>
+      {view !== 'map' && (
+        <div className="flex justify-between h-20 items-center pr-7">
+          <RowsPerPage setCount={setCount} count={count} />
+          <Search search={search} setSearch={setSearch} />
+        </div>
+      )}
       {view === 'grid' ? (
         <GridView selectAll={selectAll} count={count} Card={Card} />
       ) : view === 'list' ? (
         <Table COLUMNS={COLUMNS} dummy={dummy} count={count} allowRowsSelect />
       ) : (
-        <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+        <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto mt-5">
           <MapView />
         </div>
       )}

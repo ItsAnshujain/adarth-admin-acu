@@ -8,12 +8,12 @@ const Master = () => {
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {
-    setColor(4);
+    setColor(5);
   }, []);
 
   return (
     <div className="absolute top-0">
-      <Header title="Reports" />
+      <Header title="Masters" />
       <div className="grid grid-cols-12">
         <Sidebar />
         <Outlet />

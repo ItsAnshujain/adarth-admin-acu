@@ -1,29 +1,19 @@
 import { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import useSideBarState from '../../store/sidebar.store';
 
-const Campaigns = () => {
-  const { pathname } = useLocation();
+const Profile = () => {
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {
     setColor(4);
   }, []);
 
-  let headerTitle = '';
-  if (pathname.includes('view')) {
-    headerTitle = 'User Details';
-  } else if (pathname.includes('create')) {
-    headerTitle = 'Add Users';
-  } else {
-    headerTitle = 'Users';
-  }
-
   return (
     <div className="absolute top-0">
-      <Header title={headerTitle} />
+      <Header title="My Profile" />
       <div className="grid grid-cols-12">
         <Sidebar />
         <Outlet />
@@ -32,4 +22,4 @@ const Campaigns = () => {
   );
 };
 
-export default Campaigns;
+export default Profile;

@@ -125,7 +125,7 @@ const Inventory = () => {
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {
-    setColor(6);
+    setColor(7);
   }, []);
 
   return (
@@ -220,10 +220,12 @@ const Inventory = () => {
             text="List of spaces"
             setView={setView}
           />
-          <div className="flex justify-between h-20 items-center pr-7">
-            <RowsPerPage setCount={setCount} count={count} />
-            <Search search={search} setSearch={setSearch} />
-          </div>
+          {view !== 'map' && (
+            <div className="flex justify-between h-20 items-center pr-7">
+              <RowsPerPage setCount={setCount} count={count} />
+              <Search search={search} setSearch={setSearch} />
+            </div>
+          )}
           {view === 'grid' ? (
             <GridView selectAll={selectAll} count={count} Card={Card} />
           ) : view === 'list' ? (
