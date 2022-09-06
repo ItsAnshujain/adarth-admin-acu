@@ -50,6 +50,10 @@ const HomePage = lazy(() => import('./pages/Home'));
 const Notifications = lazy(() => import('./pages/Notification'));
 const Settings = lazy(() => import('./pages/Setting/Home'));
 
+const Profile = lazy(() => import('./pages/Profile/Profile'));
+const ProfileHome = lazy(() => import('./pages/Profile/Home'));
+const ProfileEdit = lazy(() => import('./pages/Profile/Edit'));
+
 const App = () => (
   <Router>
     <Routes>
@@ -443,7 +447,38 @@ const App = () => (
           </Suspense>
         }
       />
-
+      <Route
+        path="/"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <Profile />
+          </Suspense>
+        }
+      >
+        <Route
+          path="profile"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <ProfileHome />
+            </Suspense>
+          }
+        />
+        <Route
+          path="edit-profile"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <ProfileEdit />
+            </Suspense>
+          }
+        />
+      </Route>
       <Route path="/landlords" element={<Landlords />} />
     </Routes>
   </Router>
