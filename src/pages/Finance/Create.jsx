@@ -1,9 +1,9 @@
-import MainArea from '../../components/shared/FileUpload';
+import Create from '../../components/Finance/Create';
 
-const CreateBulk = () => (
+const Home = () => (
   <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-    <MainArea />
+    <Create />
   </div>
 );
 
-export default CreateBulk;
+export default Home;

@@ -13,6 +13,7 @@ const sidebarText = [
   'Campaigns',
   'Reports',
   'Landlords',
+  'Finance',
 ];
 
 const Sidebar = () => {

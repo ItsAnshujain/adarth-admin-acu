@@ -9,7 +9,7 @@ import dummy from '../../Dummydata/Inventory.json';
 import Card from '../../components/Inventory/Card';
 import MapView from '../../components/Inventory/MapView';
 
-const Inventory = () => {
+const Home = () => {
   const [search, setSearch] = useState('');
   const [count, setCount] = useState('20');
   const [view, setView] = useState('list');
@@ -42,4 +42,4 @@ const Inventory = () => {
   );
 };
 
-export default Inventory;
+export default Home;
