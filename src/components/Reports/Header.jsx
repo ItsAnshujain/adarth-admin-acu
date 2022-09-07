@@ -1,14 +1,12 @@
 import { useState } from 'react';
-import { Text, Button } from '@mantine/core';
-import { ChevronDown } from 'react-feather';
+import { Text, Button, Select } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
-import Filter from '../Filter';
 
 const Header = ({ text }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showFilter, setShowFilter] = useState(false);
+  const [value, setValue] = useState();
   const ref = useClickOutside(() => setShowDatePicker(false));
 
   const openDatePicker = () => {
@@ -34,15 +32,18 @@ const Header = ({ text }) => {
           )}
         </div>
         <div className="mr-2">
-          <Button
-            onClick={() => setShowFilter(!showFilter)}
-            variant="default"
-            type="button"
-            className="font-medium"
-          >
-            <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
-          </Button>
-          {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
+          <Select
+            value={value}
+            onChange={setValue}
+            placeholder="Sort By"
+            data={[
+              { value: 'weekly', label: 'Weekly' },
+              { value: 'monthly', label: 'Monthly' },
+              { value: 'quarterly', label: 'Quarterly' },
+              { value: 'yearly', label: 'Yearly' },
+              { value: 'lastFiveYears', label: 'Last Five Years' },
+            ]}
+          />
         </div>
       </div>
     </div>
