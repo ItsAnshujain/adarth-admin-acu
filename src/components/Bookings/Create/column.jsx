@@ -1,10 +1,13 @@
-/* eslint-disable */
+import shallow from 'zustand/shallow';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NativeSelect } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
+import classNames from 'classnames';
 import Badge from '../../shared/Badge';
 import MenuIcon from '../../Menu';
+import useCreateBookingSelectSpaceState from '../../../store/createBookingSelectSpace.store';
+import upload from '../../../assets/upload.svg';
 
 const COLUMNS = [
   {
@@ -16,11 +19,19 @@ const COLUMNS = [
     accessor: 'space_name_and_photo',
     Cell: tableProps => {
       const navigate = useNavigate();
-      const { status, photo, space_name, id } = tableProps.row.original;
+
+      const {
+        row: {
+          original: { status, photo, space_name, id },
+        },
+      } = tableProps;
+
       const color =
         status === 'Available' ? 'green' : status === 'Unavailable' ? 'orange' : 'primary';
+
       return (
         <div
+          aria-hidden
           onClick={() => navigate(`view-details/${id}`)}
           className="grid grid-cols-2 gap-2 items-center cursor-pointer"
         >
@@ -47,6 +58,44 @@ const COLUMNS = [
         },
       } = tableProps;
       return <div className="w-fit">{landlord_name}</div>;
+    },
+  },
+  {
+    Header: 'UPLOAD MEDIA',
+    accessor: '',
+    Cell: tableProps => {
+      const {
+        row: {
+          original: { id },
+        },
+      } = tableProps;
+
+      const selectedSpace = useCreateBookingSelectSpaceState(state => state.selectedSpace, shallow);
+
+      return selectedSpace.length > 0 ? (
+        selectedSpace.map(selected => {
+          if (selected.original.id === id) {
+            return (
+              <button
+                type="button"
+                className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-350 text-white rounded-md cursor-pointer"
+              >
+                <span>Upload</span>
+                <img src={upload} alt="Upload" />
+              </button>
+            );
+          }
+          return null;
+        })
+      ) : (
+        <button
+          type="button"
+          className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-200 text-white rounded-md cursor-not-allowed "
+        >
+          <span>Upload</span>
+          <img src={upload} alt="Upload" />
+        </button>
+      );
     },
   },
   {
@@ -112,7 +161,7 @@ const COLUMNS = [
         },
       } = tableProps;
       return (
-        <div onClick={() => setShowMenu(!showMenu)}>
+        <div aria-hidden onClick={() => setShowMenu(!showMenu)}>
           <div className="relative">
             <MenuIcon />
             {/* {showMenu && (
