@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 import { useMemo, useState } from 'react';
 import classNames from 'classnames';
 import shallow from 'zustand/shallow';
@@ -43,6 +42,7 @@ const Table = ({
     useSortBy,
     usePagination,
     useRowSelect,
+    /* eslint-disable react/no-unstable-nested-components */
     allowRowsSelect &&
       (hooks => {
         hooks.visibleColumns.push(cols => [
@@ -107,7 +107,8 @@ const Table = ({
               return (
                 <tr
                   className={classNames(
-                    `text-left ${!isCreateOrder ? 'border border-l-0' : 'my-4'} overflow-auto`,
+                    'text-left overflow-auto',
+                    isCreateOrder ? 'border border-l-0' : 'my-4',
                   )}
                   {...row.getRowProps()}
                 >

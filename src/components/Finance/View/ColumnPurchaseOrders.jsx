@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { useNavigate } from 'react-router-dom';
 import { Eye, Edit2, Trash, Share2, Mail, Link } from 'react-feather';
 import { Menu } from '@mantine/core';
@@ -111,6 +110,7 @@ const COLUMNS = [
                 </Menu.Item>
                 <Menu.Item>
                   <div className="cursor-pointer flex items-center gap-1 border w-full rounded-md">
+                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                     <Link className="h-4" />
                     <span className="ml-1">Copy Link</span>
                   </div>
