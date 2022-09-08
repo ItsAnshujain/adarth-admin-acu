@@ -3,13 +3,14 @@ import classNames from 'classnames';
 import { useState } from 'react';
 import { ArrowLeft, ChevronDown } from 'react-feather';
 import { useLocation, useNavigate } from 'react-router-dom';
-import GenerateMenu from './UI/GenerateMenu';
+import GenerateMenu from '../../shared/GenerateMenu';
 
 const initialState = {
   purchase: false,
   releases: false,
   invoices: false,
 };
+
 const Header = ({ pageNumber, setPageNumber }) => {
   const [showMenu, setShowMenu] = useState(initialState);
 
