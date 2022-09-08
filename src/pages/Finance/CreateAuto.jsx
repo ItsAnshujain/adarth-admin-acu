@@ -1,9 +1,9 @@
-import MainArea from '../../components/shared/FileUpload';
+import FileUpload from '../../components/shared/FileUpload';
 
-const CreateBulk = () => (
+const Home = () => (
   <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-    <MainArea />
+    <FileUpload />
   </div>
 );
 
-export default CreateBulk;
+export default Home;

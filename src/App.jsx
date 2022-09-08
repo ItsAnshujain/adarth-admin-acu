@@ -54,6 +54,13 @@ const Profile = lazy(() => import('./pages/Profile/Profile'));
 const ProfileHome = lazy(() => import('./pages/Profile/Home'));
 const ProfileEdit = lazy(() => import('./pages/Profile/Edit'));
 
+const Finance = lazy(() => import('./pages/Finance/Finance'));
+const FinanceHome = lazy(() => import('./pages/Finance/Home'));
+const FinanceMonthly = lazy(() => import('./pages/Finance/Monthly'));
+const FinanceMonthlyDetails = lazy(() => import('./pages/Finance/MonthlyDetails'));
+const FinanceCreateOrder = lazy(() => import('./pages/Finance/Create'));
+const FinanceCreateOrderUpload = lazy(() => import('./pages/Finance/CreateAuto'));
+
 const App = () => (
   <Router>
     <Routes>
@@ -480,6 +487,62 @@ const App = () => (
         />
       </Route>
       <Route path="/landlords" element={<Landlords />} />
+      <Route
+        path="/"
+        element={
+          <Suspense
+            fallback={
+              <>
+                <Header />
+                <Sidebar />
+              </>
+            }
+          >
+            <Finance />
+          </Suspense>
+        }
+      >
+        <Route
+          path="/finance"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <FinanceHome />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/finance/:year"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <FinanceMonthly />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/finance/:year/details"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <FinanceMonthlyDetails />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/finance/create-order/:type"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <FinanceCreateOrder />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/finance/create-order/:type/upload"
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <FinanceCreateOrderUpload />
+            </Suspense>
+          }
+        />
+      </Route>
     </Routes>
   </Router>
 );

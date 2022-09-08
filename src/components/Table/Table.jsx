@@ -1,5 +1,5 @@
-/* eslint-disable react/no-unstable-nested-components */
 import { useMemo, useState } from 'react';
+import classNames from 'classnames';
 import shallow from 'zustand/shallow';
 import { useTable, useSortBy, useRowSelect, usePagination } from 'react-table';
 import { Pagination } from '@mantine/core';
@@ -9,7 +9,13 @@ import Descending from '../../assets/Icons/Descending';
 import useCreateBookingSelectSpaceState from '../../store/createBookingSelectSpace.store';
 
 // TODO: selectedFlatRows.original gives array of all selected rows and selectedRowIds contains all the data from id field
-const Table = ({ COLUMNS, dummy, allowRowsSelect = false, isBookingTable = false }) => {
+const Table = ({
+  COLUMNS,
+  dummy,
+  allowRowsSelect = false,
+  isBookingTable = false,
+  isCreateOrder = false,
+}) => {
   const [activePage, _] = useState();
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => dummy, []);
@@ -36,6 +42,7 @@ const Table = ({ COLUMNS, dummy, allowRowsSelect = false, isBookingTable = false
     useSortBy,
     usePagination,
     useRowSelect,
+    /* eslint-disable react/no-unstable-nested-components */
     allowRowsSelect &&
       (hooks => {
         hooks.visibleColumns.push(cols => [
@@ -98,7 +105,13 @@ const Table = ({ COLUMNS, dummy, allowRowsSelect = false, isBookingTable = false
             {page.map(row => {
               prepareRow(row);
               return (
-                <tr className="text-left border border-l-0 overflow-auto" {...row.getRowProps()}>
+                <tr
+                  className={classNames(
+                    'text-left overflow-auto',
+                    isCreateOrder ? 'border border-l-0' : 'my-4',
+                  )}
+                  {...row.getRowProps()}
+                >
                   {row.cells.map(cell => (
                     <td className="pl-2 py-2" {...cell.getCellProps()}>
                       <div className="w-max">{cell.render('Cell')}</div>
@@ -111,20 +124,22 @@ const Table = ({ COLUMNS, dummy, allowRowsSelect = false, isBookingTable = false
         </table>
         {/* TODO: Remove Pagination from here and do everything by sending request to backend */}
       </div>
-      <div className="flex justify-end my-4 pr-7">
-        <Pagination
-          styles={theme => ({
-            item: {
-              color: theme.colors.gray[5],
-              fontWeight: 700,
-            },
-          })}
-          page={activePage}
-          onChange={nextPage}
-          onClick={nextPage}
-          total={dummy.length}
-        />
-      </div>
+      {!isCreateOrder && (
+        <div className="flex justify-end my-4 pr-7">
+          <Pagination
+            styles={theme => ({
+              item: {
+                color: theme.colors.gray[5],
+                fontWeight: 700,
+              },
+            })}
+            page={activePage}
+            onChange={nextPage}
+            onClick={nextPage}
+            total={dummy.length}
+          />
+        </div>
+      )}
     </>
   );
 };
