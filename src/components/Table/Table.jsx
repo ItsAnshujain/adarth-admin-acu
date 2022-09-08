@@ -1,18 +1,32 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { useMemo, useState } from 'react';
+import shallow from 'zustand/shallow';
 import { useTable, useSortBy, useRowSelect, usePagination } from 'react-table';
 import { Pagination } from '@mantine/core';
 import IndeterminateCheckbox from './Checkbox';
 import Ascending from '../../assets/Icons/Ascending';
 import Descending from '../../assets/Icons/Descending';
+import useCreateBookingSelectSpaceState from '../../store/createBookingSelectSpace.store';
 
 // TODO: selectedFlatRows.original gives array of all selected rows and selectedRowIds contains all the data from id field
-const Table = ({ COLUMNS, dummy, allowRowsSelect = false }) => {
+const Table = ({ COLUMNS, dummy, allowRowsSelect = false, isBookingTable = false }) => {
   const [activePage, _] = useState();
   const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => dummy, []);
+  const setSelectedSpace = useCreateBookingSelectSpaceState(
+    state => state.setSelectedSpace,
+    shallow,
+  );
 
-  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, page, nextPage } = useTable(
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    prepareRow,
+    page,
+    nextPage,
+    selectedFlatRows,
+  } = useTable(
     {
       columns,
       data,
@@ -36,6 +50,10 @@ const Table = ({ COLUMNS, dummy, allowRowsSelect = false }) => {
         ]);
       }),
   );
+
+  if (isBookingTable) {
+    setSelectedSpace(selectedFlatRows);
+  }
 
   return (
     <>

@@ -5,10 +5,11 @@ import Filter from '../../Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
+import useCreateBookingSelectSpaceState from '../../../store/createBookingSelectSpace.store';
 
 const SelectSpace = ({ data, column }) => {
   const [search, setSearch] = useState('');
-
+  const selectedSpace = useCreateBookingSelectSpaceState(state => state.selectedSpace);
   const [showFilter, setShowFilter] = useState(false);
 
   return (
@@ -26,7 +27,7 @@ const SelectSpace = ({ data, column }) => {
         <div className="flex gap-4">
           <div>
             <p className="text-slate-400">Selected Places</p>
-            <p className="font-bold">12</p>
+            <p className="font-bold">{selectedSpace.length}</p>
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
@@ -42,7 +43,7 @@ const SelectSpace = ({ data, column }) => {
           <Search search={search} setSearch={setSearch} />
         </div>
       </div>
-      <Table dummy={data} COLUMNS={column} allowRowsSelect />
+      <Table dummy={data} COLUMNS={column} allowRowsSelect isBookingTable />
     </>
   );
 };

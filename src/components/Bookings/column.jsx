@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Eye, Edit2, Trash } from 'react-feather';
@@ -32,6 +31,8 @@ const COLUMNS = [
 
       return (
         <div
+          aria-hidden
+          type="button"
           onClick={() => navigate(`view-details/${id}`)}
           className="flex items-center gap-2 cursor-pointer"
         >
@@ -254,34 +255,40 @@ const COLUMNS = [
     disableSortBy: true,
     Cell: tableProps => {
       const navigate = useNavigate();
-      const { id } = tableProps.row.original;
+      const {
+        row: {
+          original: { id },
+        },
+      } = tableProps;
 
       return (
         <Menu shadow="md" width={150}>
           <Menu.Target>
-            <button>
+            <button type="button">
               <MenuIcon />
             </button>
           </Menu.Target>
 
           <Menu.Dropdown>
             <Menu.Item>
-              <div
+              <button
+                type="button"
                 onClick={() => navigate(`view-details/${id}`)}
-                className="cursor-pointer flex items-center gap-1"
+                className="cursor-pointer flex items-center gap-1 w-full"
               >
                 <Eye className="h-4" />
                 <span className="ml-1">View Details</span>
-              </div>
+              </button>
             </Menu.Item>
             <Menu.Item>
-              <div
+              <button
+                type="button"
                 onClick={() => navigate(`edit-details/${id}`)}
-                className="cursor-pointer flex items-center gap-1"
+                className="cursor-pointer flex items-center gap-1 w-full"
               >
                 <Edit2 className="h-4" />
                 <span className="ml-1">Edit</span>
-              </div>
+              </button>
             </Menu.Item>
             <Menu.Item>
               <div className="cursor-pointer flex items-center gap-1">

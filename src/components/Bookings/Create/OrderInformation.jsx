@@ -32,19 +32,8 @@ const OrderInfo = () => (
   <div className="pl-5 pr-7 mt-4">
     <p className="text-xl font-bold">Order Information</p>
     <div className="grid grid-cols-2 gap-8 mt-4">
-      <div className="flex flex-col gap-4">
-        <TextInput styles={styles} label="Campaign Name" placeholder="Write..." />
-        <p className="font-bold">Upload Media</p>
-        <div className="w-full border flex items-center cursor-pointer border-slate-300">
-          <button
-            type="button"
-            className="p-2 ml-1 h-[80%] flex items-center gap-2 border border-black"
-          >
-            <span>Upload File</span>
-            <img src={upload} alt="Upload" className="mr-1" />
-          </button>
-        </div>
-      </div>
+      <TextInput styles={styles} label="Campaign Name" placeholder="Write..." />
+
       <div>
         <Textarea
           styles={textAreaStyles}

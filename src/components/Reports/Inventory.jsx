@@ -26,7 +26,7 @@ import Table from '../Table/Table';
 import RowsPerPage from '../RowsPerPage';
 import Search from '../Search';
 import GridView from '../GridView';
-import COLUMNS from '../Inventory/column';
+import COLUMNS from './ColumnInventory';
 import dummy from '../../Dummydata/Inventory.json';
 import Card from '../Inventory/Card';
 import useSideBarState from '../../store/sidebar.store';
@@ -135,22 +135,27 @@ const Inventory = () => {
         <div className="flex justify-between gap-4 flex-wrap mb-8">
           <div className="border rounded p-8  flex-1">
             <img src={greenFolder} alt="folder" />
-            <p className="my-2 text-xs font-light text-slate-400">Total Inventory</p>
+            <p className="my-2 text-sm font-light text-slate-400">Total Inventory</p>
             <p className="font-bold">386387</p>
           </div>
           <div className="border rounded p-8 flex-1">
             <img src={greenFolder} alt="folder" />
-            <p className="my-2 text-xs font-light text-slate-400">Vacant</p>
+            <p className="my-2 text-sm font-light text-slate-400">Vacant</p>
             <p className="font-bold">386387</p>
           </div>
           <div className="border rounded p-8  flex-1">
             <img src={blueFolder} alt="folder" />
-            <p className="my-2 text-xs font-light text-slate-400">Occupied</p>
+            <p className="my-2 text-sm font-light text-slate-400">Occupied</p>
             <p className="font-bold">386387</p>
           </div>
           <div className="border rounded p-8 flex-1">
             <img src={greenFolder} alt="folder" />
-            <p className="my-2 text-xs font-light text-slate-400">Under Maintenance</p>
+            <p className="my-2 text-sm font-light text-slate-400">Under Maintenance</p>
+            <p className="font-bold">386387</p>
+          </div>
+          <div className="border rounded p-8 flex-1">
+            <img src={greenFolder} alt="folder" />
+            <p className="my-2 text-sm font-light text-slate-400">Total Opertaional Cost</p>
             <p className="font-bold">386387</p>
           </div>
           <div aria-hidden className="flex-1 invisible">
@@ -211,6 +216,18 @@ const Inventory = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+        <div className="flex justify-between gap-4 flex-wrap my-8">
+          <div className="border rounded p-8  flex-1">
+            <img src={greenFolder} alt="folder" />
+            <p className="my-2 text-sm font-light text-slate-400">Best Performing Inventory</p>
+            <p className="font-bold">Blogpad</p>
+          </div>
+          <div className="border rounded p-8 flex-1">
+            <img src={greenFolder} alt="folder" />
+            <p className="my-2 text-sm font-light text-slate-400">Worst Performing Inventory</p>
+            <p className="font-bold">Oopa</p>
           </div>
         </div>
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)]  border-gray-450 overflow-x-scroll mt-10">

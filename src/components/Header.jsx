@@ -1,4 +1,4 @@
-import { Button } from '@mantine/core';
+import { Button, Menu as MenuProfile } from '@mantine/core';
 import { useState } from 'react';
 import { Menu } from 'react-feather';
 import { Link } from 'react-router-dom';
@@ -7,6 +7,7 @@ import DrawerSidebar from './DrawerSidebar';
 
 const Header = ({ title }) => {
   const [opened, setOpened] = useState(false);
+  const [menuProfileOpened, setMenuProfileOpened] = useState(false);
 
   return (
     <>
@@ -30,10 +31,30 @@ const Header = ({ title }) => {
                 Settings
               </Button>
             </Link>
-            <Button variant="default">
-              <img className="w-8 h-8 mr-2" src={logo} alt="logo" />
-              <p className="font-medium text-sm">Profile</p>
-            </Button>
+
+            <MenuProfile
+              opened={menuProfileOpened}
+              onChange={setMenuProfileOpened}
+              shadow="md"
+              width={150}
+            >
+              <MenuProfile.Target>
+                <Button variant="default">
+                  <img className="w-8 h-8 mr-2" src={logo} alt="logo" />
+                  <p className="font-medium text-sm">Profile</p>
+                </Button>
+              </MenuProfile.Target>
+
+              <MenuProfile.Dropdown>
+                <Link to="/profile">
+                  <MenuProfile.Item>My Profile</MenuProfile.Item>
+                </Link>
+                <Link to="/edit-profile">
+                  <MenuProfile.Item>Edit Profile</MenuProfile.Item>
+                </Link>
+                <MenuProfile.Item className="text-red-500">Logout</MenuProfile.Item>
+              </MenuProfile.Dropdown>
+            </MenuProfile>
           </div>
         </div>
       </header>
