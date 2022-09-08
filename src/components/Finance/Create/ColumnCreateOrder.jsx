@@ -11,8 +11,8 @@ const COLUMNS = [
     Cell: () => (
       <div>
         <p>Hoarding Rent</p>
-        <p>At Lal Ganesh 30ft x 20ft</p>
-        <p>20th March to 19 April 2022</p>
+        <p className="text-xs">At Lal Ganesh 30ft x 20ft</p>
+        <p className="text-xs">20th March to 19 April 2022</p>
       </div>
     ),
   },
