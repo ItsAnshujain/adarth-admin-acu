@@ -17,7 +17,7 @@ const Table = ({
   isCreateOrder = false,
 }) => {
   const [activePage, _] = useState();
-  const columns = useMemo(() => COLUMNS, []);
+  const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const data = useMemo(() => dummy, []);
   const setSelectedSpace = useCreateBookingSelectSpaceState(
     state => state.setSelectedSpace,
@@ -71,31 +71,33 @@ const Table = ({
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(header => (
                   <th className="text-sm" {...header.getHeaderProps(header.getSortByToggleProps())}>
-                    <div className="w-max flex align-center text-left pl-2 text-gray-400 hover:text-black py-2 text-xs font-medium">
-                      <div className="w-fit tracking-wide">{header.render('Header')}</div>
-                      <div className="ml-2 gap-1 flex flex-col">
-                        {header.canSort ? (
-                          header.isSorted ? (
-                            header.isSortedDesc ? (
-                              <>
-                                <Ascending fill="#A1A9B8" />
-                                <Descending fill="black" />
-                              </>
+                    {!header.hideHeader ? (
+                      <div className="w-max flex align-center text-left pl-2 text-gray-400 hover:text-black py-2 text-xs font-medium">
+                        <div className="w-fit tracking-wide">{header.render('Header')}</div>
+                        <div className="ml-2 gap-1 flex flex-col">
+                          {header.canSort ? (
+                            header.isSorted ? (
+                              header.isSortedDesc ? (
+                                <>
+                                  <Ascending fill="#A1A9B8" />
+                                  <Descending fill="black" />
+                                </>
+                              ) : (
+                                <>
+                                  <Ascending fill="black" />
+                                  <Descending fill="#A1A9B8" />
+                                </>
+                              )
                             ) : (
                               <>
-                                <Ascending fill="black" />
+                                <Ascending fill="#A1A9B8" />
                                 <Descending fill="#A1A9B8" />
                               </>
                             )
-                          ) : (
-                            <>
-                              <Ascending fill="#A1A9B8" />
-                              <Descending fill="#A1A9B8" />
-                            </>
-                          )
-                        ) : null}
+                          ) : null}
+                        </div>
                       </div>
-                    </div>
+                    ) : null}
                   </th>
                 ))}
               </tr>
@@ -108,7 +110,7 @@ const Table = ({
                 <tr
                   className={classNames(
                     'text-left overflow-auto',
-                    isCreateOrder ? 'border border-l-0' : 'my-4',
+                    !isCreateOrder ? 'border border-l-0' : 'my-4',
                   )}
                   {...row.getRowProps()}
                 >
