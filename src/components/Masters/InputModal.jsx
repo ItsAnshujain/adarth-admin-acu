@@ -1,7 +1,7 @@
 import { Modal } from '@mantine/core';
 import { useLocation } from 'react-router-dom';
 
-const InputModal = ({ opened, setOpened, isEdit = 'false' }) => {
+const InputModal = ({ opened, setOpened, isEdit = false }) => {
   const { pathname } = useLocation();
 
   return (

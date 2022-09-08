@@ -79,15 +79,13 @@ const Preview = () => {
                 {toIndianCurrency(270000)}
               </Text>
 
-              {!pathname.includes('campaigns/view-details/') && (
-                <Badge
-                  className="text-purple-450 bg-purple-100 capitalize"
-                  text="1000+ Total Impressions"
-                  size="lg"
-                  variant="filled"
-                  radius="md"
-                />
-              )}
+              <Badge
+                className="text-purple-450 bg-purple-100 capitalize"
+                text="1000+ Total Impressions"
+                size="lg"
+                variant="filled"
+                radius="md"
+              />
             </div>
 
             <div className="mt-12">
@@ -106,10 +104,7 @@ const Preview = () => {
                       Size
                     </Text>
                     <Text className="mb-4">W X H</Text>
-                    <Text color="gray" size="md" weight="300">
-                      Impression
-                    </Text>
-                    <Text className="mb-4">26982673</Text>
+
                     <Text color="gray" size="md" weight="300">
                       Resolution
                     </Text>
