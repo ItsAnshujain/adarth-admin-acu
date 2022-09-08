@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Select, TextInput } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
 
 const styles = {
   label: {
@@ -14,6 +15,11 @@ const styles = {
 };
 const Credentials = () => {
   const [value, setValue] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate(`?type=${value}`);
+  }, [value]);
 
   return (
     <div className="pl-5 pr-7 mt-4">
@@ -24,7 +30,11 @@ const Credentials = () => {
             styles={styles}
             value={value}
             onChange={setValue}
-            data={['Admin', 'Super User']}
+            data={[
+              { label: 'Admin', value: 'admin' },
+              { label: 'Super User', value: 'super-user' },
+              { label: 'Media Owner', value: 'media-owner' },
+            ]}
             label="Role"
             required
             placeholder="Select"

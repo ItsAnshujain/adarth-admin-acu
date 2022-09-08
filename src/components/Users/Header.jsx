@@ -15,7 +15,7 @@ const AreaHeader = () => {
         <Select
           value={value}
           onChange={setValue}
-          data={['Team', 'Peers']}
+          data={['Team', 'Peers', 'Media Owners']}
           styles={{
             rightSection: { pointerEvents: 'none' },
           }}
