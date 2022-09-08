@@ -20,7 +20,6 @@ const BasicInfo = () => {
   const [city, setCity] = useState(null);
   const [peer, setPeer] = useState(null);
   const { pathname } = useLocation();
-  console.log(pathname);
 
   return (
     <div className="pl-5 pr-7 mt-4">

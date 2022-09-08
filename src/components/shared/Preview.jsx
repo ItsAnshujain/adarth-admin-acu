@@ -1,17 +1,19 @@
+import { useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { Text } from '@mantine/core';
-import dummy0 from '../../../assets/unsplash.png';
-import dummy1 from '../../../assets/dummy1.png';
-import dummy2 from '../../../assets/dummy2.png';
-import dummy3 from '../../../assets/dummy3.png';
-import toIndianCurrency from '../../../utils/currencyFormat';
-import Badge from '../../shared/Badge';
+import dummy0 from '../../assets/unsplash.png';
+import dummy1 from '../../assets/dummy1.png';
+import dummy2 from '../../assets/dummy2.png';
+import dummy3 from '../../assets/dummy3.png';
+import toIndianCurrency from '../../utils/currencyFormat';
+import Badge from './Badge';
 
 const imageUrl = [dummy1, dummy2, dummy0, dummy2, dummy1, dummy0];
 const Preview = () => {
   const [readMore, setReadMore] = useState(false);
   const [scrollImage, setScrollImage] = useState(imageUrl);
   const [posterImage, setPosterImage] = useState(dummy3);
+  const { pathname } = useLocation();
 
   const exchangeImages = index => {
     const temp = posterImage;
@@ -72,9 +74,21 @@ const Preview = () => {
                 </span>
               )}
             </Text>
-            <Text weight="bold" className="my-2">
-              {toIndianCurrency(270000)}
-            </Text>
+            <div className="flex gap-3 items-center">
+              <Text weight="bold" className="my-2">
+                {toIndianCurrency(270000)}
+              </Text>
+
+              {!pathname.includes('campaigns/view-details/') && (
+                <Badge
+                  className="text-purple-450 bg-purple-100 capitalize"
+                  text="1000+ Total Impressions"
+                  size="lg"
+                  variant="filled"
+                  radius="md"
+                />
+              )}
+            </div>
 
             <div className="mt-12">
               <Text>Specifications</Text>
