@@ -119,19 +119,19 @@ const Campaign = () => {
               <Doughnut options={config.options} data={config.data} />
             </div>
             <div>
-              <p className="font-medium">Printing Status</p>
+              <p className="font-medium">Health Status</p>
               <div className="flex gap-8 mt-6 flex-wrap">
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                   <div>
-                    <p className="my-2 text-xs font-light text-slate-400">Ongoing</p>
+                    <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
                     <p className="font-bold text-lg">1233</p>
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                   <div>
-                    <p className="my-2 text-xs font-light text-slate-400">Completed</p>
+                    <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
                     <p className="font-bold text-lg">1233</p>
                   </div>
                 </div>

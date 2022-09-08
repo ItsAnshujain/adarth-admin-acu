@@ -1,4 +1,4 @@
-/* eslint-disable */
+import { useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { Text } from '@mantine/core';
 import dummy0 from '../../assets/unsplash.png';
@@ -8,12 +8,12 @@ import dummy3 from '../../assets/dummy3.png';
 import toIndianCurrency from '../../utils/currencyFormat';
 import Badge from './Badge';
 
-const badgeData = ['School', 'Youth', 'Student', 'College Students'];
 const imageUrl = [dummy1, dummy2, dummy0, dummy2, dummy1, dummy0];
 const Preview = () => {
   const [readMore, setReadMore] = useState(false);
   const [scrollImage, setScrollImage] = useState(imageUrl);
   const [posterImage, setPosterImage] = useState(dummy3);
+  const { pathname } = useLocation();
 
   const exchangeImages = index => {
     const temp = posterImage;
@@ -33,6 +33,7 @@ const Preview = () => {
         <div className="flex overflow-scroll pt-4 gap-4 items-center">
           {scrollImage.map((src, index) => (
             <img
+              aria-hidden
               onClick={() => exchangeImages(index)}
               className="h-24 w-28 cursor-pointer"
               src={src}
@@ -78,14 +79,17 @@ const Preview = () => {
                 {toIndianCurrency(270000)}
               </Text>
 
-              <Badge
-                className="text-purple-450 bg-purple-100 capitalize"
-                text="1000+ Total Impressions"
-                size="lg"
-                variant="filled"
-                radius="md"
-              />
+              {!pathname.includes('campaigns/view-details/') && (
+                <Badge
+                  className="text-purple-450 bg-purple-100 capitalize"
+                  text="1000+ Total Impressions"
+                  size="lg"
+                  variant="filled"
+                  radius="md"
+                />
+              )}
             </div>
+
             <div className="mt-12">
               <Text>Specifications</Text>
               <Text color="gray" className="mb-2">
