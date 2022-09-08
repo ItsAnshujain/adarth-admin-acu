@@ -47,7 +47,7 @@ const COLUMNS = [
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
-          <Modal opened={opened} setOpened={setOpened} />
+          <Modal opened={opened} setOpened={setOpened} isEdit />
         </>
       );
     },

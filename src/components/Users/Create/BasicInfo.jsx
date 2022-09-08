@@ -1,5 +1,6 @@
 import { TextInput, Select } from '@mantine/core';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import image from '../../../assets/image.png';
 
 const styles = {
@@ -18,6 +19,8 @@ const BasicInfo = () => {
   const [state, setState] = useState(null);
   const [city, setCity] = useState(null);
   const [peer, setPeer] = useState(null);
+  const { pathname } = useLocation();
+  console.log(pathname);
 
   return (
     <div className="pl-5 pr-7 mt-4">
@@ -68,15 +71,17 @@ const BasicInfo = () => {
           label="About"
           required
         />
-        <Select
-          styles={styles}
-          value={peer}
-          onChange={setPeer}
-          data={['Admin', 'Super User']}
-          label="Select Peer"
-          required
-          placeholder="Select"
-        />
+        {!pathname.includes('edit-profile') && (
+          <Select
+            styles={styles}
+            value={peer}
+            onChange={setPeer}
+            data={['Admin', 'Super User']}
+            label="Select Peer"
+            required
+            placeholder="Select"
+          />
+        )}
       </div>
     </div>
   );

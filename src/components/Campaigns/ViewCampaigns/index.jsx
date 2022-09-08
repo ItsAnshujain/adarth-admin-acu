@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Header from './Header';
-import PreviewCampaign from '../shared/Preview';
+import PreviewCampaign from './Preview';
 import SpacesList from './SpacesList';
 import TotalBookings from './TotalBookings';
 import data from '../../../Dummydata/CAMPAIGN_SPACES.json';

@@ -1,7 +1,7 @@
-import { Modal, Select } from '@mantine/core';
+import { Modal } from '@mantine/core';
 import { useLocation } from 'react-router-dom';
 
-const InputModal = ({ opened, setOpened }) => {
+const InputModal = ({ opened, setOpened, isEdit = 'false' }) => {
   const { pathname } = useLocation();
 
   return (
@@ -13,7 +13,7 @@ const InputModal = ({ opened, setOpened }) => {
         },
       }}
       size="lg"
-      title={`Add ${pathname.includes('brand') ? 'Brand' : 'Category'}`}
+      title={`${isEdit ? 'Edit' : 'Add'} ${pathname.includes('brand') ? 'Brand' : 'Category'}`}
       opened={opened}
       withCloseButton={false}
       centered
@@ -21,17 +21,11 @@ const InputModal = ({ opened, setOpened }) => {
       <form className="border-t">
         <div className="flex flex-col gap-4 relative py-3 ">
           <p>{pathname.includes('brand') ? 'Brand' : 'Category'} Name</p>
-          <Select
-            styles={{
-              wrapper: {
-                '& svg': {
-                  visibility: 'hidden',
-                },
-              },
-            }}
-            className="w-full border border-none"
+
+          <input
+            className="w-full border p-2 focus:outline-none py-3"
+            type="text"
             placeholder="Select"
-            data={['Completed', 'Pending']}
           />
           <div className="flex gap-2  justify-end">
             <button

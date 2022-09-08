@@ -230,7 +230,7 @@ const Inventory = () => {
             <p className="font-bold">Oopa</p>
           </div>
         </div>
-        <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)]  border-gray-450 overflow-x-scroll mt-10">
+        <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mt-10">
           <AreaHeader
             selectAll={selectAll}
             setSelectAll={setSelectAll}
