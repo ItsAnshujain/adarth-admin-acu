@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Select } from '@mantine/core';
 import { Plus, ChevronDown } from 'react-feather';
-import Filter from '../Filter';
+import Filter from './Filter';
 
 const AreaHeader = () => {
   const navigate = useNavigate();
