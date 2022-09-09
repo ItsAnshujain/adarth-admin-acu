@@ -11,20 +11,40 @@ const COLUMNS = [
     accessor: 'id',
   },
   {
-    Header: 'VOUCHER NO',
-    accessor: 'voucher_no',
+    Header: 'ORDER ID',
+    accessor: 'order_id',
     Cell: () => <div>1</div>,
   },
   {
-    Header: 'INVOICE TO',
-    accessor: 'invoice_to',
-    Cell: () => <div>Adarth</div>,
+    Header: 'INVOICE ID',
+    accessor: 'invoice_id',
+    Cell: () => <div>1</div>,
   },
 
   {
-    Header: 'SUPPLIER',
-    accessor: 'supplier',
-    Cell: () => <div>MK ADD Communication Services</div>,
+    Header: 'BUYER ORDER NO',
+    accessor: 'buyer_order_no',
+    Cell: () => <div>1</div>,
+  },
+  {
+    Header: 'TO',
+    accessor: 'to',
+    Cell: () => <div>Cyber Sikkim</div>,
+  },
+  {
+    Header: 'BUYER',
+    accessor: 'buyer',
+    Cell: () => <div>Adarth</div>,
+  },
+  {
+    Header: 'INVOICE DATE',
+    accessor: 'invoice_date',
+    Cell: () => <div>2 Sep,2022</div>,
+  },
+  {
+    Header: 'SUPPLIER REF',
+    accessor: 'supplier_ref',
+    Cell: () => <div>Mohandad Gandhi</div>,
   },
   {
     Header: 'STATUS',
@@ -39,12 +59,12 @@ const COLUMNS = [
   {
     Header: 'TOTAL AMOUNT',
     accessor: 'total_amount',
-    Cell: () => <div>{toIndianCurrency(29834)}</div>,
+    Cell: () => <div>{toIndianCurrency(648764)}</div>,
   },
   {
     Header: 'PAYMENT METHOD',
     accessor: 'payment_method',
-    Cell: () => <div>BANK</div>,
+    Cell: () => <div>Bank</div>,
   },
 
   {

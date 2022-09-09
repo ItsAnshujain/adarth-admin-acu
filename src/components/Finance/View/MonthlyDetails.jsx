@@ -7,8 +7,8 @@ import Header from '../Header';
 import Search from '../../Search';
 import DateRange from '../../DateRange';
 import calendar from '../../../assets/data-table.svg';
+import ColumnPurchaseOrders from './ColumnPurchaseOrder';
 import ColumnInvoices from './ColumnInvoices';
-import ColumnPurchaseOrders from './ColumnPurchaseOrders';
 import ColumnReleaseOrders from './ColumnReleaseOrders';
 import Table from '../../Table/Table';
 import data from '../../../Dummydata/BOOKING_DATA.json';
@@ -22,15 +22,6 @@ const Monthly = () => {
   const openDatePicker = () => {
     setShowDatePicker(!showDatePicker);
   };
-
-  const getTable = () =>
-    pageNumber === 0 ? (
-      <Table COLUMNS={ColumnInvoices} dummy={data} />
-    ) : pageNumber === 1 ? (
-      <Table COLUMNS={ColumnReleaseOrders} dummy={data} />
-    ) : (
-      <Table COLUMNS={ColumnPurchaseOrders} dummy={data} />
-    );
 
   return (
     <div>
@@ -89,7 +80,13 @@ const Monthly = () => {
           )}
         </div>
       </div>
-      {getTable()}
+      {pageNumber === 0 ? (
+        <Table COLUMNS={ColumnPurchaseOrders} dummy={data} />
+      ) : pageNumber === 1 ? (
+        <Table COLUMNS={ColumnReleaseOrders} dummy={data} />
+      ) : (
+        <Table COLUMNS={ColumnInvoices} dummy={data} />
+      )}
     </div>
   );
 };
