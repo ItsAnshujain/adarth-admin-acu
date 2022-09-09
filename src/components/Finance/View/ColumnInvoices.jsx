@@ -95,7 +95,7 @@ const COLUMNS = [
                     className="cursor-pointer flex items-center gap-1 w-full"
                   >
                     <img src={whatsapp} alt="whatsapp-icon" className="h-4" />
-                    <span className="ml-1">View Details</span>
+                    <span className="ml-1">Whatsapp</span>
                   </button>
                 </Menu.Item>
                 <Menu.Item>
@@ -128,30 +128,14 @@ const COLUMNS = [
 
               <Menu.Dropdown>
                 <Menu.Item>
-                  <button
-                    type="button"
-                    onClick={() => navigate(`view-details/${id}`)}
-                    className="cursor-pointer flex items-center gap-1 w-full"
-                  >
-                    <Eye className="h-4" />
-                    <span className="ml-1">View Details</span>
+                  <button type="button" className="cursor-pointer flex items-center gap-1 w-full">
+                    <span className="ml-1">Download</span>
                   </button>
                 </Menu.Item>
                 <Menu.Item>
-                  <button
-                    type="button"
-                    onClick={() => navigate(`edit-details/${id}`)}
-                    className="cursor-pointer flex items-center gap-1 w-full"
-                  >
-                    <Edit2 className="h-4" />
-                    <span className="ml-1">Edit</span>
-                  </button>
-                </Menu.Item>
-                <Menu.Item>
-                  <div className="cursor-pointer flex items-center gap-1">
-                    <Trash className="h-4" />
+                  <button type="button" className="cursor-pointer flex items-center gap-1 w-full">
                     <span className="ml-1">Delete</span>
-                  </div>
+                  </button>
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>
