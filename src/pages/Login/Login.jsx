@@ -7,7 +7,6 @@ const Login = () => (
     <div className="mr-16">
       <img src={login} alt="login" className="h-screen" />
     </div>
-
     <Outlet />
   </div>
 );

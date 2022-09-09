@@ -25,7 +25,7 @@ const InputModal = ({ opened, setOpened, isEdit = false }) => {
           <input
             className="w-full border p-2 focus:outline-none py-3"
             type="text"
-            placeholder="Select"
+            placeholder="Write"
           />
           <div className="flex gap-2  justify-end">
             <button
