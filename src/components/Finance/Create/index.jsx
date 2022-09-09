@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { TextInput, NativeSelect } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { Calendar, ChevronDown } from 'react-feather';
@@ -6,7 +6,8 @@ import { useState } from 'react';
 import Table from '../../Table/Table';
 import column from './ColumnCreateOrder';
 import data from './Data.json';
-import toIndianCurrency from '../../../utils/currencyFormat';
+import dataColumnTotal from './DataColumTotal.json';
+import columnTotal from './columnTotal';
 
 const styles = {
   label: {
@@ -23,8 +24,14 @@ const styles = {
 
 const Create = () => {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [date, setDate] = useState();
   const [orderId, setOrderId] = useState();
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    navigate(-1);
+  };
 
   return (
     <div className="pb-12">
@@ -32,10 +39,14 @@ const Create = () => {
         <header className="h-20 border-b flex items-center justify-between pl-5 pr-7">
           <p className="font-bold text-lg">Create Purchase Order</p>
           <div className="flex gap-3">
-            <button type="button" className="border rounded-md p-2">
+            <button onClick={() => navigate(-1)} type="button" className="border rounded-md p-2">
               Cancel
             </button>
-            <button type="submit" className="border rounded-md p-2 bg-purple-450 text-white">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+              className="border rounded-md p-2 bg-purple-450 text-white"
+            >
               Create
             </button>
           </div>
@@ -86,11 +97,7 @@ const Create = () => {
           <div className="border-dashed border-0 border-black border-b-2 pb-4">
             <Table COLUMNS={column} dummy={data} isCreateOrder />
           </div>
-          <div className="flex justify-between mt-3 items-center pl-16 pr-20">
-            <p>Total</p>
-            <p className="font-bold relative left-64">41.67</p>
-            <p className="font-bold relative left-0">{toIndianCurrency(32524)}</p>
-          </div>
+          <Table COLUMNS={columnTotal} dummy={dataColumnTotal} isCreateOrder />
         </div>
         <div className="pl-5 pr-7 flex flex-col gap-4">
           <TextInput styles={styles} label="Amount Chargeable (in words)" />
