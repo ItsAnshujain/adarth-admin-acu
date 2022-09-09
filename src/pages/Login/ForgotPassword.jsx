@@ -3,6 +3,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useForgotPassword } from '../../hooks/auth.hooks';
+import Loader from '../../Loader/Loader';
 
 const initialValues = {
   email: '',
@@ -12,7 +14,7 @@ const schema = yup.object().shape({
   email: yup.string().required('Email is required').email('Invalid Email'),
 });
 
-const Home = () => {
+const ForgotPassword = () => {
   const navigate = useNavigate();
   const {
     control,
@@ -23,12 +25,25 @@ const Home = () => {
     resolver: yupResolver(schema),
     initialValues,
   });
+  const { mutate: forgotPassword, isSuccess, isLoading, isError, data } = useForgotPassword();
 
   // TODO: add data as and argument to function while integration
-  const onSubmitHandler = () => {
+  const onSubmitHandler = formData => {
+    forgotPassword(formData);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="absolute top-0 left-0 w-screen h-screen z-10 bg-white opacity-30">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (isSuccess) {
     reset(initialValues);
     navigate('/change-password');
-  };
+  }
 
   return (
     <div className="my-auto w-[31%]">
@@ -74,4 +89,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default ForgotPassword;

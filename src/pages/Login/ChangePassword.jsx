@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { Text, Button, PasswordInput } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { Text, Button, PasswordInput, Alert } from '@mantine/core';
 import { useForm, Controller } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { XOctagon } from 'react-feather';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import SuccessModal from '../../components/shared/Modal';
+import { useResetPassword } from '../../hooks/auth.hooks';
 
 const initialValues = {
   confirmPassword: '',
@@ -25,23 +27,35 @@ const schema = yup.object().shape({
 });
 
 const Home = () => {
-  const navigate = useNavigate();
   const [open, setOpenSuccessModal] = useState(false);
+  const [passwordMatches, setPasswordMatches] = useState(true);
+  const { mutate: changePassword, isLoading, isError, isSuccess } = useResetPassword();
+
+  useEffect(() => {
+    if (!passwordMatches) {
+      setPasswordMatches(false);
+      setTimeout(() => {
+        setPasswordMatches(true);
+      }, 1000);
+    }
+  }, [passwordMatches]);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm({
     resolver: yupResolver(schema),
     initialValues,
   });
 
   // TODO: add data as and argument to function while integration
-  const onSubmitHandler = () => {
-    reset(initialValues);
-    setOpenSuccessModal(true);
+  const onSubmitHandler = formData => {
+    if (formData.password !== formData.confirmPassword) {
+      setPasswordMatches(false);
+    }
+
+    return null;
   };
 
   return (
@@ -77,6 +91,13 @@ const Home = () => {
           />
 
           <p className="mb-3 text-sm text-orange-450">{errors.confirmPassword?.message}</p>
+          {!passwordMatches && (
+            <div className="absolute top-10 right-0">
+              <Alert icon={<XOctagon />} color="red">
+                Password do not match
+              </Alert>
+            </div>
+          )}
 
           <Button
             className="mt-2 width-full bg-purple-450 border-rounded-xl text-xl"

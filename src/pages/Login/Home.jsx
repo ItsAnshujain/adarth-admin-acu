@@ -1,8 +1,14 @@
-import { Title, TextInput, Text, Button, PasswordInput } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { Title, TextInput, Text, Button, PasswordInput, Alert } from '@mantine/core';
 import { useForm, Controller } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import shallow from 'zustand/shallow';
 import * as yup from 'yup';
+import { XOctagon } from 'react-feather';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useLogin } from '../../hooks/auth.hooks';
+import Loader from '../../Loader/Loader';
+import useTokenIdStore from '../../store/user.store';
 
 const initialValues = {
   email: '',
@@ -20,6 +26,11 @@ const schema = yup.object().shape({
 
 const Home = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [showNotif, setShowNotif] = useState(true);
+  const setToken = useTokenIdStore(state => state.setToken, shallow);
+  const { mutate: login, isSuccess, isLoading, isError, data } = useLogin();
+
   const {
     control,
     handleSubmit,
@@ -30,11 +41,36 @@ const Home = () => {
     initialValues,
   });
 
+  useEffect(() => {
+    if (isError) {
+      setShowNotif(true);
+      setTimeout(() => {
+        setShowNotif(false);
+      }, 1000);
+    }
+  }, [isError]);
+
   // TODO: add data as and argument to function while integration
-  const onSubmitHandler = () => {
-    reset(initialValues);
-    navigate('/home');
+  const onSubmitHandler = async formData => {
+    login(formData);
   };
+
+  if (isLoading) {
+    return (
+      <div className="absolute top-0 left-0 w-screen h-screen z-10 bg-white opacity-30">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (isSuccess) {
+    const {
+      data: { token },
+    } = data;
+    setToken(token);
+    reset(initialValues);
+    navigate(location.state?.path || '/home');
+  }
 
   return (
     <div className="my-auto w-[31%]">
@@ -65,7 +101,13 @@ const Home = () => {
         />
 
         <p className="mb-3 text-sm text-orange-450">{errors.password?.message}</p>
-
+        {isError && showNotif && (
+          <div className="absolute top-10 right-0">
+            <Alert icon={<XOctagon />} color="red">
+              Username and password do not match
+            </Alert>
+          </div>
+        )}
         <Button
           className="mt-2 width-full bg-purple-450"
           color="primary"
