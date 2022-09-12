@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react';
-import { Title, TextInput, Text, Button, PasswordInput, Alert } from '@mantine/core';
-import { useForm, Controller } from 'react-hook-form';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import shallow from 'zustand/shallow';
 import * as yup from 'yup';
-import { XOctagon } from 'react-feather';
+import shallow from 'zustand/shallow';
+import { useForm } from 'react-hook-form';
+import { Title, Text, Button } from '@mantine/core';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { showNotification } from '@mantine/notifications';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLogin } from '../../hooks/auth.hooks';
-import Loader from '../../Loader/Loader';
 import useTokenIdStore from '../../store/user.store';
+import {
+  ControlledFormTextInput,
+  ControlledFormPasswordInput,
+} from '../../components/Input/FormInput';
 
 const initialValues = {
   email: '',
@@ -27,8 +29,12 @@ const schema = yup.object().shape({
 const Home = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [showNotif, setShowNotif] = useState(true);
-  const setToken = useTokenIdStore(state => state.setToken, shallow);
+
+  const { setToken, setId } = useTokenIdStore(
+    state => ({ setToken: state.setToken, setId: state.setId }),
+    shallow,
+  );
+
   const { mutate: login, isSuccess, isLoading, isError, data } = useLogin();
 
   const {
@@ -41,75 +47,71 @@ const Home = () => {
     initialValues,
   });
 
-  useEffect(() => {
-    if (isError) {
-      setShowNotif(true);
-      setTimeout(() => {
-        setShowNotif(false);
-      }, 1000);
-    }
-  }, [isError]);
-
-  // TODO: add data as and argument to function while integration
   const onSubmitHandler = async formData => {
     login(formData);
   };
 
-  if (isLoading) {
-    return (
-      <div className="absolute top-0 left-0 w-screen h-screen z-10 bg-white opacity-30">
-        <Loader />
-      </div>
-    );
+  if (isError) {
+    showNotification({
+      title: 'Invalid details',
+      message: 'Email and Password do not match',
+    });
   }
 
   if (isSuccess) {
     const {
-      data: { token },
+      data: { token, id: userId },
     } = data;
     setToken(token);
+    setId(userId);
+
     reset(initialValues);
+
     navigate(location.state?.path || '/home');
   }
 
+  const styles = () => ({
+    label: {
+      color: 'grey',
+      opacity: '0.5',
+      marginBottom: '16px',
+      marginTop: '24px',
+      fontWeight: '100',
+      fontSize: '16px',
+    },
+  });
+
   return (
     <div className="my-auto w-[31%]">
-      <Title className="mb-8">Login to Adarth</Title>
-      <Text className="mb-8">Please use registered email for login</Text>
+      <Title className="mb-1">Login to Adarth</Title>
+      <Text>Please use registered email for login</Text>
 
       <form onSubmit={handleSubmit(onSubmitHandler)}>
-        <Text color="gray" className="mb-4 opacity-50">
-          Email
-        </Text>
-        <Controller
+        <ControlledFormTextInput
           name="email"
-          defaultValue={initialValues.email}
+          initialValues={initialValues}
           control={control}
-          render={({ field }) => <TextInput {...field} size="lg" placeholder="Your Email" />}
+          label="Email"
+          isLoading={isLoading}
+          size="lg"
+          placeholder="Your Email"
+          styles={styles}
+          errors={errors}
         />
 
-        <p className="text-sm text-orange-450 mb-3">{errors.email?.message}</p>
-
-        <Text color="gray" className="my-4 mt-6 opacity-50">
-          Password
-        </Text>
-        <Controller
+        <ControlledFormPasswordInput
           name="password"
-          defaultValue={initialValues.password}
+          initialValues={initialValues}
           control={control}
-          render={({ field }) => <PasswordInput {...field} size="lg" placeholder="Your Password" />}
+          label="Password"
+          isLoading={isLoading}
+          size="lg"
+          placeholder="Your Password"
+          styles={styles}
+          errors={errors}
         />
-
-        <p className="mb-3 text-sm text-orange-450">{errors.password?.message}</p>
-        {isError && showNotif && (
-          <div className="absolute top-10 right-0">
-            <Alert icon={<XOctagon />} color="red">
-              Username and password do not match
-            </Alert>
-          </div>
-        )}
         <Button
-          className="mt-2 width-full bg-purple-450"
+          className="mt-5 width-full bg-purple-450"
           color="primary"
           type="submit"
           styles={() => ({

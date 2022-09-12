@@ -1,10 +1,11 @@
-import { TextInput, Text, Button } from '@mantine/core';
-import { useForm, Controller } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@mantine/core';
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { showNotification } from '@mantine/notifications';
 import { useForgotPassword } from '../../hooks/auth.hooks';
-import Loader from '../../Loader/Loader';
+import { ControlledFormTextInput } from '../../components/Input/FormInput';
 
 const initialValues = {
   email: '',
@@ -15,56 +16,65 @@ const schema = yup.object().shape({
 });
 
 const ForgotPassword = () => {
-  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm({
     resolver: yupResolver(schema),
     initialValues,
   });
-  const { mutate: forgotPassword, isSuccess, isLoading, isError, data } = useForgotPassword();
+  const { mutate: forgotPassword, isSuccess, isLoading, isError } = useForgotPassword();
 
   // TODO: add data as and argument to function while integration
   const onSubmitHandler = formData => {
     forgotPassword(formData);
   };
 
-  if (isLoading) {
-    return (
-      <div className="absolute top-0 left-0 w-screen h-screen z-10 bg-white opacity-30">
-        <Loader />
-      </div>
-    );
+  if (isSuccess) {
+    showNotification({
+      title: 'Request Submitted',
+      message: 'Please check your email for further instructions',
+    });
   }
 
-  if (isSuccess) {
-    reset(initialValues);
-    navigate('/change-password');
+  if (isError) {
+    showNotification({
+      title: 'Invalid details',
+      message: 'Please use registered email id',
+    });
   }
+
+  const styles = () => ({
+    label: {
+      color: 'grey',
+      opacity: '0.5',
+      marginBottom: '16px',
+      fontWeight: '100',
+      fontSize: '16px',
+    },
+  });
 
   return (
     <div className="my-auto w-[31%]">
       <p className="mb-1 text-2xl font-bold">Forgot Password</p>
-      <Text className="mb-8">Please use registered email id</Text>
+      <p className="mb-4">Please use registered email id</p>
 
       <form onSubmit={handleSubmit(onSubmitHandler)}>
-        <Text color="gray" className="mb-4 opacity-50">
-          Email
-        </Text>
-        <Controller
+        <ControlledFormTextInput
+          label="Email"
           name="email"
-          defaultValue={initialValues.email}
+          initialValues={initialValues}
+          placeholder="Your Email"
+          size="lg"
+          isLoading={isLoading}
           control={control}
-          render={({ field }) => <TextInput {...field} size="lg" placeholder="Your Email" />}
+          errors={errors}
+          styles={styles}
         />
 
-        <p className="text-sm text-orange-450 mb-3">{errors.email?.message}</p>
-
         <Button
-          className="mt-2 width-full bg-purple-450"
+          className="mt-4 width-full bg-purple-450"
           color="primary"
           type="submit"
           styles={() => ({
@@ -80,11 +90,11 @@ const ForgotPassword = () => {
           Send Link
         </Button>
       </form>
-      <Text className="mt-4">
+      <p className="mt-4">
         <Link to="/">
           <span className="text-purple-450 ml-1 cursor-pointer">Back to Login</span>
         </Link>
-      </Text>
+      </p>
     </div>
   );
 };

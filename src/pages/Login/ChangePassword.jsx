@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Text, Button, PasswordInput, Alert } from '@mantine/core';
-import { useForm, Controller } from 'react-hook-form';
-import { Link } from 'react-router-dom';
-import { XOctagon } from 'react-feather';
 import * as yup from 'yup';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Text, Button } from '@mantine/core';
+import { Link, useNavigate } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { showNotification } from '@mantine/notifications';
 import SuccessModal from '../../components/shared/Modal';
 import { useResetPassword } from '../../hooks/auth.hooks';
+import { ControlledFormPasswordInput } from '../../components/Input/FormInput';
 
 const initialValues = {
   confirmPassword: '',
@@ -30,16 +31,7 @@ const Home = () => {
   const [open, setOpenSuccessModal] = useState(false);
   const [passwordMatches, setPasswordMatches] = useState(true);
   const { mutate: changePassword, isLoading, isError, isSuccess } = useResetPassword();
-
-  useEffect(() => {
-    if (!passwordMatches) {
-      setPasswordMatches(false);
-      setTimeout(() => {
-        setPasswordMatches(true);
-      }, 1000);
-    }
-  }, [passwordMatches]);
-
+  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
@@ -53,10 +45,47 @@ const Home = () => {
   const onSubmitHandler = formData => {
     if (formData.password !== formData.confirmPassword) {
       setPasswordMatches(false);
+      setTimeout(() => {
+        setPasswordMatches(true);
+      }, 10);
+    } else {
+      changePassword({
+        password: formData.password,
+        token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzFiMjNhOTRlOWU2ODgwODQxMmU5ZTgiLCJpYXQiOjE2NjI5Nzk4MTQsImV4cCI6MTY2MzA2NjIxNH0.DI52v5EDobQG5TcbO0GYFzRgm-pVHKiBpji-Hc_Qm90',
+      });
     }
 
     return null;
   };
+
+  if (isError) {
+    showNotification({
+      title: 'Something went wrong',
+      message: 'Please try again',
+    });
+  }
+
+  if (!passwordMatches) {
+    showNotification({
+      title: 'Password does not match',
+    });
+  }
+
+  if (isSuccess) {
+    navigate('/login');
+  }
+
+  const styles = () => ({
+    label: {
+      color: 'grey',
+      opacity: '0.5',
+      marginBottom: '16px',
+      marginTop: '24px',
+      fontWeight: '100',
+      fontSize: '16px',
+    },
+  });
 
   return (
     <>
@@ -64,43 +93,32 @@ const Home = () => {
         <p className="text-2xl font-bold">Change Password</p>
 
         <form onSubmit={handleSubmit(onSubmitHandler)}>
-          <Text color="gray" className="mb-2 opacity-50">
-            New Password
-          </Text>
-          <Controller
+          <ControlledFormPasswordInput
+            label="New Password"
             name="password"
-            defaultValue={initialValues.password}
+            initialValues={initialValues}
             control={control}
-            render={({ field }) => (
-              <PasswordInput {...field} size="lg" placeholder="Your New Password" />
-            )}
+            placeholder="Your New Password"
+            styles={styles}
+            isLoading={isLoading}
+            size="lg"
+            errors={errors}
           />
 
-          <p className="text-sm text-orange-450 mb-3">{errors.password?.message}</p>
-
-          <Text color="gray" className="mb-2 mt-6 opacity-50">
-            Confirm Password
-          </Text>
-          <Controller
+          <ControlledFormPasswordInput
+            label="Confirm Password"
             name="confirmPassword"
-            defaultValue={initialValues.confirmPassword}
+            initialValues={initialValues}
             control={control}
-            render={({ field }) => (
-              <PasswordInput {...field} size="lg" placeholder="Confirm New Password" />
-            )}
+            placeholder="Confirm New Password"
+            styles={styles}
+            isLoading={isLoading}
+            size="lg"
+            errors={errors}
           />
-
-          <p className="mb-3 text-sm text-orange-450">{errors.confirmPassword?.message}</p>
-          {!passwordMatches && (
-            <div className="absolute top-10 right-0">
-              <Alert icon={<XOctagon />} color="red">
-                Password do not match
-              </Alert>
-            </div>
-          )}
 
           <Button
-            className="mt-2 width-full bg-purple-450 border-rounded-xl text-xl"
+            className="mt-3 width-full bg-purple-450 border-rounded-xl text-xl"
             color="primary"
             type="submit"
             styles={() => ({

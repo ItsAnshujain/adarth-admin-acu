@@ -7,9 +7,13 @@ const useTokenIdStore = create(
     combine(
       {
         token: null,
+        id: null,
+        userDetails: [],
       },
       set => ({
         setToken: token => set(() => ({ token })),
+        setId: id => set(() => ({ id })),
+        setUserDetails: userDetails => set(() => ({ userDetails })),
       }),
     ),
     {
