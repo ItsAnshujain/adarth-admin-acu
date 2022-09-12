@@ -6,11 +6,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { showNotification } from '@mantine/notifications';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLogin } from '../../hooks/auth.hooks';
-import useTokenIdStore from '../../store/user.store';
 import {
   ControlledFormTextInput,
   ControlledFormPasswordInput,
 } from '../../components/Input/FormInput';
+import { fetchUserDetails } from '../../hooks/user.hooks';
+import useUserStore from '../../store/user.store';
 
 const initialValues = {
   email: '',
@@ -30,18 +31,25 @@ const Home = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { setToken, setId } = useTokenIdStore(
-    state => ({ setToken: state.setToken, setId: state.setId }),
+  const { setToken, setId, id, setUserDetails } = useUserStore(
+    state => ({
+      setToken: state.setToken,
+      setId: state.setId,
+      id: state.id,
+      setUserDetails: state.setUserDetails,
+    }),
     shallow,
   );
 
-  const { mutate: login, isSuccess, isLoading, isError, data } = useLogin();
+  useUserStore(state => state.userDetails, shallow);
+
+  const { mutate: login, isError, data, isLoading, isSuccess } = useLogin();
+  const { data: ud, isSuccess: userDataLoaded, isLoading: userDataLoading } = fetchUserDetails(id);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm({
     resolver: yupResolver(schema),
     initialValues,
@@ -64,9 +72,10 @@ const Home = () => {
     } = data;
     setToken(token);
     setId(userId);
+  }
 
-    reset(initialValues);
-
+  if (userDataLoaded) {
+    setUserDetails(ud);
     navigate(location.state?.path || '/home');
   }
 
@@ -92,7 +101,7 @@ const Home = () => {
           initialValues={initialValues}
           control={control}
           label="Email"
-          isLoading={isLoading}
+          isLoading={isLoading && userDataLoading}
           size="lg"
           placeholder="Your Email"
           styles={styles}
@@ -104,13 +113,14 @@ const Home = () => {
           initialValues={initialValues}
           control={control}
           label="Password"
-          isLoading={isLoading}
+          isLoading={isLoading && userDataLoading}
           size="lg"
           placeholder="Your Password"
           styles={styles}
           errors={errors}
         />
         <Button
+          disabled={isLoading && userDataLoading}
           className="mt-5 width-full bg-purple-450"
           color="primary"
           type="submit"

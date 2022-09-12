@@ -29,8 +29,7 @@ const schema = yup.object().shape({
 
 const Home = () => {
   const [open, setOpenSuccessModal] = useState(false);
-  const [passwordMatches, setPasswordMatches] = useState(true);
-  const { mutate: changePassword, isLoading, isError, isSuccess } = useResetPassword();
+  const { mutate: changePassword, isLoading } = useResetPassword();
   const navigate = useNavigate();
   const {
     control,
@@ -44,39 +43,35 @@ const Home = () => {
   // TODO: add data as and argument to function while integration
   const onSubmitHandler = formData => {
     if (formData.password !== formData.confirmPassword) {
-      setPasswordMatches(false);
-      setTimeout(() => {
-        setPasswordMatches(true);
-      }, 10);
-    } else {
-      changePassword({
-        password: formData.password,
-        token:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzFiMjNhOTRlOWU2ODgwODQxMmU5ZTgiLCJpYXQiOjE2NjI5Nzk4MTQsImV4cCI6MTY2MzA2NjIxNH0.DI52v5EDobQG5TcbO0GYFzRgm-pVHKiBpji-Hc_Qm90',
+      showNotification({
+        title: 'Password does not match',
       });
+    } else {
+      changePassword(
+        {
+          password: formData.password,
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzFiMjNhOTRlOWU2ODgwODQxMmU5ZTgiLCJpYXQiOjE2NjI5Nzk4MTQsImV4cCI6MTY2MzA2NjIxNH0.DI52v5EDobQG5TcbO0GYFzRgm-pVHKiBpji-Hc_Qm90',
+        },
+        {
+          onError: err => {
+            showNotification({
+              title: 'Something went wrong',
+              message: err.message,
+              color: 'red',
+            });
+          },
+          onSuccess: () => {
+            navigate('/login');
+          },
+        },
+      );
     }
 
     return null;
   };
 
-  if (isError) {
-    showNotification({
-      title: 'Something went wrong',
-      message: 'Please try again',
-    });
-  }
-
-  if (!passwordMatches) {
-    showNotification({
-      title: 'Password does not match',
-    });
-  }
-
-  if (isSuccess) {
-    navigate('/login');
-  }
-
-  const styles = () => ({
+  const styles = {
     label: {
       color: 'grey',
       opacity: '0.5',
@@ -85,7 +80,7 @@ const Home = () => {
       fontWeight: '100',
       fontSize: '16px',
     },
-  });
+  };
 
   return (
     <>
@@ -118,6 +113,7 @@ const Home = () => {
           />
 
           <Button
+            disabled={isLoading}
             className="mt-3 width-full bg-purple-450 border-rounded-xl text-xl"
             color="primary"
             type="submit"
