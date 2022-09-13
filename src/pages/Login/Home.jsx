@@ -13,7 +13,7 @@ import {
 import { fetchUserDetails } from '../../hooks/user.hooks';
 import useUserStore from '../../store/user.store';
 
-const initialValues = {
+const defaultValues = {
   email: '',
   password: '',
 };
@@ -52,7 +52,7 @@ const Home = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    initialValues,
+    defaultValues,
   });
 
   const onSubmitHandler = async formData => {
@@ -63,6 +63,7 @@ const Home = () => {
     showNotification({
       title: 'Invalid details',
       message: 'Email and Password do not match',
+      color: 'red',
     });
   }
 
@@ -98,7 +99,6 @@ const Home = () => {
       <form onSubmit={handleSubmit(onSubmitHandler)}>
         <ControlledFormTextInput
           name="email"
-          initialValues={initialValues}
           control={control}
           label="Email"
           isLoading={isLoading && userDataLoading}
@@ -107,10 +107,8 @@ const Home = () => {
           styles={styles}
           errors={errors}
         />
-
         <ControlledFormPasswordInput
           name="password"
-          initialValues={initialValues}
           control={control}
           label="Password"
           isLoading={isLoading && userDataLoading}

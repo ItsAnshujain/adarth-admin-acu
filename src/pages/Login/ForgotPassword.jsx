@@ -7,7 +7,7 @@ import { showNotification } from '@mantine/notifications';
 import { useForgotPassword } from '../../hooks/auth.hooks';
 import { ControlledFormTextInput } from '../../components/Input/FormInput';
 
-const initialValues = {
+const defaultValues = {
   email: '',
 };
 
@@ -22,7 +22,7 @@ const ForgotPassword = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    initialValues,
+    defaultValues,
   });
   const { mutate: forgotPassword, isLoading } = useForgotPassword();
 
@@ -32,13 +32,13 @@ const ForgotPassword = () => {
         showNotification({
           title: 'Invalid details',
           message: err.message,
+          color: 'red',
         });
       },
       onSuccess: () => {
         showNotification({
           title: 'Request Submitted',
           message: 'Please check your email for further instructions',
-          color: 'green',
         });
       },
     });
@@ -63,7 +63,6 @@ const ForgotPassword = () => {
         <ControlledFormTextInput
           label="Email"
           name="email"
-          initialValues={initialValues}
           placeholder="Your Email"
           size="lg"
           isLoading={isLoading}
