@@ -6,10 +6,10 @@ import Table from '../Table/Table';
 import data from '../../Dummydata/MOCK_DATA.json';
 import COLUMNS from './column';
 
-const Category = () => {
+const Category = ({ s = [] }) => {
   const [search, setSearch] = useState('');
   const [count, setCount] = useState('20');
-
+  // console.log(data);
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
       <Header text="Category" />

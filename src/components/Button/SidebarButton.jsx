@@ -1,13 +1,48 @@
 import classNames from 'classnames';
+import React from 'react';
 import { Mail } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
+import { useFetchMastersTypes } from '../../hooks/masters.hooks';
 import SidebarExpandableButton from './SidebarExpandableButton';
 
+const masterTypes = {
+  category: 'Category',
+  brand: 'Brand',
+  illumination: 'Illumination',
+  media_type: 'Media Type',
+  tag: 'Tag',
+  zone: 'Zone',
+  facing: 'Facing',
+  demographic: 'Demographic',
+  audience: 'Audience',
+  space_type: 'Space Type',
+  printing_status: 'Printing Status',
+  mounting_status: 'Mounting Status',
+  campaign_status: 'Campaign Status',
+  payment_status: 'Payment Status',
+};
+
 const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
+  const { data } = useFetchMastersTypes();
+
+  const renderList = React.useMemo(() => {
+    const tempList = [];
+    if (data) {
+      const values = Object.values(data);
+      values.map(key => {
+        tempList.push(masterTypes[key]);
+        return tempList;
+      });
+    }
+
+    return tempList;
+  }, [data]);
+
   const navigate = useNavigate();
   if (index === 5) {
     const dataObj = {
-      content: ['Category', 'Brands', 'Industry', 'Illumination'],
+      content: renderList,
+      // content: ['Category', 'Brands', 'Industry', 'Illumination'],
       label: text,
     };
     return (

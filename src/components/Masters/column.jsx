@@ -11,11 +11,12 @@ const COLUMNS = [
   },
   {
     Header: 'NAME',
-    accessor: 'company_name',
+    accessor: 'name',
   },
   {
     Header: '',
     accessor: 'details',
+    footer: props => props.column.id,
     disableSortBy: true,
     Cell: () => {
       const [opened, setOpened] = useState(false);
