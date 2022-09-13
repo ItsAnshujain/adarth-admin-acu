@@ -1,12 +1,15 @@
-import { useState } from 'react';
-import { Text, Button, PasswordInput } from '@mantine/core';
-import { useForm, Controller } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Text, Button } from '@mantine/core';
+import { Link, useNavigate } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { showNotification } from '@mantine/notifications';
 import SuccessModal from '../../components/shared/Modal';
+import { useResetPassword } from '../../hooks/auth.hooks';
+import { ControlledFormPasswordInput } from '../../components/Input/FormInput';
 
-const initialValues = {
+const defaultValues = {
   confirmPassword: '',
   password: '',
 };
@@ -25,23 +28,70 @@ const schema = yup.object().shape({
 });
 
 const Home = () => {
-  const navigate = useNavigate();
   const [open, setOpenSuccessModal] = useState(false);
+  const { mutate: changePassword, isLoading } = useResetPassword();
+  const navigate = useNavigate();
+
+  const {
+    location: { hostname, search },
+  } = window;
+
+  let token = '';
+  if (hostname === 'localhost') {
+    token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzFiMjNhOTRlOWU2ODgwODQxMmU5ZTgiLCJpYXQiOjE2NjI5Nzk4MTQsImV4cCI6MTY2MzA2NjIxNH0.DI52v5EDobQG5TcbO0GYFzRgm-pVHKiBpji-Hc_Qm90';
+  } else {
+    token = search?.split('=')[1];
+  }
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm({
     resolver: yupResolver(schema),
-    initialValues,
+    defaultValues,
   });
 
-  // TODO: add data as and argument to function while integration
-  const onSubmitHandler = () => {
-    reset(initialValues);
-    setOpenSuccessModal(true);
+  const onSubmitHandler = formData => {
+    if (formData.password !== formData.confirmPassword) {
+      showNotification({
+        title: 'Password does not match',
+        color: 'red',
+      });
+    } else {
+      changePassword(
+        {
+          password: formData.password,
+          token,
+        },
+        {
+          onError: err => {
+            showNotification({
+              title: 'Something went wrong',
+              message: err.message,
+              color: 'red',
+            });
+          },
+          onSuccess: () => {
+            navigate('/login');
+          },
+        },
+      );
+    }
+
+    return null;
+  };
+
+  const styles = {
+    label: {
+      color: 'grey',
+      opacity: '0.5',
+      marginBottom: '16px',
+      marginTop: '24px',
+      fontWeight: '100',
+      fontSize: '16px',
+    },
   };
 
   return (
@@ -50,36 +100,31 @@ const Home = () => {
         <p className="text-2xl font-bold">Change Password</p>
 
         <form onSubmit={handleSubmit(onSubmitHandler)}>
-          <Text color="gray" className="mb-2 opacity-50">
-            New Password
-          </Text>
-          <Controller
+          <ControlledFormPasswordInput
+            label="New Password"
             name="password"
-            defaultValue={initialValues.password}
             control={control}
-            render={({ field }) => (
-              <PasswordInput {...field} size="lg" placeholder="Your New Password" />
-            )}
+            placeholder="Your New Password"
+            styles={styles}
+            isLoading={isLoading}
+            size="lg"
+            errors={errors}
           />
 
-          <p className="text-sm text-orange-450 mb-3">{errors.password?.message}</p>
-
-          <Text color="gray" className="mb-2 mt-6 opacity-50">
-            Confirm Password
-          </Text>
-          <Controller
+          <ControlledFormPasswordInput
+            label="Confirm Password"
             name="confirmPassword"
-            defaultValue={initialValues.confirmPassword}
             control={control}
-            render={({ field }) => (
-              <PasswordInput {...field} size="lg" placeholder="Confirm New Password" />
-            )}
+            placeholder="Confirm New Password"
+            styles={styles}
+            isLoading={isLoading}
+            size="lg"
+            errors={errors}
           />
-
-          <p className="mb-3 text-sm text-orange-450">{errors.confirmPassword?.message}</p>
 
           <Button
-            className="mt-2 width-full bg-purple-450 border-rounded-xl text-xl"
+            disabled={isLoading}
+            className="mt-3 width-full bg-purple-450 border-rounded-xl text-xl"
             color="primary"
             type="submit"
             styles={() => ({
