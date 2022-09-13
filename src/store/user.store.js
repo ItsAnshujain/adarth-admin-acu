@@ -2,13 +2,13 @@ import { combine, persist } from 'zustand/middleware';
 import create from 'zustand';
 import { USER_TOKEN_ID_KEY } from '../utils/config';
 
-const useTokenIdStore = create(
+const useUserStore = create(
   persist(
     combine(
       {
         token: null,
         id: null,
-        userDetails: [],
+        userDetails: {},
       },
       set => ({
         setToken: token => set(() => ({ token })),
@@ -22,4 +22,4 @@ const useTokenIdStore = create(
   ),
 );
 
-export default useTokenIdStore;
+export default useUserStore;

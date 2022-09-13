@@ -24,28 +24,27 @@ const ForgotPassword = () => {
     resolver: yupResolver(schema),
     initialValues,
   });
-  const { mutate: forgotPassword, isSuccess, isLoading, isError } = useForgotPassword();
+  const { mutate: forgotPassword, isLoading } = useForgotPassword();
 
-  // TODO: add data as and argument to function while integration
   const onSubmitHandler = formData => {
-    forgotPassword(formData);
+    forgotPassword(formData, {
+      onError: err => {
+        showNotification({
+          title: 'Invalid details',
+          message: err.message,
+        });
+      },
+      onSuccess: () => {
+        showNotification({
+          title: 'Request Submitted',
+          message: 'Please check your email for further instructions',
+          color: 'green',
+        });
+      },
+    });
   };
 
-  if (isSuccess) {
-    showNotification({
-      title: 'Request Submitted',
-      message: 'Please check your email for further instructions',
-    });
-  }
-
-  if (isError) {
-    showNotification({
-      title: 'Invalid details',
-      message: 'Please use registered email id',
-    });
-  }
-
-  const styles = () => ({
+  const styles = {
     label: {
       color: 'grey',
       opacity: '0.5',
@@ -53,7 +52,7 @@ const ForgotPassword = () => {
       fontWeight: '100',
       fontSize: '16px',
     },
-  });
+  };
 
   return (
     <div className="my-auto w-[31%]">
@@ -74,6 +73,7 @@ const ForgotPassword = () => {
         />
 
         <Button
+          disabled={isLoading}
           className="mt-4 width-full bg-purple-450"
           color="primary"
           type="submit"
