@@ -1,10 +1,10 @@
 import { TextInput } from '@mantine/core';
 import icon from '../assets/icon.svg';
 
-const Search = ({ state, setState }) => (
+const Search = ({ search, setSearch = () => {} }) => (
   <TextInput
-    value={state}
-    onChange={e => setState(e.target.value)}
+    defaultValue={search}
+    onChange={e => setSearch(e.currentTarget.value)}
     className="w-3/12"
     placeholder="Search"
     icon={<img src={icon} alt="search-icon" className="h-4" />}

@@ -30,7 +30,7 @@ const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
     if (data) {
       const values = Object.values(data);
       values.map(key => {
-        tempList.push(masterTypes[key]);
+        tempList.push({ name: masterTypes[key], type: key });
         return tempList;
       });
     }
@@ -42,7 +42,6 @@ const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
   if (index === 5) {
     const dataObj = {
       content: renderList,
-      // content: ['Category', 'Brands', 'Industry', 'Illumination'],
       label: text,
     };
     return (
@@ -54,7 +53,11 @@ const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
 
   if (index === 7) {
     const dataObj = {
-      content: ['Campaign Report', 'Revenue Reports', 'Inventory Report'],
+      content: [
+        { name: 'Campaign Report' },
+        { name: 'Revenue Reports' },
+        { name: 'Inventory Report' },
+      ],
       label: text,
     };
 

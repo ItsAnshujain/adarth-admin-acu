@@ -44,8 +44,8 @@ const ReportRevenue = lazy(() => import('./pages/Report/Revenue'));
 const ReportCampaign = lazy(() => import('./pages/Report/Campaign'));
 
 const MasterHome = lazy(() => import('./pages/Master/Master'));
-const MasterBrand = lazy(() => import('./pages/Master/Brands'));
-const MasterCategory = lazy(() => import('./pages/Master/Category'));
+// const MasterBrand = lazy(() => import('./pages/Master/Brands'));
+// const MasterCategory = lazy(() => import('./pages/Master/Category'));
 
 const HomePage = lazy(() => import('./pages/Home'));
 const Notifications = lazy(() => import('./pages/Notification'));
@@ -473,28 +473,7 @@ const App = () => (
             </RequireAuth>
           </Suspense>
         }
-      >
-        <Route
-          path="category"
-          element={
-            <Suspense fallback={<Loader />}>
-              <RequireAuth>
-                <MasterCategory />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="brand"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <MasterBrand />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-      </Route>
+      />
 
       <Route
         path="/notification"

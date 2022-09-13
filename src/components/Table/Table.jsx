@@ -11,14 +11,15 @@ import useCreateBookingSelectSpaceState from '../../store/createBookingSelectSpa
 // TODO: selectedFlatRows.original gives array of all selected rows and selectedRowIds contains all the data from id field
 const Table = ({
   COLUMNS,
-  dummy,
+  dummy = [],
   allowRowsSelect = false,
   isBookingTable = false,
   isCreateOrder = false,
+  query,
 }) => {
   const [activePage, _] = useState();
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
-  const data = useMemo(() => dummy, []);
+  const data = useMemo(() => dummy, [query]);
   const setSelectedSpace = useCreateBookingSelectSpaceState(
     state => state.setSelectedSpace,
     shallow,
@@ -64,7 +65,7 @@ const Table = ({
 
   return (
     <>
-      <div className="mr-7 max-w-screen overflow-x-auto">
+      <div className="mr-7 max-w-screen overflow-x-auto  min-h-[450px]">
         <table className="w-full overflow-y-visible relative z-10" {...getTableProps()}>
           <thead className="bg-gray-100">
             {headerGroups.map(headerGroup => (
