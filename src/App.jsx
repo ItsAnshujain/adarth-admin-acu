@@ -10,6 +10,7 @@ import Loader from './Loader';
 import CustomLoader from './Loader/Loader';
 import Sidebar from './Loader/Sidebar';
 import RequireAuth from './components/Auth';
+import NoMatch from './pages/NoMatch';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -617,6 +618,7 @@ const App = () => (
           }
         />
       </Route>
+      <Route path="*" element={<NoMatch />} />
     </Routes>
   </Router>
 );

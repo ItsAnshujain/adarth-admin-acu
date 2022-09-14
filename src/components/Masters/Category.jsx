@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDebouncedState } from '@mantine/hooks';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import Header from './Header';
 import RowsPerPage from '../RowsPerPage';
 import Search from '../Search';
@@ -14,7 +14,10 @@ const Category = () => {
   const [count, setCount] = React.useState('20');
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const [query, setQuery] = React.useState();
+  const navigate = useNavigate();
+  const [query, setQuery] = React.useState({
+    type: 'category',
+  });
   const { data } = useFetchMasters(serialize(query));
 
   const COLUMNS = React.useMemo(
@@ -27,6 +30,24 @@ const Category = () => {
       {
         Header: 'NAME',
         accessor: 'name',
+        Cell: tableProps =>
+          React.useMemo(() => {
+            const {
+              row: {
+                original: { _id, name },
+              },
+            } = tableProps;
+
+            return (
+              <button
+                type="button"
+                className="cursor-pointer"
+                onClick={() => navigate(`/masters?id=brand&parentId=${_id}`, { replace: true })}
+              >
+                {name}
+              </button>
+            );
+          }, []),
       },
       {
         Header: '',
