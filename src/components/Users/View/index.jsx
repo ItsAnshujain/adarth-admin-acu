@@ -207,27 +207,27 @@ const Header = () => {
               <div className="border rounded p-8  pr-20">
                 <img src={purplefolder} alt="folder" />
                 <p className="my-2 text-slate-400 text-sm">Ongoing Orders</p>
-                <p weight="bold">325</p>
+                <p>325</p>
               </div>
               <div className="border rounded p-8 pr-20">
                 <img src={orangefolder} alt="folder" />
                 <p className="my-2 text-slate-400 text-sm">Upcoming Orders</p>
-                <p weight="bold">325</p>
+                <p>325</p>
               </div>
               <div className="border rounded p-8 pr-20">
                 <img src={bluefolder} alt="folder" />
                 <p className="my-2 text-slate-400 text-sm">Completed Orders</p>
-                <p weight="bold">325</p>
+                <p>325</p>
               </div>
               <div className="border rounded p-8 pr-20">
                 <img src={redfolder} alt="folder" />
                 <p className="my-2 text-slate-400 text-sm">Total Proposal</p>
-                <p weight="bold">325</p>
+                <p>325</p>
               </div>
               <div className="border rounded p-8 pr-20">
                 <img src={greenfolder} alt="folder" />
                 <p className="my-2 text-slate-400 text-sm">Total Campaign</p>
-                <p weight="bold">325</p>
+                <p>325</p>
               </div>
             </div>
           </div>

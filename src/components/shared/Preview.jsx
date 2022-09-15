@@ -1,4 +1,3 @@
-import { useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { Text } from '@mantine/core';
 import dummy0 from '../../assets/unsplash.png';
@@ -13,7 +12,6 @@ const Preview = () => {
   const [readMore, setReadMore] = useState(false);
   const [scrollImage, setScrollImage] = useState(imageUrl);
   const [posterImage, setPosterImage] = useState(dummy3);
-  const { pathname } = useLocation();
 
   const exchangeImages = index => {
     const temp = posterImage;

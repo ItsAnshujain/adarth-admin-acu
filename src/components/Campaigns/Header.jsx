@@ -52,7 +52,6 @@ const AreaHeader = ({ text, setView }) => {
               `px-4 border-gray-300 border rounded-md ${color.list.fill ? 'bg-white' : 'bg-black'}`,
             )}
             onClick={handleListClick}
-            variant="default"
             type="button"
           >
             <Server
@@ -67,7 +66,6 @@ const AreaHeader = ({ text, setView }) => {
               }`,
             )}
             onClick={handleGridClick}
-            variant="default"
             type="button"
           >
             <Grid
@@ -102,7 +100,6 @@ const AreaHeader = ({ text, setView }) => {
             onClick={() => {
               navigate('create-campaign');
             }}
-            variant="default"
             className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
             type="button"
           >

@@ -35,7 +35,6 @@ const AreaHeader = () => {
             onClick={() => {
               navigate('create-user');
             }}
-            variant="default"
             className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
             type="button"
           >

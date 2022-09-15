@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Eye, Edit2, Trash, Share2, Mail, Link } from 'react-feather';
+import { Share2, Mail, Link } from 'react-feather';
 import { Menu } from '@mantine/core';
 import MenuIcon from '../../Menu';
 import toIndianCurrency from '../../../utils/currencyFormat';
