@@ -1,11 +1,13 @@
-import { Modal } from '@mantine/core';
+import { Menu, Modal } from '@mantine/core';
 import { useForm } from 'react-hook-form';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import React from 'react';
+import { ChevronDown } from 'react-feather';
 import { ControlledFormTextInput } from '../Input/FormInput';
-import { useCreateMaster, useUpdateMaster } from '../../hooks/masters.hooks';
+import { useCreateMaster, useFetchMasters, useUpdateMaster } from '../../hooks/masters.hooks';
+import { masterTypes, serialize } from '../../utils';
 
 const defaultValues = {
   name: '',
@@ -16,34 +18,45 @@ const schema = yup.object().shape({
 });
 
 const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
-  const { pathname } = useLocation();
-  const { mutate: create, isLoading, isSuccess } = useCreateMaster();
-  const {
-    mutate: edit,
-    isLoading: isUpdateMasterLoading,
-    isSuccess: isUpdateMasterSuccess,
-  } = useUpdateMaster();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = React.useState({
+    type: 'category',
+  });
+  const [menuValue, setMenuValue] = React.useState();
+  const { data: parentData } = useFetchMasters(serialize(query));
+  const { mutate: create, isLoading } = useCreateMaster();
+  const { mutate: edit, isLoading: isUpdateMasterLoading } = useUpdateMaster();
   const {
     handleSubmit,
     control,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema), defaultValues });
 
-  const onSubmit = formData => {
-    let data = {};
-    const arr = pathname.split('/');
-    if (arr.includes('masters')) {
-      const type = arr[arr.length - 1];
-      data = { ...formData, type };
-      if (isEdit) {
-        edit({ masterId: masterData?._id, data });
-      } else {
-        create(data);
-      }
+  const masterType = React.useMemo(
+    () => masterTypes[searchParams.get('type')],
+    [searchParams.get('type')],
+  );
 
-      if (isSuccess || isUpdateMasterSuccess) setOpened(false);
+  const onSubmit = async formData => {
+    let data = {};
+    const type = searchParams.get('type');
+    const parentId = searchParams.get('parentId');
+    data = { ...formData, type };
+    if (menuValue?.id) {
+      data = { ...formData, type, parentId: menuValue?.id };
+    } else if (parentId) {
+      data = { ...formData, type, parentId };
     }
+    if (isEdit) {
+      edit({ masterId: masterData?._id, data });
+    } else {
+      create(data);
+    }
+    reset();
+    setOpened(false);
   };
 
   React.useEffect(() => {
@@ -51,6 +64,11 @@ const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
       setValue('name', masterData?.name);
     }
   }, [isEdit]);
+
+  React.useEffect(() => {
+    const type = searchParams.get('type');
+    setQuery({ type });
+  }, [location.search]);
 
   return (
     <Modal
@@ -61,22 +79,54 @@ const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
         },
       }}
       size="lg"
-      title={`${isEdit ? 'Edit' : 'Add'} ${pathname.includes('brand') ? 'Brand' : 'Category'}`}
+      title={`${isEdit ? 'Edit' : 'Add'} ${masterType}`}
       opened={opened}
       withCloseButton={false}
       centered
+      onClose={() => setOpened(false)}
     >
       <form className="border-t" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-4 relative py-3 ">
-          <p>{pathname.includes('brand') ? 'Brand' : 'Category'} Name</p>
+          <p>{masterType} Name</p>
           <ControlledFormTextInput
             name="name"
-            placeholder="Category Name"
+            placeholder={`${masterType} Name`}
             size="lg"
             isLoading={isLoading || isUpdateMasterLoading}
             control={control}
             errors={errors}
           />
+          {searchParams.get('parentId') ? (
+            <>
+              <p>Parent List</p>
+              <Menu shadow="md" width="100%">
+                <Menu.Target>
+                  <button
+                    type="button"
+                    className="h-[50px] border-solid text-lg border-2 flex flex-row justify-between items-center px-5 rounded-sm	"
+                  >
+                    {menuValue?.name || 'Select..'}
+                    <ChevronDown className="h-4" />
+                  </button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {parentData?.docs?.map(item => (
+                    <Menu.Item
+                      onClick={() => {
+                        setMenuValue({
+                          name: item?.name,
+                          id: item?._id,
+                        });
+                      }}
+                      key={item?._id}
+                    >
+                      <span className="text-base">{item?.name}</span>
+                    </Menu.Item>
+                  ))}
+                </Menu.Dropdown>
+              </Menu>
+            </>
+          ) : null}
           <div className="flex gap-2  justify-end">
             <button
               onClick={() => setOpened(false)}

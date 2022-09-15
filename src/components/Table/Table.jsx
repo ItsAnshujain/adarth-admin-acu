@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import classNames from 'classnames';
 import shallow from 'zustand/shallow';
 import { useTable, useSortBy, useRowSelect, usePagination } from 'react-table';
@@ -15,11 +15,10 @@ const Table = ({
   allowRowsSelect = false,
   isBookingTable = false,
   isCreateOrder = false,
-  query,
+  activePage,
+  totalPage,
 }) => {
-  const [activePage, _] = useState();
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
-  const data = useMemo(() => dummy, [query]);
   const setSelectedSpace = useCreateBookingSelectSpaceState(
     state => state.setSelectedSpace,
     shallow,
@@ -36,10 +35,9 @@ const Table = ({
   } = useTable(
     {
       columns,
-      data,
+      data: dummy,
       initialState: { pageIndex: 0 },
     },
-
     useSortBy,
     usePagination,
     useRowSelect,
@@ -139,7 +137,7 @@ const Table = ({
             page={activePage}
             onChange={nextPage}
             onClick={nextPage}
-            total={dummy.length}
+            total={totalPage}
           />
         </div>
       )}

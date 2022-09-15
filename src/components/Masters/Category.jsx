@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDebouncedState } from '@mantine/hooks';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import classnames from 'classnames';
 import Header from './Header';
 import RowsPerPage from '../RowsPerPage';
 import Search from '../Search';
@@ -19,6 +20,8 @@ const Category = () => {
     type: 'category',
   });
   const { data } = useFetchMasters(serialize(query));
+
+  const hasParentId = searchParams.has('parentId');
 
   const COLUMNS = React.useMemo(
     () => [
@@ -41,8 +44,16 @@ const Category = () => {
             return (
               <button
                 type="button"
-                className="cursor-pointer"
-                onClick={() => navigate(`/masters?id=brand&parentId=${_id}`, { replace: true })}
+                className={classnames(hasParentId ? 'cursor-text' : 'cursor-pointer')}
+                onClick={
+                  hasParentId
+                    ? () => {}
+                    : () => {
+                        navigate(`/masters?type=${searchParams.get('type')}&parentId=${_id}`, {
+                          replace: true,
+                        });
+                      }
+                }
               >
                 {name}
               </button>
@@ -57,17 +68,29 @@ const Category = () => {
         Cell: ({ row }) => React.useMemo(() => <MenuPopover row={row} />, []),
       },
     ],
-    [],
+    [hasParentId, data],
   );
 
   React.useEffect(() => {
+    const parentId = searchParams.get('parentId');
+    if (parentId) {
+      setQuery({ ...query, parentId, name: search });
+      return;
+    }
+
     setQuery({ ...query, name: search });
   }, [search]);
 
   React.useEffect(() => {
-    const type = searchParams.get('id');
+    const type = searchParams.get('type');
+    const parentId = searchParams.get('parentId');
+    if (parentId) {
+      setQuery({ ...query, parentId });
+      return;
+    }
+
     setQuery({ type });
-  }, [location.search, searchParams]);
+  }, [location.search]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
@@ -76,7 +99,12 @@ const Category = () => {
         <RowsPerPage setCount={setCount} count={count} />
         <Search search={search} setSearch={setSearch} />
       </div>
-      <Table dummy={data?.docs} COLUMNS={COLUMNS} query={query} />
+      <Table
+        dummy={data?.docs || []}
+        COLUMNS={COLUMNS}
+        activePage={data?.page}
+        totalPage={data?.totalPage}
+      />
     </div>
   );
 };

@@ -3,24 +3,8 @@ import React from 'react';
 import { Mail } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import { useFetchMastersTypes } from '../../hooks/masters.hooks';
+import { masterTypes } from '../../utils';
 import SidebarExpandableButton from './SidebarExpandableButton';
-
-const masterTypes = {
-  category: 'Category',
-  brand: 'Brand',
-  illumination: 'Illumination',
-  media_type: 'Media Type',
-  tag: 'Tag',
-  zone: 'Zone',
-  facing: 'Facing',
-  demographic: 'Demographic',
-  audience: 'Audience',
-  space_type: 'Space Type',
-  printing_status: 'Printing Status',
-  mounting_status: 'Mounting Status',
-  campaign_status: 'Campaign Status',
-  payment_status: 'Payment Status',
-};
 
 const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
   const { data } = useFetchMastersTypes();

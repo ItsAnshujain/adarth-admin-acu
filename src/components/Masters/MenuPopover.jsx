@@ -30,7 +30,9 @@ const MenuPopover = ({ row }) => {
 
   const onSubmit = () => {
     deleteItem({ masterId: row?.values?._id });
-    if (isSuccess) setIsConfirmed(false);
+    if (isSuccess) {
+      setIsConfirmed(false);
+    }
   };
 
   // trigger delete func if status is true

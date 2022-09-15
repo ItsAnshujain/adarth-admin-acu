@@ -14,7 +14,7 @@ const AccordionLabel = props => {
       navigate(`/${sidebarText.toLowerCase()}/campaign`);
       setColor(7);
     } else if (label === 'Masters') {
-      navigate(`/${sidebarText.toLowerCase()}?id=category`);
+      navigate(`/${sidebarText.toLowerCase()}?type=category`);
       setColor(5);
     }
   };
@@ -96,7 +96,7 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
                   } else if (index === 2 && sidebarText === 'Reports') {
                     navigate(`/${sidebarText.toLowerCase()}/inventory`);
                   } else if (sidebarText === 'Masters') {
-                    navigate(`/${sidebarText.toLowerCase()}?id=${obj?.type}`);
+                    navigate(`/${sidebarText.toLowerCase()}?type=${obj?.type}`);
                   }
                   // Used in smaller screens only
                   if (setOpened) setOpened(false);
@@ -114,6 +114,9 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
                 {obj.name}
               </button>
             ))}
+            {item.content.length === 0 ? (
+              <p className="font-medium text-xs block mt-0.5">Loading...</p>
+            ) : null}
           </div>
         </Accordion.Panel>
       </Accordion.Item>
