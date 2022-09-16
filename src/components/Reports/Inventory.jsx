@@ -53,20 +53,6 @@ for (let i = 0; i < 6; i += 1) {
 }
 labels.reverse();
 
-function createGradient(ctx, area) {
-  const colorStart = '#000';
-  const colorMid = '#1a1a1a';
-  const colorEnd = '#12ff3a';
-
-  const gradient = ctx.createLinearGradient(0, area.bottom, 0, area.top);
-
-  gradient.addColorStop(0, colorStart);
-  gradient.addColorStop(0.5, colorMid);
-  gradient.addColorStop(1, colorEnd);
-
-  return gradient;
-}
-
 // Doughnut
 const data = {
   datasets: [
