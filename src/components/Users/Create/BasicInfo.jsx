@@ -20,7 +20,6 @@ const BasicInfo = () => {
   const [city, setCity] = useState(null);
   const [peer, setPeer] = useState(null);
   const { search } = useLocation();
-  const type = search.split('=')[1];
 
   return (
     <div className="pl-5 pr-7 mt-4">
@@ -32,7 +31,32 @@ const BasicInfo = () => {
           <img src={image} alt="placeholder" />
         </div>
       </div>
-      {!type === 'media-owner' ? (
+      {search.includes('mediaOwner=true') ? (
+        <div className="grid grid-cols-2 gap-6 mt-4 mb-12">
+          <TextInput styles={styles} label="Organization Name" required />
+          <TextInput styles={styles} label="License ID" required />
+          <TextInput styles={styles} label="Phone Number" required />
+          <TextInput styles={styles} label="Email" required />
+          <TextInput
+            placeholder="Write"
+            className="col-span-2"
+            styles={styles}
+            label="Address"
+            required
+          />
+          <Select
+            styles={styles}
+            value={city}
+            onChange={setCity}
+            data={['Admin', 'Super User']}
+            label="City"
+            required
+            placeholder="Select"
+          />
+          <TextInput styles={styles} label="Pin" required />
+          <TextInput placeholder="Write" className="col-span-2" styles={styles} label="About" />
+        </div>
+      ) : (
         <div className="grid grid-cols-2 gap-6 mt-4 mb-12">
           <TextInput placeholder="Write" styles={styles} label="Name" required />
           <TextInput placeholder="Write" styles={styles} label="Organization" required />
@@ -81,31 +105,6 @@ const BasicInfo = () => {
             required
             placeholder="Select"
           />
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-6 mt-4 mb-12">
-          <TextInput styles={styles} label="Organization Name" required />
-          <TextInput styles={styles} label="License ID" required />
-          <TextInput styles={styles} label="Phone Number" required />
-          <TextInput styles={styles} label="Email" required />
-          <TextInput
-            placeholder="Write"
-            className="col-span-2"
-            styles={styles}
-            label="Address"
-            required
-          />
-          <Select
-            styles={styles}
-            value={city}
-            onChange={setCity}
-            data={['Admin', 'Super User']}
-            label="City"
-            required
-            placeholder="Select"
-          />
-          <TextInput styles={styles} label="Pin" required />
-          <TextInput placeholder="Write" className="col-span-2" styles={styles} label="About" />
         </div>
       )}
     </div>
