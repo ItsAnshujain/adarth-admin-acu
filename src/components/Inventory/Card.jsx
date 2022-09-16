@@ -39,15 +39,11 @@ const Card = ({
         </Text>
         <div className="grid grid-cols-2 justify-between">
           <div className="mt-2">
-            <p className="text-sm text-gray-400" weight="200">
-              Category
-            </p>
+            <p className="text-sm text-gray-400">Category</p>
             <p className="text-sm mt-1">{category}</p>
           </div>
           <div className="mt-2">
-            <p className="text-sm text-gray-400" weight="200">
-              Impressions
-            </p>
+            <p className="text-sm text-gray-400">Impressions</p>
             <p className="text-sm mt-1">{impression}</p>
           </div>
         </div>

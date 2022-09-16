@@ -30,7 +30,6 @@ export const ControlledFormTextInput = ({
 
 export const ControlledFormPasswordInput = ({
   name,
-  initialValues,
   control,
   isLoading,
   size,
@@ -41,17 +40,16 @@ export const ControlledFormPasswordInput = ({
 }) => (
   <Controller
     name={name}
-    defaultValue={initialValues[name]}
     control={control}
     render={({ field }) => (
       <PasswordInput
         label={label}
         styles={styles}
         disabled={isLoading}
-        {...field}
         size={size}
         placeholder={placeholder}
         error={errors[name]?.message}
+        {...field}
       />
     )}
   />

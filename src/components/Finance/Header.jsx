@@ -22,8 +22,8 @@ const Header = ({ operationalCost, totalSale, year, month, pageNumber }) => {
   };
 
   return (
-    <header className="flex justify-between gap-2 pr-7 h-20 border-b items-center">
-      <div className={classNames(`${!year ? 'invisible' : 'flex gap-2 items-center pl-5'}`)}>
+    <header className="flex justify-between gap-2 pr-7 h-20 border-b items-center flex-wrap">
+      <div className={classNames(`${!year ? 'invisible' : 'flex gap-4 items-center pl-5'}`)}>
         <p className="font-bold text-lg">{!month ? `Year ${year}` : ` ${month} ${year}`}</p>
         {pageNumber === 0 && (
           <>
@@ -40,7 +40,7 @@ const Header = ({ operationalCost, totalSale, year, month, pageNumber }) => {
           </>
         )}
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         <div className="relative">
           <Button
             onClick={() => handleShowMenu('purchase')}
@@ -50,7 +50,7 @@ const Header = ({ operationalCost, totalSale, year, month, pageNumber }) => {
             Generate Purchase Order <ChevronDown />
             {showMenu.purchase && (
               <GenerateMenu
-                location="/finance/create-order/:type/upload"
+                location="/finance/create-order/purchase/upload"
                 locationCreate="/finance/create-order/purchase"
               />
             )}
@@ -65,7 +65,7 @@ const Header = ({ operationalCost, totalSale, year, month, pageNumber }) => {
             Generate Release Order <ChevronDown />
             {showMenu.release && (
               <GenerateMenu
-                location="/finance/create-order/:type/upload"
+                location="/finance/create-order/release/upload"
                 locationCreate="/finance/create-order/release"
               />
             )}
@@ -80,7 +80,7 @@ const Header = ({ operationalCost, totalSale, year, month, pageNumber }) => {
             Generate Invoice <ChevronDown />
             {showMenu.invoice && (
               <GenerateMenu
-                location="/finance/create-order/:type/upload"
+                location="/finance/create-order/invoice/upload"
                 locationCreate="/finance/create-order/invoice/"
               />
             )}

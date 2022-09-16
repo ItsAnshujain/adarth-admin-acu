@@ -78,7 +78,6 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
                 }`,
               )}
               onClick={handleListClick}
-              variant="default"
               type="button"
             >
               <Server
@@ -93,7 +92,6 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
                 }`,
               )}
               onClick={handleGridClick}
-              variant="default"
               type="button"
             >
               <Grid
@@ -108,7 +106,6 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
                 }`,
               )}
               onClick={handleMapClick}
-              variant="default"
               type="button"
             >
               <MapPin
@@ -143,7 +140,6 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
           <div className="relative">
             <button
               onClick={() => setAddDetails(!addDetailsClicked)}
-              variant="default"
               className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"
               type="button"
             >

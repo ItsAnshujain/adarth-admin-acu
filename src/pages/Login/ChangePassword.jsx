@@ -9,7 +9,7 @@ import SuccessModal from '../../components/shared/Modal';
 import { useResetPassword } from '../../hooks/auth.hooks';
 import { ControlledFormPasswordInput } from '../../components/Input/FormInput';
 
-const initialValues = {
+const defaultValues = {
   confirmPassword: '',
   password: '',
 };
@@ -31,27 +31,39 @@ const Home = () => {
   const [open, setOpenSuccessModal] = useState(false);
   const { mutate: changePassword, isLoading } = useResetPassword();
   const navigate = useNavigate();
+
+  const {
+    location: { hostname, search },
+  } = window;
+
+  let token = '';
+  if (hostname === 'localhost') {
+    token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzFiMjNhOTRlOWU2ODgwODQxMmU5ZTgiLCJpYXQiOjE2NjI5Nzk4MTQsImV4cCI6MTY2MzA2NjIxNH0.DI52v5EDobQG5TcbO0GYFzRgm-pVHKiBpji-Hc_Qm90';
+  } else {
+    token = search?.split('=')[1];
+  }
+
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    initialValues,
+    defaultValues,
   });
 
-  // TODO: add data as and argument to function while integration
   const onSubmitHandler = formData => {
     if (formData.password !== formData.confirmPassword) {
       showNotification({
         title: 'Password does not match',
+        color: 'red',
       });
     } else {
       changePassword(
         {
           password: formData.password,
-          token:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzFiMjNhOTRlOWU2ODgwODQxMmU5ZTgiLCJpYXQiOjE2NjI5Nzk4MTQsImV4cCI6MTY2MzA2NjIxNH0.DI52v5EDobQG5TcbO0GYFzRgm-pVHKiBpji-Hc_Qm90',
+          token,
         },
         {
           onError: err => {
@@ -91,7 +103,6 @@ const Home = () => {
           <ControlledFormPasswordInput
             label="New Password"
             name="password"
-            initialValues={initialValues}
             control={control}
             placeholder="Your New Password"
             styles={styles}
@@ -103,7 +114,6 @@ const Home = () => {
           <ControlledFormPasswordInput
             label="Confirm Password"
             name="confirmPassword"
-            initialValues={initialValues}
             control={control}
             placeholder="Confirm New Password"
             styles={styles}

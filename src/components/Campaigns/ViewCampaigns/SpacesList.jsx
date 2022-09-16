@@ -32,7 +32,6 @@ const SpacesList = ({ data, columns }) => {
           <div>
             <button
               onClick={() => {}}
-              variant="default"
               className="bg-purple-450 flex items-center align-center py-2 text-white rounded-md px-4 text-sm"
               type="button"
             >

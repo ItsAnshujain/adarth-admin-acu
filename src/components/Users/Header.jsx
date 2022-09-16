@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Select } from '@mantine/core';
 import { Plus, ChevronDown } from 'react-feather';
-import Filter from '../Filter';
+import Filter from './Filter';
 
 const AreaHeader = () => {
   const navigate = useNavigate();
@@ -35,7 +35,6 @@ const AreaHeader = () => {
             onClick={() => {
               navigate('create-user');
             }}
-            variant="default"
             className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
             type="button"
           >

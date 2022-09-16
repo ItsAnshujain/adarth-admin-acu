@@ -37,7 +37,13 @@ const Create = () => {
     <div className="pb-12">
       <form>
         <header className="h-20 border-b flex items-center justify-between pl-5 pr-7">
-          <p className="font-bold text-lg">Create Purchase Order</p>
+          <p className="font-bold text-lg">{`Create ${
+            pathname.includes('purchase')
+              ? 'Purchase Order'
+              : pathname.includes('release')
+              ? 'Release Order'
+              : 'Invoice'
+          }`}</p>
           <div className="flex gap-3">
             <button onClick={() => navigate(-1)} type="button" className="border rounded-md p-2">
               Cancel

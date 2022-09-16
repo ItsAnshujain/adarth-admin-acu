@@ -20,20 +20,16 @@ const Card = ({ data: { category, impression, cost, status, subtitle, type } }) 
         <p className="flex gap-1 text-xs items-center ml-2 text-purple-450">{type}</p>
       </div>
 
-      <p size="lg" className="mt-2 font-bold text-lg" weight="bold">
+      <p size="lg" className="mt-2 font-bold text-lg">
         {subtitle}
       </p>
       <div className="grid grid-cols-2 justify-between">
         <div className="mt-2">
-          <p className="text-sm text-gray-400" weight="200">
-            No of Media
-          </p>
+          <p className="text-sm text-gray-400">No of Media</p>
           <p className="text-sm mt-1">{category}</p>
         </div>
         <div className="mt-2">
-          <p className="text-sm text-gray-400" weight="200">
-            Impressions
-          </p>
+          <p className="text-sm text-gray-400">Impressions</p>
           <p className="text-sm mt-1">{impression}</p>
         </div>
       </div>

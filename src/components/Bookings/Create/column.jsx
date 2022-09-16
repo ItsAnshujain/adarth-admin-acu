@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NativeSelect } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import classNames from 'classnames';
 import Badge from '../../shared/Badge';
 import MenuIcon from '../../Menu';
 import useCreateBookingSelectSpaceState from '../../../store/createBookingSelectSpace.store';
@@ -154,9 +153,9 @@ const COLUMNS = [
     accessor: 'details',
     Cell: tableProps => {
       const [showMenu, setShowMenu] = useState(false);
-      const navigate = useNavigate();
       const {
         row: {
+          // eslint-disable-next-line no-unused-vars
           original: { id },
         },
       } = tableProps;
