@@ -14,7 +14,7 @@ const defaultValues = {
 };
 
 const schema = yup.object().shape({
-  name: yup.string().required('Category name is required'),
+  name: yup.string().trim().required('Category name is required'),
 });
 
 const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
