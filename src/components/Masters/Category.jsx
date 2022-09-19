@@ -18,6 +18,7 @@ const Category = () => {
   const navigate = useNavigate();
   const [query, setQuery] = React.useState({
     type: 'category',
+    parentId: null,
   });
   const { data } = useFetchMasters(serialize(query));
 
@@ -89,7 +90,7 @@ const Category = () => {
       return;
     }
 
-    setQuery({ type });
+    setQuery({ ...query, type });
   }, [location.search]);
 
   return (
