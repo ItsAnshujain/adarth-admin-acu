@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import { useMemo } from 'react';
 import { Mail } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import { useFetchMastersTypes } from '../../hooks/masters.hooks';
@@ -9,7 +9,7 @@ import SidebarExpandableButton from './SidebarExpandableButton';
 const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
   const { data } = useFetchMastersTypes();
 
-  const renderList = React.useMemo(() => {
+  const renderList = useMemo(() => {
     const tempList = [];
     if (data) {
       const values = Object.values(data);

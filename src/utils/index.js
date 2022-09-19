@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export const serialize = object => {
   const str = [];
   for (const p in object) {

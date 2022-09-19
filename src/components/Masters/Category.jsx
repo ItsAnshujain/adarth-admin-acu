@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import classnames from 'classnames';
@@ -12,11 +12,11 @@ import { serialize } from '../../utils';
 
 const Category = () => {
   const [search, setSearch] = useDebouncedState('', 1000);
-  const [count, setCount] = React.useState('20');
+  const [count, setCount] = useState('20');
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const [query, setQuery] = React.useState({
+  const [query, setQuery] = useState({
     type: 'category',
     parentId: null,
   });
@@ -24,18 +24,18 @@ const Category = () => {
 
   const hasParentId = searchParams.has('parentId');
 
-  const COLUMNS = React.useMemo(
+  const COLUMNS = useMemo(
     () => [
       {
         Header: '#',
         accessor: 'id',
-        Cell: ({ row }) => React.useMemo(() => <div className="pl-2">{row.index + 1}</div>, []),
+        Cell: ({ row }) => useMemo(() => <div className="pl-2">{row.index + 1}</div>, []),
       },
       {
         Header: 'NAME',
         accessor: 'name',
         Cell: tableProps =>
-          React.useMemo(() => {
+          useMemo(() => {
             const {
               row: {
                 original: { _id, name },
@@ -66,13 +66,13 @@ const Category = () => {
         accessor: '_id',
         footer: props => props.column.id,
         disableSortBy: true,
-        Cell: ({ row }) => React.useMemo(() => <MenuPopover row={row} />, []),
+        Cell: ({ row }) => useMemo(() => <MenuPopover row={row} />, []),
       },
     ],
     [hasParentId, data],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const parentId = searchParams.get('parentId');
     if (parentId) {
       setQuery({ ...query, parentId, name: search });
@@ -82,11 +82,11 @@ const Category = () => {
     setQuery({ ...query, name: search });
   }, [search]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const type = searchParams.get('type');
     const parentId = searchParams.get('parentId');
     if (parentId) {
-      setQuery({ ...query, parentId });
+      setQuery({ ...query, type, parentId });
       return;
     }
 

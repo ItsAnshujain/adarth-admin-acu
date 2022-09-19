@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import React from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { ChevronDown } from 'react-feather';
 import { ControlledFormTextInput } from '../Input/FormInput';
 import { useCreateMaster, useFetchMasters, useUpdateMaster } from '../../hooks/masters.hooks';
@@ -20,10 +20,11 @@ const schema = yup.object().shape({
 const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [query, setQuery] = React.useState({
+  const [query, setQuery] = useState({
     type: 'category',
+    parentId: null,
   });
-  const [menuValue, setMenuValue] = React.useState();
+  const [menuValue, setMenuValue] = useState();
   const { data: parentData } = useFetchMasters(serialize(query));
   const { mutate: create, isLoading } = useCreateMaster();
   const { mutate: edit, isLoading: isUpdateMasterLoading } = useUpdateMaster();
@@ -35,12 +36,12 @@ const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema), defaultValues });
 
-  const masterType = React.useMemo(
+  const masterType = useMemo(
     () => masterTypes[searchParams.get('type')],
     [searchParams.get('type')],
   );
 
-  const onSubmit = async formData => {
+  const onSubmit = formData => {
     let data = {};
     const type = searchParams.get('type');
     const parentId = searchParams.get('parentId');
@@ -59,15 +60,15 @@ const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
     setOpened(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isEdit) {
       setValue('name', masterData?.name);
     }
   }, [isEdit]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const type = searchParams.get('type');
-    setQuery({ type });
+    setQuery({ ...query, type });
   }, [location.search]);
 
   return (
