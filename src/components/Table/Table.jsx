@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import classNames from 'classnames';
 import shallow from 'zustand/shallow';
 import { useTable, useSortBy, useRowSelect, usePagination } from 'react-table';
@@ -11,14 +11,14 @@ import useCreateBookingSelectSpaceState from '../../store/createBookingSelectSpa
 // TODO: selectedFlatRows.original gives array of all selected rows and selectedRowIds contains all the data from id field
 const Table = ({
   COLUMNS,
-  dummy,
+  dummy = [],
   allowRowsSelect = false,
   isBookingTable = false,
   isCreateOrder = false,
+  activePage,
+  totalPage,
 }) => {
-  const [activePage, _] = useState();
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
-  const data = useMemo(() => dummy, []);
   const setSelectedSpace = useCreateBookingSelectSpaceState(
     state => state.setSelectedSpace,
     shallow,
@@ -35,10 +35,9 @@ const Table = ({
   } = useTable(
     {
       columns,
-      data,
+      data: dummy,
       initialState: { pageIndex: 0 },
     },
-
     useSortBy,
     usePagination,
     useRowSelect,
@@ -64,7 +63,7 @@ const Table = ({
 
   return (
     <>
-      <div className="mr-7 max-w-screen overflow-x-auto">
+      <div className="mr-7 max-w-screen overflow-x-auto  min-h-[450px]">
         <table className="w-full overflow-y-visible relative z-10" {...getTableProps()}>
           <thead className="bg-gray-100">
             {headerGroups.map(headerGroup => (
@@ -138,7 +137,7 @@ const Table = ({
             page={activePage}
             onChange={nextPage}
             onClick={nextPage}
-            total={dummy.length}
+            total={totalPage}
           />
         </div>
       )}

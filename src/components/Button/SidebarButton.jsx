@@ -1,13 +1,31 @@
 import classNames from 'classnames';
+import { useMemo } from 'react';
 import { Mail } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
+import { useFetchMastersTypes } from '../../hooks/masters.hooks';
+import { masterTypes } from '../../utils';
 import SidebarExpandableButton from './SidebarExpandableButton';
 
 const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
+  const { data } = useFetchMastersTypes();
+
+  const renderList = useMemo(() => {
+    const tempList = [];
+    if (data) {
+      const values = Object.values(data);
+      values.map(key => {
+        tempList.push({ name: masterTypes[key], type: key });
+        return tempList;
+      });
+    }
+
+    return tempList;
+  }, [data]);
+
   const navigate = useNavigate();
   if (index === 5) {
     const dataObj = {
-      content: ['Category', 'Brands', 'Industry', 'Illumination'],
+      content: renderList,
       label: text,
     };
     return (
@@ -19,7 +37,11 @@ const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
 
   if (index === 7) {
     const dataObj = {
-      content: ['Campaign Report', 'Revenue Reports', 'Inventory Report'],
+      content: [
+        { name: 'Campaign Report' },
+        { name: 'Revenue Reports' },
+        { name: 'Inventory Report' },
+      ],
       label: text,
     };
 
