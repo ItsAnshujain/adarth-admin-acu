@@ -14,12 +14,12 @@ const styles = {
   },
 };
 const Credentials = () => {
-  const [value, setValue] = useState(null);
+  const [role, setRole] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(`?type=${value}`);
-  }, [value]);
+    navigate(`?type=${role}`);
+  }, [role]);
 
   return (
     <div className="pl-5 pr-7 mt-4">
@@ -28,12 +28,14 @@ const Credentials = () => {
         <div className="flex flex-col gap-4">
           <Select
             styles={styles}
-            value={value}
-            onChange={setValue}
+            value={role}
+            onChange={setRole}
             data={[
               { label: 'Admin', value: 'admin' },
-              { label: 'Super User', value: 'super-user' },
-              { label: 'Media Owner', value: 'media-owner' },
+              { label: 'Manager', value: 'manager&mediaOwner=false' },
+              { label: 'Media Owner', value: 'manager&mediaOwner=true' },
+              { label: 'Supervisor', value: 'supervisor' },
+              { label: 'Associate', value: 'associate' },
             ]}
             label="Role"
             required
