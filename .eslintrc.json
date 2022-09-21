@@ -33,7 +33,7 @@
     "camelcase": "off",
     "no-restricted-syntax": "off",
     "func-names": "off",
-    "no-console": 2,
+    "no-console": 1,
     "react/jsx-filename-extension": [
       1,
       {
