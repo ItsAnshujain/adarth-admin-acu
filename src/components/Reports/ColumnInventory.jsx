@@ -1,10 +1,9 @@
-/* eslint-disable */
-import Badge from '../shared/Badge';
-import MenuIcon from '../Menu';
 import { useNavigate } from 'react-router-dom';
 import { Eye, Edit2, Trash } from 'react-feather';
 import { Menu } from '@mantine/core';
 import toIndianCurrency from '../../utils/currencyFormat';
+import MenuIcon from '../Menu';
+import Badge from '../shared/Badge';
 
 const COLUMNS = [
   {
@@ -16,11 +15,18 @@ const COLUMNS = [
     accessor: 'space_name_and_photo',
     Cell: tableProps => {
       const navigate = useNavigate();
-      const { status, photo, space_name, id } = tableProps.row.original;
+
+      const {
+        row: {
+          original: { status, photo, space_name, id },
+        },
+      } = tableProps;
+
       const color =
         status === 'Available' ? 'green' : status === 'Unavailable' ? 'orange' : 'primary';
       return (
         <div
+          aria-hidden
           onClick={() => navigate(`view-details/${id}`)}
           className="grid grid-cols-2 gap-2 items-center cursor-pointer"
         >
@@ -40,7 +46,15 @@ const COLUMNS = [
   {
     Header: 'MEDIA OWNER NAME',
     accessor: 'landlord_name',
-    Cell: tableProps => <div className="w-fit">{tableProps.row.original['landlord_name']}</div>,
+    Cell: tableProps => {
+      const {
+        row: {
+          original: { landlord_name },
+        },
+      } = tableProps;
+
+      <div className="w-fit">{landlord_name}</div>;
+    },
   },
   {
     Header: 'SPACE TYPE',
@@ -49,17 +63,17 @@ const COLUMNS = [
   {
     Header: 'TOTAL REVENUE',
     accessor: 'total_revenue',
-    Cell: tableProps => <div className="w-fit mr-2">{toIndianCurrency(48964)}</div>,
+    Cell: () => <div className="w-fit mr-2">{toIndianCurrency(48964)}</div>,
   },
   {
     Header: 'TOTAL BOOKING',
     accessor: 'total_booking',
-    Cell: tableProps => <div className="w-fit">{527}</div>,
+    Cell: () => <div className="w-fit">{527}</div>,
   },
   {
     Header: 'TOTAL OPERATIONAL COST',
     accessor: 'total_operational_cost',
-    Cell: tableProps => <div className="w-fit mr-2">{toIndianCurrency(48967984)}</div>,
+    Cell: () => <div className="w-fit mr-2">{toIndianCurrency(48967984)}</div>,
   },
   {
     Header: 'DIMENSION',
@@ -87,34 +101,40 @@ const COLUMNS = [
     disableSortBy: true,
     Cell: tableProps => {
       const navigate = useNavigate();
-      const { id } = tableProps.row.original;
+      const {
+        row: {
+          original: { id },
+        },
+      } = tableProps;
 
       return (
         <Menu shadow="md" width={150}>
           <Menu.Target>
-            <button>
+            <button type="button">
               <MenuIcon />
             </button>
           </Menu.Target>
 
           <Menu.Dropdown>
             <Menu.Item>
-              <div
+              <button
+                type="button"
                 onClick={() => navigate(`/inventory/view-details/${id}`)}
                 className="cursor-pointer flex items-center gap-1"
               >
                 <Eye className="h-4" />
                 <span className="ml-1">View Details</span>
-              </div>
+              </button>
             </Menu.Item>
             <Menu.Item>
-              <div
+              <button
+                type="button"
                 onClick={() => navigate(`/inventory/edit-details/${id}`)}
                 className="cursor-pointer flex items-center gap-1"
               >
                 <Edit2 className="h-4" />
                 <span className="ml-1">Edit</span>
-              </div>
+              </button>
             </Menu.Item>
             <Menu.Item>
               <div className="cursor-pointer flex items-center gap-1">
