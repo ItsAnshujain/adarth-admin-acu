@@ -23,9 +23,12 @@ const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
   const [query, setQuery] = useState({
     type: 'category',
     parentId: null,
+    limit: 10,
+    page: 1,
   });
   const [menuValue, setMenuValue] = useState();
   const { data: parentData } = useFetchMasters(serialize(query));
+
   const { mutate: create, isLoading } = useCreateMaster();
   const { mutate: edit, isLoading: isUpdateMasterLoading } = useUpdateMaster();
   const {
@@ -48,7 +51,7 @@ const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
     data = { ...formData, type };
     if (menuValue?.id) {
       data = { ...formData, type, parentId: menuValue?.id };
-    } else if (parentId) {
+    } else if (parentId !== 'null') {
       data = { ...formData, type, parentId };
     }
     if (isEdit) {
@@ -97,7 +100,7 @@ const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
             control={control}
             errors={errors}
           />
-          {searchParams.get('parentId') ? (
+          {searchParams.get('parentId') !== 'null' ? (
             <>
               <p>Parent List</p>
               <Menu shadow="md" width="100%">

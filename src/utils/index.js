@@ -2,7 +2,7 @@ export const serialize = object => {
   const str = [];
   for (const p in object) {
     if (Object.prototype.hasOwnProperty.call(object, p)) {
-      if (object[p] || typeof object[p] === 'boolean') {
+      if (object[p] || typeof object[p] === 'boolean' || object[p] === null) {
         str.push(`${encodeURIComponent(p)}=${encodeURIComponent(object[p])}`);
       }
     }
