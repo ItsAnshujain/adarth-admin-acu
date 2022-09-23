@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import classNames from 'classnames';
 import shallow from 'zustand/shallow';
 import { useTable, useSortBy, useRowSelect, usePagination } from 'react-table';
@@ -15,8 +15,11 @@ const Table = ({
   allowRowsSelect = false,
   isBookingTable = false,
   isCreateOrder = false,
-  activePage,
-  totalPage,
+  activePage = 1,
+  totalPages = 1,
+  selectedRows = () => {},
+  setActivePage = () => {},
+  rowCountLimit = 10,
 }) => {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const setSelectedSpace = useCreateBookingSelectSpaceState(
@@ -30,7 +33,7 @@ const Table = ({
     headerGroups,
     prepareRow,
     page,
-    nextPage,
+    setPageSize,
     selectedFlatRows,
   } = useTable(
     {
@@ -41,6 +44,7 @@ const Table = ({
     useSortBy,
     usePagination,
     useRowSelect,
+
     /* eslint-disable react/no-unstable-nested-components */
     allowRowsSelect &&
       (hooks => {
@@ -60,6 +64,14 @@ const Table = ({
   if (isBookingTable) {
     setSelectedSpace(selectedFlatRows);
   }
+
+  useEffect(() => {
+    selectedRows(selectedFlatRows);
+  }, [selectedFlatRows]);
+
+  useEffect(() => {
+    setPageSize(rowCountLimit);
+  }, [rowCountLimit]);
 
   return (
     <>
@@ -103,6 +115,13 @@ const Table = ({
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
+            {page.length === 0 && (
+              <tr>
+                <td className="pl-2 py-2 text-center">
+                  <p>No Records Found</p>
+                </td>
+              </tr>
+            )}
             {page.map(row => {
               prepareRow(row);
               return (
@@ -135,9 +154,8 @@ const Table = ({
               },
             })}
             page={activePage}
-            onChange={nextPage}
-            onClick={nextPage}
-            total={totalPage}
+            onChange={setActivePage}
+            total={totalPages}
           />
         </div>
       )}

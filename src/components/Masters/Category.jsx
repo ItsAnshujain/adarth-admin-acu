@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import classnames from 'classnames';
 import Header from './Header';
 import RowsPerPage from '../RowsPerPage';
 import Search from '../Search';
@@ -12,17 +11,25 @@ import { serialize } from '../../utils';
 
 const Category = () => {
   const [search, setSearch] = useDebouncedState('', 1000);
-  const [count, setCount] = useState('20');
+  const [count, setCount] = useState('10');
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
   const [query, setQuery] = useState({
     type: 'category',
     parentId: null,
+    limit: 10,
+    page: 1,
   });
   const { data } = useFetchMasters(serialize(query));
 
-  const hasParentId = searchParams.has('parentId');
+  const type = searchParams.get('type');
+  const parentId = searchParams.get('parentId');
+  const page = searchParams.get('page');
+
+  const handlePagination = currentPage => {
+    navigate(`/masters?type=category&parentId=null&limit=${page}&page=${currentPage}`);
+  };
 
   const COLUMNS = useMemo(
     () => [
@@ -41,19 +48,20 @@ const Category = () => {
                 original: { _id, name },
               },
             } = tableProps;
+            const hasParentId = searchParams.get('parentId');
 
             return (
               <button
                 type="button"
-                className={classnames(hasParentId ? 'cursor-text' : 'cursor-pointer')}
+                className={hasParentId === 'null' ? 'cursor-pointer' : 'cursor-text'}
                 onClick={
-                  hasParentId
-                    ? () => {}
-                    : () => {
+                  hasParentId === 'null'
+                    ? () => {
                         navigate(`/masters?type=${searchParams.get('type')}&parentId=${_id}`, {
                           replace: true,
                         });
                       }
+                    : () => {}
                 }
               >
                 {name}
@@ -69,29 +77,25 @@ const Category = () => {
         Cell: ({ row }) => useMemo(() => <MenuPopover row={row} />, []),
       },
     ],
-    [hasParentId, data],
+    [data],
   );
 
   useEffect(() => {
-    const parentId = searchParams.get('parentId');
-    if (parentId) {
-      setQuery({ ...query, parentId, name: search });
-      return;
-    }
-
-    setQuery({ ...query, name: search });
-  }, [search]);
+    setQuery({ ...query, parentId, name: search });
+  }, [search, parentId]);
 
   useEffect(() => {
-    const type = searchParams.get('type');
-    const parentId = searchParams.get('parentId');
-    if (parentId) {
-      setQuery({ ...query, type, parentId });
-      return;
-    }
+    setQuery({ ...query, type, parentId });
+  }, [location.search, type, parentId]);
 
-    setQuery({ ...query, type });
-  }, [location.search]);
+  useEffect(() => {
+    const limit = parseInt(count, 10);
+    setQuery({ ...query, limit });
+  }, [count]);
+
+  useEffect(() => {
+    setQuery({ ...query, page });
+  }, [page]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
@@ -103,8 +107,10 @@ const Category = () => {
       <Table
         dummy={data?.docs || []}
         COLUMNS={COLUMNS}
-        activePage={data?.page}
-        totalPage={data?.totalPage}
+        activePage={data?.page || 1}
+        totalPages={data?.totalPages || 1}
+        setActivePage={handlePagination}
+        rowCountLimit={count}
       />
     </div>
   );

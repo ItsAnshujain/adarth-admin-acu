@@ -14,7 +14,7 @@ const AccordionLabel = props => {
       navigate(`/${sidebarText.toLowerCase()}/campaign`);
       setColor(7);
     } else if (label === 'Masters') {
-      navigate(`/${sidebarText.toLowerCase()}?type=category&parentId=null`);
+      navigate(`/${sidebarText.toLowerCase()}?type=category&parentId=null&limit=${10}`);
       setColor(5);
     }
   };
@@ -96,7 +96,9 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
                   } else if (index === 2 && sidebarText === 'Reports') {
                     navigate(`/${sidebarText.toLowerCase()}/inventory`);
                   } else if (sidebarText === 'Masters') {
-                    navigate(`/${sidebarText.toLowerCase()}?type=${obj?.type}&parentId=null`);
+                    navigate(
+                      `/${sidebarText.toLowerCase()}?type=${obj?.type}&parentId=null&limit=${10}`,
+                    );
                   }
                   // Used in smaller screens only
                   if (setOpened) setOpened(false);
