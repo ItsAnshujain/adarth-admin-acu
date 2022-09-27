@@ -25,28 +25,6 @@ import useSideBarState from '../../store/sidebar.store';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Title);
 
-const barDataIndustry = {
-  labels: [
-    'Fashion',
-    'Pub',
-    'Design',
-    'React',
-    'HTML',
-    'CSS',
-    'JavaScript',
-    'Garments',
-    'Bike',
-    'Car',
-    'Apparell',
-  ],
-  datasets: [
-    {
-      data: [10, 200, 300, 200, 300, 40, 90, 90, 40, 90, 90],
-      backgroundColor: '#914EFB',
-    },
-  ],
-};
-
 const barDataState = {
   labels: [
     'Kolkata',

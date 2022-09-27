@@ -12,7 +12,6 @@ const Header = ({ text }) => {
         </div>
         <button
           onClick={() => setOpened(true)}
-          variant="default"
           className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"
           type="button"
         >

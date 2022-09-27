@@ -1,5 +1,4 @@
 import { Textarea, TextInput } from '@mantine/core';
-import upload from '../../../assets/upload.svg';
 
 const styles = {
   label: {

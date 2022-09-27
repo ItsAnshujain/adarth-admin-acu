@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Text, Button, PasswordInput } from '@mantine/core';
 import { useForm, Controller } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import SuccessModal from '../../components/shared/Modal';
@@ -25,7 +25,6 @@ const schema = yup.object().shape({
 });
 
 const Home = () => {
-  const navigate = useNavigate();
   const [open, setOpenSuccessModal] = useState(false);
 
   const {

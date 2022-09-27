@@ -1,3 +1,5 @@
+import MenuIcon from '../../Menu';
+
 const COLUMNS = [
   {
     Header: '#',
@@ -129,6 +131,26 @@ const COLUMNS = [
   {
     Header: 'PRICING',
     accessor: 'pricing',
+  },
+  {
+    Header: '',
+    accessor: 'details',
+    disableSortBy: true,
+    Cell: tableProps => {
+      const {
+        row: {
+          // eslint-disable-next-line no-unused-vars
+          original: { id },
+        },
+      } = tableProps;
+      return (
+        <div className="w-[100px] flex justify-center">
+          <button type="button">
+            <MenuIcon />
+          </button>
+        </div>
+      );
+    },
   },
 ];
 

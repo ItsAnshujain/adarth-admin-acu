@@ -141,7 +141,7 @@ const BasicInformation = ({ formData, setFormData }) => {
         />
         <div className="text-right">
           <input className="border w-24" type="text" readOnly value={maxImpressions} />
-          <p className="text-sm font-thin" size="sm" weight="100">
+          <p className="text-sm font-thin" size="sm">
             Max
           </p>
         </div>

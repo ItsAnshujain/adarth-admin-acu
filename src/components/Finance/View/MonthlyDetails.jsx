@@ -69,12 +69,12 @@ const Monthly = () => {
       </div>
       <div className="py-4 flex justify-end pr-7 gap-2 text-right">
         <Search />
-        <div ref={ref} className=" relative">
+        <div ref={ref} className="relative">
           <Button onClick={openDatePicker} variant="default" type="button">
             <img src={calendar} className="h-5" alt="calendar" />
           </Button>
-          {showDatePicker && (
-            <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
+          {!showDatePicker && (
+            <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3 right-[-400px]">
               <DateRange handleClose={openDatePicker} />
             </div>
           )}
