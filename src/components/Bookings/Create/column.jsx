@@ -153,7 +153,6 @@ const COLUMNS = [
     accessor: 'details',
     Cell: tableProps => {
       const [showMenu, setShowMenu] = useState(false);
-
       const {
         row: {
           // eslint-disable-next-line no-unused-vars

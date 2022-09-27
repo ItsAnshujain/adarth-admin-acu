@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 import { useState } from 'react';
-import { Text, Button } from '@mantine/core';
 import { useForm } from 'react-hook-form';
+import { Text, Button } from '@mantine/core';
 import { Link, useNavigate } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { showNotification } from '@mantine/notifications';
