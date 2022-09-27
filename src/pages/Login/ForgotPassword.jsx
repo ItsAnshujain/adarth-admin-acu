@@ -1,10 +1,13 @@
-import { TextInput, Text, Button } from '@mantine/core';
-import { useForm, Controller } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@mantine/core';
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { showNotification } from '@mantine/notifications';
+import { useForgotPassword } from '../../hooks/auth.hooks';
+import { ControlledFormTextInput } from '../../components/Input/FormInput';
 
-const initialValues = {
+const defaultValues = {
   email: '',
 };
 
@@ -12,44 +15,65 @@ const schema = yup.object().shape({
   email: yup.string().required('Email is required').email('Invalid Email'),
 });
 
-const Home = () => {
-  const navigate = useNavigate();
+const ForgotPassword = () => {
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm({
     resolver: yupResolver(schema),
-    initialValues,
+    defaultValues,
   });
+  const { mutate: forgotPassword, isLoading } = useForgotPassword();
 
-  // TODO: add data as and argument to function while integration
-  const onSubmitHandler = () => {
-    reset(initialValues);
-    navigate('/change-password');
+  const onSubmitHandler = formData => {
+    forgotPassword(formData, {
+      onError: err => {
+        showNotification({
+          title: 'Invalid details',
+          message: err.message,
+          color: 'red',
+        });
+      },
+      onSuccess: () => {
+        showNotification({
+          title: 'Request Submitted',
+          message: 'Please check your email for further instructions',
+        });
+      },
+    });
+  };
+
+  const styles = {
+    label: {
+      color: 'grey',
+      opacity: '0.5',
+      marginBottom: '16px',
+      fontWeight: '100',
+      fontSize: '16px',
+    },
   };
 
   return (
     <div className="my-auto w-[31%]">
       <p className="mb-1 text-2xl font-bold">Forgot Password</p>
-      <Text className="mb-8">Please use registered email id</Text>
+      <p className="mb-4">Please use registered email id</p>
 
       <form onSubmit={handleSubmit(onSubmitHandler)}>
-        <Text color="gray" className="mb-4 opacity-50">
-          Email
-        </Text>
-        <Controller
+        <ControlledFormTextInput
+          label="Email"
           name="email"
-          defaultValue={initialValues.email}
+          placeholder="Your Email"
+          size="lg"
+          isLoading={isLoading}
           control={control}
-          render={({ field }) => <TextInput {...field} size="lg" placeholder="Your Email" />}
+          errors={errors}
+          styles={styles}
         />
 
-        <p className="text-sm text-orange-450 mb-3">{errors.email?.message}</p>
-
         <Button
-          className="mt-2 width-full bg-purple-450"
+          disabled={isLoading}
+          className="mt-4 width-full bg-purple-450"
           color="primary"
           type="submit"
           styles={() => ({
@@ -65,13 +89,13 @@ const Home = () => {
           Send Link
         </Button>
       </form>
-      <Text className="mt-4">
+      <p className="mt-4">
         <Link to="/">
           <span className="text-purple-450 ml-1 cursor-pointer">Back to Login</span>
         </Link>
-      </Text>
+      </p>
     </div>
   );
 };
 
-export default Home;
+export default ForgotPassword;

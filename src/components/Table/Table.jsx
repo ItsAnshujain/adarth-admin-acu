@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import classNames from 'classnames';
 import shallow from 'zustand/shallow';
 import { useTable, useSortBy, useRowSelect, usePagination } from 'react-table';
@@ -11,14 +11,17 @@ import useCreateBookingSelectSpaceState from '../../store/createBookingSelectSpa
 // TODO: selectedFlatRows.original gives array of all selected rows and selectedRowIds contains all the data from id field
 const Table = ({
   COLUMNS,
-  dummy,
+  dummy = [],
   allowRowsSelect = false,
   isBookingTable = false,
   isCreateOrder = false,
+  activePage = 1,
+  totalPages = 1,
+  selectedRows = () => {},
+  setActivePage = () => {},
+  rowCountLimit = 10,
 }) => {
-  const [activePage, _] = useState();
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
-  const data = useMemo(() => dummy, []);
   const setSelectedSpace = useCreateBookingSelectSpaceState(
     state => state.setSelectedSpace,
     shallow,
@@ -30,18 +33,18 @@ const Table = ({
     headerGroups,
     prepareRow,
     page,
-    nextPage,
+    setPageSize,
     selectedFlatRows,
   } = useTable(
     {
       columns,
-      data,
+      data: dummy,
       initialState: { pageIndex: 0 },
     },
-
     useSortBy,
     usePagination,
     useRowSelect,
+
     /* eslint-disable react/no-unstable-nested-components */
     allowRowsSelect &&
       (hooks => {
@@ -62,9 +65,17 @@ const Table = ({
     setSelectedSpace(selectedFlatRows);
   }
 
+  useEffect(() => {
+    selectedRows(selectedFlatRows);
+  }, [selectedFlatRows]);
+
+  useEffect(() => {
+    setPageSize(rowCountLimit);
+  }, [rowCountLimit]);
+
   return (
     <>
-      <div className="mr-7 max-w-screen overflow-x-auto">
+      <div className="mr-7 max-w-screen overflow-x-auto  min-h-[450px]">
         <table className="w-full overflow-y-visible relative z-10" {...getTableProps()}>
           <thead className="bg-gray-100">
             {headerGroups.map(headerGroup => (
@@ -104,6 +115,13 @@ const Table = ({
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
+            {page.length === 0 && (
+              <tr>
+                <td className="pl-2 py-2 text-center">
+                  <p>No Records Found</p>
+                </td>
+              </tr>
+            )}
             {page.map(row => {
               prepareRow(row);
               return (
@@ -136,9 +154,8 @@ const Table = ({
               },
             })}
             page={activePage}
-            onChange={nextPage}
-            onClick={nextPage}
-            total={dummy.length}
+            onChange={setActivePage}
+            total={totalPages}
           />
         </div>
       )}

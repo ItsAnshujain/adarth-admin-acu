@@ -10,7 +10,7 @@ import {
   BarElement,
   Tooltip,
 } from 'chart.js';
-import { Button, Select } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
 import Header from './Header';
@@ -89,7 +89,6 @@ const Revenue = () => {
   const revenueRef = useClickOutside(() => setShowDatePickerRevenue(false));
   // const dateIndustryRef = useClickOutside(() => setShowDateIndustry(false));
   const dateCityRef = useClickOutside(() => setShowDateCity(false));
-  const [sortBy, setSortBy] = useState('');
 
   const [showFilter, setShowFilter] = useState(false);
   const setColor = useSideBarState(state => state.setColor);
@@ -145,24 +144,10 @@ const Revenue = () => {
                   <img src={calendar} className="h-5" alt="calendar" />
                 </Button>
                 {showDatePickerRevenue && (
-                  <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
+                  <div className="absolute z-20 -translate-x-[90%] bg-white -top-0.3">
                     <DateRange handleClose={() => setShowDatePickerRevenue(false)} />
                   </div>
                 )}
-              </div>
-              <div className="mr-2">
-                <Select
-                  value={lineRevenueGraph}
-                  onChange={setLineRevenueGraph}
-                  placeholder="Sort By"
-                  data={[
-                    { value: 'weekly', label: 'Weekly' },
-                    { value: 'monthly', label: 'Monthly' },
-                    { value: 'quarterly', label: 'Quarterly' },
-                    { value: 'yearly', label: 'Yearly' },
-                    { value: 'lastFiveYears', label: 'Last Five Years' },
-                  ]}
-                />
               </div>
             </div>
           </div>
@@ -218,18 +203,7 @@ const Revenue = () => {
                     </div>
                   )}
                 </div>
-                <Select
-                  value={sortBy}
-                  onChange={setSortBy}
-                  placeholder="Sort By"
-                  data={[
-                    { value: 'weekly', label: 'Weekly' },
-                    { value: 'monthly', label: 'Monthly' },
-                    { value: 'quarterly', label: 'Quarterly' },
-                    { value: 'yearly', label: 'Yearly' },
-                    { value: 'lastFiveYears', label: 'Last Five Years' },
-                  ]}
-                />
+
                 <div className="mx-2">
                   <Button
                     onClick={() => setShowFilter(!showFilter)}

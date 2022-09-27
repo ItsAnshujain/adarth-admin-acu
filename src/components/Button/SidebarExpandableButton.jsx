@@ -14,7 +14,7 @@ const AccordionLabel = props => {
       navigate(`/${sidebarText.toLowerCase()}/campaign`);
       setColor(7);
     } else if (label === 'Masters') {
-      navigate(`/${sidebarText.toLowerCase()}/category`);
+      navigate(`/${sidebarText.toLowerCase()}?type=category&parentId=null&limit=10`);
       setColor(5);
     }
   };
@@ -79,7 +79,7 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
         </Accordion.Control>
         <Accordion.Panel>
           <div className="ml-5">
-            {item.content.map((text, index) => (
+            {item.content.map((obj, index) => (
               <button
                 type="button"
                 onClick={() => {
@@ -95,20 +95,15 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
                     navigate(`/${sidebarText.toLowerCase()}/revenue`);
                   } else if (index === 2 && sidebarText === 'Reports') {
                     navigate(`/${sidebarText.toLowerCase()}/inventory`);
-                  } else if (index === 0 && sidebarText === 'Masters') {
-                    navigate(`/${sidebarText.toLowerCase()}/category`);
-                  } else if (index === 1 && sidebarText === 'Masters') {
-                    navigate(`/${sidebarText.toLowerCase()}/brand`);
+                  } else if (sidebarText === 'Masters') {
+                    navigate(
+                      `/${sidebarText.toLowerCase()}?type=${obj?.type}&parentId=null&limit=10`,
+                    );
                   }
-                  // } else if (index === 2 && sidebarText === 'Masters') {
-                  //   navigate(`/${sidebarText.toLowerCase()}/industry`);
-                  // } else if (index === 3 && sidebarText === 'Masters') {
-                  //   navigate(`/${sidebarText.toLowerCase()}/illumination`);
-                  // }
                   // Used in smaller screens only
                   if (setOpened) setOpened(false);
                 }}
-                key={text}
+                key={obj.name}
                 className={classNames(
                   ` font-medium text-xs block mt-0.5 ${
                     (sidebarText === 'Reports' && reports[index]) ||
@@ -118,9 +113,12 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
                   }`,
                 )}
               >
-                {text}
+                {obj.name}
               </button>
             ))}
+            {item.content.length === 0 ? (
+              <p className="font-medium text-xs block mt-0.5">Loading...</p>
+            ) : null}
           </div>
         </Accordion.Panel>
       </Accordion.Item>

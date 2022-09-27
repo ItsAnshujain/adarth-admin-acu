@@ -1,10 +1,19 @@
-import { Title, TextInput, Text, Button, PasswordInput } from '@mantine/core';
-import { useForm, Controller } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
+import shallow from 'zustand/shallow';
+import { useForm } from 'react-hook-form';
+import { Title, Text, Button } from '@mantine/core';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { showNotification } from '@mantine/notifications';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLogin } from '../../hooks/auth.hooks';
+import {
+  ControlledFormTextInput,
+  ControlledFormPasswordInput,
+} from '../../components/Input/FormInput';
+import { fetchUserDetails } from '../../hooks/user.hooks';
+import useUserStore from '../../store/user.store';
 
-const initialValues = {
+const defaultValues = {
   email: '',
   password: '',
 };
@@ -20,54 +29,97 @@ const schema = yup.object().shape({
 
 const Home = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { setToken, setId, id, setUserDetails } = useUserStore(
+    state => ({
+      setToken: state.setToken,
+      setId: state.setId,
+      id: state.id,
+      setUserDetails: state.setUserDetails,
+    }),
+    shallow,
+  );
+
+  useUserStore(state => state.userDetails, shallow);
+
+  const { mutate: login, isError, data, isLoading, isSuccess } = useLogin();
+  const { data: ud, isSuccess: userDataLoaded, isLoading: userDataLoading } = fetchUserDetails(id);
+
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm({
     resolver: yupResolver(schema),
-    initialValues,
+    defaultValues,
   });
 
-  // TODO: add data as and argument to function while integration
-  const onSubmitHandler = () => {
-    reset(initialValues);
-    navigate('/home');
+  const onSubmitHandler = async formData => {
+    login(formData);
   };
+
+  if (isError) {
+    showNotification({
+      title: 'Invalid details',
+      message: 'Email and Password do not match',
+      color: 'red',
+    });
+  }
+
+  if (isSuccess) {
+    const {
+      data: { token, id: userId },
+    } = data;
+    setToken(token);
+    setId(userId);
+  }
+
+  if (userDataLoaded) {
+    setUserDetails(ud);
+    navigate(location.state?.path || '/home');
+  }
+
+  const styles = () => ({
+    label: {
+      color: 'grey',
+      opacity: '0.5',
+      marginBottom: '16px',
+      marginTop: '24px',
+      fontWeight: '100',
+      fontSize: '16px',
+    },
+  });
 
   return (
     <div className="my-auto w-[31%]">
-      <Title className="mb-8">Login to Adarth</Title>
-      <Text className="mb-8">Please use registered email for login</Text>
+      <Title className="mb-1">Login to Adarth</Title>
+      <Text>Please use registered email for login</Text>
 
       <form onSubmit={handleSubmit(onSubmitHandler)}>
-        <Text color="gray" className="mb-4 opacity-50">
-          Email
-        </Text>
-        <Controller
+        <ControlledFormTextInput
           name="email"
-          defaultValue={initialValues.email}
           control={control}
-          render={({ field }) => <TextInput {...field} size="lg" placeholder="Your Email" />}
+          label="Email"
+          isLoading={isLoading && userDataLoading}
+          size="lg"
+          placeholder="Your Email"
+          styles={styles}
+          errors={errors}
         />
-
-        <p className="text-sm text-orange-450 mb-3">{errors.email?.message}</p>
-
-        <Text color="gray" className="my-4 mt-6 opacity-50">
-          Password
-        </Text>
-        <Controller
+        <ControlledFormPasswordInput
           name="password"
-          defaultValue={initialValues.password}
           control={control}
-          render={({ field }) => <PasswordInput {...field} size="lg" placeholder="Your Password" />}
+          label="Password"
+          isLoading={isLoading && userDataLoading}
+          size="lg"
+          placeholder="Your Password"
+          styles={styles}
+          errors={errors}
         />
-
-        <p className="mb-3 text-sm text-orange-450">{errors.password?.message}</p>
-
         <Button
-          className="mt-2 width-full bg-purple-450"
+          disabled={isLoading && userDataLoading}
+          className="mt-5 width-full bg-purple-450"
           color="primary"
           type="submit"
           styles={() => ({

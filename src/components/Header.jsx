@@ -1,14 +1,22 @@
 import { Button, Menu as MenuProfile } from '@mantine/core';
 import { useState } from 'react';
 import { Menu } from 'react-feather';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import shallow from 'zustand/shallow';
 import logo from '../assets/logo.svg';
 import DrawerSidebar from './DrawerSidebar';
+import useTokenIdStore from '../store/user.store';
 
 const Header = ({ title }) => {
   const [opened, setOpened] = useState(false);
   const [menuProfileOpened, setMenuProfileOpened] = useState(false);
+  const navigate = useNavigate();
+  const setToken = useTokenIdStore(state => state.setToken, shallow);
 
+  const handleLogout = () => {
+    setToken(null);
+    navigate('/login');
+  };
   return (
     <>
       <header className="grid grid-cols-12 h-20  border-b border-gray-450 relative w-screen">
@@ -52,7 +60,9 @@ const Header = ({ title }) => {
                 <Link to="/edit-profile">
                   <MenuProfile.Item>Edit Profile</MenuProfile.Item>
                 </Link>
-                <MenuProfile.Item className="text-red-500">Logout</MenuProfile.Item>
+                <MenuProfile.Item className="text-red-500" onClick={handleLogout}>
+                  Logout
+                </MenuProfile.Item>
               </MenuProfile.Dropdown>
             </MenuProfile>
           </div>

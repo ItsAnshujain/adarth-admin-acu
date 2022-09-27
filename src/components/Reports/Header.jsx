@@ -26,24 +26,10 @@ const Header = ({ text }) => {
             <img src={calendar} className="h-5" alt="calendar" />
           </Button>
           {showDatePicker && (
-            <div className="absolute z-20 -translate-x-[80%] bg-white -top-0.3">
+            <div className="absolute z-20 -translate-x-[90%] bg-white -top-0.3">
               <DateRange handleClose={openDatePicker} />
             </div>
           )}
-        </div>
-        <div className="mr-2">
-          <Select
-            value={value}
-            onChange={setValue}
-            placeholder="Sort By"
-            data={[
-              { value: 'weekly', label: 'Weekly' },
-              { value: 'monthly', label: 'Monthly' },
-              { value: 'quarterly', label: 'Quarterly' },
-              { value: 'yearly', label: 'Yearly' },
-              { value: 'lastFiveYears', label: 'Last Five Years' },
-            ]}
-          />
         </div>
       </div>
     </div>

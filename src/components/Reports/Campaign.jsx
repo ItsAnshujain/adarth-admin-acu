@@ -154,20 +154,6 @@ const Campaign = () => {
                     </div>
                   )}
                 </div>
-                <div className="mr-2">
-                  <Select
-                    value={value}
-                    onChange={setValue}
-                    placeholder="Sort By"
-                    data={[
-                      { value: 'weekly', label: 'Weekly' },
-                      { value: 'monthly', label: 'Monthly' },
-                      { value: 'quarterly', label: 'Quarterly' },
-                      { value: 'yearly', label: 'Yearly' },
-                      { value: 'lastFiveYears', label: 'Last Five Years' },
-                    ]}
-                  />
-                </div>
               </div>
             </div>
             <div>
