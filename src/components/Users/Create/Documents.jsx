@@ -1,66 +1,96 @@
-import { useDropzone } from 'react-dropzone';
-import pdf from '../../../assets/pdf.svg';
-import trash from '../../../assets/trash.svg';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import PreviewCard from './UI/PreviewCard';
 import DragDropCard from './UI/DragDropCard';
-
-const previewCardData = {
-  trash,
-  pdf,
-  cardText: 'Landlord License',
-  cardSubtext: 'Your landlord license photocopy',
-  filename: 'license.pdf',
-};
-
-const dataPreviewCard = new Array(4).fill(previewCardData);
-
-const dragDropCardData = {
-  cardText: 'Landlord License',
-  cardSubtext: 'Your landlord license photocopy',
-};
-
-const dataDragDropCard = new Array(4).fill(dragDropCardData);
+import { useFormContext } from '../../../context/formContext';
+import { useUploadFile } from '../../../hooks/upload.hooks';
 
 const Documents = () => {
-  const { acceptedFiles, fileRejections, getRootProps, getInputProps } = useDropzone({
-    accept: {
-      'application/pdf': ['.pdf'],
-    },
-  });
+  const { id: userId } = useParams();
+  const { setFieldValue, values } = useFormContext();
+  const [uploadImageList, setUploadImageList] = useState([]);
+  const { mutateAsync: upload } = useUploadFile();
 
-  dragDropCardData.getInputProps = getInputProps;
-  dragDropCardData.getRootProps = getRootProps;
+  const onHandleDrop = async data => {
+    const formData = new FormData();
+    formData.append('files', data?.[0]);
+    const res = await upload(formData);
+    return res[0]?.Location;
+  };
 
-  const acceptedFileItems = acceptedFiles.map(file => (
-    <li key={file.path}>
-      {file.path} - {file.size} bytes
-    </li>
-  ));
+  const handleDelete = docIndex => {
+    setUploadImageList(uploadImageList.filter((_, index) => index !== docIndex));
+  };
 
-  const fileRejectionItems = fileRejections.map(({ file, errors }) => (
-    <li key={file.path}>
-      {file.path} - {file.size} bytes
-      <ul>
-        {errors.map(e => (
-          <li key={e.code}>{e.message}</li>
-        ))}
-      </ul>
-    </li>
-  ));
+  const onPreviewDocuments = (url, docType) => {
+    if (uploadImageList.length < 3) {
+      setUploadImageList(prevState => {
+        if (prevState) {
+          return [...prevState, { type: docType, url }];
+        }
 
-  dragDropCardData.acceptedFileItems = acceptedFileItems;
-  dragDropCardData.fileRejectionItems = fileRejectionItems;
+        return null;
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      const tempArr = [];
+      const tempObj = values?.docs;
+      if (tempObj) {
+        // TODO: fix this
+        // eslint-disable-next-line guard-for-in
+        for (const key in tempObj) {
+          tempArr.push({
+            type: key,
+            url: values.docs[key],
+          });
+        }
+      }
+
+      setUploadImageList(tempArr);
+    }
+  }, [values?.docs]);
 
   return (
     <div className="pl-5 pr-7 mt-4">
       <p className="text-xl font-bold mb-8">Documents of the associates</p>
+
       <div className="grid grid-cols-4 gap-8">
-        {dataPreviewCard.map(doc => (
-          <PreviewCard {...doc} />
+        {uploadImageList?.map((doc, index) => (
+          <PreviewCard
+            onClickDelete={() => handleDelete(index)}
+            filename={doc?.type}
+            cardText={doc?.type}
+            cardSubtext={doc?.type}
+            fileExtensionType={doc?.url}
+          />
         ))}
-        {dataDragDropCard.map(doc => (
-          <DragDropCard {...doc} />
-        ))}
+        <DragDropCard
+          cardText="Upload Your Landlord License photocopy"
+          onHandleDrop={async params => {
+            const url = await onHandleDrop(params);
+            setFieldValue('docs.landlordLicense', url);
+            onPreviewDocuments(url, 'landlordLicense');
+          }}
+        />
+        <DragDropCard
+          cardText="Upload Your Pan photocopy"
+          onHandleDrop={async params => {
+            const url = await onHandleDrop(params);
+            setFieldValue('docs.pan', url);
+            onPreviewDocuments(url, 'pan');
+          }}
+        />
+        <DragDropCard
+          cardText="Upload Your Aadhaar photocopy"
+          onHandleDrop={async params => {
+            const url = await onHandleDrop(params);
+            setFieldValue('docs.aadhaar', url);
+            onPreviewDocuments(url, 'aadhaar');
+          }}
+        />
       </div>
     </div>
   );

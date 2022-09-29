@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { ChevronDown, Plus } from 'react-feather';
-import { Tabs, Button } from '@mantine/core';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Tabs, Button, Image } from '@mantine/core';
+import { useNavigate, useParams } from 'react-router-dom';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
 import Filter from '../../Filter';
-import pdf from '../../../assets/pdf.svg';
-import image1 from '../../../assets/image1.png';
+// import pdf from '../../../assets/pdf.svg';
 import greenfolder from '../../../assets/ongoing.svg';
 import purplefolder from '../../../assets/completed.svg';
 import orangefolder from '../../../assets/upcoming.svg';
@@ -19,6 +18,9 @@ import dummy2 from '../../../Dummydata/USER_PROPOSAL.json';
 import column from './column';
 import columns from './columns';
 import Table from '../../Table/Table';
+import { useFetchUsersById } from '../../../hooks/users.hooks';
+import PreviewCard from '../Create/UI/PreviewCard';
+import UserImage from '../../../assets/placeholders/user.png';
 
 const Header = () => {
   const [activeTab, setActiveTab] = useState('first');
@@ -27,12 +29,9 @@ const Header = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [search, setSearch] = useState('');
   const [count, setCount] = useState('20');
-
+  const { id: userId } = useParams();
   const navigate = useNavigate();
-  const { pathname } = useLocation();
-
-  const id = pathname.split('/')[3];
-
+  const { data: userDetails } = useFetchUsersById(userId);
   const openDatePicker = () => {
     setShowDatePicker(!showDatePicker);
   };
@@ -49,116 +48,73 @@ const Header = () => {
         <button
           className="absolute right-7 top-7 bg-purple-450 text-white px-4 py-2 rounded-md"
           type="button"
-          onClick={() => navigate(`/users/edit-details/${id}`)}
+          onClick={() => navigate(`/users/edit-details/${userId}`)}
         >
           Edit
         </button>
       </Tabs.List>
       <Tabs.Panel value="first">
-        <div className="pl-5 pr-7 flex justify-between mt-8 mb-8">
-          <div className="grid grid-cols-3 gap-8">
-            <div className="flex flex-col gap-8">
+        <div className="pl-5 flex justify-between mt-8 mb-8">
+          <div className="grid grid-cols-4 gap-8">
+            <div className="flex flex-col col-span-1 gap-8">
               <div className="flex gap-4">
                 <div>
-                  <img src={image1} alt="profile pic" />
+                  <Image
+                    src={userDetails?.image || UserImage}
+                    alt="profile pic"
+                    height={120}
+                    width={120}
+                  />
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-xl font-bold">Peter Williams</p>
-                  <p className="text-[#914EFB]">Management</p>
-                  <p>Adarth</p>
+                  <p className="text-xl font-bold">{userDetails?.name || 'NA'}</p>
+                  <p className="text-[#914EFB] capitalize">{userDetails?.role || 'NA'}</p>
+                  <p>{userDetails?.company || 'NA'}</p>
                 </div>
               </div>
               <div>
-                <p>
-                  But I must explain to you how all this mistaken idea of denouncing pleasure and
-                  praising pain was born and I will give you a complete account of the system, and
-                  expound the actual teachings of the great explorer of the truth, the
-                  master-builder of human happiness.{' '}
-                </p>
+                <p>{userDetails?.about || 'NA'}</p>
               </div>
               <div>
                 <p className="text-slate-400">Email</p>
-                <p className="font-semibold">peter@adarthgmail.com</p>
+                <p className="font-semibold">{userDetails?.email || 'NA'}</p>
               </div>
               <div>
                 <p className="text-slate-400">Phone</p>
-                <p className="font-semibold">+91 987542134</p>
+                <p className="font-semibold">+91 {userDetails?.number || 'NA'}</p>
               </div>
               <div>
                 <p className="text-slate-400">Address</p>
-                <p className="font-semibold">
-                  Hedy Greene Ap #696-3279 Viverra. Avenue Latrobe DE{' '}
-                </p>
+                <p className="font-semibold">{userDetails?.address || 'NA'}</p>
               </div>
               <div>
                 <p className="text-slate-400">City</p>
-                <p className="font-semibold">Madrid</p>
+                <p className="font-semibold">{userDetails?.city || 'NA'}</p>
               </div>
               <div>
                 <p className="text-slate-400">Pincode</p>
-                <p className="font-semibold">43455513</p>
+                <p className="font-semibold">{userDetails?.pincode || 'NA'}</p>
               </div>
               <div>
                 <p className="text-slate-400">Pan</p>
-                <p className="font-semibold">ABCD1234561</p>
+                <p className="font-semibold">{userDetails?.pan || 'NA'}</p>
               </div>
               <div>
                 <p className="text-slate-400">Aadhar</p>
-                <p className="font-semibold">4441-4221-3561-0548</p>
+                <p className="font-semibold">{userDetails?.aadhaar || 'NA'}</p>
               </div>
             </div>
-            <div className="flex flex-col gap-8">
-              <div className="flex flex-col">
-                <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
-                  <div className="flex justify-center flex-col">
-                    <img src={pdf} alt="" className="h-8" />
-                    <p className="text-sm font-medium">license.pdf</p>
-                  </div>
-                </div>
-                <div className="text-sm mt-2">
-                  <p className="font-medium">Landlord License</p>
-                  <p className="text-slate-400">Your landlord license photocopy</p>
-                </div>
+            {userDetails?.docs?.map(doc => (
+              <div className="flex flex-col col-span-1">
+                <PreviewCard
+                  filename={doc}
+                  cardText={doc}
+                  cardSubtext={doc}
+                  showTrashBtn={false}
+                  preview
+                />
               </div>
-              <div className="flex flex-col">
-                <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
-                  <div className="flex justify-center flex-col">
-                    <img src={pdf} alt="" className="h-8" />
-                    <p className="text-sm font-medium">license.pdf</p>
-                  </div>
-                </div>
-                <div className="text-sm mt-2">
-                  <p className="font-medium">Landlord License</p>
-                  <p className="text-slate-400">Your landlord license photocopy</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-8">
-              <div className="flex flex-col ">
-                <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
-                  <div className="flex justify-center flex-col">
-                    <img src={pdf} alt="" className="h-8" />
-                    <p className="text-sm font-medium">license.pdf</p>
-                  </div>
-                </div>
-                <div className="text-sm mt-2">
-                  <p className="font-medium">Landlord License</p>
-                  <p className="text-slate-400">Your landlord license photocopy</p>
-                </div>
-              </div>
-              <div className="flex flex-col ">
-                <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
-                  <div className="flex justify-center flex-col">
-                    <img src={pdf} alt="" className="h-8" />
-                    <p className="text-sm font-medium">license.pdf</p>
-                  </div>
-                </div>
-                <div className="text-sm mt-2">
-                  <p className="font-medium">Landlord License</p>
-                  <p className="text-slate-400">Your landlord license photocopy</p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </Tabs.Panel>

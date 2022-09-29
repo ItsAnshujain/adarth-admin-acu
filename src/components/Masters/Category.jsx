@@ -28,7 +28,12 @@ const Category = () => {
   const page = searchParams.get('page');
 
   const handlePagination = currentPage => {
-    navigate(`/masters?type=category&parentId=null&limit=${page}&page=${currentPage}`);
+    const queries = serialize({
+      ...query,
+      limit: page,
+      page: currentPage,
+    });
+    navigate(`/masters?${queries}`);
   };
 
   const COLUMNS = useMemo(
@@ -94,7 +99,7 @@ const Category = () => {
   }, [count]);
 
   useEffect(() => {
-    setQuery({ ...query, page });
+    if (page) setQuery({ ...query, page });
   }, [page]);
 
   return (

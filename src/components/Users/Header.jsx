@@ -4,23 +4,28 @@ import { Button, Select } from '@mantine/core';
 import { Plus, ChevronDown } from 'react-feather';
 import Filter from './Filter';
 
-const AreaHeader = () => {
+const AreaHeader = ({ setFilter = () => {} }) => {
   const navigate = useNavigate();
-  const [value, setValue] = useState('Team');
   const [showFilter, setShowFilter] = useState(false);
+  const [value, setValue] = useState('Team');
 
+  const handleFilter = val => {
+    if (val) {
+      setFilter(val.toLowerCase());
+      setValue(val);
+    }
+  };
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center">
       <div className="pl-5">
         <Select
           value={value}
-          onChange={setValue}
-          data={['Team', 'Peers', 'Media Owners']}
+          onChange={handleFilter}
+          data={['Team', 'Peer']}
           styles={{
             rightSection: { pointerEvents: 'none' },
           }}
           rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-          required
         />
       </div>
       <div className="flex justify-around mr-7">

@@ -1,7 +1,13 @@
-import { TextInput, Select } from '@mantine/core';
-import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Image } from '@mantine/core';
+import { Dropzone } from '@mantine/dropzone';
+import { useEffect, useState } from 'react';
 import image from '../../../assets/image.png';
+import { useFormContext } from '../../../context/formContext';
+import { useUploadFile } from '../../../hooks/upload.hooks';
+import { useFetchUsers } from '../../../hooks/users.hooks';
+import { serialize } from '../../../utils';
+import Select from '../../shared/Select';
+import TextInput from '../../shared/TextInput';
 
 const styles = {
   label: {
@@ -16,10 +22,41 @@ const styles = {
 };
 
 const BasicInfo = () => {
-  const [state, setState] = useState(null);
-  const [city, setCity] = useState(null);
-  const [peer, setPeer] = useState(null);
-  const { search } = useLocation();
+  const { errors, getInputProps, setFieldValue, values } = useFormContext();
+  const { mutateAsync: upload, isLoading } = useUploadFile();
+  const [uploadImage, setUploadImage] = useState([]);
+  const [peerList, setPeerList] = useState([]);
+  const [query] = useState({
+    page: 1,
+    limit: 1,
+    sortOrder: 'asc',
+    sortBy: 'createdAt',
+    filter: 'peer',
+  });
+
+  const { data: usersList } = useFetchUsers(serialize(query));
+
+  const onHandleDrop = async params => {
+    const formData = new FormData();
+    formData.append('files', params?.[0]);
+    const res = await upload(formData);
+    setUploadImage(res?.[0].Location);
+    setFieldValue('image', res?.[0].Location);
+  };
+
+  const onFormattedPeerList = () => {
+    const tempArr = [];
+    usersList?.docs?.map(item => {
+      tempArr.push({ name: item?.name, id: item._id });
+      return tempArr;
+    });
+
+    setPeerList(tempArr);
+  };
+
+  useEffect(() => {
+    onFormattedPeerList();
+  }, [usersList]);
 
   return (
     <div className="pl-5 pr-7 mt-4">
@@ -27,86 +64,122 @@ const BasicInfo = () => {
       <div className="mt-8 flex flex-col">
         <p className="font-bold text-lg">Upload Profile Picture</p>
         <p className="text-md text-slate-400">Please upload png or jpeg photo(150x150 px)</p>
-        <div className="flex items-center justify-center h-[150px] w-[150px] border-dotted border-4">
-          <img src={image} alt="placeholder" />
+        <div className="flex">
+          <Image
+            src={values.image ? values.image : uploadImage}
+            alt="profile-image"
+            height={150}
+            width={150}
+          />
+
+          <div className="h-[150px] w-[150px] mt-3">
+            <Dropzone
+              onDrop={files => onHandleDrop(files)}
+              accept={['image/png', 'image/jpeg']}
+              className="h-full w-full flex justify-center items-center"
+              loading={isLoading}
+              name="image"
+              multiple={false}
+              {...getInputProps('image')}
+            >
+              <img src={image} alt="placeholder" />
+            </Dropzone>
+          </div>
         </div>
+        {uploadImage.length === 0 && errors?.image ? (
+          <p className="mt-1 text-xs text-red-450">{errors?.image}</p>
+        ) : null}
       </div>
-      {search.includes('mediaOwner=true') ? (
-        <div className="grid grid-cols-2 gap-6 mt-4 mb-12">
-          <TextInput styles={styles} label="Organization Name" required />
-          <TextInput styles={styles} label="License ID" required />
-          <TextInput styles={styles} label="Phone Number" required />
-          <TextInput styles={styles} label="Email" required />
-          <TextInput
-            placeholder="Write"
-            className="col-span-2"
-            styles={styles}
-            label="Address"
-            required
-          />
-          <Select
-            styles={styles}
-            value={city}
-            onChange={setCity}
-            data={['Admin', 'Super User']}
-            label="City"
-            required
-            placeholder="Select"
-          />
-          <TextInput styles={styles} label="Pin" required />
-          <TextInput placeholder="Write" className="col-span-2" styles={styles} label="About" />
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-6 mt-4 mb-12">
-          <TextInput placeholder="Write" styles={styles} label="Name" required />
-          <TextInput placeholder="Write" styles={styles} label="Organization" required />
-          <TextInput placeholder="Write" styles={styles} label="Phone Number" required />
-          <Select
-            styles={styles}
-            value={state}
-            onChange={setState}
-            data={['Admin', 'Super User']}
-            label="State"
-            required
-            placeholder="Select"
-          />
-          <TextInput
-            placeholder="Write"
-            className="col-span-2"
-            styles={styles}
-            label="Address"
-            required
-          />
-          <Select
-            styles={styles}
-            value={city}
-            onChange={setCity}
-            data={['Admin', 'Super User']}
-            label="City"
-            required
-            placeholder="Select"
-          />
-          <TextInput placeholder="Write" styles={styles} label="Pin" required />
-          <TextInput placeholder="Write" styles={styles} label="Aadhar Number" required />
-          <TextInput placeholder="Write" styles={styles} label="Pan Number" required />
-          <TextInput
-            placeholder="Write"
-            className="col-span-2"
-            styles={styles}
-            label="About"
-            required
-          />
-          <Select
-            styles={styles}
-            value={peer}
-            onChange={setPeer}
-            data={['Admin', 'Super User']}
-            label="Select Peer"
-            required
-            placeholder="Select"
-          />
-        </div>
-      )}
+      <div className="grid grid-cols-2 gap-6 mt-4 mb-12">
+        <TextInput
+          label="Name"
+          name="name"
+          styles={styles}
+          withAsterisk
+          errors={errors}
+          placeholder="Name"
+        />
+        <TextInput
+          label="Organization"
+          name="company"
+          styles={styles}
+          withAsterisk
+          errors={errors}
+          placeholder="Organization"
+        />
+        <TextInput
+          label="Phone Number"
+          name="number"
+          styles={styles}
+          withAsterisk
+          errors={errors}
+          placeholder="Phone Number"
+        />
+        <TextInput
+          label="State"
+          name="state"
+          styles={styles}
+          withAsterisk
+          errors={errors}
+          placeholder="State"
+        />
+        <TextInput
+          label="Address"
+          name="address"
+          styles={styles}
+          withAsterisk
+          errors={errors}
+          placeholder="Address"
+          className="col-span-2"
+        />
+        <TextInput
+          label="City"
+          name="city"
+          styles={styles}
+          withAsterisk
+          errors={errors}
+          placeholder="City"
+        />
+        <TextInput
+          label="Pin"
+          name="pincode"
+          styles={styles}
+          withAsterisk
+          errors={errors}
+          placeholder="Pin"
+        />
+        <TextInput
+          label="Aadhaar"
+          name="aadhaar"
+          styles={styles}
+          withAsterisk
+          errors={errors}
+          placeholder="Aadhaar"
+        />
+        <TextInput
+          label="Pan"
+          name="pan"
+          styles={styles}
+          withAsterisk
+          errors={errors}
+          placeholder="Pan"
+        />
+        <TextInput
+          label="About"
+          name="about"
+          styles={styles}
+          errors={errors}
+          placeholder="Write"
+          className="col-span-2"
+        />
+        <Select
+          label="Select Peer"
+          name="peer"
+          options={peerList}
+          errors={errors}
+          placeholder="Select"
+        />
+      </div>
     </div>
   );
 };
