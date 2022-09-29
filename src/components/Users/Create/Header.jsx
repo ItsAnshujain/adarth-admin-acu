@@ -5,8 +5,17 @@ import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Credentials', 'Basic Information', 'Documents'];
 
-const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
+const Header = ({ setFormStep, formStep, isLoading }) => {
   const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (formStep === 1) {
+      navigate(-1);
+    } else {
+      setFormStep(formStep - 1);
+    }
+  };
+
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center">
       <div className="flex gap-6 pl-5 relative">
@@ -51,34 +60,21 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
       </div>
       <div className="flex gap-4 pr-7">
         <Button className="border-black radius-md text-black">Cancel</Button>
-        <Button
-          onClick={() => {
-            if (formStep === 1) {
-              navigate(-1);
-            } else {
-              setFormStep(formStep - 1);
-            }
-          }}
-          className="bg-black"
-        >
+        <Button className="bg-black" onClick={handleBack}>
           <ChevronLeft className="mr-2 h-4" />
           Back
         </Button>
-
-        <Button
-          onClick={() => {
-            if (formStep <= 2) setFormStep(formStep + 1);
-            if (formStep === 3) {
-              setOpenSuccessModal(true);
-              return;
-            }
-            setFormStep(formStep + 1);
-          }}
-          className="bg-purple-450 order-3"
-        >
-          {formStep === 3 ? 'Save' : 'Next'}
-          {formStep < 3 && <ChevronRight className="ml-1 h-4" />}
-        </Button>
+        {formStep < 3 ? (
+          <Button type="submit" className="bg-purple-450 order-3">
+            Next
+            <ChevronRight className="ml-1 h-4" />
+          </Button>
+        ) : null}
+        {formStep === 3 ? (
+          <Button type="submit" className="bg-purple-450 order-3" loading={isLoading}>
+            {isLoading ? 'Saving...' : 'Save'}
+          </Button>
+        ) : null}
       </div>
     </div>
   );

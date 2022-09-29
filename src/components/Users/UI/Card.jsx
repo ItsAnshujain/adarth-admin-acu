@@ -1,12 +1,22 @@
-const UserCard = ({ name, designation, company, email, phone, image }) => (
+import { Image } from '@mantine/core';
+import UserImage from '../../../assets/placeholders/user.png';
+
+const UserCard = ({
+  name = 'NA',
+  role = 'NA',
+  company = 'NA',
+  email = 'NA',
+  phone = 'NA',
+  image,
+}) => (
   <div className="border rounded-md p-4 cursor-pointer">
     <div className="flex gap-4">
       <div className="border-radius-full">
-        <img src={image} alt="profile pic" />
+        <Image src={image || UserImage} alt="profile pic" height={80} width={80} />
       </div>
       <div className="flex flex-col justify-between">
-        <p className="text-xl font-bold">{name}</p>
-        <p className="text-[#914EFB]">{designation}</p>
+        <p className="text-xl font-bold capitalize">{name}</p>
+        <p className="text-[#914EFB] capitalize">{role}</p>
         <p>{company}</p>
       </div>
     </div>

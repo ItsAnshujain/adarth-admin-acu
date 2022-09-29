@@ -1,6 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Select, TextInput } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useFormContext } from '../../../context/formContext';
+import Select from '../../shared/Select';
+import TextInput from '../../shared/TextInput';
+
+const roleList = [
+  { label: 'Manager', value: 'manager' },
+  { label: 'Media Owner', value: 'media_owner' },
+  { label: 'Supervisor', value: 'supervisor' },
+  { label: 'Associate', value: 'associate' },
+];
 
 const styles = {
   label: {
@@ -14,12 +21,7 @@ const styles = {
   },
 };
 const Credentials = () => {
-  const [role, setRole] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate(`?type=${role}`);
-  }, [role]);
+  const { errors } = useFormContext();
 
   return (
     <div className="pl-5 pr-7 mt-4">
@@ -27,25 +29,39 @@ const Credentials = () => {
       <div className="grid grid-cols-2 gap-8 mt-4">
         <div className="flex flex-col gap-4">
           <Select
-            styles={styles}
-            value={role}
-            onChange={setRole}
-            data={[
-              { label: 'Admin', value: 'admin' },
-              { label: 'Manager', value: 'manager&mediaOwner=false' },
-              { label: 'Media Owner', value: 'manager&mediaOwner=true' },
-              { label: 'Supervisor', value: 'supervisor' },
-              { label: 'Associate', value: 'associate' },
-            ]}
             label="Role"
-            required
+            name="role"
+            options={roleList}
+            withAsterisk
+            errors={errors}
             placeholder="Select"
           />
-          <TextInput styles={styles} label="Password" required />
+          <TextInput
+            label="Password"
+            name="password"
+            styles={styles}
+            withAsterisk
+            errors={errors}
+            placeholder="Password"
+          />
         </div>
         <div className="flex flex-col gap-4">
-          <TextInput styles={styles} label="Email ID" required />
-          <TextInput styles={styles} label="Confirm Password" required />
+          <TextInput
+            label="Email ID"
+            name="email"
+            styles={styles}
+            withAsterisk
+            errors={errors}
+            placeholder="Email ID"
+          />
+          <TextInput
+            label="Confirm Password"
+            name="confirmPassword"
+            styles={styles}
+            withAsterisk
+            errors={errors}
+            placeholder="Confirm Password"
+          />
         </div>
       </div>
     </div>
