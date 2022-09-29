@@ -1,35 +1,32 @@
 import * as yup from 'yup';
 import shallow from 'zustand/shallow';
-import { useForm } from 'react-hook-form';
 import { Title, Text, Button } from '@mantine/core';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { showNotification } from '@mantine/notifications';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { yupResolver } from '@mantine/form';
+import { useForm, FormProvider } from '../../context/formContext';
 import { useLogin } from '../../hooks/auth.hooks';
-import {
-  ControlledFormTextInput,
-  ControlledFormPasswordInput,
-} from '../../components/Input/FormInput';
 import { fetchUserDetails } from '../../hooks/user.hooks';
 import useUserStore from '../../store/user.store';
+import TextInput from '../../components/shared/TextInput';
+import PasswordInput from '../../components/shared/PasswordInput';
 
-const defaultValues = {
+const initialValues = {
   email: '',
   password: '',
 };
 
 const schema = yup.object().shape({
-  email: yup.string().required('Email is required').email('Invalid Email'),
+  email: yup.string().trim().required('Email is required').email('Invalid Email'),
   password: yup
     .string()
-    .required('Password is required')
+    .trim()
     .min(6, 'Password must be at least 6 characters long')
-    .max(32, 'Password must be at most 32 characters long'),
+    .max(32, 'Password must be at most 32 characters long')
+    .required('Password is required'),
 });
 
 const Home = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const { setToken, setId, id, setUserDetails } = useUserStore(
     state => ({
@@ -43,29 +40,14 @@ const Home = () => {
 
   useUserStore(state => state.userDetails, shallow);
 
-  const { mutate: login, isError, data, isLoading, isSuccess } = useLogin();
+  const { mutate: login, data, isLoading, isSuccess } = useLogin();
   const { data: ud, isSuccess: userDataLoaded, isLoading: userDataLoading } = fetchUserDetails(id);
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues,
-  });
+  const form = useForm({ validate: yupResolver(schema), initialValues });
 
   const onSubmitHandler = async formData => {
     login(formData);
   };
-
-  if (isError) {
-    showNotification({
-      title: 'Invalid details',
-      message: 'Email and Password do not match',
-      color: 'red',
-    });
-  }
 
   if (isSuccess) {
     const {
@@ -77,7 +59,7 @@ const Home = () => {
 
   if (userDataLoaded) {
     setUserDetails(ud);
-    navigate(location.state?.path || '/home');
+    navigate('/home');
   }
 
   const styles = () => ({
@@ -95,46 +77,45 @@ const Home = () => {
     <div className="my-auto w-[31%]">
       <Title className="mb-1">Login to Adarth</Title>
       <Text>Please use registered email for login</Text>
-
-      <form onSubmit={handleSubmit(onSubmitHandler)}>
-        <ControlledFormTextInput
-          name="email"
-          control={control}
-          label="Email"
-          isLoading={isLoading && userDataLoading}
-          size="lg"
-          placeholder="Your Email"
-          styles={styles}
-          errors={errors}
-        />
-        <ControlledFormPasswordInput
-          name="password"
-          control={control}
-          label="Password"
-          isLoading={isLoading && userDataLoading}
-          size="lg"
-          placeholder="Your Password"
-          styles={styles}
-          errors={errors}
-        />
-        <Button
-          disabled={isLoading && userDataLoading}
-          className="mt-5 width-full bg-purple-450"
-          color="primary"
-          type="submit"
-          styles={() => ({
-            root: {
-              width: '100%',
-              height: '40px',
-              '&:hover': {
-                backgroundColor: '#4B0DAF',
+      <FormProvider form={form}>
+        <form onSubmit={form.onSubmit(onSubmitHandler)}>
+          <TextInput
+            name="email"
+            label="Email"
+            disabled={isLoading && userDataLoading}
+            size="lg"
+            placeholder="Your Email"
+            styles={styles}
+            errors={form.errors}
+          />
+          <PasswordInput
+            name="password"
+            label="Password"
+            disabled={isLoading && userDataLoading}
+            size="lg"
+            placeholder="Your Password"
+            styles={styles}
+            errors={form.errors}
+          />
+          <Button
+            disabled={isLoading && userDataLoading}
+            className="mt-5 width-full bg-purple-450"
+            color="primary"
+            type="submit"
+            styles={() => ({
+              root: {
+                width: '100%',
+                height: '40px',
+                '&:hover': {
+                  backgroundColor: '#4B0DAF',
+                },
               },
-            },
-          })}
-        >
-          Login
-        </Button>
-      </form>
+            })}
+          >
+            Login
+          </Button>
+        </form>
+      </FormProvider>
       <Text className="mt-4">
         <Link to="/forgot-password">
           <span className="text-purple-450 ml-1 cursor-pointer">Forgot Password</span>

@@ -1,37 +1,89 @@
-const ChangePassword = () => (
-  <div className="pl-5 pr-7 mt-4">
-    <p className="font-bold text-xl">Change Password</p>
-    <p className="font-medium text-slate-400 text-sm mt-1 mb-3">
-      Lorem ipsum dolor sit inventore veritatis corrupti suscipit!
-    </p>
-    <div className="flex gap-4 flex-col">
-      <div>
-        <label htmlFor="current-password">
-          <p className="text-[#969EA1] track-wide">Current Password</p>
-          <input
-            type="password"
-            className="w-4/12  text-slate-400 p-5 py-5 h-8 border rounded-md"
-          />
-        </label>
-      </div>
-      <label htmlFor="current-password">
-        <p className="text-[#969EA1] track-wide">New Password</p>
-        <input type="password" className="w-4/12  text-slate-400 p-5 py-5 h-8  border rounded-md" />
-      </label>
-      <div>
-        <label htmlFor="current-password">
-          <p className="text-[#969EA1] track-wide">Confirm Password</p>
-          <input
-            type="password"
-            className="w-4/12  text-slate-400 p-5 py-5 h-8  border rounded-md "
-          />
-        </label>
-      </div>
+import { yupResolver } from '@mantine/form';
+import * as yup from 'yup';
+import { FormProvider, useForm } from '../../context/formContext';
+import PasswordInput from '../shared/PasswordInput';
+
+const styles = {
+  label: {
+    color: 'grey',
+    marginBottom: '4px',
+    fontWeight: '100',
+    fontSize: '16px',
+  },
+};
+
+const initialValues = {
+  confirmPassword: '',
+  password: '',
+  oldPassword: '',
+};
+
+const schema = yup.object().shape({
+  oldPassword: yup.string().trim().required('Current Password is required'),
+  password: yup
+    .string()
+    .trim()
+    .min(6, 'Password must be at least 6 characters long')
+    .max(32, 'Password must be at most 32 characters long')
+    .required('New Password is required'),
+  confirmPassword: yup
+    .string()
+    .trim()
+    .required('Confirm Password is required')
+    .oneOf([yup.ref('password'), null], 'New password and Confirm password must match'),
+});
+
+const ChangePassword = () => {
+  const form = useForm({ validate: yupResolver(schema), initialValues });
+
+  const onSubmitHandler = formData => {
+    // eslint-disable-next-line no-console
+    console.log(formData);
+  };
+  return (
+    <div className="pl-5 pr-7 mt-4">
+      <p className="font-bold text-xl mb-3">Change Password</p>
+      <FormProvider form={form}>
+        <form onSubmit={form.onSubmit(onSubmitHandler)}>
+          <div className="flex gap-4 flex-col">
+            <PasswordInput
+              label="Current Password"
+              name="oldPassword"
+              // disabled={isLoading}
+              size="md"
+              placeholder="Your Current Password"
+              styles={styles}
+              errors={form.errors}
+              className="w-4/12"
+            />
+            <PasswordInput
+              label="New Password"
+              name="password"
+              // disabled={isLoading}
+              size="md"
+              placeholder="Your New Password"
+              styles={styles}
+              errors={form.errors}
+              className="w-4/12"
+            />
+            <PasswordInput
+              label="Confirm Password"
+              name="confirmPassword"
+              // disabled={isLoading}
+              size="md"
+              placeholder="Confirm New Password"
+              styles={styles}
+              errors={form.errors}
+              className="w-4/12"
+            />
+          </div>
+          <button type="submit" className="py-2 px-8 rounded bg-purple-450 text-white mt-4">
+            Save
+          </button>
+        </form>
+      </FormProvider>
     </div>
-    <button type="button" className="py-2 px-8 rounded bg-purple-450 text-white mt-4">
-      Save
-    </button>
-  </div>
-);
+  );
+};
 
 export default ChangePassword;

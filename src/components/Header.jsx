@@ -3,20 +3,38 @@ import { useState } from 'react';
 import { Menu } from 'react-feather';
 import { Link, useNavigate } from 'react-router-dom';
 import shallow from 'zustand/shallow';
+import { showNotification } from '@mantine/notifications';
 import logo from '../assets/logo.svg';
 import DrawerSidebar from './DrawerSidebar';
-import useTokenIdStore from '../store/user.store';
+import useUserStore from '../store/user.store';
 
 const Header = ({ title }) => {
   const [opened, setOpened] = useState(false);
   const [menuProfileOpened, setMenuProfileOpened] = useState(false);
   const navigate = useNavigate();
-  const setToken = useTokenIdStore(state => state.setToken, shallow);
+
+  const { setToken, setId, setUserDetails } = useUserStore(
+    state => ({
+      setToken: state.setToken,
+      setId: state.setId,
+      setUserDetails: state.setUserDetails,
+    }),
+    shallow,
+  );
 
   const handleLogout = () => {
     setToken(null);
+    setId(null);
+    setUserDetails({});
     navigate('/login');
+    showNotification({
+      title: 'Logout',
+      message: 'Logged out successfully',
+      autoClose: 3000,
+      color: 'green',
+    });
   };
+
   return (
     <>
       <header className="grid grid-cols-12 h-20  border-b border-gray-450 relative w-screen">
