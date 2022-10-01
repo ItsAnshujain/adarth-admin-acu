@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { Accordion } from '@mantine/core';
+import { Accordion, Button } from '@mantine/core';
 import classNames from 'classnames';
 import { Mail } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
@@ -80,8 +80,7 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
         <Accordion.Panel>
           <div className="ml-5">
             {item.content.map((obj, index) => (
-              <button
-                type="button"
+              <Button
                 onClick={() => {
                   if (sidebarText === 'Reports') {
                     setReportColor(index);
@@ -114,7 +113,7 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
                 )}
               >
                 {obj.name}
-              </button>
+              </Button>
             ))}
             {item.content.length === 0 ? (
               <p className="font-medium text-xs block mt-0.5">Loading...</p>

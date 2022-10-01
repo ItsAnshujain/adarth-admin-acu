@@ -1,20 +1,21 @@
 import React, { forwardRef } from 'react';
-import { TextInput as MantineTextInput } from '@mantine/core';
+import { NumberInput as MantineNumberInput } from '@mantine/core';
 import { useFormContext } from '../../context/formContext';
 
-const TextInput = forwardRef(({ name, errors, styles, ...props }, ref) => {
+const NumberInput = forwardRef(({ name, errors, styles, ...props }, ref) => {
   const form = useFormContext();
 
   return (
-    <MantineTextInput
+    <MantineNumberInput
       ref={ref}
       name={name}
       styles={styles}
       error={errors}
+      hideControls
       {...form.getInputProps(name)}
       {...props}
     />
   );
 });
 
-export default TextInput;
+export default NumberInput;
