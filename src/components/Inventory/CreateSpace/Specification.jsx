@@ -1,5 +1,12 @@
-import { useState } from 'react';
-import { Text, Select, RangeSlider, MultiSelect, TextInput } from '@mantine/core';
+import { useDebouncedState } from '@mantine/hooks';
+import { useEffect } from 'react';
+import { useFormContext } from '../../../context/formContext';
+import { useFetchMasters } from '../../../hooks/masters.hooks';
+import { serialize } from '../../../utils';
+import MultiSelect from '../../shared/MultiSelect';
+import NativeSelect from '../../shared/NativeSelect';
+import NumberInput from '../../shared/NumberInput';
+import RangeSlider from '../../shared/RangeSlider';
 
 const styles = {
   label: {
@@ -39,168 +46,166 @@ const sliderStyle = {
   },
 };
 
-const Specification = ({ formData, setFormData }) => {
-  const [minImpressions, setMinImpressions] = useState(200);
-  const [maxImpressions, setMaxImpressions] = useState(800);
-  const [previousBrands, setPreviousBrands] = useState([]);
-  const [tags, setTags] = useState([]);
+const marks = [
+  { value: 2000, label: '20%' },
+  { value: 8000, label: '80%' },
+];
 
-  const handleChange = e => {
-    const { name, value } = e.target;
+const Specification = ({ specificationsData }) => {
+  const [sliderValues, setSliderValue] = useDebouncedState([], 1000);
+  const { errors, setFieldValue } = useFormContext();
 
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-  const data = [
-    { value: 'react', label: 'React' },
-    { value: 'ng', label: 'Angular' },
-    { value: 'svelte', label: 'Svelte' },
-    { value: 'vue', label: 'Vue' },
-    { value: 'riot', label: 'Riot' },
-    { value: 'next', label: 'Next.js' },
-    { value: 'blitz', label: 'Blitz.js' },
-  ];
-  const marks = [
-    { value: 200, label: '20%' },
-    { value: 800, label: '80%' },
-  ];
+  const {
+    data: illuminationData,
+    isLoading: isIlluminationLoading,
+    isSuccess: isIlluminationLoaded,
+  } = useFetchMasters(serialize({ type: 'illumination', limit: 100 }));
+  const {
+    data: brandData,
+    isLoading: isBrandLoading,
+    isSuccess: isBrandLoaded,
+  } = useFetchMasters(serialize({ type: 'brand', limit: 100 }));
+  const {
+    data: tagData,
+    isLoading: isTagLoading,
+    isSuccess: isTagLoaded,
+  } = useFetchMasters(serialize({ type: 'tag', limit: 100 }));
+
+  useEffect(() => {
+    setFieldValue('specifications.impressions.min', sliderValues[0]);
+    setFieldValue('specifications.impressions.max', sliderValues[1]);
+  }, [sliderValues]);
+
+  useEffect(() => {
+    // not loading edited data so using props
+    setFieldValue('specifications.impressions.max', specificationsData?.impressions?.max);
+    setFieldValue('specifications.impressions.min', specificationsData?.impressions?.min);
+  }, [specificationsData]);
+
   return (
     <div className="flex flex-col pl-5 pr-7 pt-4 mb-44">
-      <Text size="md" weight="bold">
-        Space Specifications
-      </Text>
-      <Text size="sm" weight="300" className="text-gray-500">
+      <p className="font-bold text-lg">Space Specifications</p>
+      <p className="text-sm font-light text-gray-500">
         All the related details regarding the campaign
-      </Text>
+      </p>
       <div className="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
         <div>
-          <Select
-            value={formData.illumination}
-            onChange={handleChange}
-            styles={styles}
-            name="illumination"
-            className="mb-7"
+          <NativeSelect
             label="Illumination"
-            placeholder="Select"
-            data={[
-              { value: 'react', label: 'React' },
-              { value: 'ng', label: 'Angular' },
-              { value: 'svelte', label: 'Svelte' },
-              { value: 'vue', label: 'Vue' },
-            ]}
-          />
-          <TextInput
-            value={formData.resolutions}
-            onChange={handleChange}
+            name="specifications.illuminations"
             styles={styles}
-            name="resolutions"
-            placeholder="Write"
+            errors={errors}
+            disabled={isIlluminationLoading}
+            placeholder="Select..."
+            options={
+              isIlluminationLoaded
+                ? illuminationData.docs.map(category => ({
+                    label: category.name,
+                    value: category._id,
+                  }))
+                : []
+            }
             className="mb-7"
-            label="Resolutions"
           />
-          <TextInput
-            value={formData.healthstatus}
-            onChange={handleChange}
-            styles={styles}
-            name="healthstatus"
-            placeholder="Write"
-            className="mb-7"
+          <NumberInput
             label="Health Status"
+            name="specifications.health"
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+            className="mb-7"
           />
         </div>
         <div>
-          <Select
-            value={formData.unit}
-            onChange={handleChange}
-            styles={styles}
-            name="unit"
-            className="mb-7"
+          <NumberInput
             label="Unit"
-            placeholder="Select"
-            data={[
-              { value: 'react', label: 'React' },
-              { value: 'ng', label: 'Angular' },
-              { value: 'svelte', label: 'Svelte' },
-              { value: 'vue', label: 'Vue' },
-            ]}
+            name="specifications.unit"
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+            className="mb-7"
           />
           <div className="grid grid-cols-2 gap-4">
-            <Select
-              value={formData.width}
-              onChange={handleChange}
-              styles={styles}
-              name="width"
-              className="mb-7"
+            <NumberInput
               label="Width"
-              placeholder="Select"
-              data={[
-                { value: 'react', label: 'React' },
-                { value: 'ng', label: 'Angular' },
-                { value: 'svelte', label: 'Svelte' },
-                { value: 'vue', label: 'Vue' },
-              ]}
-            />
-            <Select
-              value={formData.height}
-              onChange={handleChange}
+              name="specifications.resolutions.width"
               styles={styles}
-              name="height"
+              errors={errors}
+              placeholder="Write..."
               className="mb-7"
+            />
+            <NumberInput
               label="Height"
-              placeholder="Select"
-              data={[
-                { value: 'react', label: 'React' },
-                { value: 'ng', label: 'Angular' },
-                { value: 'svelte', label: 'Svelte' },
-                { value: 'vue', label: 'Vue' },
-              ]}
+              name="specifications.resolutions.height"
+              styles={styles}
+              errors={errors}
+              placeholder="Write..."
+              className="mb-7"
             />
           </div>
         </div>
       </div>
       <div>
-        <Text weight="bold">Impressions</Text>
-        <div className="flex gap-4 items-center">
+        <p className="font-bold">Impressions</p>
+        <div className="flex gap-4 items-start">
           <div>
-            <input className="border w-24 py-1 px-1" type="text" readOnly value={minImpressions} />
+            <NumberInput
+              name="specifications.impressions.min"
+              errors={errors}
+              readOnly
+              className="w-24"
+            />
             <p className="text-slate-400">Min</p>
           </div>
           <RangeSlider
-            onChange={val => {
-              setMinImpressions(val[0], setMaxImpressions(val[1]));
-            }}
-            className="mb-5 flex-auto"
-            min={100}
-            max={1000}
+            min={0}
+            max={10000}
             styles={sliderStyle}
-            value={[minImpressions, maxImpressions]}
-            defaultValue={[200, 1000]}
+            className="pt-4 flex-auto"
             marks={marks}
+            setControlledRangeValue={setSliderValue}
           />
           <div>
-            <input className="border w-24" type="text" readOnly value={maxImpressions} />
+            <NumberInput
+              name="specifications.impressions.max"
+              errors={errors}
+              readOnly
+              className="w-24"
+            />
             <p className="text-right text-slate-400">Max</p>
           </div>
         </div>
         <MultiSelect
-          className="mb-5 mt-4"
-          name="previousbrands"
-          onChange={setPreviousBrands}
-          value={previousBrands}
-          styles={multiSelectStyles}
-          data={data}
           label="Previous brands"
+          name="specifications.previousBrands"
+          styles={multiSelectStyles}
+          errors={errors}
+          disabled={isBrandLoading}
+          options={
+            isBrandLoaded
+              ? brandData.docs.map(brand => ({
+                  label: brand.name,
+                  value: brand._id,
+                }))
+              : []
+          }
           placeholder="Select all that you like"
+          className="mb-5 mt-4"
         />
         <MultiSelect
-          styles={multiSelectStyles}
-          value={tags}
-          onChange={setTags}
-          name="tags"
-          data={data}
           label="Tags"
+          name="specifications.tags"
+          styles={multiSelectStyles}
+          errors={`${errors}.0`}
+          disabled={isTagLoading}
+          options={
+            isTagLoaded
+              ? tagData.docs.map(brand => ({
+                  label: brand.name,
+                  value: brand._id,
+                }))
+              : []
+          }
           placeholder="Select all that you like"
         />
       </div>

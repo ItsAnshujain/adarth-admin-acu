@@ -1,53 +1,30 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Text, Button } from '@mantine/core';
+import { Text, Button, Image } from '@mantine/core';
 import classNames from 'classnames';
 import { Plus, ChevronDown, Server, Grid, MapPin } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import Filter from '../Filter';
+import useLayoutView from '../../store/layout.store';
 
-const initialState = {
-  grid: { fill: true },
-  list: { fill: false },
-  map: { fill: true },
-};
-
-const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
+const AreaHeader = ({ text }) => {
   const { pathname } = useLocation();
   const [addDetailsClicked, setAddDetails] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
-  const [color, setColor] = useState(initialState);
-  const ref = useClickOutside(() => setShowDatePicker(false));
+  const dateRef = useClickOutside(() => setShowDatePicker(false));
+  const addDetailsButtonRef = useClickOutside(() => setAddDetails(false));
 
-  const handleListClick = () => {
-    setColor({
-      grid: { fill: true },
-      list: { fill: false },
-      map: { fill: true },
-    });
-    setView('list');
-  };
+  const { activeLayout, setActiveLayout } = useLayoutView(state => ({
+    activeLayout: state.activeLayout,
+    setActiveLayout: state.setActiveLayout,
+  }));
 
-  const handleGridClick = () => {
-    setColor({
-      grid: { fill: false },
-      list: { fill: true },
-      map: { fill: true },
-    });
-    setView('grid');
-  };
-
-  const handleMapClick = () => {
-    setColor({
-      grid: { fill: true },
-      list: { fill: true },
-      map: { fill: false },
-    });
-    setView('map');
-  };
+  const handleListClick = () => setActiveLayout('list');
+  const handleGridClick = () => setActiveLayout('grid');
+  const handleMapClick = () => setActiveLayout('map');
 
   const openDatePicker = () => {
     setShowDatePicker(!showDatePicker);
@@ -61,63 +38,58 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
         </Text>
       </div>
       <div className="flex justify-around mr-7">
-        {!color.grid.fill && (
-          <div className="mr-4 text-gray-400 flex items-center justify-center">
-            <Text size="sm" className="mr-2">
-              Select All Product
-            </Text>
-            <input type="checkbox" checked={selectAll} onChange={() => setSelectAll(!selectAll)} />
-          </div>
-        )}
         {!pathname.includes('reports') && (
           <div className="mr-2 flex ">
-            <button
+            <Button
               className={classNames(
                 `px-4 border-gray-300 border rounded-md ${
-                  color.list.fill ? 'bg-white' : 'bg-black'
+                  activeLayout === 'list' ? 'bg-black' : 'bg-white'
                 }`,
               )}
               onClick={handleListClick}
-              type="button"
             >
               <Server
                 strokeWidth="3px"
-                className={`max-h-5 ${classNames(color.list.fill ? 'text-black' : 'text-white')}`}
+                className={`max-h-5 ${classNames(
+                  activeLayout === 'list' ? 'text-white' : 'text-black',
+                )}`}
               />
-            </button>
-            <button
+            </Button>
+            <Button
               className={classNames(
                 `text-white border-gray-300 border px-4 rounded-md ${
-                  color.grid.fill ? 'bg-white' : 'bg-black'
+                  activeLayout === 'grid' ? 'bg-black' : 'bg-white'
                 }`,
               )}
               onClick={handleGridClick}
-              type="button"
             >
               <Grid
                 strokeWidth="3px"
-                className={`max-h-5 ${classNames(color.grid.fill ? 'text-black' : 'text-white')}`}
+                className={`max-h-5 ${classNames(
+                  activeLayout === 'grid' ? 'text-white' : 'text-black',
+                )}`}
               />
-            </button>
-            <button
+            </Button>
+            <Button
               className={classNames(
                 `px-4 border-gray-300 border rounded-md ${
-                  color.map.fill ? 'bg-white' : 'bg-black'
+                  activeLayout === 'map' ? 'bg-black' : 'bg-white'
                 }`,
               )}
               onClick={handleMapClick}
-              type="button"
             >
               <MapPin
                 strokeWidth="3px"
-                className={`max-h-5 ${classNames(color.map.fill ? 'text-black' : 'text-white')}`}
+                className={`max-h-5 ${classNames(
+                  activeLayout === 'map' ? 'text-white' : 'text-black',
+                )}`}
               />
-            </button>
+            </Button>
           </div>
         )}
-        <div ref={ref} className="mr-2 relative">
+        <div ref={dateRef} className="mr-2 relative">
           <Button onClick={openDatePicker} variant="default" type="button">
-            <img src={calendar} className="h-5" alt="calendar" />
+            <Image src={calendar} height={20} alt="calendar" />
           </Button>
           {showDatePicker && (
             <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
@@ -138,15 +110,17 @@ const AreaHeader = ({ text, setView, selectAll, setSelectAll }) => {
         </div>
         {!pathname.includes('reports') && (
           <div className="relative">
-            <button
+            <Button
               onClick={() => setAddDetails(!addDetailsClicked)}
               className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"
-              type="button"
             >
               <Plus size={16} className="mt-[1px] mr-1" /> Add Space
-            </button>
+            </Button>
             {addDetailsClicked && (
-              <div className="absolute text-sm z-20 bg-white shadow-lg p-4 right-7 w-36">
+              <div
+                ref={addDetailsButtonRef}
+                className="absolute text-sm z-20 bg-white shadow-lg p-4 right-7 w-36"
+              >
                 <Link to="create-space/single">
                   <div className="mb-2 cursor-pointer">Single Entry</div>
                 </Link>

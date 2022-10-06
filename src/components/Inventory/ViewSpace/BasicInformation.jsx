@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { useState } from 'react';
-import { Text } from '@mantine/core';
+import { Button, Text } from '@mantine/core';
 import dummy0 from '../../../assets/unsplash.png';
 import dummy1 from '../../../assets/dummy1.png';
 import dummy2 from '../../../assets/dummy2.png';
@@ -8,14 +8,21 @@ import dummy3 from '../../../assets/dummy3.png';
 import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Badge from '../../shared/Badge';
+import { useToggle } from '@mantine/hooks';
+import { useFetchInventoryById } from '../../../hooks/inventory.hooks';
+import { useParams } from 'react-router-dom';
+import MapView from '../CreateSpace/MapView';
 
 const badgeData = ['School', 'Youth', 'Student', 'College Students'];
 const imageUrl = [dummy1, dummy2, dummy0, dummy2, dummy1, dummy0];
 
 const BasicInfo = () => {
-  const [readMore, setReadMore] = useState(false);
+  const { id: inventoryId } = useParams();
+  const [readMore, toggle] = useToggle();
   const [scrollImage, setScrollImage] = useState(imageUrl);
   const [posterImage, setPosterImage] = useState(dummy3);
+
+  const { data: inventoryDetails } = useFetchInventoryById(inventoryId, !!inventoryId);
 
   const exchangeImages = index => {
     const temp = posterImage;
@@ -97,7 +104,7 @@ const BasicInfo = () => {
       </div>
       <div className="flex-1 pr-7 max-w-1/2">
         <Text size="lg" weight="bolder">
-          Bangalore Station Bill Board
+          {inventoryDetails?.basicInformation?.spaceName}
         </Text>
         <div>
           <div className="flex gap-2">
@@ -111,11 +118,6 @@ const BasicInfo = () => {
           <Text weight="300" color="gray">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis laudantium officiis
             sunt temporibus est error non odit!{' '}
-            {!readMore && (
-              <button onClick={() => setReadMore(true)} type="button" className="text-purple-450">
-                Read more
-              </button>
-            )}
             {readMore && (
               <span>
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum molestias
@@ -125,9 +127,12 @@ const BasicInfo = () => {
                 beatae id recusandae.
               </span>
             )}
+            <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
+              {readMore ? 'Read less' : 'Read more'}
+            </Button>
           </Text>
           <Text weight="bold" className="my-2">
-            {toIndianCurrency(270000)}
+            {toIndianCurrency(inventoryDetails?.basicInformation?.price || 0)}
           </Text>
           <div className="flex gap-2 mb-8">
             {badgeData.map(data => (
@@ -155,25 +160,32 @@ const BasicInfo = () => {
                   <Text color="gray" size="xs" weight="300">
                     Impression
                   </Text>
-                  <Text className="mb-4">26982673</Text>
+                  <Text className="mb-4">
+                    {inventoryDetails?.specifications?.impressions?.max || 0}
+                  </Text>
                   <Text color="gray" size="xs" weight="300">
                     Resolution
                   </Text>
-                  <Text>1080px</Text>
+                  <Text>
+                    {inventoryDetails?.specifications?.resolutions?.height || 0}px X{' '}
+                    {inventoryDetails?.specifications?.resolutions?.width || 0}px
+                  </Text>
                 </div>
                 <div>
                   <Text color="gray" size="xs" weight="300">
                     Unit
                   </Text>
-                  <Text className="mb-4">1</Text>
+                  <Text className="mb-4">{inventoryDetails?.specifications?.unit}</Text>
                   <Text color="gray" size="xs" weight="300">
                     Supported Media
                   </Text>
-                  <Text className="mb-4">MPR</Text>
+                  <Text className="mb-4">
+                    {inventoryDetails?.basicInformation?.supportedMedia || 'NA'}
+                  </Text>
                   <Text color="gray" size="xs" weight="300">
                     Illumination
                   </Text>
-                  <Text>Lit</Text>
+                  <Text>{'{illumination}'}</Text>
                 </div>
               </div>
               <div className="flex gap-2 p-4 border rounded-md flex-1">
@@ -181,29 +193,30 @@ const BasicInfo = () => {
                   <Text color="gray" size="xs" weight="300">
                     Address
                   </Text>
-                  <Text className="mb-4">
-                    Melvin Porter P.O. Box 132 1599 Curabitur Rd. Bandera South Dakota 45149
-                  </Text>
+                  <Text className="mb-4">{inventoryDetails?.location?.address || 'NA '}</Text>
                   <div className="grid grid-cols-2">
                     <div>
                       <Text color="gray" size="xs" weight="300">
                         District
                       </Text>
-                      <Text className="mb-4">Some District</Text>
+                      <Text className="mb-4">{inventoryDetails?.location?.city || 'NA'}</Text>
                     </div>
                     <div>
                       <Text color="gray" size="xs" weight="300">
                         State
                       </Text>
-                      <Text className="mb-4">Some State</Text>
+                      <Text className="mb-4">{inventoryDetails?.location?.state || 'NA'}</Text>
                     </div>
                   </div>
                   <Text color="gray" size="xs" weight="300">
                     Pin Code
                   </Text>
-                  <Text className="mb-4">1574516</Text>
+                  <Text className="mb-4">{inventoryDetails?.location?.zip || 'NA'}</Text>
                 </div>
-                <div className="flex-1">Map Place holder</div>
+                <MapView
+                  latitude={inventoryDetails?.location.latitude}
+                  longitude={inventoryDetails?.location.longitude}
+                />
               </div>
             </div>
           </div>
