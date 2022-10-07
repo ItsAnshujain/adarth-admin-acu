@@ -26,4 +26,5 @@ export const masterTypes = {
   mounting_status: 'Mounting Status',
   campaign_status: 'Campaign Status',
   payment_status: 'Payment Status',
+  proposal_status: 'Proposal Status',
 };

@@ -2,13 +2,14 @@ import { Button } from '@mantine/core';
 import classNames from 'classnames';
 import { useMemo } from 'react';
 import { Mail } from 'react-feather';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useFetchMastersTypes } from '../../hooks/masters.hooks';
 import { masterTypes } from '../../utils';
 import SidebarExpandableButton from './SidebarExpandableButton';
 
 const SidebarButton = ({ text, index, color, clickHandler, setOpened }) => {
-  const { data } = useFetchMastersTypes();
+  const { pathname } = useLocation();
+  const { data } = useFetchMastersTypes(!!pathname.includes('/masters'));
 
   const renderList = useMemo(() => {
     const tempList = [];
