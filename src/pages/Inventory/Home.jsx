@@ -127,27 +127,27 @@ const Home = () => {
   };
 
   const formattedData = () => {
-    if (inventoryData?.docs) {
-      const updatedList = [];
-      const tempList = [...inventoryData.docs];
-      tempList?.map(row => {
-        const rowObj = {
-          ...row?.basicInformation,
-          ...row?.location,
-          health: `${row?.specifications?.health}%`,
-          impressions: `${row?.specifications?.impressions?.max}+`,
-          dimension: ` ${row?.specifications?.resolutions?.height} ${row?.specifications?.resolutions?.width}`,
-          _id: row?._id,
-        };
+    const updatedList = [];
+    const tempList = [...inventoryData.docs];
+    tempList?.map(row => {
+      const rowObj = {
+        ...row?.basicInformation,
+        ...row?.location,
+        health: `${row?.specifications?.health}%`,
+        impressions: `${row?.specifications?.impressions?.max}+`,
+        dimension: ` ${row?.specifications?.resolutions?.height} ${row?.specifications?.resolutions?.width}`,
+        _id: row?._id,
+      };
 
-        return updatedList.push(rowObj);
-      });
-      setUpdatedInventoryList(updatedList);
-    }
+      return updatedList.push(rowObj);
+    });
+    setUpdatedInventoryList(updatedList);
   };
 
   useEffect(() => {
-    formattedData();
+    if (inventoryData?.docs) {
+      formattedData();
+    }
   }, [inventoryData]);
 
   useEffect(() => {

@@ -10,7 +10,7 @@ import BasicInfo from './BasicInformation';
 const Main = () => {
   const navigate = useNavigate();
   const { id: inventoryId } = useParams();
-  const [isUnderMaintenance, toggle] = useToggle(false);
+  const [isUnderMaintenance, toggle] = useToggle();
   const [activeTab, setActiveTab] = useState('basic-info');
 
   const handleBack = () => navigate('/inventory');
@@ -34,7 +34,11 @@ const Main = () => {
           {activeTab === 'basic-info' ? (
             <div className="flex items-center pr-7">
               <p className="text-lg mr-3">Under maintenance</p>
-              <Switch checked={isUnderMaintenance} onClick={() => toggle()} size="xl" />
+              <Switch
+                checked={isUnderMaintenance}
+                onChange={e => toggle(e.currentTarget.checked)}
+                size="xl"
+              />
             </div>
           ) : null}
           <Button onClick={handleEditDetails} className="bg-purple-450" size="md">

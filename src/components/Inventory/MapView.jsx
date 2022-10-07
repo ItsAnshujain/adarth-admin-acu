@@ -2,9 +2,8 @@ import { Image, NativeSelect } from '@mantine/core';
 import { useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import GoogleMapReact from 'google-map-react';
-import MarkerIcon from '../../assets/pin.png';
-
-const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
+import MarkerIcon from '../../assets/pin.svg';
+import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
 
 const defaultProps = {
   center: {
@@ -27,7 +26,7 @@ const MapView = () => {
     <div className="relative px-5">
       <div style={{ height: '70vh', width: '100%' }}>
         <GoogleMapReact
-          bootstrapURLKeys={{ key: GOOGLE_API_KEY }}
+          bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY }}
           yesIWantToUseGoogleMapApiInternals
           defaultCenter={defaultProps.center}
           defaultZoom={defaultProps.zoom}

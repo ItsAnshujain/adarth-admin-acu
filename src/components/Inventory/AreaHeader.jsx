@@ -4,6 +4,7 @@ import { Text, Button, Image } from '@mantine/core';
 import classNames from 'classnames';
 import { Plus, ChevronDown, Server, Grid, MapPin } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
+import shallow from 'zustand/shallow';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import Filter from '../Filter';
@@ -17,10 +18,13 @@ const AreaHeader = ({ text }) => {
   const dateRef = useClickOutside(() => setShowDatePicker(false));
   const addDetailsButtonRef = useClickOutside(() => setAddDetails(false));
 
-  const { activeLayout, setActiveLayout } = useLayoutView(state => ({
-    activeLayout: state.activeLayout,
-    setActiveLayout: state.setActiveLayout,
-  }));
+  const { activeLayout, setActiveLayout } = useLayoutView(
+    state => ({
+      activeLayout: state.activeLayout,
+      setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
 
   const handleListClick = () => setActiveLayout('list');
   const handleGridClick = () => setActiveLayout('grid');

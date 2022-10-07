@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Image, Menu, Text } from '@mantine/core';
 import { Eye, Edit2, Trash } from 'react-feather';
@@ -12,8 +11,18 @@ import modalConfig from '../../utils/modalConfig';
 
 const Card = ({ data }) => {
   const modals = useModals();
-  const [isConfirmed, setIsConfirmed] = useState(false);
   const navigate = useNavigate();
+
+  const onSubmit = () => {
+    // eslint-disable-next-line no-console
+    console.log('hello');
+  };
+
+  const checkConfirmation = isConfirmed => {
+    if (isConfirmed) {
+      onSubmit();
+    }
+  };
 
   const toggletDeleteModal = () =>
     modals.openContextModal('basic', {
@@ -22,21 +31,12 @@ const Card = ({ data }) => {
         modalBody: (
           <DeleteConfirmContent
             onClickCancel={id => modals.closeModal(id)}
-            setIsConfirmed={setIsConfirmed}
+            setIsConfirmed={checkConfirmation}
           />
         ),
       },
       ...modalConfig,
     });
-
-  const onSubmit = () => {};
-
-  // trigger delete func if status is true
-  useEffect(() => {
-    if (isConfirmed) {
-      onSubmit();
-    }
-  }, [isConfirmed]);
 
   return (
     <div className="drop-shadow-md">
