@@ -53,10 +53,17 @@ const schema = action =>
       .trim()
       .concat(action === 2 ? requiredSchema('City is required') : null),
     pincode: yup
-      .number()
+      .string()
+      .trim()
       .concat(
         action === 2
-          ? yup.number().required('Pin is required').min(6, 'Pin must be at least 6 digts')
+          ? yup
+              .string()
+              .trim()
+              .min(6, 'Pin must be at least 6 digts')
+              .max(6, 'Pin must be at max 6 digts')
+              .matches(/\d/, 'Pin must contain only digits')
+              .required('Pin is required')
           : null,
       ),
     pan: yup
@@ -64,17 +71,27 @@ const schema = action =>
       .trim()
       .concat(
         action === 2
-          ? requiredSchema('Pan is required')
+          ? yup
+              .string()
+              .trim()
               .min(10, 'Pan must be at least 10 characters')
               .matches(/\d/, 'Pan must contain 1 digit')
               .matches(/[a-zA-Z]/, 'Pan must contain 1 letter')
+              .required('Pan is required')
           : null,
       ),
     aadhaar: yup
-      .number()
+      .string()
+      .trim()
       .concat(
         action === 2
-          ? yup.number().required('Aadhaar is required').min(6, 'Aadhaar must be at least 12 digts')
+          ? yup
+              .string()
+              .trim()
+              .min(12, 'Aadhaar must be at least 12 digts')
+              .max(12, 'Aadhaar must be at max 12 digts')
+              .matches(/\d/, 'Pin must contain only digits')
+              .required('Aadhaar is required')
           : null,
       ),
     about: yup.string().trim(),
@@ -100,9 +117,9 @@ const initialValues = {
   state: '',
   address: '',
   city: '',
-  pincode: 0,
+  pincode: '',
   pan: '',
-  aadhaar: 0,
+  aadhaar: '',
   about: '',
   peer: '',
   image: '',
@@ -136,6 +153,8 @@ const MainArea = () => {
       const docs = formData?.docs;
       data = {
         ...formData,
+        pincode: formData?.pincode ? parseInt(formData.pincode, 10) : 0,
+        aadhaar: formData?.aadhaar ? parseInt(formData.aadhaar, 10) : 0,
         docs: [
           { aadhaar: docs.aadhaar },
           { pan: docs.pan },
@@ -143,12 +162,11 @@ const MainArea = () => {
         ],
       };
 
-      // if object key of form is empty string
-      if (data?.peer === '') {
-        delete data.peer;
-      } else if (data?.about === '') {
-        delete data.about;
-      }
+      Object.keys(data).forEach(key => {
+        if (data[key] === '') {
+          delete data[key];
+        }
+      });
 
       if (userId) {
         update({ userId, data });
