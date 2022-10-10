@@ -1,21 +1,31 @@
-import { Menu, Modal } from '@mantine/core';
-import { useForm } from 'react-hook-form';
+import { Button, Modal } from '@mantine/core';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useState, useMemo, useEffect } from 'react';
-import { ChevronDown } from 'react-feather';
-import { ControlledFormTextInput } from '../Input/FormInput';
+import { yupResolver } from '@mantine/form';
 import { useCreateMaster, useFetchMasters, useUpdateMaster } from '../../hooks/masters.hooks';
 import { masterTypes, serialize } from '../../utils';
+import NativeSelect from '../shared/NativeSelect';
+import { FormProvider, useForm } from '../../context/formContext';
+import TextInput from '../shared/TextInput';
 
-const defaultValues = {
-  name: '',
+const modalStyles = {
+  title: {
+    fontWeight: 700,
+    fontSize: '20px',
+  },
 };
-
-const schema = yup.object().shape({
-  name: yup.string().trim().required('Category name is required'),
-});
+const styles = {
+  label: {
+    marginBottom: '4px',
+    fontSize: '16px',
+    letterSpacing: '0.5px',
+  },
+};
+const initialValues = {
+  name: '',
+  parentId: '',
+};
 
 const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
   const location = useLocation();
@@ -23,129 +33,144 @@ const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
   const [query, setQuery] = useState({
     type: 'category',
     parentId: null,
-    limit: 10,
+    limit: 100,
     page: 1,
   });
-  const [menuValue, setMenuValue] = useState();
-  const { data: parentData } = useFetchMasters(serialize(query));
 
-  const { mutate: create, isLoading } = useCreateMaster();
-  const { mutate: edit, isLoading: isUpdateMasterLoading } = useUpdateMaster();
-  const {
-    handleSubmit,
-    control,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm({ resolver: yupResolver(schema), defaultValues });
-
+  const type = searchParams.get('type');
+  const parentId = searchParams.get('parentId');
   const masterType = useMemo(
     () => masterTypes[searchParams.get('type')],
     [searchParams.get('type')],
   );
 
+  const {
+    data: parentData,
+    isLoading: isParentDataLoading,
+    isSuccess: isParentDateLoaded,
+  } = useFetchMasters(serialize(query));
+
+  const { mutate: create, isLoading } = useCreateMaster();
+  const { mutate: edit, isLoading: isUpdateMasterLoading } = useUpdateMaster();
+
+  const schema = yup.object().shape({
+    name: yup
+      .string()
+      .trim()
+      .required(
+        parentId !== 'null'
+          ? `Sub ${masterType} name is required`
+          : `${masterType} name is required`,
+      ),
+    parentId: yup.string().trim(),
+  });
+
+  const form = useForm({ validate: yupResolver(schema), initialValues });
+
   const onSubmit = formData => {
     let data = {};
-    const type = searchParams.get('type');
-    const parentId = searchParams.get('parentId');
     data = { ...formData, type };
-    if (menuValue?.id) {
-      data = { ...formData, type, parentId: menuValue?.id };
-    } else if (parentId !== 'null') {
-      data = { ...formData, type, parentId };
-    }
+    // check for empty string
+    Object.keys(data).forEach(key => {
+      if (data[key] === '') {
+        delete data[key];
+      }
+    });
+
     if (isEdit) {
       edit({ masterId: masterData?._id, data });
     } else {
       create(data);
     }
-    reset();
+    form.reset();
     setOpened(false);
+    form.clearErrors();
+  };
+
+  const onHandleCloseAndClear = () => {
+    setOpened(false);
+    form.clearErrors();
   };
 
   useEffect(() => {
+    if (parentId !== 'null') {
+      form.setFieldValue('parentId', parentId);
+    } else {
+      form.reset();
+    }
+  }, [parentId]);
+
+  useEffect(() => {
     if (isEdit) {
-      setValue('name', masterData?.name);
+      form.setFieldValue('name', masterData?.name);
     }
   }, [isEdit]);
 
   useEffect(() => {
-    const type = searchParams.get('type');
     setQuery({ ...query, type });
   }, [location.search]);
 
   return (
     <Modal
-      styles={{
-        title: {
-          fontWeight: 700,
-          fontSize: '20px',
-        },
-      }}
+      styles={modalStyles}
       size="lg"
-      title={`${isEdit ? 'Edit' : 'Add'} ${masterType}`}
+      title={`${isEdit ? 'Edit' : 'Add'} ${parentId !== 'null' ? `Sub ${masterType}` : masterType}`}
       opened={opened}
       withCloseButton={false}
       centered
-      onClose={() => setOpened(false)}
+      onClose={onHandleCloseAndClear}
     >
-      <form className="border-t" onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex flex-col gap-4 relative py-3 ">
-          <p>{masterType} Name</p>
-          <ControlledFormTextInput
-            name="name"
-            placeholder={`${masterType} Name`}
-            size="lg"
-            isLoading={isLoading || isUpdateMasterLoading}
-            control={control}
-            errors={errors}
-          />
-          {searchParams.get('parentId') !== 'null' ? (
-            <>
-              <p>Parent List</p>
-              <Menu shadow="md" width="100%">
-                <Menu.Target>
-                  <button
-                    type="button"
-                    className="h-[50px] border-solid text-lg border-2 flex flex-row justify-between items-center px-5 rounded-sm	"
-                  >
-                    {menuValue?.name || 'Select..'}
-                    <ChevronDown className="h-4" />
-                  </button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  {parentData?.docs?.map(item => (
-                    <Menu.Item
-                      onClick={() => {
-                        setMenuValue({
-                          name: item?.name,
-                          id: item?._id,
-                        });
-                      }}
-                      key={item?._id}
-                    >
-                      <span className="text-base">{item?.name}</span>
-                    </Menu.Item>
-                  ))}
-                </Menu.Dropdown>
-              </Menu>
-            </>
-          ) : null}
-          <div className="flex gap-2  justify-end">
-            <button
-              onClick={() => setOpened(false)}
-              type="button"
-              className="bg-black text-white  rounded-md text-sm p-2"
-              disabled={isLoading || isUpdateMasterLoading}
-            >
-              Cancel
-            </button>
-            <button type="submit" className="bg-purple-450 text-white rounded-md text-sm p-2">
-              Save
-            </button>
+      <FormProvider form={form}>
+        <form className="border-t" onSubmit={form.onSubmit(onSubmit)}>
+          <div className="flex flex-col gap-4 relative py-3 ">
+            <TextInput
+              label={parentId !== 'null' ? `Sub ${masterType} Name` : `${masterType} Name`}
+              name="name"
+              styles={styles}
+              errors={form.errors}
+              placeholder={parentId !== 'null' ? `Sub ${masterType} Name` : `${masterType} Name`}
+              size="lg"
+            />
+            {parentId !== 'null' ? (
+              <NativeSelect
+                label="Parent List"
+                name="parentId"
+                styles={styles}
+                errors={form.errors}
+                disabled={!isEdit || isParentDataLoading}
+                placeholder="Select..."
+                size="lg"
+                options={
+                  isParentDateLoaded
+                    ? parentData?.docs?.map(category => ({
+                        label: category.name,
+                        value: category._id,
+                      }))
+                    : []
+                }
+                className="mb-7"
+              />
+            ) : null}
+            <div className="flex gap-2  justify-end">
+              <Button
+                onClick={onHandleCloseAndClear}
+                className="bg-black text-white  rounded-md text-sm p-2 font-normal"
+                disabled={isLoading || isUpdateMasterLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="bg-purple-450 text-white rounded-md text-sm p-2 font-normal"
+                disabled={isLoading || isUpdateMasterLoading}
+                loading={isLoading || isUpdateMasterLoading}
+              >
+                Save
+              </Button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </FormProvider>
     </Modal>
   );
 };
