@@ -21,7 +21,7 @@ const Sidebar = () => {
         tempList.push({
           label: masterTypes[key],
           type: key,
-          subPath: `?type=${key}&parentId=null&limit=10&page=1&limit=10`,
+          subPath: `?type=${key}&parentId=null&limit=10&page=1`,
         });
         return tempList;
       });

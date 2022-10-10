@@ -30,7 +30,7 @@ const AreaHeader = ({ setFilter = () => {} }) => {
       </div>
       <div className="flex justify-around mr-7">
         <div className="mr-2">
-          <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
+          <Button onClick={() => setShowFilter(!showFilter)} variant="default">
             <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
           </Button>
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
