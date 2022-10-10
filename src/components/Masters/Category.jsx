@@ -1,19 +1,19 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Button } from '@mantine/core';
 import Header from './Header';
 import RowsPerPage from '../RowsPerPage';
 import Search from '../Search';
 import Table from '../Table/Table';
 import MenuPopover from './MenuPopover';
 import { useFetchMasters } from '../../hooks/masters.hooks';
-import { serialize } from '../../utils';
+import { serialize, masterTypes } from '../../utils';
 
 const Category = () => {
   const [search, setSearch] = useDebouncedState('', 1000);
   const [count, setCount] = useState('10');
   const [searchParams] = useSearchParams();
-  const location = useLocation();
   const navigate = useNavigate();
   const [query, setQuery] = useState({
     type: 'category',
@@ -41,7 +41,16 @@ const Category = () => {
       {
         Header: '#',
         accessor: 'id',
-        Cell: ({ row }) => useMemo(() => <div className="pl-2">{row.index + 1}</div>, []),
+        Cell: ({ row }) =>
+          useMemo(() => {
+            let currentPage = page;
+            let rowCount = 0;
+            if (page < 1) {
+              currentPage = 1;
+            }
+            rowCount = (currentPage - 1) * count;
+            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+          }, []),
       },
       {
         Header: 'NAME',
@@ -53,14 +62,15 @@ const Category = () => {
                 original: { _id, name },
               },
             } = tableProps;
-            const hasParentId = searchParams.get('parentId');
 
             return (
-              <button
-                type="button"
-                className={hasParentId === 'null' ? 'cursor-pointer' : 'cursor-text'}
+              <Button
+                className={
+                  (parentId === 'null' ? 'cursor-pointer' : 'cursor-text',
+                  'text-black font-normal p-0')
+                }
                 onClick={
-                  hasParentId === 'null'
+                  parentId === 'null'
                     ? () => {
                         navigate(`/masters?type=${searchParams.get('type')}&parentId=${_id}`, {
                           replace: true,
@@ -70,7 +80,7 @@ const Category = () => {
                 }
               >
                 {name}
-              </button>
+              </Button>
             );
           }, []),
       },
@@ -86,12 +96,8 @@ const Category = () => {
   );
 
   useEffect(() => {
-    setQuery({ ...query, parentId, name: search });
-  }, [search, parentId]);
-
-  useEffect(() => {
-    setQuery({ ...query, type, parentId });
-  }, [location.search, type, parentId]);
+    setQuery({ ...query, type, parentId, name: search });
+  }, [type, search, parentId]);
 
   useEffect(() => {
     const limit = parseInt(count, 10);
@@ -99,12 +105,16 @@ const Category = () => {
   }, [count]);
 
   useEffect(() => {
-    if (page) setQuery({ ...query, page });
-  }, [page]);
+    if (parentId !== 'null') {
+      setQuery({ ...query, type, parentId, page });
+    } else {
+      setQuery({ ...query, type, parentId: null, page });
+    }
+  }, [type, parentId, page]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
-      <Header text="Category" />
+      <Header text={masterTypes[query.type]} />
       <div className="flex justify-between h-20 items-center pr-7">
         <RowsPerPage setCount={setCount} count={count} />
         <Search search={search} setSearch={setSearch} />

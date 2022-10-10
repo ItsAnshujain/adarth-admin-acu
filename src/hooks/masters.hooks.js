@@ -45,16 +45,14 @@ export const useCreateMaster = () => {
       onSuccess: () => {
         queryClient.invalidateQueries(['masters']);
         showNotification({
-          title: 'Add Master',
-          message: 'Master added successfully',
+          title: 'Master added successfully',
           autoClose: 3000,
           color: 'green',
         });
       },
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
+          title: err?.message,
           autoClose: 3000,
           color: 'red',
         });
@@ -87,16 +85,14 @@ export const useUpdateMaster = () => {
       onSuccess: () => {
         queryClient.invalidateQueries(['masters']);
         showNotification({
-          title: 'Edit Master',
-          message: 'Master edited successfully',
+          title: 'Master edited successfully',
           autoClose: 3000,
           color: 'green',
         });
       },
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
+          title: err?.message,
           autoClose: 3000,
           color: 'red',
         });
@@ -117,16 +113,14 @@ export const useDeleteMaster = () => {
       onSuccess: () => {
         queryClient.invalidateQueries(['masters']);
         showNotification({
-          title: 'Delete Master',
-          message: 'Master deleted successfully',
+          title: 'Master deleted successfully',
           autoClose: 3000,
           color: 'green',
         });
       },
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
+          title: err?.message,
           autoClose: 3000,
           color: 'red',
         });
