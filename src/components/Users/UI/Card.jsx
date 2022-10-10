@@ -12,7 +12,13 @@ const UserCard = ({
   <div className="border rounded-md p-4 cursor-pointer">
     <div className="flex gap-4">
       <div className="border-radius-full">
-        <Image src={image || UserImage} alt="profile pic" height={80} width={80} />
+        <Image
+          src={image || UserImage}
+          alt="profile pic"
+          height={80}
+          width={80}
+          className="bg-gray-450 rounded-full"
+        />
       </div>
       <div className="flex flex-col justify-between">
         <p className="text-xl font-bold capitalize">{name}</p>

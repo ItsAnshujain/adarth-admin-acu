@@ -18,10 +18,10 @@ const schema = action =>
     password: yup
       .string()
       .trim()
-      .required('Password is required')
       .min(6, 'Password must be at least 6 characters')
-      .matches(/\d/, 'Password must contain 1 digit')
-      .matches(/[a-zA-Z]/, 'Password must contain 1 letter'),
+      .matches(/\d/, 'Password must contain atleast 1 digit')
+      .matches(/[a-zA-Z]/, 'Password must contain atleast 1 letter')
+      .required('Password is required'),
     confirmPassword: yup
       .string()
       .trim()
@@ -124,7 +124,7 @@ const MainArea = () => {
   const getForm = () =>
     formStep === 1 ? <Credentials /> : formStep === 2 ? <BasicInfo /> : <Documents />;
 
-  const { data: userDetails } = useFetchUsersById(userId);
+  const { data: userDetails } = useFetchUsersById(userId, !!userId);
 
   const onSubmitUserForm = formData => {
     setFormStep(prevState => prevState + 1);
