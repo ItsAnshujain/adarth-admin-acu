@@ -5,10 +5,18 @@ import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Basic Information', 'Specifications', 'Location'];
 
-const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
+const Header = ({ setFormStep, formStep, isLoading }) => {
   const navigate = useNavigate();
+  const handleInventory = () => navigate('/inventory');
+  const handleBack = () => {
+    if (formStep === 1) {
+      navigate('/inventory');
+    } else {
+      setFormStep(formStep - 1);
+    }
+  };
   return (
-    <div className="h-20 border-b border-gray-450 flex justify-between items-center">
+    <div className="h-20 border-b border-gray-450 flex justify-between items-center flex-wrap">
       <div className="flex gap-6 pl-5 relative">
         {initialState.map((val, index) => (
           <Chip
@@ -49,36 +57,38 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
           </Chip>
         ))}
       </div>
-      <div className="flex gap-4 pr-7">
-        <Button className="border-black radius-md text-black">Cancel</Button>
-        <Button
-          onClick={() => {
-            if (formStep === 1) {
-              navigate('/inventory');
-            } else {
-              setFormStep(formStep - 1);
-            }
-          }}
-          className="bg-black"
-        >
+      <div className="flex gap-4 pr-7 flex-wrap">
+        <Button className="border-black radius-md text-black" onClick={handleInventory}>
+          Cancel
+        </Button>
+        <Button onClick={handleBack} className="bg-black">
           <ChevronLeft className="mr-2 h-4" />
           Back
         </Button>
 
-        <Button
-          onClick={() => {
-            if (formStep <= 2) setFormStep(formStep + 1);
-            if (formStep === 4) {
-              setOpenSuccessModal(true);
-              return;
-            }
-            setFormStep(formStep + 1);
-          }}
-          className="bg-purple-450 order-3"
-        >
-          {formStep === 3 ? 'Preview' : formStep === 4 ? 'Save' : 'Next'}
-          {formStep < 3 && <ChevronRight className="ml-1 h-4" />}
-        </Button>
+        {formStep < 3 ? (
+          <Button type="submit" className="bg-purple-450 order-3">
+            Next
+            <ChevronRight className="ml-1 h-4" />
+          </Button>
+        ) : null}
+
+        {formStep === 3 ? (
+          <Button type="submit" className="bg-purple-450 order-3">
+            Preview
+          </Button>
+        ) : null}
+
+        {formStep === 4 ? (
+          <Button
+            type="submit"
+            disabled={isLoading}
+            loading={isLoading}
+            className="bg-purple-450 order-3"
+          >
+            {isLoading ? 'Saving...' : 'Save'}
+          </Button>
+        ) : null}
       </div>
     </div>
   );

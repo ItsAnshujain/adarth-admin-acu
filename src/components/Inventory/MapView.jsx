@@ -1,14 +1,39 @@
-import { NativeSelect } from '@mantine/core';
+import { Image, NativeSelect } from '@mantine/core';
 import { useState } from 'react';
 import { ChevronDown } from 'react-feather';
-import Map from '../../assets/MapInventory.png';
+import GoogleMapReact from 'google-map-react';
+import MarkerIcon from '../../assets/pin.svg';
+import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
+
+const defaultProps = {
+  center: {
+    lat: 10.99835602,
+    lng: 77.01502627,
+  },
+  zoom: 11,
+};
+
+const Marker = () => (
+  <div>
+    <Image src={MarkerIcon} width={40} height={40} />
+  </div>
+);
 
 const MapView = () => {
   const [value, setValue] = useState('Billboard');
 
   return (
-    <div className="pl-5 mb-10 relative pr-7">
-      <img src={Map} alt="map" />
+    <div className="relative px-5">
+      <div style={{ height: '70vh', width: '100%' }}>
+        <GoogleMapReact
+          bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY }}
+          yesIWantToUseGoogleMapApiInternals
+          defaultCenter={defaultProps.center}
+          defaultZoom={defaultProps.zoom}
+        >
+          <Marker />
+        </GoogleMapReact>
+      </div>
       <div className="absolute top-5 right-10 w-64">
         <NativeSelect
           className="mr-2"

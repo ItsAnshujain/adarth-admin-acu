@@ -1,2 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
-export const USER_TOKEN_ID_KEY = 'adarth-user-token-id'; // remove eslint-disable when there's more than one variable
+export const USER_TOKEN_ID_KEY = 'adarth-user-token-id';
+
+export const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;

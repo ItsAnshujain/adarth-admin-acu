@@ -1,11 +1,11 @@
 import { Divider, Image } from '@mantine/core';
-import React from 'react';
+import React, { useState } from 'react';
 
 import CheckIcon from '../assets/check.svg';
 import TrashIcon from '../assets/trash.svg';
 
 const DeleteConfirmContent = ({ onClickCancel = () => {}, setIsConfirmed = () => {} }) => {
-  const [accept, setAccept] = React.useState(false);
+  const [accept, setAccept] = useState(false);
 
   const handleConfirm = () => {
     setAccept(true);
