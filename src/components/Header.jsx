@@ -5,8 +5,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import shallow from 'zustand/shallow';
 import { showNotification } from '@mantine/notifications';
 import logo from '../assets/logo.svg';
-import DrawerSidebar from './DrawerSidebar';
 import useUserStore from '../store/user.store';
+import DrawerSidebar from './DrawerSidebar';
 
 const Header = ({ title }) => {
   const [opened, setOpened] = useState(false);
@@ -40,7 +40,9 @@ const Header = ({ title }) => {
       <header className="grid grid-cols-12 h-20  border-b border-gray-450 relative w-screen">
         <div className="flex items-center col-span-2 pl-2 lg:pl-7 self-center">
           <Menu onClick={() => setOpened(true)} className="mr-2 h-6 w-6 inline-block lg:hidden" />
-          <img className="w-16 lg:w-24" src={logo} alt="logo" />
+          <Link to="/">
+            <img className="w-16 lg:w-24" src={logo} alt="logo" />
+          </Link>
         </div>
         <div className="flex justify-between items-center col-span-10 border-l border-gray-450">
           <div className="pl-5">
