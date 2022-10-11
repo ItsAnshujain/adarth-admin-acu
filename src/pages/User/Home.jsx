@@ -29,7 +29,7 @@ const Home = () => {
 
   const [query, setQuery] = useState({
     page: 1,
-    limit: 1,
+    limit: 10,
     sortOrder: 'asc',
     sortBy: 'createdAt',
     filter: 'team',
@@ -38,7 +38,7 @@ const Home = () => {
   const { data, isLoading } = useFetchUsers(serialize(query));
 
   const page = searchParams.get('page');
-
+  const role = searchParams.get('role');
   const setColor = useSideBarState(state => state.setColor);
   useEffect(() => {
     setColor(4);
@@ -69,6 +69,12 @@ const Home = () => {
   useEffect(() => {
     if (page) setQuery({ ...query, page });
   }, [page]);
+
+  useEffect(() => {
+    if (role) {
+      setQuery({ ...query, role });
+    }
+  }, [role]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">

@@ -65,12 +65,17 @@ const BasicInfo = () => {
         <p className="font-bold text-lg">Upload Profile Picture</p>
         <p className="text-md text-slate-400">Please upload png or jpeg photo(150x150 px)</p>
         <div className="flex">
-          <Image
-            src={values.image ? values.image : uploadImage}
-            alt="profile-image"
-            height={150}
-            width={150}
-          />
+          {values.image !== '' ? (
+            <div className="h-[150px] w-[150px] mt-3 mr-3">
+              <Image
+                src={values.image || uploadImage}
+                alt="profile-image"
+                height={150}
+                width={150}
+                className="bg-gray-450"
+              />
+            </div>
+          ) : null}
 
           <div className="h-[150px] w-[150px] mt-3">
             <Dropzone
