@@ -74,7 +74,7 @@ const BasicInfo = () => {
 
           <div className="h-[150px] w-[150px] mt-3">
             <Dropzone
-              onDrop={files => onHandleDrop(files)}
+              onDrop={onHandleDrop}
               accept={['image/png', 'image/jpeg']}
               className="h-full w-full flex justify-center items-center"
               loading={isLoading}

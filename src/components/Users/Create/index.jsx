@@ -119,7 +119,7 @@ const MainArea = () => {
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ validate: yupResolver(schema(formStep)), initialValues });
   const { mutate: create, isLoading } = useCreateUsers();
-  const { mutate: update, isUpdateUserLoading } = useUpdateUsers();
+  const { mutate: update, isLoading: isUpdateUserLoading } = useUpdateUsers();
 
   const getForm = () =>
     formStep === 1 ? <Credentials /> : formStep === 2 ? <BasicInfo /> : <Documents />;
