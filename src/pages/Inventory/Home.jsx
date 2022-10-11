@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
-import { useNavigate } from 'react-router-dom';
-import { Button, Image } from '@mantine/core';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Button, Image, Progress } from '@mantine/core';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/Inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -18,6 +18,7 @@ const Home = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useDebouncedState('', 1000);
   const [count, setCount] = useState('10');
+  const [searchParams] = useSearchParams();
   const viewType = useLayoutView(state => state.activeLayout);
   const [updatedInventoryList, setUpdatedInventoryList] = useState([]);
   const [query, setQuery] = useState({
@@ -28,24 +29,35 @@ const Home = () => {
     serialize(query),
   );
 
+  const page = searchParams.get('page');
+
   const COLUMNS = useMemo(
     () => [
       {
         Header: '#',
         accessor: 'id',
-        Cell: ({ row }) => useMemo(() => <div className="pl-2">{row.index + 1}</div>, []),
+        Cell: ({ row }) =>
+          useMemo(() => {
+            let currentPage = page;
+            let rowCount = 0;
+            if (page < 1) {
+              currentPage = 1;
+            }
+            rowCount = (currentPage - 1) * count;
+            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+          }, []),
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'spaceName',
         Cell: tableProps =>
           useMemo(() => {
-            const { photo, spaceName, _id } = tableProps.row.original;
+            const { spacePhotos, spaceName, _id } = tableProps.row.original;
 
             return (
               <div className="flex items-center gap-2">
                 <div className="bg-white border rounded-md">
-                  <Image className="h-8 w-8 mx-auto" src={photo} alt="banner" />
+                  <Image className="h-8 w-8 mx-auto" src={spacePhotos} alt="banner" />
                 </div>
                 <Button
                   className="text-black font-medium"
@@ -84,8 +96,22 @@ const Home = () => {
         accessor: 'impressions',
       },
       {
-        Header: 'HEALTH',
-        accessor: 'health',
+        Header: 'HEALTH STATUS',
+        accessor: 'health_status',
+        Cell: tableProps =>
+          useMemo(() => {
+            const { health } = tableProps.row.original;
+            return (
+              <div className="w-24">
+                <Progress
+                  sections={[
+                    { value: health, color: 'green' },
+                    { value: 100 - health, color: 'red' },
+                  ]}
+                />
+              </div>
+            );
+          }, []),
       },
       {
         Header: 'LOCATION',
@@ -121,6 +147,7 @@ const Home = () => {
   const handlePagination = currentPage => {
     const queries = serialize({
       ...query,
+      limit: count,
       page: currentPage,
     });
     navigate(`/inventory?${queries}`);
@@ -133,7 +160,7 @@ const Home = () => {
       const rowObj = {
         ...row?.basicInformation,
         ...row?.location,
-        health: `${row?.specifications?.health}%`,
+        health: row?.specifications?.health,
         impressions: `${row?.specifications?.impressions?.max}+`,
         dimension: ` ${row?.specifications?.resolutions?.height} ${row?.specifications?.resolutions?.width}`,
         _id: row?._id,

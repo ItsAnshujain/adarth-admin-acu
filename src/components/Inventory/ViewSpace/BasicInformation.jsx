@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { useState } from 'react';
-import { Button, Text } from '@mantine/core';
+import { Button, Text, Image } from '@mantine/core';
 import dummy0 from '../../../assets/unsplash.png';
 import dummy1 from '../../../assets/dummy1.png';
 import dummy2 from '../../../assets/dummy2.png';
@@ -43,8 +43,21 @@ const BasicInfo = () => {
       <div className="flex-1 pl-5 max-w-1/2">
         <div className="flex flex-col">
           {!isInventoryDetailsLoading ? (
-            <div>
-              <img className="w-full h-96 max-w-1/2" src={posterImage} alt="poster" />
+            <div className="h-96">
+              {inventoryDetails?.basicInformation?.spacePhotos ? (
+                <Image
+                  height={384}
+                  src={inventoryDetails?.basicInformation?.spacePhotos}
+                  alt="poster"
+                  fit="contain"
+                  withPlaceholder
+                  placeholder={
+                    <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
+                  }
+                />
+              ) : (
+                <Image height={384} src={null} alt="poster" fit="contain" withPlaceholder />
+              )}
             </div>
           ) : (
             <Skeleton className="flex flex-col w-full h-96 max-w-1/2" />
@@ -82,7 +95,7 @@ const BasicInfo = () => {
                   <Text size="sm" weight="300" color="gray">
                     Total Completed Bookings
                   </Text>
-                  <Text>2455</Text>
+                  <Text>0</Text>
                 </div>
               </div>
               <div className="flex items-center border pl-4">
@@ -93,7 +106,7 @@ const BasicInfo = () => {
                   <Text size="sm" weight="300" color="gray">
                     Upcoming Bookings
                   </Text>
-                  <Text>2455</Text>
+                  <Text>0</Text>
                 </div>
               </div>
               <div className="flex items-center border pl-4">
@@ -104,7 +117,7 @@ const BasicInfo = () => {
                   <Text size="sm" weight="300" color="gray">
                     Total Revenue
                   </Text>
-                  <Text>{toIndianCurrency(2504555)}</Text>
+                  <Text>{toIndianCurrency(0)}</Text>
                 </div>
               </div>
               <div className="flex items-center border pl-4">
@@ -118,7 +131,7 @@ const BasicInfo = () => {
                   <Text size="sm" weight="300" color="gray">
                     This Year
                   </Text>
-                  <Text>156</Text>
+                  <Text>0</Text>
                 </div>
               </div>
             </>
@@ -152,17 +165,7 @@ const BasicInfo = () => {
                 </Text>
               </div>
               <Text weight="300" color="gray">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis laudantium
-                officiis sunt temporibus est error non odit!{' '}
-                {readMore && (
-                  <span>
-                    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum molestias
-                    perferendis aspernatur debitis pariatur dolores ipsa. Magni iusto, iure sapiente
-                    numquam consequuntur est provident nihil id voluptas placeat reiciendis nostrum!
-                    Pariatur temporibus et, suscipit unde impedit deleniti accusamus, possimus eos,
-                    beatae id recusandae.
-                  </span>
-                )}
+                {inventoryDetails?.basicInformation?.description} {readMore && <></>}
                 <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
                   {readMore ? 'Read less' : 'Read more'}
                 </Button>

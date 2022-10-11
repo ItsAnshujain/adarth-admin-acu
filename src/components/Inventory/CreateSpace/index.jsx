@@ -51,7 +51,8 @@ const schema = action =>
             ? yup.number().typeError('Price must be a number').required('Price is required')
             : null,
         ),
-      spacePhotos: yup.array().of(yup.string().trim()),
+      // spacePhotos: yup.array().of(yup.string().trim()),
+      spacePhotos: yup.string().trim(),
       otherPhotos: yup.array().of(yup.string().trim()),
       footFall: yup
         .number()
@@ -209,7 +210,8 @@ const initialValues = {
     supportedMedia: '',
     description: '',
     price: 0,
-    spacePhotos: [''],
+    // spacePhotos: [''],
+    spacePhotos: '',
     otherPhotos: [''],
     footFall: 0,
     // demographic: '',
@@ -310,6 +312,7 @@ const MainArea = () => {
       }
       form.setFieldValue('basicInformation.mediaType', basicInformation?.mediaType);
       form.setFieldValue('basicInformation.mediaType', basicInformation?.mediaType);
+      form.setFieldValue('basicInformation.spacePhotos', basicInformation?.spacePhotos);
       form.setFieldValue('specifications.illuminations', specifications?.illuminations);
       form.setFieldValue('specifications.unit', specifications?.unit);
       form.setFieldValue('specifications.health', specifications?.health);

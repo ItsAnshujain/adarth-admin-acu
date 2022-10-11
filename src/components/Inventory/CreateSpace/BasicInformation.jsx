@@ -1,6 +1,5 @@
 import { Dropzone } from '@mantine/dropzone';
-import { Button, FileButton, Image } from '@mantine/core';
-// import placeholder from '../../../assets/placeholder.png';
+import { Button, FileButton, Image, Text } from '@mantine/core';
 import image from '../../../assets/image.png';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
@@ -68,7 +67,8 @@ const BasicInfo = () => {
     const formData = new FormData();
     formData.append('files', params?.[0]);
     const res = await upload(formData);
-    setFieldValue('basicInformation.spacePhotos', [res?.[0].Location]);
+    // setFieldValue('basicInformation.spacePhotos', [res?.[0].Location]);
+    setFieldValue('basicInformation.spacePhotos', res?.[0].Location);
   };
 
   const onHandleMultipleImages = async params => {
@@ -242,18 +242,17 @@ const BasicInfo = () => {
               <p className="text-gray-400 text-center">Supported png format only</p>
             </Dropzone>
           </div>
-          {values?.basicInformation?.spacePhotos[0] !== '' &&
-            values?.basicInformation?.spacePhotos?.map(item => (
-              <div className="w-full">
-                <Image
-                  src={item}
-                  alt="more-preview"
-                  key={item}
-                  height={400}
-                  className="bg-slate-300"
-                />
-              </div>
-            ))}
+          {values?.basicInformation?.spacePhotos ? (
+            <Image
+              src={values?.basicInformation?.spacePhotos}
+              alt="more-preview"
+              height={400}
+              className="bg-slate-300"
+              placeholder={
+                <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
+              }
+            />
+          ) : null}
         </div>
         <div className="">
           <p className="text-xl font-bold">Other Images</p>
