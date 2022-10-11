@@ -26,27 +26,27 @@ const queryClient = new QueryClient({
 const Modal = ({ innerProps }) => innerProps.modalBody;
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <MantineProvider
-      emotionOptions={{ key: 'mantine', prepend: false }}
-      withGlobalStyles
-      withNormalizeCSS
-      theme={{
-        fontFamily: 'DM Sans, sans-serif',
-        colors: {
-          brand: ['#DAC4FF', '#C7A5FF', '#B387FA', '#9A69EA', '#824DD8', '#692FC7', '#4B0DAF'],
-        },
-        primaryColor: 'brand',
-      }}
-    >
-      <QueryClientProvider client={queryClient}>
-        <ModalsProvider modals={{ basic: Modal }}>
-          <NotificationsProvider position="top-right">
-            <App />
-          </NotificationsProvider>
-        </ModalsProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </MantineProvider>
-  </React.StrictMode>,
+  // <React.StrictMode> TODO: removed strictmode cz map load issue
+  <MantineProvider
+    emotionOptions={{ key: 'mantine', prepend: false }}
+    withGlobalStyles
+    withNormalizeCSS
+    theme={{
+      fontFamily: 'DM Sans, sans-serif',
+      colors: {
+        brand: ['#DAC4FF', '#C7A5FF', '#B387FA', '#9A69EA', '#824DD8', '#692FC7', '#4B0DAF'],
+      },
+      primaryColor: 'brand',
+    }}
+  >
+    <QueryClientProvider client={queryClient}>
+      <ModalsProvider modals={{ basic: Modal }}>
+        <NotificationsProvider position="top-right">
+          <App />
+        </NotificationsProvider>
+      </ModalsProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  </MantineProvider>,
+  // </React.StrictMode>,
 );

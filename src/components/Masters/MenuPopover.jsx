@@ -1,5 +1,5 @@
 import { Menu } from '@mantine/core';
-import React from 'react';
+import React, { useState } from 'react';
 import { Edit2, Trash } from 'react-feather';
 import { useModals } from '@mantine/modals';
 import InputModal from './InputModal';
@@ -9,10 +9,20 @@ import DeleteConfirmContent from '../DeleteConfirmContent';
 import { useDeleteMaster } from '../../hooks/masters.hooks';
 
 const MenuPopover = ({ row }) => {
-  const [opened, setOpened] = React.useState(false);
+  const [opened, setOpened] = useState(false);
   const modals = useModals();
-  const [isConfirmed, setIsConfirmed] = React.useState(false);
-  const { mutate: deleteItem, isLoading, isSuccess } = useDeleteMaster();
+
+  const { mutate: deleteItem, isLoading } = useDeleteMaster();
+
+  const onSubmit = () => {
+    deleteItem({ masterId: row?.values?._id });
+  };
+
+  const checkConfirmation = isConfirmed => {
+    if (isConfirmed) {
+      onSubmit();
+    }
+  };
 
   const toggletDeleteModal = () =>
     modals.openContextModal('basic', {
@@ -21,26 +31,12 @@ const MenuPopover = ({ row }) => {
         modalBody: (
           <DeleteConfirmContent
             onClickCancel={id => modals.closeModal(id)}
-            setIsConfirmed={setIsConfirmed}
+            setIsConfirmed={checkConfirmation}
           />
         ),
       },
       ...modalConfig,
     });
-
-  const onSubmit = () => {
-    deleteItem({ masterId: row?.values?._id });
-    if (isSuccess) {
-      setIsConfirmed(false);
-    }
-  };
-
-  // trigger delete func if status is true
-  React.useEffect(() => {
-    if (isConfirmed) {
-      onSubmit();
-    }
-  }, [isConfirmed]);
 
   return (
     <>

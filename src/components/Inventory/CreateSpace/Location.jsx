@@ -1,4 +1,7 @@
-import { Text, TextInput } from '@mantine/core';
+import { useFormContext } from '../../../context/formContext';
+import NumberInput from '../../shared/NumberInput';
+import TextInput from '../../shared/TextInput';
+import MapView from './MapView';
 
 const styles = {
   label: {
@@ -8,111 +11,94 @@ const styles = {
     letterSpacing: '0.5px',
   },
 };
-const Location = ({ formData, setFormData }) => {
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+const Location = () => {
+  const { errors, values } = useFormContext();
 
   return (
     <div className="flex flex-col pl-5 pr-7 pt-4 mb-10">
-      <Text size="md" weight="bold">
-        Location
-      </Text>
-      <Text size="sm" weight="300" className="text-gray-500">
+      <p className="font-bold text-lg">Location</p>
+      <p className="text-gray-500 text-sm font-light">
         Please fill the form with valid information, this details will help the customer
-      </Text>
+      </p>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">
         <div>
           <TextInput
-            value={formData.address}
-            onChange={handleChange}
-            styles={styles}
-            name="address"
-            placeholder="Write"
-            className="mb-7"
             label="Address"
+            name="location.address"
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+            className="mb-7"
           />
           <TextInput
-            value={formData.state}
-            onChange={handleChange}
-            styles={styles}
-            name="state"
-            placeholder="Write"
-            className="mb-7"
             label="State"
-          />
-          <TextInput
-            value={formData.latitude}
-            onChange={handleChange}
+            name="location.state"
             styles={styles}
-            name="latitude"
-            placeholder="Write"
+            errors={errors}
+            placeholder="Write..."
             className="mb-7"
+          />
+          <NumberInput
             label="Latitude"
+            name="location.latitude"
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+            className="mb-7"
           />
           <TextInput
-            value={formData.zone}
-            onChange={handleChange}
-            styles={styles}
-            name="zone"
-            placeholder="Write"
-            className="mb-7"
             label="Zone"
+            name="location.zone"
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+            className="mb-7"
           />
           <TextInput
-            value={formData.facing}
-            onChange={handleChange}
-            styles={styles}
-            name="facing"
-            placeholder="Write"
-            className="mb-7"
             label="Facing"
+            name="location.facing"
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+            className="mb-7"
           />
         </div>
         <div>
           <TextInput
-            value={formData.city}
-            onChange={handleChange}
-            styles={styles}
-            name="city"
-            placeholder="Write"
-            className="mb-7"
             label="City"
-          />
-          <TextInput
-            value={formData.zip}
-            onChange={handleChange}
+            name="location.city"
             styles={styles}
-            name="zip"
-            placeholder="Write"
+            errors={errors}
+            placeholder="Write..."
             className="mb-7"
+          />
+          <NumberInput
             label="Zip"
-          />
-          <TextInput
-            value={formData.longitude}
-            onChange={handleChange}
+            name="location.zip"
             styles={styles}
-            name="longitude"
-            placeholder="Write"
+            errors={errors}
+            placeholder="Write..."
             className="mb-7"
+          />
+          <NumberInput
             label="Longitude"
+            name="location.longitude"
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+            className="mb-7"
           />
           <TextInput
-            value={formData.landmark}
-            onChange={handleChange}
-            styles={styles}
-            name="landmark"
-            placeholder="Write"
-            className="mb-7"
             label="Landmark"
+            name="location.landmark"
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+            className="mb-7"
           />
         </div>
       </div>
-      <div className="w-[40%] h-48 border">Map Place Holder</div>
+      <MapView latitude={+values.location.latitude} longitude={+values.location.longitude} />
     </div>
   );
 };
