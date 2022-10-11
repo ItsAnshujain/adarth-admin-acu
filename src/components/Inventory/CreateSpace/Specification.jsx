@@ -46,10 +46,7 @@ const sliderStyle = {
   },
 };
 
-const marks = [
-  { value: 2000, label: '20%' },
-  { value: 8000, label: '80%' },
-];
+const marks = [{ value: 6500 }, { value: 8500 }];
 
 const Specification = ({ specificationsData }) => {
   const [sliderValues, setSliderValue] = useDebouncedState([], 1000);
@@ -158,7 +155,7 @@ const Specification = ({ specificationsData }) => {
             <p className="text-slate-400">Min</p>
           </div>
           <RangeSlider
-            min={0}
+            min={5000}
             max={10000}
             styles={sliderStyle}
             className="pt-4 flex-auto"

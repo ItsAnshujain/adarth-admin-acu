@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Image, Menu, Text } from '@mantine/core';
 import { Eye, Edit2, Trash } from 'react-feather';
 import { useModals } from '@mantine/modals';
-import unsplash from '../../assets/unsplash.png';
 import Badge from '../shared/Badge';
 import toIndianCurrency from '../../utils/currencyFormat';
 import MenuIcon from '../Menu';
@@ -40,8 +39,21 @@ const Card = ({ data }) => {
 
   return (
     <div className="drop-shadow-md">
-      <div className="w-full">
-        <Image className="w-full" src={unsplash} alt="card" />
+      <div className="min-w-[273px]">
+        {data?.basicInformation?.spacePhotos ? (
+          <Image
+            className="w-full"
+            height={176}
+            src={data?.basicInformation?.spacePhotos}
+            alt="card"
+            withPlaceholder
+            placeholder={
+              <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
+            }
+          />
+        ) : (
+          <Image height={176} src={null} alt="card" fit="contain" withPlaceholder />
+        )}
       </div>
       <div className="p-4 pt-4 pb-7 bg-white">
         <div className="mb-2">
