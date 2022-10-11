@@ -1,39 +1,41 @@
-import { useState, useEffect } from 'react';
-import data from '../Dummydata/CardData';
+import { Pagination, Skeleton } from '@mantine/core';
+import Card from './Inventory/Card';
 
-// TODO : Add pagination
-const GridView = ({ count, page = 1, selectAll, Card }) => {
-  const state = new Array(100).fill(false);
-  const [checkbox, setCheckbox] = useState(state);
-  const newData = data.slice(count * page, count * page + count);
-  const handleCheckboxClick = index => {
-    setCheckbox(prevState => {
-      const newState = [...prevState];
-      newState[index] = !newState[index];
-      return newState;
-    });
-  };
-  useEffect(() => {
-    if (selectAll) {
-      setCheckbox(state.fill(true));
-    } else {
-      setCheckbox(state.fill(false));
-    }
-  }, [selectAll]);
+const skeletonList = () =>
+  Array.apply('', Array(5)).map((_, index) => (
+    // eslint-disable-next-line react/no-array-index-key
+    <Skeleton height={410} width={273} radius="sm" key={index} />
+  ));
 
-  return (
-    <div className="flex flex-wrap mx-5 justify-between gap-y-8 mb-10 ">
-      {newData.map((each, index) => (
-        <Card
-          key={Math.random() * 100000000000000000}
-          data={each}
-          id={index}
-          checkbox={checkbox[index]}
-          handleCheckbox={() => handleCheckboxClick(index)}
-        />
+const GridView = ({
+  list,
+  totalPages = 1,
+  activePage = 1,
+  setActivePage = () => {},
+  isLoadingList,
+}) => (
+  <>
+    <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[70%] overflow-y-auto">
+      {list.map(item => (
+        <Card key={item?._id} data={item} />
       ))}
+      {isLoadingList ? skeletonList() : null}
     </div>
-  );
-};
+    <div className="flex justify-end my-4 pr-7">
+      <Pagination
+        styles={theme => ({
+          item: {
+            color: theme.colors.gray[9],
+            fontWeight: 100,
+            fontSize: '0.7em',
+          },
+        })}
+        page={activePage}
+        onChange={setActivePage}
+        total={totalPages}
+      />
+    </div>
+  </>
+);
 
 export default GridView;

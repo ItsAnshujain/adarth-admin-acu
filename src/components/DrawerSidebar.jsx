@@ -33,7 +33,7 @@ const DrawerSidebar = ({ opened, setOpened }) => {
         <div className="flex flex-col items-start gap-2">
           {sidebarText.map((text, index) => (
             <SidebarButton
-              key={Math.random() * 1000000000}
+              key={text}
               color={color}
               clickHandler={setColor}
               index={index}
