@@ -64,6 +64,7 @@ const Header = () => {
                     alt="profile pic"
                     height={120}
                     width={120}
+                    className="bg-gray-450 rounded-full"
                   />
                 </div>
                 <div className="flex flex-col">

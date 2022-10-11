@@ -4,7 +4,7 @@ import { Mail, ChevronDown } from 'react-feather';
 import classNames from 'classnames';
 import { useMemo } from 'react';
 import { useFetchMastersTypes } from '../hooks/masters.hooks';
-import { masterTypes } from '../utils';
+import { masterTypes, serialize } from '../utils';
 import NestedSidebarContent from './NestedSidebarContent';
 
 const Sidebar = () => {
@@ -14,6 +14,12 @@ const Sidebar = () => {
   const { data, isSuccess: isMasterLoaded } = useFetchMastersTypes(!!pathname.includes('/masters'));
 
   const renderList = useMemo(() => {
+    const queries = serialize({
+      parentId: null,
+      limit: 10,
+      page: 1,
+    });
+
     const tempList = [];
     if (data) {
       const values = Object.values(data);
@@ -21,7 +27,7 @@ const Sidebar = () => {
         tempList.push({
           label: masterTypes[key],
           type: key,
-          subPath: `?type=${key}&parentId=null&limit=10&page=1&limit=10`,
+          subPath: `?type=${key}&${queries}`,
         });
         return tempList;
       });
