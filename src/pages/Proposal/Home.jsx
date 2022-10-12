@@ -27,7 +27,8 @@ const Proposals = () => {
     serialize(query),
   );
 
-  const activeLayout = useLayoutView(state => state.setActiveLayout);
+  const viewType = useLayoutView(state => state.activeLayout);
+
   // TODO: use one store for multiple pages view
   const handlePagination = currentPage => {
     const queries = serialize({
@@ -132,7 +133,7 @@ const Proposals = () => {
         <RowsPerPage setCount={setCount} count={count} />
         <Search search={search} setSearch={setSearch} />
       </div>
-      {activeLayout === 'list' ? (
+      {viewType === 'list' ? (
         <Table
           dummy={proposalsData?.docs || []}
           COLUMNS={COLUMNS}
