@@ -4,35 +4,20 @@ import classNames from 'classnames';
 import { Text, Button } from '@mantine/core';
 import { Plus, ChevronDown, Server, Grid } from 'react-feather';
 import Filter from './Filter';
+import useLayoutView from '../../store/layout.store';
 
-const initialState = {
-  grid: { fill: true },
-  list: { fill: false },
-  map: { fill: true },
-};
-
-const Header = ({ text, setView }) => {
+const Header = ({ text }) => {
   const navigate = useNavigate();
   const [showFilter, setShowFilter] = useState(false);
-  const [color, setColor] = useState(initialState);
 
-  const handleListClick = () => {
-    setColor({
-      grid: { fill: true },
-      list: { fill: false },
-      map: { fill: true },
-    });
-    setView('list');
-  };
+  const { activeLayout, setActiveLayout } = useLayoutView(state => ({
+    activeLayout: state.activeLayout,
+    setActiveLayout: state.setActiveLayout,
+  }));
 
-  const handleGridClick = () => {
-    setColor({
-      grid: { fill: false },
-      list: { fill: true },
-      map: { fill: true },
-    });
-    setView('grid');
-  };
+  const handleListClick = () => setActiveLayout('list');
+
+  const handleGridClick = () => setActiveLayout('grid');
 
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center pl-5 pr-5">
@@ -43,20 +28,24 @@ const Header = ({ text, setView }) => {
         <div className="flex">
           <button
             className={classNames(
-              `px-4 border-gray-300 border rounded-md ${color.list.fill ? 'bg-white' : 'bg-black'}`,
+              `px-4 border-gray-300 border rounded-md ${
+                activeLayout === 'grid' ? 'bg-white' : 'bg-black'
+              }`,
             )}
             onClick={handleListClick}
             type="button"
           >
             <Server
               strokeWidth="3px"
-              className={`max-h-5 ${classNames(color.list.fill ? 'text-black' : 'text-white')}`}
+              className={`max-h-5 ${classNames(
+                activeLayout === 'grid' ? 'text-black' : 'text-white',
+              )}`}
             />
           </button>
           <button
             className={classNames(
               `text-white border-gray-300 border px-4 rounded-md ${
-                color.grid.fill ? 'bg-white' : 'bg-black'
+                activeLayout === 'list' ? 'bg-white' : 'bg-black'
               }`,
             )}
             onClick={handleGridClick}
@@ -64,7 +53,9 @@ const Header = ({ text, setView }) => {
           >
             <Grid
               strokeWidth="3px"
-              className={`max-h-5 ${classNames(color.grid.fill ? 'text-black' : 'text-white')}`}
+              className={`max-h-5 ${classNames(
+                activeLayout === 'list' ? 'text-black' : 'text-white',
+              )}`}
             />
           </button>
         </div>
