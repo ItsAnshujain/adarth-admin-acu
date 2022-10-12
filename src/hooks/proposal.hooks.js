@@ -20,16 +20,14 @@ export const useCreateProposal = () => {
       onSuccess: () => {
         queryClient.invalidateQueries(['proposals']);
         showNotification({
-          title: 'Add Proposal',
-          message: 'Proposal added successfully',
+          title: 'Proposal added successfully',
           autoClose: 3000,
           color: 'green',
         });
       },
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
+          title: err?.message,
           autoClose: 3000,
           color: 'red',
         });
@@ -74,16 +72,14 @@ export const useUpdateProposal = () => {
       onSuccess: () => {
         queryClient.invalidateQueries(['proposals']);
         showNotification({
-          title: 'Edit Proposal',
-          message: 'Proposal edited successfully',
+          title: 'Proposal edited successfully',
           autoClose: 3000,
           color: 'green',
         });
       },
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
+          title: err?.message,
           autoClose: 3000,
           color: 'red',
         });
@@ -104,16 +100,14 @@ export const useDeleteProposal = () => {
       onSuccess: () => {
         queryClient.invalidateQueries(['proposals']);
         showNotification({
-          title: 'Delete Proposal',
-          message: 'Proposal deleted successfully',
+          title: 'Proposal deleted successfully',
           autoClose: 3000,
           color: 'green',
         });
       },
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
+          title: err?.message,
           autoClose: 3000,
           color: 'red',
         });
