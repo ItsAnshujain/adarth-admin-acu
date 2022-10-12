@@ -1,5 +1,4 @@
 import { Menu } from '@mantine/core';
-import { useState, useEffect } from 'react';
 import { useModals } from '@mantine/modals';
 import { useNavigate } from 'react-router-dom';
 import { Eye, Edit2, Trash } from 'react-feather';
@@ -11,8 +10,17 @@ import { useDeleteProposal } from '../../hooks/proposal.hooks';
 const MenuPopover = ({ itemId }) => {
   const modals = useModals();
   const navigate = useNavigate();
-  const [isConfirmed, setIsConfirmed] = useState(false);
-  const { mutate: deleteItem, isLoading, isSuccess } = useDeleteProposal();
+  const { mutate: deleteItem, isLoading } = useDeleteProposal();
+
+  const onSubmit = () => {
+    deleteItem({ proposalId: itemId });
+  };
+
+  const checkConfirmation = isConfirmed => {
+    if (isConfirmed) {
+      onSubmit();
+    }
+  };
 
   const toggletDeleteModal = () =>
     modals.openContextModal('basic', {
@@ -21,26 +29,12 @@ const MenuPopover = ({ itemId }) => {
         modalBody: (
           <DeleteConfirmContent
             onClickCancel={id => modals.closeModal(id)}
-            setIsConfirmed={setIsConfirmed}
+            setIsConfirmed={checkConfirmation}
           />
         ),
       },
       ...modalConfig,
     });
-
-  const onSubmit = () => {
-    deleteItem({ proposalId: itemId });
-    if (isSuccess) {
-      setIsConfirmed(false);
-    }
-  };
-
-  // trigger delete func if status is true
-  useEffect(() => {
-    if (isConfirmed) {
-      onSubmit();
-    }
-  }, [isConfirmed]);
 
   return (
     <Menu shadow="md" width={150}>

@@ -117,13 +117,9 @@ const Proposals = () => {
   );
 
   useEffect(() => {
-    setQuery({ ...query, search });
-  }, [search]);
-
-  useEffect(() => {
     const limit = parseInt(count, 10);
-    setQuery({ ...query, limit });
-  }, [count]);
+    setQuery({ ...query, limit, search });
+  }, [count, search]);
 
   useEffect(() => {
     if (page) setQuery({ ...query, page });
