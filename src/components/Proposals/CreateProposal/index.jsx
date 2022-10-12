@@ -7,7 +7,11 @@ import BasicInfo from './BasicInfo';
 import Spaces from '../Spaces';
 import SuccessModal from '../../shared/Modal';
 import Header from './Header';
-import { useCreateProposal, useFetchProposalById } from '../../../hooks/proposal.hooks';
+import {
+  useCreateProposal,
+  useUpdateProposal,
+  useFetchProposalById,
+} from '../../../hooks/proposal.hooks';
 import { FormProvider, useForm } from '../../../context/formContext';
 
 const schema = yup.object().shape({
@@ -41,6 +45,7 @@ const Main = () => {
   const [selectedRow, setSelectedRow] = useState([]);
 
   const { mutate: create, isLoading: isCreateProposalLoading } = useCreateProposal();
+  const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalData } = useFetchProposalById(proposalId, !!proposalId);
   const getForm = () =>
     formStep === 1 ? (
@@ -78,7 +83,11 @@ const Main = () => {
 
       data.spaces = [...spaceArray];
 
-      create(data);
+      if (proposalId) {
+        update({ proposalId, data });
+      } else {
+        create(data);
+      }
       form.reset();
 
       setTimeout(() => navigate('/proposals'), 2000);
@@ -108,7 +117,8 @@ const Main = () => {
             <Header
               setFormStep={setFormStep}
               formStep={formStep}
-              isCreateProposalLoading={isCreateProposalLoading}
+              isProposalLoading={isCreateProposalLoading || isUpdateProposalLoading}
+              isEditable={!!proposalId}
             />
           </div>
           {getForm()}

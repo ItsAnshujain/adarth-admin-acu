@@ -14,6 +14,7 @@ const MenuPopover = ({ itemId }) => {
 
   const onSubmit = () => {
     deleteItem({ proposalId: itemId });
+    setTimeout(() => modals.closeModal(), 2000);
   };
 
   const checkConfirmation = isConfirmed => {
