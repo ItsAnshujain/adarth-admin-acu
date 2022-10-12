@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import * as yup from 'yup';
-import dayjs from 'dayjs';
 import { useNavigate, useParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { yupResolver } from '@mantine/form';
@@ -11,7 +10,6 @@ import Header from './Header';
 import { useCreateProposal, useFetchProposalById } from '../../../hooks/proposal.hooks';
 import { FormProvider, useForm } from '../../../context/formContext';
 
-const UTC_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ[Z]';
 const schema = yup.object().shape({
   name: yup.string().trim().required('Name is required'),
   description: yup.string().trim().required('Description is required'),
@@ -49,9 +47,9 @@ const Main = () => {
 
   const onSubmit = formData => {
     let data = {};
-    const startDate = dayjs(formData?.startDate).format(UTC_FORMAT);
-    const endDate = dayjs(formData?.endDate).format(UTC_FORMAT);
-    data = { ...formData, startDate, endDate };
+    data = {
+      ...formData,
+    };
     setFormStep(2);
     if (formStep === 2) {
       if (selectedRow.length === 0) {
@@ -87,6 +85,15 @@ const Main = () => {
   useEffect(() => {
     if (proposalData) {
       form.setFieldValue('name', proposalData?.name);
+      form.setFieldValue('description', proposalData?.description);
+
+      if (proposalData?.startDate) {
+        form.setFieldValue('startDate', new Date(proposalData.startDate));
+      }
+
+      if (proposalData?.endDate) {
+        form.setFieldValue('endDate', new Date(proposalData.endDate));
+      }
     }
   }, [proposalData]);
 

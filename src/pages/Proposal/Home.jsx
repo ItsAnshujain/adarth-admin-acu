@@ -21,6 +21,7 @@ const Proposals = () => {
   const [query, setQuery] = useState({
     page: 1,
     limit: 10,
+    sort: 'createdAt',
   });
   const page = searchParams.get('page');
   const { data: proposalsData, isLoading: isLoadingProposalsData } = useFetchProposals(
