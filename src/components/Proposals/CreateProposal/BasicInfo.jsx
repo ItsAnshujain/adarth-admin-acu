@@ -1,19 +1,23 @@
-import { Text, TextInput, Textarea } from '@mantine/core';
-import { DatePicker } from '@mantine/dates';
+import { Button, Text } from '@mantine/core';
 import { useState } from 'react';
+import TextareaInput from '../../shared/TextareaInput';
+import DatePicker from '../../shared/DatePicker';
+import { useFormContext } from '../../../context/formContext';
+import TextInput from '../../shared/TextInput';
 
-const textAreaStyles = {
+const styles = {
   label: {
-    fontWeight: 'bold',
-  },
-  input: {
-    height: '127px',
+    marginBottom: '4px',
+    fontWeight: 700,
+    fontSize: '15px',
+    letterSpacing: '0.5px',
   },
 };
 
 const BasicInfo = () => {
   const [showNotesOne, setShowNotesOne] = useState(false);
   const [showNotesTwo, setShowNotesTwo] = useState(false);
+  const { errors } = useFormContext();
 
   return (
     <div className="flex gap-4 pt-4 flex-col pl-5 pr-7">
@@ -22,21 +26,43 @@ const BasicInfo = () => {
       </Text>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <TextInput name="spacename" placeholder="Write" className="mb-7" label="Proposal Name" />
-          <TextInput name="spacename" placeholder="Write" className="mb-7" label="Price" />
+          <TextInput
+            label="Proposal Name"
+            name="name"
+            styles={styles}
+            errors={errors}
+            className="mb-7"
+            placeholder="Write..."
+          />
+          <div className="grid grid-cols-2 gap-4 ">
+            <DatePicker
+              label="Start Date"
+              name="startDate"
+              placeholder="DD/MM/YYYY"
+              minDate={new Date()}
+              styles={styles}
+              errors={errors}
+            />
+            <DatePicker
+              label="End Date"
+              name="endDate"
+              placeholder="DD/MM/YYYY"
+              minDate={new Date()}
+              styles={styles}
+              errors={errors}
+            />
+          </div>
         </div>
         <div className="row-span-2">
-          <Textarea
-            styles={textAreaStyles}
-            name="spacename"
-            placeholder="Write"
+          <TextareaInput
             label="Description"
+            name="description"
+            styles={styles}
+            errors={errors}
+            maxLength={200}
+            placeholder="Maximum 200 characters"
           />
         </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4 w-1/2">
-        <DatePicker label="Start Date" placeholder="DD/MM/YYYY" />
-        <DatePicker label="End Date" placeholder="DD/MM/YYYY" />
       </div>
       <div>
         <Text size="sm" weight="bold">
@@ -48,9 +74,12 @@ const BasicInfo = () => {
           {showNotesOne ? (
             'qui totam esse eligendi repellendus laboriosam harum praesentium quidem minus expedita ut similique!'
           ) : (
-            <button type="button" className="text-purple-450" onClick={() => setShowNotesOne(true)}>
+            <Button
+              className="text-purple-450 font-normal px-1"
+              onClick={() => setShowNotesOne(true)}
+            >
               Read More
-            </button>
+            </Button>
           )}
         </Text>
         <Text size="sm">
@@ -59,9 +88,12 @@ const BasicInfo = () => {
           {showNotesTwo ? (
             'qui totam esse eligendi repellendus laboriosam harum praesentium quidem minus expedita ut similique!'
           ) : (
-            <button type="button" className="text-purple-450" onClick={() => setShowNotesTwo(true)}>
+            <Button
+              className="text-purple-450 font-normal px-1"
+              onClick={() => setShowNotesTwo(true)}
+            >
               Read More
-            </button>
+            </Button>
           )}
         </Text>
       </div>

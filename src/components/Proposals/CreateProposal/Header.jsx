@@ -5,8 +5,15 @@ import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Basic Information', 'Specifications'];
 
-const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
+const Header = ({ setFormStep, formStep, isCreateProposalLoading }) => {
   const navigate = useNavigate();
+  const handleBack = () => {
+    if (formStep === 1) {
+      navigate(-1);
+    } else {
+      setFormStep(formStep - 1);
+    }
+  };
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center w-full">
       <div className="flex gap-6 pl-5 relative">
@@ -47,31 +54,26 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
 
       <div className="flex gap-4 pr-7 ">
         <Button className="border-black text-black radius-md">Cancel</Button>
-        <Button
-          onClick={() => {
-            if (formStep === 1) {
-              navigate('/proposals');
-            } else {
-              setFormStep(formStep - 1);
-            }
-          }}
-          className="bg-black"
-        >
+        <Button onClick={handleBack} className="bg-black">
           <ChevronLeft className="mr-2 h-4" />
           Back
         </Button>
-        <Button
-          onClick={() => {
-            if (formStep < 2) setFormStep(formStep + 1);
-            if (formStep === 2) {
-              setOpenSuccessModal(true);
-            }
-          }}
-          className="bg-purple-450 order-3"
-        >
-          {formStep === 2 ? 'Save' : 'Next'}
-          {formStep < 2 && <ChevronRight className="ml-1 h-4" />}
-        </Button>
+        {formStep === 1 ? (
+          <Button type="submit" className="bg-purple-450 order-3">
+            Next
+            <ChevronRight className="ml-1 h-4" />
+          </Button>
+        ) : null}
+        {formStep === 2 ? (
+          <Button
+            type="submit"
+            className="bg-purple-450 order-3"
+            disabled={isCreateProposalLoading}
+            loading={isCreateProposalLoading}
+          >
+            {isCreateProposalLoading ? 'Saving...' : 'Save'}
+          </Button>
+        ) : null}
       </div>
     </div>
   );
