@@ -18,7 +18,7 @@ const COLUMNS = [
     },
   },
   {
-    Header: 'BOOKING MANAGER',
+    Header: 'CAMPAIGN INCHARGE',
     accessor: 'booking_manager',
     Cell: tableProps => {
       const {

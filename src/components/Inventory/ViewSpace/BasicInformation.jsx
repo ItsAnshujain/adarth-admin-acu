@@ -104,7 +104,7 @@ const BasicInfo = () => {
                 </div>
                 <div>
                   <Text size="sm" weight="300" color="gray">
-                    Upcoming Bookings
+                    Total Operational Cost
                   </Text>
                   <Text>0</Text>
                 </div>

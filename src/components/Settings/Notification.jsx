@@ -30,7 +30,7 @@ const Notification = () => (
   <div className="pl-5 pr-7">
     <div className="py-8">
       <div className="w-4/12 flex justify-between">
-        <p className="font-bold text-xl">Manual Notification</p>
+        <p className="font-bold text-xl">Message Notification</p>
         <Switch styles={switchStyles} />
       </div>
       <p className="font-medium text-sm mt-2 text-slate-400">
