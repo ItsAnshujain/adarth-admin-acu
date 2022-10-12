@@ -20,12 +20,18 @@ const Table = ({
   selectedRows = () => {},
   setActivePage = () => {},
   rowCountLimit = 10,
+  selectedRowData = [],
 }) => {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const setSelectedSpace = useCreateBookingSelectSpaceState(
     state => state.setSelectedSpace,
     shallow,
   );
+
+  const handleSelectedRows = () => {
+    const preIds = selectedRowData.map(item => item._id);
+    return dummy?.filter(row => preIds.includes(row._id));
+  };
 
   const {
     getTableProps,
@@ -39,7 +45,7 @@ const Table = ({
     {
       columns,
       data: dummy,
-      initialState: { pageIndex: 0 },
+      initialState: { pageIndex: 0, selectedRowIds: handleSelectedRows() },
     },
     useSortBy,
     usePagination,

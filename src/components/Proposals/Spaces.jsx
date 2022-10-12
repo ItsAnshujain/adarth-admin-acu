@@ -14,7 +14,7 @@ import { useFetchInventory } from '../../hooks/inventory.hooks';
 import NativeDropdownSelect from '../shared/NativeDropdownSelect';
 import { serialize } from '../../utils';
 
-const Spaces = ({ setSelectedRow = () => {} }) => {
+const Spaces = ({ setSelectedRow = () => {}, selectedRowData = [] }) => {
   const navigate = useNavigate();
   const [search, setSearch] = useDebouncedState('', 1000);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -209,6 +209,7 @@ const Spaces = ({ setSelectedRow = () => {} }) => {
         COLUMNS={COLUMNS}
         allowRowsSelect
         selectedRows={setSelectedRow}
+        selectedRowData={selectedRowData}
       />
     </>
   );

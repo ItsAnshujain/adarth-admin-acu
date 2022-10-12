@@ -43,7 +43,11 @@ const Main = () => {
   const { mutate: create, isLoading: isCreateProposalLoading } = useCreateProposal();
   const { data: proposalData } = useFetchProposalById(proposalId, !!proposalId);
   const getForm = () =>
-    formStep === 1 ? <BasicInfo /> : <Spaces setSelectedRow={setSelectedRow} />;
+    formStep === 1 ? (
+      <BasicInfo />
+    ) : (
+      <Spaces setSelectedRow={setSelectedRow} selectedRowData={proposalData?.spaces || []} />
+    );
 
   const onSubmit = formData => {
     let data = {};
@@ -56,7 +60,6 @@ const Main = () => {
         showNotification({
           title: 'Add Spaces',
           message: 'Please select atleast one space to continue',
-          autoClose: 3000,
           color: 'blue',
         });
         return;
@@ -65,7 +68,7 @@ const Main = () => {
       const spaceArray = [];
       selectedRow?.map(item => {
         const element = {
-          _id: item.original._id,
+          id: item.original._id,
           price: item.original.price,
         };
         spaceArray.push(element);
