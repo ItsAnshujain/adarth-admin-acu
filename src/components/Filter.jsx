@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Drawer, RangeSlider, TextInput } from '@mantine/core';
+import { Button, Drawer, RangeSlider, TextInput } from '@mantine/core';
 
 const inititalFilterData = {
   'Cities': {
@@ -79,6 +79,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
       title="Filters"
       onClose={() => setShowFilter(false)}
     >
+      <div className="w-full flex justify-end">
+        <Button variant="default" className="mb-3 bg-purple-450 text-white">
+          Apply Filters
+        </Button>
+      </div>
       <div className="flex text-gray-400 flex-col gap-4">
         <div className="flex flex-col border p-4 pt-2 gap-2 rounded-xl">
           <div className="border-b py-2 flex justify-between items-center">
