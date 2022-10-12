@@ -1,0 +1,123 @@
+import { showNotification } from '@mantine/notifications';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  createProposal,
+  deleteProposal,
+  fetchProposalById,
+  fetchProposals,
+  updateProposal,
+} from '../requests/proposal.requests';
+
+export const useCreateProposal = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async data => {
+      const res = await createProposal(data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['proposals']);
+        showNotification({
+          title: 'Add Proposal',
+          message: 'Proposal added successfully',
+          autoClose: 3000,
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: 'Error',
+          message: err?.message,
+          autoClose: 3000,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
+
+export const useFetchProposals = (query, enabled = true) =>
+  useQuery(
+    ['proposals', query],
+    async () => {
+      const res = await fetchProposals(query);
+      return res?.data;
+    },
+    {
+      enabled,
+    },
+  );
+
+export const useFetchProposalById = (proposalId, enabled = true) =>
+  useQuery(
+    ['proposals-by-id', proposalId],
+    async () => {
+      const res = await fetchProposalById(proposalId);
+      return res?.data;
+    },
+    {
+      enabled,
+    },
+  );
+
+export const useUpdateProposal = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ({ proposalId, data }) => {
+      const res = await updateProposal(proposalId, data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['proposals']);
+        showNotification({
+          title: 'Edit Proposal',
+          message: 'Proposal edited successfully',
+          autoClose: 3000,
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: 'Error',
+          message: err?.message,
+          autoClose: 3000,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
+
+export const useDeleteProposal = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ({ proposalId }) => {
+      const res = await deleteProposal(proposalId);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['proposals']);
+        showNotification({
+          title: 'Delete Proposal',
+          message: 'Proposal deleted successfully',
+          autoClose: 3000,
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: 'Error',
+          message: err?.message,
+          autoClose: 3000,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
