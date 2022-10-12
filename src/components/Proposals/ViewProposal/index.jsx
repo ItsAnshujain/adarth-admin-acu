@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import RowsPerPage from '../../RowsPerPage';
@@ -10,8 +10,9 @@ import Filter from '../../Filter';
 import DateRange from '../../DateRange';
 import calendar from '../../../assets/data-table.svg';
 import Table from '../../Table/Table';
-import COLUMNS from '../shared/column';
 import dummy from '../../../Dummydata/CREATE_PROPOSAL_DATA.json';
+import MenuPopover from '../MenuPopover';
+import NativeDropdownSelect from '../../shared/NativeDropdownSelect';
 
 const ProposalDetails = () => {
   const [search, setSearch] = useState('');
@@ -22,6 +23,87 @@ const ProposalDetails = () => {
   const openDatePicker = () => {
     setShowDatePicker(!showDatePicker);
   };
+
+  const COLUMNS = useMemo(
+    () => [
+      {
+        Header: '#',
+        accessor: 'id',
+      },
+      {
+        Header: 'SPACE NAME & PHOTO',
+        accessor: 'spaceName',
+        Cell: tableProps =>
+          useMemo(() => {
+            const { photo, spaceName } = tableProps.row.original;
+
+            return (
+              <div className="flex items-center gap-2">
+                <div className="bg-white border rounded-md">
+                  <img className="h-8 w-8 mx-auto" src={photo} alt="banner" />
+                </div>
+                <p className="flex-1">{spaceName}</p>
+              </div>
+            );
+          }, []),
+      },
+      {
+        Header: 'LANDLORD NAME',
+        accessor: 'landlord_name',
+        Cell: tableProps =>
+          useMemo(() => <div className="w-fit">{tableProps.row.original.landlord_name}</div>, []),
+      },
+      {
+        Header: 'SPACE TYPE',
+        accessor: 'space_type',
+      },
+      {
+        Header: 'DIMENSION',
+        accessor: 'dimension',
+      },
+      {
+        Header: 'IMPRESSION',
+        accessor: 'impressions',
+      },
+      {
+        Header: 'HEALTH',
+        accessor: 'health',
+      },
+      {
+        Header: 'LOCATION',
+        accessor: 'city',
+      },
+      {
+        Header: 'MEDIA TYPE',
+        accessor: 'media_type',
+      },
+      {
+        Header: 'PRICING',
+        accessor: 'price',
+        Cell: tableProps =>
+          useMemo(() => {
+            const {
+              row: {
+                original: { price },
+              },
+            } = tableProps;
+
+            return <NativeDropdownSelect />;
+          }, []),
+      },
+      {
+        Header: '',
+        accessor: 'details',
+        Cell: tableProps =>
+          useMemo(() => {
+            const { _id } = tableProps.row.original;
+
+            return <MenuPopover itemId={_id} />;
+          }, []),
+      },
+    ],
+    [],
+  );
 
   return (
     <div onClick={() => setShowShare(false)}>
