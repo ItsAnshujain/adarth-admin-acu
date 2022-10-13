@@ -1,21 +1,50 @@
 import { useModals } from '@mantine/modals';
 import { Menu } from '@mantine/core';
 import { Eye, Trash } from 'react-feather';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import modalConfig from '../../utils/modalConfig';
 import DeleteConfirmContent from '../DeleteConfirmContent';
 import MenuIcon from '../Menu';
+import { useUpdateProposal } from '../../hooks/proposal.hooks';
 
-const MenuPopover = ({ itemId }) => {
+const MenuPopover = ({ itemId, proposalData }) => {
   const modals = useModals();
   const navigate = useNavigate();
+  const { id: proposalId } = useParams();
+  const queryClient = useQueryClient();
 
-  const onSubmit = () => {};
+  const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
+
+  const onSubmit = () => {
+    const spaces = [];
+    if (proposalData?.spaces) {
+      proposalData?.spaces.map(item => {
+        let element;
+        if (item._id !== itemId) {
+          element = {
+            id: item._id,
+            price: item.price,
+          };
+          spaces.push(element);
+        }
+        return spaces;
+      });
+    }
+
+    const data = { ...proposalData, spaces };
+    if (proposalId) {
+      update({ proposalId, data });
+    }
+
+    setTimeout(() => modals.closeModal(), 2000);
+  };
 
   const checkConfirmation = isConfirmed => {
     if (isConfirmed) {
       onSubmit();
     }
+    queryClient.invalidateQueries(['proposals-by-id', proposalId]);
   };
 
   const toggletDeleteModal = () =>
@@ -51,7 +80,7 @@ const MenuPopover = ({ itemId }) => {
         <Menu.Item
           icon={<Trash className="h-4" />}
           onClick={() => toggletDeleteModal()}
-          //   disabled={isLoading}
+          disabled={isUpdateProposalLoading}
           className="cursor-pointer flex items-center gap-1"
         >
           <span className="ml-1">Remove</span>
