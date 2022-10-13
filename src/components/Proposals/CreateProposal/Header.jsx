@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Basic Information', 'Specifications'];
 
-const Header = ({ setFormStep, formStep, isCreateProposalLoading }) => {
+const Header = ({ setFormStep, formStep, isProposalLoading, isEditable }) => {
   const navigate = useNavigate();
   const handleBack = () => {
     if (formStep === 1) {
@@ -14,6 +14,8 @@ const Header = ({ setFormStep, formStep, isCreateProposalLoading }) => {
       setFormStep(formStep - 1);
     }
   };
+  const handleHome = () => navigate('/proposals');
+
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center w-full">
       <div className="flex gap-6 pl-5 relative">
@@ -53,7 +55,9 @@ const Header = ({ setFormStep, formStep, isCreateProposalLoading }) => {
       </div>
 
       <div className="flex gap-4 pr-7 ">
-        <Button className="border-black text-black radius-md">Cancel</Button>
+        <Button onClick={handleHome} className="border-black text-black radius-md">
+          Cancel
+        </Button>
         <Button onClick={handleBack} className="bg-black">
           <ChevronLeft className="mr-2 h-4" />
           Back
@@ -68,10 +72,10 @@ const Header = ({ setFormStep, formStep, isCreateProposalLoading }) => {
           <Button
             type="submit"
             className="bg-purple-450 order-3"
-            disabled={isCreateProposalLoading}
-            loading={isCreateProposalLoading}
+            disabled={isProposalLoading}
+            loading={isProposalLoading}
           >
-            {isCreateProposalLoading ? 'Saving...' : 'Save'}
+            {isProposalLoading ? 'Saving...' : isEditable ? 'Edit' : 'Save'}
           </Button>
         ) : null}
       </div>

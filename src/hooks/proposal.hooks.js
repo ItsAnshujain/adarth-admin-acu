@@ -34,7 +34,7 @@ export const useCreateProposal = () => {
   );
 };
 
-export const useFetchProposals = (query, enabled = true) =>
+export const useFetchProposals = (query, enabled = true, retry = false) =>
   useQuery(
     ['proposals', query],
     async () => {
@@ -43,6 +43,7 @@ export const useFetchProposals = (query, enabled = true) =>
     },
     {
       enabled,
+      retry,
     },
   );
 

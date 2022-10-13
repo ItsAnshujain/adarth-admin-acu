@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import * as yup from 'yup';
-import dayjs from 'dayjs';
 import { useNavigate, useParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { yupResolver } from '@mantine/form';
@@ -8,10 +7,13 @@ import BasicInfo from './BasicInfo';
 import Spaces from '../Spaces';
 import SuccessModal from '../../shared/Modal';
 import Header from './Header';
-import { useCreateProposal, useFetchProposalById } from '../../../hooks/proposal.hooks';
+import {
+  useCreateProposal,
+  useUpdateProposal,
+  useFetchProposalById,
+} from '../../../hooks/proposal.hooks';
 import { FormProvider, useForm } from '../../../context/formContext';
 
-const UTC_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ[Z]';
 const schema = yup.object().shape({
   name: yup.string().trim().required('Name is required'),
   description: yup.string().trim().required('Description is required'),
@@ -43,22 +45,26 @@ const Main = () => {
   const [selectedRow, setSelectedRow] = useState([]);
 
   const { mutate: create, isLoading: isCreateProposalLoading } = useCreateProposal();
+  const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalData } = useFetchProposalById(proposalId, !!proposalId);
   const getForm = () =>
-    formStep === 1 ? <BasicInfo /> : <Spaces setSelectedRow={setSelectedRow} />;
+    formStep === 1 ? (
+      <BasicInfo />
+    ) : (
+      <Spaces setSelectedRow={setSelectedRow} selectedRowData={proposalData?.spaces || []} />
+    );
 
   const onSubmit = formData => {
     let data = {};
-    const startDate = dayjs(formData?.startDate).format(UTC_FORMAT);
-    const endDate = dayjs(formData?.endDate).format(UTC_FORMAT);
-    data = { ...formData, startDate, endDate };
+    data = {
+      ...formData,
+    };
     setFormStep(2);
     if (formStep === 2) {
       if (selectedRow.length === 0) {
         showNotification({
           title: 'Add Spaces',
           message: 'Please select atleast one space to continue',
-          autoClose: 3000,
           color: 'blue',
         });
         return;
@@ -67,7 +73,7 @@ const Main = () => {
       const spaceArray = [];
       selectedRow?.map(item => {
         const element = {
-          _id: item.original._id,
+          id: item.original._id,
           price: item.original.price,
         };
         spaceArray.push(element);
@@ -77,7 +83,11 @@ const Main = () => {
 
       data.spaces = [...spaceArray];
 
-      create(data);
+      if (proposalId) {
+        update({ proposalId, data });
+      } else {
+        create(data);
+      }
       form.reset();
 
       setTimeout(() => navigate('/proposals'), 2000);
@@ -87,6 +97,15 @@ const Main = () => {
   useEffect(() => {
     if (proposalData) {
       form.setFieldValue('name', proposalData?.name);
+      form.setFieldValue('description', proposalData?.description);
+
+      if (proposalData?.startDate) {
+        form.setFieldValue('startDate', new Date(proposalData.startDate));
+      }
+
+      if (proposalData?.endDate) {
+        form.setFieldValue('endDate', new Date(proposalData.endDate));
+      }
     }
   }, [proposalData]);
 
@@ -98,7 +117,8 @@ const Main = () => {
             <Header
               setFormStep={setFormStep}
               formStep={formStep}
-              isCreateProposalLoading={isCreateProposalLoading}
+              isProposalLoading={isCreateProposalLoading || isUpdateProposalLoading}
+              isEditable={!!proposalId}
             />
           </div>
           {getForm()}

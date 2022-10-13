@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
 import { Button } from '@mantine/core';
+import { debounce } from 'lodash';
 import AreaHeader from '../../components/Proposals/Header';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
@@ -17,25 +18,20 @@ const Proposals = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useDebouncedState('', 1000);
-  const [count, setCount] = useState('10');
   const [query, setQuery] = useState({
-    page: 1,
+    page: searchParams.get('page') ?? 1,
     limit: 10,
+    sort: 'createdAt',
   });
-  const page = searchParams.get('page');
   const { data: proposalsData, isLoading: isLoadingProposalsData } = useFetchProposals(
-    serialize(query),
+    `${searchParams.toString()}`,
   );
 
-  const activeLayout = useLayoutView(state => state.setActiveLayout);
+  const viewType = useLayoutView(state => state.activeLayout);
+
   // TODO: use one store for multiple pages view
   const handlePagination = currentPage => {
-    const queries = serialize({
-      ...query,
-      limit: count,
-      page: currentPage,
-    });
-    navigate(`/proposals?${queries}`);
+    setQuery({ ...query, page: currentPage });
   };
 
   const COLUMNS = useMemo(
@@ -45,12 +41,12 @@ const Proposals = () => {
         accessor: 'id',
         Cell: ({ row }) =>
           useMemo(() => {
-            let currentPage = page;
+            let currentPage = query.page;
             let rowCount = 0;
-            if (page < 1) {
+            if (query.page < 1) {
               currentPage = 1;
             }
-            rowCount = (currentPage - 1) * count;
+            rowCount = (currentPage - 1) * query.limit;
             return <div className="pl-2">{rowCount + row.index + 1}</div>;
           }, []),
       },
@@ -117,33 +113,42 @@ const Proposals = () => {
   );
 
   useEffect(() => {
-    const limit = parseInt(count, 10);
-    setQuery({ ...query, limit, search });
-  }, [count, search]);
+    setQuery({ ...query, search });
+  }, [search]);
+
+  const debounceQuery = debounce(tempQuery => {
+    searchParams.delete('page');
+    searchParams.delete('limit');
+    searchParams.delete('sort');
+    navigate(`/proposals?${serialize(tempQuery)}&${searchParams.toString()}`);
+  }, 1000);
 
   useEffect(() => {
-    if (page) setQuery({ ...query, page });
-  }, [page]);
+    debounceQuery(query);
+  }, [query]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <AreaHeader text="Proposals List" />
       <div className="flex justify-between h-20 items-center pr-7">
-        <RowsPerPage setCount={setCount} count={count} />
+        <RowsPerPage
+          setCount={count => setQuery({ ...query, limit: count })}
+          count={`${query.limit}`}
+        />
         <Search search={search} setSearch={setSearch} />
       </div>
-      {activeLayout === 'list' ? (
+      {viewType === 'list' ? (
         <Table
           dummy={proposalsData?.docs || []}
           COLUMNS={COLUMNS}
           activePage={proposalsData?.page || 1}
           totalPages={proposalsData?.totalPages || 1}
           setActivePage={handlePagination}
-          rowCountLimit={count}
+          rowCountLimit={query.limit}
         />
       ) : (
         <GridView
-          count={count}
+          count={query.limit}
           list={proposalsData?.docs || []}
           activePage={proposalsData?.page}
           totalPages={proposalsData?.totalPages}
