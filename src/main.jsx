@@ -41,7 +41,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   >
     <QueryClientProvider client={queryClient}>
       <ModalsProvider modals={{ basic: Modal }}>
-        <NotificationsProvider position="top-right">
+        <NotificationsProvider position="top-right" autoClose={3000}>
           <App />
         </NotificationsProvider>
       </ModalsProvider>

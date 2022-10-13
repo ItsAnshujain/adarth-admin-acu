@@ -30,8 +30,8 @@ const Main = () => {
             Booking
           </Tabs.Tab>
         </div>
-        <div className="flex pr-7">
-          {activeTab === 'basic-info' ? (
+        {activeTab === 'basic-info' ? (
+          <div className="flex pr-7">
             <div className="flex items-center pr-7">
               <p className="text-lg mr-3">Under maintenance</p>
               <Switch
@@ -40,11 +40,11 @@ const Main = () => {
                 size="xl"
               />
             </div>
-          ) : null}
-          <Button onClick={handleEditDetails} className="bg-purple-450" size="md">
-            Edit Space
-          </Button>
-        </div>
+            <Button onClick={handleEditDetails} className="bg-purple-450" size="md">
+              Edit Space
+            </Button>
+          </div>
+        ) : null}
       </Tabs.List>
 
       <Tabs.Panel value="basic-info" pt="xs">
