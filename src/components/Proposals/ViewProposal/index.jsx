@@ -31,7 +31,7 @@ const ProposalDetails = () => {
   const { data: proposalData } = useFetchProposalById(proposalId);
 
   const page = 1; // TODO: make api changes for pagination in spaces array
-  console.log(proposalData);
+
   const COLUMNS = useMemo(
     () => [
       {
@@ -74,6 +74,15 @@ const ProposalDetails = () => {
       {
         Header: 'SPACE TYPE',
         accessor: 'space_type',
+        Cell: ({ row }) => useMemo(() => <div className="w-fit">{row.original.startDate}</div>, []),
+      },
+      {
+        Header: 'START DATE',
+        accessor: 'startDate',
+      },
+      {
+        Header: 'END DATE',
+        accessor: 'endDate',
       },
       {
         Header: 'DIMENSION',

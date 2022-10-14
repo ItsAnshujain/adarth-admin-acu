@@ -3,6 +3,7 @@ import * as yup from 'yup';
 import { useNavigate, useParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { yupResolver } from '@mantine/form';
+import { useDebouncedState } from '@mantine/hooks';
 import BasicInfo from './BasicInfo';
 import Spaces from '../Spaces';
 import SuccessModal from '../../shared/Modal';
@@ -16,7 +17,7 @@ import { FormProvider, useForm } from '../../../context/formContext';
 
 const schema = yup.object().shape({
   name: yup.string().trim().required('Name is required'),
-  description: yup.string().trim().required('Description is required'),
+  description: yup.string().trim(),
   startDate: yup
     .string()
     .test('startDate', 'Start Date must be less that End Date', function (val) {
@@ -43,15 +44,23 @@ const Main = () => {
   const navigate = useNavigate();
   const { id: proposalId } = useParams();
   const [selectedRow, setSelectedRow] = useState([]);
-
+  const [proposedPrice, setProposedPrice] = useDebouncedState(null, 1000);
   const { mutate: create, isLoading: isCreateProposalLoading } = useCreateProposal();
   const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalData } = useFetchProposalById(proposalId, !!proposalId);
+
+  const handleUpdatedProposedPrice = (val, id) => setProposedPrice({ price: val, inventoryId: id });
+
   const getForm = () =>
     formStep === 1 ? (
       <BasicInfo />
     ) : (
-      <Spaces setSelectedRow={setSelectedRow} selectedRowData={proposalData?.spaces || []} />
+      <Spaces
+        setSelectedRow={setSelectedRow}
+        selectedRowData={proposalData?.spaces || []}
+        noOfSelectedPlaces={selectedRow.length}
+        setProposedPrice={handleUpdatedProposedPrice}
+      />
     );
 
   const onSubmit = formData => {
@@ -82,6 +91,22 @@ const Main = () => {
       });
 
       data.spaces = [...spaceArray];
+
+      if (proposedPrice) {
+        const newSpaceArray = spaceArray.map(item => {
+          if (item.id === proposedPrice.inventoryId) {
+            return { ...item, price: proposedPrice.price };
+          }
+          return item;
+        });
+        data.spaces = [...newSpaceArray];
+      }
+
+      Object.keys(data).forEach(key => {
+        if (data[key] === '') {
+          delete data[key];
+        }
+      });
 
       if (proposalId) {
         update({ proposalId, data });

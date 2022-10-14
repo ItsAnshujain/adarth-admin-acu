@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Text, Button, Progress, Image } from '@mantine/core';
+import { Text, Button, Progress, Image, NumberInput } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
@@ -11,10 +11,14 @@ import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
 import MenuPopover from './MenuPopover';
 import { useFetchInventory } from '../../hooks/inventory.hooks';
-import NativeDropdownSelect from '../shared/NativeDropdownSelect';
 import { serialize } from '../../utils';
 
-const Spaces = ({ setSelectedRow = () => {}, selectedRowData = [] }) => {
+const Spaces = ({
+  setSelectedRow = () => {},
+  selectedRowData = [],
+  noOfSelectedPlaces,
+  setProposedPrice = () => {},
+}) => {
   const navigate = useNavigate();
   const [search, setSearch] = useDebouncedState('', 1000);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -119,7 +123,18 @@ const Spaces = ({ setSelectedRow = () => {}, selectedRowData = [] }) => {
       {
         Header: 'PRICING',
         accessor: 'price',
-        Cell: () => useMemo(() => <NativeDropdownSelect />, []),
+        Cell: ({ row }) =>
+          useMemo(
+            () => (
+              <NumberInput
+                defaultValue={row.original.price}
+                className="w-40"
+                hideControls
+                onChange={val => setProposedPrice(val, row.original._id)}
+              />
+            ),
+            [],
+          ),
       },
       {
         Header: '',
@@ -159,6 +174,19 @@ const Spaces = ({ setSelectedRow = () => {}, selectedRowData = [] }) => {
     }
   }, [inventoryData]);
 
+  const calcutateTotalPrice = useMemo(() => {
+    const initialCost = 0;
+    if (selectedRowData.length > 0) {
+      const totalCostArray = selectedRowData.map(item => item?.price);
+      const total = totalCostArray.reduce(
+        (previousValue, currentValue) => previousValue + currentValue,
+        initialCost,
+      );
+      return total;
+    }
+    return initialCost;
+  }, [selectedRowData]);
+
   return (
     <>
       <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
@@ -186,11 +214,13 @@ const Spaces = ({ setSelectedRow = () => {}, selectedRowData = [] }) => {
         <div className="flex gap-4">
           <div>
             <Text color="gray">Selected Places</Text>
-            <Text weight="bold">0</Text>
+            <Text weight="bold">{noOfSelectedPlaces}</Text>
           </div>
           <div>
             <Text color="gray">Total Price</Text>
-            <Text weight="bold">{toIndianCurrency(20000)}</Text>
+            <Text weight="bold">
+              {calcutateTotalPrice ? toIndianCurrency(calcutateTotalPrice) : 0}
+            </Text>
           </div>
         </div>
         <div className="flex justify-between mb-4 items-center">

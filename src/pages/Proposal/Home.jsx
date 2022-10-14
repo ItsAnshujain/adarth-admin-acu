@@ -72,7 +72,7 @@ const Proposals = () => {
           }, []),
       },
       {
-        Header: 'Creator',
+        Header: 'CREATOR',
         accessor: 'creator',
       },
       {
@@ -80,6 +80,14 @@ const Proposals = () => {
         accessor: 'status',
         Cell: ({ row }) =>
           useMemo(() => <div className="pl-2">{row?.original?.status?.name}</div>, []),
+      },
+      {
+        Header: 'START DATE',
+        accessor: 'startDate',
+      },
+      {
+        Header: 'END DATE',
+        accessor: 'endDate',
       },
       {
         Header: 'CLIENT',
