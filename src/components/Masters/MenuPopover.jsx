@@ -16,6 +16,7 @@ const MenuPopover = ({ row }) => {
 
   const onSubmit = () => {
     deleteItem({ masterId: row?.values?._id });
+    setTimeout(() => modals.closeAll(), 2000);
   };
 
   const checkConfirmation = isConfirmed => {
