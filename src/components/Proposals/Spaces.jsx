@@ -73,7 +73,7 @@ const Spaces = ({ setSelectedRow = () => {}, selectedRowData = [] }) => {
           }, []),
       },
       {
-        Header: 'LANDLORD NAME',
+        Header: 'MEDIA OWNER NAME',
         accessor: 'landlord_name',
         Cell: tableProps =>
           useMemo(() => <div className="w-fit">{tableProps.row.original.landlord_name}</div>, []),
