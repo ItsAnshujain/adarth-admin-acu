@@ -1,5 +1,5 @@
 import { Image, NativeSelect } from '@mantine/core';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import GoogleMapReact from 'google-map-react';
 import MarkerIcon from '../../assets/pin.svg';
@@ -7,20 +7,21 @@ import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
 
 const defaultProps = {
   center: {
-    lat: 10.99835602,
-    lng: 77.01502627,
+    lat: 22.567646,
+    lng: 88.370743,
   },
   zoom: 11,
 };
 
-const Marker = () => (
-  <div>
-    <Image src={MarkerIcon} width={40} height={40} />
-  </div>
-);
+const Marker = () => <Image src={MarkerIcon} width={40} height={40} />;
 
-const MapView = () => {
+const MapView = ({ lists = [] }) => {
   const [value, setValue] = useState('Billboard');
+
+  const getAllLocations = useMemo(
+    () => lists.map(item => <Marker lat={item.latitude} lng={item.longitude} key={item._id} />),
+    [lists.length > 0],
+  );
 
   return (
     <div className="relative px-5">
@@ -31,7 +32,7 @@ const MapView = () => {
           defaultCenter={defaultProps.center}
           defaultZoom={defaultProps.zoom}
         >
-          <Marker />
+          {lists.length ? getAllLocations : <Marker />}
         </GoogleMapReact>
       </div>
       <div className="absolute top-5 right-10 w-64">

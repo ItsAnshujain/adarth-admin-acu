@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Button, Image, Progress } from '@mantine/core';
+import { Badge, Button, Image, Progress } from '@mantine/core';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/Inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -57,10 +57,14 @@ const Home = () => {
             return (
               <div className="flex items-center gap-2">
                 <div className="bg-white border rounded-md">
-                  <Image className="h-8 w-8 mx-auto" src={spacePhotos} alt="banner" />
+                  {spacePhotos ? (
+                    <Image src={spacePhotos} alt="banner" height={32} width={32} />
+                  ) : (
+                    <Image src={null} withPlaceholder height={32} width={32} />
+                  )}
                 </div>
                 <Button
-                  className="text-black font-medium"
+                  className="text-black font-medium px-2"
                   onClick={() =>
                     navigate(`/inventory/view-details/${_id}`, {
                       replace: true,
@@ -69,6 +73,9 @@ const Home = () => {
                 >
                   {spaceName}
                 </Button>
+                <Badge className="capitalize" variant="filled" color="green">
+                  Available
+                </Badge>
               </div>
             );
           }, []),
@@ -162,7 +169,7 @@ const Home = () => {
         ...row?.location,
         health: row?.specifications?.health,
         impressions: `${row?.specifications?.impressions?.max}+`,
-        dimension: ` ${row?.specifications?.resolutions?.height} ${row?.specifications?.resolutions?.width}`,
+        dimension: `${row?.specifications?.resolutions?.height}ft x ${row?.specifications?.resolutions?.width}ft`,
         _id: row?._id,
       };
 
@@ -215,7 +222,7 @@ const Home = () => {
         />
       ) : viewType === 'map' ? (
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto mt-5">
-          <MapView />
+          <MapView lists={updatedInventoryList} />
         </div>
       ) : null}
     </div>

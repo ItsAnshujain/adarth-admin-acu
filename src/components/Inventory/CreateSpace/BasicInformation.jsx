@@ -43,6 +43,11 @@ const supportedMediaTypes = [
 const BasicInfo = () => {
   const { errors, getInputProps, values, setFieldValue } = useFormContext();
   const {
+    data: spaceTypeData,
+    isSuccess: isSpaceTypeDataLoaded,
+    isLoading: isSpaceTypeDataLoading,
+  } = useFetchMasters(serialize({ type: 'space_type', parentId: null, limit: 100 }));
+  const {
     data: categoryData,
     isSuccess: isCategoryLoaded,
     isLoading: isCategoryLoading,
@@ -60,6 +65,16 @@ const BasicInfo = () => {
     isSuccess: mediaTypeLoaded,
     isLoading: isMediaTypeLoading,
   } = useFetchMasters(serialize({ type: 'media_type', limit: 100 }));
+  const {
+    data: audienceData,
+    isSuccess: isAudienceDataLoaded,
+    isLoading: isAudienceDataLoading,
+  } = useFetchMasters(serialize({ type: 'audience', parentId: null, limit: 100 }));
+  const {
+    data: demographicData,
+    isSuccess: isDemographicDataLoaded,
+    isLoading: isDemographicDataLoading,
+  } = useFetchMasters(serialize({ type: 'demographic', parentId: null, limit: 100 }));
 
   const { mutateAsync: upload, isLoading } = useUploadFile();
 
@@ -110,6 +125,23 @@ const BasicInfo = () => {
           options={mediaOwnerList}
           className="mb-7"
           disabled
+        />
+        <NativeSelect
+          label="Space Type"
+          name="basicInformation.spaceType"
+          styles={styles}
+          errors={errors}
+          disabled={isSpaceTypeDataLoading}
+          placeholder="Select..."
+          options={
+            isSpaceTypeDataLoaded
+              ? spaceTypeData.docs.map(type => ({
+                  label: type.name,
+                  value: type._id,
+                }))
+              : []
+          }
+          className="mb-7"
         />
         <NativeSelect
           label="Category"
@@ -188,23 +220,39 @@ const BasicInfo = () => {
           placeholder="Write..."
           className="mb-7"
         />
-        <TextInput
+        <NativeSelect
           label="Audience"
           name="basicInformation.audience"
           styles={styles}
           errors={errors}
-          placeholder="Write..."
+          disabled={isAudienceDataLoading}
+          placeholder="Select..."
+          options={
+            isAudienceDataLoaded
+              ? audienceData.docs.map(type => ({
+                  label: type.name,
+                  value: type._id,
+                }))
+              : []
+          }
           className="mb-7"
-          disabled
         />
-        <TextInput
+        <NativeSelect
           label="Demographics"
           name="basicInformation.demographic"
           styles={styles}
           errors={errors}
-          placeholder="Write..."
+          disabled={isDemographicDataLoading}
+          placeholder="Select..."
+          options={
+            isDemographicDataLoaded
+              ? demographicData.docs.map(type => ({
+                  label: type.name,
+                  value: type._id,
+                }))
+              : []
+          }
           className="mb-7"
-          disabled
         />
         <TextareaInput
           label="Description"
