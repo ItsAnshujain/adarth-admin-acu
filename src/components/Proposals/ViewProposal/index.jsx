@@ -147,7 +147,7 @@ const ProposalDetails = () => {
   const formattedData = () => {
     const updatedList = [];
     const tempList = [...proposalData.spaces];
-    tempList?.map(row => {
+    tempList?.forEach(row => {
       const rowObj = {
         ...row?.basicInformation,
         ...row?.location,
