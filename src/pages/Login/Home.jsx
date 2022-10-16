@@ -40,27 +40,18 @@ const Home = () => {
 
   useUserStore(state => state.userDetails, shallow);
 
-  const { mutate: login, data, isLoading, isSuccess } = useLogin();
-  const { data: ud, isSuccess: userDataLoaded, isLoading: userDataLoading } = fetchUserDetails(id);
+  const { mutateAsync: login, isLoading } = useLogin();
+  const { data: ud, isLoading: userDataLoading } = fetchUserDetails(id);
 
   const form = useForm({ validate: yupResolver(schema), initialValues });
 
   const onSubmitHandler = async formData => {
-    login(formData);
-  };
-
-  if (isSuccess) {
-    const {
-      data: { token, id: userId },
-    } = data;
-    setToken(token);
-    setId(userId);
-  }
-
-  if (userDataLoaded) {
+    const response = await login(formData);
+    setToken(response.token);
+    setId(response.id);
     setUserDetails(ud);
     navigate('/home');
-  }
+  };
 
   const styles = () => ({
     label: {
