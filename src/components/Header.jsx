@@ -10,7 +10,6 @@ import DrawerSidebar from './DrawerSidebar';
 
 const Header = ({ title }) => {
   const [opened, setOpened] = useState(false);
-  const [menuProfileOpened, setMenuProfileOpened] = useState(false);
   const navigate = useNavigate();
 
   const { setToken, setId, setUserDetails } = useUserStore(
@@ -59,13 +58,7 @@ const Header = ({ title }) => {
                 Settings
               </Button>
             </Link>
-
-            <MenuProfile
-              opened={menuProfileOpened}
-              onChange={setMenuProfileOpened}
-              shadow="md"
-              width={150}
-            >
+            <MenuProfile shadow="md" width={150}>
               <MenuProfile.Target>
                 <Button variant="default">
                   <img className="w-8 h-8 mr-2" src={logo} alt="logo" />

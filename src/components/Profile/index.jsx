@@ -1,124 +1,147 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import image1 from '../../assets/image1.png';
-import pdf from '../../assets/pdf.svg';
+// import pdf from '../../assets/pdf.svg';
+import { useFetchUsersById } from '../../hooks/users.hooks';
+import useUserStore from '../../store/user.store';
+import { aadhaarFormat } from '../../utils';
 
-const Profile = () => (
-  <>
-    <div className="h-20 flex justify-end items-center border-b pr-7">
-      <Link to="/edit-profile">
-        <button
-          type="button"
-          className=" text-white p-2 px-4 font-thin text-sm bg-purple-450 rounded-lg"
-        >
-          Edit
-        </button>
-      </Link>
-    </div>
-    <div className="pl-5 pr-7 flex justify-between mt-8 mb-8">
-      <div className="grid grid-cols-3 gap-8">
-        <div className="flex flex-col gap-8">
-          <div className="flex gap-4">
+const Profile = () => {
+  const userID = useUserStore(state => state.id);
+  const { data } = useFetchUsersById(userID, !!userID);
+
+  const [showDocs, setShowDocs] = useState([]);
+
+  useEffect(() => {
+    if (data) {
+      const finalObject = {};
+      if (data.docs.find(item => Object.keys(item)[0] === 'landlordLicense')) {
+        finalObject.landlordLicense = data.docs.find(
+          item => Object.keys(item)[0] === 'landlordLicense',
+        ).landlordLicense;
+      }
+      if (data.docs.find(item => Object.keys(item)[0] === 'aadhaar')) {
+        finalObject.aadhaar = data.docs.find(item => Object.keys(item)[0] === 'aadhaar').aadhaar;
+      }
+      if (data.docs.find(item => Object.keys(item)[0] === 'pan')) {
+        finalObject.pan = data.docs.find(item => Object.keys(item)[0] === 'pan').pan;
+      }
+      setShowDocs({ ...finalObject });
+    }
+  }, [data]);
+
+  return (
+    <>
+      <div className="h-20 flex justify-end items-center border-b pr-7">
+        <Link to="/edit-profile">
+          <button
+            type="button"
+            className=" text-white p-2 px-4 font-thin text-sm bg-purple-450 rounded-lg"
+          >
+            Edit
+          </button>
+        </Link>
+      </div>
+      <div className="pl-5 pr-7 flex justify-between mt-8 mb-8">
+        <div className="grid grid-cols-3 gap-8">
+          <div className="flex flex-col gap-8">
+            <div className="flex gap-4">
+              <div>
+                <img src={data?.image || image1} alt="profile pic" />
+              </div>
+              <div className="flex flex-col">
+                <p className="text-xl font-bold">{data?.name || 'N/A'}</p>
+                <p className="text-[#914EFB]">{data?.role || 'N/A'}</p>
+                <p>{data?.company}</p>
+              </div>
+            </div>
             <div>
-              <img src={image1} alt="profile pic" />
+              <p>{data?.about}</p>
             </div>
-            <div className="flex flex-col">
-              <p className="text-xl font-bold">Peter Williams</p>
-              <p className="text-[#914EFB]">Management</p>
-              <p>Adarth</p>
+            <div>
+              <p className="text-slate-400">Email</p>
+              <p className="font-semibold">{data?.email || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-slate-400">Phone</p>
+              <p className="font-semibold">{data?.number || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-slate-400">Address</p>
+              <p className="font-semibold">{data?.address || 'N/A'} </p>
+            </div>
+            <div>
+              <p className="text-slate-400">City</p>
+              <p className="font-semibold">{data?.city || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-slate-400">Pincode</p>
+              <p className="font-semibold">{data?.pincode || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-slate-400">Pan</p>
+              <p className="font-semibold">{data?.pan || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-slate-400">Aadhaar</p>
+              <p className="font-semibold">{aadhaarFormat(data?.aadhaar || '') || 'N/A'}</p>
             </div>
           </div>
-          <div>
-            <p>
-              But I must explain to you how all this mistaken idea of denouncing pleasure and
-              praising pain was born and I will give you a complete account of the system, and
-              expound the actual teachings of the great explorer of the truth, the master-builder of
-              human happiness.{' '}
-            </p>
-          </div>
-          <div>
-            <p className="text-slate-400">Email</p>
-            <p className="font-semibold">peter@adarthgmail.com</p>
-          </div>
-          <div>
-            <p className="text-slate-400">Phone</p>
-            <p className="font-semibold">+91 987542134</p>
-          </div>
-          <div>
-            <p className="text-slate-400">Address</p>
-            <p className="font-semibold">Hedy Greene Ap #696-3279 Viverra. Avenue Latrobe DE </p>
-          </div>
-          <div>
-            <p className="text-slate-400">City</p>
-            <p className="font-semibold">Madrid</p>
-          </div>
-          <div>
-            <p className="text-slate-400">Pincode</p>
-            <p className="font-semibold">43455513</p>
-          </div>
-          <div>
-            <p className="text-slate-400">Pan</p>
-            <p className="font-semibold">ABCD1234561</p>
-          </div>
-          <div>
-            <p className="text-slate-400">Aadhar</p>
-            <p className="font-semibold">4441-4221-3561-0548</p>
-          </div>
-        </div>
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col">
-            <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
-              <div className="flex justify-center flex-col">
-                <img src={pdf} alt="" className="h-8" />
-                <p className="text-sm font-medium">license.pdf</p>
+          <div className="flex flex-col gap-8">
+            {showDocs.landlordLicense ? (
+              <div className="flex flex-col">
+                <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
+                  <div className="flex justify-center flex-col h-full w-full">
+                    <img
+                      src={showDocs.landlordLicense}
+                      alt="landlordLicense"
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                </div>
+                <div className="text-sm mt-2">
+                  <p className="font-medium">Landlord License</p>
+                  <p className="text-slate-400">Your landlord license photocopy</p>
+                </div>
               </div>
-            </div>
-            <div className="text-sm mt-2">
-              <p className="font-medium">Landlord License</p>
-              <p className="text-slate-400">Your landlord license photocopy</p>
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
-              <div className="flex justify-center flex-col">
-                <img src={pdf} alt="" className="h-8" />
-                <p className="text-sm font-medium">license.pdf</p>
+            ) : null}
+            {showDocs.aadhaar ? (
+              <div className="flex flex-col">
+                <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
+                  <div className="flex justify-center flex-col h-full w-full">
+                    <img
+                      src={showDocs.aadhaar}
+                      alt="aadhaar"
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                </div>
+                <div className="text-sm mt-2">
+                  <p className="font-medium">Aadhaar</p>
+                  <p className="text-slate-400">Your aadhaar card photocopy</p>
+                </div>
               </div>
-            </div>
-            <div className="text-sm mt-2">
-              <p className="font-medium">Landlord License</p>
-              <p className="text-slate-400">Your landlord license photocopy</p>
-            </div>
+            ) : null}
           </div>
-        </div>
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col ">
-            <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
-              <div className="flex justify-center flex-col">
-                <img src={pdf} alt="" className="h-8" />
-                <p className="text-sm font-medium">license.pdf</p>
+          <div className="flex flex-col gap-8">
+            {showDocs.pan ? (
+              <div className="flex flex-col ">
+                <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
+                  <div className="flex justify-center flex-col h-full w-full">
+                    <img src={showDocs.pan} alt="pan" className="h-full w-full object-contain" />
+                  </div>
+                </div>
+                <div className="text-sm mt-2">
+                  <p className="font-medium">Pan</p>
+                  <p className="text-slate-400">Your pan card photocopy</p>
+                </div>
               </div>
-            </div>
-            <div className="text-sm mt-2">
-              <p className="font-medium">Landlord License</p>
-              <p className="text-slate-400">Your landlord license photocopy</p>
-            </div>
-          </div>
-          <div className="flex flex-col ">
-            <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
-              <div className="flex justify-center flex-col">
-                <img src={pdf} alt="" className="h-8" />
-                <p className="text-sm font-medium">license.pdf</p>
-              </div>
-            </div>
-            <div className="text-sm mt-2">
-              <p className="font-medium">Landlord License</p>
-              <p className="text-slate-400">Your landlord license photocopy</p>
-            </div>
+            ) : null}
           </div>
         </div>
       </div>
-    </div>
-  </>
-);
+    </>
+  );
+};
 
 export default Profile;

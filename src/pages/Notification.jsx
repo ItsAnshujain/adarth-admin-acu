@@ -23,6 +23,7 @@ const Notifications = () => {
           <div className="flex flex-col gap-4 pl-5 pr-7 mt-4 mb-10">
             {notification.map((item, index) => (
               <div
+                key={Math.random()}
                 className={classNames(
                   `border p-4 ${
                     index === 2 || index === 3 ? 'text-purple-450 bg-[#4B0DAF1A]' : ''
