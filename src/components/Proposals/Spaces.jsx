@@ -177,12 +177,9 @@ const Spaces = ({
   const calcutateTotalPrice = useMemo(() => {
     const initialCost = 0;
     if (selectedRowData.length > 0) {
-      const totalCostArray = selectedRowData.map(item => item?.price);
-      const total = totalCostArray.reduce(
-        (previousValue, currentValue) => previousValue + currentValue,
-        initialCost,
-      );
-      return total;
+      return selectedRowData
+        .map(item => item?.price)
+        .reduce((previousValue, currentValue) => previousValue + currentValue, initialCost);
     }
     return initialCost;
   }, [selectedRowData]);

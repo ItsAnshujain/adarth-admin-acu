@@ -5,12 +5,9 @@ const Details = ({ proposalData }) => {
   const calcutateTotalPrice = useMemo(() => {
     const initialCost = 0;
     if (proposalData?.spaces.length > 0) {
-      const totalPriceArray = proposalData.spaces.map(item => item?.price);
-      const total = totalPriceArray.reduce(
-        (previousValue, currentValue) => previousValue + currentValue,
-        initialCost,
-      );
-      return total;
+      return proposalData.spaces
+        .map(item => item?.price)
+        .reduce((previousValue, currentValue) => previousValue + currentValue, initialCost);
     }
     return initialCost;
   }, [proposalData?.spaces]);
