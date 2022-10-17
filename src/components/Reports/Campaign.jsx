@@ -1,4 +1,4 @@
-import { Button, Select } from '@mantine/core';
+import { Button } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { Doughnut, Bar } from 'react-chartjs-2';
@@ -71,7 +71,6 @@ const config = {
 
 const Campaign = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [value, setValue] = useState();
 
   const openDatePicker = () => {
     setShowDatePicker(!showDatePicker);
