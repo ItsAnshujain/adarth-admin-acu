@@ -61,8 +61,8 @@ const Spaces = ({
             () => (
               <div className="flex items-center gap-2">
                 <div className="bg-white border rounded-md">
-                  {basicInformation?.photo ? (
-                    <Image src={basicInformation.photo} alt="banner" height={32} width={32} />
+                  {basicInformation?.spacePhotos ? (
+                    <Image src={basicInformation.spacePhotos} alt="banner" height={32} width={32} />
                   ) : (
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
