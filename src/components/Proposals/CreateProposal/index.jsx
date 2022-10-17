@@ -83,7 +83,7 @@ const Main = () => {
       selectedRow?.map(item => {
         const element = {
           id: item.original._id,
-          price: item.original.price,
+          price: item.original.basicInformation.price,
         };
         spaceArray.push(element);
 

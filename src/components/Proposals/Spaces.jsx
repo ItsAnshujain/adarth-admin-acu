@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { Text, Button, Progress, Image, NumberInput } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -24,7 +24,6 @@ const Spaces = ({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [searchParams] = useSearchParams();
   const [showFilter, setShowFilter] = useState(false);
-  const [updatedInventoryList, setUpdatedInventoryList] = useState([]);
   const [query] = useState({
     limit: 10,
     page: 1,
@@ -53,14 +52,20 @@ const Spaces = ({
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'spaceName',
-        Cell: tableProps =>
-          useMemo(() => {
-            const { photo, spaceName, _id } = tableProps.row.original;
-
-            return (
+        Cell: ({
+          row: {
+            original: { _id, basicInformation },
+          },
+        }) =>
+          useMemo(
+            () => (
               <div className="flex items-center gap-2">
                 <div className="bg-white border rounded-md">
-                  <Image className="h-8 w-8 mx-auto" src={photo} alt="banner" />
+                  {basicInformation?.photo ? (
+                    <Image src={basicInformation.photo} alt="banner" height={32} width={32} />
+                  ) : (
+                    <Image src={null} withPlaceholder height={32} width={32} />
+                  )}
                 </div>
                 <Button
                   className="text-black font-medium"
@@ -70,11 +75,12 @@ const Spaces = ({
                     })
                   }
                 >
-                  {spaceName}
+                  {basicInformation?.spaceName}
                 </Button>
               </div>
-            );
-          }, []),
+            ),
+            [],
+          ),
       },
       {
         Header: 'LANDLORD NAME',
@@ -89,32 +95,57 @@ const Spaces = ({
       {
         Header: 'DIMENSION',
         accessor: 'dimension',
+        Cell: ({
+          row: {
+            original: { specifications },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p>{`${specifications?.resolutions?.height}ft x ${specifications?.resolutions?.width}ft`}</p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'IMPRESSION',
         accessor: 'impressions',
+        Cell: ({
+          row: {
+            original: { specifications },
+          },
+        }) => useMemo(() => <p>{`${specifications?.impressions?.max}+`}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',
         accessor: 'health_status',
-        Cell: tableProps =>
-          useMemo(() => {
-            const { health } = tableProps.row.original;
-            return (
+        Cell: ({
+          row: {
+            original: { specifications },
+          },
+        }) =>
+          useMemo(
+            () => (
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: health, color: 'green' },
-                    { value: 100 - health, color: 'red' },
+                    { value: specifications?.health, color: 'green' },
+                    { value: 100 - (specifications?.health || 0), color: 'red' },
                   ]}
                 />
               </div>
-            );
-          }, []),
+            ),
+            [],
+          ),
       },
       {
         Header: 'LOCATION',
         accessor: 'city',
+        Cell: ({
+          row: {
+            original: { location },
+          },
+        }) => useMemo(() => <p>{location?.city}</p>, []),
       },
       {
         Header: 'MEDIA TYPE',
@@ -123,14 +154,18 @@ const Spaces = ({
       {
         Header: 'PRICING',
         accessor: 'price',
-        Cell: ({ row }) =>
+        Cell: ({
+          row: {
+            original: { _id, basicInformation },
+          },
+        }) =>
           useMemo(
             () => (
               <NumberInput
-                defaultValue={row.original.price}
+                defaultValue={basicInformation?.price}
                 className="w-40"
                 hideControls
-                onChange={val => setProposedPrice(val, row.original._id)}
+                onChange={val => setProposedPrice(val, _id)}
               />
             ),
             [],
@@ -139,40 +174,15 @@ const Spaces = ({
       {
         Header: '',
         accessor: 'details',
-        Cell: tableProps =>
-          useMemo(() => {
-            const { _id } = tableProps.row.original;
-
-            return <MenuPopover itemId={_id} />;
-          }, []),
+        Cell: ({
+          row: {
+            original: { _id },
+          },
+        }) => useMemo(() => <MenuPopover itemId={_id} />, []),
       },
     ],
-    [updatedInventoryList],
+    [inventoryData?.docs],
   );
-
-  const formattedData = () => {
-    const updatedList = [];
-    const tempList = [...inventoryData.docs];
-    tempList?.map(row => {
-      const rowObj = {
-        ...row?.basicInformation,
-        ...row?.location,
-        health: row?.specifications?.health,
-        impressions: `${row?.specifications?.impressions?.max}+`,
-        dimension: ` ${row?.specifications?.resolutions?.height} ${row?.specifications?.resolutions?.width}`,
-        _id: row?._id,
-      };
-
-      return updatedList.push(rowObj);
-    });
-    setUpdatedInventoryList(updatedList);
-  };
-
-  useEffect(() => {
-    if (inventoryData?.docs) {
-      formattedData();
-    }
-  }, [inventoryData]);
 
   const calcutateTotalPrice = useMemo(() => {
     const initialCost = 0;
@@ -224,7 +234,7 @@ const Spaces = ({
           <Text size="sm" className="text-purple-450">
             Total Places{' '}
             <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-              {updatedInventoryList?.length}
+              {inventoryData?.docs?.length}
             </span>
           </Text>
 
@@ -232,7 +242,7 @@ const Spaces = ({
         </div>
       </div>
       <Table
-        dummy={updatedInventoryList || []}
+        dummy={inventoryData?.docs || []}
         COLUMNS={COLUMNS}
         allowRowsSelect
         selectedRows={setSelectedRow}
