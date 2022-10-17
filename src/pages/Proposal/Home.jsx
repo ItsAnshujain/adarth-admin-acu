@@ -21,7 +21,6 @@ const Proposals = () => {
   });
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
-  const search = searchParams.get('search');
 
   const [searchInput, setSearchinput] = useDebouncedState('', 1000);
 
@@ -147,7 +146,7 @@ const Proposals = () => {
       <AreaHeader text="Proposals List" />
       <div className="flex justify-between h-20 items-center pr-7">
         <RowsPerPage setCount={handleRowCount} count={limit} />
-        <Search search={search} setSearch={setSearchinput} />
+        <Search search={searchInput} setSearch={setSearchinput} />
       </div>
       {viewType === 'list' ? (
         <Table
