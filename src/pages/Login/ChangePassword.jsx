@@ -133,7 +133,7 @@ const Home = () => {
           </form>
         </FormProvider>
         <Text className="mt-4">
-          <Link to="/">
+          <Link to="/login">
             <span className="text-purple-450 ml-1 cursor-pointer">Back to Login</span>
           </Link>
         </Text>

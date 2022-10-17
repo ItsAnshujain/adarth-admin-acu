@@ -6,22 +6,18 @@ export const useLogin = () =>
   useMutation(
     async data => {
       const res = await login(data);
-      return res;
+      return res?.data;
     },
     {
       onSuccess: () => {
         showNotification({
-          title: 'Login',
-          message: 'Logged in successfully',
-          autoClose: 3000,
+          title: 'Logged in successfully',
           color: 'green',
         });
       },
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
-          autoClose: 3000,
+          title: err?.message,
           color: 'red',
         });
       },
@@ -37,8 +33,7 @@ export const useForgotPassword = () =>
     {
       onError: err => {
         showNotification({
-          title: 'Invalid details',
-          message: err.message,
+          title: err.message,
           color: 'red',
         });
       },
