@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Button, Text, Image, Skeleton } from '@mantine/core';
+import { Button, Text, Image, Skeleton, Badge } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import { useToggle } from '@mantine/hooks';
 import dummy3 from '../../../assets/dummy3.png';
 import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
-import Badge from '../../shared/Badge';
+
 import { useFetchInventoryById } from '../../../hooks/inventory.hooks';
 import MapView from '../CreateSpace/MapView';
 
@@ -84,7 +84,7 @@ const BasicInfo = () => {
             <>
               <div className="flex items-center border pl-4 py-8">
                 <div className="mr-4">
-                  <img src={layers} alt="poster" />
+                  <Image src={layers} alt="poster" />
                 </div>
                 <div>
                   <Text size="sm" weight="300" color="gray">
@@ -95,7 +95,7 @@ const BasicInfo = () => {
               </div>
               <div className="flex items-center border pl-4">
                 <div className="mr-4">
-                  <img src={layers} alt="poster" />
+                  <Image src={layers} alt="poster" />
                 </div>
                 <div>
                   <Text size="sm" weight="300" color="gray">
@@ -106,7 +106,7 @@ const BasicInfo = () => {
               </div>
               <div className="flex items-center border pl-4">
                 <div className="mr-4">
-                  <img src={layers} alt="poster" />
+                  <Image src={layers} alt="poster" />
                 </div>
                 <div>
                   <Text size="sm" weight="300" color="gray">
@@ -117,7 +117,7 @@ const BasicInfo = () => {
               </div>
               <div className="flex items-center border pl-4">
                 <div className="mr-4">
-                  <img src={layers} alt="poster" />
+                  <Image src={layers} alt="poster" />
                 </div>
                 <div>
                   <Text size="sm" weight="300" color="gray">
@@ -165,6 +165,9 @@ const BasicInfo = () => {
                   {readMore ? 'Read less' : 'Read more'}
                 </Button>
               </Text>
+              <Badge className="capitalize" variant="filled" color="green" size="lg" mt="xs">
+                Available
+              </Badge>
               <Text weight="bold" className="my-2">
                 {toIndianCurrency(inventoryDetails?.basicInformation?.price || 0)}
               </Text>
@@ -172,11 +175,12 @@ const BasicInfo = () => {
                 {badgeData.map(data => (
                   <Badge
                     className="text-purple-450 bg-purple-100 capitalize"
-                    text={data}
                     size="lg"
                     variant="filled"
                     radius="md"
-                  />
+                  >
+                    {data}
+                  </Badge>
                 ))}
               </div>
             </>

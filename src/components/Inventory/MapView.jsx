@@ -19,7 +19,10 @@ const MapView = ({ lists = [] }) => {
   const [value, setValue] = useState('Billboard');
 
   const getAllLocations = useMemo(
-    () => lists.map(item => <Marker lat={item.latitude} lng={item.longitude} key={item._id} />),
+    () =>
+      lists.map(item => (
+        <Marker lat={item?.location?.latitude} lng={item?.location?.longitude} key={item._id} />
+      )),
     [lists.length > 0],
   );
 
