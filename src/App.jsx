@@ -88,6 +88,7 @@ const App = () => {
 
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/login" />} />
       <Route
         path="/"
         element={
@@ -105,7 +106,7 @@ const App = () => {
           path="/home"
           element={
             <Suspense fallback={<HeaderSidebarLoader />}>
-              <HomePage />s
+              <HomePage />
             </Suspense>
           }
         />
