@@ -245,7 +245,7 @@ const Spaces = ({
         dummy={inventoryData?.docs || []}
         COLUMNS={COLUMNS}
         allowRowsSelect
-        selectedRows={setSelectedRow}
+        setSelectedFlatRows={setSelectedRow}
         selectedRowData={selectedRowData}
       />
     </>

@@ -2,6 +2,7 @@ import { showNotification } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createInventory,
+  deleteInventory,
   deleteInventoryById,
   fetchInventory,
   fetchInventoryById,
@@ -95,6 +96,36 @@ export const useDeleteInventoryById = () => {
         queryClient.invalidateQueries(['inventory']);
         showNotification({
           title: 'Inventory deleted successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
+
+export const useDeleteInventory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async data => {
+      const query =
+        data?.length === 1 ? `/${data[0]}` : `?${data.map(item => `id=${item}`).join('&')}`;
+      // single id takes url param and multiple ids take query params
+      const res = await deleteInventory(query);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['inventory']);
+
+        showNotification({
+          title: 'Spaces deleted successfully',
           color: 'green',
         });
       },

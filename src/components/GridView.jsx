@@ -13,11 +13,26 @@ const GridView = ({
   activePage = 1,
   setActivePage = () => {},
   isLoadingList,
+  selectedCards = [],
+  setSelectedCards = () => {},
 }) => (
   <>
     <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[70%] overflow-y-auto">
       {list.map(item => (
-        <Card key={item?._id} data={item} />
+        <Card
+          key={item?._id}
+          data={item}
+          isSelected={selectedCards.includes(item._id)}
+          onSelect={cardId => {
+            if (selectedCards.includes(item._id)) {
+              setSelectedCards(selectedCards.filter(ele => ele !== item._id));
+            } else {
+              const tempArr = [...selectedCards];
+              tempArr.push(cardId);
+              setSelectedCards(tempArr); // TODO: use immmer
+            }
+          }}
+        />
       ))}
       {isLoadingList ? skeletonList() : null}
     </div>

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Badge, Button, Image, Menu, Text } from '@mantine/core';
+import { Badge, Button, Checkbox, Image, Menu, Text } from '@mantine/core';
 import { Eye, Edit2, Trash } from 'react-feather';
 import { useModals } from '@mantine/modals';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -7,7 +7,7 @@ import MenuIcon from '../Menu';
 import DeleteConfirmContent from '../DeleteConfirmContent';
 import modalConfig from '../../utils/modalConfig';
 
-const Card = ({ data }) => {
+const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
   const modals = useModals();
   const navigate = useNavigate();
 
@@ -55,10 +55,17 @@ const Card = ({ data }) => {
         )}
       </div>
       <div className="p-4 px-4 bg-white">
-        <div className="mb-2">
+        <div className="flex justify-between items-center mb-2 ">
           <Badge className="capitalize" variant="filled" color="green" size="lg">
             Available
           </Badge>
+          <Checkbox
+            onChange={event => onSelect(event.target.value)}
+            label="Select"
+            classNames={{ root: 'flex flex-row-reverse', label: 'pr-2' }}
+            defaultValue={data?._id}
+            checked={isSelected}
+          />
         </div>
         <Text size="md" weight="bold">
           {data?.basicInformation?.spaceName}
