@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Accordion, Checkbox, Button, Drawer, RangeSlider, TextInput } from '@mantine/core';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 const styles = {
   title: { fontWeight: 'bold' },
@@ -33,8 +33,7 @@ const statusObj = {
 };
 
 const Filter = ({ isOpened, setShowFilter }) => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(10000);
   const [minPlace, setMinPlace] = useState(0);
@@ -42,12 +41,13 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const [statusArr, setStatusArr] = useState([]);
 
   const handleStatusArr = stat => {
-    let tempArr = [...statusArr];
-    if (tempArr.some(item => item?.status === stat)) {
-      tempArr = tempArr.filter(item => item?.status !== stat);
+    let tempArr = [...statusArr]; // TODO: use immmer
+    if (tempArr.some(item => item === stat)) {
+      tempArr = tempArr.filter(item => item !== stat);
     } else {
-      tempArr.push({ status: stat });
+      tempArr.push(stat);
     }
+
     setStatusArr(tempArr);
   };
 
@@ -59,6 +59,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
             onChange={event => handleStatusArr(event.target.value)}
             label={statusObj[item]}
             defaultValue={item}
+            checked={statusArr.includes(item)}
           />
         </div>
       )),
@@ -66,22 +67,33 @@ const Filter = ({ isOpened, setShowFilter }) => {
   );
 
   const handleNavigationByFilter = () => {
-    const urlParam = new URLSearchParams();
-    statusArr.forEach(item => {
-      urlParam.append('status', item.status);
-    });
-
     searchParams.delete('status');
-    searchParams.set('priceMin', minPrice || 1);
-    searchParams.set('priceMax', maxPrice);
-    searchParams.set('totalPlacesMin', minPlace || 1);
-    searchParams.set('totalPlacesMax', maxPlace);
-
-    navigate({
-      pathname: '/proposals',
-      search: `${searchParams.toString()}&${urlParam.toString()}`,
+    statusArr.forEach(item => {
+      searchParams.append('status', item);
     });
+
+    setSearchParams(searchParams);
+    setShowFilter(false);
   };
+
+  const handleResetParams = () => {
+    searchParams.delete('status');
+    searchParams.delete('priceMin');
+    searchParams.delete('priceMax');
+    searchParams.delete('totalPlacesMin');
+    searchParams.delete('totalPlacesMax');
+    setSearchParams(searchParams);
+    setStatusArr([]);
+  };
+
+  useEffect(() => {
+    setStatusArr(searchParams.getAll('status'));
+    setMinPrice(searchParams.get('priceMin') ?? 0);
+    setMaxPrice(searchParams.get('priceMax') ?? 100000);
+    setMinPlace(searchParams.get('totalPlacesMin') ?? 0);
+    setMaxPlace(searchParams.get('totalPlacesMax') ?? 100000);
+  }, [searchParams]);
+
   return (
     <Drawer
       className="overflow-auto"
@@ -99,6 +111,9 @@ const Filter = ({ isOpened, setShowFilter }) => {
       onClose={() => setShowFilter(false)}
     >
       <div className="w-full flex justify-end">
+        <Button onClick={handleResetParams} className="border-black text-black radius-md mr-3">
+          Reset
+        </Button>
         <Button
           variant="default"
           className="mb-3 bg-purple-450 text-white"
@@ -129,14 +144,20 @@ const Filter = ({ isOpened, setShowFilter }) => {
                     <div>
                       <TextInput
                         value={minPrice}
-                        onChange={e => setMinPrice(e.target.value)}
+                        onChange={e => {
+                          setMinPrice(e.target.value);
+                          searchParams.set('priceMin', e.target.value);
+                        }}
                         label="Min"
                       />
                     </div>
                     <div>
                       <TextInput
                         value={maxPrice}
-                        onChange={e => setMaxPrice(e.target.value)}
+                        onChange={e => {
+                          setMaxPrice(e.target.value);
+                          searchParams.set('priceMax', e.target.value);
+                        }}
                         label="Max"
                       />
                     </div>
@@ -146,6 +167,8 @@ const Filter = ({ isOpened, setShowFilter }) => {
                     <RangeSlider
                       onChange={val => {
                         setMinPrice(val[0], setMaxPrice(val[1]));
+                        searchParams.set('priceMin', val[0]);
+                        searchParams.set('priceMax', val[1]);
                       }}
                       min={0}
                       max={10000}
@@ -170,14 +193,20 @@ const Filter = ({ isOpened, setShowFilter }) => {
                     <div>
                       <TextInput
                         value={minPlace}
-                        onChange={e => setMinPlace(e.target.value)}
+                        onChange={e => {
+                          setMinPlace(e.target.value);
+                          searchParams.set('totalPlacesMin', e.target.value);
+                        }}
                         label="Min"
                       />
                     </div>
                     <div>
                       <TextInput
                         value={maxPlace}
-                        onChange={e => setMaxPlace(e.target.value)}
+                        onChange={e => {
+                          setMaxPlace(e.target.value);
+                          searchParams.set('totalPlacesMax', e.target.value);
+                        }}
                         label="Max"
                       />
                     </div>
@@ -187,6 +216,8 @@ const Filter = ({ isOpened, setShowFilter }) => {
                     <RangeSlider
                       onChange={val => {
                         setMinPlace(val[0], setMaxPlace(val[1]));
+                        searchParams.set('totalPlacesMin', val[0]);
+                        searchParams.set('totalPlacesMax', val[1]);
                       }}
                       min={0}
                       max={10000}

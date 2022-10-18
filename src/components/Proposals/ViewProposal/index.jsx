@@ -1,7 +1,7 @@
-/* eslint-disable */
-import { useEffect, useMemo, useState } from 'react';
-import { Button, Progress, Text } from '@mantine/core';
+import { useMemo, useState } from 'react';
+import { Button, Image, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
+import { useParams } from 'react-router-dom';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import Header from './Header';
@@ -11,7 +11,6 @@ import DateRange from '../../DateRange';
 import calendar from '../../../assets/data-table.svg';
 import Table from '../../Table/Table';
 import MenuPopover from '../MenuPopover';
-import { useParams } from 'react-router-dom';
 import { useFetchProposalById } from '../../../hooks/proposal.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
 
@@ -21,7 +20,6 @@ const ProposalDetails = () => {
   const [showShare, setShowShare] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [updatedInventoryList, setUpdatedInventoryList] = useState([]);
 
   const openDatePicker = () => {
     setShowDatePicker(!showDatePicker);
@@ -31,7 +29,7 @@ const ProposalDetails = () => {
   const { data: proposalData } = useFetchProposalById(proposalId);
 
   const page = 1; // TODO: make api changes for pagination in spaces array
-  console.log(proposalData);
+
   const COLUMNS = useMemo(
     () => [
       {
@@ -51,59 +49,99 @@ const ProposalDetails = () => {
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'spaceName',
-        Cell: tableProps =>
-          useMemo(() => {
-            const { photo, spaceName } = tableProps.row.original;
-
-            return (
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(
+            () => (
               <div className="flex items-center gap-2">
                 <div className="bg-white border rounded-md">
-                  <img className="h-8 w-8 mx-auto" src={photo} alt="banner" />
+                  {basicInformation?.spacePhotos ? (
+                    <Image src={basicInformation.spacePhotos} alt="banner" height={32} width={32} />
+                  ) : (
+                    <Image src={null} withPlaceholder height={32} width={32} />
+                  )}
                 </div>
-                <p className="flex-1">{spaceName}</p>
+                <p className="flex-1">{basicInformation?.spaceName}</p>
               </div>
-            );
-          }, []),
+            ),
+            [],
+          ),
       },
       {
         Header: 'MEDIA OWNER NAME',
         accessor: 'landlord_name',
-        Cell: tableProps =>
-          useMemo(() => <div className="w-fit">{tableProps.row.original.landlord_name}</div>, []),
+        Cell: tableProps => useMemo(() => <div>{tableProps.row.original.landlord_name}</div>, []),
       },
       {
         Header: 'SPACE TYPE',
         accessor: 'space_type',
+        Cell: ({ row }) => useMemo(() => <p>{row.original.startDate}</p>, []),
+      },
+      {
+        Header: 'START DATE',
+        accessor: 'startDate',
+      },
+      {
+        Header: 'END DATE',
+        accessor: 'endDate',
       },
       {
         Header: 'DIMENSION',
         accessor: 'dimension',
+        Cell: ({
+          row: {
+            original: { specifications },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p>{`${specifications?.resolutions?.height}ft x ${specifications?.resolutions?.width}ft`}</p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'IMPRESSION',
         accessor: 'impressions',
+        Cell: ({
+          row: {
+            original: { specifications },
+          },
+        }) => useMemo(() => <p>{`${specifications?.impressions?.max}+`}</p>, []),
       },
       {
         Header: 'HEALTH',
         accessor: 'health',
-        Cell: tableProps =>
-          useMemo(() => {
-            const { health } = tableProps.row.original;
-            return (
+        Cell: ({
+          row: {
+            original: { specifications },
+          },
+        }) =>
+          useMemo(
+            () => (
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: health, color: 'green' },
-                    { value: 100 - health, color: 'red' },
+                    { value: specifications?.health, color: 'green' },
+                    { value: 100 - (specifications?.health || 0), color: 'red' },
                   ]}
                 />
               </div>
-            );
-          }, []),
+            ),
+            [],
+          ),
       },
       {
         Header: 'LOCATION',
         accessor: 'city',
+        Cell: ({
+          row: {
+            original: { location },
+          },
+        }) => useMemo(() => <p>{location?.city}</p>, []),
       },
       {
         Header: 'MEDIA TYPE',
@@ -112,55 +150,27 @@ const ProposalDetails = () => {
       {
         Header: 'PRICING',
         accessor: 'price',
-        Cell: ({ row }) =>
-          useMemo(() => {
-            return (
-              <div className="pl-2">
-                {row.original.price ? toIndianCurrency(row?.original?.price) : 0}
-              </div>
-            );
-          }, []),
+        Cell: ({
+          row: {
+            original: { price },
+          },
+        }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
       },
       {
         Header: '',
         accessor: 'details',
-        Cell: tableProps =>
-          useMemo(() => {
-            const { _id } = tableProps.row.original;
-
-            return <MenuPopover itemId={_id} proposalData={proposalData} />;
-          }, []),
+        Cell: ({
+          row: {
+            original: { _id },
+          },
+        }) => useMemo(() => <MenuPopover itemId={_id} proposalData={proposalData} />, []),
       },
     ],
-    [updatedInventoryList],
+    [proposalData?.spaces],
   );
 
-  const formattedData = () => {
-    const updatedList = [];
-    const tempList = [...proposalData.spaces];
-    tempList?.map(row => {
-      const rowObj = {
-        ...row?.basicInformation,
-        ...row?.location,
-        health: row?.specifications?.health,
-        impressions: `${row?.specifications?.impressions?.max}+`,
-        dimension: ` ${row?.specifications?.resolutions?.height} ${row?.specifications?.resolutions?.width}`,
-        _id: row?._id,
-      };
-
-      return updatedList.push(rowObj);
-    });
-    setUpdatedInventoryList(updatedList);
-  };
-
-  useEffect(() => {
-    if (proposalData?.spaces) {
-      formattedData();
-    }
-  }, [proposalData?.spaces]);
-
   return (
-    <div onClick={() => setShowShare(false)}>
+    <div>
       <Header showShare={showShare} setShowShare={setShowShare} />
       <Details proposalData={proposalData} />
       <div className="pl-5 pr-7 flex justify-between mt-4">
@@ -192,7 +202,7 @@ const ProposalDetails = () => {
         <Search search={search} setSearch={setSearch} />
       </div>
       <div>
-        <Table COLUMNS={COLUMNS} dummy={updatedInventoryList || []} />
+        <Table COLUMNS={COLUMNS} dummy={proposalData?.spaces || []} />
       </div>
     </div>
   );

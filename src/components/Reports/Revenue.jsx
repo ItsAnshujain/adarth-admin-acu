@@ -84,7 +84,6 @@ const Revenue = () => {
   const [showDatePickerRevenue, setShowDatePickerRevenue] = useState(false);
   // const [showDateIndustry, setShowDateIndustry] = useState(false);
   const [showDateCity, setShowDateCity] = useState(false);
-  const [lineRevenueGraph, setLineRevenueGraph] = useState();
 
   const revenueRef = useClickOutside(() => setShowDatePickerRevenue(false));
   // const dateIndustryRef = useClickOutside(() => setShowDateIndustry(false));

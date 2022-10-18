@@ -23,6 +23,8 @@ const Header = ({ text }) => {
 
   const handleGridClick = () => setActiveLayout('grid');
 
+  const handleShowFilter = () => setShowFilter(!showFilter);
+
   return (
     <div className="h-20 border-b border-gray-450 flex justify-between items-center pl-5 pr-5">
       <Text weight="bold" size="md">
@@ -61,11 +63,7 @@ const Header = ({ text }) => {
             />
           </Button>
         </div>
-        <Button
-          onClick={() => setShowFilter(!showFilter)}
-          variant="default"
-          className="font-medium"
-        >
+        <Button onClick={handleShowFilter} variant="default" className="font-medium">
           <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
         </Button>
         {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}

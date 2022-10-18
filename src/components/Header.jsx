@@ -13,11 +13,10 @@ const Header = ({ title }) => {
   const [menuProfileOpened, setMenuProfileOpened] = useState(false);
   const navigate = useNavigate();
 
-  const { setToken, setId, setUserDetails } = useUserStore(
+  const { setToken, setId } = useUserStore(
     state => ({
       setToken: state.setToken,
       setId: state.setId,
-      setUserDetails: state.setUserDetails,
     }),
     shallow,
   );
@@ -25,12 +24,9 @@ const Header = ({ title }) => {
   const handleLogout = () => {
     setToken(null);
     setId(null);
-    setUserDetails({});
     navigate('/login');
     showNotification({
-      title: 'Logout',
-      message: 'Logged out successfully',
-      autoClose: 3000,
+      title: 'Logged out successfully',
       color: 'green',
     });
   };
