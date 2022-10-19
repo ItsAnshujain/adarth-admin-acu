@@ -11,7 +11,7 @@ import useCreateBookingSelectSpaceState from '../../store/createBookingSelectSpa
 // TODO: selectedFlatRows.original gives array of all selected rows and selectedRowIds contains all the data from id field
 const Table = ({
   COLUMNS,
-  dummy = [],
+  data = [],
   allowRowsSelect = false,
   isBookingTable = false,
   isCreateOrder = false,
@@ -30,7 +30,7 @@ const Table = ({
 
   const handleSelectedRows = () => {
     const preIds = selectedRowData.map(item => item._id);
-    return dummy?.filter(row => preIds.includes(row._id));
+    return data?.filter(row => preIds.includes(row._id));
   };
 
   const {
@@ -44,7 +44,7 @@ const Table = ({
   } = useTable(
     {
       columns,
-      data: dummy,
+      data,
       initialState: { pageIndex: 0, selectedRowIds: handleSelectedRows() },
     },
     useSortBy,

@@ -108,7 +108,7 @@ const Proposals = () => {
           <Search search={search} setSearch={setSearch} />
         </div>
       </div>
-      <Table dummy={dummy} COLUMNS={column} />
+      <Table data={dummy} COLUMNS={column} />
     </div>
   );
 };

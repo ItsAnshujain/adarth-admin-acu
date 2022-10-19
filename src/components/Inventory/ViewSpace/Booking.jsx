@@ -39,7 +39,7 @@ const Booking = ({ count }) => {
           </div>
         </div>
       </div>
-      <Table dummy={dummy} COLUMNS={COLUMNS} count={count} allowRowsSelect />
+      <Table data={dummy} COLUMNS={COLUMNS} count={count} allowRowsSelect />
     </div>
   );
 };

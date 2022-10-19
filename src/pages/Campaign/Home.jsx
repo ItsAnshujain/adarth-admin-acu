@@ -22,7 +22,7 @@ const Home = () => {
       {view === 'grid' ? (
         <GridView count={count} Card={Card} />
       ) : (
-        <Table COLUMNS={COLUMNS} dummy={dummy} count={count} allowRowsSelect />
+        <Table COLUMNS={COLUMNS} data={dummy} count={count} allowRowsSelect />
       )}
     </div>
   );

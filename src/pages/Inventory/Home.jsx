@@ -252,7 +252,7 @@ const Home = () => {
       ) : viewType === 'list' ? (
         <Table
           COLUMNS={COLUMNS}
-          dummy={inventoryData?.docs || []}
+          data={inventoryData?.docs || []}
           activePage={inventoryData?.page || 1}
           totalPages={inventoryData?.totalPages || 1}
           setActivePage={handlePagination}
