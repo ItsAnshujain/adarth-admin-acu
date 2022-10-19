@@ -242,7 +242,7 @@ const Spaces = ({
         </div>
       </div>
       <Table
-        dummy={inventoryData?.docs || []}
+        data={inventoryData?.docs || []}
         COLUMNS={COLUMNS}
         allowRowsSelect
         setSelectedFlatRows={setSelectedRow}

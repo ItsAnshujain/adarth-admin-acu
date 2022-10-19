@@ -204,12 +204,12 @@ const Header = () => {
                   <RowsPerPage setCount={setCount} count={count} />
                   <Search search={search} setSearch={setSearch} />
                 </div>
-                <Table dummy={dummy} COLUMNS={column} />
+                <Table data={dummy} COLUMNS={column} />
               </div>
             </Tabs.Panel>
             <Tabs.Panel value="proposal" className="mr-5">
               <div className="mt-8">
-                <Table dummy={dummy2} COLUMNS={columns} />
+                <Table data={dummy2} COLUMNS={columns} />
               </div>
             </Tabs.Panel>
           </Tabs>

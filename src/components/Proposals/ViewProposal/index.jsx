@@ -202,7 +202,7 @@ const ProposalDetails = () => {
         <Search search={search} setSearch={setSearch} />
       </div>
       <div>
-        <Table COLUMNS={COLUMNS} dummy={proposalData?.spaces || []} />
+        <Table COLUMNS={COLUMNS} data={proposalData?.spaces || []} />
       </div>
     </div>
   );

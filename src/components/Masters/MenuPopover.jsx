@@ -25,7 +25,7 @@ const MenuPopover = ({ row }) => {
     }
   };
 
-  const toggletDeleteModal = () =>
+  const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
       title: '',
       innerProps: {
@@ -57,7 +57,7 @@ const MenuPopover = ({ row }) => {
           </Menu.Item>
           <Menu.Item
             icon={<Trash className="h-4" />}
-            onClick={() => toggletDeleteModal()}
+            onClick={() => toggleDeleteModal()}
             disabled={isLoading}
           >
             <span className="text-base">Delete</span>

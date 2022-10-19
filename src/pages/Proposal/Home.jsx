@@ -150,7 +150,7 @@ const Proposals = () => {
       </div>
       {viewType === 'list' ? (
         <Table
-          dummy={proposalsData?.docs || []}
+          data={proposalsData?.docs || []}
           COLUMNS={COLUMNS}
           activePage={proposalsData?.page || 1}
           totalPages={proposalsData?.totalPages || 1}

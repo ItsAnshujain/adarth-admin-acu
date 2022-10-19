@@ -45,7 +45,7 @@ const SpacesList = ({ data, columns }) => {
           <RowsPerPage setCount={setCount} count={count} />
           <Search search={search} setSearch={setSearch} />
         </div>
-        <Table dummy={data} COLUMNS={columns} allowRowsSelect />
+        <Table data={data} COLUMNS={columns} allowRowsSelect />
       </div>
     </>
   );

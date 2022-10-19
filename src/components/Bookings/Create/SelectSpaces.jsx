@@ -43,7 +43,7 @@ const SelectSpace = ({ data, column }) => {
           <Search search={search} setSearch={setSearch} />
         </div>
       </div>
-      <Table dummy={data} COLUMNS={column} allowRowsSelect isBookingTable />
+      <Table data={data} COLUMNS={column} allowRowsSelect isBookingTable />
     </>
   );
 };

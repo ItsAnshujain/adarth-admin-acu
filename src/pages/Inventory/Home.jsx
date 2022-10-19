@@ -47,7 +47,7 @@ const Home = () => {
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
-  const toggletImagePreviewModal = imgSrc =>
+  const toggleImagePreviewModal = imgSrc =>
     modals.openContextModal('basic', {
       title: 'Preview',
       innerProps: {
@@ -93,7 +93,7 @@ const Home = () => {
               <div className="flex items-center gap-2">
                 <Box
                   className="bg-white border rounded-md cursor-zoom-in"
-                  onClick={() => toggletImagePreviewModal(basicInformation?.spacePhotos)}
+                  onClick={() => toggleImagePreviewModal(basicInformation?.spacePhotos)}
                 >
                   {basicInformation?.spacePhotos ? (
                     <Image
@@ -276,7 +276,7 @@ const Home = () => {
       ) : viewType === 'list' ? (
         <Table
           COLUMNS={COLUMNS}
-          dummy={inventoryData?.docs || []}
+          data={inventoryData?.docs || []}
           activePage={inventoryData?.page || 1}
           totalPages={inventoryData?.totalPages || 1}
           setActivePage={handlePagination}
