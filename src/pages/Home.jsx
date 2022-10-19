@@ -10,12 +10,16 @@ import {
   BarElement,
   Tooltip,
 } from 'chart.js';
+import { Image } from '@mantine/core';
 import AreaHeader from '../components/Home/Header';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import greenFolder from '../assets/ongoing.svg';
-import blueFolder from '../assets/completed.svg';
-import orangeFolder from '../assets/upcoming.svg';
+import OngoingCampaignIcon from '../assets/ongoing-campaign.svg';
+import UpcomingCampaignIcon from '../assets/upcoming-campaign.svg';
+import CompletedCampaignIcon from '../assets/completed-campaign.svg';
+import VacantIcon from '../assets/vacant.svg';
+import OccupiedIcon from '../assets/occupied.svg';
+import TotalCampaignIcon from '../assets/total-campaign.svg';
 
 ChartJS.register(
   CategoryScale,
@@ -88,34 +92,52 @@ const HomePage = () => (
           <div className="grid grid-rows-2 mb-8 gap-y-4">
             <div className="grid grid-cols-3 gap-8">
               <div className="border rounded p-8 flex-1">
-                <img src={orangeFolder} alt="folder" />
+                <Image src={TotalCampaignIcon} alt="folder" height={24} width={24} fit="contain" />
                 <p className="my-2 text-sm font-light text-slate-400">Total Campaign(Overall)</p>
                 <p className="font-bold">386387</p>
               </div>
               <div className="border rounded p-8  flex-1">
-                <img src={blueFolder} alt="folder" />
+                <Image
+                  src={OngoingCampaignIcon}
+                  alt="folder"
+                  height={24}
+                  width={24}
+                  fit="contain"
+                />
                 <p className="my-2 text-sm font-light text-slate-400">Total Ongoing Campaign</p>
                 <p className="font-bold">386387</p>
               </div>
               <div className="border rounded p-8  flex-1">
-                <img src={greenFolder} alt="folder" />
+                <Image
+                  src={UpcomingCampaignIcon}
+                  alt="folder"
+                  height={24}
+                  width={24}
+                  fit="contain"
+                />
                 <p className="my-2 text-sm font-light text-slate-400">Upcoming Campaign</p>
                 <p className="font-bold">386387</p>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-8">
               <div className="border rounded p-8 flex-1">
-                <img src={greenFolder} alt="folder" />
+                <Image
+                  src={CompletedCampaignIcon}
+                  alt="folder"
+                  height={24}
+                  width={24}
+                  fit="contain"
+                />
                 <p className="my-2 text-sm font-light text-slate-400">Completed Campaign</p>
                 <p className="font-bold">386387</p>
               </div>
               <div className="border rounded p-8 flex-1">
-                <img src={greenFolder} alt="folder" />
+                <Image src={VacantIcon} alt="folder" height={24} width={24} fit="contain" />
                 <p className="my-2 text-sm font-light text-slate-400">Vacant</p>
                 <p className="font-bold">386387</p>
               </div>
               <div className="border rounded p-8  flex-1">
-                <img src={blueFolder} alt="folder" />
+                <Image src={OccupiedIcon} alt="folder" height={24} width={24} fit="contain" />
                 <p className="my-2 text-xs font-light text-slate-400">Occupied</p>
                 <p className="font-bold">386387</p>
               </div>

@@ -1,4 +1,4 @@
-import { Button } from '@mantine/core';
+import { Button, Image } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { Doughnut, Bar } from 'react-chartjs-2';
@@ -12,12 +12,14 @@ import {
   Title,
 } from 'chart.js';
 import useSideBarState from '../../store/sidebar.store';
-import greenFolder from '../../assets/ongoing.svg';
-import blueFolder from '../../assets/completed.svg';
-import orangeFolder from '../../assets/upcoming.svg';
 import Header from './Header';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
+import TotalCampaignIcon from '../../assets/total-campaign.svg';
+import OngoingCampaignIcon from '../../assets/ongoing-campaign.svg';
+import UpcomingCampaignIcon from '../../assets/upcoming-campaign.svg';
+import CompletedCampaignIcon from '../../assets/completed-campaign.svg';
+import ImpressionsIcon from '../../assets/impressions.svg';
 
 ChartJS.register(ArcElement, Tooltip, CategoryScale, LinearScale, BarElement, Title);
 const options = {
@@ -88,27 +90,33 @@ const Campaign = () => {
         <div className="flex justify-between gap-4 flex-wrap mb-8">
           <div className="flex gap-2 w-2/3 flex-wrap">
             <div className="border rounded p-8 flex-1">
-              <img src={orangeFolder} alt="folder" />
+              <Image src={TotalCampaignIcon} alt="folder" fit="contain" height={24} width={24} />
               <p className="my-2 text-sm font-light text-slate-400">Total Campaign(Overall)</p>
               <p className="font-bold">386387</p>
             </div>
             <div className="border rounded p-8  flex-1">
-              <img src={blueFolder} alt="folder" />
+              <Image src={OngoingCampaignIcon} alt="folder" fit="contain" height={24} width={24} />
               <p className="my-2 text-sm font-light text-slate-400">Total Ongoing Campaign</p>
               <p className="font-bold">386387</p>
             </div>
             <div className="border rounded p-8  flex-1">
-              <img src={greenFolder} alt="folder" />
+              <Image src={UpcomingCampaignIcon} alt="folder" fit="contain" height={24} width={24} />
               <p className="my-2 text-sm font-light text-slate-400">Upcoming Campaign</p>
               <p className="font-bold">386387</p>
             </div>
             <div className="border rounded p-8 flex-1">
-              <img src={greenFolder} alt="folder" />
+              <Image
+                src={CompletedCampaignIcon}
+                alt="folder"
+                fit="contain"
+                height={24}
+                width={24}
+              />
               <p className="my-2 text-sm font-light text-slate-400">Completed Campaign</p>
               <p className="font-bold">386387</p>
             </div>
             <div className="border rounded p-8 flex-1">
-              <img src={greenFolder} alt="folder" />
+              <Image src={ImpressionsIcon} alt="folder" fit="contain" height={24} width={24} />
               <p className="my-2 text-sm font-light text-slate-400">Total Impression Count</p>
               <p className="font-bold">386387</p>
             </div>
