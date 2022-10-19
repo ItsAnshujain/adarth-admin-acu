@@ -59,7 +59,7 @@ const Spaces = ({ data, column }) => {
           <Search search={search} setSearch={setSearch} />
         </div>
       </div>
-      <Table dummy={data} COLUMNS={column} allowRowsSelect />
+      <Table data={data} COLUMNS={column} allowRowsSelect />
     </>
   );
 };

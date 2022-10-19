@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { Button, Image, Menu, Text } from '@mantine/core';
+import { Badge, Button, Image, Menu, Text } from '@mantine/core';
 import { Eye, Edit2, Trash } from 'react-feather';
 import { useModals } from '@mantine/modals';
-import Badge from '../shared/Badge';
 import toIndianCurrency from '../../utils/currencyFormat';
 import MenuIcon from '../Menu';
 import DeleteConfirmContent from '../DeleteConfirmContent';
@@ -23,7 +22,7 @@ const Card = ({ data }) => {
     }
   };
 
-  const toggletDeleteModal = () =>
+  const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
       title: '',
       innerProps: {
@@ -55,9 +54,11 @@ const Card = ({ data }) => {
           <Image height={176} src={null} alt="card" fit="contain" withPlaceholder />
         )}
       </div>
-      <div className="p-4 pt-4 pb-7 bg-white">
+      <div className="p-4 px-4 bg-white">
         <div className="mb-2">
-          <Badge radius="md" color="green" variant="filled" text={data?.status} size="md" />
+          <Badge className="capitalize" variant="filled" color="green" size="lg">
+            Available
+          </Badge>
         </div>
         <Text size="md" weight="bold">
           {data?.basicInformation?.spaceName}
@@ -81,7 +82,7 @@ const Card = ({ data }) => {
           </Text>
           <Menu shadow="md" width={180} className="mt-4" position="bottom-end">
             <Menu.Target>
-              <Button>
+              <Button className="px-0">
                 <MenuIcon />
               </Button>
             </Menu.Target>
@@ -103,7 +104,7 @@ const Card = ({ data }) => {
               <Menu.Item
                 className="cursor-pointer flex items-center gap-1"
                 icon={<Trash className="h-4" />}
-                onClick={toggletDeleteModal}
+                onClick={toggleDeleteModal}
               >
                 <span className="ml-1">Delete</span>
               </Menu.Item>

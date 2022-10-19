@@ -232,7 +232,7 @@ const Inventory = () => {
           {view === 'grid' ? (
             <GridView selectAll={selectAll} count={count} Card={Card} />
           ) : view === 'list' ? (
-            <Table COLUMNS={COLUMNS} dummy={dummy} count={count} allowRowsSelect />
+            <Table COLUMNS={COLUMNS} data={dummy} count={count} allowRowsSelect />
           ) : null}
         </div>
       </div>

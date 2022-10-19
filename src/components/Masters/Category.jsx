@@ -115,7 +115,7 @@ const Category = () => {
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       <Table
-        dummy={masterData?.docs || []}
+        data={masterData?.docs || []}
         COLUMNS={COLUMNS}
         activePage={masterData?.page || 1}
         totalPages={masterData?.totalPages || 1}

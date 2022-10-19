@@ -27,6 +27,10 @@ const schema = action =>
         .concat(action === 1 ? requiredSchema('Space name is required') : null),
       landlord: yup.string().trim(),
       mediaOwner: yup.string().trim(),
+      spaceType: yup
+        .string()
+        .trim()
+        .concat(action === 1 ? requiredSchema('Space Type is required') : null),
       category: yup
         .string()
         .trim()
@@ -61,14 +65,14 @@ const schema = action =>
             ? yup.number().typeError('FootFall must be a number').required('Footfall is required')
             : null,
         ),
-      // demographic: yup
-      //   .string()
-      //   .trim()
-      //   .concat(action === 1 ? requiredSchema('Demographics is required') : null),
-      // audience: yup
-      //   .string()
-      //   .trim()
-      //   .concat(action === 1 ? requiredSchema('Audience is required') : null),
+      demographic: yup
+        .string()
+        .trim()
+        .concat(action === 1 ? requiredSchema('Demographics is required') : null),
+      audience: yup
+        .string()
+        .trim()
+        .concat(action === 1 ? requiredSchema('Audience is required') : null),
     }),
     specifications: yup.object().shape({
       illuminations: yup
@@ -188,14 +192,6 @@ const schema = action =>
         .string()
         .trim()
         .concat(action === 3 ? requiredSchema('Facing is required') : null),
-      // headingTo: yup
-      //   .string()
-      //   .trim()
-      //   .concat(action === 3 ? requiredSchema('Heading To is required') : null),
-      // headingFrom: yup
-      //   .string()
-      //   .trim()
-      //   .concat(action === 3 ? requiredSchema('Heading From is required') : null),
     }),
   });
 
@@ -206,6 +202,7 @@ const initialValues = {
     mediaOwner: '',
     category: '',
     subCategory: '',
+    spaceType: '',
     mediaType: '',
     supportedMedia: '',
     description: '',
@@ -214,8 +211,8 @@ const initialValues = {
     spacePhotos: '',
     otherPhotos: [''],
     footFall: 0,
-    // demographic: '',
-    // audience: '',
+    demographic: '',
+    audience: '',
   },
   specifications: {
     illuminations: '',
@@ -242,8 +239,6 @@ const initialValues = {
     zone: '',
     landmark: '',
     facing: '',
-    // headingTo: '',
-    // headingFrom: '',
   },
 };
 
@@ -310,8 +305,10 @@ const MainArea = () => {
       if (basicInformation?.category) {
         form.setFieldValue('basicInformation.subCategory', basicInformation?.subCategory);
       }
+      form.setFieldValue('basicInformation.spaceType', basicInformation?.spaceType);
       form.setFieldValue('basicInformation.mediaType', basicInformation?.mediaType);
-      form.setFieldValue('basicInformation.mediaType', basicInformation?.mediaType);
+      form.setFieldValue('basicInformation.demographic', basicInformation?.demographic);
+      form.setFieldValue('basicInformation.audience', basicInformation?.audience);
       form.setFieldValue('basicInformation.spacePhotos', basicInformation?.spacePhotos);
       form.setFieldValue('specifications.illuminations', specifications?.illuminations);
       form.setFieldValue('specifications.unit', specifications?.unit);

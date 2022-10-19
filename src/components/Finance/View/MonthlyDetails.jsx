@@ -81,11 +81,11 @@ const Monthly = () => {
         </div>
       </div>
       {pageNumber === 0 ? (
-        <Table COLUMNS={ColumnPurchaseOrders} dummy={data} />
+        <Table COLUMNS={ColumnPurchaseOrders} data={data} />
       ) : pageNumber === 1 ? (
-        <Table COLUMNS={ColumnReleaseOrders} dummy={data} />
+        <Table COLUMNS={ColumnReleaseOrders} data={data} />
       ) : (
-        <Table COLUMNS={ColumnInvoices} dummy={data} />
+        <Table COLUMNS={ColumnInvoices} data={data} />
       )}
     </div>
   );

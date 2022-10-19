@@ -45,6 +45,7 @@ const Location = () => {
             errors={errors}
             placeholder="Write..."
             className="mb-7"
+            precision={6}
           />
           <TextInput
             label="Zone"
@@ -87,6 +88,7 @@ const Location = () => {
             errors={errors}
             placeholder="Write..."
             className="mb-7"
+            precision={6}
           />
           <TextInput
             label="Landmark"

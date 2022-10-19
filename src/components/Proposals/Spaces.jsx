@@ -83,7 +83,7 @@ const Spaces = ({
           ),
       },
       {
-        Header: 'LANDLORD NAME',
+        Header: 'MEDIA OWNER NAME',
         accessor: 'landlord_name',
         Cell: tableProps =>
           useMemo(() => <div className="w-fit">{tableProps.row.original.landlord_name}</div>, []),
@@ -242,7 +242,7 @@ const Spaces = ({
         </div>
       </div>
       <Table
-        dummy={inventoryData?.docs || []}
+        data={inventoryData?.docs || []}
         COLUMNS={COLUMNS}
         allowRowsSelect
         selectedRows={setSelectedRow}

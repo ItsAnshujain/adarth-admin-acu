@@ -101,9 +101,9 @@ const Create = () => {
             rightSectionWidth={40}
           />
           <div className="border-dashed border-0 border-black border-b-2 pb-4">
-            <Table COLUMNS={column} dummy={data} isCreateOrder />
+            <Table COLUMNS={column} data={data} isCreateOrder />
           </div>
-          <Table COLUMNS={columnTotal} dummy={dataColumnTotal} isCreateOrder />
+          <Table COLUMNS={columnTotal} data={dataColumnTotal} isCreateOrder />
         </div>
         <div className="pl-5 pr-7 flex flex-col gap-4">
           <TextInput styles={styles} label="Amount Chargeable (in words)" />

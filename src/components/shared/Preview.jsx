@@ -1,21 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Button, Image, Text } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
-import dummy3 from '../../assets/dummy3.png';
 import toIndianCurrency from '../../utils/currencyFormat';
 import Badge from './Badge';
 import { useFormContext } from '../../context/formContext';
 
 const Preview = () => {
   const [readMore, toggle] = useToggle();
-  const [scrollImage, setScrollImage] = useState([]);
-  const [posterImage, setPosterImage] = useState(dummy3);
+  const [otherImages, setOtherImages] = useState([]);
+  const [posterImage, setPosterImage] = useState(null);
   const { values } = useFormContext();
 
   const exchangeImages = index => {
     const temp = posterImage;
-    setPosterImage(scrollImage[index]);
-    setScrollImage(prev => {
+    setPosterImage(otherImages[index]);
+    setOtherImages(prev => {
       const newImgs = [...prev];
       newImgs[index] = temp;
       return newImgs;
@@ -24,13 +23,17 @@ const Preview = () => {
 
   useEffect(() => {
     setPosterImage(values?.basicInformation?.spacePhotos);
-  }, [values?.basicInformation?.spacePhotos]);
+
+    if (values?.basicInformation?.otherPhotos) {
+      setOtherImages([...values.basicInformation.otherPhotos]);
+    }
+  }, [values?.basicInformation?.spacePhotos, values?.basicInformation?.otherPhotos]);
 
   return (
     <div className="grid grid-cols-2 gap-x-8 pl-5 pr-7 pt-4">
       <div className="flex flex-col">
         <div className="h-96">
-          {posterImage.length ? (
+          {posterImage ? (
             <Image
               height={384}
               src={posterImage}
@@ -45,17 +48,18 @@ const Preview = () => {
             <Image height={384} src={null} alt="poster" fit="contain" withPlaceholder />
           )}
         </div>
-        <div className="flex overflow-scroll pt-4 gap-4 items-center">
-          {scrollImage.map((src, index) => (
-            <img
-              key={src}
-              aria-hidden
-              onClick={() => exchangeImages(index)}
-              className="h-24 w-28 cursor-pointer"
-              src={src}
-              alt="poster"
-            />
-          ))}
+        <div className="flex overflow-scroll pt-4 gap-4 items-center ">
+          {otherImages.length > 0 && otherImages?.[0] !== ''
+            ? otherImages.map((src, index) => (
+                <Image
+                  key={src}
+                  onClick={() => exchangeImages(index)}
+                  className="w-28 cursor-pointer bg-slate-300"
+                  src={src}
+                  alt="poster"
+                />
+              ))
+            : null}
         </div>
       </div>
       <div>
@@ -66,17 +70,7 @@ const Preview = () => {
               <p className="font-bold text-xs text-purple-450">{'{category}'}</p>
             </div>
             <p className="font-light text-slate-400">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis laudantium
-              officiis sunt temporibus est error non odit!{' '}
-              {readMore && (
-                <span>
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum molestias
-                  perferendis aspernatur debitis pariatur dolores ipsa. Magni iusto, iure sapiente
-                  numquam consequuntur est provident nihil id voluptas placeat reiciendis nostrum!
-                  Pariatur temporibus et, suscipit unde impedit deleniti accusamus, possimus eos,
-                  beatae id recusandae.
-                </span>
-              )}
+              {values?.basicInformation?.description}
               <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
                 {readMore ? 'Read less' : 'Read more'}
               </Button>
@@ -106,8 +100,8 @@ const Preview = () => {
 
                     <p className="text-slate-400 text-md font-light">Resolution</p>
                     <p className="mb-4">
-                      {values?.specifications?.resolutions?.height || 0}px X{' '}
-                      {values?.specifications?.resolutions?.width || 0}px
+                      {values?.specifications?.resolutions?.height || 0}ft X{' '}
+                      {values?.specifications?.resolutions?.width || 0}ft
                     </p>
                   </div>
                   <div>

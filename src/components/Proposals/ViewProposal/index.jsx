@@ -71,7 +71,7 @@ const ProposalDetails = () => {
           ),
       },
       {
-        Header: 'LANDLORD NAME',
+        Header: 'MEDIA OWNER NAME',
         accessor: 'landlord_name',
         Cell: tableProps => useMemo(() => <div>{tableProps.row.original.landlord_name}</div>, []),
       },
@@ -202,7 +202,7 @@ const ProposalDetails = () => {
         <Search search={search} setSearch={setSearch} />
       </div>
       <div>
-        <Table COLUMNS={COLUMNS} dummy={proposalData?.spaces || []} />
+        <Table COLUMNS={COLUMNS} data={proposalData?.spaces || []} />
       </div>
     </div>
   );
