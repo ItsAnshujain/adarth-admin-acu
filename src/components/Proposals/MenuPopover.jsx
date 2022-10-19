@@ -47,7 +47,7 @@ const MenuPopover = ({ itemId, proposalData }) => {
     queryClient.invalidateQueries(['proposals-by-id', proposalId]);
   };
 
-  const toggletDeleteModal = () =>
+  const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
       title: '',
       innerProps: {
@@ -79,7 +79,7 @@ const MenuPopover = ({ itemId, proposalData }) => {
         </Menu.Item>
         <Menu.Item
           icon={<Trash className="h-4" />}
-          onClick={() => toggletDeleteModal()}
+          onClick={() => toggleDeleteModal()}
           disabled={isUpdateProposalLoading}
           className="cursor-pointer flex items-center gap-1"
         >

@@ -22,7 +22,7 @@ const Card = ({ data }) => {
     }
   };
 
-  const toggletDeleteModal = () =>
+  const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
       title: '',
       innerProps: {
@@ -104,7 +104,7 @@ const Card = ({ data }) => {
               <Menu.Item
                 className="cursor-pointer flex items-center gap-1"
                 icon={<Trash className="h-4" />}
-                onClick={toggletDeleteModal}
+                onClick={toggleDeleteModal}
               >
                 <span className="ml-1">Delete</span>
               </Menu.Item>
