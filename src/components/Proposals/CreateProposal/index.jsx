@@ -138,7 +138,7 @@ const Main = () => {
     <>
       <FormProvider form={form}>
         <form onSubmit={form.onSubmit(onSubmit)}>
-          <div className="h-20 border-b border-gray-450 flex justify-between items-center">
+          <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
             <Header
               setFormStep={setFormStep}
               formStep={formStep}

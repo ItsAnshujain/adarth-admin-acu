@@ -19,7 +19,7 @@ const FileUpload = () => {
 
   return (
     <>
-      <header className="h-20 border-b border-gray-450 flex justify-between items-center pl-5 pr-7">
+      <header className="h-[60px] border-b border-gray-450 flex justify-between items-center pl-5 pr-7">
         <p className="text-xl font-bold">Upload Space CSV</p>
         <button
           onClick={() => navigate(-1)}

@@ -38,7 +38,7 @@ const Header = () => {
 
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>
-      <Tabs.List className="h-20 relative">
+      <Tabs.List className="h-[60px] relative">
         <Tabs.Tab className="text-base hover:bg-transparent" value="first">
           Overview
         </Tabs.Tab>
@@ -46,7 +46,7 @@ const Header = () => {
           Managing
         </Tabs.Tab>
         <button
-          className="absolute right-7 top-7 bg-purple-450 text-white px-4 py-2 rounded-md"
+          className="absolute right-7 top-3 bg-purple-450 text-white px-4 py-2 rounded-md"
           type="button"
           onClick={() => navigate(`/users/edit-details/${userId}`)}
         >
