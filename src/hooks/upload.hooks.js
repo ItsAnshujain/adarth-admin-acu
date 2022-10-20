@@ -28,10 +28,10 @@ export const useUploadFile = () =>
     },
   );
 
-export const useDeleteUploadedFile = () => {
+export const useDeleteUploadedFile = () =>
   useMutation(
-    async ({ keyId }) => {
-      const res = await deleteUploadedFile(keyId);
+    async key => {
+      const res = await deleteUploadedFile(key);
       return res?.data;
     },
     {
@@ -53,4 +53,3 @@ export const useDeleteUploadedFile = () => {
       },
     },
   );
-};

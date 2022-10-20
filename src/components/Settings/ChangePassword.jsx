@@ -1,6 +1,8 @@
+import { Button } from '@mantine/core';
 import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
 import { FormProvider, useForm } from '../../context/formContext';
+import { useChangePassword } from '../../hooks/settings.hooks';
 import PasswordInput from '../shared/PasswordInput';
 
 const styles = {
@@ -36,9 +38,10 @@ const schema = yup.object().shape({
 const ChangePassword = () => {
   const form = useForm({ validate: yupResolver(schema), initialValues });
 
+  const { mutateAsync, isLoading } = useChangePassword();
+
   const onSubmitHandler = formData => {
-    // eslint-disable-next-line no-console
-    console.log(formData);
+    mutateAsync({ ...formData });
   };
   return (
     <div className="pl-5 pr-7 mt-4">
@@ -80,9 +83,14 @@ const ChangePassword = () => {
               className="w-4/12"
             />
           </div>
-          <button type="submit" className="py-2 px-8 rounded bg-purple-450 text-white mt-4">
+          <Button
+            disabled={isLoading}
+            loading={isLoading}
+            type="submit"
+            className="py-2 px-8 rounded bg-purple-450 text-white mt-4 "
+          >
             Save
-          </button>
+          </Button>
         </form>
       </FormProvider>
     </div>

@@ -1,63 +1,143 @@
-import { useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
+import { yupResolver } from '@mantine/form';
+import * as yup from 'yup';
 import BasicInfo from './BasicInformation';
 import SelectSpaces from './SelectSpaces';
 import OrderInfo from './OrderInformation';
 import SuccessModal from '../../shared/Modal';
 import Header from './Header';
-import column from './column';
-import data from '../../../Dummydata/CAMPAIGN_SPACES.json';
+import { FormProvider, useForm } from '../../../context/formContext';
+import { useCreateBookings } from '../../../hooks/booking.hooks';
 
-const formInitialState = {
-  companyname: '',
-  clientemail: '',
-  clientpannumber: '',
-  clientname: '',
-  clientcontactnumber: '',
-  clientgstnumber: '',
-  campaignname: '',
-  media: '',
+const requiredSchema = text => yup.string().trim().required(text);
+
+const schema = step =>
+  yup.object().shape({
+    client: yup.object().shape({
+      companyName: yup
+        .string()
+        .trim()
+        .concat(step === 1 ? requiredSchema('Company name is required') : null),
+      name: yup
+        .string()
+        .trim()
+        .concat(step === 1 ? requiredSchema('Client name is required') : null),
+      paymentType: yup
+        .string()
+        .trim()
+        .concat(step === 1 ? requiredSchema('Payment type is required') : null),
+      email: yup
+        .string()
+        .trim()
+        .concat(step === 1 ? yup.string().email('Email must be valid') : null)
+        .concat(step === 1 ? requiredSchema('Email is required') : null),
+      paymentReferenceNumber: yup
+        .string()
+        .trim()
+        .concat(step === 1 ? requiredSchema('Payment reference number is required') : null),
+      contactNumber: yup
+        .string()
+        .trim()
+        .concat(
+          step === 1
+            ? yup
+                .string()
+                .matches(
+                  /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
+                  'Contact number must be valid',
+                )
+            : null,
+        )
+        .concat(step === 1 ? requiredSchema('Contact Number is required') : null),
+      panNumber: yup
+        .string()
+        .trim()
+        .concat(
+          step === 1
+            ? yup.string().matches(/[A-Z]{5}[0-9]{4}[A-Z]{1}/, 'Pan number must be valid')
+            : null,
+        )
+        .concat(step === 1 ? requiredSchema('Pan number is required') : null),
+      gstNumber: yup
+        .string()
+        .trim()
+        .concat(
+          step === 1
+            ? yup
+                .string()
+                .matches(
+                  /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
+                  'GST number must be valid',
+                )
+            : null,
+        )
+        .concat(step === 1 ? requiredSchema('GST number is required') : null),
+    }),
+    campaignName: yup
+      .string()
+      .trim()
+      .concat(step === 2 ? requiredSchema('Campaign name is required') : null),
+    description: yup
+      .string()
+      .trim()
+      .concat(step === 2 ? requiredSchema('Campaign description is required') : null),
+    spaces: yup
+      .mixed()
+      .concat(
+        step === 3 ? yup.array().of(yup.object()).min(1, 'Minimum 1 space is required') : null,
+      ),
+  });
+
+const initialValues = {
+  client: {
+    companyName: '',
+    name: '',
+    email: '',
+    contactNumber: '',
+    panNumber: '',
+    gstNumber: '',
+    paymentReferenceNumber: '',
+    paymentType: '',
+  },
+  campaignName: '',
   description: '',
+  spaces: [],
 };
 
 const MainArea = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
-  const [formData, setFormData] = useState(formInitialState);
+  const submitRef = useRef(null);
+
+  const form = useForm({ validate: yupResolver(schema(formStep)), initialValues });
+
+  const { mutateAsync: createBooking } = useCreateBookings();
+
+  const handleSubmit = formData => {
+    if (formStep <= 2) {
+      setFormStep(prev => prev + 1);
+      return;
+    }
+
+    createBooking({ ...formData });
+  };
 
   const getForm = () =>
-    formStep === 1 ? (
-      <BasicInfo formData={formData} setFormData={setFormData} />
-    ) : formStep === 2 ? (
-      <OrderInfo formData={formData} setFormData={setFormData} />
-    ) : (
-      <SelectSpaces data={data} column={column} />
-    );
-
-  useEffect(() => {
-    const draft = JSON.parse(localStorage.getItem('order-drafts'));
-
-    if (draft) {
-      setFormData(draft);
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('order-drafts', JSON.stringify(formData));
-    return () => {
-      localStorage.removeItem('order-drafts', JSON.stringify(formData));
-    };
-  }, [formStep]);
+    formStep === 1 ? <BasicInfo /> : formStep === 2 ? <OrderInfo /> : <SelectSpaces />;
 
   return (
     <>
-      <Header
-        setFormStep={setFormStep}
-        formStep={formStep}
-        setOpenSuccessModal={setOpenSuccessModal}
-      />
+      <Header setFormStep={setFormStep} formStep={formStep} submitRef={submitRef} />
       <div>
         <div>
-          <form>{getForm()}</form>
+          <FormProvider form={form}>
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+              {getForm()}
+              <button type="submit" ref={submitRef} className="hidden">
+                submit
+              </button>
+            </form>
+          </FormProvider>
         </div>
       </div>
       <SuccessModal

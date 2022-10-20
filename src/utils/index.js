@@ -28,3 +28,18 @@ export const masterTypes = {
   payment_status: 'Payment Status',
   proposal_status: 'Proposal Status',
 };
+
+export const aadhaarFormat = aadhaarNumber => {
+  if (aadhaarNumber) {
+    const total = aadhaarNumber.split('');
+    let aadhaar = '';
+    while (total.length > 4) {
+      const fourLetter = total.splice(0, 4);
+      aadhaar += `${fourLetter.join('')}-`;
+    }
+    aadhaar += `${total.join('')}`;
+
+    return aadhaar;
+  }
+  return '';
+};

@@ -12,29 +12,22 @@ import CompletedOrdersIcon from '../../assets/completed-orders.svg';
 import UpcomingOrdersIcon from '../../assets/upcoming-orders.svg';
 import dummy from '../../Dummydata/ORDER_DATA.json';
 import column from '../../components/Bookings/column';
+import { useBookings, useBookingStats } from '../../hooks/booking.hooks';
+import { serialize } from '../../utils';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-
-export const data = {
-  datasets: [
-    {
-      data: [3425, 3425],
-      backgroundColor: ['#FF900E', '#914EFB'],
-      borderColor: ['#FF900E', '#914EFB'],
-      borderWidth: 1,
-    },
-  ],
-};
-const config = {
-  type: 'line',
-  data,
-  options: { responsive: true },
-};
 
 const Proposals = () => {
   const setColor = useSideBarState(state => state.setColor);
   const [search, setSearch] = useState('');
   const [count, setCount] = useState('20');
+  const [filters] = useState({ page: 1, limit: 10 });
+  const [statsFilter] = useState({});
+
+  // eslint-disable-next-line no-unused-vars
+  const { data: bookingData } = useBookings(serialize(filters));
+
+  const { data: bookingStats } = useBookingStats(serialize(statsFilter));
 
   useEffect(() => {
     setColor(2);
@@ -48,7 +41,19 @@ const Proposals = () => {
           <div className="flex justify-between gap-4 flex-wrap">
             <div className="flex gap-4 p-4 border rounded-md items-center">
               <div className="w-32">
-                <Doughnut options={config.options} data={config.data} />
+                <Doughnut
+                  options={{ responsive: true }}
+                  data={{
+                    datasets: [
+                      {
+                        data: [bookingStats?.data.online || 0, bookingStats?.data.offline || 0],
+                        backgroundColor: ['#FF900E', '#914EFB'],
+                        borderColor: ['#FF900E', '#914EFB'],
+                        borderWidth: 1,
+                      },
+                    ],
+                  }}
+                />
               </div>
               <div>
                 <Text size="md">Revenue Breakup</Text>
@@ -60,7 +65,7 @@ const Proposals = () => {
                         Online Sale
                       </Text>
                       <Text weight="bolder" size="xl">
-                        1233
+                        {bookingStats?.data.online || 0}
                       </Text>
                     </div>
                   </div>
@@ -71,7 +76,7 @@ const Proposals = () => {
                         Offline Sale
                       </Text>
                       <Text weight="bolder" size="xl">
-                        1233
+                        {bookingStats?.data.offline || 0}
                       </Text>
                     </div>
                   </div>
@@ -84,7 +89,7 @@ const Proposals = () => {
                 <Text className="my-2" size="sm" weight="200">
                   Ongoing Orders
                 </Text>
-                <Text weight="bold">386387</Text>
+                <Text weight="bold">{bookingStats?.data.ongoing || 0}</Text>
               </div>
               <div className="border rounded p-8 pr-20">
                 <Image
@@ -97,7 +102,7 @@ const Proposals = () => {
                 <Text className="my-2" size="sm" weight="200">
                   Upcoming Orders
                 </Text>
-                <Text weight="bold">386387</Text>
+                <Text weight="bold">{bookingStats?.data.upcoming || 0}</Text>
               </div>
               <div className="border rounded p-8 pr-20">
                 <Image
@@ -110,7 +115,7 @@ const Proposals = () => {
                 <Text className="my-2" size="sm" weight="200">
                   Completed Orders
                 </Text>
-                <Text weight="bold">386387</Text>
+                <Text weight="bold">{bookingStats?.data.completed || 0}</Text>
               </div>
             </div>
           </div>
