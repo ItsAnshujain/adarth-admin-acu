@@ -11,8 +11,9 @@ import Loader from './Loader';
 import CustomLoader from './Loader/Loader';
 import Sidebar from './Loader/Sidebar';
 import NoMatch from './pages/NoMatch';
-import ProtectedRoutes from './utils/ProtectedRoutes';
+import { useFetchUsersById } from './hooks/users.hooks';
 import useTokenIdStore from './store/user.store';
+import ProtectedRoutes from './utils/ProtectedRoutes';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -74,7 +75,9 @@ const HeaderSidebarLoader = () => (
 
 const App = () => {
   const location = useLocation();
-  const token = useTokenIdStore(state => state.token, shallow);
+  const { token, id } = useTokenIdStore(state => ({ id: state.id, token: state.token }), shallow);
+
+  useFetchUsersById(id, !!id);
 
   // to avoid logged in users to access the routes
   if (

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Basic Information', 'Order Information', 'Select Spaces'];
 
-const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
+const Header = ({ setFormStep, formStep, submitRef }) => {
   const navigate = useNavigate();
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -54,7 +54,7 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
         <Button
           onClick={() => {
             if (formStep === 1) {
-              navigate('/inventory');
+              navigate('/bookings');
             } else {
               setFormStep(formStep - 1);
             }
@@ -65,17 +65,7 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
           Back
         </Button>
 
-        <Button
-          onClick={() => {
-            if (formStep <= 2) setFormStep(formStep + 1);
-            if (formStep === 3) {
-              setOpenSuccessModal(true);
-              return;
-            }
-            setFormStep(formStep + 1);
-          }}
-          className="bg-purple-450 order-3"
-        >
+        <Button onClick={() => submitRef.current.click()} className="bg-purple-450 order-3">
           {formStep === 3 ? 'Create Order' : 'Next'}
           {formStep < 3 && <ChevronRight className="ml-1 h-4" />}
         </Button>

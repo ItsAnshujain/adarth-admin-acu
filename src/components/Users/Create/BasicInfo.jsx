@@ -21,7 +21,7 @@ const styles = {
   },
 };
 
-const BasicInfo = () => {
+const BasicInfo = ({ setUploadingFile }) => {
   const { errors, getInputProps, setFieldValue, values } = useFormContext();
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const [uploadImage, setUploadImage] = useState([]);
@@ -33,6 +33,10 @@ const BasicInfo = () => {
     sortBy: 'createdAt',
     filter: 'peer',
   });
+
+  useEffect(() => {
+    setUploadingFile(isLoading);
+  }, [isLoading]);
 
   const { data: usersList } = useFetchUsers(serialize(query));
 

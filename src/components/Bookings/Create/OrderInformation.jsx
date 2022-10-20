@@ -1,4 +1,6 @@
-import { Textarea, TextInput } from '@mantine/core';
+import { useFormContext } from '../../../context/formContext';
+import TextInput from '../../shared/TextInput';
+import Textarea from '../../shared/TextareaInput';
 
 const styles = {
   label: {
@@ -27,21 +29,33 @@ const textAreaStyles = {
   },
 };
 
-const OrderInfo = () => (
-  <div className="pl-5 pr-7 mt-4">
-    <p className="text-xl font-bold">Order Information</p>
-    <div className="grid grid-cols-2 gap-8 mt-4">
-      <TextInput styles={styles} label="Campaign Name" placeholder="Write..." />
+const OrderInfo = () => {
+  const { errors } = useFormContext();
 
-      <div>
-        <Textarea
-          styles={textAreaStyles}
-          label="Description"
-          placeholder="Maximun 200 characters"
+  return (
+    <div className="pl-5 pr-7 mt-4">
+      <p className="text-xl font-bold">Order Information</p>
+      <div className="grid grid-cols-2 gap-8 mt-4">
+        <TextInput
+          styles={styles}
+          label="Campaign Name"
+          name="campaignName"
+          placeholder="Write..."
+          errors={errors}
         />
+
+        <div>
+          <Textarea
+            styles={textAreaStyles}
+            label="Description"
+            name="description"
+            placeholder="Maximun 200 characters"
+            errors={errors}
+          />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default OrderInfo;

@@ -152,7 +152,7 @@ const Sidebar = () => {
     <div className="hidden lg:block lg:col-span-2 mt-4">
       <div className="flex flex-col items-start gap-2 px-5">
         {sidebarMenuList.map(item => (
-          <div className="w-full flex flex-col border-gray-450 border">
+          <div className="w-full flex flex-col border-gray-450 border" key={item.label}>
             <div className="flex items-center justify-between ">
               <Button
                 onClick={() => {

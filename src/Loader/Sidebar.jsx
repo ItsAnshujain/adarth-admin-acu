@@ -7,7 +7,7 @@ const Sidebar = () => (
   <div className="hidden lg:block lg:col-span-2 pt-4  border-r border-slate-300 w-[16.70%] h-[calc(100vh-80px)]">
     <div className="flex flex-col items-start gap-4">
       {sidebarText.map(_ => (
-        <div className="ml-4 flex w-full">
+        <div className="ml-4 flex w-full" key={Math.random()}>
           <Skeleton
             className="w-full max-w-[210px] lg:max-w-[140px] xl:max-w-[215px]"
             height={height}
