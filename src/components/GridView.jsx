@@ -13,29 +13,48 @@ const GridView = ({
   activePage = 1,
   setActivePage = () => {},
   isLoadingList,
-}) => (
-  <>
-    <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[70%] overflow-y-auto">
-      {list.map(item => (
-        <Card key={item?._id} data={item} />
-      ))}
-      {isLoadingList ? skeletonList() : null}
-    </div>
-    <div className="flex justify-end my-4 pr-7">
-      <Pagination
-        styles={theme => ({
-          item: {
-            color: theme.colors.gray[9],
-            fontWeight: 100,
-            fontSize: '0.7em',
-          },
-        })}
-        page={activePage}
-        onChange={setActivePage}
-        total={totalPages}
-      />
-    </div>
-  </>
-);
+  selectedCards = [],
+  setSelectedCards = () => {},
+}) => {
+  const handleCardSelection = (cardId, itemId) => {
+    if (selectedCards.includes(itemId)) {
+      setSelectedCards(selectedCards.filter(ele => ele !== itemId));
+    } else {
+      const tempArr = [...selectedCards];
+      tempArr.push(cardId);
+      setSelectedCards(tempArr); // TODO: use immmer
+    }
+  };
+
+  return (
+    <>
+      <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[70%] overflow-y-auto">
+        {list.map(item => (
+          <Card
+            key={item?._id}
+            data={item}
+            isSelected={selectedCards.includes(item._id)}
+            onSelect={cardId => handleCardSelection(cardId, item._id)}
+          />
+        ))}
+        {isLoadingList ? skeletonList() : null}
+      </div>
+      <div className="flex justify-end my-4 pr-7">
+        <Pagination
+          styles={theme => ({
+            item: {
+              color: theme.colors.gray[9],
+              fontWeight: 100,
+              fontSize: '0.7em',
+            },
+          })}
+          page={activePage}
+          onChange={setActivePage}
+          total={totalPages}
+        />
+      </div>
+    </>
+  );
+};
 
 export default GridView;

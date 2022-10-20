@@ -9,3 +9,5 @@ export const fetchInventoryById = inventoryId => http.get(`/inventory/${inventor
 export const updateInventory = (inventoryId, data) => http.patch(`/inventory/${inventoryId}`, data);
 
 export const deleteInventoryById = inventoryId => http.delete(`/inventory/${inventoryId}`);
+
+export const deleteInventory = query => http.delete(`/inventory${query}`);

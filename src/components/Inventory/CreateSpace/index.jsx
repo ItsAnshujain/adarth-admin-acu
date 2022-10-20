@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import BasicInfo from './BasicInformation';
@@ -243,6 +243,7 @@ const initialValues = {
 };
 
 const MainArea = () => {
+  const navigate = useNavigate();
   const { id: inventoryId } = useParams();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
@@ -291,6 +292,7 @@ const MainArea = () => {
       } else {
         create(data);
       }
+      setTimeout(() => navigate('/inventory'), 2000);
     }
   };
 

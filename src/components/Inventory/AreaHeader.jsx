@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Text, Button, Image } from '@mantine/core';
+import { Text, Button, Image, Checkbox } from '@mantine/core';
 import classNames from 'classnames';
 import { Plus, ChevronDown, Server, Grid, MapPin } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
@@ -10,7 +10,14 @@ import DateRange from '../DateRange';
 import Filter from '../Filter';
 import useLayoutView from '../../store/layout.store';
 
-const AreaHeader = ({ text }) => {
+const AreaHeader = ({
+  text,
+  handleSelectedCards = () => {},
+  noOfCardsSelected,
+  totalCards,
+  onDeleteCards = () => {},
+  isLoading = false,
+}) => {
   const { pathname } = useLocation();
   const [addDetailsClicked, setAddDetails] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -45,9 +52,27 @@ const AreaHeader = ({ text }) => {
         {!pathname.includes('reports') && (
           <div className="mr-2 flex ">
             <Button
+              onClick={onDeleteCards}
+              className="border-gray-450 text-black font-normal radius-md mr-2"
+              disabled={noOfCardsSelected === 0 || isLoading}
+              loading={isLoading}
+            >
+              Delete items
+            </Button>
+            {activeLayout === 'grid' ? (
+              <Checkbox
+                className="mr-5"
+                onChange={event => handleSelectedCards(event.target.checked)}
+                label="Select All Product"
+                classNames={{ root: 'flex flex-row-reverse', label: 'pr-2' }}
+                indeterminate={noOfCardsSelected > 0 && !(totalCards === noOfCardsSelected)}
+                checked={totalCards === noOfCardsSelected}
+              />
+            ) : null}
+            <Button
               className={classNames(
                 `px-4 border-gray-300 border rounded-md ${
-                  activeLayout === 'list' ? 'bg-black' : 'bg-white'
+                  activeLayout === 'list' ? 'bg-purple-450' : 'bg-white'
                 }`,
               )}
               onClick={handleListClick}
@@ -62,7 +87,7 @@ const AreaHeader = ({ text }) => {
             <Button
               className={classNames(
                 `text-white border-gray-300 border px-4 rounded-md ${
-                  activeLayout === 'grid' ? 'bg-black' : 'bg-white'
+                  activeLayout === 'grid' ? 'bg-purple-450' : 'bg-white'
                 }`,
               )}
               onClick={handleGridClick}
@@ -77,7 +102,7 @@ const AreaHeader = ({ text }) => {
             <Button
               className={classNames(
                 `px-4 border-gray-300 border rounded-md ${
-                  activeLayout === 'map' ? 'bg-black' : 'bg-white'
+                  activeLayout === 'map' ? 'bg-purple-450' : 'bg-white'
                 }`,
               )}
               onClick={handleMapClick}

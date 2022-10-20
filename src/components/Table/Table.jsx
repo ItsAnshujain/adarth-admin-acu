@@ -17,7 +17,7 @@ const Table = ({
   isCreateOrder = false,
   activePage = 1,
   totalPages = 1,
-  selectedRows = () => {},
+  setSelectedFlatRows = () => {},
   setActivePage = () => {},
   rowCountLimit = 10,
   selectedRowData = [],
@@ -72,7 +72,7 @@ const Table = ({
   }
 
   useEffect(() => {
-    selectedRows(selectedFlatRows);
+    setSelectedFlatRows(selectedFlatRows);
   }, [selectedFlatRows]);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Badge, Box, Button, Image, Progress } from '@mantine/core';
@@ -10,7 +10,7 @@ import Search from '../../components/Search';
 import GridView from '../../components/GridView';
 import MapView from '../../components/Inventory/MapView';
 import useLayoutView from '../../store/layout.store';
-import { useFetchInventory } from '../../hooks/inventory.hooks';
+import { useDeleteInventory, useFetchInventory } from '../../hooks/inventory.hooks';
 import MenuPopover from '../../components/Inventory/MenuPopover';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
@@ -27,6 +27,22 @@ const Home = () => {
   const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
     `${searchParams.toString()}`,
   );
+  const { mutate: deleteInventoryData, isLoading: isLoadingDeletedInventoryData } =
+    useDeleteInventory();
+  const [selectedCards, setSelectedCards] = useState([]);
+
+  const handleSelectedCards = isCheckedSelected => {
+    if (inventoryData?.docs.length > 0 && isCheckedSelected) {
+      setSelectedCards(inventoryData?.docs?.map(item => item._id));
+    } else {
+      setSelectedCards([]);
+    }
+  };
+
+  const handleDeleteCards = () => {
+    deleteInventoryData(selectedCards);
+    setSelectedCards([]);
+  };
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
@@ -197,12 +213,11 @@ const Home = () => {
       {
         Header: '',
         accessor: 'details',
-        Cell: tableProps =>
-          useMemo(() => {
-            const { _id } = tableProps.row.original;
-
-            return <MenuPopover itemId={_id} />;
-          }, []),
+        Cell: ({
+          row: {
+            original: { _id },
+          },
+        }) => useMemo(() => <MenuPopover itemId={_id} />, []),
       },
     ],
     [inventoryData?.docs],
@@ -233,7 +248,14 @@ const Home = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <AreaHeader text="List of spaces" />
+      <AreaHeader
+        text="List of spaces"
+        handleSelectedCards={handleSelectedCards}
+        noOfCardsSelected={selectedCards?.length}
+        totalCards={inventoryData?.docs?.length}
+        onDeleteCards={handleDeleteCards}
+        isLoading={isLoadingDeletedInventoryData}
+      />
       {viewType !== 'map' && (
         <div className="flex justify-between h-20 items-center pr-7">
           <RowsPerPage setCount={handleRowCount} count={limit} />
@@ -247,7 +269,9 @@ const Home = () => {
           activePage={inventoryData?.page}
           totalPages={inventoryData?.totalPages}
           setActivePage={handlePagination}
-          isLoadingList={isLoadingInventoryData}
+          isLoadingList={isLoadingInventoryData || isLoadingDeletedInventoryData}
+          selectedCards={selectedCards}
+          setSelectedCards={setSelectedCards}
         />
       ) : viewType === 'list' ? (
         <Table
@@ -257,6 +281,9 @@ const Home = () => {
           totalPages={inventoryData?.totalPages || 1}
           setActivePage={handlePagination}
           rowCountLimit={limit}
+          allowRowsSelect
+          selectedRowData={selectedCards}
+          setSelectedFlatRows={ele => setSelectedCards(ele?.map(itm => itm.original._id))}
         />
       ) : viewType === 'map' ? (
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto mt-5">
