@@ -8,6 +8,23 @@ const inititalFilterData = {
     'own': 'Own',
     'peers': 'Peers',
   },
+  'category': {
+    'billboards': 'Billboards',
+    'digital_screens': 'Digital Screens',
+    'transit_media': 'Transit Media',
+    'street_furniture': 'Street Furniture',
+  },
+  'subCategory': {
+    'billboards': 'Billboards',
+    'unipoles': 'Unipoles',
+    'car_wraps': 'Car Wraps',
+    'bus_wraps': 'Bus Wraps',
+    'digital_screens': 'Digital Screens',
+  },
+  'mediaType': {
+    'premium': 'Premium',
+    'economical': 'Economical',
+  },
   'cities': {
     'tier_1': 'Tier 1',
     'tier_2': 'Tier 2',
@@ -66,7 +83,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const [tierCity, setTierCity] = useState();
 
   const handleCheckedValues = (filterValues, filterKey) => {
-    console.log(filterValues, filterKey);
     searchParams.set(filterKey, filterValues);
     setTierCity(filterValues);
     // const urlParam = new URLSearchParams();
@@ -91,8 +107,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
   const handleNavigationByFilter = () => {
     setSearchParams(searchParams);
-    console.log(searchParams.toString());
-
     // const urlParam = new URLSearchParams();
     // urlParam.append('city', item.status);
     // searchParams.delete('status');
@@ -161,6 +175,35 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <div className="mt-2">
                 {renderStatus(inititalFilterData.inventoryOwner, 'landlord')}
               </div>
+            </Accordion.Panel>
+          </Accordion.Item>
+
+          <Accordion.Item value="category" className="mb-4 rounded-xl border">
+            <Accordion.Control>
+              <p className="text-lg">Category</p>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <div className="mt-2">{renderStatus(inititalFilterData.category, 'category')}</div>
+            </Accordion.Panel>
+          </Accordion.Item>
+
+          <Accordion.Item value="subCategory" className="mb-4 rounded-xl border">
+            <Accordion.Control>
+              <p className="text-lg">Sub Category</p>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <div className="mt-2">
+                {renderStatus(inititalFilterData.subCategory, 'subCategory')}
+              </div>
+            </Accordion.Panel>
+          </Accordion.Item>
+
+          <Accordion.Item value="mediaType" className="mb-4 rounded-xl border">
+            <Accordion.Control>
+              <p className="text-lg">Media Type</p>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <div className="mt-2">{renderStatus(inititalFilterData.mediaType, 'mediaType')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
