@@ -26,7 +26,7 @@ const Header = ({ pageNumber, setPageNumber }) => {
 
   const navigate = useNavigate();
   return (
-    <div className="h-20 border-b border-gray-450 flex justify-between items-center flex-wrap">
+    <div className="h-[60px] border-b border-gray-450 flex justify-between items-center flex-wrap">
       <div className="flex pl-5 gap-3 items-center font-medium">
         <button onClick={() => navigate(-1)} className="mr-4" type="button">
           <ArrowLeft />
@@ -37,7 +37,7 @@ const Header = ({ pageNumber, setPageNumber }) => {
           className={classNames(
             `${
               pageNumber === 0
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-8 after:bg-purple-450'
+                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
                 : ''
             }`,
           )}
@@ -49,7 +49,7 @@ const Header = ({ pageNumber, setPageNumber }) => {
           className={classNames(
             `${
               pageNumber === 1
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-8 after:bg-purple-450'
+                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
                 : ''
             }`,
           )}
@@ -62,7 +62,7 @@ const Header = ({ pageNumber, setPageNumber }) => {
           className={classNames(
             `${
               pageNumber === 2
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-8 after:bg-purple-450'
+                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
                 : ''
             }`,
           )}

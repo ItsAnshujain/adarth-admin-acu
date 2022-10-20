@@ -8,7 +8,7 @@ const initialState = ['Basic Information', 'Order Information', 'Select Spaces']
 const Header = ({ setFormStep, formStep, submitRef }) => {
   const navigate = useNavigate();
   return (
-    <div className="h-20 border-b border-gray-450 flex justify-between items-center">
+    <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <div className="flex gap-6 pl-5 relative">
         {initialState.map((val, index) => (
           <Chip

@@ -38,7 +38,7 @@ const Header = () => {
 
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>
-      <Tabs.List className="h-20 relative">
+      <Tabs.List className="h-[60px] relative">
         <Tabs.Tab className="text-base hover:bg-transparent" value="first">
           Overview
         </Tabs.Tab>
@@ -46,7 +46,7 @@ const Header = () => {
           Managing
         </Tabs.Tab>
         <button
-          className="absolute right-7 top-7 bg-purple-450 text-white px-4 py-2 rounded-md"
+          className="absolute right-7 top-3 bg-purple-450 text-white px-4 py-2 rounded-md"
           type="button"
           onClick={() => navigate(`/users/edit-details/${userId}`)}
         >
@@ -204,12 +204,12 @@ const Header = () => {
                   <RowsPerPage setCount={setCount} count={count} />
                   <Search search={search} setSearch={setSearch} />
                 </div>
-                <Table dummy={dummy} COLUMNS={column} />
+                <Table data={dummy} COLUMNS={column} />
               </div>
             </Tabs.Panel>
             <Tabs.Panel value="proposal" className="mr-5">
               <div className="mt-8">
-                <Table dummy={dummy2} COLUMNS={columns} />
+                <Table data={dummy2} COLUMNS={columns} />
               </div>
             </Tabs.Panel>
           </Tabs>

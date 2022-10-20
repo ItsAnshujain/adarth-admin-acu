@@ -119,7 +119,7 @@ const EditProfile = () => {
     <FormProvider form={form}>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Tabs value={activeTab} onTabChange={setActiveTab}>
-          <Tabs.List className="h-20 relative">
+          <Tabs.List className="h-[60px] relative">
             <Tabs.Tab className="text-base hover:bg-transparent" value="first">
               Basic Information
             </Tabs.Tab>

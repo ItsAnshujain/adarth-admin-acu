@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import shallow from 'zustand/shallow';
 import Login from './pages/Login/Login';
 import LoginMain from './pages/Login/Home';
 import ChangePassword from './pages/Login/ChangePassword';
@@ -9,10 +10,10 @@ import Header from './Loader/Header';
 import Loader from './Loader';
 import CustomLoader from './Loader/Loader';
 import Sidebar from './Loader/Sidebar';
-import RequireAuth from './components/Auth';
 import NoMatch from './pages/NoMatch';
 import { useFetchUsersById } from './hooks/users.hooks';
-import useUserStore from './store/user.store';
+import useTokenIdStore from './store/user.store';
+import ProtectedRoutes from './utils/ProtectedRoutes';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -65,49 +66,59 @@ const FinanceMonthlyDetails = lazy(() => import('./pages/Finance/MonthlyDetails'
 const FinanceCreateOrder = lazy(() => import('./pages/Finance/Create'));
 const FinanceCreateOrderUpload = lazy(() => import('./pages/Finance/CreateAuto'));
 
+const HeaderSidebarLoader = () => (
+  <>
+    <Header />
+    <Sidebar />
+  </>
+);
+
 const App = () => {
-  const id = useUserStore(state => state.id);
+  const location = useLocation();
+  const { token, id } = useTokenIdStore(state => ({ id: state.id, token: state.token }), shallow);
+
   useFetchUsersById(id, !!id);
+
+  // to avoid logged in users to access the routes
+  if (
+    token &&
+    (location.pathname.includes('/login') ||
+      location.pathname.includes('/forgot-password') ||
+      location.pathname.includes('/change-password'))
+  ) {
+    return <Navigate to="/home" replace />;
+  }
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/" element={<Login />}>
-          <Route path="login" element={<LoginMain />} />
-          <Route path="change-password" element={<ChangePassword />} />
-          <Route path="forgot-password" element={<ForgotPassword />} />
-        </Route>
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" />} />
+      <Route
+        path="/"
+        element={
+          <Suspense fallback={<CustomLoader />}>
+            <Login />
+          </Suspense>
+        }
+      >
+        <Route path="/login" element={<LoginMain />} />
+        <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+      </Route>
+      <Route element={<ProtectedRoutes />}>
         <Route
           path="/home"
           element={
-            <Suspense
-              fallback={
-                <>
-                  <Header />
-                  <Sidebar />
-                </>
-              }
-            >
-              <RequireAuth>
-                <HomePage />
-              </RequireAuth>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <HomePage />
             </Suspense>
           }
         />
+
         <Route
           path="/inventory"
           element={
-            <Suspense
-              fallback={
-                <>
-                  <Header />
-                  <Sidebar />
-                </>
-              }
-            >
-              <RequireAuth>
-                <Inventory />
-              </RequireAuth>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <Inventory />
             </Suspense>
           }
         >
@@ -115,9 +126,7 @@ const App = () => {
             path=""
             element={
               <Suspense fallback={<Loader />}>
-                <RequireAuth>
-                  <InventoryHome />
-                </RequireAuth>
+                <InventoryHome />
               </Suspense>
             }
           />
@@ -125,9 +134,7 @@ const App = () => {
             path="create-space/single"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <CreateSpaceSingle />
-                </RequireAuth>
+                <CreateSpaceSingle />
               </Suspense>
             }
           />
@@ -135,9 +142,7 @@ const App = () => {
             path="create-space/bulk"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <CreateSpaceBulk />
-                </RequireAuth>
+                <CreateSpaceBulk />
               </Suspense>
             }
           />
@@ -145,9 +150,7 @@ const App = () => {
             path="edit-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <CreateSpaceSingle />
-                </RequireAuth>
+                <CreateSpaceSingle />
               </Suspense>
             }
           />
@@ -155,9 +158,7 @@ const App = () => {
             path="view-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <SpaceDetails />
-                </RequireAuth>
+                <SpaceDetails />
               </Suspense>
             }
           />
@@ -165,17 +166,8 @@ const App = () => {
         <Route
           path="/campaigns"
           element={
-            <Suspense
-              fallback={
-                <>
-                  <Header />
-                  <Sidebar />
-                </>
-              }
-            >
-              <RequireAuth>
-                <Campaigns />
-              </RequireAuth>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <Campaigns />
             </Suspense>
           }
         >
@@ -183,9 +175,7 @@ const App = () => {
             path=""
             element={
               <Suspense fallback={<Loader />}>
-                <RequireAuth>
-                  <CampaignHome />
-                </RequireAuth>
+                <CampaignHome />
               </Suspense>
             }
           />
@@ -193,9 +183,7 @@ const App = () => {
             path="create-campaign"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <CampaignCreate />
-                </RequireAuth>
+                <CampaignCreate />
               </Suspense>
             }
           />
@@ -203,9 +191,7 @@ const App = () => {
             path="edit-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <CampaignCreate />
-                </RequireAuth>
+                <CampaignCreate />
               </Suspense>
             }
           />
@@ -213,9 +199,7 @@ const App = () => {
             path="view-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <CampaignView />
-                </RequireAuth>
+                <CampaignView />
               </Suspense>
             }
           />
@@ -223,17 +207,8 @@ const App = () => {
         <Route
           path="/proposals"
           element={
-            <Suspense
-              fallback={
-                <>
-                  <Header />
-                  <Sidebar />
-                </>
-              }
-            >
-              <RequireAuth>
-                <Proposals />
-              </RequireAuth>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <Proposals />
             </Suspense>
           }
         >
@@ -241,9 +216,7 @@ const App = () => {
             path=""
             element={
               <Suspense fallback={<Loader />}>
-                <RequireAuth>
-                  <ProposalsHome />
-                </RequireAuth>
+                <ProposalsHome />
               </Suspense>
             }
           />
@@ -251,9 +224,7 @@ const App = () => {
             path="create-proposals"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <CreateProposals />
-                </RequireAuth>
+                <CreateProposals />
               </Suspense>
             }
           />
@@ -261,9 +232,7 @@ const App = () => {
             path="edit-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <CreateProposals />
-                </RequireAuth>
+                <CreateProposals />
               </Suspense>
             }
           />
@@ -271,9 +240,7 @@ const App = () => {
             path="view-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <ViewProposal />
-                </RequireAuth>
+                <ViewProposal />
               </Suspense>
             }
           />
@@ -281,17 +248,8 @@ const App = () => {
         <Route
           path="/bookings"
           element={
-            <Suspense
-              fallback={
-                <>
-                  <Header />
-                  <Sidebar />
-                </>
-              }
-            >
-              <RequireAuth>
-                <Booking />
-              </RequireAuth>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <Booking />
             </Suspense>
           }
         >
@@ -299,9 +257,7 @@ const App = () => {
             path=""
             element={
               <Suspense fallback={<Loader />}>
-                <RequireAuth>
-                  <BookingHome />
-                </RequireAuth>
+                <BookingHome />
               </Suspense>
             }
           />
@@ -309,9 +265,7 @@ const App = () => {
             path="view-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <ViewBooking />
-                </RequireAuth>
+                <ViewBooking />
               </Suspense>
             }
           />
@@ -319,9 +273,7 @@ const App = () => {
             path="generate-purchase-order/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <Generate />
-                </RequireAuth>
+                <Generate />
               </Suspense>
             }
           />
@@ -329,9 +281,7 @@ const App = () => {
             path="generate-release-order/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <Generate />
-                </RequireAuth>
+                <Generate />
               </Suspense>
             }
           />
@@ -339,9 +289,7 @@ const App = () => {
             path="generate-invoice/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <Generate />
-                </RequireAuth>
+                <Generate />
               </Suspense>
             }
           />
@@ -349,9 +297,7 @@ const App = () => {
             path="create-order"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <CreateOrder />
-                </RequireAuth>
+                <CreateOrder />
               </Suspense>
             }
           />
@@ -359,17 +305,8 @@ const App = () => {
         <Route
           path="users"
           element={
-            <Suspense
-              fallback={
-                <>
-                  <Header />
-                  <Sidebar />
-                </>
-              }
-            >
-              <RequireAuth>
-                <User />
-              </RequireAuth>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <User />
             </Suspense>
           }
         >
@@ -377,9 +314,7 @@ const App = () => {
             path=""
             element={
               <Suspense fallback={<Loader />}>
-                <RequireAuth>
-                  <UserHome />
-                </RequireAuth>
+                <UserHome />
               </Suspense>
             }
           />
@@ -387,9 +322,7 @@ const App = () => {
             path="create-user"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <CreateUser />
-                </RequireAuth>
+                <CreateUser />
               </Suspense>
             }
           />
@@ -397,9 +330,7 @@ const App = () => {
             path="edit-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <CreateUser />
-                </RequireAuth>
+                <CreateUser />
               </Suspense>
             }
           />
@@ -407,9 +338,7 @@ const App = () => {
             path="view-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <ViewUser />
-                </RequireAuth>
+                <ViewUser />
               </Suspense>
             }
           />
@@ -417,17 +346,8 @@ const App = () => {
         <Route
           path="/reports"
           element={
-            <Suspense
-              fallback={
-                <>
-                  <Header />
-                  <Sidebar />
-                </>
-              }
-            >
-              <RequireAuth>
-                <ReportHome />
-              </RequireAuth>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <ReportHome />
             </Suspense>
           }
         >
@@ -435,9 +355,7 @@ const App = () => {
             path="inventory"
             element={
               <Suspense fallback={<Loader />}>
-                <RequireAuth>
-                  <ReportInventory />
-                </RequireAuth>
+                <ReportInventory />
               </Suspense>
             }
           />
@@ -445,9 +363,7 @@ const App = () => {
             path="revenue"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <ReportRevenue />
-                </RequireAuth>
+                <ReportRevenue />
               </Suspense>
             }
           />
@@ -455,9 +371,7 @@ const App = () => {
             path="campaign"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <ReportCampaign />
-                </RequireAuth>
+                <ReportCampaign />
               </Suspense>
             }
           />
@@ -466,17 +380,8 @@ const App = () => {
         <Route
           path="/masters"
           element={
-            <Suspense
-              fallback={
-                <>
-                  <Header />
-                  <Sidebar />
-                </>
-              }
-            >
-              <RequireAuth>
-                <MasterHome />
-              </RequireAuth>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <MasterHome />
             </Suspense>
           }
         />
@@ -484,17 +389,8 @@ const App = () => {
         <Route
           path="/notification"
           element={
-            <Suspense
-              fallback={
-                <>
-                  <Header />
-                  <Sidebar />
-                </>
-              }
-            >
-              <RequireAuth>
-                <Notifications />
-              </RequireAuth>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <Notifications />
             </Suspense>
           }
         />
@@ -502,34 +398,16 @@ const App = () => {
         <Route
           path="/setting"
           element={
-            <Suspense
-              fallback={
-                <>
-                  <Header />
-                  <Sidebar />
-                </>
-              }
-            >
-              <RequireAuth>
-                <Settings />
-              </RequireAuth>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <Settings />
             </Suspense>
           }
         />
         <Route
           path="/"
           element={
-            <Suspense
-              fallback={
-                <>
-                  <Header />
-                  <Sidebar />
-                </>
-              }
-            >
-              <RequireAuth>
-                <Profile />
-              </RequireAuth>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <Profile />
             </Suspense>
           }
         >
@@ -537,9 +415,7 @@ const App = () => {
             path="profile"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <ProfileHome />
-                </RequireAuth>
+                <ProfileHome />
               </Suspense>
             }
           />
@@ -547,9 +423,7 @@ const App = () => {
             path="edit-profile"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <ProfileEdit />
-                </RequireAuth>
+                <ProfileEdit />
               </Suspense>
             }
           />
@@ -558,17 +432,8 @@ const App = () => {
         <Route
           path="/"
           element={
-            <Suspense
-              fallback={
-                <>
-                  <Header />
-                  <Sidebar />
-                </>
-              }
-            >
-              <RequireAuth>
-                <Finance />
-              </RequireAuth>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <Finance />
             </Suspense>
           }
         >
@@ -576,9 +441,7 @@ const App = () => {
             path="/finance"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <FinanceHome />
-                </RequireAuth>
+                <FinanceHome />
               </Suspense>
             }
           />
@@ -586,9 +449,7 @@ const App = () => {
             path="/finance/:year"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <FinanceMonthly />
-                </RequireAuth>
+                <FinanceMonthly />
               </Suspense>
             }
           />
@@ -596,9 +457,7 @@ const App = () => {
             path="/finance/:year/details"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <FinanceMonthlyDetails />
-                </RequireAuth>
+                <FinanceMonthlyDetails />
               </Suspense>
             }
           />
@@ -606,9 +465,7 @@ const App = () => {
             path="/finance/create-order/:type"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <FinanceCreateOrder />
-                </RequireAuth>
+                <FinanceCreateOrder />
               </Suspense>
             }
           />
@@ -616,16 +473,14 @@ const App = () => {
             path="/finance/create-order/:type/upload"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <RequireAuth>
-                  <FinanceCreateOrderUpload />
-                </RequireAuth>
+                <FinanceCreateOrderUpload />
               </Suspense>
             }
           />
         </Route>
-        <Route path="*" element={<NoMatch />} />
-      </Routes>
-    </Router>
+      </Route>
+      <Route path="*" element={<NoMatch />} />
+    </Routes>
   );
 };
 

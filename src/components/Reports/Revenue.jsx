@@ -10,18 +10,20 @@ import {
   BarElement,
   Tooltip,
 } from 'chart.js';
-import { Button } from '@mantine/core';
+import { Button, Image } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
 import Header from './Header';
-import orangeFolder from '../../assets/upcoming.svg';
-import greenFolder from '../../assets/ongoing.svg';
-import blueFolder from '../../assets/completed.svg';
 import toIndianCurrency from '../../utils/currencyFormat';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import FilterRevenue from './FilterRevenue';
 import useSideBarState from '../../store/sidebar.store';
+import TotalRevenueIcon from '../../assets/total-revenue.svg';
+import OfflineRevenueIcon from '../../assets/offline-revenue.svg';
+import OnlineRevenueIcon from '../../assets/online-revenue.svg';
+import ProposalSentIcon from '../../assets/proposal-sent.svg';
+import OperationalCostIcon from '../../assets/operational-cost.svg';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Title);
 
@@ -84,7 +86,6 @@ const Revenue = () => {
   const [showDatePickerRevenue, setShowDatePickerRevenue] = useState(false);
   // const [showDateIndustry, setShowDateIndustry] = useState(false);
   const [showDateCity, setShowDateCity] = useState(false);
-  // const [lineRevenueGraph, setLineRevenueGraph] = useState();
 
   const revenueRef = useClickOutside(() => setShowDatePickerRevenue(false));
   // const dateIndustryRef = useClickOutside(() => setShowDateIndustry(false));
@@ -103,27 +104,27 @@ const Revenue = () => {
       <div className="mr-7 pl-5 mt-5 mb-10">
         <div className="flex flex-1 justify-between gap-4 flex-wrap mb-8 ">
           <div className="border rounded p-8 flex-1">
-            <img src={orangeFolder} alt="folder" />
+            <Image src={TotalRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Revenue</p>
             <p className="font-bold">{toIndianCurrency(386387)}</p>
           </div>
           <div className="border rounded p-8  flex-1">
-            <img src={greenFolder} alt="folder" />
+            <Image src={OfflineRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Offline Revenue</p>
             <p className="font-bold">{toIndianCurrency(386)}</p>
           </div>
           <div className="border rounded p-8 flex-1">
-            <img src={greenFolder} alt="folder" />
+            <Image src={OnlineRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Online Revenue</p>
             <p className="font-bold">{toIndianCurrency(386)}</p>
           </div>
           <div className="border rounded p-8 flex-1">
-            <img src={blueFolder} alt="folder" />
+            <Image src={ProposalSentIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Proposals Sent</p>
             <p className="font-bold">386387</p>
           </div>
           <div className="border rounded p-8 flex-1">
-            <img src={blueFolder} alt="folder" />
+            <Image src={OperationalCostIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Operational Cost</p>
             <p className="font-bold">386387</p>
           </div>

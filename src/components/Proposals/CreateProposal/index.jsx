@@ -1,20 +1,23 @@
 import { useState, useEffect } from 'react';
 import * as yup from 'yup';
-import { yupResolver } from '@mantine/form';
-import dayjs from 'dayjs';
 import { useNavigate, useParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
+import { yupResolver } from '@mantine/form';
+import { useDebouncedState } from '@mantine/hooks';
 import BasicInfo from './BasicInfo';
 import Spaces from '../Spaces';
 import SuccessModal from '../../shared/Modal';
 import Header from './Header';
-import { useCreateProposal, useFetchProposalById } from '../../../hooks/proposal.hooks';
+import {
+  useCreateProposal,
+  useUpdateProposal,
+  useFetchProposalById,
+} from '../../../hooks/proposal.hooks';
 import { FormProvider, useForm } from '../../../context/formContext';
 
-const UTC_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ[Z]';
 const schema = yup.object().shape({
   name: yup.string().trim().required('Name is required'),
-  description: yup.string().trim().required('Description is required'),
+  description: yup.string().trim(),
   startDate: yup
     .string()
     .test('startDate', 'Start Date must be less that End Date', function (val) {
@@ -41,24 +44,36 @@ const Main = () => {
   const navigate = useNavigate();
   const { id: proposalId } = useParams();
   const [selectedRow, setSelectedRow] = useState([]);
-
+  const [proposedPrice, setProposedPrice] = useDebouncedState(null, 1000);
   const { mutate: create, isLoading: isCreateProposalLoading } = useCreateProposal();
+  const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalData } = useFetchProposalById(proposalId, !!proposalId);
+
+  const handleUpdatedProposedPrice = (val, id) => setProposedPrice({ price: val, inventoryId: id });
+
   const getForm = () =>
-    formStep === 1 ? <BasicInfo /> : <Spaces setSelectedRow={setSelectedRow} />;
+    formStep === 1 ? (
+      <BasicInfo />
+    ) : (
+      <Spaces
+        setSelectedRow={setSelectedRow}
+        selectedRowData={proposalData?.spaces || []}
+        noOfSelectedPlaces={selectedRow.length}
+        setProposedPrice={handleUpdatedProposedPrice}
+      />
+    );
 
   const onSubmit = formData => {
     let data = {};
-    const startDate = dayjs(formData?.startDate).format(UTC_FORMAT);
-    const endDate = dayjs(formData?.endDate).format(UTC_FORMAT);
-    data = { ...formData, startDate, endDate };
+    data = {
+      ...formData,
+    };
     setFormStep(2);
     if (formStep === 2) {
       if (selectedRow.length === 0) {
         showNotification({
           title: 'Add Spaces',
           message: 'Please select atleast one space to continue',
-          autoClose: 3000,
           color: 'blue',
         });
         return;
@@ -67,8 +82,8 @@ const Main = () => {
       const spaceArray = [];
       selectedRow?.map(item => {
         const element = {
-          _id: item.original._id,
-          price: item.original.price,
+          id: item.original._id,
+          price: item.original.basicInformation.price,
         };
         spaceArray.push(element);
 
@@ -77,7 +92,27 @@ const Main = () => {
 
       data.spaces = [...spaceArray];
 
-      create(data);
+      if (proposedPrice) {
+        const newSpaceArray = spaceArray.map(item => {
+          if (item.id === proposedPrice.inventoryId) {
+            return { ...item, price: proposedPrice.price };
+          }
+          return item;
+        });
+        data.spaces = [...newSpaceArray];
+      }
+
+      Object.keys(data).forEach(key => {
+        if (data[key] === '') {
+          delete data[key];
+        }
+      });
+
+      if (proposalId) {
+        update({ proposalId, data });
+      } else {
+        create(data);
+      }
       form.reset();
 
       setTimeout(() => navigate('/proposals'), 2000);
@@ -87,6 +122,15 @@ const Main = () => {
   useEffect(() => {
     if (proposalData) {
       form.setFieldValue('name', proposalData?.name);
+      form.setFieldValue('description', proposalData?.description);
+
+      if (proposalData?.startDate) {
+        form.setFieldValue('startDate', new Date(proposalData.startDate));
+      }
+
+      if (proposalData?.endDate) {
+        form.setFieldValue('endDate', new Date(proposalData.endDate));
+      }
     }
   }, [proposalData]);
 
@@ -94,11 +138,12 @@ const Main = () => {
     <>
       <FormProvider form={form}>
         <form onSubmit={form.onSubmit(onSubmit)}>
-          <div className="h-20 border-b border-gray-450 flex justify-between items-center">
+          <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
             <Header
               setFormStep={setFormStep}
               formStep={formStep}
-              isCreateProposalLoading={isCreateProposalLoading}
+              isProposalLoading={isCreateProposalLoading || isUpdateProposalLoading}
+              isEditable={!!proposalId}
             />
           </div>
           {getForm()}

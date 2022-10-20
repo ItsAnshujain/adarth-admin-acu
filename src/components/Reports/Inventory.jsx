@@ -13,11 +13,9 @@ import {
   ArcElement,
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
-import { Button } from '@mantine/core';
+import { Button, Image } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import Header from './Header';
-import greenFolder from '../../assets/ongoing.svg';
-import blueFolder from '../../assets/completed.svg';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import Filter from '../Filter';
@@ -30,6 +28,13 @@ import COLUMNS from './ColumnInventory';
 import dummy from '../../Dummydata/Inventory.json';
 import Card from '../Inventory/Card';
 import useSideBarState from '../../store/sidebar.store';
+import InventoryIcon from '../../assets/inventory-active.svg';
+import OperationalCostIcon from '../../assets/operational-cost.svg';
+import VacantIcon from '../../assets/vacant.svg';
+import OccupiedIcon from '../../assets/occupied.svg';
+import UnderMaintenaceIcon from '../../assets/under-maintenance.svg';
+import BestIcon from '../../assets/best-performing-inventory.svg';
+import WorstIcon from '../../assets/worst-performing-inventory.svg';
 
 ChartJS.register(
   ArcElement,
@@ -120,27 +125,27 @@ const Inventory = () => {
       <div className="pr-7 pl-5 mt-5 mb-10">
         <div className="flex justify-between gap-4 flex-wrap mb-8">
           <div className="border rounded p-8  flex-1">
-            <img src={greenFolder} alt="folder" />
+            <Image src={InventoryIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Inventory</p>
             <p className="font-bold">386387</p>
           </div>
           <div className="border rounded p-8 flex-1">
-            <img src={greenFolder} alt="folder" />
+            <Image src={VacantIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Vacant</p>
             <p className="font-bold">386387</p>
           </div>
           <div className="border rounded p-8  flex-1">
-            <img src={blueFolder} alt="folder" />
+            <Image src={OccupiedIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Occupied</p>
             <p className="font-bold">386387</p>
           </div>
           <div className="border rounded p-8 flex-1">
-            <img src={greenFolder} alt="folder" />
+            <Image src={UnderMaintenaceIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Under Maintenance</p>
             <p className="font-bold">386387</p>
           </div>
           <div className="border rounded p-8 flex-1">
-            <img src={greenFolder} alt="folder" />
+            <Image src={OperationalCostIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Opertaional Cost</p>
             <p className="font-bold">386387</p>
           </div>
@@ -206,12 +211,12 @@ const Inventory = () => {
         </div>
         <div className="flex justify-between gap-4 flex-wrap my-8">
           <div className="border rounded p-8  flex-1">
-            <img src={greenFolder} alt="folder" />
+            <Image src={BestIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Best Performing Inventory</p>
             <p className="font-bold">Blogpad</p>
           </div>
           <div className="border rounded p-8 flex-1">
-            <img src={greenFolder} alt="folder" />
+            <Image src={WorstIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Worst Performing Inventory</p>
             <p className="font-bold">Oopa</p>
           </div>
@@ -232,7 +237,7 @@ const Inventory = () => {
           {view === 'grid' ? (
             <GridView selectAll={selectAll} count={count} Card={Card} />
           ) : view === 'list' ? (
-            <Table COLUMNS={COLUMNS} dummy={dummy} count={count} allowRowsSelect />
+            <Table COLUMNS={COLUMNS} data={dummy} count={count} allowRowsSelect />
           ) : null}
         </div>
       </div>

@@ -6,7 +6,7 @@ const Header = ({ text }) => {
   const [opened, setOpened] = useState(false);
   return (
     <>
-      <div className="h-20 border-b border-gray-450 flex justify-between items-center pr-7">
+      <div className="h-[60px] border-b border-gray-450 flex justify-between items-center pr-7">
         <div className="pl-5">
           <p className="text-lg font-bold">{text}</p>
         </div>

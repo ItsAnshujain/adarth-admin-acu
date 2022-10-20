@@ -1,26 +1,20 @@
-/* eslint-disable */
 import { useState } from 'react';
-import { Button, Text, Image } from '@mantine/core';
-import dummy0 from '../../../assets/unsplash.png';
-import dummy1 from '../../../assets/dummy1.png';
-import dummy2 from '../../../assets/dummy2.png';
+import { Button, Text, Image, Skeleton, Badge } from '@mantine/core';
+import { useParams } from 'react-router-dom';
+import { useToggle } from '@mantine/hooks';
 import dummy3 from '../../../assets/dummy3.png';
 import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
-import Badge from '../../shared/Badge';
-import { useToggle } from '@mantine/hooks';
+
 import { useFetchInventoryById } from '../../../hooks/inventory.hooks';
-import { useParams } from 'react-router-dom';
 import MapView from '../CreateSpace/MapView';
-import { Skeleton } from '@mantine/core';
 
 const badgeData = ['School', 'Youth', 'Student', 'College Students'];
-const imageUrl = [dummy1, dummy2, dummy0, dummy2, dummy1, dummy0];
 
 const BasicInfo = () => {
   const { id: inventoryId } = useParams();
   const [readMore, toggle] = useToggle();
-  const [scrollImage, setScrollImage] = useState(imageUrl);
+  const [scrollImage, setScrollImage] = useState([]);
   const [posterImage, setPosterImage] = useState(dummy3);
 
   const { data: inventoryDetails, isLoading: isInventoryDetailsLoading } = useFetchInventoryById(
@@ -66,7 +60,8 @@ const BasicInfo = () => {
             {!isInventoryDetailsLoading ? (
               <>
                 {scrollImage.map((src, index) => (
-                  <img
+                  <Image
+                    key={src}
                     onClick={() => exchangeImages(index)}
                     className="h-24 w-28 cursor-pointer"
                     src={src}
@@ -89,7 +84,7 @@ const BasicInfo = () => {
             <>
               <div className="flex items-center border pl-4 py-8">
                 <div className="mr-4">
-                  <img src={layers} alt="poster" />
+                  <Image src={layers} alt="poster" />
                 </div>
                 <div>
                   <Text size="sm" weight="300" color="gray">
@@ -100,7 +95,7 @@ const BasicInfo = () => {
               </div>
               <div className="flex items-center border pl-4">
                 <div className="mr-4">
-                  <img src={layers} alt="poster" />
+                  <Image src={layers} alt="poster" />
                 </div>
                 <div>
                   <Text size="sm" weight="300" color="gray">
@@ -111,7 +106,7 @@ const BasicInfo = () => {
               </div>
               <div className="flex items-center border pl-4">
                 <div className="mr-4">
-                  <img src={layers} alt="poster" />
+                  <Image src={layers} alt="poster" />
                 </div>
                 <div>
                   <Text size="sm" weight="300" color="gray">
@@ -122,7 +117,7 @@ const BasicInfo = () => {
               </div>
               <div className="flex items-center border pl-4">
                 <div className="mr-4">
-                  <img src={layers} alt="poster" />
+                  <Image src={layers} alt="poster" />
                 </div>
                 <div>
                   <Text size="sm" weight="300" color="gray">
@@ -165,11 +160,14 @@ const BasicInfo = () => {
                 </Text>
               </div>
               <Text weight="300" color="gray">
-                {inventoryDetails?.basicInformation?.description} {readMore && <></>}
+                {inventoryDetails?.basicInformation?.description}
                 <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
                   {readMore ? 'Read less' : 'Read more'}
                 </Button>
               </Text>
+              <Badge className="capitalize" variant="filled" color="green" size="lg" mt="xs">
+                Available
+              </Badge>
               <Text weight="bold" className="my-2">
                 {toIndianCurrency(inventoryDetails?.basicInformation?.price || 0)}
               </Text>
@@ -177,11 +175,12 @@ const BasicInfo = () => {
                 {badgeData.map(data => (
                   <Badge
                     className="text-purple-450 bg-purple-100 capitalize"
-                    text={data}
                     size="lg"
                     variant="filled"
                     radius="md"
-                  />
+                  >
+                    {data}
+                  </Badge>
                 ))}
               </div>
             </>

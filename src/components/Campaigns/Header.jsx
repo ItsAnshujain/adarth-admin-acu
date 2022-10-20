@@ -41,7 +41,7 @@ const AreaHeader = ({ text, setView }) => {
   };
 
   return (
-    <div className="h-20 border-b border-gray-450 flex justify-between items-center">
+    <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <div className="pl-5">
         <p className="text-lg text-bold">{text}</p>
       </div>

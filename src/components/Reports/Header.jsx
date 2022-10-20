@@ -6,7 +6,6 @@ import DateRange from '../DateRange';
 
 const Header = ({ text }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  // const [value, setValue] = useState();
   const ref = useClickOutside(() => setShowDatePicker(false));
 
   const openDatePicker = () => {
@@ -14,7 +13,7 @@ const Header = ({ text }) => {
   };
 
   return (
-    <div className="h-20 border-b border-gray-450 flex justify-between items-center">
+    <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <div className="pl-5">
         <Text size="lg" weight="bold">
           {text}

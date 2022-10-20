@@ -5,7 +5,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { yupResolver } from '@mantine/form';
 import { useForm, FormProvider } from '../../context/formContext';
 import { useLogin } from '../../hooks/auth.hooks';
-import { fetchUserDetails } from '../../hooks/user.hooks';
 import useUserStore from '../../store/user.store';
 import TextInput from '../../components/shared/TextInput';
 import PasswordInput from '../../components/shared/PasswordInput';
@@ -28,39 +27,25 @@ const schema = yup.object().shape({
 const Home = () => {
   const navigate = useNavigate();
 
-  const { setToken, setId, id, setUserDetails } = useUserStore(
+  const { setToken, setId } = useUserStore(
     state => ({
       setToken: state.setToken,
       setId: state.setId,
       id: state.id,
-      setUserDetails: state.setUserDetails,
     }),
     shallow,
   );
 
-  useUserStore(state => state.userDetails, shallow);
-
-  const { mutate: login, data, isLoading, isSuccess } = useLogin();
-  const { data: ud, isSuccess: userDataLoaded, isLoading: userDataLoading } = fetchUserDetails(id);
+  const { mutateAsync: login, isLoading } = useLogin();
 
   const form = useForm({ validate: yupResolver(schema), initialValues });
 
   const onSubmitHandler = async formData => {
-    login(formData);
-  };
-
-  if (isSuccess) {
-    const {
-      data: { token, id: userId },
-    } = data;
-    setToken(token);
-    setId(userId);
-  }
-
-  if (userDataLoaded) {
-    setUserDetails(ud);
+    const response = await login(formData);
+    setToken(response.token);
+    setId(response.id);
     navigate('/home');
-  }
+  };
 
   const styles = () => ({
     label: {
@@ -82,7 +67,7 @@ const Home = () => {
           <TextInput
             name="email"
             label="Email"
-            disabled={isLoading && userDataLoading}
+            disabled={isLoading}
             size="lg"
             placeholder="Your Email"
             styles={styles}
@@ -91,14 +76,14 @@ const Home = () => {
           <PasswordInput
             name="password"
             label="Password"
-            disabled={isLoading && userDataLoading}
+            disabled={isLoading}
             size="lg"
             placeholder="Your Password"
             styles={styles}
             errors={form.errors}
           />
           <Button
-            disabled={isLoading && userDataLoading}
+            disabled={isLoading}
             className="mt-5 width-full bg-purple-450"
             color="primary"
             type="submit"

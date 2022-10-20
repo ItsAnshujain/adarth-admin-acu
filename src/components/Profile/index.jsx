@@ -33,7 +33,7 @@ const Profile = () => {
 
   return (
     <>
-      <div className="h-20 flex justify-end items-center border-b pr-7">
+      <div className="h-[60px] flex justify-end items-center border-b pr-7">
         <Link to="/edit-profile">
           <button
             type="button"

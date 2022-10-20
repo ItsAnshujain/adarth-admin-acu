@@ -11,21 +11,27 @@ import useCreateBookingSelectSpaceState from '../../store/createBookingSelectSpa
 // TODO: selectedFlatRows.original gives array of all selected rows and selectedRowIds contains all the data from id field
 const Table = ({
   COLUMNS,
-  dummy = [],
+  data = [],
   allowRowsSelect = false,
   isBookingTable = false,
   isCreateOrder = false,
   activePage = 1,
   totalPages = 1,
-  selectedRows = () => {},
+  setSelectedFlatRows = () => {},
   setActivePage = () => {},
   rowCountLimit = 10,
+  selectedRowData = [],
 }) => {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const setSelectedSpace = useCreateBookingSelectSpaceState(
     state => state.setSelectedSpace,
     shallow,
   );
+
+  const handleSelectedRows = () => {
+    const preIds = selectedRowData.map(item => item._id);
+    return data?.filter(row => preIds.includes(row._id));
+  };
 
   const {
     getTableProps,
@@ -38,8 +44,8 @@ const Table = ({
   } = useTable(
     {
       columns,
-      data: dummy,
-      initialState: { pageIndex: 0 },
+      data,
+      initialState: { pageIndex: 0, selectedRowIds: handleSelectedRows() },
     },
     useSortBy,
     usePagination,
@@ -66,7 +72,7 @@ const Table = ({
   }
 
   useEffect(() => {
-    selectedRows(selectedFlatRows);
+    setSelectedFlatRows(selectedFlatRows);
   }, [selectedFlatRows]);
 
   useEffect(() => {

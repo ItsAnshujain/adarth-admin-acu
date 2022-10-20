@@ -2,6 +2,8 @@ import { showNotification } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createInventory,
+  deleteInventory,
+  deleteInventoryById,
   fetchInventory,
   fetchInventoryById,
   updateInventory,
@@ -20,17 +22,13 @@ export const useCreateInventory = () => {
         queryClient.invalidateQueries(['inventory']);
 
         showNotification({
-          title: 'Add Space',
-          message: 'Space added successfully',
-          autoClose: 3000,
+          title: 'Space added successfully',
           color: 'green',
         });
       },
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
-          autoClose: 3000,
+          title: err?.message,
           color: 'red',
         });
       },
@@ -61,17 +59,13 @@ export const useUpdateInventory = () => {
         queryClient.invalidateQueries(['inventory']);
 
         showNotification({
-          title: 'Edit Space',
-          message: 'Space edited successfully',
-          autoClose: 3000,
+          title: 'Space edited successfully',
           color: 'green',
         });
       },
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
-          autoClose: 3000,
+          title: err?.message,
           color: 'red',
         });
       },
@@ -88,3 +82,59 @@ export const useFetchInventoryById = (inventoryId, enabled = true) =>
     },
     { enabled },
   );
+
+export const useDeleteInventoryById = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ({ inventoryId }) => {
+      const res = await deleteInventoryById(inventoryId);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['inventory']);
+        showNotification({
+          title: 'Inventory deleted successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
+
+export const useDeleteInventory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async data => {
+      const query =
+        data?.length === 1 ? `/${data[0]}` : `?${data.map(item => `id=${item}`).join('&')}`;
+      // single id takes url param and multiple ids take query params
+      const res = await deleteInventory(query);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['inventory']);
+
+        showNotification({
+          title: 'Spaces deleted successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
