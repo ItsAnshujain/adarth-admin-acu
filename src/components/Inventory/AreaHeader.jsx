@@ -5,8 +5,6 @@ import classNames from 'classnames';
 import { Plus, ChevronDown, Server, Grid, MapPin } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
 import shallow from 'zustand/shallow';
-// import calendar from '../../assets/data-table.svg';
-// import DateRange from '../DateRange';
 import Filter from './Filter';
 import useLayoutView from '../../store/layout.store';
 
