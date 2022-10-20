@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Text, Button, Select } from '@mantine/core';
+import { Text, Button } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 
 const Header = ({ text }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [value, setValue] = useState();
+  // const [value, setValue] = useState();
   const ref = useClickOutside(() => setShowDatePicker(false));
 
   const openDatePicker = () => {
