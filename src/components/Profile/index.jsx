@@ -1,16 +1,17 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import image1 from '../../assets/image1.png';
 // import pdf from '../../assets/pdf.svg';
-import { useFetchUsersById } from '../../hooks/users.hooks';
 import useUserStore from '../../store/user.store';
 import { aadhaarFormat } from '../../utils';
 
 const Profile = () => {
-  const userID = useUserStore(state => state.id);
-  const { data } = useFetchUsersById(userID, !!userID);
+  const userId = useUserStore(state => state.id);
+  const queryClient = useQueryClient();
+  const data = queryClient.getQueryData(['users-by-id', userId]);
 
-  const [showDocs, setShowDocs] = useState([]);
+  const [docs, setDocs] = useState([]);
 
   useEffect(() => {
     if (data) {
@@ -26,7 +27,7 @@ const Profile = () => {
       if (data.docs.find(item => Object.keys(item)[0] === 'pan')) {
         finalObject.pan = data.docs.find(item => Object.keys(item)[0] === 'pan').pan;
       }
-      setShowDocs({ ...finalObject });
+      setDocs({ ...finalObject });
     }
   }, [data]);
 
@@ -88,12 +89,12 @@ const Profile = () => {
             </div>
           </div>
           <div className="flex flex-col gap-8">
-            {showDocs.landlordLicense ? (
+            {docs.landlordLicense ? (
               <div className="flex flex-col">
                 <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
                   <div className="flex justify-center flex-col h-full w-full">
                     <img
-                      src={showDocs.landlordLicense}
+                      src={docs.landlordLicense}
                       alt="landlordLicense"
                       className="h-full w-full object-contain"
                     />
@@ -105,12 +106,12 @@ const Profile = () => {
                 </div>
               </div>
             ) : null}
-            {showDocs.aadhaar ? (
+            {docs.aadhaar ? (
               <div className="flex flex-col">
                 <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
                   <div className="flex justify-center flex-col h-full w-full">
                     <img
-                      src={showDocs.aadhaar}
+                      src={docs.aadhaar}
                       alt="aadhaar"
                       className="h-full w-full object-contain"
                     />
@@ -124,11 +125,11 @@ const Profile = () => {
             ) : null}
           </div>
           <div className="flex flex-col gap-8">
-            {showDocs.pan ? (
+            {docs.pan ? (
               <div className="flex flex-col ">
                 <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
                   <div className="flex justify-center flex-col h-full w-full">
-                    <img src={showDocs.pan} alt="pan" className="h-full w-full object-contain" />
+                    <img src={docs.pan} alt="pan" className="h-full w-full object-contain" />
                   </div>
                 </div>
                 <div className="text-sm mt-2">

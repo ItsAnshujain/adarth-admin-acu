@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import * as yup from 'yup';
+import { yupResolver } from '@mantine/form';
 import dayjs from 'dayjs';
 import { useNavigate, useParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
-import { yupResolver } from '@mantine/form';
 import BasicInfo from './BasicInfo';
 import Spaces from '../Spaces';
 import SuccessModal from '../../shared/Modal';

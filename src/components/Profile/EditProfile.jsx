@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Button, Tabs } from '@mantine/core';
 import { yupResolver } from '@mantine/form';
+import { useQueryClient } from '@tanstack/react-query';
 import * as yup from 'yup';
 import BasicInfo from '../Users/Create/BasicInfo';
 import Documents from '../Users/Create/Documents';
 import useUserStore from '../../store/user.store';
 import { FormProvider, useForm } from '../../context/formContext';
-import { useFetchUsersById, useUpdateUsers } from '../../hooks/users.hooks';
+import { useUpdateUsers } from '../../hooks/users.hooks';
 
 const requiredSchema = requiredText => yup.string().trim().required(requiredText);
 
@@ -81,7 +82,10 @@ const EditProfile = () => {
   const [uploadingFile, setUploadingFile] = useState(false);
 
   const userId = useUserStore(state => state.id);
-  const { data } = useFetchUsersById(userId, !!userId);
+
+  const queryClient = useQueryClient();
+  const data = queryClient.getQueryData(['users-by-id', userId]);
+
   const { mutateAsync, isLoading } = useUpdateUsers();
 
   const form = useForm({ validate: yupResolver(schema(activeTab)), initialValues });

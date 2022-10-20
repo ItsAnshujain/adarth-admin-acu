@@ -21,7 +21,8 @@ const Documents = ({ documents }) => {
       for (let i = 0; i < uploadImageList.length; i += 1) {
         const item = uploadImageList[i];
         if (item.type === docName) {
-          handleDelete(i);
+          // eslint-disable-next-line no-await-in-loop
+          await handleDelete(i);
           break;
         }
       }

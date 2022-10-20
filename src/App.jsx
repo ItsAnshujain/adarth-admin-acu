@@ -11,6 +11,8 @@ import CustomLoader from './Loader/Loader';
 import Sidebar from './Loader/Sidebar';
 import RequireAuth from './components/Auth';
 import NoMatch from './pages/NoMatch';
+import { useFetchUsersById } from './hooks/users.hooks';
+import useUserStore from './store/user.store';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -63,564 +65,568 @@ const FinanceMonthlyDetails = lazy(() => import('./pages/Finance/MonthlyDetails'
 const FinanceCreateOrder = lazy(() => import('./pages/Finance/Create'));
 const FinanceCreateOrderUpload = lazy(() => import('./pages/Finance/CreateAuto'));
 
-const App = () => (
-  <Router>
-    <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="/" element={<Login />}>
-        <Route path="login" element={<LoginMain />} />
-        <Route path="change-password" element={<ChangePassword />} />
-        <Route path="forgot-password" element={<ForgotPassword />} />
-      </Route>
-      <Route
-        path="/home"
-        element={
-          <Suspense
-            fallback={
-              <>
-                <Header />
-                <Sidebar />
-              </>
+const App = () => {
+  const id = useUserStore(state => state.id);
+  useFetchUsersById(id, !!id);
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/" element={<Login />}>
+          <Route path="login" element={<LoginMain />} />
+          <Route path="change-password" element={<ChangePassword />} />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+        </Route>
+        <Route
+          path="/home"
+          element={
+            <Suspense
+              fallback={
+                <>
+                  <Header />
+                  <Sidebar />
+                </>
+              }
+            >
+              <RequireAuth>
+                <HomePage />
+              </RequireAuth>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/inventory"
+          element={
+            <Suspense
+              fallback={
+                <>
+                  <Header />
+                  <Sidebar />
+                </>
+              }
+            >
+              <RequireAuth>
+                <Inventory />
+              </RequireAuth>
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<Loader />}>
+                <RequireAuth>
+                  <InventoryHome />
+                </RequireAuth>
+              </Suspense>
             }
-          >
-            <RequireAuth>
-              <HomePage />
-            </RequireAuth>
-          </Suspense>
-        }
-      />
-      <Route
-        path="/inventory"
-        element={
-          <Suspense
-            fallback={
-              <>
-                <Header />
-                <Sidebar />
-              </>
+          />
+          <Route
+            path="create-space/single"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <CreateSpaceSingle />
+                </RequireAuth>
+              </Suspense>
             }
-          >
-            <RequireAuth>
-              <Inventory />
-            </RequireAuth>
-          </Suspense>
-        }
-      >
-        <Route
-          path=""
-          element={
-            <Suspense fallback={<Loader />}>
-              <RequireAuth>
-                <InventoryHome />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="create-space/single"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <CreateSpaceSingle />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="create-space/bulk"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <CreateSpaceBulk />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="edit-details/:id"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <CreateSpaceSingle />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="view-details/:id"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <SpaceDetails />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-      </Route>
-      <Route
-        path="/campaigns"
-        element={
-          <Suspense
-            fallback={
-              <>
-                <Header />
-                <Sidebar />
-              </>
+          />
+          <Route
+            path="create-space/bulk"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <CreateSpaceBulk />
+                </RequireAuth>
+              </Suspense>
             }
-          >
-            <RequireAuth>
-              <Campaigns />
-            </RequireAuth>
-          </Suspense>
-        }
-      >
-        <Route
-          path=""
-          element={
-            <Suspense fallback={<Loader />}>
-              <RequireAuth>
-                <CampaignHome />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="create-campaign"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <CampaignCreate />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="edit-details/:id"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <CampaignCreate />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="view-details/:id"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <CampaignView />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-      </Route>
-      <Route
-        path="/proposals"
-        element={
-          <Suspense
-            fallback={
-              <>
-                <Header />
-                <Sidebar />
-              </>
+          />
+          <Route
+            path="edit-details/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <CreateSpaceSingle />
+                </RequireAuth>
+              </Suspense>
             }
-          >
-            <RequireAuth>
-              <Proposals />
-            </RequireAuth>
-          </Suspense>
-        }
-      >
-        <Route
-          path=""
-          element={
-            <Suspense fallback={<Loader />}>
-              <RequireAuth>
-                <ProposalsHome />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="create-proposals"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <CreateProposals />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="edit-details/:id"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <CreateProposals />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="view-details/:id"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <ViewProposal />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-      </Route>
-      <Route
-        path="/bookings"
-        element={
-          <Suspense
-            fallback={
-              <>
-                <Header />
-                <Sidebar />
-              </>
+          />
+          <Route
+            path="view-details/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <SpaceDetails />
+                </RequireAuth>
+              </Suspense>
             }
-          >
-            <RequireAuth>
-              <Booking />
-            </RequireAuth>
-          </Suspense>
-        }
-      >
+          />
+        </Route>
         <Route
-          path=""
+          path="/campaigns"
           element={
-            <Suspense fallback={<Loader />}>
+            <Suspense
+              fallback={
+                <>
+                  <Header />
+                  <Sidebar />
+                </>
+              }
+            >
               <RequireAuth>
-                <BookingHome />
+                <Campaigns />
               </RequireAuth>
             </Suspense>
           }
-        />
-        <Route
-          path="view-details/:id"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <ViewBooking />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="generate-purchase-order/:id"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <Generate />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="generate-release-order/:id"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <Generate />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="generate-invoice/:id"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <Generate />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="create-order"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <CreateOrder />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-      </Route>
-      <Route
-        path="users"
-        element={
-          <Suspense
-            fallback={
-              <>
-                <Header />
-                <Sidebar />
-              </>
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<Loader />}>
+                <RequireAuth>
+                  <CampaignHome />
+                </RequireAuth>
+              </Suspense>
             }
-          >
-            <RequireAuth>
-              <User />
-            </RequireAuth>
-          </Suspense>
-        }
-      >
-        <Route
-          path=""
-          element={
-            <Suspense fallback={<Loader />}>
-              <RequireAuth>
-                <UserHome />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="create-user"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <CreateUser />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="edit-details/:id"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <CreateUser />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="view-details/:id"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <ViewUser />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-      </Route>
-      <Route
-        path="/reports"
-        element={
-          <Suspense
-            fallback={
-              <>
-                <Header />
-                <Sidebar />
-              </>
+          />
+          <Route
+            path="create-campaign"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <CampaignCreate />
+                </RequireAuth>
+              </Suspense>
             }
-          >
-            <RequireAuth>
-              <ReportHome />
-            </RequireAuth>
-          </Suspense>
-        }
-      >
+          />
+          <Route
+            path="edit-details/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <CampaignCreate />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="view-details/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <CampaignView />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+        </Route>
         <Route
-          path="inventory"
+          path="/proposals"
           element={
-            <Suspense fallback={<Loader />}>
+            <Suspense
+              fallback={
+                <>
+                  <Header />
+                  <Sidebar />
+                </>
+              }
+            >
               <RequireAuth>
-                <ReportInventory />
+                <Proposals />
               </RequireAuth>
             </Suspense>
           }
-        />
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<Loader />}>
+                <RequireAuth>
+                  <ProposalsHome />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="create-proposals"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <CreateProposals />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="edit-details/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <CreateProposals />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="view-details/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <ViewProposal />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+        </Route>
         <Route
-          path="revenue"
+          path="/bookings"
           element={
-            <Suspense fallback={<CustomLoader />}>
+            <Suspense
+              fallback={
+                <>
+                  <Header />
+                  <Sidebar />
+                </>
+              }
+            >
               <RequireAuth>
-                <ReportRevenue />
+                <Booking />
               </RequireAuth>
             </Suspense>
           }
-        />
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<Loader />}>
+                <RequireAuth>
+                  <BookingHome />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="view-details/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <ViewBooking />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="generate-purchase-order/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <Generate />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="generate-release-order/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <Generate />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="generate-invoice/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <Generate />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="create-order"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <CreateOrder />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+        </Route>
         <Route
-          path="campaign"
+          path="users"
           element={
-            <Suspense fallback={<CustomLoader />}>
+            <Suspense
+              fallback={
+                <>
+                  <Header />
+                  <Sidebar />
+                </>
+              }
+            >
               <RequireAuth>
-                <ReportCampaign />
+                <User />
               </RequireAuth>
             </Suspense>
           }
-        />
-      </Route>
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<Loader />}>
+                <RequireAuth>
+                  <UserHome />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="create-user"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <CreateUser />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="edit-details/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <CreateUser />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="view-details/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <ViewUser />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+        </Route>
+        <Route
+          path="/reports"
+          element={
+            <Suspense
+              fallback={
+                <>
+                  <Header />
+                  <Sidebar />
+                </>
+              }
+            >
+              <RequireAuth>
+                <ReportHome />
+              </RequireAuth>
+            </Suspense>
+          }
+        >
+          <Route
+            path="inventory"
+            element={
+              <Suspense fallback={<Loader />}>
+                <RequireAuth>
+                  <ReportInventory />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="revenue"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <ReportRevenue />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="campaign"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <ReportCampaign />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+        </Route>
 
-      <Route
-        path="/masters"
-        element={
-          <Suspense
-            fallback={
-              <>
-                <Header />
-                <Sidebar />
-              </>
-            }
-          >
-            <RequireAuth>
-              <MasterHome />
-            </RequireAuth>
-          </Suspense>
-        }
-      />
+        <Route
+          path="/masters"
+          element={
+            <Suspense
+              fallback={
+                <>
+                  <Header />
+                  <Sidebar />
+                </>
+              }
+            >
+              <RequireAuth>
+                <MasterHome />
+              </RequireAuth>
+            </Suspense>
+          }
+        />
 
-      <Route
-        path="/notification"
-        element={
-          <Suspense
-            fallback={
-              <>
-                <Header />
-                <Sidebar />
-              </>
-            }
-          >
-            <RequireAuth>
-              <Notifications />
-            </RequireAuth>
-          </Suspense>
-        }
-      />
+        <Route
+          path="/notification"
+          element={
+            <Suspense
+              fallback={
+                <>
+                  <Header />
+                  <Sidebar />
+                </>
+              }
+            >
+              <RequireAuth>
+                <Notifications />
+              </RequireAuth>
+            </Suspense>
+          }
+        />
 
-      <Route
-        path="/setting"
-        element={
-          <Suspense
-            fallback={
-              <>
-                <Header />
-                <Sidebar />
-              </>
+        <Route
+          path="/setting"
+          element={
+            <Suspense
+              fallback={
+                <>
+                  <Header />
+                  <Sidebar />
+                </>
+              }
+            >
+              <RequireAuth>
+                <Settings />
+              </RequireAuth>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <Suspense
+              fallback={
+                <>
+                  <Header />
+                  <Sidebar />
+                </>
+              }
+            >
+              <RequireAuth>
+                <Profile />
+              </RequireAuth>
+            </Suspense>
+          }
+        >
+          <Route
+            path="profile"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <ProfileHome />
+                </RequireAuth>
+              </Suspense>
             }
-          >
-            <RequireAuth>
-              <Settings />
-            </RequireAuth>
-          </Suspense>
-        }
-      />
-      <Route
-        path="/"
-        element={
-          <Suspense
-            fallback={
-              <>
-                <Header />
-                <Sidebar />
-              </>
+          />
+          <Route
+            path="edit-profile"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <ProfileEdit />
+                </RequireAuth>
+              </Suspense>
             }
-          >
-            <RequireAuth>
-              <Profile />
-            </RequireAuth>
-          </Suspense>
-        }
-      >
+          />
+        </Route>
+        <Route path="/landlords" element={<Landlords />} />
         <Route
-          path="profile"
+          path="/"
           element={
-            <Suspense fallback={<CustomLoader />}>
+            <Suspense
+              fallback={
+                <>
+                  <Header />
+                  <Sidebar />
+                </>
+              }
+            >
               <RequireAuth>
-                <ProfileHome />
+                <Finance />
               </RequireAuth>
             </Suspense>
           }
-        />
-        <Route
-          path="edit-profile"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <ProfileEdit />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-      </Route>
-      <Route path="/landlords" element={<Landlords />} />
-      <Route
-        path="/"
-        element={
-          <Suspense
-            fallback={
-              <>
-                <Header />
-                <Sidebar />
-              </>
+        >
+          <Route
+            path="/finance"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <FinanceHome />
+                </RequireAuth>
+              </Suspense>
             }
-          >
-            <RequireAuth>
-              <Finance />
-            </RequireAuth>
-          </Suspense>
-        }
-      >
-        <Route
-          path="/finance"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <FinanceHome />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/finance/:year"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <FinanceMonthly />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/finance/:year/details"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <FinanceMonthlyDetails />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/finance/create-order/:type"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <FinanceCreateOrder />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-        <Route
-          path="/finance/create-order/:type/upload"
-          element={
-            <Suspense fallback={<CustomLoader />}>
-              <RequireAuth>
-                <FinanceCreateOrderUpload />
-              </RequireAuth>
-            </Suspense>
-          }
-        />
-      </Route>
-      <Route path="*" element={<NoMatch />} />
-    </Routes>
-  </Router>
-);
+          />
+          <Route
+            path="/finance/:year"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <FinanceMonthly />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="/finance/:year/details"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <FinanceMonthlyDetails />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="/finance/create-order/:type"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <FinanceCreateOrder />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+          <Route
+            path="/finance/create-order/:type/upload"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <RequireAuth>
+                  <FinanceCreateOrderUpload />
+                </RequireAuth>
+              </Suspense>
+            }
+          />
+        </Route>
+        <Route path="*" element={<NoMatch />} />
+      </Routes>
+    </Router>
+  );
+};
 
 export default App;

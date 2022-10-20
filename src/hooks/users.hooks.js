@@ -74,7 +74,7 @@ export const useUpdateUsers = () => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('users');
+        queryClient.invalidateQueries('users-by-id');
         showNotification({
           title: 'Update User',
           message: 'User updated successfully',

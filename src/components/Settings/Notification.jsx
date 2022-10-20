@@ -33,8 +33,8 @@ const inputStyles = {
 };
 
 const schema = yup.object().shape({
-  manualNotify: yup.boolean().required('manual Notify is required'),
-  emailNotify: yup.boolean().required('Email Notify is required'),
+  manualNotify: yup.boolean().required('Message notification is required'),
+  emailNotify: yup.boolean().required('Email notification is required'),
   notificationEmail: yup
     .string()
     .trim()
