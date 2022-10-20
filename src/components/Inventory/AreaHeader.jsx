@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Text, Button, Image, Checkbox } from '@mantine/core';
+import { Text, Button, Checkbox } from '@mantine/core';
 import classNames from 'classnames';
 import { Plus, ChevronDown, Server, Grid, MapPin } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
 import shallow from 'zustand/shallow';
-import calendar from '../../assets/data-table.svg';
-import DateRange from '../DateRange';
-import Filter from '../Filter';
+// import calendar from '../../assets/data-table.svg';
+// import DateRange from '../DateRange';
+import Filter from './Filter';
 import useLayoutView from '../../store/layout.store';
 
 const AreaHeader = ({
@@ -20,9 +20,7 @@ const AreaHeader = ({
 }) => {
   const { pathname } = useLocation();
   const [addDetailsClicked, setAddDetails] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
-  const dateRef = useClickOutside(() => setShowDatePicker(false));
   const addDetailsButtonRef = useClickOutside(() => setAddDetails(false));
 
   const { activeLayout, setActiveLayout } = useLayoutView(
@@ -36,10 +34,6 @@ const AreaHeader = ({
   const handleListClick = () => setActiveLayout('list');
   const handleGridClick = () => setActiveLayout('grid');
   const handleMapClick = () => setActiveLayout('map');
-
-  const openDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -116,16 +110,6 @@ const AreaHeader = ({
             </Button>
           </div>
         )}
-        <div ref={dateRef} className="mr-2 relative">
-          <Button onClick={openDatePicker} variant="default" type="button">
-            <Image src={calendar} height={20} alt="calendar" />
-          </Button>
-          {showDatePicker && (
-            <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
-              <DateRange handleClose={openDatePicker} />
-            </div>
-          )}
-        </div>
         <div className="mr-2">
           <Button
             onClick={() => setShowFilter(!showFilter)}
