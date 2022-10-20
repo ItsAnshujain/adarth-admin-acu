@@ -45,3 +45,17 @@ export const debounce = (func, delay) => {
     }, delay);
   };
 };
+
+export const spaceTypes = {
+  billboards: 'Billboards',
+  digital_screens: 'Digital Screens',
+  transit_media: 'Transit Media',
+  street_furniture: 'Street Furniture',
+};
+
+export const colors = {
+  billboards: 'red',
+  digital_screens: 'green',
+  transit_media: 'blue',
+  street_furniture: 'yellow',
+};

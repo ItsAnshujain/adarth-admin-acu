@@ -85,7 +85,7 @@ const Preview = () => {
 
               <Badge
                 className="text-purple-450 bg-purple-100 capitalize"
-                text={`${values?.specifications?.impressions?.max || 0}+ Total Impressions`}
+                text={`${values?.specifications?.impressions?.min || 0}+ Total Impressions`}
                 size="lg"
                 variant="filled"
                 radius="md"

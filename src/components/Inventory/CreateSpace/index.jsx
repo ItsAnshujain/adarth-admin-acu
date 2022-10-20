@@ -317,6 +317,7 @@ const MainArea = () => {
       }
       form.setFieldValue('basicInformation.spaceType', basicInformation?.spaceType);
       form.setFieldValue('basicInformation.mediaType', basicInformation?.mediaType);
+      form.setFieldValue('basicInformation.supportedMedia', basicInformation?.supportedMedia);
       form.setFieldValue('basicInformation.demographic', basicInformation?.demographic);
       form.setFieldValue('basicInformation.audience', basicInformation?.audience);
       form.setFieldValue('basicInformation.spacePhotos', basicInformation?.spacePhotos);

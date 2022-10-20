@@ -186,6 +186,7 @@ const BasicInfo = () => {
               <div className="flex gap-2 mb-8">
                 {badgeData.map(data => (
                   <Badge
+                    key={data}
                     className="text-purple-450 bg-purple-100 capitalize"
                     size="lg"
                     variant="filled"
@@ -222,7 +223,7 @@ const BasicInfo = () => {
                       Impression
                     </Text>
                     <Text className="mb-4">
-                      {inventoryDetails?.specifications?.impressions?.max || 0}
+                      {inventoryDetails?.specifications?.impressions?.min || 0}
                     </Text>
                     <Text color="gray" size="xs" weight="300">
                       Resolution

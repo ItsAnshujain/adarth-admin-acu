@@ -18,7 +18,7 @@ const Location = () => {
     <div className="flex flex-col pl-5 pr-7 pt-4 mb-10">
       <p className="font-bold text-lg">Location</p>
       <p className="text-gray-500 text-sm font-light">
-        Please fill the relevant details regarding the adspace
+        Please fill the relevant details regarding the ad Space
       </p>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">
         <div>

@@ -89,7 +89,7 @@ const Specification = ({ specificationsData }) => {
     <div className="flex flex-col pl-5 pr-7 pt-4 mb-44">
       <p className="font-bold text-lg">Space Specifications</p>
       <p className="text-sm font-light text-gray-500">
-        Please fill the relevant details regarding the adspace
+        Please fill the relevant details regarding the ad Space
       </p>
       <div className="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
         <div>
