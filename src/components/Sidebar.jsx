@@ -1,11 +1,31 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button } from '@mantine/core';
-import { Mail, ChevronDown } from 'react-feather';
+import { Button, Image } from '@mantine/core';
+import { ChevronDown } from 'react-feather';
 import classNames from 'classnames';
 import { useMemo } from 'react';
 import { useFetchMastersTypes } from '../hooks/masters.hooks';
 import { masterTypes, serialize } from '../utils';
 import NestedSidebarContent from './NestedSidebarContent';
+import HomeIcon from '../assets/home-default.svg';
+import HomeActiveIcon from '../assets/home-active.svg';
+import InventoryIcon from '../assets/inventory-default.svg';
+import InventoryActiveIcon from '../assets/inventory-active.svg';
+import BookingIcon from '../assets/booking-default.svg';
+import BookingActiveIcon from '../assets/booking-active.svg';
+import ProposalIcon from '../assets/proposal-default.svg';
+import ProposalActiveIcon from '../assets/proposal-active.svg';
+import UsersIcon from '../assets/users-default.svg';
+import UsersActiveIcon from '../assets/users-active.svg';
+import MastersIcon from '../assets/masters-default.svg';
+import MastersActiveIcon from '../assets/masters-active.svg';
+import CampaignIcon from '../assets/campaign-default.svg';
+import CampaignActiveIcon from '../assets/campaign-active.svg';
+import ReportIcon from '../assets/report-default.svg';
+import ReportActiveIcon from '../assets/report-active.svg';
+import LandlordsIcon from '../assets/landlords-default.svg';
+import LandlordsActiveIcon from '../assets/landlords-active.svg';
+import FinanceIcon from '../assets/finance-default.svg';
+import FinanceActiveIcon from '../assets/finance-active.svg';
 
 const Sidebar = () => {
   const { pathname } = useLocation();
@@ -61,31 +81,45 @@ const Sidebar = () => {
       {
         label: 'Home',
         path: '/home',
+        icon: HomeIcon,
+        activeIcon: HomeActiveIcon,
       },
       {
         label: 'Inventory',
         path: '/inventory',
+        icon: InventoryIcon,
+        activeIcon: InventoryActiveIcon,
       },
       {
         label: 'Bookings',
         path: '/bookings',
+        icon: BookingIcon,
+        activeIcon: BookingActiveIcon,
       },
       {
         label: 'Proposals',
         path: '/proposals',
+        icon: ProposalIcon,
+        activeIcon: ProposalActiveIcon,
       },
       {
         label: 'Users',
         path: '/users',
+        icon: UsersIcon,
+        activeIcon: UsersActiveIcon,
       },
       {
         label: 'Masters',
         path: '/masters',
         nested: renderList || [],
+        icon: MastersIcon,
+        activeIcon: MastersActiveIcon,
       },
       {
         label: 'Campaigns',
         path: '/campaigns',
+        icon: CampaignIcon,
+        activeIcon: CampaignActiveIcon,
       },
       {
         label: 'Reports',
@@ -95,14 +129,20 @@ const Sidebar = () => {
           { label: 'Revenue Reports', subPath: '/revenue' },
           { label: 'Inventory Report', subPath: '/inventory' },
         ],
+        icon: ReportIcon,
+        activeIcon: ReportActiveIcon,
       },
       {
         label: 'Landlords',
         path: '/landlords',
+        icon: LandlordsIcon,
+        activeIcon: LandlordsActiveIcon,
       },
       {
         label: 'Finance',
         path: '/finance',
+        icon: FinanceIcon,
+        activeIcon: FinanceActiveIcon,
       },
     ],
     [isMasterLoaded],
@@ -122,12 +162,14 @@ const Sidebar = () => {
                     handleNavigate(item.path);
                   }
                 }}
-                className="p-2 flex w-full "
+                className="p-2 flex w-full h-[40px]"
               >
-                <Mail
-                  className={classNames(
-                    `mr-2 h-5 ${checkActive(item.path) ? 'text-purple-350' : 'text-gray-500'}`,
-                  )}
+                <Image
+                  src={checkActive(item.path) ? item.activeIcon : item.icon}
+                  height={24}
+                  width={24}
+                  className="mr-2"
+                  fit="contain"
                 />
                 <span
                   className={classNames(

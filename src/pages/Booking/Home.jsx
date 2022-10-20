@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Text } from '@mantine/core';
+import { Image, Text } from '@mantine/core';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import AreaHeader from '../../components/Bookings/Header';
 import useSideBarState from '../../store/sidebar.store';
-import ongoing from '../../assets/ongoing.svg';
-import completed from '../../assets/completed.svg';
-import upcoming from '../../assets/upcoming.svg';
+import OngoingOrdersIcon from '../../assets/ongoing-orders.svg';
+import CompletedOrdersIcon from '../../assets/completed-orders.svg';
+import UpcomingOrdersIcon from '../../assets/upcoming-orders.svg';
 import dummy from '../../Dummydata/ORDER_DATA.json';
 import column from '../../components/Bookings/column';
 
@@ -80,21 +80,33 @@ const Proposals = () => {
             </div>
             <div className="flex gap-4 justify-between flex-wrap">
               <div className="border rounded p-8  pr-20">
-                <img src={ongoing} alt="ongoing" />
+                <Image src={OngoingOrdersIcon} alt="ongoing" height={24} width={24} fit="contain" />
                 <Text className="my-2" size="sm" weight="200">
                   Ongoing Orders
                 </Text>
                 <Text weight="bold">386387</Text>
               </div>
               <div className="border rounded p-8 pr-20">
-                <img src={upcoming} alt="upcoming" />
+                <Image
+                  src={UpcomingOrdersIcon}
+                  alt="upcoming"
+                  height={24}
+                  width={24}
+                  fit="contain"
+                />
                 <Text className="my-2" size="sm" weight="200">
                   Upcoming Orders
                 </Text>
                 <Text weight="bold">386387</Text>
               </div>
               <div className="border rounded p-8 pr-20">
-                <img src={completed} alt="completed" />
+                <Image
+                  src={CompletedOrdersIcon}
+                  alt="completed"
+                  height={24}
+                  width={24}
+                  fit="contain"
+                />
                 <Text className="my-2" size="sm" weight="200">
                   Completed Orders
                 </Text>

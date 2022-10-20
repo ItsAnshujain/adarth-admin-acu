@@ -1,4 +1,4 @@
-import { Button, Menu as MenuProfile } from '@mantine/core';
+import { Button, Image, Menu as MenuProfile } from '@mantine/core';
 import { useState } from 'react';
 import { Menu } from 'react-feather';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,6 +7,8 @@ import { showNotification } from '@mantine/notifications';
 import logo from '../assets/logo.svg';
 import useUserStore from '../store/user.store';
 import DrawerSidebar from './DrawerSidebar';
+import NotificationsIcon from '../assets/notifications.svg';
+import SettingsIcon from '../assets/settings.svg';
 
 const Header = ({ title }) => {
   const [opened, setOpened] = useState(false);
@@ -46,12 +48,22 @@ const Header = ({ title }) => {
           </div>
           <div className="flex items-center mr-7">
             <Link to="/notification">
-              <Button variant="subtle" color="gray" className="font-medium">
+              <Button
+                variant="subtle"
+                color="gray"
+                className="font-medium"
+                leftIcon={<Image src={NotificationsIcon} height={24} width={24} />}
+              >
                 Notifications
               </Button>
             </Link>
             <Link to="/setting">
-              <Button variant="subtle" color="gray" className="font-medium">
+              <Button
+                variant="subtle"
+                color="gray"
+                className="font-medium"
+                leftIcon={<Image src={SettingsIcon} height={24} width={24} />}
+              >
                 Settings
               </Button>
             </Link>
