@@ -23,10 +23,10 @@ const Main = () => {
           <Button onClick={handleBack} className="mr-4">
             <ArrowLeft color="#000" />
           </Button>
-          <Tabs.Tab value="basic-info" className="py-6 px-3 text-lg">
+          <Tabs.Tab value="basic-info" className="px-3 text-lg h-[60px]">
             Basic Information
           </Tabs.Tab>
-          <Tabs.Tab value="booking" className="py-6 px-3 text-lg">
+          <Tabs.Tab value="booking" className="px-3 text-lg h-[60px]">
             Booking
           </Tabs.Tab>
         </div>

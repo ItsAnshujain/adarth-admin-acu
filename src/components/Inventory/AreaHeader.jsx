@@ -42,7 +42,7 @@ const AreaHeader = ({
   };
 
   return (
-    <div className="h-20 border-b border-gray-450 flex justify-between items-center">
+    <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <div className="pl-5">
         <Text size="lg" weight="bold">
           {!pathname.includes('reports') ? text : 'Inventory Report'}

@@ -9,7 +9,7 @@ const Header = ({ tabs, setTabs }) => {
 
   const navigate = useNavigate();
   return (
-    <div className="h-20 border-b border-gray-450 flex justify-between items-center">
+    <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <div className="flex pl-5 gap-6 items-center">
         <button onClick={() => navigate(-1)} className="mr-4" type="button">
           <ArrowLeft />
@@ -20,7 +20,7 @@ const Header = ({ tabs, setTabs }) => {
           className={classNames(
             `${
               tabs === 0
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-8  after:bg-purple-450'
+                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5  after:bg-purple-450'
                 : ''
             }`,
           )}
@@ -32,7 +32,7 @@ const Header = ({ tabs, setTabs }) => {
           className={classNames(
             `${
               tabs === 1
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-8  after:bg-purple-450'
+                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5  after:bg-purple-450'
                 : ''
             }`,
           )}
@@ -45,7 +45,7 @@ const Header = ({ tabs, setTabs }) => {
           className={classNames(
             `${
               tabs === 2
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-8  after:bg-purple-450'
+                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5  after:bg-purple-450'
                 : ''
             }`,
           )}

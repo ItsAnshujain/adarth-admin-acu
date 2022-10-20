@@ -36,7 +36,7 @@ const Create = () => {
   return (
     <div className="pb-12">
       <form>
-        <header className="h-20 border-b flex items-center justify-between pl-5 pr-7">
+        <header className="h-[60px] border-b flex items-center justify-between pl-5 pr-7">
           <p className="font-bold text-lg">{`Create ${
             pathname.includes('purchase')
               ? 'Purchase Order'

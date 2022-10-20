@@ -33,7 +33,7 @@ const Header = ({ title }) => {
 
   return (
     <>
-      <header className="grid grid-cols-12 h-20  border-b border-gray-450 relative w-screen">
+      <header className="grid grid-cols-12 h-[60px] border-b border-gray-450 relative w-screen">
         <div className="flex items-center col-span-2 pl-2 lg:pl-7 self-center">
           <Menu onClick={() => setOpened(true)} className="mr-2 h-6 w-6 inline-block lg:hidden" />
           <Link to="/">

@@ -17,7 +17,7 @@ const Header = ({ setFormStep, formStep, isProposalLoading, isEditable }) => {
   const handleHome = () => navigate('/proposals');
 
   return (
-    <div className="h-20 border-b border-gray-450 flex justify-between items-center w-full">
+    <div className="h-20 border-gray-450 flex justify-between items-center w-full">
       <div className="flex gap-6 pl-5 relative">
         {initialState.map((val, index) => (
           <Chip

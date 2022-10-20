@@ -26,7 +26,7 @@ const Header = ({ text }) => {
   const handleShowFilter = () => setShowFilter(!showFilter);
 
   return (
-    <div className="h-20 border-b border-gray-450 flex justify-between items-center pl-5 pr-5">
+    <div className="h-[60px] border-b border-gray-450 flex justify-between items-center pl-5 pr-5">
       <Text weight="bold" size="md">
         {text}
       </Text>
