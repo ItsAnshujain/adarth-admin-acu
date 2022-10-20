@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Basic Information', 'Specifications', 'Location'];
 
-const Header = ({ setFormStep, formStep, isLoading }) => {
+const Header = ({ setFormStep, formStep, isLoading, isSaved }) => {
   const navigate = useNavigate();
   const handleInventory = () => navigate('/inventory');
   const handleBack = () => {
@@ -61,10 +61,12 @@ const Header = ({ setFormStep, formStep, isLoading }) => {
         <Button className="border-black radius-md text-black" onClick={handleInventory}>
           Cancel
         </Button>
-        <Button onClick={handleBack} className="bg-black">
-          <ChevronLeft className="mr-2 h-4" />
-          Back
-        </Button>
+        {!isSaved ? (
+          <Button onClick={handleBack} className="bg-black">
+            <ChevronLeft className="mr-2 h-4" />
+            Back
+          </Button>
+        ) : null}
 
         {formStep < 3 ? (
           <Button type="submit" className="bg-purple-450 order-3">
@@ -79,7 +81,12 @@ const Header = ({ setFormStep, formStep, isLoading }) => {
           </Button>
         ) : null}
 
-        {formStep === 4 ? (
+        {isSaved ? (
+          <Chip checked color="lime" variant="filled" size="lg">
+            Saved
+          </Chip>
+        ) : null}
+        {formStep === 4 && !isSaved ? (
           <Button
             type="submit"
             disabled={isLoading}

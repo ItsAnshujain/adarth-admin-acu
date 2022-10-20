@@ -1,11 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Text, Image, Skeleton, Badge } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import { useToggle } from '@mantine/hooks';
-import dummy3 from '../../../assets/dummy3.png';
 import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
-
 import { useFetchInventoryById } from '../../../hooks/inventory.hooks';
 import MapView from '../CreateSpace/MapView';
 
@@ -14,8 +12,8 @@ const badgeData = ['School', 'Youth', 'Student', 'College Students'];
 const BasicInfo = () => {
   const { id: inventoryId } = useParams();
   const [readMore, toggle] = useToggle();
-  const [scrollImage, setScrollImage] = useState([]);
-  const [posterImage, setPosterImage] = useState(dummy3);
+  const [otherImages, setOtherImages] = useState([]);
+  const [posterImage, setPosterImage] = useState(null);
 
   const { data: inventoryDetails, isLoading: isInventoryDetailsLoading } = useFetchInventoryById(
     inventoryId,
@@ -24,13 +22,24 @@ const BasicInfo = () => {
 
   const exchangeImages = index => {
     const temp = posterImage;
-    setPosterImage(scrollImage[index]);
-    setScrollImage(prev => {
+    setPosterImage(otherImages[index]);
+    setOtherImages(prev => {
       const newImgs = [...prev];
       newImgs[index] = temp;
       return newImgs;
     });
   };
+
+  useEffect(() => {
+    setPosterImage(inventoryDetails?.basicInformation?.spacePhotos);
+
+    if (inventoryDetails?.basicInformation?.otherPhotos) {
+      setOtherImages([...inventoryDetails.basicInformation.otherPhotos]);
+    }
+  }, [
+    inventoryDetails?.basicInformation?.spacePhotos,
+    inventoryDetails?.basicInformation?.otherPhotos,
+  ]);
 
   return (
     <div className="flex gap-8 pt-4">
@@ -38,10 +47,10 @@ const BasicInfo = () => {
         <div className="flex flex-col">
           {!isInventoryDetailsLoading ? (
             <div className="h-96">
-              {inventoryDetails?.basicInformation?.spacePhotos ? (
+              {posterImage ? (
                 <Image
                   height={384}
-                  src={inventoryDetails?.basicInformation?.spacePhotos}
+                  src={posterImage}
                   alt="poster"
                   fit="contain"
                   withPlaceholder
@@ -59,12 +68,15 @@ const BasicInfo = () => {
           <div className="flex overflow-scroll pt-4 gap-4 items-center">
             {!isInventoryDetailsLoading ? (
               <>
-                {scrollImage.map((src, index) => (
+                {otherImages.map((src, index) => (
                   <Image
                     key={src}
                     onClick={() => exchangeImages(index)}
-                    className="h-24 w-28 cursor-pointer"
+                    className="cursor-pointer bg-slate-300"
+                    height={96}
+                    width={112}
                     src={src}
+                    fit="contain"
                     alt="poster"
                   />
                 ))}

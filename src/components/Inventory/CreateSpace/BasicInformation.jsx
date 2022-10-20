@@ -165,7 +165,7 @@ const BasicInfo = () => {
           name="basicInformation.subCategory"
           styles={styles}
           errors={errors}
-          disabled={isSubCategoryLoading}
+          disabled={isSubCategoryLoading || subCategories?.docs?.length === 0}
           placeholder="Select..."
           options={
             subCategoryLoaded
@@ -175,8 +175,11 @@ const BasicInfo = () => {
                 }))
               : []
           }
-          className="mb-7"
+          className={!(subCategories?.docs?.length === 0) ? 'mb-7' : ''}
         />
+        {subCategories?.docs?.length === 0 ? (
+          <p className="mt-1 mb-7 text-xs text-red-450">No Sub Category available</p>
+        ) : null}
         <NativeSelect
           label="Media Type"
           name="basicInformation.mediaType"

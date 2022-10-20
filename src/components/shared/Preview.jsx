@@ -54,8 +54,11 @@ const Preview = () => {
                 <Image
                   key={src}
                   onClick={() => exchangeImages(index)}
-                  className="w-28 cursor-pointer bg-slate-300"
+                  className="cursor-pointer bg-slate-300"
+                  height={96}
+                  width={112}
                   src={src}
+                  fit="contain"
                   alt="poster"
                 />
               ))

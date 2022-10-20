@@ -22,7 +22,8 @@ export const useCreateInventory = () => {
         queryClient.invalidateQueries(['inventory']);
 
         showNotification({
-          title: 'Space added successfully',
+          title: 'Inventory Successfully Added',
+          message: 'Thank you for adding the inventory',
           color: 'green',
         });
       },
@@ -59,7 +60,7 @@ export const useUpdateInventory = () => {
         queryClient.invalidateQueries(['inventory']);
 
         showNotification({
-          title: 'Space edited successfully',
+          title: 'Inventory updated successfully',
           color: 'green',
         });
       },
@@ -125,7 +126,7 @@ export const useDeleteInventory = () => {
         queryClient.invalidateQueries(['inventory']);
 
         showNotification({
-          title: 'Spaces deleted successfully',
+          title: 'Inventory deleted successfully',
           color: 'green',
         });
       },

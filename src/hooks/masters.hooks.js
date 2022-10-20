@@ -33,6 +33,12 @@ export const useFetchMasters = (query, enabled = true) =>
     },
   );
 
+export const useMasters = () =>
+  useMutation(async query => {
+    const res = await fetchMasters(query);
+    return res?.data;
+  });
+
 export const useCreateMaster = () => {
   const queryClient = useQueryClient();
 

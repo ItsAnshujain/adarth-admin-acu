@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useFormContext } from '../../../context/formContext';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
+// import AsyncSelect from '../../shared/AsyncSelect';
 import MultiSelect from '../../shared/MultiSelect';
 import NativeSelect from '../../shared/NativeSelect';
 import NumberInput from '../../shared/NumberInput';
@@ -57,6 +58,11 @@ const Specification = ({ specificationsData }) => {
     isLoading: isIlluminationLoading,
     isSuccess: isIlluminationLoaded,
   } = useFetchMasters(serialize({ type: 'illumination', limit: 100 }));
+  const {
+    data: spaceStatusData,
+    isLoading: isSpaceStatusLoading,
+    isSuccess: isSpaceStatusLoaded,
+  } = useFetchMasters(serialize({ type: 'space_status', limit: 100 }));
   const {
     data: brandData,
     isLoading: isBrandLoading,
@@ -143,6 +149,25 @@ const Specification = ({ specificationsData }) => {
         </div>
       </div>
       <div>
+        <div className="grid grid-cols-2 gap-y-4 gap-x-8">
+          <NativeSelect
+            label="Space Status"
+            name="specifications.spaceStatus"
+            styles={styles}
+            errors={errors}
+            disabled={isSpaceStatusLoading}
+            placeholder="Select..."
+            options={
+              isSpaceStatusLoaded
+                ? spaceStatusData.docs.map(category => ({
+                    label: category.name,
+                    value: category._id,
+                  }))
+                : []
+            }
+            className="mb-7"
+          />
+        </div>
         <p className="font-bold">Impressions</p>
         <div className="flex gap-4 items-start">
           <div>
@@ -205,6 +230,14 @@ const Specification = ({ specificationsData }) => {
           }
           placeholder="Select all that you like"
         />
+        {/* TODO: update select component  */}
+        {/* <AsyncSelect
+          name="specifications.previousBrands"
+          label="Previous Brands"
+          masterKey="brand"
+          errors={errors}
+        /> */}
+        {/* <AsyncSelect name="specifications.tags" label="Tags" masterKey="tag" /> */}
       </div>
     </div>
   );

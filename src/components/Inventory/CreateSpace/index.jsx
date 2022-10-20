@@ -35,10 +35,7 @@ const schema = action =>
         .string()
         .trim()
         .concat(action === 1 ? requiredSchema('Category is required') : null),
-      subCategory: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Sub category is required') : null),
+      subCategory: yup.string().trim(),
       mediaType: yup
         .string()
         .trim()
@@ -79,6 +76,10 @@ const schema = action =>
         .string()
         .trim()
         .concat(action === 2 ? requiredSchema('Illumination is required') : null),
+      spaceStatus: yup
+        .string()
+        .trim()
+        .concat(action === 2 ? requiredSchema('Space Status is required') : null),
       unit: yup
         .number()
         .concat(
@@ -216,6 +217,7 @@ const initialValues = {
   },
   specifications: {
     illuminations: '',
+    spaceStatus: '',
     unit: 0,
     resolutions: {
       height: 0,
@@ -249,8 +251,12 @@ const MainArea = () => {
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ validate: yupResolver(schema(formStep)), initialValues });
 
-  const { mutate: create, isLoading } = useCreateInventory();
-  const { mutate: update, isLoading: isUpdateInventoryLoading } = useUpdateInventory();
+  const { mutate: create, isLoading, isSuccess: isCreateSuccess } = useCreateInventory();
+  const {
+    mutate: update,
+    isLoading: isUpdateInventoryLoading,
+    isSuccess: isEditSuccess,
+  } = useUpdateInventory();
   const { data: inventoryDetails } = useFetchInventoryById(inventoryId, !!inventoryId);
 
   const getForm = () =>
@@ -287,7 +293,9 @@ const MainArea = () => {
           delete data.location[key];
         }
       });
+
       if (inventoryId) {
+        data.isUnderMaintenance = false;
         update({ inventoryId, data });
       } else {
         create(data);
@@ -312,6 +320,7 @@ const MainArea = () => {
       form.setFieldValue('basicInformation.demographic', basicInformation?.demographic);
       form.setFieldValue('basicInformation.audience', basicInformation?.audience);
       form.setFieldValue('basicInformation.spacePhotos', basicInformation?.spacePhotos);
+      form.setFieldValue('basicInformation.otherPhotos', basicInformation?.otherPhotos);
       form.setFieldValue('specifications.illuminations', specifications?.illuminations);
       form.setFieldValue('specifications.unit', specifications?.unit);
       form.setFieldValue('specifications.health', specifications?.health);
@@ -319,6 +328,7 @@ const MainArea = () => {
       form.setFieldValue('specifications.impressions.min', specifications?.impressions?.min);
       form.setFieldValue('specifications.resolutions.height', specifications?.resolutions?.height);
       form.setFieldValue('specifications.resolutions.width', specifications?.resolutions?.width);
+      form.setFieldValue('specifications.spaceStatus', specifications?.spaceStatus);
       form.setFieldValue('specifications.previousBrands', specifications?.previousBrands);
       form.setFieldValue('specifications.tags', specifications?.tags);
       form.setFieldValue('location.latitude', location?.latitude);
@@ -341,6 +351,7 @@ const MainArea = () => {
             setFormStep={setFormStep}
             formStep={formStep}
             isLoading={isLoading || isUpdateInventoryLoading}
+            isSaved={isCreateSuccess || isEditSuccess}
           />
           {getForm()}
         </form>
