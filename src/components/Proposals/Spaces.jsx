@@ -68,14 +68,16 @@ const Spaces = ({
                   )}
                 </div>
                 <Button
-                  className="text-black font-medium"
+                  className="text-black font-medium max-w-[180px]"
                   onClick={() =>
                     navigate(`/inventory/view-details/${_id}`, {
                       replace: true,
                     })
                   }
                 >
-                  {basicInformation?.spaceName}
+                  <span className="overflow-hidden text-ellipsis">
+                    {basicInformation?.spaceName}
+                  </span>
                 </Button>
               </div>
             ),

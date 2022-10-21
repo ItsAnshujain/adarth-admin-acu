@@ -91,7 +91,7 @@ const Home = () => {
         }) =>
           useMemo(
             () => (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 ">
                 <Box
                   className="bg-white border rounded-md cursor-zoom-in"
                   onClick={() => toggleImagePreviewModal(basicInformation?.spacePhotos)}
@@ -108,14 +108,16 @@ const Home = () => {
                   )}
                 </Box>
                 <Button
-                  className="text-black font-medium px-2"
+                  className="text-black font-medium px-2 max-w-[180px]"
                   onClick={() =>
                     navigate(`/inventory/view-details/${_id}`, {
                       replace: true,
                     })
                   }
                 >
-                  {basicInformation?.spaceName}
+                  <span className="overflow-hidden text-ellipsis">
+                    {basicInformation?.spaceName}
+                  </span>
                 </Button>
                 <Badge className="capitalize" variant="filled" color="green">
                   Available

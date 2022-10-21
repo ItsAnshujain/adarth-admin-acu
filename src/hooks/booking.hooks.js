@@ -7,7 +7,7 @@ export const useBookings = (filter, enabled = true) =>
     ['bookings', filter],
     async () => {
       const res = await bookings(filter);
-      return res;
+      return res?.data;
     },
     {
       enabled: !!enabled,
