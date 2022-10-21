@@ -80,14 +80,14 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
           </div>
           <div className="mt-2">
             <p className="text-sm text-gray-400">Impressions</p>
-            <p className="text-sm mt-1">{data?.specifications?.impressions?.max}+</p>
+            <p className="text-sm mt-1">{data?.specifications?.impressions?.min}+</p>
           </div>
         </div>
         <div className="flex justify-between items-center">
           <Text size="lg" className="mt-4 font-bold" color="purple">
             {data?.basicInformation?.price ? toIndianCurrency(data.basicInformation.price) : 'NA'}
           </Text>
-          <Menu shadow="md" width={180} className="mt-4" position="bottom-end">
+          <Menu shadow="md" width={180} className="mt-4" position="top-end">
             <Menu.Target>
               <Button className="px-0">
                 <MenuIcon />

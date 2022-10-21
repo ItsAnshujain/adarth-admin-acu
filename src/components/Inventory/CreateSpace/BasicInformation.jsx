@@ -33,13 +33,6 @@ const mediaOwnerList = [
   { value: 'vue', label: 'Heera' },
 ];
 
-const supportedMediaTypes = [
-  { value: 'react', label: 'Ram' },
-  { value: 'ng', label: 'Shayam' },
-  { value: 'svelte', label: 'Damn' },
-  { value: 'vue', label: 'Heera' },
-];
-
 const BasicInfo = () => {
   const { errors, getInputProps, values, setFieldValue } = useFormContext();
   const {
@@ -82,7 +75,6 @@ const BasicInfo = () => {
     const formData = new FormData();
     formData.append('files', params?.[0]);
     const res = await upload(formData);
-    // setFieldValue('basicInformation.spacePhotos', [res?.[0].Location]);
     setFieldValue('basicInformation.spacePhotos', res?.[0].Location);
   };
 
@@ -197,15 +189,14 @@ const BasicInfo = () => {
           }
           className="mb-7"
         />
-        <NativeSelect
+
+        <TextInput
           label="Supported Media"
           name="basicInformation.supportedMedia"
           styles={styles}
           errors={errors}
-          placeholder="Select..."
-          options={supportedMediaTypes}
+          placeholder="Write..."
           className="mb-7"
-          disabled
         />
         <NumberInput
           label="Price"
@@ -311,16 +302,10 @@ const BasicInfo = () => {
             Lorem ipsum atque quibusdam quos eius corrupti modi maiores.
           </p>
           <div className="grid grid-cols-2 gap-4">
-            {values?.basicInformation?.otherPhotos[0] !== '' &&
+            {values?.basicInformation?.otherPhotos?.[0] !== '' &&
               values?.basicInformation?.otherPhotos?.map(item => (
-                <div className="w-full">
-                  <Image
-                    src={item}
-                    alt="more-preview"
-                    key={item}
-                    height={200}
-                    className="bg-slate-300"
-                  />
+                <div className="w-full" key={item}>
+                  <Image src={item} alt="more-preview" height={200} className="bg-slate-300" />
                 </div>
               ))}
           </div>

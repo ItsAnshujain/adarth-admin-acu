@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Text, Button, Progress, Image, NumberInput } from '@mantine/core';
+import { Text, Button, Progress, Image, NumberInput, Badge } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
@@ -11,7 +11,7 @@ import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
 import MenuPopover from './MenuPopover';
 import { useFetchInventory } from '../../hooks/inventory.hooks';
-import { serialize } from '../../utils';
+import { colors, serialize, spaceTypes } from '../../utils';
 
 const Spaces = ({
   setSelectedRow = () => {},
@@ -91,6 +91,19 @@ const Spaces = ({
       {
         Header: 'SPACE TYPE',
         accessor: 'space_type',
+        Cell: ({
+          row: {
+            original: { specifications },
+          },
+        }) =>
+          useMemo(() => {
+            const type = specifications?.spaceType ? spaceTypes[specifications.spaceType] : '-';
+            return (
+              <Badge color={colors[type]} size="lg" className="capitalize">
+                {spaceTypes[type] || <span>-</span>}
+              </Badge>
+            );
+          }),
       },
       {
         Header: 'DIMENSION',
@@ -114,7 +127,7 @@ const Spaces = ({
           row: {
             original: { specifications },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.max}+`}</p>, []),
+        }) => useMemo(() => <p>{`${specifications?.impressions?.min}+`}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',

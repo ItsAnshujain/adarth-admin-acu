@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Button, Image, Progress, Text } from '@mantine/core';
+import { Badge, Button, Image, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams } from 'react-router-dom';
 import RowsPerPage from '../../RowsPerPage';
@@ -13,6 +13,7 @@ import Table from '../../Table/Table';
 import MenuPopover from '../MenuPopover';
 import { useFetchProposalById } from '../../../hooks/proposal.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
+import { colors, spaceTypes } from '../../../utils';
 
 const ProposalDetails = () => {
   const [search, setSearch] = useState('');
@@ -78,7 +79,19 @@ const ProposalDetails = () => {
       {
         Header: 'SPACE TYPE',
         accessor: 'space_type',
-        Cell: ({ row }) => useMemo(() => <p>{row.original.startDate}</p>, []),
+        Cell: ({
+          row: {
+            original: { specifications },
+          },
+        }) =>
+          useMemo(() => {
+            const type = specifications?.spaceType ? spaceTypes[specifications.spaceType] : '-';
+            return (
+              <Badge color={colors[type]} size="lg" className="capitalize">
+                {spaceTypes[type] || <span>-</span>}
+              </Badge>
+            );
+          }),
       },
       {
         Header: 'START DATE',
@@ -110,7 +123,7 @@ const ProposalDetails = () => {
           row: {
             original: { specifications },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.max}+`}</p>, []),
+        }) => useMemo(() => <p>{`${specifications?.impressions?.min}+`}</p>, []),
       },
       {
         Header: 'HEALTH',

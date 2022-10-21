@@ -14,6 +14,7 @@ import { useDeleteInventory, useFetchInventory } from '../../hooks/inventory.hoo
 import MenuPopover from '../../components/Inventory/MenuPopover';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
+import { colors, spaceTypes } from '../../utils';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -133,10 +134,24 @@ const Home = () => {
       {
         Header: 'PEER',
         accessor: 'peer',
+        Cell: () => useMemo(() => <p>-</p>),
       },
       {
         Header: 'SPACE TYPE',
         accessor: 'space_type',
+        Cell: ({
+          row: {
+            original: { specifications },
+          },
+        }) =>
+          useMemo(() => {
+            const type = specifications?.spaceType ? spaceTypes[specifications.spaceType] : '-';
+            return (
+              <Badge color={colors[type]} size="lg" className="capitalize">
+                {spaceTypes[type] || <span>-</span>}
+              </Badge>
+            );
+          }),
       },
       {
         Header: 'DIMENSION',
@@ -160,7 +175,7 @@ const Home = () => {
           row: {
             original: { specifications },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.max}+`}</p>, []),
+        }) => useMemo(() => <p>{`${specifications?.impressions?.min}+`}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',
