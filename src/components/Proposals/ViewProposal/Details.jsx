@@ -12,6 +12,16 @@ const Details = ({ proposalData }) => {
     return initialCost;
   }, [proposalData?.spaces]);
 
+  const calcutateTotalMinimumImpressions = useMemo(() => {
+    const initialImpressions = 0;
+    if (proposalData?.spaces.length > 0) {
+      return proposalData.spaces
+        .map(item => item?.specifications?.impressions?.min)
+        .reduce((previousValue, currentValue) => previousValue + currentValue, initialImpressions);
+    }
+    return initialImpressions;
+  }, [proposalData?.spaces]);
+
   return (
     <div className="mt-4 pl-5 pr-7">
       <Text size="xl" weight="bold">
@@ -39,7 +49,7 @@ const Details = ({ proposalData }) => {
             <Text color="grey" weight="400">
               Expected Impressions
             </Text>
-            <Text weight="bolder">0</Text>
+            <Text weight="bolder">{calcutateTotalMinimumImpressions || 0}</Text>
           </div>
           <div>
             <Text color="grey" weight="400">

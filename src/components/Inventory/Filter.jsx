@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Accordion, Button, Checkbox, Drawer, RangeSlider, TextInput } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
+import { serialize } from '../../utils';
+import { useFetchMasters } from '../../hooks/masters.hooks';
 
 const inititalFilterData = {
   'inventoryOwner': {
@@ -8,60 +10,14 @@ const inititalFilterData = {
     'own': 'Own',
     'peers': 'Peers',
   },
-  'category': {
-    'billboards': 'Billboards',
-    'digital_screens': 'Digital Screens',
-    'transit_media': 'Transit Media',
-    'street_furniture': 'Street Furniture',
-  },
-  'subCategory': {
-    'billboards': 'Billboards',
-    'unipoles': 'Unipoles',
-    'car_wraps': 'Car Wraps',
-    'bus_wraps': 'Bus Wraps',
-    'digital_screens': 'Digital Screens',
-  },
-  'mediaType': {
-    'premium': 'Premium',
-    'economical': 'Economical',
-  },
-  'cities': {
+  'city': {
     'tier_1': 'Tier 1',
     'tier_2': 'Tier 2',
     'tier_3': 'Tier 3',
   },
-  'zone': {
-    'north_east': 'North East',
-    'west': 'West',
-    'south_east': 'South East',
-    'south': 'South',
-    'north': 'North',
-  },
   'footFall': {
     '5000+': '5000+',
     '10000+': '10000+',
-  },
-  'facing': {
-    'single': 'Single',
-    'double': 'Double',
-    'four_facing': 'Four Facing',
-  },
-  'tags': {
-    'value_for_money': 'Value for money',
-    'high_visibility': 'High Visibility',
-    'premium': 'Premium',
-  },
-  'demographics': {
-    'commercial': 'Commercial',
-    'highway': 'Highway',
-  },
-  'audience': {
-    'young': 'Young',
-    'middle_class': 'Middle Class',
-    'elite': 'Elite',
-    'urban': 'Urban',
-    'female_focused': 'Female Focused',
-    'male_focused': 'Male Focused',
   },
 };
 const styles = { title: { fontWeight: 'bold' } };
@@ -77,20 +33,67 @@ const sliderStyle = {
 
 const Filter = ({ isOpened, setShowFilter }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(10000);
-  const [tierCity, setTierCity] = useState();
+  const [filterOptions, setFilterOptions] = useState({
+    inventoryOwner: '',
+    category: '',
+    subCategory: '',
+    mediaType: '',
+    city: '',
+    zone: '',
+    footFall: '',
+    facing: '',
+    tags: '',
+    demographic: '',
+    audience: '',
+  });
+
+  console.log(filterOptions);
+  const inventoryOwner = searchParams.get('inventoryOwner');
+  const category = searchParams.get('category');
+  const subCategory = searchParams.get('subCategory');
+  const mediaType = searchParams.get('mediaType');
+  const city = searchParams.get('city');
+  const zone = searchParams.get('zone');
+  const footFall = searchParams.get('footFall');
+  const facing = searchParams.get('facing');
+  const tags = searchParams.get('tags');
+  const demographic = searchParams.get('demographic');
+  const audience = searchParams.get('audience');
+
+  const { data: categoryData, isLoading: isCategoryLoading } = useFetchMasters(
+    serialize({ type: 'category', parentId: null, limit: 10 }),
+  );
+  const { data: subCategoryData, isLoading: isSubCategoryLoading } = useFetchMasters(
+    serialize({ parentId: category, limit: 10 }),
+    !!category,
+  );
+  const { data: mediaTypeData, isLoading: isMediaTypeLoading } = useFetchMasters(
+    serialize({ type: 'media_type', parentId: null, limit: 10 }),
+  );
+  const { data: zoneData, isLoading: isZoneLoading } = useFetchMasters(
+    serialize({ type: 'facing', parentId: null, limit: 10 }),
+  );
+  const { data: tagData, isLoading: isTagLoading } = useFetchMasters(
+    serialize({ type: 'tag', parentId: null, limit: 10 }),
+  );
+  const { data: facingData, isLoading: isFacingLoading } = useFetchMasters(
+    serialize({ type: 'facing', parentId: null, limit: 10 }),
+  );
+  const { data: demographicsData, isLoading: isDemographicsDataLoading } = useFetchMasters(
+    serialize({ type: 'demographic', parentId: null, limit: 10 }),
+  );
+  const { data: audienceData, isLoading: isAudienceLoading } = useFetchMasters(
+    serialize({ type: 'audience', parentId: null, limit: 10 }),
+  );
 
   const handleCheckedValues = (filterValues, filterKey) => {
+    setFilterOptions(prevState => ({ ...prevState, [filterKey]: filterValues }));
     searchParams.set(filterKey, filterValues);
-    setTierCity(filterValues);
-    // const urlParam = new URLSearchParams();
-    // urlParam.append(filterKey, filterValues);
-    // setParams(prevState => `${prevState}&${urlParam.toString()}`);
   };
 
-  const renderStatus = useCallback(
+  const renderStaticStatus = useCallback(
     (filterDataObj, filterKey) =>
       Object.keys(filterDataObj).map(item => (
         <div className="flex gap-2 mb-2" key={item}>
@@ -98,43 +101,92 @@ const Filter = ({ isOpened, setShowFilter }) => {
             onChange={event => handleCheckedValues(event.target.value, filterKey)}
             label={filterDataObj[item]}
             defaultValue={item}
-            checked={item === tierCity}
+            checked={filterOptions[filterKey] === item}
           />
         </div>
       )),
-    [tierCity],
+    [filterOptions],
+  );
+
+  const renderDynamicStatus = useCallback(
+    (data, filterKey) =>
+      data?.map(item => (
+        <div className="flex gap-2 mb-2" key={item?._id}>
+          <Checkbox
+            onChange={event => handleCheckedValues(event.target.value, filterKey)}
+            label={item?.name}
+            defaultValue={item?._id}
+            checked={filterOptions[filterKey] === item._id}
+          />
+        </div>
+      )),
+    [filterOptions],
   );
 
   const handleNavigationByFilter = () => {
     setSearchParams(searchParams);
-    // const urlParam = new URLSearchParams();
-    // urlParam.append('city', item.status);
-    // searchParams.delete('status');
-    // searchParams.set('priceMin', minPrice || 1);
-    // searchParams.set('priceMax', maxPrice);
-    // searchParams.set('totalPlacesMin', minPlace || 1);
-    // searchParams.set('totalPlacesMax', maxPlace);
-    // navigate({
-    //   pathname: '/inventory',
-    //   search: `${params}`,
-    // });
+    setShowFilter(false);
   };
 
   const handleResetParams = () => {
-    searchParams.delete('status');
+    searchParams.delete('inventoryOwner');
+    searchParams.delete('category');
+    searchParams.delete('subCategory');
+    searchParams.delete('mediaType');
+    searchParams.delete('city');
     searchParams.delete('priceMin');
     searchParams.delete('priceMax');
-    searchParams.delete('totalPlacesMin');
-    searchParams.delete('totalPlacesMax');
+    searchParams.delete('zone');
+    searchParams.delete('footFall');
+    searchParams.delete('facing');
+    searchParams.delete('tags');
+    searchParams.delete('demographic');
+    searchParams.delete('audience');
     setSearchParams(searchParams);
+    setFilterOptions({
+      inventoryOwner: '',
+      category: '',
+      subCategory: '',
+      mediaType: '',
+      city: '',
+      zone: '',
+      footFall: '',
+      facing: '',
+      tags: '',
+      demographic: '',
+      audience: '',
+    });
+  };
+
+  const handleMinPrice = e => {
+    setMinPrice(e.target.value);
+    searchParams.set('priceMin', e.target.value);
+  };
+  const handleMaxPrice = e => {
+    setMinPrice(e.target.value);
+    searchParams.set('priceMin', e.target.value);
+  };
+  const handleSliderChange = val => {
+    setMinPrice(val[0], setMaxPrice(val[1]));
+    searchParams.set('priceMin', val[0]);
+    searchParams.set('priceMax', val[1]);
   };
 
   useEffect(() => {
-    setTierCity(searchParams.get('city'));
-    // setMinPrice(searchParams.get('priceMin') ?? 0);
-    // setMaxPrice(searchParams.get('priceMax') ?? 100000);
-    // setMinPlace(searchParams.get('totalPlacesMin') ?? 0);
-    // setMaxPlace(searchParams.get('totalPlacesMax') ?? 100000);
+    setFilterOptions(prevState => ({
+      ...prevState,
+      inventoryOwner: inventoryOwner || '',
+      category: category || '',
+      subCategory: subCategory || '',
+      mediaType: mediaType || '',
+      city: city || '',
+      zone: zone || '',
+      footFall: footFall || '',
+      facing: facing || '',
+      tags: tags || '',
+      demographic: demographic || '',
+      audience: audience || '',
+    }));
   }, [searchParams]);
 
   return (
@@ -166,53 +218,53 @@ const Filter = ({ isOpened, setShowFilter }) => {
         </Button>
       </div>
       <div className="flex text-gray-400 flex-col gap-4">
-        <Accordion defaultValue="inventoryOwner">
+        <Accordion>
           <Accordion.Item value="inventoryOwner" className="mb-4 rounded-xl border">
             <Accordion.Control>
               <p className="text-lg">Inventory Owner</p>
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderStatus(inititalFilterData.inventoryOwner, 'landlord')}
+                {renderStaticStatus(inititalFilterData.inventoryOwner, 'landlord')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="category" className="mb-4 rounded-xl border">
-            <Accordion.Control>
+            <Accordion.Control disabled={isCategoryLoading}>
               <p className="text-lg">Category</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStatus(inititalFilterData.category, 'category')}</div>
+              <div className="mt-2">{renderDynamicStatus(categoryData?.docs, 'category')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="subCategory" className="mb-4 rounded-xl border">
-            <Accordion.Control>
+            <Accordion.Control disabled={isSubCategoryLoading}>
               <p className="text-lg">Sub Category</p>
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderStatus(inititalFilterData.subCategory, 'subCategory')}
+                {renderDynamicStatus(subCategoryData?.docs, 'subCategory')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="mediaType" className="mb-4 rounded-xl border">
-            <Accordion.Control>
+            <Accordion.Control disabled={isMediaTypeLoading}>
               <p className="text-lg">Media Type</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStatus(inititalFilterData.mediaType, 'mediaType')}</div>
+              <div className="mt-2">{renderDynamicStatus(mediaTypeData?.docs, 'mediaType')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
-          <Accordion.Item value="cities" className="mb-4 rounded-xl border">
+          <Accordion.Item value="city" className="mb-4 rounded-xl border">
             <Accordion.Control>
               <p className="text-lg">Cities</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStatus(inititalFilterData.cities, 'city')}</div>
+              <div className="mt-2">{renderStaticStatus(inititalFilterData.city, 'city')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -225,26 +277,15 @@ const Filter = ({ isOpened, setShowFilter }) => {
                 <div className="flex flex-col gap-2 mb-2">
                   <div className="flex justify-between gap-8">
                     <div>
-                      <TextInput
-                        value={minPrice}
-                        onChange={e => setMinPrice(e.target.value)}
-                        label="Min"
-                      />
+                      <TextInput value={minPrice} onChange={handleMinPrice} label="Min" />
                     </div>
                     <div>
-                      <TextInput
-                        value={maxPrice}
-                        onChange={e => setMaxPrice(e.target.value)}
-                        label="Max"
-                      />
+                      <TextInput value={maxPrice} onChange={handleMaxPrice} label="Max" />
                     </div>
                   </div>
-
                   <div>
                     <RangeSlider
-                      onChange={val => {
-                        setMinPrice(val[0], setMaxPrice(val[1]));
-                      }}
+                      onChange={handleSliderChange}
                       min={0}
                       max={10000}
                       styles={sliderStyle}
@@ -258,11 +299,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
           </Accordion.Item>
 
           <Accordion.Item value="zone" className="mb-4 rounded-xl border">
-            <Accordion.Control>
+            <Accordion.Control disabled={isZoneLoading}>
               <p className="text-lg">Zone</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStatus(inititalFilterData.zone)}</div>
+              <div className="mt-2">{renderDynamicStatus(zoneData?.docs, 'zone')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -271,43 +312,45 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Footfall</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStatus(inititalFilterData.footFall)}</div>
+              <div className="mt-2">{renderStaticStatus(inititalFilterData.footFall)}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="facing" className="mb-4 rounded-xl border">
-            <Accordion.Control>
+            <Accordion.Control disabled={isFacingLoading}>
               <p className="text-lg">Facing</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStatus(inititalFilterData.facing)}</div>
+              <div className="mt-2">{renderDynamicStatus(facingData?.docs, 'facing')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="tags" className="mb-4 rounded-xl border">
-            <Accordion.Control>
+            <Accordion.Control disabled={isTagLoading}>
               <p className="text-lg">Tags</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStatus(inititalFilterData.tags)}</div>
+              <div className="mt-2">{renderDynamicStatus(tagData?.docs, 'tags')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="demographics" className="mb-4 rounded-xl border">
-            <Accordion.Control>
+            <Accordion.Control disabled={isDemographicsDataLoading}>
               <p className="text-lg">Demographics</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStatus(inititalFilterData.demographics)}</div>
+              <div className="mt-2">
+                {renderDynamicStatus(demographicsData?.docs, 'demographic')}
+              </div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="audience" className="mb-4 rounded-xl border">
-            <Accordion.Control>
+            <Accordion.Control disabled={isAudienceLoading}>
               <p className="text-lg">Audience</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStatus(inititalFilterData.audience)}</div>
+              <div className="mt-2">{renderDynamicStatus(audienceData?.docs, 'audience')}</div>
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>
