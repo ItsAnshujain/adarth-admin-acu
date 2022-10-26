@@ -4,7 +4,7 @@ import { Button } from '@mantine/core';
 import { RangeCalendar, DatePicker } from '@mantine/dates';
 import { Calendar } from 'react-feather';
 
-const DateRange = ({ handleClose }) => {
+const DateRange = ({ handleClose = () => {} }) => {
   const navigate = useNavigate();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
