@@ -49,7 +49,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
     audience: '',
   });
 
-  console.log(filterOptions);
   const inventoryOwner = searchParams.get('inventoryOwner');
   const category = searchParams.get('category');
   const subCategory = searchParams.get('subCategory');

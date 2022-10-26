@@ -23,9 +23,10 @@ const Booking = ({ count }) => {
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
-  const { data: bookingData } = useBookings(`${searchParams.toString()}`);
+  const { data: bookingData } = useBookings(searchParams.toString());
 
-  const openDatePicker = () => setShowDatePicker(!showDatePicker);
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
+  const toggleFilter = () => setShowFilter(!showFilter);
 
   const COLUMNS = useMemo(
     () => [
@@ -209,17 +210,17 @@ const Booking = ({ count }) => {
         </div>
         <div className="flex">
           <div ref={ref} className="mr-2 relative">
-            <Button onClick={openDatePicker} variant="default" type="button">
-              <img src={calendar} className="h-5" alt="calendar" />
+            <Button onClick={toggleDatePicker} variant="default" type="button">
+              <Image src={calendar} className="h-5" alt="calendar" />
             </Button>
             {showDatePicker && (
               <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
-                <DateRange handleClose={openDatePicker} />
+                <DateRange handleClose={toggleDatePicker} />
               </div>
             )}
           </div>
           <div className="mr-2">
-            <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
+            <Button onClick={toggleFilter} variant="default" type="button">
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
             {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
