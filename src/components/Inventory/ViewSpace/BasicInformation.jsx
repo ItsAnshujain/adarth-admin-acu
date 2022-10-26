@@ -247,7 +247,7 @@ const BasicInfo = () => {
                     <Text color="gray" size="xs" weight="300">
                       Illumination
                     </Text>
-                    <Text>{'{illumination}'}</Text>
+                    <Text>{inventoryDetails?.specifications?.illuminations?.name || 'NA'}</Text>
                   </div>
                 </div>
               ) : (

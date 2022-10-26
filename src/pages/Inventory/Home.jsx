@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Badge, Box, Button, Image, Progress } from '@mantine/core';
+import { Badge, Box, Button, Image, Loader, Progress } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/Inventory/AreaHeader';
@@ -279,6 +279,11 @@ const Home = () => {
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       )}
+      {isLoadingInventoryData && viewType === 'list' ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <Loader />
+        </div>
+      ) : null}
       {viewType === 'grid' ? (
         <GridView
           count={limit}
@@ -290,7 +295,7 @@ const Home = () => {
           selectedCards={selectedCards}
           setSelectedCards={setSelectedCards}
         />
-      ) : viewType === 'list' ? (
+      ) : viewType === 'list' && inventoryData?.docs?.length ? (
         <Table
           COLUMNS={COLUMNS}
           data={inventoryData?.docs || []}

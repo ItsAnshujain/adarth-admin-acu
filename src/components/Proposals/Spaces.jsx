@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Text, Button, Progress, Image, NumberInput, Badge } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -23,6 +23,7 @@ const Spaces = ({
   const [search, setSearch] = useDebouncedState('', 1000);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
+  const [updatedSpaces, setUpdatedSpaces] = useState([]);
   const [searchParams] = useSearchParams();
   const [showFilter, setShowFilter] = useState(false);
   const [query] = useState({
@@ -33,6 +34,23 @@ const Spaces = ({
   const openDatePicker = () => setShowDatePicker(!showDatePicker);
   const { data: inventoryData } = useFetchInventory(serialize(query));
   const page = searchParams.get('page');
+
+  useEffect(() => {
+    if (selectedRowData && inventoryData?.docs) {
+      const arrOfIds = selectedRowData?.map(item => item._id);
+      const arrOfUpdatedPrices = inventoryData?.docs?.map(item => {
+        if (arrOfIds.includes(item._id)) {
+          const spaceData = selectedRowData.find(rowData => rowData._id === item._id);
+          return {
+            ...item,
+            basicInformation: { ...item?.basicInformation, price: spaceData?.price },
+          };
+        }
+        return { ...item };
+      });
+      setUpdatedSpaces([...arrOfUpdatedPrices]);
+    }
+  }, [inventoryData?.docs]);
 
   const COLUMNS = useMemo(
     () => [
@@ -260,7 +278,7 @@ const Spaces = ({
         </div>
       </div>
       <Table
-        data={inventoryData?.docs || []}
+        data={updatedSpaces}
         COLUMNS={COLUMNS}
         allowRowsSelect
         setSelectedFlatRows={setSelectedRow}
