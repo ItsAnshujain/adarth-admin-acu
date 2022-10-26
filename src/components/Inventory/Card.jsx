@@ -37,7 +37,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
     });
 
   return (
-    <div className="drop-shadow-md max-w-[273px] min-w-[273px]">
+    <div className="drop-shadow-md w-[273px]">
       <div>
         {data?.basicInformation?.spacePhotos ? (
           <Image
