@@ -1,5 +1,5 @@
 import { showNotification } from '@mantine/notifications';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { changePassword, deleteAccount, updateNotification } from '../requests/settings.requests';
 
 export const useChangePassword = () =>
@@ -28,14 +28,16 @@ export const useChangePassword = () =>
     },
   );
 
-export const useUpdateNotification = () =>
-  useMutation(
+export const useUpdateNotification = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
     async data => {
       const res = await updateNotification(data);
       return res;
     },
     {
       onSuccess: () => {
+        queryClient.invalidateQueries(['users-by-id']);
         showNotification({
           title: 'Notification',
           message: 'Notifications updated successfully',
@@ -53,6 +55,7 @@ export const useUpdateNotification = () =>
       },
     },
   );
+};
 
 export const useDeleteAccount = () =>
   useMutation(

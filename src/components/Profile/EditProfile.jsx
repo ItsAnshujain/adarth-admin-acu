@@ -44,16 +44,34 @@ const schema = step =>
       .trim()
       .concat(step === 'first' ? requiredSchema('State is required') : null),
     pincode: yup
-      .number()
-      .concat(step === 'first' ? yup.number().required('Pin code is required') : null),
+      .string()
+      .concat(step === 'first' ? yup.string().required('Pin code is required') : null)
+      .concat(
+        step === 'first' ? yup.string().matches(/^(\d{4}|\d{6})$/, 'Pin code must be valid') : null,
+      ),
     pan: yup
       .string()
       .trim()
-      .concat(step === 'first' ? requiredSchema('Pan is required') : null),
+      .concat(step === 'first' ? requiredSchema('Pan is required') : null)
+      .concat(
+        step === 'first'
+          ? yup.string().matches(/[A-Z]{5}[0-9]{4}[A-Z]{1}/, 'Pan number must be valid')
+          : null,
+      ),
     aadhaar: yup
       .string()
       .trim()
-      .concat(step === 'first' ? requiredSchema('Aadhaar number is required') : null),
+      .concat(step === 'first' ? requiredSchema('Aadhaar number is required') : null)
+      .concat(
+        step === 'first'
+          ? yup
+              .string()
+              .matches(
+                /(^[0-9]{4}[0-9]{4}[0-9]{4}$)|(^[0-9]{4}\s[0-9]{4}\s[0-9]{4}$)|(^[0-9]{4}-[0-9]{4}-[0-9]{4}$)/,
+                'Aadhaar number must be valid',
+              )
+          : null,
+      ),
     image: yup
       .string()
       .trim()
@@ -128,7 +146,7 @@ const EditProfile = () => {
             </Tabs.Tab>
             <Button
               loading={isLoading || uploadingFile}
-              className="absolute right-7 top-7 bg-purple-450 text-white px-4 py-2 rounded-md"
+              className="absolute right-7 top-3 bg-purple-450 text-white px-4 py-2 rounded-md"
               type="submit"
             >
               Save

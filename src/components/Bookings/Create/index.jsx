@@ -22,19 +22,11 @@ const schema = step =>
         .string()
         .trim()
         .concat(step === 1 ? requiredSchema('Client name is required') : null),
-      paymentType: yup
-        .string()
-        .trim()
-        .concat(step === 1 ? requiredSchema('Payment type is required') : null),
       email: yup
         .string()
         .trim()
         .concat(step === 1 ? yup.string().email('Email must be valid') : null)
         .concat(step === 1 ? requiredSchema('Email is required') : null),
-      paymentReferenceNumber: yup
-        .string()
-        .trim()
-        .concat(step === 1 ? requiredSchema('Payment reference number is required') : null),
       contactNumber: yup
         .string()
         .trim()
@@ -73,6 +65,14 @@ const schema = step =>
         )
         .concat(step === 1 ? requiredSchema('GST number is required') : null),
     }),
+    paymentReference: yup
+      .string()
+      .trim()
+      .concat(step === 1 ? requiredSchema('Payment reference number is required') : null),
+    paymentType: yup
+      .string()
+      .trim()
+      .concat(step === 1 ? requiredSchema('Payment type is required') : null),
     campaignName: yup
       .string()
       .trim()
@@ -96,9 +96,9 @@ const initialValues = {
     contactNumber: '',
     panNumber: '',
     gstNumber: '',
-    paymentReferenceNumber: '',
-    paymentType: '',
   },
+  paymentReference: '',
+  paymentType: '',
   campaignName: '',
   description: '',
   spaces: [],
@@ -112,14 +112,16 @@ const MainArea = () => {
   const form = useForm({ validate: yupResolver(schema(formStep)), initialValues });
 
   const { mutateAsync: createBooking } = useCreateBookings();
+  console.log(form.errors);
 
-  const handleSubmit = formData => {
+  const handleSubmit = async formData => {
     if (formStep <= 2) {
       setFormStep(prev => prev + 1);
       return;
     }
 
-    createBooking({ ...formData });
+    await createBooking({ ...formData });
+    setOpenSuccessModal(true);
   };
 
   const getForm = () =>

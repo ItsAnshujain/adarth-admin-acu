@@ -3,6 +3,7 @@ import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Select } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
+import dayjs from 'dayjs';
 import completed from '../../../assets/completed.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import upload from '../../../assets/upload.svg';
@@ -25,7 +26,7 @@ const config = {
   options: { responsive: true },
 };
 
-const OrderInformation = () => {
+const OrderInformation = ({ bookingData }) => {
   const [mountingStatus, setMountingStatus] = useState('');
   const [printingStatus, setPrintingStatus] = useState('');
   const [campaignIncharge, setCampaignIncharge] = useState('');
@@ -70,15 +71,17 @@ const OrderInformation = () => {
           <div className="flex p-4 gap-12 border flex-wrap">
             <div>
               <p className="text-slate-400">Order Id</p>
-              <p className="font-bold">#347894743</p>
+              <p className="font-bold">{bookingData?.bookingId || []}</p>
             </div>
             <div>
               <p className="text-slate-400">Order Date</p>
-              <p className="font-bold">15 May 2037</p>
+              <p className="font-bold">
+                {bookingData?.createdAt ? dayjs(bookingData?.createdAt).format('D MMMM  YYYY') : ''}
+              </p>
             </div>
             <div>
               <p className="text-slate-400">Price</p>
-              <p className="font-bold">{toIndianCurrency(648764)}</p>
+              <p className="font-bold">{toIndianCurrency(bookingData?.totalPrice || 0)}</p>
             </div>
             <div>
               <p className="text-slate-400">Start Date</p>

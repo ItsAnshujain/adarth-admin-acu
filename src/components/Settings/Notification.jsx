@@ -1,10 +1,13 @@
 /* eslint-disable no-useless-escape */
+import { useEffect } from 'react';
 import { Button, Switch } from '@mantine/core';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
+import { useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from '../../context/formContext';
 import TextInput from '../shared/TextInput';
 import { useUpdateNotification } from '../../hooks/settings.hooks';
+import useUserStore from '../../store/user.store';
 
 const switchStyles = {
   root: {
@@ -82,10 +85,34 @@ const initialValues = {
   whatsappNumber: '',
 };
 
+const stringToBoolean = data => {
+  if (typeof data === 'string') {
+    if (data === 'false') {
+      return false;
+    }
+    return true;
+  }
+  return data;
+};
+
 const Notification = () => {
   const form = useForm({ validate: yupResolver(schema), initialValues });
 
   const { mutateAsync, isLoading } = useUpdateNotification();
+  const userId = useUserStore(state => state.id);
+
+  const queryClient = useQueryClient();
+  const data = queryClient.getQueryData(['users-by-id', userId]);
+
+  useEffect(() => {
+    if (data) {
+      form.setFieldValue('manualNotify', stringToBoolean(data.manualNotify));
+      form.setFieldValue('emailNotify', stringToBoolean(data.emailNotify));
+      form.setFieldValue('whatsappNotify', stringToBoolean(data.whatsappNotify));
+      form.setFieldValue('whatsappNumber', data.whatsappNumber);
+      form.setFieldValue('notificationEmail', data.notificationEmail);
+    }
+  }, [data]);
 
   const onSubmitHandler = formData => {
     const formDataCopy = { ...formData };
@@ -107,6 +134,7 @@ const Notification = () => {
               <p className="font-bold text-xl">Message Notification</p>
               <Switch
                 styles={switchStyles}
+                checked={form.values.manualNotify}
                 onChange={e => form.setFieldValue('manualNotify', e.target.checked)}
               />
             </div>
@@ -119,6 +147,7 @@ const Notification = () => {
               <p className="font-bold text-xl">Email Notification</p>
               <Switch
                 styles={switchStyles}
+                checked={form.values.emailNotify}
                 onChange={e => {
                   form.setFieldValue('emailNotify', e.target.checked);
                   if (!e.target.checked) {
@@ -144,6 +173,7 @@ const Notification = () => {
               <p className="font-bold text-xl">Whatsapp Notification</p>
               <Switch
                 styles={switchStyles}
+                checked={form.values.whatsappNotify}
                 onChange={e => {
                   form.setFieldValue('whatsappNotify', e.target.checked);
                   if (!e.target.checked) {
