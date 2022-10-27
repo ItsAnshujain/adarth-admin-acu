@@ -37,8 +37,8 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
     });
 
   return (
-    <div className="drop-shadow-md">
-      <div className="min-w-[273px]">
+    <div className="drop-shadow-md w-[273px]">
+      <div>
         {data?.basicInformation?.spacePhotos ? (
           <Image
             className="w-full"
@@ -67,7 +67,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
             checked={isSelected}
           />
         </div>
-        <Text size="md" weight="bold">
+        <Text size="md" weight="bold" lineClamp={1} className="w-full">
           {data?.basicInformation?.spaceName}
         </Text>
         <Text size="sm" className="mt-2" weight="200">

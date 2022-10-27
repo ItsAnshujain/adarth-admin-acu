@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Badge, Button, Image, Progress, Text } from '@mantine/core';
+import { Badge, Box, Button, Image, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams } from 'react-router-dom';
+import { useModals } from '@mantine/modals';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import Header from './Header';
@@ -14,8 +15,10 @@ import MenuPopover from '../MenuPopover';
 import { useFetchProposalById } from '../../../hooks/proposal.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { colors, spaceTypes } from '../../../utils';
+import modalConfig from '../../../utils/modalConfig';
 
 const ProposalDetails = () => {
+  const modals = useModals();
   const [search, setSearch] = useState('');
   const [count, setCount] = useState('10');
   const [showShare, setShowShare] = useState(false);
@@ -30,6 +33,23 @@ const ProposalDetails = () => {
   const { data: proposalData } = useFetchProposalById(proposalId);
 
   const page = 1; // TODO: make api changes for pagination in spaces array
+
+  const toggleImagePreviewModal = imgSrc =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <Box className=" flex justify-center" onClickCancel={id => modals.closeModal(id)}>
+            {imgSrc ? (
+              <Image src={imgSrc} height={580} width={580} alt="preview" />
+            ) : (
+              <Image src={null} height={580} width={580} withPlaceholder />
+            )}
+          </Box>
+        ),
+      },
+      ...modalConfig,
+    });
 
   const COLUMNS = useMemo(
     () => [
@@ -58,13 +78,16 @@ const ProposalDetails = () => {
           useMemo(
             () => (
               <div className="flex items-center gap-2">
-                <div className="bg-white border rounded-md">
+                <Box
+                  className="bg-white border rounded-md cursor-zoom-in"
+                  onClick={() => toggleImagePreviewModal(basicInformation?.spacePhotos)}
+                >
                   {basicInformation?.spacePhotos ? (
                     <Image src={basicInformation.spacePhotos} alt="banner" height={32} width={32} />
                   ) : (
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
-                </div>
+                </Box>
                 <p className="flex-1">{basicInformation?.spaceName}</p>
               </div>
             ),
