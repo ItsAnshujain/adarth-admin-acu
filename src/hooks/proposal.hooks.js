@@ -71,7 +71,7 @@ export const useUpdateProposal = () => {
       onSuccess: () => {
         queryClient.invalidateQueries(['proposals']);
         showNotification({
-          title: 'Proposal edited successfully',
+          title: 'Proposal updated successfully',
           color: 'green',
         });
       },

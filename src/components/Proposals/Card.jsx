@@ -4,7 +4,7 @@ const Card = ({ proposalData }) => {
   const { _id, name, price, status, client, totalPlaces } = proposalData;
   return (
     <div className="flex flex-col px-4 py-8 shadow-md gap-4 max-w-72 bg-white">
-      <p className="font-bold">{name || 'NA'}</p>
+      <p className="font-bold text-ellipsis w-full overflow-hidden">{name || 'NA'}</p>
       <p className="text-purple-450 text-sm">{status || 'NA'}</p>
       <div className="flex justify-between">
         <div>

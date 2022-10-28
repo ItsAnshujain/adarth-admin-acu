@@ -35,7 +35,7 @@ const Header = ({ text }) => {
           <Button
             className={classNames(
               `px-4 border-gray-300 border rounded-md ${
-                activeLayout === 'grid' ? 'bg-white' : 'bg-black'
+                activeLayout === 'grid' ? 'bg-white' : 'bg-purple-450'
               }`,
             )}
             onClick={handleListClick}
@@ -50,7 +50,7 @@ const Header = ({ text }) => {
           <Button
             className={classNames(
               `text-white border-gray-300 border px-4 rounded-md ${
-                activeLayout === 'list' ? 'bg-white' : 'bg-black'
+                activeLayout === 'list' ? 'bg-white' : 'bg-purple-450'
               }`,
             )}
             onClick={handleGridClick}

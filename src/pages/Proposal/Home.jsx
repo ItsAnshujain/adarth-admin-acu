@@ -72,7 +72,7 @@ const Proposals = () => {
           useMemo(
             () => (
               <Button
-                className="text-black font-medium"
+                className="text-black font-medium max-w-[250px]"
                 onClick={() => navigate(`view-details/${_id}`, { replace: true })}
               >
                 {name}

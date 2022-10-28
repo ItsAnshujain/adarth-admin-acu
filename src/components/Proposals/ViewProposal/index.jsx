@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Badge, Box, Button, Image, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams } from 'react-router-dom';
+import { useClickOutside } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
@@ -24,10 +25,9 @@ const ProposalDetails = () => {
   const [showShare, setShowShare] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const ref = useClickOutside(() => setShowDatePicker(false));
 
-  const openDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
+  const openDatePicker = () => setShowDatePicker(!showDatePicker);
 
   const { id: proposalId } = useParams();
   const { data: proposalData } = useFetchProposalById(proposalId);
@@ -214,12 +214,12 @@ const ProposalDetails = () => {
           Selected Inventory
         </Text>
         <div className="flex gap-2">
-          <div className="mr-2 relative">
+          <div ref={ref} className="mr-2 relative">
             <Button onClick={openDatePicker} variant="default" type="button">
               <img src={calendar} className="h-5" alt="calendar" />
             </Button>
             {showDatePicker && (
-              <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
+              <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
                 <DateRange handleClose={openDatePicker} />
               </div>
             )}

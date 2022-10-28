@@ -213,6 +213,9 @@ const Specification = ({ specificationsData }) => {
           }
           placeholder="Select all that you like"
           className="mb-5 mt-4"
+          searchable
+          clearable
+          maxDropdownHeight={160}
         />
         <MultiSelect
           label="Tags"
@@ -229,6 +232,9 @@ const Specification = ({ specificationsData }) => {
               : []
           }
           placeholder="Select all that you like"
+          searchable
+          clearable
+          maxDropdownHeight={160}
         />
         {/* TODO: update select component  */}
         {/* <AsyncSelect

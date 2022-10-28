@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Text, Button, Progress, Image, NumberInput, Badge } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useDebouncedState } from '@mantine/hooks';
+import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import Filter from '../Filter';
 import DateRange from '../DateRange';
 import Search from '../Search';
@@ -22,6 +22,7 @@ const Spaces = ({
   const navigate = useNavigate();
   const [search, setSearch] = useDebouncedState('', 1000);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const ref = useClickOutside(() => setShowDatePicker(false));
   const [searchParams] = useSearchParams();
   const [showFilter, setShowFilter] = useState(false);
   const [query] = useState({
@@ -217,20 +218,22 @@ const Spaces = ({
             Select Place for Campaign
           </Text>
           <div className="flex items-center gap-2">
-            <div className="relative">
+            <div ref={ref} className="relative">
               <Button onClick={openDatePicker} variant="default" type="button">
                 <img src={calendar} className="h-5" alt="calendar" />
               </Button>
               {showDatePicker && (
-                <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
+                <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
                   <DateRange handleClose={openDatePicker} />
                 </div>
               )}
             </div>
-            <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
-              <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
-            </Button>
-            {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
+            <div className="mr-2">
+              <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
+                <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
+              </Button>
+              {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
+            </div>
           </div>
         </div>
         <div className="flex gap-4">
