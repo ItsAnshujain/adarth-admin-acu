@@ -27,19 +27,47 @@ const schema = action =>
         .concat(action === 1 ? requiredSchema('Space name is required') : null),
       landlord: yup.string().trim(),
       mediaOwner: yup.string().trim(),
-      spaceType: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Space Type is required') : null),
-      category: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Category is required') : null),
-      subCategory: yup.string().trim(),
-      mediaType: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Media Type is required') : null),
+      spaceType: yup.mixed().concat(
+        action === 1
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('spaceType', 'Space Type is required', obj => obj.value !== '')
+          : null,
+      ),
+      category: yup.mixed().concat(
+        action === 1
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('category', 'Category is required', obj => obj.value !== '')
+          : null,
+      ),
+      subCategory: yup.mixed().concat(
+        action === 1
+          ? yup.object().shape({
+              label: yup.string().trim(),
+              value: yup.string().trim(),
+            })
+          : null,
+      ),
+      mediaType: yup.mixed().concat(
+        action === 1
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('mediaType', 'Media Type is required', obj => obj.value !== '')
+          : null,
+      ),
       supportedMedia: yup.string().trim(),
       description: yup
         .string()
@@ -47,82 +75,149 @@ const schema = action =>
         .concat(action === 1 ? requiredSchema('Description is required') : null),
       price: yup
         .number()
+        .nullable()
         .concat(
           action === 1
-            ? yup.number().typeError('Price must be a number').required('Price is required')
+            ? yup
+                .number()
+                .typeError('Price must be a number')
+                .required('Price is required')
+                .nullable()
             : null,
         ),
-      // spacePhotos: yup.array().of(yup.string().trim()),
       spacePhotos: yup.string().trim(),
       otherPhotos: yup.array().of(yup.string().trim()),
       footFall: yup
         .number()
+        .nullable()
         .concat(
           action === 1
-            ? yup.number().typeError('FootFall must be a number').required('Footfall is required')
+            ? yup
+                .number()
+                .typeError('FootFall must be a number')
+                .required('Footfall is required')
+                .nullable()
             : null,
         ),
-      demographic: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Demographics is required') : null),
-      audience: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Audience is required') : null),
+      demographic: yup.mixed().concat(
+        action === 1
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('demographic', 'Demographics is required', obj => obj.value !== '')
+          : null,
+      ),
+      audience: yup.mixed().concat(
+        action === 1
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('audience', 'Audience is required', obj => obj.value !== '')
+          : null,
+      ),
     }),
     specifications: yup.object().shape({
-      illuminations: yup
-        .string()
-        .trim()
-        .concat(action === 2 ? requiredSchema('Illumination is required') : null),
-      spaceStatus: yup
-        .string()
-        .trim()
-        .concat(action === 2 ? requiredSchema('Space Status is required') : null),
+      illuminations: yup.mixed().concat(
+        action === 2
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('illuminations', 'Illumination is required', obj => obj.value !== '')
+          : null,
+      ),
+      spaceStatus: yup.mixed().concat(
+        action === 2
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('spaceStatus', 'Space Status is required', obj => obj.value !== '')
+          : null,
+      ),
       unit: yup
         .number()
+        .nullable()
         .concat(
           action === 2
-            ? yup.number().typeError('Unit must be a number').required('Unit is required')
+            ? yup
+                .number()
+                .typeError('Unit must be a number')
+                .required('Unit is required')
+                .nullable()
             : null,
         ),
-      resolutions: yup.object({
+      resolutions: yup.object().shape({
         height: yup
           .number()
+          .nullable()
           .concat(
             action === 2
-              ? yup.number().typeError('Height must be a number').required('Height is required')
+              ? yup
+                  .number()
+                  .typeError('Height must be a number')
+                  .required('Height is required')
+                  .nullable()
               : null,
           ),
         width: yup
           .number()
+          .nullable()
           .concat(
             action === 2
-              ? yup.number().typeError('Width must be a number').required('Width is required')
+              ? yup
+                  .number()
+                  .typeError('Width must be a number')
+                  .required('Width is required')
+                  .nullable()
               : null,
           ),
       }),
       health: yup
         .number()
+        .nullable()
         .concat(
           action === 2
-            ? yup.number().typeError('Health must be a number').required('Health is required')
+            ? yup
+                .number()
+                .typeError('Health must be a number')
+                .required('Health is required')
+                .nullable()
             : null,
         ),
-      impressions: yup.object({
+      impressions: yup.object().shape({
         min: yup
           .number()
+          .nullable()
           .concat(
             action === 2
-              ? yup.number().typeError('Min must be a number').required('Min is required')
+              ? yup
+                  .number()
+                  .typeError('Min must be a number')
+                  .required('Min is required')
+                  .nullable()
               : null,
           ),
         max: yup
           .number()
+          .nullable()
           .concat(
             action === 2
-              ? yup.number().typeError('Max must be a number').required('Max is required')
+              ? yup
+                  .number()
+                  .typeError('Max must be a number')
+                  .required('Max is required')
+                  .nullable()
               : null,
           ),
       }),
@@ -150,16 +245,26 @@ const schema = action =>
     location: yup.object().shape({
       latitude: yup
         .number()
+        .nullable()
         .concat(
           action === 3
-            ? yup.number().typeError('Latitude must be a number').required('Latitude is required')
+            ? yup
+                .number()
+                .typeError('Latitude must be a number')
+                .required('Latitude is required')
+                .nullable()
             : null,
         ),
       longitude: yup
         .number()
+        .nullable()
         .concat(
           action === 3
-            ? yup.number().typeError('Longitude must be a number').required('Longitude is required')
+            ? yup
+                .number()
+                .typeError('Longitude must be a number')
+                .required('Longitude is required')
+                .nullable()
             : null,
         ),
       address: yup
@@ -176,9 +281,15 @@ const schema = action =>
         .concat(action === 3 ? requiredSchema('State is required') : null),
       zip: yup
         .number()
+        .nullable()
         .concat(
           action === 3
-            ? yup.number().typeError('Zip must be a number').required('Zip is required')
+            ? yup
+                .number()
+                .typeError('Zip must be a number')
+                .required('Zip is required')
+                .min(6, 'Zip must be at least 6 digits')
+                .nullable()
             : null,
         ),
       zone: yup
@@ -201,43 +312,42 @@ const initialValues = {
     spaceName: '',
     landlord: '',
     mediaOwner: '',
-    category: '',
-    subCategory: '',
-    spaceType: '',
-    mediaType: '',
+    category: { label: '', value: '' },
+    subCategory: { label: '', value: '' },
+    spaceType: { label: '', value: '' },
+    mediaType: { label: '', value: '' },
     supportedMedia: '',
     description: '',
-    price: 0,
-    // spacePhotos: [''],
+    price: null,
     spacePhotos: '',
     otherPhotos: [''],
-    footFall: 0,
-    demographic: '',
-    audience: '',
+    footFall: null,
+    demographic: { label: '', value: '' },
+    audience: { label: '', value: '' },
   },
   specifications: {
-    illuminations: '',
-    spaceStatus: '',
-    unit: 0,
+    illuminations: { label: '', value: '' },
+    spaceStatus: { label: '', value: '' },
+    unit: null,
     resolutions: {
-      height: 0,
-      width: 0,
+      height: null,
+      width: null,
     },
-    health: 0,
+    health: null,
     impressions: {
-      min: 0,
-      max: 0,
+      min: null,
+      max: null,
     },
     previousBrands: [''],
     tags: [''],
   },
   location: {
-    latitude: 0,
-    longitude: 0,
+    latitude: null,
+    longitude: null,
     address: '',
     city: '',
     state: '',
-    zip: 0,
+    zip: null,
     zone: '',
     landmark: '',
     facing: '',
@@ -261,9 +371,9 @@ const MainArea = () => {
 
   const getForm = () =>
     formStep === 1 ? (
-      <BasicInfo />
+      <BasicInfo basicInformation={inventoryDetails?.basicInformation} />
     ) : formStep === 2 ? (
-      <Specification specificationsData={inventoryDetails?.specifications} />
+      <Specification />
     ) : formStep === 3 ? (
       <Location />
     ) : formStep === 4 ? (
@@ -274,7 +384,24 @@ const MainArea = () => {
     ) : null;
 
   const onSubmitInventoryForm = formData => {
-    const data = formData;
+    const data = {
+      ...formData,
+      basicInformation: {
+        ...formData.basicInformation,
+        audience: formData?.basicInformation?.audience?.value,
+        category: formData?.basicInformation?.category?.value,
+        demographic: formData?.basicInformation?.demographic?.value,
+        mediaType: formData?.basicInformation?.mediaType?.value,
+        spaceType: formData?.basicInformation?.spaceType?.value,
+        subCategory: formData?.basicInformation?.subCategory?.value,
+      },
+      specifications: {
+        ...formData.specifications,
+        illuminations: formData?.specifications?.illuminations?.value,
+        spaceStatus: formData?.specifications?.spaceStatus?.value,
+      },
+    };
+
     setFormStep(prevState => prevState + 1);
     if (formStep === 4) {
       setFormStep(4);
@@ -307,40 +434,105 @@ const MainArea = () => {
   useEffect(() => {
     if (inventoryDetails) {
       const { basicInformation, specifications, location } = inventoryDetails;
-      form.setFieldValue('basicInformation.spaceName', basicInformation?.spaceName);
-      form.setFieldValue('basicInformation.description', basicInformation?.description);
-      form.setFieldValue('basicInformation.footFall', basicInformation?.footFall);
-      form.setFieldValue('basicInformation.price', basicInformation?.price);
-      form.setFieldValue('basicInformation.category', basicInformation?.category);
+      form.setFieldValue('basicInformation.spaceName', basicInformation?.spaceName || '');
+      form.setFieldValue('basicInformation.description', basicInformation?.description || '');
+      form.setFieldValue('basicInformation.footFall', basicInformation?.footFall || null);
+      form.setFieldValue('basicInformation.price', basicInformation?.price || null);
+      form.setFieldValue('basicInformation.category.label', basicInformation?.category?.name || '');
+      form.setFieldValue('basicInformation.category.value', basicInformation?.category?._id || '');
       if (basicInformation?.category) {
-        form.setFieldValue('basicInformation.subCategory', basicInformation?.subCategory);
+        form.setFieldValue(
+          'basicInformation.subCategory.label',
+          basicInformation?.subCategory?.name || '',
+        );
+        form.setFieldValue(
+          'basicInformation.subCategory.value',
+          basicInformation?.subCategory?._id || '',
+        );
       }
-      form.setFieldValue('basicInformation.spaceType', basicInformation?.spaceType);
-      form.setFieldValue('basicInformation.mediaType', basicInformation?.mediaType);
-      form.setFieldValue('basicInformation.supportedMedia', basicInformation?.supportedMedia);
-      form.setFieldValue('basicInformation.demographic', basicInformation?.demographic);
-      form.setFieldValue('basicInformation.audience', basicInformation?.audience);
-      form.setFieldValue('basicInformation.spacePhotos', basicInformation?.spacePhotos);
-      form.setFieldValue('basicInformation.otherPhotos', basicInformation?.otherPhotos);
-      form.setFieldValue('specifications.illuminations', specifications?.illuminations);
-      form.setFieldValue('specifications.unit', specifications?.unit);
-      form.setFieldValue('specifications.health', specifications?.health);
-      form.setFieldValue('specifications.impressions.max', specifications?.impressions?.max);
-      form.setFieldValue('specifications.impressions.min', specifications?.impressions?.min);
-      form.setFieldValue('specifications.resolutions.height', specifications?.resolutions?.height);
-      form.setFieldValue('specifications.resolutions.width', specifications?.resolutions?.width);
-      form.setFieldValue('specifications.spaceStatus', specifications?.spaceStatus);
-      form.setFieldValue('specifications.previousBrands', specifications?.previousBrands);
-      form.setFieldValue('specifications.tags', specifications?.tags);
-      form.setFieldValue('location.latitude', location?.latitude);
-      form.setFieldValue('location.longitude', location?.longitude);
-      form.setFieldValue('location.address', location?.address);
-      form.setFieldValue('location.city', location?.city);
-      form.setFieldValue('location.state', location?.state);
-      form.setFieldValue('location.zip', location?.zip);
-      form.setFieldValue('location.zone', location?.zone);
-      form.setFieldValue('location.landmark', location?.landmark);
-      form.setFieldValue('location.facing', location?.facing);
+      form.setFieldValue(
+        'basicInformation.spaceType.label',
+        basicInformation?.spaceType?.name || '',
+      );
+      form.setFieldValue(
+        'basicInformation.spaceType.value',
+        basicInformation?.spaceType?._id || '',
+      );
+      form.setFieldValue(
+        'basicInformation.mediaType.label',
+        basicInformation?.mediaType?.name || '',
+      );
+      form.setFieldValue(
+        'basicInformation.mediaType.value',
+        basicInformation?.mediaType?._id || '',
+      );
+      form.setFieldValue('basicInformation.supportedMedia', basicInformation?.supportedMedia || '');
+      form.setFieldValue(
+        'basicInformation.demographic.label',
+        basicInformation?.demographic?.name || '',
+      );
+      form.setFieldValue(
+        'basicInformation.demographic.value',
+        basicInformation?.demographic?._id || '',
+      );
+      form.setFieldValue('basicInformation.audience.label', basicInformation?.audience?.name || '');
+      form.setFieldValue('basicInformation.audience.value', basicInformation?.audience?._id || '');
+      form.setFieldValue('basicInformation.spacePhotos', basicInformation?.spacePhotos || '');
+      form.setFieldValue('basicInformation.otherPhotos', basicInformation?.otherPhotos || ['']);
+      form.setFieldValue(
+        'specifications.illuminations.label',
+        specifications?.illuminations?.name || '',
+      );
+      form.setFieldValue(
+        'specifications.illuminations.value',
+        specifications?.illuminations?._id || '',
+      );
+      form.setFieldValue('specifications.unit', specifications?.unit || null);
+      form.setFieldValue('specifications.health', specifications?.health || null);
+      form.setFieldValue(
+        'specifications.impressions.max',
+        specifications?.impressions?.max || null,
+      );
+      form.setFieldValue(
+        'specifications.impressions.min',
+        specifications?.impressions?.min || null,
+      );
+      form.setFieldValue(
+        'specifications.resolutions.height',
+        specifications?.resolutions?.height || null,
+      );
+      form.setFieldValue(
+        'specifications.resolutions.width',
+        specifications?.resolutions?.width || null,
+      );
+      form.setFieldValue(
+        'specifications.spaceStatus.label',
+        specifications?.spaceStatus?.name || '',
+      );
+      form.setFieldValue(
+        'specifications.spaceStatus.value',
+        specifications?.spaceStatus?._id || '',
+      );
+      if (specifications?.previousBrands) {
+        const arrOfPreviousBrandsIds = specifications.previousBrands?.map(item => item._id);
+        form.setFieldValue(
+          'specifications.previousBrands',
+          arrOfPreviousBrandsIds?.length ? arrOfPreviousBrandsIds : [''],
+        );
+      }
+      if (specifications?.tags) {
+        const arrOfTagsIds = specifications.tags?.map(item => item._id);
+        form.setFieldValue('specifications.tags', arrOfTagsIds?.length ? arrOfTagsIds : ['']);
+      }
+      form.setFieldValue('location.latitude', location?.latitude || null);
+      form.setFieldValue('location.longitude', location?.longitude || null);
+      form.setFieldValue('location.address', location?.address || '');
+      form.setFieldValue('location.city', location?.city || '');
+      form.setFieldValue('location.state', location?.state || '');
+      form.setFieldValue('location.zip', location?.zip || null);
+      form.setFieldValue('location.zone', location?.zone || '');
+      form.setFieldValue('location.landmark', location?.landmark || '');
+      form.setFieldValue('location.facing', location?.facing || '');
     }
   }, [inventoryDetails]);
 

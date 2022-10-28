@@ -7,8 +7,9 @@ import { useFormContext } from '../../../context/formContext';
 import TextInput from '../../shared/TextInput';
 import TextareaInput from '../../shared/TextareaInput';
 import NativeSelect from '../../shared/NativeSelect';
-import NumberInput from '../../shared/NumberInput';
 import { useUploadFile } from '../../../hooks/upload.hooks';
+import Select from '../../shared/Select';
+import NumberInput from '../../shared/NumberInput';
 
 const styles = {
   label: {
@@ -50,7 +51,7 @@ const BasicInfo = () => {
     isSuccess: subCategoryLoaded,
     isLoading: isSubCategoryLoading,
   } = useFetchMasters(
-    serialize({ parentId: values?.basicInformation.category }),
+    serialize({ parentId: values?.basicInformation.category?.value }),
     !!values?.basicInformation.category,
   );
   const {
@@ -118,7 +119,7 @@ const BasicInfo = () => {
           className="mb-7"
           disabled
         />
-        <NativeSelect
+        <Select
           label="Space Type"
           name="basicInformation.spaceType"
           styles={styles}
@@ -135,7 +136,7 @@ const BasicInfo = () => {
           }
           className="mb-7"
         />
-        <NativeSelect
+        <Select
           label="Category"
           name="basicInformation.category"
           styles={styles}
@@ -152,7 +153,7 @@ const BasicInfo = () => {
           }
           className="mb-7"
         />
-        <NativeSelect
+        <Select
           label="Sub Category"
           name="basicInformation.subCategory"
           styles={styles}
@@ -172,7 +173,7 @@ const BasicInfo = () => {
         {subCategories?.docs?.length === 0 ? (
           <p className="mt-1 mb-7 text-xs text-red-450">No Sub Category available</p>
         ) : null}
-        <NativeSelect
+        <Select
           label="Media Type"
           name="basicInformation.mediaType"
           styles={styles}
@@ -214,7 +215,7 @@ const BasicInfo = () => {
           placeholder="Write..."
           className="mb-7"
         />
-        <NativeSelect
+        <Select
           label="Audience"
           name="basicInformation.audience"
           styles={styles}
@@ -231,7 +232,7 @@ const BasicInfo = () => {
           }
           className="mb-7"
         />
-        <NativeSelect
+        <Select
           label="Demographics"
           name="basicInformation.demographic"
           styles={styles}

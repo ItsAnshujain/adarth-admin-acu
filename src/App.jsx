@@ -122,14 +122,7 @@ const App = () => {
             </Suspense>
           }
         >
-          <Route
-            path=""
-            element={
-              <Suspense fallback={<Loader />}>
-                <InventoryHome />
-              </Suspense>
-            }
-          />
+          <Route path="" element={<InventoryHome />} />
           <Route
             path="create-space/single"
             element={
@@ -215,19 +208,12 @@ const App = () => {
           <Route
             path=""
             element={
-              <Suspense fallback={<Loader />}>
+              <Suspense fallback={<CustomLoader />}>
                 <ProposalsHome />
               </Suspense>
             }
           />
-          <Route
-            path="create-proposals"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <CreateProposals />
-              </Suspense>
-            }
-          />
+          <Route path="create-proposals" element={<CreateProposals />} />
           <Route
             path="edit-details/:id"
             element={

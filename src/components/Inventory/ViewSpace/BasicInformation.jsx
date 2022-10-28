@@ -177,8 +177,14 @@ const BasicInfo = () => {
                   {readMore ? 'Read less' : 'Read more'}
                 </Button>
               </Text>
-              <Badge className="capitalize" variant="filled" color="green" size="lg" mt="xs">
-                Available
+              <Badge
+                className="capitalize"
+                variant="filled"
+                color={inventoryDetails?.isUnderMaintenance ? 'yellow' : 'green'}
+                size="lg"
+                mt="xs"
+              >
+                {inventoryDetails?.isUnderMaintenance ? 'Under maintenance' : 'Available'}
               </Badge>
               <Text weight="bold" className="my-2">
                 {toIndianCurrency(inventoryDetails?.basicInformation?.price || 0)}
@@ -247,7 +253,7 @@ const BasicInfo = () => {
                     <Text color="gray" size="xs" weight="300">
                       Illumination
                     </Text>
-                    <Text>{'{illumination}'}</Text>
+                    <Text>{inventoryDetails?.specifications?.illuminations?.name || 'NA'}</Text>
                   </div>
                 </div>
               ) : (

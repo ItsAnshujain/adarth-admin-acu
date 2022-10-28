@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Text, Button, Progress, Image, NumberInput, Badge } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -23,6 +23,7 @@ const Spaces = ({
   const [search, setSearch] = useDebouncedState('', 1000);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
+  const [updatedSpaces, setUpdatedSpaces] = useState([]);
   const [searchParams] = useSearchParams();
   const [showFilter, setShowFilter] = useState(false);
   const [query] = useState({
@@ -30,9 +31,11 @@ const Spaces = ({
     page: 1,
   });
 
-  const openDatePicker = () => setShowDatePicker(!showDatePicker);
   const { data: inventoryData } = useFetchInventory(serialize(query));
   const page = searchParams.get('page');
+
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
+  const toggleFilter = () => setShowFilter(!showFilter);
 
   const COLUMNS = useMemo(
     () => [
@@ -210,6 +213,23 @@ const Spaces = ({
     return initialCost;
   }, [selectedRowData]);
 
+  useEffect(() => {
+    if (inventoryData?.docs) {
+      const arrOfIds = selectedRowData?.map(item => item._id);
+      const arrOfUpdatedPrices = inventoryData?.docs?.map(item => {
+        if (arrOfIds.includes(item._id)) {
+          const spaceData = selectedRowData.find(rowData => rowData._id === item._id);
+          return {
+            ...item,
+            basicInformation: { ...item?.basicInformation, price: spaceData?.price },
+          };
+        }
+        return { ...item };
+      });
+      setUpdatedSpaces(arrOfUpdatedPrices);
+    }
+  }, [inventoryData?.docs]);
+
   return (
     <>
       <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
@@ -219,17 +239,17 @@ const Spaces = ({
           </Text>
           <div className="flex items-center gap-2">
             <div ref={ref} className="relative">
-              <Button onClick={openDatePicker} variant="default" type="button">
-                <img src={calendar} className="h-5" alt="calendar" />
+              <Button onClick={toggleDatePicker} variant="default" type="button">
+                <Image src={calendar} className="h-5" alt="calendar" />
               </Button>
               {showDatePicker && (
                 <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
-                  <DateRange handleClose={openDatePicker} />
+                  <DateRange handleClose={toggleDatePicker} />
                 </div>
               )}
             </div>
             <div className="mr-2">
-              <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
+              <Button onClick={toggleFilter} variant="default" type="button">
                 <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
               </Button>
               {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
@@ -260,7 +280,7 @@ const Spaces = ({
         </div>
       </div>
       <Table
-        data={inventoryData?.docs || []}
+        data={updatedSpaces}
         COLUMNS={COLUMNS}
         allowRowsSelect
         setSelectedFlatRows={setSelectedRow}

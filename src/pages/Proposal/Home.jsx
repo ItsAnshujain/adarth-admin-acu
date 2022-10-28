@@ -1,7 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
-import { Button } from '@mantine/core';
+import { Button, Loader } from '@mantine/core';
+import dayjs from 'dayjs';
 import AreaHeader from '../../components/Proposals/Header';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
@@ -11,6 +12,8 @@ import { useFetchProposals } from '../../hooks/proposal.hooks';
 import MenuPopover from './MenuPopover';
 import useLayoutView from '../../store/layout.store';
 import toIndianCurrency from '../../utils/currencyFormat';
+
+const DATE_FORMAT = 'DD MMM YYYY';
 
 const Proposals = () => {
   const navigate = useNavigate();
@@ -72,7 +75,7 @@ const Proposals = () => {
           useMemo(
             () => (
               <Button
-                className="text-black font-medium max-w-[250px]"
+                className="text-black font-medium max-w-[250px] capitalize"
                 onClick={() => navigate(`view-details/${_id}`, { replace: true })}
               >
                 {name}
@@ -84,6 +87,15 @@ const Proposals = () => {
       {
         Header: 'CREATOR',
         accessor: 'creator',
+        Cell: ({
+          row: {
+            original: { creator },
+          },
+        }) =>
+          useMemo(
+            () => <p className="text-black font-medium max-w-[250px]">{creator?.name}</p>,
+            [],
+          ),
       },
       {
         Header: 'STATUS',
@@ -92,15 +104,45 @@ const Proposals = () => {
           row: {
             original: { status },
           },
-        }) => useMemo(() => <p className="pl-2">{status?.name}</p>, []),
+        }) =>
+          useMemo(
+            () => <p className="pl-2 font-bold text-purple-350">{status?.name || '-'}</p>,
+            [],
+          ),
       },
       {
         Header: 'START DATE',
         accessor: 'startDate',
+        Cell: ({
+          row: {
+            original: { startDate },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                {dayjs(startDate).format(DATE_FORMAT)}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'END DATE',
         accessor: 'endDate',
+        Cell: ({
+          row: {
+            original: { endDate },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                {dayjs(endDate).format(DATE_FORMAT)}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'CLIENT',
@@ -148,7 +190,12 @@ const Proposals = () => {
         <RowsPerPage setCount={handleRowCount} count={limit} />
         <Search search={searchInput} setSearch={setSearchinput} />
       </div>
-      {viewType === 'list' ? (
+      {isLoadingProposalsData && viewType === 'list' ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <Loader />
+        </div>
+      ) : null}
+      {viewType === 'list' && proposalsData?.docs?.length ? (
         <Table
           data={proposalsData?.docs || []}
           COLUMNS={COLUMNS}
@@ -157,7 +204,7 @@ const Proposals = () => {
           setActivePage={handlePagination}
           rowCountLimit={limit}
         />
-      ) : (
+      ) : viewType === 'grid' ? (
         <GridView
           count={limit}
           list={proposalsData?.docs || []}
@@ -166,7 +213,7 @@ const Proposals = () => {
           setActivePage={handlePagination}
           isLoadingList={isLoadingProposalsData}
         />
-      )}
+      ) : null}
     </div>
   );
 };

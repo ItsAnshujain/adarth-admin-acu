@@ -14,6 +14,8 @@ import {
   useFetchProposalById,
 } from '../../../hooks/proposal.hooks';
 import { FormProvider, useForm } from '../../../context/formContext';
+import { useFetchMasters } from '../../../hooks/masters.hooks';
+import { serialize } from '../../../utils';
 
 const schema = yup.object().shape({
   name: yup.string().trim().required('Name is required'),
@@ -51,6 +53,10 @@ const Main = () => {
 
   const handleUpdatedProposedPrice = (val, id) => setProposedPrice({ price: val, inventoryId: id });
 
+  const { data: proposalStatusData } = useFetchMasters(
+    serialize({ type: 'proposal_status', parentId: null, limit: 10 }),
+  );
+
   const getForm = () =>
     formStep === 1 ? (
       <BasicInfo />
@@ -65,8 +71,13 @@ const Main = () => {
 
   const onSubmit = formData => {
     let data = {};
+
+    const status = proposalStatusData?.docs?.filter(item => item?.name.toLowerCase() === 'draft')[0]
+      ?._id;
+
     data = {
       ...formData,
+      status,
     };
     setFormStep(2);
     if (formStep === 2) {
@@ -103,7 +114,7 @@ const Main = () => {
       }
 
       Object.keys(data).forEach(key => {
-        if (data[key] === '') {
+        if (data[key] === '' || data[key] === undefined) {
           delete data[key];
         }
       });

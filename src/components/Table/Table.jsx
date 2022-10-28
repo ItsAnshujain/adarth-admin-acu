@@ -1,83 +1,63 @@
 import React, { useEffect, useMemo } from 'react';
 import classNames from 'classnames';
-import shallow from 'zustand/shallow';
-import { useTable, useSortBy, useRowSelect, usePagination } from 'react-table';
+import { useTable, useSortBy, useRowSelect } from 'react-table';
 import { Pagination } from '@mantine/core';
 import IndeterminateCheckbox from './Checkbox';
 import Ascending from '../../assets/Icons/Ascending';
 import Descending from '../../assets/Icons/Descending';
-import useCreateBookingSelectSpaceState from '../../store/createBookingSelectSpace.store';
 
-// TODO: selectedFlatRows.original gives array of all selected rows and selectedRowIds contains all the data from id field
 const Table = ({
   COLUMNS,
   data = [],
   allowRowsSelect = false,
-  isBookingTable = false,
   isCreateOrder = false,
   activePage = 1,
   totalPages = 1,
   setSelectedFlatRows = () => {},
   setActivePage = () => {},
-  rowCountLimit = 10,
   selectedRowData = [],
 }) => {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
-  const setSelectedSpace = useCreateBookingSelectSpaceState(
-    state => state.setSelectedSpace,
-    shallow,
-  );
 
   const handleSelectedRows = () => {
+    const obj = {};
     const preIds = selectedRowData.map(item => item._id);
-    return data?.filter(row => preIds.includes(row._id));
+    data?.forEach((row, index) => {
+      if (preIds.includes(row._id)) {
+        obj[index] = true;
+      }
+    });
+    return obj;
   };
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    prepareRow,
-    page,
-    setPageSize,
-    selectedFlatRows,
-  } = useTable(
-    {
-      columns,
-      data,
-      initialState: { pageIndex: 0, selectedRowIds: handleSelectedRows() },
-    },
-    useSortBy,
-    usePagination,
-    useRowSelect,
-
-    /* eslint-disable react/no-unstable-nested-components */
-    allowRowsSelect &&
-      (hooks => {
-        hooks.visibleColumns.push(cols => [
-          {
-            id: 'selection',
-            Header: ({ getToggleAllRowsSelectedProps }) => (
-              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-            ),
-            Cell: ({ row }) => <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />,
-          },
-          ...cols,
-        ]);
-      }),
-  );
-
-  if (isBookingTable) {
-    setSelectedSpace(selectedFlatRows);
-  }
+  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows, selectedFlatRows } =
+    useTable(
+      {
+        columns,
+        data,
+        initialState: { pageIndex: 0, selectedRowIds: handleSelectedRows() },
+      },
+      useSortBy,
+      useRowSelect,
+      /* eslint-disable react/no-unstable-nested-components */
+      allowRowsSelect &&
+        (hooks => {
+          hooks.visibleColumns.push(cols => [
+            {
+              id: 'selection',
+              Header: ({ getToggleAllRowsSelectedProps }) => (
+                <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+              ),
+              Cell: ({ row }) => <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />,
+            },
+            ...cols,
+          ]);
+        }),
+    );
 
   useEffect(() => {
     setSelectedFlatRows(selectedFlatRows);
   }, [selectedFlatRows]);
-
-  useEffect(() => {
-    setPageSize(rowCountLimit);
-  }, [rowCountLimit]);
 
   return (
     <>
@@ -121,14 +101,14 @@ const Table = ({
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {page.length === 0 && (
+            {rows?.length === 0 && (
               <tr>
                 <td className="pl-2 py-2 text-center">
                   <p>No Records Found</p>
                 </td>
               </tr>
             )}
-            {page.map(row => {
+            {rows?.map(row => {
               prepareRow(row);
               return (
                 <tr
@@ -148,7 +128,6 @@ const Table = ({
             })}
           </tbody>
         </table>
-        {/* TODO: Remove Pagination from here and do everything by sending request to backend */}
       </div>
       {!isCreateOrder && (
         <div className="flex justify-end my-4 pr-7">
