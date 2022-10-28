@@ -86,7 +86,7 @@ const Home = () => {
         accessor: 'spaceName',
         Cell: ({
           row: {
-            original: { _id, basicInformation },
+            original: { _id, basicInformation, isUnderMaintenance },
           },
         }) =>
           useMemo(
@@ -119,8 +119,12 @@ const Home = () => {
                     {basicInformation?.spaceName}
                   </span>
                 </Button>
-                <Badge className="capitalize" variant="filled" color="green">
-                  Available
+                <Badge
+                  className="capitalize"
+                  variant="filled"
+                  color={isUnderMaintenance ? 'yellow' : 'green'}
+                >
+                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
                 </Badge>
               </div>
             ),

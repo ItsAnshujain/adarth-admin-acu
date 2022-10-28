@@ -27,104 +27,159 @@ const schema = action =>
         .concat(action === 1 ? requiredSchema('Space name is required') : null),
       landlord: yup.string().trim(),
       mediaOwner: yup.string().trim(),
-      spaceType: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Space Type is required') : null),
-      category: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Category is required') : null),
-      subCategory: yup.string().trim(),
-      mediaType: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Media Type is required') : null),
+      spaceType: yup.mixed().concat(
+        action === 1
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('spaceType', 'Space Type is required', obj => obj.value !== '')
+          : null,
+      ),
+      category: yup.mixed().concat(
+        action === 1
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('category', 'Category is required', obj => obj.value !== '')
+          : null,
+      ),
+      subCategory: yup.mixed().concat(
+        action === 1
+          ? yup.object().shape({
+              label: yup.string().trim(),
+              value: yup.string().trim(),
+            })
+          : null,
+      ),
+      mediaType: yup.mixed().concat(
+        action === 1
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('mediaType', 'Media Type is required', obj => obj.value !== '')
+          : null,
+      ),
       supportedMedia: yup.string().trim(),
       description: yup
         .string()
         .trim()
         .concat(action === 1 ? requiredSchema('Description is required') : null),
       price: yup
-        .number()
+        .string()
+        .trim()
         .concat(
-          action === 1
-            ? yup.number().typeError('Price must be a number').required('Price is required')
-            : null,
-        ),
-      // spacePhotos: yup.array().of(yup.string().trim()),
+          action === 1 ? yup.string().matches(/^\d+$/, 'Price must be a positive number') : null,
+        )
+        .concat(action === 1 ? requiredSchema('Price is required') : null),
       spacePhotos: yup.string().trim(),
       otherPhotos: yup.array().of(yup.string().trim()),
       footFall: yup
-        .number()
+        .string()
+        .trim()
         .concat(
-          action === 1
-            ? yup.number().typeError('FootFall must be a number').required('Footfall is required')
-            : null,
-        ),
-      demographic: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Demographics is required') : null),
-      audience: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Audience is required') : null),
+          action === 1 ? yup.string().matches(/^\d+$/, 'Footfall must be a positive number') : null,
+        )
+        .concat(action === 1 ? requiredSchema('Footfall is required') : null),
+      demographic: yup.mixed().concat(
+        action === 1
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('demographic', 'Demographics is required', obj => obj.value !== '')
+          : null,
+      ),
+      audience: yup.mixed().concat(
+        action === 1
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('audience', 'Audience is required', obj => obj.value !== '')
+          : null,
+      ),
     }),
     specifications: yup.object().shape({
-      illuminations: yup
-        .string()
-        .trim()
-        .concat(action === 2 ? requiredSchema('Illumination is required') : null),
-      spaceStatus: yup
-        .string()
-        .trim()
-        .concat(action === 2 ? requiredSchema('Space Status is required') : null),
+      illuminations: yup.mixed().concat(
+        action === 2
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('illuminations', 'Illumination is required', obj => obj.value !== '')
+          : null,
+      ),
+      spaceStatus: yup.mixed().concat(
+        action === 2
+          ? yup
+              .object()
+              .shape({
+                label: yup.string().trim(),
+                value: yup.string().trim(),
+              })
+              .test('spaceStatus', 'Space Status is required', obj => obj.value !== '')
+          : null,
+      ),
       unit: yup
-        .number()
+        .string()
+        .trim()
         .concat(
-          action === 2
-            ? yup.number().typeError('Unit must be a number').required('Unit is required')
-            : null,
-        ),
-      resolutions: yup.object({
+          action === 2 ? yup.string().matches(/^\d+$/, 'Unit must be a positive number') : null,
+        )
+        .concat(action === 2 ? requiredSchema('Unit is required') : null),
+      resolutions: yup.object().shape({
         height: yup
-          .number()
+          .string()
+          .trim()
           .concat(
-            action === 2
-              ? yup.number().typeError('Height must be a number').required('Height is required')
-              : null,
-          ),
+            action === 2 ? yup.string().matches(/^\d+$/, 'Height must be a positive number') : null,
+          )
+          .concat(action === 2 ? requiredSchema('Height is required') : null),
         width: yup
-          .number()
+          .string()
+          .trim()
           .concat(
-            action === 2
-              ? yup.number().typeError('Width must be a number').required('Width is required')
-              : null,
-          ),
+            action === 2 ? yup.string().matches(/^\d+$/, 'Width must be a positive number') : null,
+          )
+          .concat(action === 2 ? requiredSchema('Width is required') : null),
       }),
       health: yup
-        .number()
+        .string()
+        .trim()
         .concat(
-          action === 2
-            ? yup.number().typeError('Health must be a number').required('Health is required')
-            : null,
-        ),
-      impressions: yup.object({
+          action === 2 ? yup.string().matches(/^\d+$/, 'Health must be a positive number') : null,
+        )
+        .concat(action === 2 ? requiredSchema('Health is required') : null),
+      impressions: yup.object().shape({
         min: yup
-          .number()
+          .string()
+          .trim()
           .concat(
-            action === 2
-              ? yup.number().typeError('Min must be a number').required('Min is required')
-              : null,
-          ),
+            action === 2 ? yup.string().matches(/^\d+$/, 'Min must be a positive number') : null,
+          )
+          .concat(action === 2 ? requiredSchema('Min is required') : null),
         max: yup
-          .number()
+          .string()
+          .trim()
           .concat(
-            action === 2
-              ? yup.number().typeError('Max must be a number').required('Max is required')
-              : null,
-          ),
+            action === 2 ? yup.string().matches(/^\d+$/, 'Max must be a positive number') : null,
+          )
+          .concat(action === 2 ? requiredSchema('Max is required') : null),
       }),
       previousBrands: yup.lazy(() =>
         action === 2
@@ -175,12 +230,17 @@ const schema = action =>
         .trim()
         .concat(action === 3 ? requiredSchema('State is required') : null),
       zip: yup
-        .number()
+        .string()
+        .trim()
         .concat(
           action === 3
-            ? yup.number().typeError('Zip must be a number').required('Zip is required')
+            ? yup
+                .string()
+                .min(6, 'Zip must be at least 6 digits')
+                .matches(/^\d+$/, 'Zip must be a positive number')
             : null,
-        ),
+        )
+        .concat(action === 3 ? requiredSchema('Zip is required') : null),
       zone: yup
         .string()
         .trim()
@@ -201,32 +261,31 @@ const initialValues = {
     spaceName: '',
     landlord: '',
     mediaOwner: '',
-    category: '',
-    subCategory: '',
-    spaceType: '',
-    mediaType: '',
+    category: { label: '', value: '' },
+    subCategory: { label: '', value: '' },
+    spaceType: { label: '', value: '' },
+    mediaType: { label: '', value: '' },
     supportedMedia: '',
     description: '',
-    price: 0,
-    // spacePhotos: [''],
+    price: '',
     spacePhotos: '',
     otherPhotos: [''],
-    footFall: 0,
-    demographic: '',
-    audience: '',
+    footFall: '',
+    demographic: { label: '', value: '' },
+    audience: { label: '', value: '' },
   },
   specifications: {
-    illuminations: '',
-    spaceStatus: '',
-    unit: 0,
+    illuminations: { label: '', value: '' },
+    spaceStatus: { label: '', value: '' },
+    unit: '',
     resolutions: {
-      height: 0,
-      width: 0,
+      height: '',
+      width: '',
     },
-    health: 0,
+    health: '',
     impressions: {
-      min: 0,
-      max: 0,
+      min: '',
+      max: '',
     },
     previousBrands: [''],
     tags: [''],
@@ -237,7 +296,7 @@ const initialValues = {
     address: '',
     city: '',
     state: '',
-    zip: 0,
+    zip: '',
     zone: '',
     landmark: '',
     facing: '',
@@ -261,9 +320,9 @@ const MainArea = () => {
 
   const getForm = () =>
     formStep === 1 ? (
-      <BasicInfo />
+      <BasicInfo basicInformation={inventoryDetails?.basicInformation} />
     ) : formStep === 2 ? (
-      <Specification specificationsData={inventoryDetails?.specifications} />
+      <Specification />
     ) : formStep === 3 ? (
       <Location />
     ) : formStep === 4 ? (
@@ -274,7 +333,54 @@ const MainArea = () => {
     ) : null;
 
   const onSubmitInventoryForm = formData => {
-    const data = formData;
+    const data = {
+      ...formData,
+      basicInformation: {
+        ...formData.basicInformation,
+        price: formData?.basicInformation?.price
+          ? parseInt(formData.basicInformation.price, 10)
+          : '',
+        footFall: formData?.basicInformation?.footFall
+          ? parseInt(formData.basicInformation.footFall, 10)
+          : '',
+        audience: formData?.basicInformation?.audience?.value,
+        category: formData?.basicInformation?.category?.value,
+        demographic: formData?.basicInformation?.demographic?.value,
+        mediaType: formData?.basicInformation?.mediaType?.value,
+        spaceType: formData?.basicInformation?.spaceType?.value,
+        subCategory: formData?.basicInformation?.subCategory?.value,
+      },
+      specifications: {
+        ...formData.specifications,
+        unit: formData?.specifications?.unit ? parseInt(formData.specifications.unit, 10) : '',
+        health: formData?.specifications?.health
+          ? parseInt(formData.specifications.health, 10)
+          : '',
+        resolutions: {
+          height: formData?.specifications?.resolutions?.height
+            ? parseInt(formData.specifications?.resolutions.height, 10)
+            : '',
+          width: formData?.specifications?.resolutions?.width
+            ? parseInt(formData.specifications?.resolutions.width, 10)
+            : '',
+        },
+        impressions: {
+          min: formData?.specifications?.impressions?.min
+            ? parseInt(formData.specifications?.impressions.min, 10)
+            : '',
+          max: formData?.specifications?.impressions?.max
+            ? parseInt(formData.specifications?.impressions.max, 10)
+            : '',
+        },
+        illuminations: formData?.specifications?.illuminations?.value,
+        spaceStatus: formData?.specifications?.spaceStatus?.value,
+      },
+      location: {
+        ...formData.location,
+        zip: formData?.location?.zip ? parseInt(formData.location.zip, 10) : '',
+      },
+    };
+
     setFormStep(prevState => prevState + 1);
     if (formStep === 4) {
       setFormStep(4);
@@ -307,40 +413,149 @@ const MainArea = () => {
   useEffect(() => {
     if (inventoryDetails) {
       const { basicInformation, specifications, location } = inventoryDetails;
-      form.setFieldValue('basicInformation.spaceName', basicInformation?.spaceName);
-      form.setFieldValue('basicInformation.description', basicInformation?.description);
-      form.setFieldValue('basicInformation.footFall', basicInformation?.footFall);
-      form.setFieldValue('basicInformation.price', basicInformation?.price);
-      form.setFieldValue('basicInformation.category', basicInformation?.category);
+      form.setFieldValue(
+        'basicInformation.spaceName',
+        basicInformation?.spaceName ? basicInformation.spaceName : '',
+      );
+      form.setFieldValue(
+        'basicInformation.description',
+        basicInformation?.description ? basicInformation.description : '',
+      );
+      form.setFieldValue(
+        'basicInformation.footFall',
+        basicInformation?.footFall ? basicInformation.footFall : '',
+      );
+      form.setFieldValue(
+        'basicInformation.price',
+        basicInformation?.price ? basicInformation.price : '',
+      );
+      form.setFieldValue(
+        'basicInformation.category.label',
+        basicInformation?.category ? basicInformation.category.name : { label: '', value: '' },
+      );
+      form.setFieldValue(
+        'basicInformation.category.value',
+        basicInformation?.category ? basicInformation.category._id : { label: '', value: '' },
+      );
       if (basicInformation?.category) {
-        form.setFieldValue('basicInformation.subCategory', basicInformation?.subCategory);
+        form.setFieldValue(
+          'basicInformation.subCategory.label',
+          basicInformation?.subCategory
+            ? basicInformation.subCategory.name
+            : { label: '', value: '' },
+        );
+        form.setFieldValue(
+          'basicInformation.subCategory.value',
+          basicInformation?.subCategory
+            ? basicInformation.subCategory._id
+            : { label: '', value: '' },
+        );
       }
-      form.setFieldValue('basicInformation.spaceType', basicInformation?.spaceType);
-      form.setFieldValue('basicInformation.mediaType', basicInformation?.mediaType);
-      form.setFieldValue('basicInformation.supportedMedia', basicInformation?.supportedMedia);
-      form.setFieldValue('basicInformation.demographic', basicInformation?.demographic);
-      form.setFieldValue('basicInformation.audience', basicInformation?.audience);
-      form.setFieldValue('basicInformation.spacePhotos', basicInformation?.spacePhotos);
-      form.setFieldValue('basicInformation.otherPhotos', basicInformation?.otherPhotos);
-      form.setFieldValue('specifications.illuminations', specifications?.illuminations);
-      form.setFieldValue('specifications.unit', specifications?.unit);
-      form.setFieldValue('specifications.health', specifications?.health);
-      form.setFieldValue('specifications.impressions.max', specifications?.impressions?.max);
-      form.setFieldValue('specifications.impressions.min', specifications?.impressions?.min);
-      form.setFieldValue('specifications.resolutions.height', specifications?.resolutions?.height);
-      form.setFieldValue('specifications.resolutions.width', specifications?.resolutions?.width);
-      form.setFieldValue('specifications.spaceStatus', specifications?.spaceStatus);
-      form.setFieldValue('specifications.previousBrands', specifications?.previousBrands);
-      form.setFieldValue('specifications.tags', specifications?.tags);
-      form.setFieldValue('location.latitude', location?.latitude);
-      form.setFieldValue('location.longitude', location?.longitude);
-      form.setFieldValue('location.address', location?.address);
-      form.setFieldValue('location.city', location?.city);
-      form.setFieldValue('location.state', location?.state);
-      form.setFieldValue('location.zip', location?.zip);
-      form.setFieldValue('location.zone', location?.zone);
-      form.setFieldValue('location.landmark', location?.landmark);
-      form.setFieldValue('location.facing', location?.facing);
+      form.setFieldValue(
+        'basicInformation.spaceType.label',
+        basicInformation?.spaceType ? basicInformation.spaceType.name : '',
+      );
+      form.setFieldValue(
+        'basicInformation.spaceType.value',
+        basicInformation?.spaceType ? basicInformation.spaceType._id : '',
+      );
+      form.setFieldValue(
+        'basicInformation.mediaType.label',
+        basicInformation?.mediaType ? basicInformation.mediaType.name : { label: '', value: '' },
+      );
+      form.setFieldValue(
+        'basicInformation.mediaType.value',
+        basicInformation?.mediaType ? basicInformation.mediaType._id : { label: '', value: '' },
+      );
+      form.setFieldValue(
+        'basicInformation.supportedMedia',
+        basicInformation?.supportedMedia ? basicInformation.supportedMedia : '',
+      );
+      form.setFieldValue(
+        'basicInformation.demographic.label',
+        basicInformation?.demographic
+          ? basicInformation.demographic.name
+          : { label: '', value: '' },
+      );
+      form.setFieldValue(
+        'basicInformation.demographic.value',
+        basicInformation?.demographic ? basicInformation.demographic._id : { label: '', value: '' },
+      );
+      form.setFieldValue(
+        'basicInformation.audience.label',
+        basicInformation?.audience ? basicInformation.audience.name : { label: '', value: '' },
+      );
+      form.setFieldValue(
+        'basicInformation.audience.value',
+        basicInformation?.audience ? basicInformation.audience._id : { label: '', value: '' },
+      );
+      form.setFieldValue(
+        'basicInformation.spacePhotos',
+        basicInformation?.spacePhotos ? basicInformation.spacePhotos : '',
+      );
+      form.setFieldValue(
+        'basicInformation.otherPhotos',
+        basicInformation?.otherPhotos ? basicInformation.otherPhotos : [''],
+      );
+      form.setFieldValue(
+        'specifications.illuminations.label',
+        specifications?.illuminations
+          ? specifications.illuminations.name
+          : { label: '', value: '' },
+      );
+      form.setFieldValue(
+        'specifications.illuminations.value',
+        specifications?.illuminations ? specifications.illuminations._id : { label: '', value: '' },
+      );
+      form.setFieldValue('specifications.unit', specifications?.unit ? specifications.unit : '');
+      form.setFieldValue(
+        'specifications.health',
+        specifications?.health ? specifications.health : '',
+      );
+      form.setFieldValue(
+        'specifications.impressions.max',
+        specifications?.impressions?.max ? specifications.impressions.max : '',
+      );
+      form.setFieldValue(
+        'specifications.impressions.min',
+        specifications?.impressions?.min ? specifications.impressions.min : '',
+      );
+      form.setFieldValue(
+        'specifications.resolutions.height',
+        specifications?.resolutions?.height ? specifications.resolutions.height : '',
+      );
+      form.setFieldValue(
+        'specifications.resolutions.width',
+        specifications?.resolutions?.width ? specifications.resolutions.width : '',
+      );
+      form.setFieldValue(
+        'specifications.spaceStatus.label',
+        specifications?.spaceStatus ? specifications.spaceStatus.name : { label: '', value: '' },
+      );
+      form.setFieldValue(
+        'specifications.spaceStatus.value',
+        specifications?.spaceStatus ? specifications.spaceStatus._id : { label: '', value: '' },
+      );
+      if (specifications?.previousBrands) {
+        const arrOfPreviousBrandsIds = specifications.previousBrands?.map(item => item._id);
+        form.setFieldValue(
+          'specifications.previousBrands',
+          arrOfPreviousBrandsIds?.length ? arrOfPreviousBrandsIds : [''],
+        );
+      }
+      if (specifications?.tags) {
+        const arrOfTagsIds = specifications.tags?.map(item => item._id);
+        form.setFieldValue('specifications.tags', arrOfTagsIds?.length ? arrOfTagsIds : ['']);
+      }
+      form.setFieldValue('location.latitude', location?.latitude ? location.latitude : 0);
+      form.setFieldValue('location.longitude', location?.longitude ? location.longitude : 0);
+      form.setFieldValue('location.address', location?.address ? location.address : '');
+      form.setFieldValue('location.city', location?.city ? location.city : '');
+      form.setFieldValue('location.state', location?.state ? location.state : '');
+      form.setFieldValue('location.zip', location?.zip ? location.zip : '');
+      form.setFieldValue('location.zone', location?.zone ? location.zone : '');
+      form.setFieldValue('location.landmark', location?.landmark ? location.landmark : '');
+      form.setFieldValue('location.facing', location?.facing ? location.facing : '');
     }
   }, [inventoryDetails]);
 

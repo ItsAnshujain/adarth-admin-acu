@@ -18,6 +18,8 @@ const Booking = ({ count }) => {
   const [searchParams] = useSearchParams({
     'page': 1,
     'limit': 20,
+    'sortBy': 'createdAt',
+    'sortOrder': 'asc',
   });
 
   const page = searchParams.get('page');

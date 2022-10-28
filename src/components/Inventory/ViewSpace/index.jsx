@@ -22,8 +22,21 @@ const Main = () => {
   const onUpdateMaintenance = toggleValue => {
     toggle(toggleValue);
     const data = {
-      basicInformation: inventoryDetails?.basicInformation,
-      specifications: inventoryDetails?.specifications,
+      basicInformation: {
+        ...inventoryDetails?.basicInformation,
+        audience: inventoryDetails?.basicInformation?.audience?._id,
+        category: inventoryDetails?.basicInformation?.category?._id,
+        demographic: inventoryDetails?.basicInformation?.demographic?._id,
+        mediaType: inventoryDetails?.basicInformation?.mediaType?._id,
+        subCategory: inventoryDetails?.basicInformation?.subCategory?._id,
+      },
+      specifications: {
+        ...inventoryDetails?.specifications,
+        illuminations: inventoryDetails?.specifications?.illuminations?._id,
+        spaceStatus: inventoryDetails?.specifications?.spaceStatus?._id,
+        previousBrands: inventoryDetails?.specifications?.previousBrands?.map(item => item._id),
+        tags: inventoryDetails?.specifications?.tags?.map(item => item._id),
+      },
       location: inventoryDetails?.location,
     };
     if (inventoryId) {

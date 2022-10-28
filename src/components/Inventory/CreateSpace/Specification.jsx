@@ -1,13 +1,11 @@
-import { useDebouncedState } from '@mantine/hooks';
-import { useEffect } from 'react';
 import { useFormContext } from '../../../context/formContext';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
 // import AsyncSelect from '../../shared/AsyncSelect';
 import MultiSelect from '../../shared/MultiSelect';
-import NativeSelect from '../../shared/NativeSelect';
-import NumberInput from '../../shared/NumberInput';
+import TextInput from '../../shared/TextInput';
 import RangeSlider from '../../shared/RangeSlider';
+import Select from '../../shared/Select';
 
 const styles = {
   label: {
@@ -49,8 +47,7 @@ const sliderStyle = {
 
 const marks = [{ value: 6500 }, { value: 8500 }];
 
-const Specification = ({ specificationsData }) => {
-  const [sliderValues, setSliderValue] = useDebouncedState([], 1000);
+const Specification = () => {
   const { errors, setFieldValue } = useFormContext();
 
   const {
@@ -74,17 +71,6 @@ const Specification = ({ specificationsData }) => {
     isSuccess: isTagLoaded,
   } = useFetchMasters(serialize({ type: 'tag', limit: 100 }));
 
-  useEffect(() => {
-    setFieldValue('specifications.impressions.min', sliderValues[0]);
-    setFieldValue('specifications.impressions.max', sliderValues[1]);
-  }, [sliderValues]);
-
-  useEffect(() => {
-    // not loading edited data so using props
-    setFieldValue('specifications.impressions.max', specificationsData?.impressions?.max);
-    setFieldValue('specifications.impressions.min', specificationsData?.impressions?.min);
-  }, [specificationsData]);
-
   return (
     <div className="flex flex-col pl-5 pr-7 pt-4 mb-44">
       <p className="font-bold text-lg">Space Specifications</p>
@@ -93,7 +79,7 @@ const Specification = ({ specificationsData }) => {
       </p>
       <div className="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
         <div>
-          <NativeSelect
+          <Select
             label="Illumination"
             name="specifications.illuminations"
             styles={styles}
@@ -110,17 +96,18 @@ const Specification = ({ specificationsData }) => {
             }
             className="mb-7"
           />
-          <NumberInput
-            label="Health Status"
-            name="specifications.health"
+          <TextInput
+            label="Resolutions"
+            name="specifications.resolution"
             styles={styles}
             errors={errors}
             placeholder="Write..."
             className="mb-7"
+            disabled
           />
         </div>
         <div>
-          <NumberInput
+          <TextInput
             label="Unit"
             name="specifications.unit"
             styles={styles}
@@ -129,7 +116,7 @@ const Specification = ({ specificationsData }) => {
             className="mb-7"
           />
           <div className="grid grid-cols-2 gap-4">
-            <NumberInput
+            <TextInput
               label="Width"
               name="specifications.resolutions.width"
               styles={styles}
@@ -137,7 +124,7 @@ const Specification = ({ specificationsData }) => {
               placeholder="Write..."
               className="mb-7"
             />
-            <NumberInput
+            <TextInput
               label="Height"
               name="specifications.resolutions.height"
               styles={styles}
@@ -150,7 +137,15 @@ const Specification = ({ specificationsData }) => {
       </div>
       <div>
         <div className="grid grid-cols-2 gap-y-4 gap-x-8">
-          <NativeSelect
+          <TextInput
+            label="Health Status"
+            name="specifications.health"
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+            className="mb-7"
+          />
+          <Select
             label="Space Status"
             name="specifications.spaceStatus"
             styles={styles}
@@ -171,7 +166,7 @@ const Specification = ({ specificationsData }) => {
         <p className="font-bold">Impressions</p>
         <div className="flex gap-4 items-start">
           <div>
-            <NumberInput
+            <TextInput
               name="specifications.impressions.min"
               errors={errors}
               readOnly
@@ -185,10 +180,13 @@ const Specification = ({ specificationsData }) => {
             styles={sliderStyle}
             className="pt-4 flex-auto"
             marks={marks}
-            setControlledRangeValue={setSliderValue}
+            setControlledRangeValue={arrOfValues => {
+              setFieldValue('specifications.impressions.min', arrOfValues[0]?.toString());
+              setFieldValue('specifications.impressions.max', arrOfValues[1]?.toString());
+            }}
           />
           <div>
-            <NumberInput
+            <TextInput
               name="specifications.impressions.max"
               errors={errors}
               readOnly

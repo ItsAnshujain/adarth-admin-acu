@@ -70,7 +70,9 @@ const Preview = () => {
           <p className="text-lg font-bold">{values?.basicInformation?.spaceName || 'NA'}</p>
           <div>
             <div className="flex gap-2">
-              <p className="font-bold text-xs text-purple-450">{'{category}'}</p>
+              <p className="font-bold text-xs text-purple-450">
+                {values?.basicInformation?.category?.label}
+              </p>
             </div>
             <p className="font-light text-slate-400">
               {values?.basicInformation?.description}
@@ -80,7 +82,9 @@ const Preview = () => {
             </p>
             <div className="flex gap-3 items-center">
               <p className="font-bold my-2">
-                {toIndianCurrency(values?.basicInformation?.price || 0)}
+                {values?.basicInformation?.price
+                  ? toIndianCurrency(parseInt(values.basicInformation.price, 10))
+                  : 0}
               </p>
 
               <Badge
@@ -91,7 +95,9 @@ const Preview = () => {
                 radius="md"
               />
             </div>
-
+            <div>
+              <p className="text-slate-400">Previously advertised brands</p>
+            </div>
             <div className="mt-4">
               <p className="mb-1">Specifications</p>
               <p className="text-slate-400 mb-2">All the related details regarding campaign</p>
@@ -99,17 +105,21 @@ const Preview = () => {
                 <div className="grid grid-cols-2 p-4 border rounded-md mb-4 flex-1">
                   <div>
                     <p className="text-slate-400 text-md font-light">Media Type</p>
-                    <p className="mb-4">{'{mediaType}'}</p>
+                    <p className="mb-4">{values?.basicInformation?.mediaType?.label}</p>
 
-                    <p className="text-slate-400 text-md font-light">Resolution</p>
+                    <p className="text-slate-400 text-md font-light">Size</p>
                     <p className="mb-4">
                       {values?.specifications?.resolutions?.height || 0}ft X{' '}
                       {values?.specifications?.resolutions?.width || 0}ft
                     </p>
+                    <p className=" text-slate-400 text-md font-light">Impressions</p>
+                    <p className="mb-4">{values?.specifications?.impressions?.min || 'NA'}</p>
+                    <p className="text-slate-400 text-md font-light">Resolution</p>
+                    <p>NA</p>
                   </div>
                   <div>
                     <p className="text-slate-400 text-md font-light">Illumination</p>
-                    <p className="mb-4">{'{illumination}'}</p>
+                    <p className="mb-4">{values?.specifications?.illuminations?.label}</p>
                     <p className="text-slate-400 text-md font-light">Unit</p>
                     <p className="mb-4">{values?.specifications?.unit}</p>
                     <p className="text-slate-400 text-md font-light">Supported Media</p>
