@@ -6,6 +6,7 @@ import MultiSelect from '../../shared/MultiSelect';
 import TextInput from '../../shared/TextInput';
 import RangeSlider from '../../shared/RangeSlider';
 import Select from '../../shared/Select';
+import NumberInput from '../../shared/NumberInput';
 
 const styles = {
   label: {
@@ -107,7 +108,7 @@ const Specification = () => {
           />
         </div>
         <div>
-          <TextInput
+          <NumberInput
             label="Unit"
             name="specifications.unit"
             styles={styles}
@@ -116,7 +117,7 @@ const Specification = () => {
             className="mb-7"
           />
           <div className="grid grid-cols-2 gap-4">
-            <TextInput
+            <NumberInput
               label="Width"
               name="specifications.resolutions.width"
               styles={styles}
@@ -124,7 +125,7 @@ const Specification = () => {
               placeholder="Write..."
               className="mb-7"
             />
-            <TextInput
+            <NumberInput
               label="Height"
               name="specifications.resolutions.height"
               styles={styles}
@@ -137,7 +138,7 @@ const Specification = () => {
       </div>
       <div>
         <div className="grid grid-cols-2 gap-y-4 gap-x-8">
-          <TextInput
+          <NumberInput
             label="Health Status"
             name="specifications.health"
             styles={styles}
@@ -166,7 +167,7 @@ const Specification = () => {
         <p className="font-bold">Impressions</p>
         <div className="flex gap-4 items-start">
           <div>
-            <TextInput
+            <NumberInput
               name="specifications.impressions.min"
               errors={errors}
               readOnly
@@ -181,12 +182,12 @@ const Specification = () => {
             className="pt-4 flex-auto"
             marks={marks}
             setControlledRangeValue={arrOfValues => {
-              setFieldValue('specifications.impressions.min', arrOfValues[0]?.toString());
-              setFieldValue('specifications.impressions.max', arrOfValues[1]?.toString());
+              setFieldValue('specifications.impressions.min', arrOfValues[0]);
+              setFieldValue('specifications.impressions.max', arrOfValues[1]);
             }}
           />
           <div>
-            <TextInput
+            <NumberInput
               name="specifications.impressions.max"
               errors={errors}
               readOnly

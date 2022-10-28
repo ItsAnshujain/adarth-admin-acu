@@ -73,7 +73,7 @@ const Location = () => {
             placeholder="Write..."
             className="mb-7"
           />
-          <TextInput
+          <NumberInput
             label="Zip"
             name="location.zip"
             styles={styles}

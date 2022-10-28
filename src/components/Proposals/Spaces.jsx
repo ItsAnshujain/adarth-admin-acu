@@ -214,7 +214,7 @@ const Spaces = ({
   }, [selectedRowData]);
 
   useEffect(() => {
-    if (selectedRowData && inventoryData?.docs) {
+    if (inventoryData?.docs) {
       const arrOfIds = selectedRowData?.map(item => item._id);
       const arrOfUpdatedPrices = inventoryData?.docs?.map(item => {
         if (arrOfIds.includes(item._id)) {
@@ -226,7 +226,7 @@ const Spaces = ({
         }
         return { ...item };
       });
-      setUpdatedSpaces([...arrOfUpdatedPrices]);
+      setUpdatedSpaces(arrOfUpdatedPrices);
     }
   }, [inventoryData?.docs]);
 

@@ -9,6 +9,7 @@ import TextareaInput from '../../shared/TextareaInput';
 import NativeSelect from '../../shared/NativeSelect';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import Select from '../../shared/Select';
+import NumberInput from '../../shared/NumberInput';
 
 const styles = {
   label: {
@@ -198,7 +199,7 @@ const BasicInfo = () => {
           placeholder="Write..."
           className="mb-7"
         />
-        <TextInput
+        <NumberInput
           label="Price"
           name="basicInformation.price"
           styles={styles}
@@ -206,7 +207,7 @@ const BasicInfo = () => {
           placeholder="Write..."
           className="mb-7"
         />
-        <TextInput
+        <NumberInput
           label="Footfall"
           name="basicInformation.footFall"
           styles={styles}
