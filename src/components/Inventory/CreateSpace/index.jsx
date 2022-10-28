@@ -360,7 +360,7 @@ const MainArea = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ validate: yupResolver(schema(formStep)), initialValues });
-  console.log(form.errors);
+
   const { mutate: create, isLoading, isSuccess: isCreateSuccess } = useCreateInventory();
   const {
     mutate: update,
