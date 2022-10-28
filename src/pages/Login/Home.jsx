@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 import shallow from 'zustand/shallow';
 import { Title, Text, Button } from '@mantine/core';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { yupResolver } from '@mantine/form';
 import { useForm, FormProvider } from '../../context/formContext';
 import { useLogin } from '../../hooks/auth.hooks';
@@ -26,7 +26,7 @@ const schema = yup.object().shape({
 
 const Home = () => {
   const navigate = useNavigate();
-
+  const [searchParams] = useSearchParams();
   const { setToken, setId } = useUserStore(
     state => ({
       setToken: state.setToken,
@@ -36,6 +36,7 @@ const Home = () => {
     shallow,
   );
 
+  const redirectTo = searchParams.get('redirect_to');
   const { mutateAsync: login, isLoading } = useLogin();
 
   const form = useForm({ validate: yupResolver(schema), initialValues });
@@ -44,7 +45,11 @@ const Home = () => {
     const response = await login(formData);
     setToken(response.token);
     setId(response.id);
-    navigate('/home');
+    if (redirectTo) {
+      navigate(`/${redirectTo}`);
+    } else {
+      navigate('/home');
+    }
   };
 
   const styles = () => ({

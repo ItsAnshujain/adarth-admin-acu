@@ -44,8 +44,7 @@ export const useCreateUsers = () => {
       onSuccess: () => {
         queryClient.invalidateQueries('users');
         showNotification({
-          title: 'Add User',
-          message: 'User created successfully',
+          title: 'User created successfully',
           autoClose: 3000,
           color: 'green',
         });
@@ -54,8 +53,7 @@ export const useCreateUsers = () => {
     {
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
+          title: err?.message,
           autoClose: 3000,
           color: 'red',
         });
@@ -76,8 +74,7 @@ export const useUpdateUsers = () => {
       onSuccess: () => {
         queryClient.invalidateQueries('users-by-id');
         showNotification({
-          title: 'Update User',
-          message: 'User updated successfully',
+          title: 'User updated successfully',
           autoClose: 3000,
           color: 'green',
         });
@@ -86,8 +83,7 @@ export const useUpdateUsers = () => {
     {
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
+          title: err?.message,
           autoClose: 3000,
           color: 'red',
         });

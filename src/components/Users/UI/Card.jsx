@@ -1,4 +1,4 @@
-import { Image } from '@mantine/core';
+import { Image, Text } from '@mantine/core';
 import UserImage from '../../../assets/placeholders/user.png';
 
 const UserCard = ({
@@ -21,7 +21,9 @@ const UserCard = ({
         />
       </div>
       <div className="flex flex-col justify-between">
-        <p className="text-xl font-bold capitalize">{name}</p>
+        <Text className="text-xl font-bold capitalize" lineClamp={2}>
+          {name}
+        </Text>
         <p className="text-[#914EFB] capitalize">{role}</p>
         <p>{company}</p>
       </div>
