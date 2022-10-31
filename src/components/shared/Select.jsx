@@ -22,10 +22,10 @@ const Select = ({ options = [], name, ...props }) => {
       data={options}
       styles={styles}
       error={error}
-      value={value.value}
+      value={value?.value}
       rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
       onChange={val => {
-        onChange(options.find(item => item.value === val));
+        onChange(options?.find(item => item?.value === val));
       }}
     />
   );

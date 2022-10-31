@@ -86,6 +86,9 @@ const App = () => {
       location.pathname.includes('/forgot-password') ||
       location.pathname.includes('/change-password'))
   ) {
+    if (location.search.includes('setting')) {
+      return <Navigate to="/setting?type=change_password" replace />;
+    }
     return <Navigate to="/home" replace />;
   }
 

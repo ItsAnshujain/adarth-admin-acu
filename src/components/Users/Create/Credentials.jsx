@@ -25,7 +25,7 @@ const Credentials = () => {
 
   return (
     <div className="pl-5 pr-7 mt-4">
-      <p className="text-xl font-bold">Create credentials (ID Password) for the account</p>
+      <p className="text-xl font-bold">Create user for the account</p>
       <div className="grid grid-cols-2 gap-8 mt-4">
         <div className="flex flex-col gap-4">
           <Select
@@ -37,12 +37,12 @@ const Credentials = () => {
             placeholder="Select"
           />
           <TextInput
-            label="Password"
-            name="password"
+            label="Name"
+            name="name"
             styles={styles}
             withAsterisk
             errors={errors}
-            placeholder="Password"
+            placeholder="Name"
           />
         </div>
         <div className="flex flex-col gap-4">
@@ -53,14 +53,6 @@ const Credentials = () => {
             withAsterisk
             errors={errors}
             placeholder="Email ID"
-          />
-          <TextInput
-            label="Confirm Password"
-            name="confirmPassword"
-            styles={styles}
-            withAsterisk
-            errors={errors}
-            placeholder="Confirm Password"
           />
         </div>
       </div>
