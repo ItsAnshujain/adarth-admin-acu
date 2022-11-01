@@ -14,7 +14,7 @@ import { useDeleteInventory, useFetchInventory } from '../../hooks/inventory.hoo
 import MenuPopover from '../../components/Inventory/MenuPopover';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
-import { colors, spaceTypes } from '../../utils';
+import { colors } from '../../utils';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -133,9 +133,13 @@ const Home = () => {
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'landlord_name',
-        Cell: tableProps =>
-          useMemo(() => <div className="w-fit">{tableProps.row.original.landlord_name}</div>, []),
+        accessor: 'mediaOwner',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || 'NA'}</p>, []),
       },
       {
         Header: 'PEER',
@@ -147,14 +151,15 @@ const Home = () => {
         accessor: 'space_type',
         Cell: ({
           row: {
-            original: { specifications },
+            original: { basicInformation },
           },
         }) =>
           useMemo(() => {
-            const type = specifications?.spaceType ? spaceTypes[specifications.spaceType] : '-';
+            const type = basicInformation?.spaceType?.name;
+
             return (
               <Badge color={colors[type]} size="lg" className="capitalize">
-                {spaceTypes[type] || <span>-</span>}
+                {type || <span>-</span>}
               </Badge>
             );
           }),

@@ -10,6 +10,7 @@ import NativeSelect from '../../shared/NativeSelect';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import Select from '../../shared/Select';
 import NumberInput from '../../shared/NumberInput';
+import AsyncMultiSelect from '../../shared/AsyncMultiSelect';
 
 const styles = {
   label: {
@@ -17,6 +18,26 @@ const styles = {
     fontWeight: 700,
     fontSize: '15px',
     letterSpacing: '0.5px',
+  },
+};
+
+const multiSelectStyles = {
+  label: {
+    marginBottom: '4px',
+    fontWeight: 700,
+    fontSize: '15px',
+    letterSpacing: '0.5px',
+  },
+  value: {
+    backgroundColor: 'black',
+    color: 'white',
+    '& button svg': {
+      backgroundColor: 'white',
+      borderRadius: '50%',
+    },
+  },
+  icon: {
+    color: 'white',
   },
 };
 
@@ -215,10 +236,10 @@ const BasicInfo = () => {
           placeholder="Write..."
           className="mb-7"
         />
-        <Select
+        <AsyncMultiSelect
           label="Audience"
           name="basicInformation.audience"
-          styles={styles}
+          styles={multiSelectStyles}
           errors={errors}
           disabled={isAudienceDataLoading}
           placeholder="Select..."

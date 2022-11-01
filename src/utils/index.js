@@ -74,3 +74,12 @@ export const aadhaarFormat = aadhaarNumber => {
   }
   return '';
 };
+
+export const roleTypes = {
+  'Role': {
+    'media_owner': 'Media Owner',
+    'manager': 'Manager',
+    'supervisor': 'Supervisor',
+    'associate': 'Associate',
+  },
+};

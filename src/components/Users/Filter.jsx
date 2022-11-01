@@ -1,15 +1,8 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Accordion, Button, Drawer, Radio } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
+import { roleTypes } from '../../utils';
 
-const inititalFilterData = {
-  'Role': {
-    'media_owner': 'Media Owner',
-    'manager': 'Manager',
-    'supervisor': 'Supervisor',
-    'associate': 'Associate',
-  },
-};
 const styles = { title: { fontWeight: 'bold' } };
 
 const Filter = ({ isOpened, setShowFilter }) => {
@@ -26,11 +19,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
   const renderRoles = useMemo(
     () =>
-      Object.keys(inititalFilterData.Role).map(item => (
+      Object.keys(roleTypes.Role).map(item => (
         <div className="flex gap-2 mb-2" key={item}>
           <Radio
             onChange={event => handleRoleChange(event.currentTarget.value)}
-            label={inititalFilterData.Role[item]}
+            label={roleTypes.Role[item]}
             defaultValue={item}
             checked={roles === item}
           />
