@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button, Text, Image, Skeleton, Badge } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import { useToggle } from '@mantine/hooks';
@@ -6,8 +6,6 @@ import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { useFetchInventoryById } from '../../../hooks/inventory.hooks';
 import MapView from '../CreateSpace/MapView';
-
-const badgeData = ['School', 'Youth', 'Student', 'College Students'];
 
 const BasicInfo = () => {
   const { id: inventoryId } = useParams();
@@ -29,6 +27,16 @@ const BasicInfo = () => {
       return newImgs;
     });
   };
+
+  const renderBadges = useCallback(
+    list =>
+      list?.map(item => (
+        <p key={item?._id} className="pr-1 text-black">
+          {item?.name},
+        </p>
+      )),
+    [inventoryDetails],
+  );
 
   useEffect(() => {
     setPosterImage(inventoryDetails?.basicInformation?.spacePhotos);
@@ -165,10 +173,10 @@ const BasicInfo = () => {
             <>
               <div className="flex gap-2">
                 <Text weight="bolder" size="xs" className="text-purple-450">
-                  Billboard
+                  {inventoryDetails?.basicInformation?.category?.name}
                 </Text>
                 <Text weight="bolder" size="xs">
-                  Premium Site
+                  {inventoryDetails?.specifications?.spaceStatus?.name}
                 </Text>
               </div>
               <Text weight="300" color="gray">
@@ -189,18 +197,35 @@ const BasicInfo = () => {
               <Text weight="bold" className="my-2">
                 {toIndianCurrency(inventoryDetails?.basicInformation?.price || 0)}
               </Text>
-              <div className="flex gap-2 mb-8">
-                {badgeData.map(data => (
+              <div className="flex gap-2 mb-3">
+                {/* TODO: after api change, map the array of audience */}
+                {inventoryDetails?.basicInformation?.audience ? (
                   <Badge
-                    key={data}
+                    key={inventoryDetails?.basicInformation?.audience?._id}
                     className="text-purple-450 bg-purple-100 capitalize"
                     size="lg"
                     variant="filled"
                     radius="md"
                   >
-                    {data}
+                    {inventoryDetails?.basicInformation?.audience?.name}
                   </Badge>
-                ))}
+                ) : null}
+              </div>
+              <div className="mb-2">
+                <p className="text-slate-400">Previously advertised brands</p>
+                <div className="flex w-full flex-wrap">
+                  {inventoryDetails?.specifications?.previousBrands?.length
+                    ? renderBadges(inventoryDetails?.specifications?.previousBrands)
+                    : null}
+                </div>
+              </div>
+              <div className="mb-2">
+                <p className="text-slate-400">Previously advertised brands</p>
+                <div className="flex w-full flex-wrap">
+                  {inventoryDetails?.specifications?.tags
+                    ? renderBadges(inventoryDetails?.specifications?.tags)
+                    : null}
+                </div>
               </div>
             </>
           ) : (

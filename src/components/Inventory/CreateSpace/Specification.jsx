@@ -2,11 +2,11 @@ import { useFormContext } from '../../../context/formContext';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
 // import AsyncSelect from '../../shared/AsyncSelect';
-import MultiSelect from '../../shared/MultiSelect';
 import TextInput from '../../shared/TextInput';
 import RangeSlider from '../../shared/RangeSlider';
 import Select from '../../shared/Select';
 import NumberInput from '../../shared/NumberInput';
+import AsyncMultiSelect from '../../shared/AsyncMultiSelect';
 
 const styles = {
   label: {
@@ -196,7 +196,7 @@ const Specification = () => {
             <p className="text-right text-slate-400">Max</p>
           </div>
         </div>
-        <MultiSelect
+        <AsyncMultiSelect
           label="Previous brands"
           name="specifications.previousBrands"
           styles={multiSelectStyles}
@@ -216,11 +216,11 @@ const Specification = () => {
           clearable
           maxDropdownHeight={160}
         />
-        <MultiSelect
+        <AsyncMultiSelect
           label="Tags"
           name="specifications.tags"
           styles={multiSelectStyles}
-          errors={`${errors}.0`}
+          errors={errors}
           disabled={isTagLoading}
           options={
             isTagLoaded

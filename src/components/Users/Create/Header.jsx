@@ -8,7 +8,7 @@ const Header = () => {
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
-      <div className="flex gap-4 pr-7">
+      <div className="flex justify-end gap-4 pr-7 w-full">
         <Button className="bg-black" onClick={handleBack}>
           <ChevronLeft className="mr-2 h-4" />
           Back

@@ -6,14 +6,16 @@ import toIndianCurrency from '../../utils/currencyFormat';
 import MenuIcon from '../Menu';
 import DeleteConfirmContent from '../DeleteConfirmContent';
 import modalConfig from '../../utils/modalConfig';
+import { useDeleteInventoryById } from '../../hooks/inventory.hooks';
 
 const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
   const modals = useModals();
   const navigate = useNavigate();
+  const { mutate: deleteInventory, isLoading } = useDeleteInventoryById();
 
   const onSubmit = () => {
-    // eslint-disable-next-line no-console
-    console.log('hello');
+    deleteInventory({ inventoryId: data?._id });
+    setTimeout(() => modals.closeAll(), 2000);
   };
 
   const checkConfirmation = isConfirmed => {
@@ -56,8 +58,13 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
       </div>
       <div className="p-4 px-4 bg-white">
         <div className="flex justify-between items-center mb-2 ">
-          <Badge className="capitalize" variant="filled" color="green" size="lg">
-            Available
+          <Badge
+            className="capitalize"
+            variant="filled"
+            size="lg"
+            color={data?.isUnderMaintenance ? 'yellow' : 'green'}
+          >
+            {data?.isUnderMaintenance ? 'Under Maintenance' : 'Available'}
           </Badge>
           <Checkbox
             onChange={event => onSelect(event.target.value)}
@@ -76,7 +83,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
         <div className="grid grid-cols-2 justify-between">
           <div className="mt-2">
             <p className="text-sm text-gray-400">Category</p>
-            <p className="text-sm mt-1">{data?.category}</p>
+            <p className="text-sm mt-1">{data?.basicInformation?.category?.name}</p>
           </div>
           <div className="mt-2">
             <p className="text-sm text-gray-400">Impressions</p>
@@ -98,6 +105,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
                 onClick={() => navigate(`view-details/${data?._id}`)}
                 className="cursor-pointer flex items-center gap-1"
                 icon={<Eye className="h-4" />}
+                disabled={isLoading}
               >
                 <span className="ml-1">View Details</span>
               </Menu.Item>
@@ -105,6 +113,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
                 onClick={() => navigate(`edit-details/${data?._id}`)}
                 className="cursor-pointer flex items-center gap-1"
                 icon={<Edit2 className="h-4" />}
+                disabled={isLoading}
               >
                 <span className="ml-1">Edit</span>
               </Menu.Item>
@@ -112,6 +121,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
                 className="cursor-pointer flex items-center gap-1"
                 icon={<Trash className="h-4" />}
                 onClick={toggleDeleteModal}
+                disabled={isLoading}
               >
                 <span className="ml-1">Delete</span>
               </Menu.Item>
