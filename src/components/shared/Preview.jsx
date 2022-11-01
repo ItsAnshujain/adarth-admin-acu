@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Button, Image, Text } from '@mantine/core';
+import { useState, useEffect, useCallback } from 'react';
+import { Badge, Button, Image, Text } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
-import Badge from './Badge';
 import { useFormContext } from '../../context/formContext';
 
 const Preview = () => {
@@ -20,6 +19,16 @@ const Preview = () => {
       return newImgs;
     });
   };
+
+  const renderBadges = useCallback(
+    list =>
+      list?.map(item => (
+        <p key={item._id} className="pr-1 text-black">
+          {item?.label},
+        </p>
+      )),
+    [values?.specifications?.previousBrands, values?.specifications?.tags],
+  );
 
   useEffect(() => {
     setPosterImage(values?.basicInformation?.spacePhotos);
@@ -73,6 +82,9 @@ const Preview = () => {
               <p className="font-bold text-xs text-purple-450">
                 {values?.basicInformation?.category?.label}
               </p>
+              <Text weight="bolder" size="xs">
+                {values?.specifications?.spaceStatus?.label}
+              </Text>
             </div>
             <p className="font-light text-slate-400">
               {values?.basicInformation?.description}
@@ -86,17 +98,41 @@ const Preview = () => {
                   ? toIndianCurrency(parseInt(values.basicInformation.price, 10))
                   : 0}
               </p>
-
               <Badge
                 className="text-purple-450 bg-purple-100 capitalize"
-                text={`${values?.specifications?.impressions?.min || 0}+ Total Impressions`}
                 size="lg"
                 variant="filled"
                 radius="md"
-              />
+              >
+                {`${values?.specifications?.impressions?.min || 0}+ Total Impressions`}
+              </Badge>
+            </div>
+            {values?.basicInformation?.audience?.label !== '' ? (
+              <Badge
+                key={values?.basicInformation?.audience?._id}
+                className="text-purple-450 bg-purple-100 capitalize mb-3"
+                size="lg"
+                variant="filled"
+                radius="md"
+              >
+                {values?.basicInformation?.audience?.label}
+              </Badge>
+            ) : null}
+            <div className="mb-2">
+              <p className="text-slate-400">Previously advertised brands</p>
+              {values?.specifications?.previousBrands?.length ? (
+                <div className="flex w-full flex-wrap">
+                  {renderBadges(values?.specifications?.previousBrands)}
+                </div>
+              ) : null}
             </div>
             <div>
               <p className="text-slate-400">Previously advertised brands</p>
+              {values?.specifications?.tags?.length ? (
+                <div className="flex w-full flex-wrap">
+                  {renderBadges(values?.specifications?.tags)}
+                </div>
+              ) : null}
             </div>
             <div className="mt-4">
               <p className="mb-1">Specifications</p>

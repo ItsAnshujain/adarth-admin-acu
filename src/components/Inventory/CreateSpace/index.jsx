@@ -221,26 +221,16 @@ const schema = action =>
               : null,
           ),
       }),
-      previousBrands: yup.lazy(() =>
-        action === 2
-          ? yup
-              .array()
-              .of(yup.string().trim())
-              .test(
-                'previousBrands',
-                'Previous Brand is required',
-                e => e.length > 0 && e?.[0] !== '',
-              )
-          : yup.array(),
-      ),
-      tags: yup.lazy(() =>
-        action === 2
-          ? yup
-              .array()
-              .of(yup.string().trim())
-              .test('tags', 'Tag is required', e => e.length > 0 && e?.[0] !== '')
-          : yup.array(),
-      ),
+      previousBrands: yup
+        .array()
+        .of(yup.object().shape({ label: yup.string(), value: yup.string() }))
+        .test('previousBrands', 'Previous Brand is required', val =>
+          action === 2 ? val?.length > 0 : true,
+        ),
+      tags: yup
+        .array()
+        .of(yup.object().shape({ label: yup.string(), value: yup.string() }))
+        .test('tags', 'Tag is required', val => (action === 2 ? val?.length > 0 : true)),
     }),
     location: yup.object().shape({
       latitude: yup
@@ -338,8 +328,8 @@ const initialValues = {
       min: null,
       max: null,
     },
-    previousBrands: [''],
-    tags: [''],
+    previousBrands: [],
+    tags: [],
   },
   location: {
     latitude: null,
@@ -399,6 +389,8 @@ const MainArea = () => {
         ...formData.specifications,
         illuminations: formData?.specifications?.illuminations?.value,
         spaceStatus: formData?.specifications?.spaceStatus?.value,
+        previousBrands: formData?.specifications?.previousBrands?.map(item => item?.value),
+        tags: formData?.specifications?.tags?.map(item => item?.value),
       },
     };
 
@@ -431,6 +423,7 @@ const MainArea = () => {
     }
   };
 
+  // console.log(form.values, form.errors);
   useEffect(() => {
     if (inventoryDetails) {
       const { basicInformation, specifications, location } = inventoryDetails;
@@ -514,15 +507,21 @@ const MainArea = () => {
         specifications?.spaceStatus?._id || '',
       );
       if (specifications?.previousBrands) {
-        const arrOfPreviousBrandsIds = specifications.previousBrands?.map(item => item._id);
+        const arrOfPreviousBrands = specifications.previousBrands?.map(item => ({
+          label: item?.name,
+          value: item?._id,
+        }));
         form.setFieldValue(
           'specifications.previousBrands',
-          arrOfPreviousBrandsIds?.length ? arrOfPreviousBrandsIds : [''],
+          arrOfPreviousBrands?.length ? arrOfPreviousBrands : [''],
         );
       }
       if (specifications?.tags) {
-        const arrOfTagsIds = specifications.tags?.map(item => item._id);
-        form.setFieldValue('specifications.tags', arrOfTagsIds?.length ? arrOfTagsIds : ['']);
+        const arrOfTags = specifications.tags?.map(item => ({
+          label: item?.name,
+          value: item?._id,
+        }));
+        form.setFieldValue('specifications.tags', arrOfTags?.length ? arrOfTags : ['']);
       }
       form.setFieldValue('location.latitude', location?.latitude || null);
       form.setFieldValue('location.longitude', location?.longitude || null);

@@ -133,8 +133,8 @@ const Filter = ({ isOpened, setShowFilter }) => {
     searchParams.delete('subCategory');
     searchParams.delete('mediaType');
     searchParams.delete('city');
-    searchParams.delete('priceMin');
-    searchParams.delete('priceMax');
+    searchParams.delete('minPrice');
+    searchParams.delete('maxPrice');
     searchParams.delete('zone');
     searchParams.delete('footFall');
     searchParams.delete('facing');
@@ -159,16 +159,16 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
   const handleMinPrice = e => {
     setMinPrice(e.target.value);
-    searchParams.set('priceMin', e.target.value);
+    searchParams.set('minPrice', e.target.value);
   };
   const handleMaxPrice = e => {
     setMinPrice(e.target.value);
-    searchParams.set('priceMin', e.target.value);
+    searchParams.set('maxPrice', e.target.value);
   };
   const handleSliderChange = val => {
     setMinPrice(val[0], setMaxPrice(val[1]));
-    searchParams.set('priceMin', val[0]);
-    searchParams.set('priceMax', val[1]);
+    searchParams.set('minPrice', val[0]);
+    searchParams.set('maxPrice', val[1]);
   };
 
   useEffect(() => {
@@ -224,7 +224,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderStaticStatus(inititalFilterData.inventoryOwner, 'landlord')}
+                {renderStaticStatus(inititalFilterData.inventoryOwner, 'inventoryOwner')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
