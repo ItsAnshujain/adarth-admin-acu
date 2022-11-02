@@ -99,12 +99,11 @@ const Specification = () => {
           />
           <TextInput
             label="Resolutions"
-            name="specifications.resolution"
+            name="specifications.resolutions"
             styles={styles}
             errors={errors}
             placeholder="Write..."
             className="mb-7"
-            disabled
           />
         </div>
         <div>
@@ -119,7 +118,7 @@ const Specification = () => {
           <div className="grid grid-cols-2 gap-4">
             <NumberInput
               label="Width"
-              name="specifications.resolutions.width"
+              name="specifications.size.width"
               styles={styles}
               errors={errors}
               placeholder="Write..."
@@ -127,7 +126,7 @@ const Specification = () => {
             />
             <NumberInput
               label="Height"
-              name="specifications.resolutions.height"
+              name="specifications.size.height"
               styles={styles}
               errors={errors}
               placeholder="Write..."

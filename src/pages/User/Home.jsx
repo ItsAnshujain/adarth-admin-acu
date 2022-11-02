@@ -65,6 +65,11 @@ const Home = () => {
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       <div className="relative pb-10">
+        {userData?.docs?.length === 0 && !isLoading ? (
+          <div className="w-full min-h-[400px] flex justify-center items-center">
+            <p className="text-xl">No records found</p>
+          </div>
+        ) : null}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 md:gap-3 pr-7 pl-5 relative mb-20">
           {userData?.docs?.map(user => (
             <Link to={`view-details/${user?._id}`} key={user?._id}>

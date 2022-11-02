@@ -134,8 +134,7 @@ const Main = () => {
   useEffect(() => {
     if (proposalData) {
       form.setFieldValue('name', proposalData?.name);
-      form.setFieldValue('description', proposalData?.description);
-
+      form.setFieldValue('description', proposalData?.description || '');
       if (proposalData?.startDate) {
         form.setFieldValue('startDate', new Date(proposalData.startDate));
       }

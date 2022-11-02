@@ -30,6 +30,22 @@ const Preview = () => {
     [values?.specifications?.previousBrands, values?.specifications?.tags],
   );
 
+  const renderColoredBadges = useCallback(
+    list =>
+      list?.map(item => (
+        <Badge
+          key={item?.value}
+          className="text-purple-450 bg-purple-100 capitalize mr-3 my-2"
+          size="lg"
+          variant="filled"
+          radius="sm"
+        >
+          {item?.label}
+        </Badge>
+      )),
+    [values?.basicInformation?.audience],
+  );
+
   useEffect(() => {
     setPosterImage(values?.basicInformation?.spacePhotos);
 
@@ -107,17 +123,9 @@ const Preview = () => {
                 {`${values?.specifications?.impressions?.min || 0}+ Total Impressions`}
               </Badge>
             </div>
-            {values?.basicInformation?.audience?.label !== '' ? (
-              <Badge
-                key={values?.basicInformation?.audience?._id}
-                className="text-purple-450 bg-purple-100 capitalize mb-3"
-                size="lg"
-                variant="filled"
-                radius="md"
-              >
-                {values?.basicInformation?.audience?.label}
-              </Badge>
-            ) : null}
+            {values?.basicInformation?.audience?.length
+              ? renderColoredBadges(values?.basicInformation?.audience)
+              : null}
             <div className="mb-2">
               <p className="text-slate-400">Previously advertised brands</p>
               {values?.specifications?.previousBrands?.length ? (
@@ -145,13 +153,13 @@ const Preview = () => {
 
                     <p className="text-slate-400 text-md font-light">Size</p>
                     <p className="mb-4">
-                      {values?.specifications?.resolutions?.height || 0}ft X{' '}
-                      {values?.specifications?.resolutions?.width || 0}ft
+                      {values?.specifications?.size?.height || 0}ft X{' '}
+                      {values?.specifications?.size?.width || 0}ft
                     </p>
                     <p className=" text-slate-400 text-md font-light">Impressions</p>
                     <p className="mb-4">{values?.specifications?.impressions?.min || 'NA'}</p>
                     <p className="text-slate-400 text-md font-light">Resolution</p>
-                    <p>NA</p>
+                    <p>{values?.specifications?.resolutions || 'NA'}</p>
                   </div>
                   <div>
                     <p className="text-slate-400 text-md font-light">Illumination</p>

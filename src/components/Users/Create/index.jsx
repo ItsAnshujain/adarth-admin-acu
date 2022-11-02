@@ -48,7 +48,6 @@ const MainArea = () => {
       </FormProvider>
       <SuccessModal
         title="Profile Created Successfully"
-        text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
         prompt="Visit User List"
         open={openSuccessModal}
         setOpenSuccessModal={setOpenSuccessModal}

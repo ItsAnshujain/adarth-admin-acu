@@ -110,17 +110,10 @@ const schema = action =>
               .test('demographic', 'Demographics is required', obj => obj.value !== '')
           : null,
       ),
-      audience: yup.mixed().concat(
-        action === 1
-          ? yup
-              .object()
-              .shape({
-                label: yup.string().trim(),
-                value: yup.string().trim(),
-              })
-              .test('audience', 'Audience is required', obj => obj.value !== '')
-          : null,
-      ),
+      audience: yup
+        .array()
+        .of(yup.object().shape({ label: yup.string(), value: yup.string() }))
+        .test('audience', 'Audience is required', val => (action === 1 ? val?.length > 0 : true)),
     }),
     specifications: yup.object().shape({
       illuminations: yup.mixed().concat(
@@ -157,7 +150,11 @@ const schema = action =>
                 .nullable()
             : null,
         ),
-      resolutions: yup.object().shape({
+      resolutions: yup
+        .string()
+        .trim()
+        .concat(action === 2 ? requiredSchema('Resolutions is required') : null),
+      size: yup.object().shape({
         height: yup
           .number()
           .nullable()
@@ -313,13 +310,14 @@ const initialValues = {
     otherPhotos: [''],
     footFall: null,
     demographic: { label: '', value: '' },
-    audience: { label: '', value: '' },
+    audience: [],
   },
   specifications: {
     illuminations: { label: '', value: '' },
     spaceStatus: { label: '', value: '' },
     unit: null,
-    resolutions: {
+    resolutions: '',
+    size: {
       height: null,
       width: null,
     },
@@ -378,7 +376,7 @@ const MainArea = () => {
       ...formData,
       basicInformation: {
         ...formData.basicInformation,
-        audience: formData?.basicInformation?.audience?.value,
+        audience: formData?.basicInformation?.audience?.map(item => item?.value),
         category: formData?.basicInformation?.category?.value,
         demographic: formData?.basicInformation?.demographic?.value,
         mediaType: formData?.basicInformation?.mediaType?.value,
@@ -413,6 +411,8 @@ const MainArea = () => {
         }
       });
 
+      // console.log(data);
+      // return;
       if (inventoryId) {
         data.isUnderMaintenance = false;
         update({ inventoryId, data });
@@ -468,7 +468,11 @@ const MainArea = () => {
         'basicInformation.demographic.value',
         basicInformation?.demographic?._id || '',
       );
-      form.setFieldValue('basicInformation.audience.label', basicInformation?.audience?.name || '');
+      const arrOfAudience = basicInformation?.audience?.map(item => ({
+        label: item?.name,
+        value: item?._id,
+      }));
+      form.setFieldValue('basicInformation.audience', arrOfAudience || []);
       form.setFieldValue('basicInformation.audience.value', basicInformation?.audience?._id || '');
       form.setFieldValue('basicInformation.spacePhotos', basicInformation?.spacePhotos || '');
       form.setFieldValue('basicInformation.otherPhotos', basicInformation?.otherPhotos || ['']);
@@ -490,14 +494,9 @@ const MainArea = () => {
         'specifications.impressions.min',
         specifications?.impressions?.min || null,
       );
-      form.setFieldValue(
-        'specifications.resolutions.height',
-        specifications?.resolutions?.height || null,
-      );
-      form.setFieldValue(
-        'specifications.resolutions.width',
-        specifications?.resolutions?.width || null,
-      );
+      form.setFieldValue('specifications.resolutions', specifications?.resolutions || '');
+      form.setFieldValue('specifications.size.height', specifications?.size?.height || null);
+      form.setFieldValue('specifications.size.width', specifications?.size?.width || null);
       form.setFieldValue(
         'specifications.spaceStatus.label',
         specifications?.spaceStatus?.name || '',
@@ -506,23 +505,19 @@ const MainArea = () => {
         'specifications.spaceStatus.value',
         specifications?.spaceStatus?._id || '',
       );
-      if (specifications?.previousBrands) {
-        const arrOfPreviousBrands = specifications.previousBrands?.map(item => ({
-          label: item?.name,
-          value: item?._id,
-        }));
-        form.setFieldValue(
-          'specifications.previousBrands',
-          arrOfPreviousBrands?.length ? arrOfPreviousBrands : [''],
-        );
-      }
-      if (specifications?.tags) {
-        const arrOfTags = specifications.tags?.map(item => ({
-          label: item?.name,
-          value: item?._id,
-        }));
-        form.setFieldValue('specifications.tags', arrOfTags?.length ? arrOfTags : ['']);
-      }
+      const arrOfPreviousBrands = specifications?.previousBrands?.map(item => ({
+        label: item?.name,
+        value: item?._id,
+      }));
+      form.setFieldValue(
+        'specifications.previousBrands',
+        arrOfPreviousBrands?.length ? arrOfPreviousBrands : [],
+      );
+      const arrOfTags = specifications?.tags?.map(item => ({
+        label: item?.name,
+        value: item?._id,
+      }));
+      form.setFieldValue('specifications.tags', arrOfTags?.length ? arrOfTags : []);
       form.setFieldValue('location.latitude', location?.latitude || null);
       form.setFieldValue('location.longitude', location?.longitude || null);
       form.setFieldValue('location.address', location?.address || '');

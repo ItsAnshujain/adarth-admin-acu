@@ -38,6 +38,22 @@ const BasicInfo = () => {
     [inventoryDetails],
   );
 
+  const renderColoredBadges = useCallback(
+    list =>
+      list?.map(item => (
+        <Badge
+          key={item?._id}
+          className="text-purple-450 bg-purple-100 capitalize mr-1 my-2"
+          size="lg"
+          variant="filled"
+          radius="sm"
+        >
+          {item?.name}
+        </Badge>
+      )),
+    [inventoryDetails],
+  );
+
   useEffect(() => {
     setPosterImage(inventoryDetails?.basicInformation?.spacePhotos);
 
@@ -198,18 +214,9 @@ const BasicInfo = () => {
                 {toIndianCurrency(inventoryDetails?.basicInformation?.price || 0)}
               </Text>
               <div className="flex gap-2 mb-3">
-                {/* TODO: after api change, map the array of audience */}
-                {inventoryDetails?.basicInformation?.audience ? (
-                  <Badge
-                    key={inventoryDetails?.basicInformation?.audience?._id}
-                    className="text-purple-450 bg-purple-100 capitalize"
-                    size="lg"
-                    variant="filled"
-                    radius="md"
-                  >
-                    {inventoryDetails?.basicInformation?.audience?.name}
-                  </Badge>
-                ) : null}
+                {inventoryDetails?.basicInformation?.audience.length
+                  ? renderColoredBadges(inventoryDetails?.basicInformation?.audience)
+                  : null}
               </div>
               <div className="mb-2">
                 <p className="text-slate-400">Previously advertised brands</p>
@@ -249,7 +256,10 @@ const BasicInfo = () => {
                     <Text color="gray" size="xs" weight="300">
                       Size
                     </Text>
-                    <Text className="mb-4">W X H</Text>
+                    <Text className="mb-4">
+                      {inventoryDetails?.specifications?.size?.height || 0}ft X{' '}
+                      {inventoryDetails?.specifications?.size?.width || 0}ft
+                    </Text>
                     <Text color="gray" size="xs" weight="300">
                       Impression
                     </Text>
@@ -259,10 +269,7 @@ const BasicInfo = () => {
                     <Text color="gray" size="xs" weight="300">
                       Resolution
                     </Text>
-                    <Text>
-                      {inventoryDetails?.specifications?.resolutions?.height || 0}px X{' '}
-                      {inventoryDetails?.specifications?.resolutions?.width || 0}px
-                    </Text>
+                    <Text>{inventoryDetails?.specifications?.resolutions || 'NA'}</Text>
                   </div>
                   <div>
                     <Text color="gray" size="xs" weight="300">
