@@ -1,3 +1,5 @@
+import { NativeSelect } from '@mantine/core';
+import { ChevronDown } from 'react-feather';
 import TextInput from '../../shared/TextInput';
 import { useFormContext } from '../../../context/formContext';
 
@@ -14,7 +16,7 @@ const styles = {
   },
 };
 const BasicInfo = () => {
-  const { errors } = useFormContext();
+  const { errors, setFieldValue } = useFormContext();
   return (
     <div className="pl-5 pr-7 mt-4">
       <p className="text-xl font-bold">Basic Information</p>
@@ -33,11 +35,16 @@ const BasicInfo = () => {
             name="client.panNumber"
             errors={errors}
           />
-          <TextInput
+          <NativeSelect
             styles={styles}
             label="Payment Type"
-            name="client.paymentType"
+            name="paymentType"
             errors={errors}
+            className="mr-2"
+            data={['neft', 'cheque', 'rtgs']}
+            rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+            rightSectionWidth={40}
+            onChange={e => setFieldValue('paymentType', e.target.value)}
           />
         </div>
         <div className="flex flex-col gap-4">
@@ -57,7 +64,7 @@ const BasicInfo = () => {
           <TextInput
             styles={styles}
             label="Payment Reference Number"
-            name="client.paymentReferenceNumber"
+            name="paymentReference"
             errors={errors}
           />
         </div>

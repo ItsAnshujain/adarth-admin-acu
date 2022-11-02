@@ -226,7 +226,7 @@ const SelectSpace = () => {
               <NumberInput
                 hideControls
                 defaultValue={pricing}
-                onChange={e => updatePrice(e, _id)}
+                onBlur={e => updatePrice(e.target.value, _id)}
               />
             ),
             [],
