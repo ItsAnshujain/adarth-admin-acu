@@ -26,7 +26,7 @@ const Home = () => {
   });
   const viewType = useLayoutView(state => state.activeLayout);
   const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
-    `${searchParams.toString()}`,
+    searchParams.toString(),
   );
   const { mutate: deleteInventoryData, isLoading: isLoadingDeletedInventoryData } =
     useDeleteInventory();
@@ -53,7 +53,7 @@ const Home = () => {
       title: 'Preview',
       innerProps: {
         modalBody: (
-          <Box className=" flex justify-center" onClickCancel={id => modals.closeModal(id)}>
+          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
             {imgSrc ? (
               <Image src={imgSrc} height={580} width={580} alt="preview" />
             ) : (
@@ -156,7 +156,6 @@ const Home = () => {
         }) =>
           useMemo(() => {
             const type = basicInformation?.spaceType?.name;
-
             return (
               <Badge color={colors[type]} size="lg" className="capitalize">
                 {type || <span>-</span>}
@@ -174,7 +173,9 @@ const Home = () => {
         }) =>
           useMemo(
             () => (
-              <p>{`${specifications?.resolutions?.height}ft x ${specifications?.resolutions?.width}ft`}</p>
+              <p>{`${specifications?.size?.height || 0}ft x ${
+                specifications?.size?.width || 0
+              }ft`}</p>
             ),
             [],
           ),
@@ -190,7 +191,7 @@ const Home = () => {
       },
       {
         Header: 'HEALTH STATUS',
-        accessor: 'health_status',
+        accessor: 'health',
         Cell: ({
           row: {
             original: { specifications },
@@ -218,6 +219,10 @@ const Home = () => {
             original: { location },
           },
         }) => useMemo(() => <p>{location?.city}</p>, []),
+      },
+      {
+        Header: 'MEDIA TYPE',
+        accessor: 'media_type',
       },
       {
         Header: 'PRICING',
@@ -291,6 +296,11 @@ const Home = () => {
       {isLoadingInventoryData && viewType === 'list' ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
+        </div>
+      ) : null}
+      {inventoryData?.docs?.length === 0 && !isLoadingInventoryData ? (
+        <div className="w-full min-h-[400px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
         </div>
       ) : null}
       {viewType === 'grid' ? (

@@ -1,18 +1,24 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
-import { Button, Loader } from '@mantine/core';
+import { Button, Loader, Select } from '@mantine/core';
 import dayjs from 'dayjs';
+import { ChevronDown } from 'react-feather';
 import AreaHeader from '../../components/Proposals/Header';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Table from '../../components/Table/Table';
 import GridView from '../../components/Proposals/Grid';
-import { useFetchProposals } from '../../hooks/proposal.hooks';
+import { useFetchProposals, useUpdateProposal } from '../../hooks/proposal.hooks';
 import MenuPopover from './MenuPopover';
 import useLayoutView from '../../store/layout.store';
 import toIndianCurrency from '../../utils/currencyFormat';
+import { serialize } from '../../utils';
+import { useFetchMasters } from '../../hooks/masters.hooks';
 
+const nativeSelectStyles = {
+  rightSection: { pointerEvents: 'none' },
+};
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const Proposals = () => {
@@ -24,11 +30,14 @@ const Proposals = () => {
   });
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
-
   const [searchInput, setSearchinput] = useDebouncedState('', 1000);
 
+  const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalsData, isLoading: isLoadingProposalsData } = useFetchProposals(
-    `${searchParams.toString()}`,
+    searchParams.toString(),
+  );
+  const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
+    serialize({ type: 'proposal_status', parentId: null, limit: 100 }),
   );
 
   const viewType = useLayoutView(state => state.activeLayout);
@@ -46,6 +55,11 @@ const Proposals = () => {
   const handlePagination = currentPage => {
     searchParams.set('page', currentPage);
     setSearchParams(searchParams);
+  };
+
+  const handleUpdateStatus = (proposalId, statusId) => {
+    const data = { status: statusId };
+    update({ proposalId, data });
   };
 
   const COLUMNS = useMemo(
@@ -102,11 +116,27 @@ const Proposals = () => {
         accessor: 'status',
         Cell: ({
           row: {
-            original: { status },
+            original: { _id, status },
           },
         }) =>
           useMemo(
-            () => <p className="pl-2 font-bold text-purple-350">{status?.name || '-'}</p>,
+            () => (
+              <Select
+                className="mr-2"
+                value={status?._id || ''}
+                onChange={e => handleUpdateStatus(_id, e)}
+                data={
+                  proposalStatusData?.docs?.map(item => ({
+                    label: item?.name,
+                    value: item?._id,
+                  })) || []
+                }
+                styles={nativeSelectStyles}
+                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                rightSectionWidth={40}
+                disabled={isProposalStatusLoading || isUpdateProposalLoading}
+              />
+            ),
             [],
           ),
       },
@@ -172,7 +202,7 @@ const Proposals = () => {
         }) => useMemo(() => <MenuPopover itemId={_id} />, []),
       },
     ],
-    [proposalsData, limit],
+    [proposalsData?.docs, limit, proposalStatusData],
   );
 
   useEffect(() => {
@@ -193,6 +223,11 @@ const Proposals = () => {
       {isLoadingProposalsData && viewType === 'list' ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
+        </div>
+      ) : null}
+      {proposalsData?.docs?.length === 0 && !isLoadingProposalsData ? (
+        <div className="w-full min-h-[400px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
         </div>
       ) : null}
       {viewType === 'list' && proposalsData?.docs?.length ? (

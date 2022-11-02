@@ -214,7 +214,7 @@ const BasicInfo = () => {
                 {toIndianCurrency(inventoryDetails?.basicInformation?.price || 0)}
               </Text>
               <div className="flex gap-2 mb-3">
-                {inventoryDetails?.basicInformation?.audience.length
+                {inventoryDetails?.basicInformation?.audience?.length
                   ? renderColoredBadges(inventoryDetails?.basicInformation?.audience)
                   : null}
               </div>
@@ -227,11 +227,17 @@ const BasicInfo = () => {
                 </div>
               </div>
               <div className="mb-2">
-                <p className="text-slate-400">Previously advertised brands</p>
+                <p className="text-slate-400">Previously advertised tags</p>
                 <div className="flex w-full flex-wrap">
                   {inventoryDetails?.specifications?.tags
                     ? renderBadges(inventoryDetails?.specifications?.tags)
                     : null}
+                </div>
+              </div>
+              <div className="mb-2">
+                <p className="text-slate-400">Demographics</p>
+                <div className="flex w-full flex-wrap">
+                  {inventoryDetails?.basicInformation?.demographic?.name || 'NA'}
                 </div>
               </div>
             </>
@@ -301,7 +307,7 @@ const BasicInfo = () => {
                     <div className="grid grid-cols-2">
                       <div>
                         <Text color="gray" size="xs" weight="300">
-                          District
+                          City
                         </Text>
                         <Text className="mb-4">{inventoryDetails?.location?.city || 'NA'}</Text>
                       </div>

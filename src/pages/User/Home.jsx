@@ -27,7 +27,7 @@ const Home = () => {
     'filter': 'team',
   });
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
-  const { data: userData, isLoading } = useFetchUsers(searchParams.toString());
+  const { data: userData, isLoading: isLoadingUserData } = useFetchUsers(searchParams.toString());
 
   const filter = searchParams.get('filter');
   const limit = searchParams.get('limit');
@@ -65,7 +65,7 @@ const Home = () => {
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       <div className="relative pb-10">
-        {userData?.docs?.length === 0 && !isLoading ? (
+        {userData?.docs?.length === 0 && !isLoadingUserData ? (
           <div className="w-full min-h-[400px] flex justify-center items-center">
             <p className="text-xl">No records found</p>
           </div>
@@ -76,7 +76,7 @@ const Home = () => {
               <Card {...user} />
             </Link>
           ))}
-          {isLoading ? skeletonList() : null}
+          {isLoadingUserData ? skeletonList() : null}
         </div>
         <Pagination
           styles={paginationStyles}

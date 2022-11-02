@@ -19,7 +19,7 @@ const Category = () => {
     'page': 1,
   });
   const navigate = useNavigate();
-  const { data: masterData } = useFetchMasters(`${searchParams.toString()}`);
+  const { data: masterData } = useFetchMasters(searchParams.toString());
 
   const type = searchParams.get('type');
   const parentId = searchParams.get('parentId');
