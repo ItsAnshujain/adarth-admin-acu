@@ -112,7 +112,6 @@ const MainArea = () => {
   const form = useForm({ validate: yupResolver(schema(formStep)), initialValues });
 
   const { mutateAsync: createBooking } = useCreateBookings();
-  console.log(form.errors);
 
   const handleSubmit = async formData => {
     if (formStep <= 2) {

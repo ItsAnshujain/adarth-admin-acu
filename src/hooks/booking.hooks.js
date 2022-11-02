@@ -45,9 +45,7 @@ export const useUpdateBooking = () => {
       onSuccess: () => {
         queryClient.invalidateQueries(['bookings']);
         showNotification({
-          title: 'Bookings',
-          message: 'Booking updated successfully',
-          autoClose: 3000,
+          title: 'Booking updated successfully',
           color: 'green',
         });
       },
@@ -55,7 +53,6 @@ export const useUpdateBooking = () => {
         showNotification({
           title: 'Error',
           message: err?.message,
-          autoClose: 3000,
           color: 'red',
         });
       },
@@ -74,9 +71,7 @@ export const useUpdateBookingStatus = () => {
       onSuccess: () => {
         queryClient.invalidateQueries(['bookings']);
         showNotification({
-          title: 'Bookings',
-          message: 'Booking updated successfully',
-          autoClose: 3000,
+          title: 'Booking updated successfully',
           color: 'green',
         });
       },
@@ -84,7 +79,6 @@ export const useUpdateBookingStatus = () => {
         showNotification({
           title: 'Error',
           message: err?.message,
-          autoClose: 3000,
           color: 'red',
         });
       },
@@ -101,9 +95,7 @@ export const useCreateBookings = () =>
     {
       onSuccess: () => {
         showNotification({
-          title: 'Bookings',
-          message: 'Booking created successfully',
-          autoClose: 3000,
+          title: 'Booking created successfully',
           color: 'green',
         });
       },
@@ -111,7 +103,6 @@ export const useCreateBookings = () =>
         showNotification({
           title: 'Error',
           message: err?.message,
-          autoClose: 3000,
           color: 'red',
         });
       },
@@ -141,9 +132,7 @@ export const useDeleteBooking = () => {
       onSuccess: () => {
         queryClient.invalidateQueries(['bookings']);
         showNotification({
-          title: 'Bookings',
-          message: 'Booking deleted successfully',
-          autoClose: 3000,
+          title: 'Booking deleted successfully',
           color: 'green',
         });
       },
@@ -151,7 +140,6 @@ export const useDeleteBooking = () => {
         showNotification({
           title: 'Error',
           message: err?.message,
-          autoClose: 3000,
           color: 'red',
         });
       },

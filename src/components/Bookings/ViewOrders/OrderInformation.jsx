@@ -71,7 +71,7 @@ const OrderInformation = ({ bookingData }) => {
           <div className="flex p-4 gap-12 border flex-wrap">
             <div>
               <p className="text-slate-400">Order Id</p>
-              <p className="font-bold">{bookingData?.bookingId || []}</p>
+              <p className="font-bold">{bookingData?.bookingId || ''}</p>
             </div>
             <div>
               <p className="text-slate-400">Order Date</p>
