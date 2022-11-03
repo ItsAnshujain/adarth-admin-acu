@@ -55,7 +55,7 @@ const Preview = () => {
   }, [values?.basicInformation?.spacePhotos, values?.basicInformation?.otherPhotos]);
 
   return (
-    <div className="grid grid-cols-2 gap-x-8 pl-5 pr-7 pt-4">
+    <div className="grid grid-cols-2 gap-x-8 pl-5 pt-4">
       <div className="flex flex-col">
         <div className="h-96">
           {posterImage ? (
@@ -134,15 +134,21 @@ const Preview = () => {
                 </div>
               ) : null}
             </div>
-            <div>
-              <p className="text-slate-400">Previously advertised brands</p>
+            <div className="mb-2">
+              <p className="text-slate-400">Previously advertised tags</p>
               {values?.specifications?.tags?.length ? (
                 <div className="flex w-full flex-wrap">
                   {renderBadges(values?.specifications?.tags)}
                 </div>
               ) : null}
             </div>
-            <div className="mt-4">
+            <div>
+              <p className="text-slate-400">Demographics</p>
+              <div className="flex w-full flex-wrap">
+                {values?.basicInformation?.demographic?.label || 'NA'}
+              </div>
+            </div>
+            <div className="mt-3">
               <p className="mb-1">Specifications</p>
               <p className="text-slate-400 mb-2">All the related details regarding campaign</p>
               <div className="flex flex-col ">

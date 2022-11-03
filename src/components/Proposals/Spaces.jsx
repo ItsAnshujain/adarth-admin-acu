@@ -1,8 +1,9 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Text, Button, Progress, Image, NumberInput, Badge } from '@mantine/core';
+import { Text, Button, Progress, Image, NumberInput, Badge, Box } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
+import { useModals } from '@mantine/modals';
 import Filter from '../Filter';
 import DateRange from '../DateRange';
 import Search from '../Search';
@@ -11,7 +12,8 @@ import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
 import MenuPopover from './MenuPopover';
 import { useFetchInventory } from '../../hooks/inventory.hooks';
-import { colors, serialize, spaceTypes } from '../../utils';
+import { colors, serialize } from '../../utils';
+import modalConfig from '../../utils/modalConfig';
 
 const Spaces = ({
   setSelectedRow = () => {},
@@ -21,6 +23,7 @@ const Spaces = ({
 }) => {
   const navigate = useNavigate();
   const [search, setSearch] = useDebouncedState('', 1000);
+  const modals = useModals();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
   const [updatedSpaces, setUpdatedSpaces] = useState([]);
@@ -36,6 +39,23 @@ const Spaces = ({
 
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const toggleFilter = () => setShowFilter(!showFilter);
+
+  const toggleImagePreviewModal = imgSrc =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
+            {imgSrc ? (
+              <Image src={imgSrc} height={580} width={580} alt="preview" />
+            ) : (
+              <Image src={null} height={580} width={580} withPlaceholder />
+            )}
+          </Box>
+        ),
+      },
+      ...modalConfig,
+    });
 
   const COLUMNS = useMemo(
     () => [
@@ -58,21 +78,24 @@ const Spaces = ({
         accessor: 'spaceName',
         Cell: ({
           row: {
-            original: { _id, basicInformation },
+            original: { _id, basicInformation, isUnderMaintenance },
           },
         }) =>
           useMemo(
             () => (
               <div className="flex items-center gap-2">
-                <div className="bg-white border rounded-md">
+                <Box
+                  className="bg-white border rounded-md cursor-zoom-in"
+                  onClick={() => toggleImagePreviewModal(basicInformation?.spacePhotos)}
+                >
                   {basicInformation?.spacePhotos ? (
                     <Image src={basicInformation.spacePhotos} alt="banner" height={32} width={32} />
                   ) : (
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
-                </div>
+                </Box>
                 <Button
-                  className="text-black font-medium max-w-[180px]"
+                  className="text-black px-2 font-medium max-w-[180px]"
                   onClick={() =>
                     navigate(`/inventory/view-details/${_id}`, {
                       replace: true,
@@ -83,6 +106,13 @@ const Spaces = ({
                     {basicInformation?.spaceName}
                   </span>
                 </Button>
+                <Badge
+                  className="capitalize"
+                  variant="filled"
+                  color={isUnderMaintenance ? 'yellow' : 'green'}
+                >
+                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                </Badge>
               </div>
             ),
             [],
@@ -90,23 +120,32 @@ const Spaces = ({
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'landlord_name',
-        Cell: tableProps =>
-          useMemo(() => <div className="w-fit">{tableProps.row.original.landlord_name}</div>, []),
+        accessor: 'mediaOwner',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || 'NA'}</p>, []),
+      },
+      {
+        Header: 'PEER',
+        accessor: 'peer',
+        Cell: () => useMemo(() => <p>-</p>),
       },
       {
         Header: 'SPACE TYPE',
         accessor: 'space_type',
         Cell: ({
           row: {
-            original: { specifications },
+            original: { basicInformation },
           },
         }) =>
           useMemo(() => {
-            const type = specifications?.spaceType ? spaceTypes[specifications.spaceType] : '-';
+            const type = basicInformation?.spaceType?.name;
             return (
               <Badge color={colors[type]} size="lg" className="capitalize">
-                {spaceTypes[type] || <span>-</span>}
+                {type || <span>-</span>}
               </Badge>
             );
           }),
@@ -121,7 +160,9 @@ const Spaces = ({
         }) =>
           useMemo(
             () => (
-              <p>{`${specifications?.resolutions?.height}ft x ${specifications?.resolutions?.width}ft`}</p>
+              <p>{`${specifications?.size?.height || 0}ft x ${
+                specifications?.size?.width || 0
+              }ft`}</p>
             ),
             [],
           ),
@@ -137,7 +178,7 @@ const Spaces = ({
       },
       {
         Header: 'HEALTH STATUS',
-        accessor: 'health_status',
+        accessor: 'health',
         Cell: ({
           row: {
             original: { specifications },

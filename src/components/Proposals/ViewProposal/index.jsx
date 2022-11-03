@@ -15,7 +15,7 @@ import Table from '../../Table/Table';
 import MenuPopover from '../MenuPopover';
 import { useFetchProposalById } from '../../../hooks/proposal.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
-import { colors, spaceTypes } from '../../../utils';
+import { colors } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
 
 const ProposalDetails = () => {
@@ -40,7 +40,7 @@ const ProposalDetails = () => {
       title: 'Preview',
       innerProps: {
         modalBody: (
-          <Box className=" flex justify-center" onClickCancel={id => modals.closeModal(id)}>
+          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
             {imgSrc ? (
               <Image src={imgSrc} height={580} width={580} alt="preview" />
             ) : (
@@ -73,7 +73,7 @@ const ProposalDetails = () => {
         accessor: 'spaceName',
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { basicInformation, isUnderMaintenance },
           },
         }) =>
           useMemo(
@@ -89,7 +89,16 @@ const ProposalDetails = () => {
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
                 </Box>
-                <p className="flex-1">{basicInformation?.spaceName}</p>
+                <Button className="flex-1 max-w-[180px] px-2 text-black font-medium">
+                  {basicInformation?.spaceName}
+                </Button>
+                <Badge
+                  className="capitalize"
+                  variant="filled"
+                  color={isUnderMaintenance ? 'yellow' : 'green'}
+                >
+                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                </Badge>
               </div>
             ),
             [],
@@ -97,33 +106,35 @@ const ProposalDetails = () => {
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'landlord_name',
-        Cell: tableProps => useMemo(() => <div>{tableProps.row.original.landlord_name}</div>, []),
+        accessor: 'mediaOwner',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || 'NA'}</p>, []),
+      },
+      {
+        Header: 'PEER',
+        accessor: 'peer',
+        Cell: () => useMemo(() => <p>-</p>),
       },
       {
         Header: 'SPACE TYPE',
         accessor: 'space_type',
         Cell: ({
           row: {
-            original: { specifications },
+            original: { basicInformation },
           },
         }) =>
           useMemo(() => {
-            const type = specifications?.spaceType ? spaceTypes[specifications.spaceType] : '-';
+            const type = basicInformation?.spaceType?.name;
             return (
               <Badge color={colors[type]} size="lg" className="capitalize">
-                {spaceTypes[type] || <span>-</span>}
+                {type || <span>-</span>}
               </Badge>
             );
           }),
-      },
-      {
-        Header: 'START DATE',
-        accessor: 'startDate',
-      },
-      {
-        Header: 'END DATE',
-        accessor: 'endDate',
       },
       {
         Header: 'DIMENSION',
@@ -135,7 +146,9 @@ const ProposalDetails = () => {
         }) =>
           useMemo(
             () => (
-              <p>{`${specifications?.resolutions?.height}ft x ${specifications?.resolutions?.width}ft`}</p>
+              <p>{`${specifications?.size?.height || 0}ft x ${
+                specifications?.size?.width || 0
+              }ft`}</p>
             ),
             [],
           ),

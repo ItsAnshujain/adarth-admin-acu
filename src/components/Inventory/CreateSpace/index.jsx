@@ -80,6 +80,7 @@ const schema = action =>
           action === 1
             ? yup
                 .number()
+                .positive('Price must be a positive number')
                 .typeError('Price must be a number')
                 .required('Price is required')
                 .nullable()
@@ -94,6 +95,7 @@ const schema = action =>
           action === 1
             ? yup
                 .number()
+                .positive('FootFall must be a positive number')
                 .typeError('FootFall must be a number')
                 .required('Footfall is required')
                 .nullable()
@@ -145,6 +147,7 @@ const schema = action =>
           action === 2
             ? yup
                 .number()
+                .positive('Unit must be a positive number')
                 .typeError('Unit must be a number')
                 .required('Unit is required')
                 .nullable()
@@ -162,6 +165,7 @@ const schema = action =>
             action === 2
               ? yup
                   .number()
+                  .positive('Height must be a positive number')
                   .typeError('Height must be a number')
                   .required('Height is required')
                   .nullable()
@@ -174,6 +178,7 @@ const schema = action =>
             action === 2
               ? yup
                   .number()
+                  .positive('Width must be a positive number')
                   .typeError('Width must be a number')
                   .required('Width is required')
                   .nullable()
@@ -187,6 +192,7 @@ const schema = action =>
           action === 2
             ? yup
                 .number()
+                .positive('Health must be a positive number')
                 .typeError('Health must be a number')
                 .required('Health is required')
                 .nullable()
@@ -291,6 +297,10 @@ const schema = action =>
         .string()
         .trim()
         .concat(action === 3 ? requiredSchema('Facing is required') : null),
+      tier: yup
+        .string()
+        .trim()
+        .concat(action === 3 ? requiredSchema('Tier is required') : null),
     }),
   });
 
@@ -339,6 +349,7 @@ const initialValues = {
     zone: '',
     landmark: '',
     facing: '',
+    tier: '',
   },
 };
 
@@ -411,10 +422,7 @@ const MainArea = () => {
         }
       });
 
-      // console.log(data);
-      // return;
       if (inventoryId) {
-        data.isUnderMaintenance = false;
         update({ inventoryId, data });
       } else {
         create(data);
@@ -423,7 +431,6 @@ const MainArea = () => {
     }
   };
 
-  // console.log(form.values, form.errors);
   useEffect(() => {
     if (inventoryDetails) {
       const { basicInformation, specifications, location } = inventoryDetails;
@@ -527,6 +534,7 @@ const MainArea = () => {
       form.setFieldValue('location.zone', location?.zone || '');
       form.setFieldValue('location.landmark', location?.landmark || '');
       form.setFieldValue('location.facing', location?.facing || '');
+      form.setFieldValue('location.tier', location?.tier || '');
     }
   }, [inventoryDetails]);
 

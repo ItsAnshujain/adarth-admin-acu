@@ -30,6 +30,7 @@ const schema = yup.object().shape({
     })
     .required('Start Date is required'),
   endDate: yup.string().required('End Date is required'),
+  status: yup.string().trim(),
 });
 
 const initialValues = {
@@ -37,6 +38,7 @@ const initialValues = {
   description: '',
   startDate: '',
   endDate: '',
+  status: '',
 };
 
 const Main = () => {
@@ -59,7 +61,7 @@ const Main = () => {
 
   const getForm = () =>
     formStep === 1 ? (
-      <BasicInfo />
+      <BasicInfo proposalId={proposalId} />
     ) : (
       <Spaces
         setSelectedRow={setSelectedRow}
@@ -72,20 +74,14 @@ const Main = () => {
   const onSubmit = formData => {
     let data = {};
 
-    const status = proposalStatusData?.docs?.filter(
-      item => item?.name.toLowerCase() === 'created',
-    )[0]?._id;
-
     data = {
       ...formData,
-      status,
     };
     setFormStep(2);
     if (formStep === 2) {
       if (selectedRow.length === 0) {
         showNotification({
-          title: 'Add Spaces',
-          message: 'Please select atleast one space to continue',
+          title: 'Please select atleast one space to continue',
           color: 'blue',
         });
         return;
@@ -123,6 +119,15 @@ const Main = () => {
       if (proposalId) {
         update({ proposalId, data });
       } else {
+        const status = proposalStatusData?.docs?.filter(
+          item => item?.name.toLowerCase() === 'created',
+        )[0]?._id;
+
+        data = {
+          ...formData,
+          status,
+        };
+
         create(data);
       }
       form.reset();
@@ -142,6 +147,7 @@ const Main = () => {
       if (proposalData?.endDate) {
         form.setFieldValue('endDate', new Date(proposalData.endDate));
       }
+      form.setFieldValue('status', proposalData?.status);
     }
   }, [proposalData]);
 

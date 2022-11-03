@@ -77,13 +77,15 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
         <Text size="md" weight="bold" lineClamp={1} className="w-full">
           {data?.basicInformation?.spaceName}
         </Text>
-        <Text size="sm" className="mt-2" weight="200">
+        <Text size="sm" className="mt-2" weight="200" lineClamp={1}>
           {data?.location?.address}
         </Text>
         <div className="grid grid-cols-2 justify-between">
           <div className="mt-2">
             <p className="text-sm text-gray-400">Category</p>
-            <p className="text-sm mt-1">{data?.basicInformation?.category?.name}</p>
+            <Text className="text-sm mt-1" lineClamp={1}>
+              {data?.basicInformation?.category?.name}
+            </Text>
           </div>
           <div className="mt-2">
             <p className="text-sm text-gray-400">Impressions</p>
