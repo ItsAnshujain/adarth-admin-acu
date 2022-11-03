@@ -222,7 +222,12 @@ const Home = () => {
       },
       {
         Header: 'MEDIA TYPE',
-        accessor: 'media_type',
+        accessor: 'mediaType',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) => useMemo(() => <p>{basicInformation?.mediaType?.name}</p>),
       },
       {
         Header: 'PRICING',
@@ -303,7 +308,7 @@ const Home = () => {
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-      {viewType === 'grid' ? (
+      {viewType === 'grid' && inventoryData?.docs?.length ? (
         <GridView
           count={limit}
           list={inventoryData?.docs || []}

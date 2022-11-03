@@ -60,7 +60,7 @@ const AreaHeader = ({
                 label="Select All Product"
                 classNames={{ root: 'flex flex-row-reverse', label: 'pr-2' }}
                 indeterminate={noOfCardsSelected > 0 && !(totalCards === noOfCardsSelected)}
-                checked={totalCards === noOfCardsSelected}
+                checked={totalCards === noOfCardsSelected && totalCards !== 0}
               />
             ) : null}
             <Button

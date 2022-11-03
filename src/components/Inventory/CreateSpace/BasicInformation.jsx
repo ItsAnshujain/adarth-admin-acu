@@ -11,6 +11,7 @@ import { useUploadFile } from '../../../hooks/upload.hooks';
 import Select from '../../shared/Select';
 import NumberInput from '../../shared/NumberInput';
 import AsyncMultiSelect from '../../shared/AsyncMultiSelect';
+import { useFetchUsers } from '../../../hooks/users.hooks';
 
 const styles = {
   label: {
@@ -41,22 +42,23 @@ const multiSelectStyles = {
   },
 };
 
-const landlordList = [
-  { value: 'react', label: 'Shahrukh' },
-  { value: 'ng', label: 'Salman' },
-  { value: 'svelte', label: 'Aamir' },
-  { value: 'vue', label: 'Akshay' },
-];
-
-const mediaOwnerList = [
-  { value: 'react', label: 'Ram' },
-  { value: 'ng', label: 'Shayam' },
-  { value: 'svelte', label: 'Damn' },
-  { value: 'vue', label: 'Heera' },
-];
-
 const BasicInfo = () => {
   const { errors, getInputProps, values, setFieldValue } = useFormContext();
+  const {
+    data: userData,
+    isSuccess: isUserDataLoaded,
+    isLoading: isLoadingUserData,
+  } = useFetchUsers(
+    serialize({
+      page: 1,
+      limit: 100,
+      sortOrder: 'asc',
+      sortBy: 'createdAt',
+      filter: 'team',
+      role: 'media_owner',
+    }),
+  );
+
   const {
     data: spaceTypeData,
     isSuccess: isSpaceTypeDataLoaded,
@@ -120,25 +122,27 @@ const BasicInfo = () => {
           placeholder="Write..."
           className="mb-7"
         />
-        <NativeSelect
+        <TextInput
           label="Landlord"
           name="basicInformation.landlord"
           styles={styles}
           errors={errors}
-          placeholder="Select..."
-          options={landlordList}
+          placeholder="Write..."
           className="mb-7"
-          disabled
         />
         <NativeSelect
           label="Inventory Owner"
           name="basicInformation.mediaOwner"
           styles={styles}
           errors={errors}
+          disabled={isLoadingUserData}
           placeholder="Select..."
-          options={mediaOwnerList}
+          options={
+            isUserDataLoaded
+              ? userData?.docs?.map(item => ({ label: item?.name, value: item?._id }))
+              : []
+          }
           className="mb-7"
-          disabled
         />
         <Select
           label="Space Type"

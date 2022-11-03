@@ -5,12 +5,12 @@ import { serialize } from '../../utils';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 
 const inititalFilterData = {
-  'inventoryOwner': {
+  'owner': {
     'all': 'All',
     'own': 'Own',
-    'peers': 'Peers',
+    'peer': 'Peers',
   },
-  'city': {
+  'tier': {
     'tier_1': 'Tier 1',
     'tier_2': 'Tier 2',
     'tier_3': 'Tier 3',
@@ -36,11 +36,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(10000);
   const [filterOptions, setFilterOptions] = useState({
-    inventoryOwner: '',
+    owner: '',
     category: '',
     subCategory: '',
     mediaType: '',
-    city: '',
+    tier: '',
     zone: '',
     footFall: '',
     facing: '',
@@ -49,11 +49,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
     audience: '',
   });
 
-  const inventoryOwner = searchParams.get('inventoryOwner');
+  const owner = searchParams.get('owner');
   const category = searchParams.get('category');
   const subCategory = searchParams.get('subCategory');
   const mediaType = searchParams.get('mediaType');
-  const city = searchParams.get('city');
+  const tier = searchParams.get('tier');
   const zone = searchParams.get('zone');
   const footFall = searchParams.get('footFall');
   const facing = searchParams.get('facing');
@@ -128,11 +128,10 @@ const Filter = ({ isOpened, setShowFilter }) => {
   };
 
   const handleResetParams = () => {
-    searchParams.delete('inventoryOwner');
     searchParams.delete('category');
     searchParams.delete('subCategory');
     searchParams.delete('mediaType');
-    searchParams.delete('city');
+    searchParams.delete('tier');
     searchParams.delete('minPrice');
     searchParams.delete('maxPrice');
     searchParams.delete('zone');
@@ -143,11 +142,10 @@ const Filter = ({ isOpened, setShowFilter }) => {
     searchParams.delete('audience');
     setSearchParams(searchParams);
     setFilterOptions({
-      inventoryOwner: '',
       category: '',
       subCategory: '',
       mediaType: '',
-      city: '',
+      tier: '',
       zone: '',
       footFall: '',
       facing: '',
@@ -174,11 +172,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
   useEffect(() => {
     setFilterOptions(prevState => ({
       ...prevState,
-      inventoryOwner: inventoryOwner || '',
+      owner: owner || '',
       category: category || '',
       subCategory: subCategory || '',
       mediaType: mediaType || '',
-      city: city || '',
+      tier: tier || '',
       zone: zone || '',
       footFall: footFall || '',
       facing: facing || '',
@@ -218,14 +216,12 @@ const Filter = ({ isOpened, setShowFilter }) => {
       </div>
       <div className="flex text-gray-400 flex-col gap-4">
         <Accordion>
-          <Accordion.Item value="inventoryOwner" className="mb-4 rounded-xl border">
+          <Accordion.Item value="owner" className="mb-4 rounded-xl border">
             <Accordion.Control>
               <p className="text-lg">Inventory Owner</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">
-                {renderStaticStatus(inititalFilterData.inventoryOwner, 'inventoryOwner')}
-              </div>
+              <div className="mt-2">{renderStaticStatus(inititalFilterData.owner, 'owner')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -263,7 +259,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Cities</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStaticStatus(inititalFilterData.city, 'city')}</div>
+              <div className="mt-2">{renderStaticStatus(inititalFilterData.tier, 'tier')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 

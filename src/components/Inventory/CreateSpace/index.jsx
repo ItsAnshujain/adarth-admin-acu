@@ -25,7 +25,10 @@ const schema = action =>
         .string()
         .trim()
         .concat(action === 1 ? requiredSchema('Space name is required') : null),
-      landlord: yup.string().trim(),
+      landlord: yup
+        .string()
+        .trim()
+        .concat(action === 1 ? requiredSchema('Landlord is required') : null),
       mediaOwner: yup.string().trim(),
       spaceType: yup.mixed().concat(
         action === 1
@@ -435,6 +438,8 @@ const MainArea = () => {
     if (inventoryDetails) {
       const { basicInformation, specifications, location } = inventoryDetails;
       form.setFieldValue('basicInformation.spaceName', basicInformation?.spaceName || '');
+      form.setFieldValue('basicInformation.landlord', basicInformation?.landlord || '');
+      form.setFieldValue('basicInformation.mediaOwner', basicInformation?.mediaOwner?._id || '');
       form.setFieldValue('basicInformation.description', basicInformation?.description || '');
       form.setFieldValue('basicInformation.footFall', basicInformation?.footFall || null);
       form.setFieldValue('basicInformation.price', basicInformation?.price || null);
