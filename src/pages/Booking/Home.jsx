@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
@@ -29,14 +30,25 @@ const Proposals = () => {
     sortBy: 'createdAt',
     sortOrder: 'asc',
   });
-  const [statsFilter] = useState({});
 
-  const { data: bookingData } = useBookings(serialize(filters));
-  const { data: bookingStats } = useBookingStats(serialize(statsFilter));
-  const { data: campaignStatus } = useFetchMasters('campaign_status');
-  const { data: PaymentStatus } = useFetchMasters('payment_status');
-  const { data: printingStatus } = useFetchMasters('printing_status');
-  const { data: mountingStatus } = useFetchMasters('mounting_status');
+  const { search: bookingQuery } = useLocation();
+
+  const { data: bookingData } = useBookings(
+    bookingQuery.slice(1) ? `${serialize(filters)}&${bookingQuery.slice(1)}` : serialize(filters),
+  );
+  const { data: bookingStats } = useBookingStats();
+  const { data: campaignStatus } = useFetchMasters(
+    serialize({ type: 'campaign_status', limit: 100 }),
+  );
+  const { data: PaymentStatus } = useFetchMasters(
+    serialize({ type: 'payment_status', limit: 100 }),
+  );
+  const { data: printingStatus } = useFetchMasters(
+    serialize({ type: 'printing_status', limit: 100 }),
+  );
+  const { data: mountingStatus } = useFetchMasters(
+    serialize({ type: 'mounting_status', limit: 100 }),
+  );
 
   const { mutateAsync: updateBooking } = useUpdateBookingStatus();
 
@@ -69,7 +81,7 @@ const Proposals = () => {
     {
       Header: 'CLIENT',
       accessor: 'client',
-      Cell: ({ row: { original } }) => original.client.name,
+      Cell: ({ cell: { value } }) => value.name,
     },
     {
       Header: 'ORDER DATE',
@@ -78,7 +90,7 @@ const Proposals = () => {
 
     {
       Header: 'CAMPAIGN NAME',
-      Cell: ({ row: { original } }) => useMemo(() => original.campaignName, []),
+      Cell: ({ row: { original } }) => useMemo(() => original.campaign?.name, []),
     },
     {
       Header: 'BOOKING TYPE',
