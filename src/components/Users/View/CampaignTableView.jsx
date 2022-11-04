@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import Table from '../../Table/Table';
-import dummy from '../../../Dummydata/ORDER_DATA.json';
 import column from './column';
 
 const CampaignTableView = () => {
@@ -15,7 +14,8 @@ const CampaignTableView = () => {
         <RowsPerPage setCount={setCount} count={count} />
         <Search search={search} setSearch={setSearch} />
       </div>
-      <Table data={dummy} COLUMNS={column} />
+      {/* TODO: add actual data after campaing integration */}
+      <Table data={[]} COLUMNS={column} />
     </div>
   );
 };

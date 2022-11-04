@@ -5,10 +5,13 @@ import { useFormContext } from '../../context/formContext';
 
 const styles = {
   label: {
-    marginBottom: '4px',
+    marginBottom: 8,
     fontWeight: 700,
-    fontSize: '15px',
-    letterSpacing: '0.5px',
+    fontSize: 16,
+  },
+  input: {
+    borderRadius: 0,
+    padding: 8,
   },
 };
 

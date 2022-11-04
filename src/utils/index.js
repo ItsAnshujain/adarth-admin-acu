@@ -54,10 +54,10 @@ export const spaceTypes = {
 };
 
 export const colors = {
-  billboards: 'red',
-  digital_screens: 'green',
-  transit_media: 'blue',
-  street_furniture: 'yellow',
+  red: 'Billboard',
+  green: 'Digital Screen',
+  blue: 'Transit Media',
+  yellow: 'Street Furniture',
 };
 
 export const aadhaarFormat = aadhaarNumber => {
