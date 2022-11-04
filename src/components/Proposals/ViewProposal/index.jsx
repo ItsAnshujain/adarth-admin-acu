@@ -134,17 +134,20 @@ const ProposalDetails = () => {
       },
       {
         Header: 'SPACE TYPE',
-        accessor: 'space_type',
+        accessor: 'spaceType',
         Cell: ({
           row: {
             original: { spaceType },
           },
         }) =>
-          useMemo(() => (
-            <Badge color={colors[spaceType]} size="lg" className="capitalize">
-              {spaceType || <span>-</span>}
-            </Badge>
-          )),
+          useMemo(() => {
+            const colorType = Object.keys(colors).find(key => colors[key] === spaceType);
+            return (
+              <Badge color={colorType} size="lg" className="capitalize">
+                {spaceType || <span>-</span>}
+              </Badge>
+            );
+          }),
       },
       {
         Header: 'DIMENSION',

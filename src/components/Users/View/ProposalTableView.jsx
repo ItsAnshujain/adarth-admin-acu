@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useFetchProposals } from '../../../hooks/proposal.hooks';
 import MenuPopover from '../../../pages/Proposal/MenuPopover';
+import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 
 const DATE_FORMAT = 'DD MMM YYYY';
@@ -138,7 +139,7 @@ const ProposalTableView = () => {
           row: {
             original: { price },
           },
-        }) => useMemo(() => <p className="pl-2 font-bold text-purple-350">{price || '-'}</p>, []),
+        }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
       },
       {
         Header: '',

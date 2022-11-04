@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
 import { ChevronDown, Plus } from 'react-feather';
 import { Button } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
-import Filter from '../../Filter';
 import greenfolder from '../../../assets/ongoing.svg';
 import purplefolder from '../../../assets/completed.svg';
 import orangefolder from '../../../assets/upcoming.svg';
 import redfolder from '../../../assets/redfolder.svg';
 import bluefolder from '../../../assets/bluefolder.svg';
+import ProposalFilter from '../../Proposals/Filter';
 
 const ManagingSubHeader = ({ activeTable }) => {
+  const navigate = useNavigate();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
 
-  const openDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
+  const handleCreateProposal = () => navigate('/proposals/create-proposals');
 
   return (
     <div>
@@ -24,12 +25,12 @@ const ManagingSubHeader = ({ activeTable }) => {
         <p className="font-bold">Managing Campaign</p>
         <div className="flex">
           <div className="mr-2 relative">
-            <Button onClick={openDatePicker} variant="default" type="button">
+            <Button onClick={toggleDatePicker} variant="default" type="button">
               <img src={calendar} className="h-5" alt="calendar" />
             </Button>
             {showDatePicker && (
               <div className="absolute z-20 -translate-x-1/2 bg-white -top-0.3">
-                <DateRange handleClose={openDatePicker} />
+                <DateRange handleClose={toggleDatePicker} />
               </div>
             )}
           </div>
@@ -42,13 +43,16 @@ const ManagingSubHeader = ({ activeTable }) => {
             >
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
-            {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
+            {/* TODO:add campaign filter */}
+            {showFilter && activeTable === 'proposal' && (
+              <ProposalFilter isOpened={showFilter} setShowFilter={setShowFilter} />
+            )}
           </div>
-          {!(activeTable === 'campaign') && (
+          {activeTable === 'proposal' && (
             <div className="mr-2">
               <Button
                 variant="default"
-                type="button"
+                onClick={handleCreateProposal}
                 className="font-medium bg-purple-450 text-white"
               >
                 <Plus className="h-4" />

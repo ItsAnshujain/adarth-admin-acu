@@ -148,17 +148,20 @@ const Home = () => {
       },
       {
         Header: 'SPACE TYPE',
-        accessor: 'space_type',
+        accessor: 'spaceType',
         Cell: ({
           row: {
             original: { basicInformation },
           },
         }) =>
           useMemo(() => {
-            const type = basicInformation?.spaceType?.name;
+            const colorType = Object.keys(colors).find(
+              key => colors[key] === basicInformation?.spaceType?.name,
+            );
+
             return (
-              <Badge color={colors[type]} size="lg" className="capitalize">
-                {type || <span>-</span>}
+              <Badge color={colorType} size="lg" className="capitalize">
+                {basicInformation?.spaceType?.name || <span>-</span>}
               </Badge>
             );
           }),

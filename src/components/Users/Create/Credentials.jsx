@@ -1,3 +1,6 @@
+import { Select as MantineSelect } from '@mantine/core';
+import { useState } from 'react';
+import { ChevronDown } from 'react-feather';
 import { useFormContext } from '../../../context/formContext';
 import Select from '../../shared/Select';
 import TextInput from '../../shared/TextInput';
@@ -20,30 +23,37 @@ const styles = {
     padding: 8,
   },
 };
+
 const Credentials = () => {
   const { errors } = useFormContext();
+  const [filter, setFilter] = useState('Team');
+  const handleFilter = val => setFilter(val);
 
   return (
     <div className="pl-5 pr-7 mt-4">
-      <p className="text-xl font-bold">Create user for the account</p>
+      <p className="text-xl font-bold">Create new user account</p>
       <div className="grid grid-cols-2 gap-8 mt-4">
         <div className="flex flex-col gap-4">
-          <Select
-            label="Role"
-            name="role"
-            options={roleList}
+          <MantineSelect
+            label="Type"
             withAsterisk
-            errors={errors}
-            placeholder="Select"
-          />
-          <TextInput
-            label="Name"
-            name="name"
+            value={filter}
+            onChange={handleFilter}
+            data={['Team', 'Peer']}
             styles={styles}
-            withAsterisk
-            errors={errors}
-            placeholder="Name"
+            rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
           />
+          {filter?.toLowerCase() === 'team' ? (
+            <Select
+              label="Role"
+              name="role"
+              options={roleList}
+              styles={styles}
+              withAsterisk
+              errors={errors}
+              placeholder="Select"
+            />
+          ) : null}
         </div>
         <div className="flex flex-col gap-4">
           <TextInput
@@ -54,6 +64,16 @@ const Credentials = () => {
             errors={errors}
             placeholder="Email ID"
           />
+          {filter?.toLowerCase() === 'team' ? (
+            <TextInput
+              label="Name"
+              name="name"
+              styles={styles}
+              withAsterisk
+              errors={errors}
+              placeholder="Name"
+            />
+          ) : null}
         </div>
       </div>
     </div>
