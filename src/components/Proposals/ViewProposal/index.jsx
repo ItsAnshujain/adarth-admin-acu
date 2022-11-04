@@ -1,14 +1,13 @@
-import { useMemo, useState } from 'react';
-import { Badge, Box, Button, Image, Progress, Text } from '@mantine/core';
+import { useMemo, useState, useEffect } from 'react';
+import { Badge, Box, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { useParams } from 'react-router-dom';
-import { useClickOutside } from '@mantine/hooks';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import Header from './Header';
 import Details from './Details';
-import Filter from '../../Filter';
 import DateRange from '../../DateRange';
 import calendar from '../../../assets/data-table.svg';
 import Table from '../../Table/Table';
@@ -17,21 +16,31 @@ import { useFetchProposalById } from '../../../hooks/proposal.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { colors } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
+import Filter from '../../Inventory/Filter';
 
 const ProposalDetails = () => {
   const modals = useModals();
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [count, setCount] = useState('10');
   const [showShare, setShowShare] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
+  const [searchParams, setSearchParams] = useSearchParams({
+    'owner': 'all',
+    'page': 1,
+    'limit': 10,
+    'sortBy': 'createdAt',
+    'sortOrder': 'asc',
+  });
 
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const { id: proposalId } = useParams();
-  const { data: proposalData } = useFetchProposalById(proposalId);
+  const { data: proposalData, isLoading: isProposalDataLoading } = useFetchProposalById(
+    `${proposalId}?${searchParams.toString()}`,
+  );
 
   const page = 1; // TODO: make api changes for pagination in spaces array
 
@@ -73,7 +82,7 @@ const ProposalDetails = () => {
         accessor: 'spaceName',
         Cell: ({
           row: {
-            original: { basicInformation, isUnderMaintenance },
+            original: { spaceName, spacePhoto, isUnderMaintenance },
           },
         }) =>
           useMemo(
@@ -81,16 +90,16 @@ const ProposalDetails = () => {
               <div className="flex items-center gap-2">
                 <Box
                   className="bg-white border rounded-md cursor-zoom-in"
-                  onClick={() => toggleImagePreviewModal(basicInformation?.spacePhotos)}
+                  onClick={() => toggleImagePreviewModal(spacePhoto)}
                 >
-                  {basicInformation?.spacePhotos ? (
-                    <Image src={basicInformation.spacePhotos} alt="banner" height={32} width={32} />
+                  {spacePhoto ? (
+                    <Image src={spacePhoto} alt="banner" height={32} width={32} />
                   ) : (
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
                 </Box>
                 <Button className="flex-1 max-w-[180px] px-2 text-black font-medium">
-                  {basicInformation?.spaceName}
+                  {spaceName}
                 </Button>
                 <Badge
                   className="capitalize"
@@ -117,57 +126,50 @@ const ProposalDetails = () => {
       {
         Header: 'PEER',
         accessor: 'peer',
-        Cell: () => useMemo(() => <p>-</p>),
+        Cell: ({
+          row: {
+            original: { peer },
+          },
+        }) => useMemo(() => <p className="w-fit">{peer || '-'}</p>, []),
       },
       {
         Header: 'SPACE TYPE',
         accessor: 'space_type',
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { spaceType },
           },
         }) =>
-          useMemo(() => {
-            const type = basicInformation?.spaceType?.name;
-            return (
-              <Badge color={colors[type]} size="lg" className="capitalize">
-                {type || <span>-</span>}
-              </Badge>
-            );
-          }),
+          useMemo(() => (
+            <Badge color={colors[spaceType]} size="lg" className="capitalize">
+              {spaceType || <span>-</span>}
+            </Badge>
+          )),
       },
       {
         Header: 'DIMENSION',
         accessor: 'dimension',
         Cell: ({
           row: {
-            original: { specifications },
+            original: { size },
           },
-        }) =>
-          useMemo(
-            () => (
-              <p>{`${specifications?.size?.height || 0}ft x ${
-                specifications?.size?.width || 0
-              }ft`}</p>
-            ),
-            [],
-          ),
+        }) => useMemo(() => <p>{`${size?.height || 0}ft x ${size?.width || 0}ft`}</p>, []),
       },
       {
         Header: 'IMPRESSION',
         accessor: 'impressions',
         Cell: ({
           row: {
-            original: { specifications },
+            original: { impressions },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.min}+`}</p>, []),
+        }) => useMemo(() => <p>{`${impressions?.min}+`}</p>, []),
       },
       {
         Header: 'HEALTH',
         accessor: 'health',
         Cell: ({
           row: {
-            original: { specifications },
+            original: { health },
           },
         }) =>
           useMemo(
@@ -175,8 +177,8 @@ const ProposalDetails = () => {
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: specifications?.health, color: 'green' },
-                    { value: 100 - (specifications?.health || 0), color: 'red' },
+                    { value: health, color: 'green' },
+                    { value: 100 - (health || 0), color: 'red' },
                   ]}
                 />
               </div>
@@ -186,16 +188,11 @@ const ProposalDetails = () => {
       },
       {
         Header: 'LOCATION',
-        accessor: 'city',
-        Cell: ({
-          row: {
-            original: { location },
-          },
-        }) => useMemo(() => <p>{location?.city}</p>, []),
+        accessor: 'location',
       },
       {
         Header: 'MEDIA TYPE',
-        accessor: 'media_type',
+        accessor: 'mediaType',
       },
       {
         Header: 'PRICING',
@@ -216,13 +213,26 @@ const ProposalDetails = () => {
         }) => useMemo(() => <MenuPopover itemId={_id} proposalData={proposalData} />, []),
       },
     ],
-    [proposalData?.spaces],
+    [proposalData?.inventories?.docs],
   );
+
+  const handleSearch = () => {
+    searchParams.set('spaceName', searchInput);
+    setSearchParams(searchParams);
+  };
+
+  useEffect(() => {
+    handleSearch();
+    if (searchInput === '') {
+      searchParams.delete('spaceName');
+      setSearchParams(searchParams);
+    }
+  }, [searchInput]);
 
   return (
     <div>
       <Header showShare={showShare} setShowShare={setShowShare} />
-      <Details proposalData={proposalData} />
+      <Details proposalData={proposalData?.proposal} />
       <div className="pl-5 pr-7 flex justify-between mt-4">
         <Text size="xl" weight="bolder">
           Selected Inventory
@@ -249,10 +259,22 @@ const ProposalDetails = () => {
 
       <div className="flex justify-between h-20 items-center pr-7">
         <RowsPerPage setCount={setCount} count={count} />
-        <Search search={search} setSearch={setSearch} />
+        <Search search={searchInput} setSearch={setSearchInput} />
       </div>
+      {isProposalDataLoading ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <Loader />
+        </div>
+      ) : null}
+      {proposalData?.inventories?.docs?.length === 0 && !isProposalDataLoading ? (
+        <div className="w-full min-h-[300px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
+        </div>
+      ) : null}
       <div>
-        <Table COLUMNS={COLUMNS} data={proposalData?.spaces || []} />
+        {proposalData?.inventories?.docs?.length ? (
+          <Table COLUMNS={COLUMNS} data={proposalData?.inventories?.docs || []} />
+        ) : null}
       </div>
     </div>
   );

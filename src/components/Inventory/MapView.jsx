@@ -32,7 +32,7 @@ const MapView = ({ lists = [] }) => {
   const getAllLocations = useMemo(
     () =>
       lists.map(item => {
-        if (item?.basicInformation?.spaceType === value) {
+        if (item?.basicInformation?.spaceType?._id === value) {
           return (
             <Marker lat={item?.location?.latitude} lng={item?.location?.longitude} key={item._id} />
           );
@@ -44,7 +44,7 @@ const MapView = ({ lists = [] }) => {
 
   useEffect(() => {
     setValue(spaceTypeData?.docs?.[0]._id || '');
-  }, []);
+  }, [spaceTypeData]);
 
   return (
     <div className="relative px-5">

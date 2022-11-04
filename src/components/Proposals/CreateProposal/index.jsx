@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as yup from 'yup';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { yupResolver } from '@mantine/form';
 import { useDebouncedState } from '@mantine/hooks';
@@ -47,11 +47,22 @@ const Main = () => {
   const form = useForm({ validate: yupResolver(schema), initialValues });
   const navigate = useNavigate();
   const { id: proposalId } = useParams();
+  const [searchParams] = useSearchParams({
+    'owner': 'all',
+    'page': 1,
+    'limit': 10,
+    'sortBy': 'createdAt',
+    'sortOrder': 'asc',
+  });
+
   const [selectedRow, setSelectedRow] = useState([]);
   const [proposedPrice, setProposedPrice] = useDebouncedState(null, 1000);
   const { mutate: create, isLoading: isCreateProposalLoading } = useCreateProposal();
   const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
-  const { data: proposalData } = useFetchProposalById(proposalId, !!proposalId);
+  const { data: proposalData } = useFetchProposalById(
+    `${proposalId}?${searchParams.toString()}`,
+    !!proposalId,
+  );
 
   const handleUpdatedProposedPrice = (val, id) => setProposedPrice({ price: val, inventoryId: id });
 
@@ -65,7 +76,7 @@ const Main = () => {
     ) : (
       <Spaces
         setSelectedRow={setSelectedRow}
-        selectedRowData={proposalData?.spaces || []}
+        selectedRowData={proposalData?.inventories.docs || []}
         noOfSelectedPlaces={selectedRow.length}
         setProposedPrice={handleUpdatedProposedPrice}
       />
@@ -124,7 +135,7 @@ const Main = () => {
         )[0]?._id;
 
         data = {
-          ...formData,
+          ...data,
           status,
         };
 
@@ -138,16 +149,16 @@ const Main = () => {
 
   useEffect(() => {
     if (proposalData) {
-      form.setFieldValue('name', proposalData?.name);
-      form.setFieldValue('description', proposalData?.description || '');
+      form.setFieldValue('name', proposalData?.proposal?.name);
+      form.setFieldValue('description', proposalData?.proposal?.description || '');
       if (proposalData?.startDate) {
-        form.setFieldValue('startDate', new Date(proposalData.startDate));
+        form.setFieldValue('startDate', new Date(proposalData?.proposal?.startDate));
       }
 
       if (proposalData?.endDate) {
-        form.setFieldValue('endDate', new Date(proposalData.endDate));
+        form.setFieldValue('endDate', new Date(proposalData?.proposal?.endDate));
       }
-      form.setFieldValue('status', proposalData?.status);
+      form.setFieldValue('status', proposalData?.proposal?.status);
     }
   }, [proposalData]);
 

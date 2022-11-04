@@ -1,10 +1,10 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Text, Button, Progress, Image, NumberInput, Badge, Box } from '@mantine/core';
+import { Text, Button, Progress, Image, NumberInput, Badge, Box, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import Filter from '../Filter';
+
 import DateRange from '../DateRange';
 import Search from '../Search';
 import calendar from '../../assets/data-table.svg';
@@ -14,6 +14,7 @@ import MenuPopover from './MenuPopover';
 import { useFetchInventory } from '../../hooks/inventory.hooks';
 import { colors, serialize } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
+import Filter from '../Inventory/Filter';
 
 const Spaces = ({
   setSelectedRow = () => {},
@@ -22,19 +23,21 @@ const Spaces = ({
   setProposedPrice = () => {},
 }) => {
   const navigate = useNavigate();
-  const [search, setSearch] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const modals = useModals();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
   const [updatedSpaces, setUpdatedSpaces] = useState([]);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showFilter, setShowFilter] = useState(false);
   const [query] = useState({
     limit: 10,
     page: 1,
   });
 
-  const { data: inventoryData } = useFetchInventory(serialize(query));
+  const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
+    serialize(query),
+  );
   const page = searchParams.get('page');
 
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
@@ -209,7 +212,12 @@ const Spaces = ({
       },
       {
         Header: 'MEDIA TYPE',
-        accessor: 'media_type',
+        accessor: 'mediaType',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) => useMemo(() => <p>{basicInformation?.mediaType?.name}</p>),
       },
       {
         Header: 'PRICING',
@@ -244,6 +252,11 @@ const Spaces = ({
     [inventoryData?.docs],
   );
 
+  const handleSearch = () => {
+    searchParams.set('spaceName', searchInput);
+    setSearchParams(searchParams);
+  };
+
   const calcutateTotalPrice = useMemo(() => {
     const initialCost = 0;
     if (selectedRowData.length > 0) {
@@ -270,6 +283,14 @@ const Spaces = ({
       setUpdatedSpaces(arrOfUpdatedPrices);
     }
   }, [inventoryData?.docs]);
+
+  useEffect(() => {
+    handleSearch();
+    if (searchInput === '') {
+      searchParams.delete('spaceName');
+      setSearchParams(searchParams);
+    }
+  }, [searchInput]);
 
   return (
     <>
@@ -317,16 +338,28 @@ const Spaces = ({
             </span>
           </Text>
 
-          <Search search={search} setSearch={setSearch} />
+          <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
-      <Table
-        data={updatedSpaces}
-        COLUMNS={COLUMNS}
-        allowRowsSelect
-        setSelectedFlatRows={setSelectedRow}
-        selectedRowData={selectedRowData}
-      />
+      {isLoadingInventoryData ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <Loader />
+        </div>
+      ) : null}
+      {inventoryData?.docs?.length === 0 && !isLoadingInventoryData ? (
+        <div className="w-full min-h-[400px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
+        </div>
+      ) : null}
+      {inventoryData?.docs?.length ? (
+        <Table
+          data={updatedSpaces}
+          COLUMNS={COLUMNS}
+          allowRowsSelect
+          setSelectedFlatRows={setSelectedRow}
+          selectedRowData={selectedRowData}
+        />
+      ) : null}
     </>
   );
 };

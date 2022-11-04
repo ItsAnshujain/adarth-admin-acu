@@ -22,7 +22,7 @@ const UserCard = ({
           className="bg-gray-450 rounded-full"
         />
       </div>
-      <div className="flex flex-col justify-between">
+      <div className="flex flex-col justify-between overflow-hidden">
         <Text className="text-xl font-bold capitalize" lineClamp={2}>
           {name}
         </Text>
