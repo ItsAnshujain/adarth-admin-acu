@@ -110,7 +110,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                   <div className="flex justify-between gap-8">
                     <div>
                       <TextInput
-                        value={`${filterData.minPrice}k`}
+                        value={`${filterData.minPrice}`}
                         onChange={e =>
                           setFilterData(prev => ({ ...prev, minPrice: e.target.value }))
                         }
@@ -119,7 +119,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                     </div>
                     <div>
                       <TextInput
-                        value={`${filterData.maxPrice}k`}
+                        value={`${filterData.maxPrice}`}
                         onChange={e =>
                           setFilterData(prev => ({ ...prev, maxPrice: e.target.value }))
                         }
