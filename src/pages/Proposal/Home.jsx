@@ -26,7 +26,8 @@ const Proposals = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
-    'sort': 'createdAt',
+    'sortBy': 'createdAt',
+    'sortOrder': 'asc',
   });
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');

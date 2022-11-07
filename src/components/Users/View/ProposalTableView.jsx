@@ -14,7 +14,8 @@ const ProposalTableView = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
-    'sort': 'createdAt',
+    'sortBy': 'createdAt',
+    'sortOrder': 'asc',
   });
   const { data: proposalsData, isLoading: isLoadingProposalsData } = useFetchProposals(
     searchParams.toString(),

@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
-import { Text, Button, Image } from '@mantine/core';
+import { useState, useMemo, useEffect } from 'react';
+import { Text, Button, Image, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useSearchParams } from 'react-router-dom';
-import { useClickOutside } from '@mantine/hooks';
+import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import DateRange from '../../DateRange';
 import Filter from '../../Filter';
 import calendar from '../../../assets/data-table.svg';
@@ -10,14 +10,17 @@ import Table from '../../Table/Table';
 import { useBookings } from '../../../hooks/booking.hooks';
 import MenuIcon from '../../Menu';
 import toIndianCurrency from '../../../utils/currencyFormat';
+import RowsPerPage from '../../RowsPerPage';
+import Search from '../../Search';
 
-const Booking = ({ count }) => {
+const Booking = () => {
+  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
-  const [searchParams] = useSearchParams({
+  const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
-    'limit': 20,
+    'limit': 10,
     'sortBy': 'createdAt',
     'sortOrder': 'asc',
   });
@@ -25,7 +28,9 @@ const Booking = ({ count }) => {
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
-  const { data: bookingData } = useBookings(searchParams.toString());
+  const { data: bookingData, isLoading: isLoadingBookingData } = useBookings(
+    searchParams.toString(),
+  );
 
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -53,7 +58,7 @@ const Booking = ({ count }) => {
           row: {
             original: { client },
           },
-        }) => useMemo(() => <p className="w-full">{client?.companyName}</p>, []),
+        }) => useMemo(() => <p className="w-full">{client?.name}</p>, []),
       },
       {
         Header: 'CAMPAIGN INCHARGE',
@@ -66,10 +71,10 @@ const Booking = ({ count }) => {
       },
       {
         Header: 'CAMPAIGN NAME',
-        accessor: 'campaign_name',
+        accessor: 'campaign',
         Cell: ({
           row: {
-            original: { image, campaign_name },
+            original: { image, campaign },
           },
         }) =>
           useMemo(
@@ -80,8 +85,7 @@ const Booking = ({ count }) => {
                 ) : (
                   <Image src={null} withPlaceholder height={32} width={32} />
                 )}
-
-                <div>{campaign_name}</div>
+                <p className="pl-2">{campaign?.name}</p>
               </div>
             ),
             [],
@@ -89,63 +93,63 @@ const Booking = ({ count }) => {
       },
       {
         Header: 'PRINTING STATUS',
-        accessor: 'printing_status',
+        accessor: 'printingStatus',
         Cell: ({
           row: {
-            original: { printing_status },
+            original: { currentStatus },
           },
         }) =>
           useMemo(() => {
             const color =
-              printing_status === 'Completed'
+              currentStatus?.printingStatus === 'Completed'
                 ? 'green'
-                : printing_status === 'Upcoming'
+                : currentStatus?.printingStatus === 'Upcoming'
                 ? 'red'
                 : 'blue';
             return (
               <p className="w-36" style={{ color }}>
-                {printing_status}
+                {currentStatus?.printingStatus || '-'}
               </p>
             );
           }, []),
       },
       {
         Header: 'MOUNTING STATUS',
-        accessor: 'mounting_status',
+        accessor: 'mountingStatus',
         Cell: ({
           row: {
-            original: { mounting_status },
+            original: { currentStatus },
           },
         }) =>
           useMemo(() => {
-            const color = mounting_status === 'Completed' ? 'green' : 'red';
+            const color = currentStatus?.mountingStatus === 'Completed' ? 'green' : 'red';
             return (
               <p className="w-36" style={{ color }}>
-                {mounting_status}
+                {currentStatus?.mountingStatus || '-'}
               </p>
             );
           }, []),
       },
       {
         Header: 'PAYMENT STATUS',
-        accessor: 'payment_status',
+        accessor: 'paymentStatus',
         Cell: ({
           row: {
-            original: { payment_status },
+            original: { currentStatus },
           },
         }) =>
           useMemo(() => {
-            const color = payment_status === 'Paid' ? 'green' : 'red';
+            const color = currentStatus?.paymentStatus === 'Paid' ? 'green' : 'red';
             return (
               <p className="w-36" style={{ color }}>
-                {payment_status}
+                {currentStatus?.paymentStatus || '-'}
               </p>
             );
           }, []),
       },
       {
         Header: 'PAYMENT TYPE',
-        accessor: 'payment_type',
+        accessor: 'type',
         Cell: ({
           row: {
             original: { type },
@@ -173,16 +177,12 @@ const Booking = ({ count }) => {
       },
       {
         Header: 'PRICING',
-        accessor: 'pricing',
+        accessor: 'price',
         Cell: ({
           row: {
-            original: { totalPrice },
+            original: { price },
           },
-        }) =>
-          useMemo(
-            () => <p className="pl-2">{totalPrice ? toIndianCurrency(totalPrice) : 0}</p>,
-            [],
-          ),
+        }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
       },
       {
         Header: '',
@@ -191,11 +191,9 @@ const Booking = ({ count }) => {
         Cell: () =>
           useMemo(
             () => (
-              <div className="w-[100px] flex justify-center">
-                <button type="button">
-                  <MenuIcon />
-                </button>
-              </div>
+              <Button>
+                <MenuIcon />
+              </Button>
             ),
             [],
           ),
@@ -203,6 +201,29 @@ const Booking = ({ count }) => {
     ],
     [bookingData?.docs],
   );
+
+  const handleSearch = () => {
+    searchParams.set('search', searchInput);
+    setSearchParams(searchParams);
+  };
+
+  const handleRowCount = currentLimit => {
+    searchParams.set('limit', currentLimit);
+    setSearchParams(searchParams);
+  };
+
+  const handlePagination = currentPage => {
+    searchParams.set('page', currentPage);
+    setSearchParams(searchParams);
+  };
+
+  useEffect(() => {
+    handleSearch();
+    if (searchInput === '') {
+      searchParams.delete('search');
+      setSearchParams(searchParams);
+    }
+  }, [searchInput]);
 
   return (
     <div className="flex flex-col">
@@ -229,7 +250,30 @@ const Booking = ({ count }) => {
           </div>
         </div>
       </div>
-      <Table data={bookingData?.docs || []} COLUMNS={COLUMNS} count={count} />
+      <div className="flex justify-between h-20 items-center pr-7">
+        <RowsPerPage setCount={handleRowCount} count={limit} />
+        <Search search={searchInput} setSearch={setSearchInput} />
+      </div>
+      {isLoadingBookingData ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <Loader />
+        </div>
+      ) : null}
+      {bookingData?.docs?.length === 0 && !isLoadingBookingData ? (
+        <div className="w-full min-h-[400px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
+        </div>
+      ) : null}
+      {bookingData?.docs?.length ? (
+        <Table
+          data={bookingData?.docs || []}
+          COLUMNS={COLUMNS}
+          activePage={bookingData?.page || 1}
+          totalPages={bookingData?.totalPages || 1}
+          setActivePage={handlePagination}
+          rowCountLimit={limit}
+        />
+      ) : null}
     </div>
   );
 };

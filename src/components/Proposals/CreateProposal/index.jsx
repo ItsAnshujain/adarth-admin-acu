@@ -18,6 +18,7 @@ import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
 
 const schema = yup.object().shape({
+  photo: yup.string().trim(),
   name: yup.string().trim().required('Name is required'),
   description: yup.string().trim(),
   startDate: yup
@@ -34,6 +35,7 @@ const schema = yup.object().shape({
 });
 
 const initialValues = {
+  photo: '',
   name: '',
   description: '',
   startDate: '',
@@ -151,12 +153,12 @@ const Main = () => {
     if (proposalData) {
       form.setFieldValue('name', proposalData?.proposal?.name);
       form.setFieldValue('description', proposalData?.proposal?.description || '');
-      if (proposalData?.startDate) {
-        form.setFieldValue('startDate', new Date(proposalData?.proposal?.startDate));
+      if (proposalData?.proposal?.startDate) {
+        form.setFieldValue('startDate', new Date(proposalData.proposal.startDate));
       }
 
-      if (proposalData?.endDate) {
-        form.setFieldValue('endDate', new Date(proposalData?.proposal?.endDate));
+      if (proposalData?.proposal?.endDate) {
+        form.setFieldValue('endDate', new Date(proposalData.proposal.endDate));
       }
       form.setFieldValue('status', proposalData?.proposal?.status);
     }

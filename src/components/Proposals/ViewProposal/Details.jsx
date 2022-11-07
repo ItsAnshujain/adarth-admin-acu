@@ -51,9 +51,7 @@ const Details = ({ proposalData }) => (
             Overall Start Date
           </Text>
           <Text weight="bolder">
-            {proposalData?.startDate
-              ? dayjs(proposalData.proposal.startDate).format(DATE_FORMAT)
-              : 'NA'}
+            {proposalData?.startDate ? dayjs(proposalData.startDate).format(DATE_FORMAT) : 'NA'}
           </Text>
         </div>
         <div>
@@ -61,9 +59,7 @@ const Details = ({ proposalData }) => (
             Overall End Date
           </Text>
           <Text weight="bolder">
-            {proposalData?.endDate
-              ? dayjs(proposalData.proposal.endDate).format(DATE_FORMAT)
-              : 'NA'}
+            {proposalData?.endDate ? dayjs(proposalData.endDate).format(DATE_FORMAT) : 'NA'}
           </Text>
         </div>
       </div>
