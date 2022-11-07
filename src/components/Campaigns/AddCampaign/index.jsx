@@ -7,6 +7,7 @@ import Header from './Header';
 import Spaces from './Spaces';
 import data from '../../../Dummydata/CAMPAIGN_SPACES.json';
 import column from './column';
+import { FormProvider, useForm } from '../../../context/formContext';
 
 const formInitialState = {
   campaignname: '',
@@ -23,6 +24,7 @@ const Create = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const [formData, setFormData] = useState(formInitialState);
+  const form = useForm({});
 
   const getForm = () =>
     formStep === 1 ? (
@@ -52,16 +54,18 @@ const Create = () => {
 
   return (
     <div className="mb-24">
-      <Header
-        setFormStep={setFormStep}
-        formStep={formStep}
-        setOpenSuccessModal={setOpenSuccessModal}
-      />
-      <div>
+      <FormProvider form={form}>
+        <Header
+          setFormStep={setFormStep}
+          formStep={formStep}
+          setOpenSuccessModal={setOpenSuccessModal}
+        />
         <div>
-          <form>{getForm()}</form>
+          <div>
+            <form>{getForm()}</form>
+          </div>
         </div>
-      </div>
+      </FormProvider>
       <SuccessModal
         title="Campaign Successfully Added"
         text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."

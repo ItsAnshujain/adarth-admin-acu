@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import AreaHeader from '../../components/Campaigns/Header';
 import GridView from '../../components/GridView';
-import COLUMNS from '../../components/Campaigns/column';
+// import COLUMNS from '../../components/Campaigns/column';
 import dummy from '../../Dummydata/CAMPAIGN_DATA.json';
 import Table from '../../components/Table/Table';
 import Card from '../../components/Campaigns/Card';
@@ -22,7 +22,7 @@ const Home = () => {
       {view === 'grid' ? (
         <GridView count={count} Card={Card} />
       ) : (
-        <Table COLUMNS={COLUMNS} data={dummy} count={count} allowRowsSelect />
+        <Table COLUMNS={[]} data={dummy} count={count} allowRowsSelect />
       )}
     </div>
   );
