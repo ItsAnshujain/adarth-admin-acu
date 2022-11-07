@@ -1,7 +1,7 @@
 import { Menu } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { useNavigate } from 'react-router-dom';
-import { Eye, Edit2, Trash } from 'react-feather';
+import { Eye, Trash } from 'react-feather';
 import modalConfig from '../../utils/modalConfig';
 import DeleteConfirmContent from '../../components/DeleteConfirmContent';
 import MenuIcon from '../../components/Menu';
