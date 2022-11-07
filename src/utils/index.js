@@ -83,3 +83,5 @@ export const roleTypes = {
     'associate': 'Associate',
   },
 };
+
+export const roles = ['admin', 'media_owner', 'manager', 'supervisor', 'associate'];
