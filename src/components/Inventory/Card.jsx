@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Badge, Button, Checkbox, Image, Menu, Text } from '@mantine/core';
+import { Badge, Box, Button, Checkbox, Image, Menu, Text } from '@mantine/core';
 import { Eye, Edit2, Trash } from 'react-feather';
 import { useModals } from '@mantine/modals';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -39,7 +39,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
     });
 
   return (
-    <div className="drop-shadow-md w-[273px]">
+    <Box className="drop-shadow-md w-[273px] cursor-pointer">
       <div>
         {data?.basicInformation?.spacePhotos ? (
           <Image
@@ -131,7 +131,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
           </Menu>
         </div>
       </div>
-    </div>
+    </Box>
   );
 };
 

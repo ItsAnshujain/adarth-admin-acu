@@ -252,6 +252,7 @@ const Home = () => {
       {
         Header: '',
         accessor: 'details',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { _id },
@@ -263,7 +264,7 @@ const Home = () => {
   );
 
   const handleSearch = () => {
-    searchParams.set('spaceName', searchInput);
+    searchParams.set('search', searchInput);
     setSearchParams(searchParams);
   };
 
@@ -280,7 +281,7 @@ const Home = () => {
   useEffect(() => {
     handleSearch();
     if (searchInput === '') {
-      searchParams.delete('spaceName');
+      searchParams.delete('search');
       setSearchParams(searchParams);
     }
   }, [searchInput]);

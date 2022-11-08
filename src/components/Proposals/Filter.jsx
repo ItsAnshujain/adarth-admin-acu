@@ -65,9 +65,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
   const handleNavigationByFilter = () => {
     searchParams.delete('status');
-    statusArr.forEach(item => {
-      searchParams.append('status', item);
-    });
+    statusArr.forEach(item => searchParams.append('status', item));
 
     setSearchParams(searchParams);
     setShowFilter(false);

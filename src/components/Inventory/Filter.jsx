@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Accordion, Button, Checkbox, Drawer, RangeSlider, TextInput } from '@mantine/core';
+import { Accordion, Button, Checkbox, Drawer, Radio, RangeSlider, TextInput } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { serialize } from '../../utils';
 import { useFetchMasters } from '../../hooks/masters.hooks';
@@ -44,7 +44,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
     zone: '',
     footFall: '',
     facing: '',
-    tags: '',
+    tags: [],
     demographic: '',
     audience: '',
   });
@@ -57,7 +57,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const zone = searchParams.get('zone');
   const footFall = searchParams.get('footFall');
   const facing = searchParams.get('facing');
-  const tags = searchParams.get('tags');
+  const tags = searchParams.getAll('tags');
   const demographic = searchParams.get('demographic');
   const audience = searchParams.get('audience');
 
@@ -92,11 +92,22 @@ const Filter = ({ isOpened, setShowFilter }) => {
     searchParams.set(filterKey, filterValues);
   };
 
-  const renderStaticStatus = useCallback(
+  const handleStatusArr = stat => {
+    let tempArr = [...filterOptions.tags]; // TODO: use immmer
+    if (tempArr.some(item => item === stat)) {
+      tempArr = tempArr.filter(item => item !== stat);
+    } else {
+      tempArr.push(stat);
+    }
+
+    setFilterOptions({ ...filterOptions, tags: [...tempArr] });
+  };
+
+  const renderStaticOptions = useCallback(
     (filterDataObj, filterKey) =>
       Object.keys(filterDataObj).map(item => (
         <div className="flex gap-2 mb-2" key={item}>
-          <Checkbox
+          <Radio
             onChange={event => handleCheckedValues(event.target.value, filterKey)}
             label={filterDataObj[item]}
             defaultValue={item}
@@ -107,11 +118,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
     [filterOptions],
   );
 
-  const renderDynamicStatus = useCallback(
+  const renderDynamicOptions = useCallback(
     (data, filterKey) =>
       data?.map(item => (
         <div className="flex gap-2 mb-2" key={item?._id}>
-          <Checkbox
+          <Radio
             onChange={event => handleCheckedValues(event.target.value, filterKey)}
             label={item?.name}
             defaultValue={item?._id}
@@ -122,7 +133,24 @@ const Filter = ({ isOpened, setShowFilter }) => {
     [filterOptions],
   );
 
+  const renderDynamicOptionsArr = useCallback(
+    data =>
+      data?.map(item => (
+        <div className="flex gap-2 mb-2" key={item?._id}>
+          <Checkbox
+            onChange={event => handleStatusArr(event.target.value)}
+            label={item?.name}
+            defaultValue={item?._id}
+            checked={filterOptions.tags.includes(item._id)}
+          />
+        </div>
+      )),
+    [filterOptions.tags],
+  );
+
   const handleNavigationByFilter = () => {
+    searchParams.delete('tags');
+    filterOptions.tags.forEach(item => searchParams.append('tags', item));
     setSearchParams(searchParams);
     setShowFilter(false);
   };
@@ -149,7 +177,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       zone: '',
       footFall: '',
       facing: '',
-      tags: '',
+      tags: [],
       demographic: '',
       audience: '',
     });
@@ -180,7 +208,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       zone: zone || '',
       footFall: footFall || '',
       facing: facing || '',
-      tags: tags || '',
+      tags: tags || [],
       demographic: demographic || '',
       audience: audience || '',
     }));
@@ -221,7 +249,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Inventory Owner</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStaticStatus(inititalFilterData.owner, 'owner')}</div>
+              <div className="mt-2">{renderStaticOptions(inititalFilterData.owner, 'owner')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -230,7 +258,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Category</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicStatus(categoryData?.docs, 'category')}</div>
+              <div className="mt-2">{renderDynamicOptions(categoryData?.docs, 'category')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -240,7 +268,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderDynamicStatus(subCategoryData?.docs, 'subCategory')}
+                {renderDynamicOptions(subCategoryData?.docs, 'subCategory')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
@@ -250,7 +278,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Media Type</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicStatus(mediaTypeData?.docs, 'mediaType')}</div>
+              <div className="mt-2">{renderDynamicOptions(mediaTypeData?.docs, 'mediaType')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -259,7 +287,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Cities</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStaticStatus(inititalFilterData.tier, 'tier')}</div>
+              <div className="mt-2">{renderStaticOptions(inititalFilterData.tier, 'tier')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -298,7 +326,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Zone</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicStatus(zoneData?.docs, 'zone')}</div>
+              <div className="mt-2">{renderDynamicOptions(zoneData?.docs, 'zone')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -307,7 +335,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Footfall</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStaticStatus(inititalFilterData.footFall)}</div>
+              <div className="mt-2">{renderStaticOptions(inititalFilterData.footFall)}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -316,7 +344,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Facing</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicStatus(facingData?.docs, 'facing')}</div>
+              <div className="mt-2">{renderDynamicOptions(facingData?.docs, 'facing')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -325,7 +353,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Tags</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicStatus(tagData?.docs, 'tags')}</div>
+              <div className="mt-2">{renderDynamicOptionsArr(tagData?.docs)}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -335,7 +363,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderDynamicStatus(demographicsData?.docs, 'demographic')}
+                {renderDynamicOptions(demographicsData?.docs, 'demographic')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
@@ -345,7 +373,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Audience</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicStatus(audienceData?.docs, 'audience')}</div>
+              <div className="mt-2">{renderDynamicOptions(audienceData?.docs, 'audience')}</div>
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>

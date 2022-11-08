@@ -9,7 +9,7 @@ const Card = ({ proposalData }) => (
     <div className="flex justify-between">
       <div>
         <p className="text-slate-400 text-sm">Client</p>
-        <p>{proposalData?.client || 'NA'}</p>
+        <p>{proposalData?.client?.company || 'NA'}</p>
       </div>
       <div>
         <p className="text-slate-400 text-sm">Total Places</p>

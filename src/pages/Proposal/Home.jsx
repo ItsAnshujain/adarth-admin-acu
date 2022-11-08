@@ -178,6 +178,11 @@ const Proposals = () => {
       {
         Header: 'CLIENT',
         accessor: 'client',
+        Cell: ({
+          row: {
+            original: { client },
+          },
+        }) => useMemo(() => <p className="pl-2">{client?.company}</p>, []),
       },
       {
         Header: 'TOTAL PLACES',

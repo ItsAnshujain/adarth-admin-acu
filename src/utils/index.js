@@ -84,4 +84,10 @@ export const roleTypes = {
   },
 };
 
-export const roles = ['admin', 'media_owner', 'manager', 'supervisor', 'associate'];
+export const ROLES = {
+  ADMIN: 'admin',
+  MEDIA_OWNER: 'media_owner',
+  MANAGER: 'manager',
+  SUPERVISOR: 'supervisor',
+  ASSOCIATE: 'associate',
+};

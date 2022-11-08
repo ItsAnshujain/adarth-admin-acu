@@ -19,8 +19,8 @@ import {
 const requiredSchema = requiredText => yup.string().trim().required(requiredText);
 
 const schema = action =>
-  yup.object().shape({
-    basicInformation: yup.object().shape({
+  yup.object({
+    basicInformation: yup.object({
       spaceName: yup
         .string()
         .trim()
@@ -29,12 +29,14 @@ const schema = action =>
         .string()
         .trim()
         .concat(action === 1 ? requiredSchema('Landlord is required') : null),
-      mediaOwner: yup.string().trim(),
+      mediaOwner: yup
+        .string()
+        .trim()
+        .concat(action === 1 ? requiredSchema('Inventory Owner is required') : null),
       spaceType: yup.mixed().concat(
         action === 1
           ? yup
-              .object()
-              .shape({
+              .object({
                 label: yup.string().trim(),
                 value: yup.string().trim(),
               })
@@ -44,8 +46,7 @@ const schema = action =>
       category: yup.mixed().concat(
         action === 1
           ? yup
-              .object()
-              .shape({
+              .object({
                 label: yup.string().trim(),
                 value: yup.string().trim(),
               })
@@ -54,7 +55,7 @@ const schema = action =>
       ),
       subCategory: yup.mixed().concat(
         action === 1
-          ? yup.object().shape({
+          ? yup.object({
               label: yup.string().trim(),
               value: yup.string().trim(),
             })
@@ -63,8 +64,7 @@ const schema = action =>
       mediaType: yup.mixed().concat(
         action === 1
           ? yup
-              .object()
-              .shape({
+              .object({
                 label: yup.string().trim(),
                 value: yup.string().trim(),
               })
@@ -107,8 +107,7 @@ const schema = action =>
       demographic: yup.mixed().concat(
         action === 1
           ? yup
-              .object()
-              .shape({
+              .object({
                 label: yup.string().trim(),
                 value: yup.string().trim(),
               })
@@ -117,15 +116,14 @@ const schema = action =>
       ),
       audience: yup
         .array()
-        .of(yup.object().shape({ label: yup.string(), value: yup.string() }))
+        .of(yup.object({ label: yup.string(), value: yup.string() }))
         .test('audience', 'Audience is required', val => (action === 1 ? val?.length > 0 : true)),
     }),
-    specifications: yup.object().shape({
+    specifications: yup.object({
       illuminations: yup.mixed().concat(
         action === 2
           ? yup
-              .object()
-              .shape({
+              .object({
                 label: yup.string().trim(),
                 value: yup.string().trim(),
               })
@@ -135,8 +133,7 @@ const schema = action =>
       spaceStatus: yup.mixed().concat(
         action === 2
           ? yup
-              .object()
-              .shape({
+              .object({
                 label: yup.string().trim(),
                 value: yup.string().trim(),
               })
@@ -160,7 +157,7 @@ const schema = action =>
         .string()
         .trim()
         .concat(action === 2 ? requiredSchema('Resolutions is required') : null),
-      size: yup.object().shape({
+      size: yup.object({
         height: yup
           .number()
           .nullable()
@@ -197,11 +194,12 @@ const schema = action =>
                 .number()
                 .positive('Health must be a positive number')
                 .typeError('Health must be a number')
+                .test('healthLimit', 'Health must be at max 100', val => val <= 100)
                 .required('Health is required')
                 .nullable()
             : null,
         ),
-      impressions: yup.object().shape({
+      impressions: yup.object({
         min: yup
           .number()
           .nullable()
@@ -229,16 +227,16 @@ const schema = action =>
       }),
       previousBrands: yup
         .array()
-        .of(yup.object().shape({ label: yup.string(), value: yup.string() }))
+        .of(yup.object({ label: yup.string(), value: yup.string() }))
         .test('previousBrands', 'Previous Brand is required', val =>
           action === 2 ? val?.length > 0 : true,
         ),
       tags: yup
         .array()
-        .of(yup.object().shape({ label: yup.string(), value: yup.string() }))
+        .of(yup.object({ label: yup.string(), value: yup.string() }))
         .test('tags', 'Tag is required', val => (action === 2 ? val?.length > 0 : true)),
     }),
-    location: yup.object().shape({
+    location: yup.object({
       latitude: yup
         .number()
         .nullable()
@@ -283,8 +281,9 @@ const schema = action =>
             ? yup
                 .number()
                 .typeError('Zip must be a number')
+                .positive('Zip must be a positive number')
+                .test('len', 'Zip must be 6 digits', val => val?.toString().length === 6)
                 .required('Zip is required')
-                .min(6, 'Zip must be at least 6 digits')
                 .nullable()
             : null,
         ),
