@@ -14,6 +14,8 @@ import NoMatch from './pages/NoMatch';
 import { useFetchUsersById } from './hooks/users.hooks';
 import useTokenIdStore from './store/user.store';
 import ProtectedRoutes from './utils/ProtectedRoutes';
+import ProtectedRoute from './utils/ProtectedRoute';
+import { ROLES } from './utils';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -116,7 +118,6 @@ const App = () => {
             </Suspense>
           }
         />
-
         <Route
           path="/inventory"
           element={
@@ -162,9 +163,11 @@ const App = () => {
         <Route
           path="/campaigns"
           element={
-            <Suspense fallback={<HeaderSidebarLoader />}>
-              <Campaigns />
-            </Suspense>
+            <ProtectedRoute accepted={ROLES.ADMIN}>
+              <Suspense fallback={<HeaderSidebarLoader />}>
+                <Campaigns />
+              </Suspense>
+            </ProtectedRoute>
           }
         >
           <Route
@@ -365,16 +368,16 @@ const App = () => {
             }
           />
         </Route>
-
         <Route
           path="/masters"
           element={
-            <Suspense fallback={<HeaderSidebarLoader />}>
-              <MasterHome />
-            </Suspense>
+            <ProtectedRoute accepted={ROLES.ADMIN}>
+              <Suspense fallback={<HeaderSidebarLoader />}>
+                <MasterHome />
+              </Suspense>
+            </ProtectedRoute>
           }
         />
-
         <Route
           path="/notification"
           element={
@@ -383,7 +386,6 @@ const App = () => {
             </Suspense>
           }
         />
-
         <Route
           path="/setting"
           element={

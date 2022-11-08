@@ -209,6 +209,7 @@ const ProposalDetails = () => {
       {
         Header: '',
         accessor: 'details',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { _id },
@@ -220,14 +221,14 @@ const ProposalDetails = () => {
   );
 
   const handleSearch = () => {
-    searchParams.set('spaceName', searchInput);
+    searchParams.set('search', searchInput);
     setSearchParams(searchParams);
   };
 
   useEffect(() => {
     handleSearch();
     if (searchInput === '') {
-      searchParams.delete('spaceName');
+      searchParams.delete('search');
       setSearchParams(searchParams);
     }
   }, [searchInput]);
@@ -235,7 +236,10 @@ const ProposalDetails = () => {
   return (
     <div>
       <Header showShare={showShare} setShowShare={setShowShare} />
-      <Details proposalData={proposalData?.proposal} />
+      <Details
+        proposalData={proposalData?.proposal}
+        isProposalDataLoading={isProposalDataLoading}
+      />
       <div className="pl-5 pr-7 flex justify-between mt-4">
         <Text size="xl" weight="bolder">
           Selected Inventory

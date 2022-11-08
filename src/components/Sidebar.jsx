@@ -2,9 +2,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Image } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import classNames from 'classnames';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useFetchMastersTypes } from '../hooks/masters.hooks';
-import { masterTypes, serialize } from '../utils';
+import { masterTypes, ROLES, serialize } from '../utils';
 import NestedSidebarContent from './NestedSidebarContent';
 import HomeIcon from '../assets/home-default.svg';
 import HomeActiveIcon from '../assets/home-active.svg';
@@ -26,6 +26,7 @@ import LandlordsIcon from '../assets/landlords-default.svg';
 import LandlordsActiveIcon from '../assets/landlords-active.svg';
 import FinanceIcon from '../assets/finance-default.svg';
 import FinanceActiveIcon from '../assets/finance-active.svg';
+import RoleBased from './RoleBased';
 
 const Sidebar = () => {
   const { pathname } = useLocation();
@@ -83,30 +84,65 @@ const Sidebar = () => {
         path: '/home',
         icon: HomeIcon,
         activeIcon: HomeActiveIcon,
+        acceptedRoles: [
+          ROLES.ADMIN,
+          ROLES.MEDIA_OWNER,
+          ROLES.MANAGER,
+          ROLES.SUPERVISOR,
+          ROLES.ASSOCIATE,
+        ],
       },
       {
         label: 'Inventory',
         path: '/inventory',
         icon: InventoryIcon,
         activeIcon: InventoryActiveIcon,
+        acceptedRoles: [
+          ROLES.ADMIN,
+          ROLES.MEDIA_OWNER,
+          ROLES.MANAGER,
+          ROLES.SUPERVISOR,
+          ROLES.ASSOCIATE,
+        ],
       },
       {
         label: 'Bookings',
         path: '/bookings',
         icon: BookingIcon,
         activeIcon: BookingActiveIcon,
+        acceptedRoles: [
+          ROLES.ADMIN,
+          ROLES.MEDIA_OWNER,
+          ROLES.MANAGER,
+          ROLES.SUPERVISOR,
+          ROLES.ASSOCIATE,
+        ],
       },
       {
         label: 'Proposals',
         path: '/proposals',
         icon: ProposalIcon,
         activeIcon: ProposalActiveIcon,
+        acceptedRoles: [
+          ROLES.ADMIN,
+          ROLES.MEDIA_OWNER,
+          ROLES.MANAGER,
+          ROLES.SUPERVISOR,
+          ROLES.ASSOCIATE,
+        ],
       },
       {
         label: 'Users',
         path: '/users',
         icon: UsersIcon,
         activeIcon: UsersActiveIcon,
+        acceptedRoles: [
+          ROLES.ADMIN,
+          ROLES.MEDIA_OWNER,
+          ROLES.MANAGER,
+          ROLES.SUPERVISOR,
+          ROLES.ASSOCIATE,
+        ],
       },
       {
         label: 'Masters',
@@ -114,12 +150,14 @@ const Sidebar = () => {
         nested: renderList || [],
         icon: MastersIcon,
         activeIcon: MastersActiveIcon,
+        acceptedRoles: [ROLES.ADMIN],
       },
       {
         label: 'Campaigns',
         path: '/campaigns',
         icon: CampaignIcon,
         activeIcon: CampaignActiveIcon,
+        acceptedRoles: [ROLES.ADMIN],
       },
       {
         label: 'Reports',
@@ -131,18 +169,39 @@ const Sidebar = () => {
         ],
         icon: ReportIcon,
         activeIcon: ReportActiveIcon,
+        acceptedRoles: [
+          ROLES.ADMIN,
+          ROLES.MEDIA_OWNER,
+          ROLES.MANAGER,
+          ROLES.SUPERVISOR,
+          ROLES.ASSOCIATE,
+        ],
       },
       {
         label: 'Landlords',
         path: '/landlords',
         icon: LandlordsIcon,
         activeIcon: LandlordsActiveIcon,
+        acceptedRoles: [
+          ROLES.ADMIN,
+          ROLES.MEDIA_OWNER,
+          ROLES.MANAGER,
+          ROLES.SUPERVISOR,
+          ROLES.ASSOCIATE,
+        ],
       },
       {
         label: 'Finance',
         path: '/finance',
         icon: FinanceIcon,
         activeIcon: FinanceActiveIcon,
+        acceptedRoles: [
+          ROLES.ADMIN,
+          ROLES.MEDIA_OWNER,
+          ROLES.MANAGER,
+          ROLES.SUPERVISOR,
+          ROLES.ASSOCIATE,
+        ],
       },
     ],
     [isMasterLoaded],
@@ -152,42 +211,44 @@ const Sidebar = () => {
     <div className="hidden lg:block lg:col-span-2 mt-4">
       <div className="flex flex-col items-start gap-2 px-5">
         {sidebarMenuList.map(item => (
-          <div className="w-full flex flex-col border-gray-450 border" key={item.label}>
-            <div className="flex items-center justify-between ">
-              <Button
-                onClick={() => {
-                  if (isMasterLoaded && item.nested) {
-                    navigate(`${item.path}${item.nested[0]?.subPath}`);
-                  } else {
-                    handleNavigate(item.path);
-                  }
-                }}
-                className="p-2 flex w-full h-[40px]"
-              >
-                <Image
-                  src={checkActive(item.path) ? item.activeIcon : item.icon}
-                  height={24}
-                  width={24}
-                  className="mr-2"
-                  fit="contain"
-                />
-                <span
-                  className={classNames(
-                    checkActive(item.path) ? 'text-purple-450' : 'text-gray-400',
-                    'font-medium text-sm',
-                  )}
+          <RoleBased acceptedRoles={item.acceptedRoles} key={item.label}>
+            <div className="w-full flex flex-col border-gray-450 border" key={item.label}>
+              <div className="flex items-center justify-between ">
+                <Button
+                  onClick={() => {
+                    if (isMasterLoaded && item.nested) {
+                      navigate(`${item.path}${item.nested[0]?.subPath}`);
+                    } else {
+                      handleNavigate(item.path);
+                    }
+                  }}
+                  className="p-2 flex w-full h-[40px]"
                 >
-                  {item.label}
-                </span>
-              </Button>
-              {item?.nested ? <ChevronDown className="h-4 mr-5" /> : null}
+                  <Image
+                    src={checkActive(item.path) ? item.activeIcon : item.icon}
+                    height={24}
+                    width={24}
+                    className="mr-2"
+                    fit="contain"
+                  />
+                  <span
+                    className={classNames(
+                      checkActive(item.path) ? 'text-purple-450' : 'text-gray-400',
+                      'font-medium text-sm',
+                    )}
+                  >
+                    {item.label}
+                  </span>
+                </Button>
+                {item?.nested ? <ChevronDown className="h-4 mr-5" /> : null}
+              </div>
+              <NestedSidebarContent
+                list={item.nested || []}
+                path={item.path}
+                onNavigate={handleNavigate}
+              />
             </div>
-            <NestedSidebarContent
-              list={item.nested || []}
-              path={item.path}
-              onNavigate={handleNavigate}
-            />
-          </div>
+          </RoleBased>
         ))}
       </div>
     </div>

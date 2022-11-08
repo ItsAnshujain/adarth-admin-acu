@@ -245,6 +245,7 @@ const Spaces = ({
       {
         Header: '',
         accessor: 'details',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { _id },
@@ -256,7 +257,7 @@ const Spaces = ({
   );
 
   const handleSearch = () => {
-    searchParams.set('spaceName', searchInput);
+    searchParams.set('search', searchInput);
     setSearchParams(searchParams);
   };
 
@@ -290,7 +291,7 @@ const Spaces = ({
   useEffect(() => {
     handleSearch();
     if (searchInput === '') {
-      searchParams.delete('spaceName');
+      searchParams.delete('search');
       setSearchParams(searchParams);
     }
   }, [searchInput]);

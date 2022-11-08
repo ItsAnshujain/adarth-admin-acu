@@ -10,6 +10,7 @@ import { serialize } from '../../../utils';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import NativeSelect from '../../shared/NativeSelect';
 import image from '../../../assets/image.png';
+import { useUploadFile } from '../../../hooks/upload.hooks';
 
 const nativeSelectStyles = {
   rightSection: { pointerEvents: 'none' },
@@ -34,6 +35,7 @@ const BasicInfo = ({ proposalId }) => {
   const [showNotesOne, setShowNotesOne] = useState(false);
   const [showNotesTwo, setShowNotesTwo] = useState(false);
   const { values, errors, getInputProps, setFieldValue } = useFormContext();
+  const { mutateAsync: upload, isLoading } = useUploadFile();
 
   const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
     serialize({ type: 'proposal_status', parentId: null, limit: 100 }),
@@ -42,10 +44,8 @@ const BasicInfo = ({ proposalId }) => {
   const onHandleDrop = async params => {
     const formData = new FormData();
     formData.append('files', params?.[0]);
-    // const res = await upload(formData);
-    // setFieldValue('photo', res?.[0].Location);
-    // TODO: api dependent, ignore above commented lines
-    setFieldValue('photo', params?.[0].path);
+    const res = await upload(formData);
+    setFieldValue('image', res?.[0].Location);
   };
 
   return (
@@ -62,10 +62,10 @@ const BasicInfo = ({ proposalId }) => {
               onDrop={onHandleDrop}
               accept={['image/png', 'image/jpeg']}
               className="h-full w-full flex justify-center items-center bg-slate-100"
-              // loading={isLoading}
-              name="photo"
+              loading={isLoading}
+              name="image"
               multiple={false}
-              {...getInputProps('photo')}
+              {...getInputProps('image')}
             >
               <div className="flex items-center justify-center">
                 <Image src={image} alt="placeholder" height={50} width={50} />
@@ -77,9 +77,9 @@ const BasicInfo = ({ proposalId }) => {
               <p className="text-gray-400 text-center">Supported png format only</p>
             </Dropzone>
           </div>
-          {values?.photo ? (
+          {values?.image ? (
             <Image
-              src={values?.photo}
+              src={values?.image}
               alt="proposal-preview"
               height={400}
               className="bg-slate-300"
