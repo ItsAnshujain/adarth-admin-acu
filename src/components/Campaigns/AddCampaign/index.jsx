@@ -82,8 +82,6 @@ const Create = () => {
   const [formStep, setFormStep] = useState(2);
   const form = useForm({ initialValues, validate: yupResolver(schema(formStep)) });
 
-  console.log(form.errors);
-
   const getForm = () =>
     formStep === 1 ? (
       <BasicInfo formData={form.values} setFormData={form.setFieldValue} />
@@ -95,11 +93,10 @@ const Create = () => {
       <Preview />
     );
 
-  const handleSubmit = formData => {
-    console.log(formData);
+  const handleSubmit = () => {
     if (formStep <= 3) setFormStep(formStep + 1);
     if (formStep === 4) {
-      console.log('Subnmit form');
+      // TODO: submit form
     }
   };
 
