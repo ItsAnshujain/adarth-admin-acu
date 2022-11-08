@@ -8,12 +8,15 @@ import dummyc from '../../../assets/dummyc.png';
 import dummyd from '../../../assets/dummyd.png';
 import dummye from '../../../assets/dummye.png';
 import dummyf from '../../../assets/dummyf.png';
+import useCreateBookingSelectSpaceState from '../../../store/createBookingSelectSpace.store';
 
 const IMAGES = [dummya, dummyb, dummyc, dummyd, dummye, dummyf];
 const initialState = new Array(IMAGES.length).fill(false);
 
 const CoverImage = () => {
   const [checkbox, setCheckbox] = useState(initialState);
+  const selectedSpace = useCreateBookingSelectSpaceState(state => state.selectedSpace);
+  console.log(selectedSpace);
   const handleClick = index => {
     setCheckbox(prev => {
       const newState = [...prev];

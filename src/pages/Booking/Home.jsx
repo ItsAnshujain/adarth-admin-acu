@@ -1,3 +1,4 @@
+import { useDebouncedState } from '@mantine/hooks';
 import { useLocation } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
@@ -23,13 +24,18 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Proposals = () => {
   const setColor = useSideBarState(state => state.setColor);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useDebouncedState('', 1000);
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
     sortBy: 'createdAt',
     sortOrder: 'asc',
+    search: '',
   });
+
+  useEffect(() => {
+    setFilters(prev => ({ ...prev, search, page: 1 }));
+  }, [search]);
 
   const { search: bookingQuery } = useLocation();
 

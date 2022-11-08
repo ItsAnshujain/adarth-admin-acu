@@ -37,7 +37,6 @@ const SelectSpace = () => {
         obj.space_name = item.basicInformation.spaceName;
         obj.space_type = item.basicInformation.spaceType;
         obj.dimension = item.specifications.resolutions;
-        obj.dimension = item.specifications.resolutions;
         obj.impression = item.specifications.impressions.min;
         obj.health = item.specifications.health;
         obj.location = item.location.city;
