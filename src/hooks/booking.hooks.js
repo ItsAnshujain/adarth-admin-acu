@@ -24,10 +24,10 @@ export const useBookings = (filter, enabled = true) =>
 
 export const useBookingById = (id, enabled = true) =>
   useQuery(
-    ['booking-ny-id', id],
+    ['booking-by-id', id],
     async () => {
       const res = await bookingById(id);
-      return res.data[0];
+      return res.data[0] || {};
     },
     {
       enabled,

@@ -150,9 +150,6 @@ const Notification = () => {
                 checked={form.values.emailNotify}
                 onChange={e => {
                   form.setFieldValue('emailNotify', e.target.checked);
-                  if (!e.target.checked) {
-                    form.setFieldValue('notificationEmail', '');
-                  }
                 }}
               />
             </div>
@@ -176,9 +173,6 @@ const Notification = () => {
                 checked={form.values.whatsappNotify}
                 onChange={e => {
                   form.setFieldValue('whatsappNotify', e.target.checked);
-                  if (!e.target.checked) {
-                    form.setFieldValue('whatsappNumber', '');
-                  }
                 }}
               />
             </div>
