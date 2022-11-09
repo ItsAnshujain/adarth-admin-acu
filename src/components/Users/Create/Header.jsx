@@ -2,9 +2,9 @@ import { Button } from '@mantine/core';
 import { ChevronLeft } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 
-const Header = () => {
+const Header = ({ isLoading, disabled, type }) => {
   const navigate = useNavigate();
-  const handleBack = () => navigate(-1);
+  const handleBack = () => navigate('/users');
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -13,8 +13,13 @@ const Header = () => {
           <ChevronLeft className="mr-2 h-4" />
           Back
         </Button>
-        <Button type="submit" className="bg-purple-450 order-3">
-          Send Invite Link
+        <Button
+          type="submit"
+          className="bg-purple-450 order-3"
+          loading={isLoading}
+          disabled={disabled}
+        >
+          {type === 'Team' ? 'Send Invite Link' : 'Add Peer'}
         </Button>
       </div>
     </div>

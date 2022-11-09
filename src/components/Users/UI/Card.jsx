@@ -26,7 +26,7 @@ const UserCard = ({
         <Text className="text-xl font-bold capitalize" lineClamp={2}>
           {name}
         </Text>
-        <p className="text-[#914EFB]">{roleTypes.Role[role] || 'NA'}</p>
+        <p className="text-[#914EFB]">{roleTypes[role] || 'NA'}</p>
         <p>{company}</p>
       </div>
     </div>

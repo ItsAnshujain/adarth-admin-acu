@@ -1,10 +1,9 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Text, Button, Progress, Image, NumberInput, Badge, Box, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-
 import DateRange from '../DateRange';
 import Search from '../Search';
 import calendar from '../../assets/data-table.svg';
@@ -17,17 +16,18 @@ import modalConfig from '../../utils/modalConfig';
 import Filter from '../Inventory/Filter';
 
 const Spaces = ({
+  selectedRow,
   setSelectedRow = () => {},
   selectedRowData = [],
   noOfSelectedPlaces,
   setProposedPrice = () => {},
 }) => {
-  const navigate = useNavigate();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const modals = useModals();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
   const [updatedSpaces, setUpdatedSpaces] = useState([]);
+  const [totalProposedPrice, setTotalProposedPrice] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [showFilter, setShowFilter] = useState(false);
   const [query] = useState({
@@ -59,6 +59,9 @@ const Spaces = ({
       },
       ...modalConfig,
     });
+
+  const handleInventoryDetails = itemId =>
+    window.open(`/inventory/view-details/${itemId}`, '_blank');
 
   const COLUMNS = useMemo(
     () => [
@@ -99,11 +102,7 @@ const Spaces = ({
                 </Box>
                 <Button
                   className="text-black px-2 font-medium max-w-[180px]"
-                  onClick={() =>
-                    navigate(`/inventory/view-details/${_id}`, {
-                      replace: true,
-                    })
-                  }
+                  onClick={() => handleInventoryDetails(_id)}
                 >
                   <span className="overflow-hidden text-ellipsis">
                     {basicInformation?.spaceName}
@@ -296,6 +295,13 @@ const Spaces = ({
     }
   }, [searchInput]);
 
+  useEffect(() => {
+    const total = selectedRow
+      .map(item => item?.original?.basicInformation?.price)
+      .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+    setTotalProposedPrice(total);
+  }, [noOfSelectedPlaces]);
+
   return (
     <>
       <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
@@ -330,7 +336,9 @@ const Spaces = ({
           <div>
             <Text color="gray">Total Price</Text>
             <Text weight="bold">
-              {calcutateTotalPrice ? toIndianCurrency(calcutateTotalPrice) : 0}
+              {calcutateTotalPrice
+                ? toIndianCurrency(totalProposedPrice ?? calcutateTotalPrice)
+                : 0}
             </Text>
           </div>
         </div>

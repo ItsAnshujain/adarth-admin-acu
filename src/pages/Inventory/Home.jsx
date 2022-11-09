@@ -65,6 +65,11 @@ const Home = () => {
       ...modalConfig,
     });
 
+  const handleInventoryDetails = itemId =>
+    navigate(`/inventory/view-details/${itemId}`, {
+      replace: true,
+    });
+
   const COLUMNS = useMemo(
     () => [
       {
@@ -109,11 +114,7 @@ const Home = () => {
                 </Box>
                 <Button
                   className="text-black font-medium px-2 max-w-[180px]"
-                  onClick={() =>
-                    navigate(`/inventory/view-details/${_id}`, {
-                      replace: true,
-                    })
-                  }
+                  onClick={() => handleInventoryDetails(_id)}
                 >
                   <span className="overflow-hidden text-ellipsis">
                     {basicInformation?.spaceName}

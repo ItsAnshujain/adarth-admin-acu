@@ -76,14 +76,13 @@ export const aadhaarFormat = aadhaarNumber => {
 };
 
 export const roleTypes = {
-  'Role': {
-    'media_owner': 'Media Owner',
-    'manager': 'Manager',
-    'supervisor': 'Supervisor',
-    'associate': 'Associate',
-  },
+  'media_owner': 'Media Owner',
+  'manager': 'Manager',
+  'supervisor': 'Supervisor',
+  'associate': 'Associate',
 };
 
+// TODO: Remove one roleType object
 export const ROLES = {
   ADMIN: 'admin',
   MEDIA_OWNER: 'media_owner',

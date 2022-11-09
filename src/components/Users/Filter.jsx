@@ -19,11 +19,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
   const renderRoles = useMemo(
     () =>
-      Object.keys(roleTypes.Role).map(item => (
+      Object.keys(roleTypes).map(item => (
         <div className="flex gap-2 mb-2" key={item}>
           <Radio
             onChange={event => handleRoleChange(event.currentTarget.value)}
-            label={roleTypes.Role[item]}
+            label={roleTypes[item]}
             defaultValue={item}
             checked={roles === item}
           />
