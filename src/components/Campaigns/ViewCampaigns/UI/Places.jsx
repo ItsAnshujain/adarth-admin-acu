@@ -1,11 +1,18 @@
-import { Text } from '@mantine/core';
+import { Image, Text } from '@mantine/core';
 import CustomBadge from '../../../shared/Badge';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 
 const Places = ({ data }) => (
   <div className="flex gap-4 p-4 shadow-md bg-white mb-2">
     <div>
-      <img src={data.img} alt="logo" />
+      <Image
+        height={150}
+        width={160}
+        src={data.img || null}
+        alt={data?.name}
+        fit="contain"
+        withPlaceholder
+      />
     </div>
     <div className="flex flex-col w-full">
       <CustomBadge
@@ -31,7 +38,7 @@ const Places = ({ data }) => (
           </div>
           <div>
             <p className="text-slate-400 text-sm tracking-wide">Unit</p>
-            <p className="font-normal">{data.impression}</p>
+            <p className="font-normal">{data.unit}</p>
           </div>
         </div>
         <div>

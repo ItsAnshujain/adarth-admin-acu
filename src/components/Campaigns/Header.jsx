@@ -6,14 +6,14 @@ import { Plus, ChevronDown, Server, Grid } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
-import Filter from '../Filter';
+import CampaignFilter from './Filter';
 
 const initialState = {
   grid: { fill: true },
   list: { fill: false },
 };
 
-const AreaHeader = ({ text, setView }) => {
+const AreaHeader = ({ text, setView, onApplyFilter, onResetFilter }) => {
   const navigate = useNavigate();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -93,13 +93,18 @@ const AreaHeader = ({ text, setView }) => {
           >
             <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
           </Button>
-          {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
+          {showFilter && (
+            <CampaignFilter
+              isOpened={showFilter}
+              onApply={onApplyFilter}
+              onReset={onResetFilter}
+              onClose={() => setShowFilter(!showFilter)}
+            />
+          )}
         </div>
         <div className="relative">
           <button
-            onClick={() => {
-              navigate('create-campaign');
-            }}
+            onClick={() => navigate('create-campaign')}
             className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
             type="button"
           >
