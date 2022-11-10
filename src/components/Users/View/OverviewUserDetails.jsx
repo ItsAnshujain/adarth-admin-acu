@@ -73,9 +73,8 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false }) => (
         </>
       ) : null}
       {userDetails?.docs?.map(doc => (
-        <div className="flex flex-col col-span-1">
+        <div className="flex flex-col col-span-1" key={doc._id}>
           <PreviewCard
-            key={doc._id}
             filename={doc}
             cardText={doc}
             cardSubtext={doc}

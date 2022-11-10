@@ -29,10 +29,7 @@ const schema = action =>
         .string()
         .trim()
         .concat(action === 1 ? requiredSchema('Landlord is required') : null),
-      mediaOwner: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Inventory Owner is required') : null),
+      mediaOwner: yup.string().trim(),
       spaceType: yup.mixed().concat(
         action === 1
           ? yup

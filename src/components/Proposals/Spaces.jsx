@@ -341,11 +341,7 @@ const Spaces = ({
           </div>
           <div>
             <Text color="gray">Total Price</Text>
-            <Text weight="bold">
-              {calcutateTotalPrice
-                ? toIndianCurrency(totalProposedPrice ?? calcutateTotalPrice)
-                : 0}
-            </Text>
+            <Text weight="bold">{toIndianCurrency(totalProposedPrice ?? calcutateTotalPrice)}</Text>
           </div>
         </div>
         <div className="flex justify-between mb-4 items-center">
@@ -370,7 +366,7 @@ const Spaces = ({
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-      {inventoryData?.docs?.length || updatedSpaces ? (
+      {inventoryData?.docs?.length && updatedSpaces?.length ? (
         <Table
           COLUMNS={COLUMNS}
           data={updatedSpaces}

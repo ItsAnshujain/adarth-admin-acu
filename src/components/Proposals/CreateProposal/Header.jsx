@@ -9,7 +9,11 @@ const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposal
   const navigate = useNavigate();
   const handleBack = () => {
     if (formStep === 1) {
-      navigate(`/proposals/view-details/${proposalId}`, { replace: true });
+      if (proposalId) {
+        navigate(`/proposals/view-details/${proposalId}`, { replace: true });
+      } else {
+        navigate('/proposals');
+      }
     } else {
       setFormStep(formStep - 1);
     }
