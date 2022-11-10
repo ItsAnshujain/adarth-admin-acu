@@ -78,11 +78,13 @@ const Header = ({ pageNumber, setPageNumber }) => {
               <Button
                 onClick={() => handleShowMenu('purchase')}
                 className="bg-black text-sm  text-white"
-                type="button"
               >
                 Generate Purchase Order <ChevronDown />
                 {showMenu.purchase && (
-                  <GenerateMenu location={`/bookings/generate-purchase-order/${id}`} />
+                  <GenerateMenu
+                    locationCreate="/finance/create-order/purchase"
+                    location={`/bookings/generate-purchase-order/${id}`}
+                  />
                 )}
               </Button>
             </div>
@@ -90,11 +92,13 @@ const Header = ({ pageNumber, setPageNumber }) => {
               <Button
                 onClick={() => handleShowMenu('release')}
                 className="bg-black text-sm text-white"
-                type="button"
               >
                 Generate Release Order <ChevronDown />
                 {showMenu.release && (
-                  <GenerateMenu location={`/bookings/generate-release-order/${id}`} />
+                  <GenerateMenu
+                    locationCreate="/finance/create-order/release"
+                    location={`/bookings/generate-release-order/${id}`}
+                  />
                 )}
               </Button>
             </div>
@@ -102,10 +106,14 @@ const Header = ({ pageNumber, setPageNumber }) => {
               <Button
                 onClick={() => handleShowMenu('invoice')}
                 className="bg-black text-sm text-white"
-                type="button"
               >
                 Generate Invoice <ChevronDown />
-                {showMenu.invoice && <GenerateMenu location={`/bookings/generate-invoice/${id}`} />}
+                {showMenu.invoice && (
+                  <GenerateMenu
+                    locationCreate="/finance/create-order/invoice"
+                    location={`/bookings/generate-invoice/${id}`}
+                  />
+                )}
               </Button>
             </div>
           </>

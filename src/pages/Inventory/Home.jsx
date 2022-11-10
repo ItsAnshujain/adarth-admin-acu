@@ -23,6 +23,8 @@ const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     limit: 10,
     page: 1,
+    sortOrder: 'asc',
+    sortBy: 'basicInformation.spaceName',
   });
   const viewType = useLayoutView(state => state.activeLayout);
   const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
