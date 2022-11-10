@@ -14,11 +14,22 @@ import MenuIcon from '../../Menu';
 import upload from '../../../assets/upload.svg';
 import { useFormContext } from '../../../context/formContext';
 
+const getHealthTag = score => {
+  if (score <= 30) return 'Bad';
+
+  if (score <= 50) return 'Good';
+
+  return 'Best';
+};
+
 const SelectSpace = () => {
   const { setFieldValue } = useFormContext();
 
   const [search, setSearch] = useState('');
-  const selectedSpace = useCreateBookingSelectSpaceState(state => state.selectedSpace);
+  const { selectedSpace, setSelectedSpace } = useCreateBookingSelectSpaceState(state => ({
+    selectedSpace: state.selectedSpace,
+    setSelectedSpace: state.setSelectedSpace,
+  }));
   const [showFilter, setShowFilter] = useState(false);
   const [orderPrice, setOrderPrice] = useState(0);
 
@@ -58,6 +69,9 @@ const SelectSpace = () => {
     const totalPrice = selectedSpace.reduce((acc, item) => acc + item.values.pricing, 0);
     setOrderPrice(totalPrice);
 
+    const avgHealth =
+      selectedSpace.reduce((acc, item) => acc + item.values.health, 0) / selectedSpace.length;
+
     const formData = selectedSpace.map(
       ({
         original: {
@@ -89,6 +103,7 @@ const SelectSpace = () => {
     );
 
     setFieldValue('spaces', [...formData]);
+    setFieldValue('healthTag', getHealthTag(avgHealth));
   }, [selectedSpace]);
 
   const COLUMNS = useMemo(
@@ -313,7 +328,13 @@ const SelectSpace = () => {
           <Search search={search} setSearch={setSearch} />
         </div>
       </div>
-      <Table data={updatedInventoryData} COLUMNS={COLUMNS} allowRowsSelect isBookingTable />
+      <Table
+        data={updatedInventoryData}
+        COLUMNS={COLUMNS}
+        allowRowsSelect
+        isBookingTable
+        setSelectedFlatRows={setSelectedSpace}
+      />
     </>
   );
 };

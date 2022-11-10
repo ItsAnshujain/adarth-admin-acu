@@ -75,7 +75,6 @@ const initialValues = {
   minImpression: 200,
   maxImpression: 800,
   isFeatured: false,
-  // FIXME: confirm the logic for theses two fields
   status: 'Created',
   healthTag: 'Good',
 };
@@ -114,7 +113,7 @@ const Create = () => {
 
       mutate(newData, {
         onSuccess: () => {
-          navigate('/campaign');
+          navigate('/campaigns');
         },
       });
     }

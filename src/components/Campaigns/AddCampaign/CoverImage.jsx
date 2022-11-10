@@ -27,6 +27,7 @@ const CoverImage = () => {
       <div className="flex gap-8 flex-wrap mb-8">
         {IMAGES.map(images => (
           <div
+            key={images}
             aria-hidden
             onClick={() => handleClick(images)}
             className={classNames(
@@ -43,7 +44,7 @@ const CoverImage = () => {
           </div>
         ))}
       </div>
-      <Pagination className="absolute right-14 -bottom-4 " total={8} />
+      {/* <Pagination className="absolute right-14 -bottom-4 " total={8} /> */}
     </div>
   );
 };

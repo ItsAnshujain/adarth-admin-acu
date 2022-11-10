@@ -14,6 +14,7 @@ import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import { serialize } from '../../utils/index';
 import toIndianCurrency from '../../utils/currencyFormat';
+import { useFetchMasters } from '../../hooks/masters.hooks';
 
 const Home = () => {
   const queryClient = useQueryClient();
@@ -24,6 +25,8 @@ const Home = () => {
   const { data: campaignData } = useCampaigns(serialize(query));
   const { mutate } = useUpdateCampaign();
   const { mutate: delCampaign } = useDeleteCampaign();
+
+  const { data: campaignStatus } = useFetchMasters(serialize({ type: 'campaign_status' }));
 
   const invalidate = () => {
     queryClient.invalidateQueries(['campaigns', serialize(query)]);
@@ -132,7 +135,7 @@ const Home = () => {
               <NativeSelect
                 defaultValue={status}
                 onChange={e => updateCampaign(_id, { status: e.target.value })}
-                data={['Published', 'Unpublished']}
+                data={campaignStatus?.docs?.map(item => item.name) || []}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
                 }}

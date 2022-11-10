@@ -1,4 +1,4 @@
-import { Checkbox, RangeSlider } from '@mantine/core';
+import { Checkbox, NumberInput, RangeSlider } from '@mantine/core';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils/index';
 import TextInput from '../../shared/TextInput';
@@ -80,18 +80,18 @@ const BasicInformation = ({ formData, setFormData }) => {
             label="Campaign Name"
             placeholder="Write"
           />
-          <TextInput
+          <NumberInput
             name="price"
             value={formData.price}
-            onChange={handleChange}
+            onChange={value => handleChange({ target: { name: 'price', value } })}
             styles={styles}
             label="Price"
             placeholder="Write"
           />
-          <TextInput
+          <NumberInput
             name="healthStatus"
             value={formData.healthStatus}
-            onChange={handleChange}
+            onChange={value => handleChange({ target: { name: 'healthStatus', value } })}
             styles={styles}
             label="Health Status"
             placeholder="Write"

@@ -107,11 +107,7 @@ const Preview = () => {
             onGoogleApiLoaded={({ map, maps }) => setMapInstance({ map, maps })}
           >
             {values?.spaces?.map(item => (
-              <Marker
-                key={item.address}
-                lat={item.location?.latitude}
-                lng={item.location?.longitude}
-              />
+              <Marker key={item.id} lat={item.location?.latitude} lng={item.location?.longitude} />
             ))}
           </GoogleMapReact>
         </div>
