@@ -4,9 +4,6 @@ import { useEffect, useState } from 'react';
 import image from '../../../assets/image.png';
 import { useFormContext } from '../../../context/formContext';
 import { useUploadFile } from '../../../hooks/upload.hooks';
-import { useFetchUsers } from '../../../hooks/users.hooks';
-import { serialize } from '../../../utils';
-import Select from '../../shared/Select';
 import TextInput from '../../shared/TextInput';
 
 const styles = {
@@ -25,20 +22,10 @@ const BasicInfo = ({ setUploadingFile }) => {
   const { errors, getInputProps, setFieldValue, values } = useFormContext();
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const [uploadImage, setUploadImage] = useState([]);
-  const [peerList, setPeerList] = useState([]);
-  const [query] = useState({
-    page: 1,
-    limit: 1,
-    sortOrder: 'asc',
-    sortBy: 'createdAt',
-    filter: 'peer',
-  });
 
   useEffect(() => {
     setUploadingFile(isLoading);
   }, [isLoading]);
-
-  const { data: usersList } = useFetchUsers(serialize(query));
 
   const onHandleDrop = async params => {
     const formData = new FormData();
@@ -47,20 +34,6 @@ const BasicInfo = ({ setUploadingFile }) => {
     setUploadImage(res?.[0].Location);
     setFieldValue('image', res?.[0].Location);
   };
-
-  const onFormattedPeerList = () => {
-    const tempArr = [];
-    usersList?.docs?.map(item => {
-      tempArr.push({ name: item?.name, id: item._id });
-      return tempArr;
-    });
-
-    setPeerList(tempArr);
-  };
-
-  useEffect(() => {
-    onFormattedPeerList();
-  }, [usersList]);
 
   return (
     <div className="pl-5 pr-7 mt-4">
@@ -180,13 +153,6 @@ const BasicInfo = ({ setUploadingFile }) => {
           errors={errors}
           placeholder="Write"
           className="col-span-2"
-        />
-        <Select
-          label="Select Peer"
-          name="peer"
-          options={peerList}
-          errors={errors}
-          placeholder="Select"
         />
       </div>
     </div>

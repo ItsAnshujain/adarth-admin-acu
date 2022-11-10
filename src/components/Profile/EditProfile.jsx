@@ -76,7 +76,6 @@ const schema = step =>
       .string()
       .trim()
       .concat(step === 'first' ? requiredSchema('Profile Image is required') : null),
-    peer: yup.string().trim(),
     docs: yup.array(),
   });
 
