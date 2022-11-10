@@ -1,35 +1,29 @@
-import { useMemo, useState } from 'react';
-import { Accordion, Button, Checkbox, Drawer } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useMemo, useState, useEffect } from 'react';
+import { Accordion, Button, Drawer, Radio } from '@mantine/core';
+import { useSearchParams } from 'react-router-dom';
+import { roleTypes } from '../../utils';
 
-const inititalFilterData = {
-  'Role': {
-    'media_owner': 'Media Owner',
-    'manager': 'Manager',
-    'supervisor': 'Supervisor',
-    'associate': 'Associate',
-  },
-};
 const styles = { title: { fontWeight: 'bold' } };
 
 const Filter = ({ isOpened, setShowFilter }) => {
-  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [roles, setRoles] = useState('');
+  const role = searchParams.get('role');
 
-  const handleRoleChange = role => {
-    setRoles(role);
-    if (role === roles) {
+  const handleRoleChange = userRole => {
+    setRoles(userRole);
+    if (userRole === roles) {
       setRoles('');
     }
   };
 
   const renderRoles = useMemo(
     () =>
-      Object.keys(inititalFilterData.Role).map(item => (
+      Object.keys(roleTypes).map(item => (
         <div className="flex gap-2 mb-2" key={item}>
-          <Checkbox
+          <Radio
             onChange={event => handleRoleChange(event.currentTarget.value)}
-            label={inititalFilterData.Role[item]}
+            label={roleTypes[item]}
             defaultValue={item}
             checked={roles === item}
           />
@@ -39,11 +33,18 @@ const Filter = ({ isOpened, setShowFilter }) => {
   );
 
   const handleNavigationByRoles = () => {
-    navigate({
-      pathname: '/users',
-      search: `role=${roles}`,
-    });
+    searchParams.set('role', roles);
+    setSearchParams(searchParams);
   };
+  const handleResetParams = () => {
+    searchParams.delete('role');
+    setSearchParams(searchParams);
+  };
+
+  useEffect(() => {
+    setRoles(role ?? '');
+  }, [searchParams]);
+
   return (
     <Drawer
       className="overflow-auto"
@@ -60,10 +61,13 @@ const Filter = ({ isOpened, setShowFilter }) => {
       title="Filters"
       onClose={() => setShowFilter(false)}
     >
-      <div className="w-full flex justify-end">
+      <div className="w-full flex justify-end mb-3">
+        <Button onClick={handleResetParams} className="border-black text-black radius-md mr-3">
+          Reset
+        </Button>
         <Button
           variant="default"
-          className="mb-3 bg-purple-450 text-white"
+          className=" bg-purple-450 text-white"
           onClick={handleNavigationByRoles}
         >
           Apply Filters

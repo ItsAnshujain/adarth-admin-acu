@@ -130,16 +130,14 @@ const Create = () => {
         disabled={isLoading}
       />
       <div>
-        <div>
-          <FormProvider form={form}>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-              {getForm()}
-              <button type="submit" className="hidden" ref={submitRef} disabled={isLoading}>
-                Submit
-              </button>
-            </form>
-          </FormProvider>
-        </div>
+        <FormProvider form={form}>
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            {getForm()}
+            <button type="submit" className="hidden" ref={submitRef} disabled={isLoading}>
+              Submit
+            </button>
+          </form>
+        </FormProvider>
       </div>
       <SuccessModal
         title="Campaign Successfully Added"

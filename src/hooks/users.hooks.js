@@ -1,6 +1,7 @@
 import { showNotification } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  addPeers,
   createUsers,
   deleteUsers,
   fetchUsers,
@@ -44,18 +45,14 @@ export const useCreateUsers = () => {
       onSuccess: () => {
         queryClient.invalidateQueries('users');
         showNotification({
-          title: 'Add User',
-          message: 'User created successfully',
+          title: 'User created successfully',
           autoClose: 3000,
           color: 'green',
         });
       },
-    },
-    {
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
+          title: err?.message,
           autoClose: 3000,
           color: 'red',
         });
@@ -76,18 +73,14 @@ export const useUpdateUsers = () => {
       onSuccess: () => {
         queryClient.invalidateQueries('users-by-id');
         showNotification({
-          title: 'Update User',
-          message: 'User updated successfully',
+          title: 'User updated successfully',
           autoClose: 3000,
           color: 'green',
         });
       },
-    },
-    {
       onError: err => {
         showNotification({
-          title: 'Error',
-          message: err?.message,
+          title: err?.message,
           autoClose: 3000,
           color: 'red',
         });
@@ -108,9 +101,34 @@ export const useDeleteUsers = () => {
       onSuccess: () => {
         queryClient.invalidateQueries('users');
       },
+      onError: () => {},
+    },
+  );
+};
+
+export const useInvitePeers = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async data => {
+      const res = await addPeers(data);
+      return res?.data;
     },
     {
-      onError: () => {},
+      onSuccess: () => {
+        queryClient.invalidateQueries('users');
+        showNotification({
+          title: 'Peer added successfully',
+          autoClose: 3000,
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          autoClose: 3000,
+          color: 'red',
+        });
+      },
     },
   );
 };

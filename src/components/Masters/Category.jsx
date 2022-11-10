@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Button } from '@mantine/core';
+import { Button, Loader } from '@mantine/core';
 import Header from './Header';
 import RowsPerPage from '../RowsPerPage';
 import Search from '../Search';
@@ -19,7 +19,9 @@ const Category = () => {
     'page': 1,
   });
   const navigate = useNavigate();
-  const { data: masterData } = useFetchMasters(`${searchParams.toString()}`);
+  const { data: masterData, isLoading: isMasterDataLoading } = useFetchMasters(
+    searchParams.toString(),
+  );
 
   const type = searchParams.get('type');
   const parentId = searchParams.get('parentId');
@@ -114,14 +116,26 @@ const Category = () => {
         <RowsPerPage setCount={handleRowCount} count={limit} />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
-      <Table
-        data={masterData?.docs || []}
-        COLUMNS={COLUMNS}
-        activePage={masterData?.page || 1}
-        totalPages={masterData?.totalPages || 1}
-        setActivePage={handlePagination}
-        rowCountLimit={limit}
-      />
+      {isMasterDataLoading ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <Loader />
+        </div>
+      ) : null}
+      {masterData?.docs?.length === 0 && !isMasterDataLoading ? (
+        <div className="w-full min-h-[400px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
+        </div>
+      ) : null}
+      {masterData?.docs?.length ? (
+        <Table
+          data={masterData?.docs || []}
+          COLUMNS={COLUMNS}
+          activePage={masterData?.page || 1}
+          totalPages={masterData?.totalPages || 1}
+          setActivePage={handlePagination}
+          rowCountLimit={limit}
+        />
+      ) : null}
     </div>
   );
 };

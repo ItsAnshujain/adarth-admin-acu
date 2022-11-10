@@ -2,9 +2,10 @@ import { Button, Switch, Tabs } from '@mantine/core';
 import { ArrowLeft } from 'react-feather';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useToggle } from '@mantine/hooks';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Booking from './Booking';
 import BasicInfo from './BasicInformation';
+import { useFetchInventoryById, useUpdateInventory } from '../../../hooks/inventory.hooks';
 
 // TODO:Add count prop to Booking to send it to table
 const Main = () => {
@@ -13,8 +14,25 @@ const Main = () => {
   const [isUnderMaintenance, toggle] = useToggle();
   const [activeTab, setActiveTab] = useState('basic-info');
 
+  const { data: inventoryDetails } = useFetchInventoryById(inventoryId, !!inventoryId);
+  const { mutate: update, isLoading: isUpdateInventoryLoading } = useUpdateInventory();
+
   const handleBack = () => navigate('/inventory');
   const handleEditDetails = () => navigate(`/inventory/edit-details/${inventoryId}`);
+  const onUpdateMaintenance = toggleValue => {
+    toggle(toggleValue);
+    if (inventoryId) {
+      const data = { isUnderMaintenance: toggleValue };
+      update({ inventoryId, data });
+    }
+  };
+
+  useEffect(() => {
+    // current maintenance state
+    if (inventoryDetails?.isUnderMaintenance) {
+      toggle(inventoryDetails.isUnderMaintenance);
+    }
+  }, [inventoryDetails]);
 
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>
@@ -36,11 +54,12 @@ const Main = () => {
               <p className="text-lg mr-3">Under maintenance</p>
               <Switch
                 checked={isUnderMaintenance}
-                onChange={e => toggle(e.currentTarget.checked)}
+                onChange={e => onUpdateMaintenance(e.currentTarget.checked)}
                 size="xl"
+                disabled={isUpdateInventoryLoading}
               />
             </div>
-            <Button onClick={handleEditDetails} className="bg-purple-450" size="md">
+            <Button onClick={handleEditDetails} className="bg-purple-450 rounded-md">
               Edit Space
             </Button>
           </div>

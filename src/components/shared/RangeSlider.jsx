@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { RangeSlider as MantineRangeSlider } from '@mantine/core';
 
-const RangeSlider = ({ marks, controlledRangeValue, setControlledRangeValue, ...props }) => {
+const RangeSlider = ({
+  marks,
+  controlledRangeValue = false,
+  setControlledRangeValue = () => {},
+  ...props
+}) => {
   const [rangeValue, setRangeValue] = useState([6500, 8500]);
 
   const handleChange = e => {

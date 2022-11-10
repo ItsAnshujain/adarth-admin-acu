@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react';
-import { Text, Button, Progress, Image, NumberInput } from '@mantine/core';
+import { useMemo, useState, useEffect } from 'react';
+import { Text, Button, Progress, Image, NumberInput, Badge, Box, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useDebouncedState } from '@mantine/hooks';
-import Filter from '../Filter';
+import { useSearchParams } from 'react-router-dom';
+import { useClickOutside, useDebouncedState } from '@mantine/hooks';
+import { useModals } from '@mantine/modals';
 import DateRange from '../DateRange';
 import Search from '../Search';
 import calendar from '../../assets/data-table.svg';
@@ -11,27 +11,57 @@ import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
 import MenuPopover from './MenuPopover';
 import { useFetchInventory } from '../../hooks/inventory.hooks';
-import { serialize } from '../../utils';
+import { colors, serialize } from '../../utils';
+import modalConfig from '../../utils/modalConfig';
+import Filter from '../Inventory/Filter';
 
 const Spaces = ({
+  selectedRow,
   setSelectedRow = () => {},
   selectedRowData = [],
   noOfSelectedPlaces,
   setProposedPrice = () => {},
 }) => {
-  const navigate = useNavigate();
-  const [search, setSearch] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const modals = useModals();
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [searchParams] = useSearchParams();
+  const ref = useClickOutside(() => setShowDatePicker(false));
+  const [updatedSpaces, setUpdatedSpaces] = useState([]);
+  const [totalProposedPrice, setTotalProposedPrice] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showFilter, setShowFilter] = useState(false);
   const [query] = useState({
     limit: 10,
     page: 1,
   });
 
-  const openDatePicker = () => setShowDatePicker(!showDatePicker);
-  const { data: inventoryData } = useFetchInventory(serialize(query));
+  const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
+    serialize(query),
+  );
   const page = searchParams.get('page');
+
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
+  const toggleFilter = () => setShowFilter(!showFilter);
+
+  const toggleImagePreviewModal = imgSrc =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
+            {imgSrc ? (
+              <Image src={imgSrc} height={580} width={580} alt="preview" />
+            ) : (
+              <Image src={null} height={580} width={580} withPlaceholder />
+            )}
+          </Box>
+        ),
+      },
+      ...modalConfig,
+    });
+
+  const handleInventoryDetails = itemId =>
+    window.open(`/inventory/view-details/${itemId}`, '_blank');
 
   const COLUMNS = useMemo(
     () => [
@@ -54,29 +84,37 @@ const Spaces = ({
         accessor: 'spaceName',
         Cell: ({
           row: {
-            original: { _id, basicInformation },
+            original: { _id, basicInformation, isUnderMaintenance },
           },
         }) =>
           useMemo(
             () => (
               <div className="flex items-center gap-2">
-                <div className="bg-white border rounded-md">
+                <Box
+                  className="bg-white border rounded-md cursor-zoom-in"
+                  onClick={() => toggleImagePreviewModal(basicInformation?.spacePhotos)}
+                >
                   {basicInformation?.spacePhotos ? (
                     <Image src={basicInformation.spacePhotos} alt="banner" height={32} width={32} />
                   ) : (
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
-                </div>
+                </Box>
                 <Button
-                  className="text-black font-medium"
-                  onClick={() =>
-                    navigate(`/inventory/view-details/${_id}`, {
-                      replace: true,
-                    })
-                  }
+                  className="text-black px-2 font-medium max-w-[180px]"
+                  onClick={() => handleInventoryDetails(_id)}
                 >
-                  {basicInformation?.spaceName}
+                  <span className="overflow-hidden text-ellipsis">
+                    {basicInformation?.spaceName}
+                  </span>
                 </Button>
+                <Badge
+                  className="capitalize"
+                  variant="filled"
+                  color={isUnderMaintenance ? 'yellow' : 'green'}
+                >
+                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                </Badge>
               </div>
             ),
             [],
@@ -84,13 +122,38 @@ const Spaces = ({
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'landlord_name',
-        Cell: tableProps =>
-          useMemo(() => <div className="w-fit">{tableProps.row.original.landlord_name}</div>, []),
+        accessor: 'mediaOwner',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || 'NA'}</p>, []),
+      },
+      {
+        Header: 'PEER',
+        accessor: 'peer',
+        Cell: () => useMemo(() => <p>-</p>),
       },
       {
         Header: 'SPACE TYPE',
-        accessor: 'space_type',
+        accessor: 'spaceType',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(() => {
+            const colorType = Object.keys(colors).find(
+              key => colors[key] === basicInformation?.spaceType?.name,
+            );
+
+            return (
+              <Badge color={colorType} size="lg" className="capitalize">
+                {basicInformation?.spaceType?.name || <span>-</span>}
+              </Badge>
+            );
+          }),
       },
       {
         Header: 'DIMENSION',
@@ -102,7 +165,9 @@ const Spaces = ({
         }) =>
           useMemo(
             () => (
-              <p>{`${specifications?.resolutions?.height}ft x ${specifications?.resolutions?.width}ft`}</p>
+              <p>{`${specifications?.size?.height || 0}ft x ${
+                specifications?.size?.width || 0
+              }ft`}</p>
             ),
             [],
           ),
@@ -114,11 +179,11 @@ const Spaces = ({
           row: {
             original: { specifications },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.max}+`}</p>, []),
+        }) => useMemo(() => <p>{`${specifications?.impressions?.min}+`}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',
-        accessor: 'health_status',
+        accessor: 'health',
         Cell: ({
           row: {
             original: { specifications },
@@ -149,7 +214,12 @@ const Spaces = ({
       },
       {
         Header: 'MEDIA TYPE',
-        accessor: 'media_type',
+        accessor: 'mediaType',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) => useMemo(() => <p>{basicInformation?.mediaType?.name}</p>),
       },
       {
         Header: 'PRICING',
@@ -174,6 +244,7 @@ const Spaces = ({
       {
         Header: '',
         accessor: 'details',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { _id },
@@ -183,6 +254,11 @@ const Spaces = ({
     ],
     [inventoryData?.docs],
   );
+
+  const handleSearch = () => {
+    searchParams.set('search', searchInput);
+    setSearchParams(searchParams);
+  };
 
   const calcutateTotalPrice = useMemo(() => {
     const initialCost = 0;
@@ -194,6 +270,38 @@ const Spaces = ({
     return initialCost;
   }, [selectedRowData]);
 
+  useEffect(() => {
+    if (inventoryData?.docs) {
+      const arrOfIds = selectedRowData?.map(item => item._id);
+      const arrOfUpdatedPrices = inventoryData?.docs?.map(item => {
+        if (arrOfIds.includes(item._id)) {
+          const spaceData = selectedRowData.find(rowData => rowData._id === item._id);
+          return {
+            ...item,
+            basicInformation: { ...item?.basicInformation, price: spaceData?.price },
+          };
+        }
+        return { ...item };
+      });
+      setUpdatedSpaces(arrOfUpdatedPrices);
+    }
+  }, [inventoryData?.docs]);
+
+  useEffect(() => {
+    handleSearch();
+    if (searchInput === '') {
+      searchParams.delete('search');
+      setSearchParams(searchParams);
+    }
+  }, [searchInput]);
+
+  useEffect(() => {
+    const total = selectedRow
+      .map(item => item?.original?.basicInformation?.price)
+      .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+    setTotalProposedPrice(total);
+  }, [noOfSelectedPlaces]);
+
   return (
     <>
       <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
@@ -202,20 +310,22 @@ const Spaces = ({
             Select Place for Campaign
           </Text>
           <div className="flex items-center gap-2">
-            <div className="relative">
-              <Button onClick={openDatePicker} variant="default" type="button">
-                <img src={calendar} className="h-5" alt="calendar" />
+            <div ref={ref} className="relative">
+              <Button onClick={toggleDatePicker} variant="default" type="button">
+                <Image src={calendar} className="h-5" alt="calendar" />
               </Button>
               {showDatePicker && (
-                <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
-                  <DateRange handleClose={openDatePicker} />
+                <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
+                  <DateRange handleClose={toggleDatePicker} />
                 </div>
               )}
             </div>
-            <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
-              <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
-            </Button>
-            {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
+            <div className="mr-2">
+              <Button onClick={toggleFilter} variant="default" type="button">
+                <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
+              </Button>
+              {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
+            </div>
           </div>
         </div>
         <div className="flex gap-4">
@@ -226,7 +336,9 @@ const Spaces = ({
           <div>
             <Text color="gray">Total Price</Text>
             <Text weight="bold">
-              {calcutateTotalPrice ? toIndianCurrency(calcutateTotalPrice) : 0}
+              {calcutateTotalPrice
+                ? toIndianCurrency(totalProposedPrice ?? calcutateTotalPrice)
+                : 0}
             </Text>
           </div>
         </div>
@@ -238,16 +350,28 @@ const Spaces = ({
             </span>
           </Text>
 
-          <Search search={search} setSearch={setSearch} />
+          <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
-      <Table
-        data={inventoryData?.docs || []}
-        COLUMNS={COLUMNS}
-        allowRowsSelect
-        setSelectedFlatRows={setSelectedRow}
-        selectedRowData={selectedRowData}
-      />
+      {isLoadingInventoryData ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <Loader />
+        </div>
+      ) : null}
+      {inventoryData?.docs?.length === 0 && !isLoadingInventoryData ? (
+        <div className="w-full min-h-[400px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
+        </div>
+      ) : null}
+      {inventoryData?.docs?.length ? (
+        <Table
+          data={updatedSpaces}
+          COLUMNS={COLUMNS}
+          allowRowsSelect
+          setSelectedFlatRows={setSelectedRow}
+          selectedRowData={selectedRowData}
+        />
+      ) : null}
     </>
   );
 };

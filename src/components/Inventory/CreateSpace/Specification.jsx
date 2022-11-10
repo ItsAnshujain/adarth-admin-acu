@@ -1,12 +1,12 @@
-import { useDebouncedState } from '@mantine/hooks';
-import { useEffect } from 'react';
 import { useFormContext } from '../../../context/formContext';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
-import MultiSelect from '../../shared/MultiSelect';
-import NativeSelect from '../../shared/NativeSelect';
-import NumberInput from '../../shared/NumberInput';
+// import AsyncSelect from '../../shared/AsyncSelect';
+import TextInput from '../../shared/TextInput';
 import RangeSlider from '../../shared/RangeSlider';
+import Select from '../../shared/Select';
+import NumberInput from '../../shared/NumberInput';
+import AsyncMultiSelect from '../../shared/AsyncMultiSelect';
 
 const styles = {
   label: {
@@ -48,8 +48,7 @@ const sliderStyle = {
 
 const marks = [{ value: 6500 }, { value: 8500 }];
 
-const Specification = ({ specificationsData }) => {
-  const [sliderValues, setSliderValue] = useDebouncedState([], 1000);
+const Specification = () => {
   const { errors, setFieldValue } = useFormContext();
 
   const {
@@ -57,6 +56,11 @@ const Specification = ({ specificationsData }) => {
     isLoading: isIlluminationLoading,
     isSuccess: isIlluminationLoaded,
   } = useFetchMasters(serialize({ type: 'illumination', limit: 100 }));
+  const {
+    data: spaceStatusData,
+    isLoading: isSpaceStatusLoading,
+    isSuccess: isSpaceStatusLoaded,
+  } = useFetchMasters(serialize({ type: 'space_status', limit: 100 }));
   const {
     data: brandData,
     isLoading: isBrandLoading,
@@ -68,26 +72,15 @@ const Specification = ({ specificationsData }) => {
     isSuccess: isTagLoaded,
   } = useFetchMasters(serialize({ type: 'tag', limit: 100 }));
 
-  useEffect(() => {
-    setFieldValue('specifications.impressions.min', sliderValues[0]);
-    setFieldValue('specifications.impressions.max', sliderValues[1]);
-  }, [sliderValues]);
-
-  useEffect(() => {
-    // not loading edited data so using props
-    setFieldValue('specifications.impressions.max', specificationsData?.impressions?.max);
-    setFieldValue('specifications.impressions.min', specificationsData?.impressions?.min);
-  }, [specificationsData]);
-
   return (
     <div className="flex flex-col pl-5 pr-7 pt-4 mb-44">
       <p className="font-bold text-lg">Space Specifications</p>
       <p className="text-sm font-light text-gray-500">
-        Please fill the relevant details regarding the adspace
+        Please fill the relevant details regarding the ad Space
       </p>
       <div className="grid grid-cols-2 gap-y-4 gap-x-8 mt-4">
         <div>
-          <NativeSelect
+          <Select
             label="Illumination"
             name="specifications.illuminations"
             styles={styles}
@@ -104,9 +97,9 @@ const Specification = ({ specificationsData }) => {
             }
             className="mb-7"
           />
-          <NumberInput
-            label="Health Status"
-            name="specifications.health"
+          <TextInput
+            label="Resolutions"
+            name="specifications.resolutions"
             styles={styles}
             errors={errors}
             placeholder="Write..."
@@ -125,7 +118,7 @@ const Specification = ({ specificationsData }) => {
           <div className="grid grid-cols-2 gap-4">
             <NumberInput
               label="Width"
-              name="specifications.resolutions.width"
+              name="specifications.size.width"
               styles={styles}
               errors={errors}
               placeholder="Write..."
@@ -133,7 +126,7 @@ const Specification = ({ specificationsData }) => {
             />
             <NumberInput
               label="Height"
-              name="specifications.resolutions.height"
+              name="specifications.size.height"
               styles={styles}
               errors={errors}
               placeholder="Write..."
@@ -143,6 +136,33 @@ const Specification = ({ specificationsData }) => {
         </div>
       </div>
       <div>
+        <div className="grid grid-cols-2 gap-y-4 gap-x-8">
+          <NumberInput
+            label="Health Status"
+            name="specifications.health"
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+            className="mb-7"
+          />
+          <Select
+            label="Space Status"
+            name="specifications.spaceStatus"
+            styles={styles}
+            errors={errors}
+            disabled={isSpaceStatusLoading}
+            placeholder="Select..."
+            options={
+              isSpaceStatusLoaded
+                ? spaceStatusData.docs.map(category => ({
+                    label: category.name,
+                    value: category._id,
+                  }))
+                : []
+            }
+            className="mb-7"
+          />
+        </div>
         <p className="font-bold">Impressions</p>
         <div className="flex gap-4 items-start">
           <div>
@@ -160,7 +180,10 @@ const Specification = ({ specificationsData }) => {
             styles={sliderStyle}
             className="pt-4 flex-auto"
             marks={marks}
-            setControlledRangeValue={setSliderValue}
+            setControlledRangeValue={arrOfValues => {
+              setFieldValue('specifications.impressions.min', arrOfValues[0]);
+              setFieldValue('specifications.impressions.max', arrOfValues[1]);
+            }}
           />
           <div>
             <NumberInput
@@ -172,7 +195,7 @@ const Specification = ({ specificationsData }) => {
             <p className="text-right text-slate-400">Max</p>
           </div>
         </div>
-        <MultiSelect
+        <AsyncMultiSelect
           label="Previous brands"
           name="specifications.previousBrands"
           styles={multiSelectStyles}
@@ -188,12 +211,15 @@ const Specification = ({ specificationsData }) => {
           }
           placeholder="Select all that you like"
           className="mb-5 mt-4"
+          searchable
+          clearable
+          maxDropdownHeight={160}
         />
-        <MultiSelect
+        <AsyncMultiSelect
           label="Tags"
           name="specifications.tags"
           styles={multiSelectStyles}
-          errors={`${errors}.0`}
+          errors={errors}
           disabled={isTagLoading}
           options={
             isTagLoaded
@@ -204,7 +230,18 @@ const Specification = ({ specificationsData }) => {
               : []
           }
           placeholder="Select all that you like"
+          searchable
+          clearable
+          maxDropdownHeight={160}
         />
+        {/* TODO: update select component  */}
+        {/* <AsyncSelect
+          name="specifications.previousBrands"
+          label="Previous Brands"
+          masterKey="brand"
+          errors={errors}
+        /> */}
+        {/* <AsyncSelect name="specifications.tags" label="Tags" masterKey="tag" /> */}
       </div>
     </div>
   );

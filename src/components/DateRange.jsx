@@ -4,14 +4,7 @@ import { Button } from '@mantine/core';
 import { RangeCalendar, DatePicker } from '@mantine/dates';
 import { Calendar } from 'react-feather';
 
-const styles = {
-  label: {
-    fontSize: '16',
-    fontWeight: 'bold',
-  },
-};
-
-const DateRange = ({ handleClose }) => {
+const DateRange = ({ handleClose = () => {} }) => {
   const navigate = useNavigate();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -61,37 +54,34 @@ const DateRange = ({ handleClose }) => {
           <Button className="bg-black text-white" onClick={handleClose}>
             Cancel
           </Button>
-          <button
+          <Button
             onClick={() => {
               navigate(`?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`);
             }}
             className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
-            type="button"
           >
             Apply
-          </button>
+          </Button>
         </div>
       </div>
       <div className="flex gap-8 pt-4">
         <div className="border rounded-md flex-1 p-4 py-6">
           <RangeCalendar value={value} onChange={handleRangeSetting} />
         </div>
-        <div className="flex-1 flex flex-col gap-2">
+        <div className="flex-1 flex flex-col items-start gap-2">
           <p className="text-lg font-bold">Picked Date</p>
+          <p className="font-bold">Date From</p>
           <DatePicker
             clearable={false}
             onChange={handleSetStartDate}
             value={startDate}
-            label="Date From"
-            styles={styles}
             icon={<Calendar className="text-black absolute left-[500%]" />}
           />
+          <p className="font-bold mt-3">Date To</p>
           <DatePicker
             clearable={false}
             onChange={handleSetEndDate}
             value={endDate}
-            label="Date To"
-            styles={styles}
             icon={<Calendar className="text-black absolute left-[500%]" />}
           />
         </div>

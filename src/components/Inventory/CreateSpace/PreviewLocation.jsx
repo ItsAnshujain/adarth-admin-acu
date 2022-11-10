@@ -5,7 +5,7 @@ const PreviewLocation = () => {
   const { values } = useFormContext();
 
   return (
-    <div className="flex gap-8  p-4 col-span-2 mt-4 border rounded-md flex-1 mb-10 ml-5 mr-7">
+    <div className="flex gap-8 p-4 col-span-2 mt-2 border rounded-md flex-1 mb-10 ml-5 mr-7">
       <div className="flex-1 ">
         <p className="text-lg text-slate-400 font-light">Address</p>
         <p className="mb-4">{values?.location?.address || 'NA '}</p>

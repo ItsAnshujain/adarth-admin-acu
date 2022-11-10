@@ -27,6 +27,37 @@ export const masterTypes = {
   campaign_status: 'Campaign Status',
   payment_status: 'Payment Status',
   proposal_status: 'Proposal Status',
+  space_status: 'Space Status',
+};
+
+/**
+ * Debounce function used to delay function invoke that is passed along with a delay.
+ * @param {function} func - Function which we want to call after delay
+ * @param {number} delay - Delay in milliseconds
+ * @returns {function} - Returns a function
+ */
+export const debounce = (func, delay) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};
+
+export const spaceTypes = {
+  billboards: 'Billboards',
+  digital_screens: 'Digital Screens',
+  transit_media: 'Transit Media',
+  street_furniture: 'Street Furniture',
+};
+
+export const colors = {
+  red: 'Billboard',
+  green: 'Digital Screen',
+  blue: 'Transit Media',
+  yellow: 'Street Furniture',
 };
 
 export const aadhaarFormat = aadhaarNumber => {
@@ -42,4 +73,20 @@ export const aadhaarFormat = aadhaarNumber => {
     return aadhaar;
   }
   return '';
+};
+
+export const roleTypes = {
+  'media_owner': 'Media Owner',
+  'manager': 'Manager',
+  'supervisor': 'Supervisor',
+  'associate': 'Associate',
+};
+
+// TODO: Remove one roleType object
+export const ROLES = {
+  ADMIN: 'admin',
+  MEDIA_OWNER: 'media_owner',
+  MANAGER: 'manager',
+  SUPERVISOR: 'supervisor',
+  ASSOCIATE: 'associate',
 };

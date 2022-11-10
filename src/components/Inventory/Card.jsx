@@ -1,19 +1,21 @@
 import { useNavigate } from 'react-router-dom';
-import { Badge, Button, Checkbox, Image, Menu, Text } from '@mantine/core';
+import { Badge, Box, Button, Checkbox, Image, Menu, Text } from '@mantine/core';
 import { Eye, Edit2, Trash } from 'react-feather';
 import { useModals } from '@mantine/modals';
 import toIndianCurrency from '../../utils/currencyFormat';
 import MenuIcon from '../Menu';
 import DeleteConfirmContent from '../DeleteConfirmContent';
 import modalConfig from '../../utils/modalConfig';
+import { useDeleteInventoryById } from '../../hooks/inventory.hooks';
 
 const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
   const modals = useModals();
   const navigate = useNavigate();
+  const { mutate: deleteInventory, isLoading } = useDeleteInventoryById();
 
   const onSubmit = () => {
-    // eslint-disable-next-line no-console
-    console.log('hello');
+    deleteInventory({ inventoryId: data?._id });
+    setTimeout(() => modals.closeAll(), 2000);
   };
 
   const checkConfirmation = isConfirmed => {
@@ -36,9 +38,14 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
       ...modalConfig,
     });
 
+  const handleInventoryDetails = () =>
+    navigate(`/inventory/view-details/${data?._id}`, {
+      replace: true,
+    });
+
   return (
-    <div className="drop-shadow-md">
-      <div className="min-w-[273px]">
+    <Box className="drop-shadow-md w-[273px] cursor-pointer" onClick={handleInventoryDetails}>
+      <div>
         {data?.basicInformation?.spacePhotos ? (
           <Image
             className="w-full"
@@ -55,9 +62,14 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
         )}
       </div>
       <div className="p-4 px-4 bg-white">
-        <div className="flex justify-between items-center mb-2 ">
-          <Badge className="capitalize" variant="filled" color="green" size="lg">
-            Available
+        <Box className="flex justify-between items-center mb-2 " onClick={e => e.stopPropagation()}>
+          <Badge
+            className="capitalize"
+            variant="filled"
+            size="lg"
+            color={data?.isUnderMaintenance ? 'yellow' : 'green'}
+          >
+            {data?.isUnderMaintenance ? 'Under Maintenance' : 'Available'}
           </Badge>
           <Checkbox
             onChange={event => onSelect(event.target.value)}
@@ -66,30 +78,32 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
             defaultValue={data?._id}
             checked={isSelected}
           />
-        </div>
-        <Text size="md" weight="bold">
+        </Box>
+        <Text size="md" weight="bold" lineClamp={1} className="w-full">
           {data?.basicInformation?.spaceName}
         </Text>
-        <Text size="sm" className="mt-2" weight="200">
+        <Text size="sm" className="mt-2" weight="200" lineClamp={1}>
           {data?.location?.address}
         </Text>
         <div className="grid grid-cols-2 justify-between">
           <div className="mt-2">
             <p className="text-sm text-gray-400">Category</p>
-            <p className="text-sm mt-1">{data?.category}</p>
+            <Text className="text-sm mt-1" lineClamp={1}>
+              {data?.basicInformation?.category?.name}
+            </Text>
           </div>
           <div className="mt-2">
             <p className="text-sm text-gray-400">Impressions</p>
-            <p className="text-sm mt-1">{data?.specifications?.impressions?.max}+</p>
+            <p className="text-sm mt-1">{data?.specifications?.impressions?.min}+</p>
           </div>
         </div>
         <div className="flex justify-between items-center">
           <Text size="lg" className="mt-4 font-bold" color="purple">
             {data?.basicInformation?.price ? toIndianCurrency(data.basicInformation.price) : 'NA'}
           </Text>
-          <Menu shadow="md" width={180} className="mt-4" position="bottom-end">
+          <Menu shadow="md" width={180} className="mt-4" position="top-end">
             <Menu.Target>
-              <Button className="px-0">
+              <Button className="py-0" onClick={e => e.stopPropagation()}>
                 <MenuIcon />
               </Button>
             </Menu.Target>
@@ -98,6 +112,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
                 onClick={() => navigate(`view-details/${data?._id}`)}
                 className="cursor-pointer flex items-center gap-1"
                 icon={<Eye className="h-4" />}
+                disabled={isLoading}
               >
                 <span className="ml-1">View Details</span>
               </Menu.Item>
@@ -105,6 +120,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
                 onClick={() => navigate(`edit-details/${data?._id}`)}
                 className="cursor-pointer flex items-center gap-1"
                 icon={<Edit2 className="h-4" />}
+                disabled={isLoading}
               >
                 <span className="ml-1">Edit</span>
               </Menu.Item>
@@ -112,6 +128,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
                 className="cursor-pointer flex items-center gap-1"
                 icon={<Trash className="h-4" />}
                 onClick={toggleDeleteModal}
+                disabled={isLoading}
               >
                 <span className="ml-1">Delete</span>
               </Menu.Item>
@@ -119,7 +136,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
           </Menu>
         </div>
       </div>
-    </div>
+    </Box>
   );
 };
 

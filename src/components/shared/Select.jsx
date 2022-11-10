@@ -1,11 +1,12 @@
 import React from 'react';
 import { Select as MantineSelect } from '@mantine/core';
+import { ChevronDown } from 'react-feather';
 import { useFormContext } from '../../context/formContext';
 
 const styles = {
   label: {
-    fontWeight: 'bold',
     marginBottom: 8,
+    fontWeight: 700,
     fontSize: 16,
   },
   input: {
@@ -14,16 +15,21 @@ const styles = {
   },
 };
 
-const Select = ({ options = [], name, errors, ...props }) => {
+const Select = ({ options = [], name, ...props }) => {
   const form = useFormContext();
+  const { onChange, value, error } = form.getInputProps(name);
 
   return (
     <MantineSelect
+      {...props}
       data={options}
       styles={styles}
-      error={errors}
-      {...form.getInputProps(name)}
-      {...props}
+      error={error}
+      value={value?.value}
+      rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+      onChange={val => {
+        onChange(options?.find(item => item?.value === val));
+      }}
     />
   );
 };

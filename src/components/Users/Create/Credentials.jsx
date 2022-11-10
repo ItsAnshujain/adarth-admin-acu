@@ -1,6 +1,14 @@
+import { Select as MantineSelect } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { ChevronDown } from 'react-feather';
+import { useDebouncedState } from '@mantine/hooks';
+import { useSearchParams } from 'react-router-dom';
 import { useFormContext } from '../../../context/formContext';
 import Select from '../../shared/Select';
 import TextInput from '../../shared/TextInput';
+import { useFetchUsers } from '../../../hooks/users.hooks';
+
+const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 
 const roleList = [
   { label: 'Manager', value: 'manager' },
@@ -20,48 +28,108 @@ const styles = {
     padding: 8,
   },
 };
-const Credentials = () => {
+
+const Credentials = ({ setType, setPeerId }) => {
   const { errors } = useFormContext();
+  const [filter, setFilter] = useState('Team');
+  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const handleFilter = val => {
+    setFilter(val);
+    setType(val);
+  };
+  const [searchParams, setSearchParams] = useSearchParams({
+    'page': 1,
+    'limit': 100,
+    'sortOrder': 'asc',
+    'sortBy': 'createdAt',
+    'filter': 'peer',
+  });
+
+  const { data: userData } = useFetchUsers(searchParams.toString(), searchInput !== '');
+
+  const emailValidation = email => {
+    if (!email || regex.test(email) === false) {
+      return false;
+    }
+    return true;
+  };
+
+  const handleSearch = () => {
+    if (emailValidation(searchInput)) {
+      searchParams.set('email', searchInput);
+      setSearchParams(searchParams);
+    }
+  };
+
+  useEffect(() => {
+    handleSearch();
+    if (searchInput === '') {
+      searchParams.delete('email');
+      setSearchParams(searchParams);
+      setPeerId('');
+    }
+    if (userData?._id) {
+      setPeerId(userData?._id);
+    }
+  }, [searchInput, userData]);
 
   return (
     <div className="pl-5 pr-7 mt-4">
-      <p className="text-xl font-bold">Create credentials (ID Password) for the account</p>
+      <p className="text-xl font-bold">Create new user account</p>
       <div className="grid grid-cols-2 gap-8 mt-4">
         <div className="flex flex-col gap-4">
-          <Select
-            label="Role"
-            name="role"
-            options={roleList}
+          <MantineSelect
+            label="Type"
             withAsterisk
-            errors={errors}
-            placeholder="Select"
-          />
-          <TextInput
-            label="Password"
-            name="password"
+            value={filter}
+            onChange={handleFilter}
+            data={['Team', 'Peer']}
             styles={styles}
-            withAsterisk
-            errors={errors}
-            placeholder="Password"
+            rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
           />
+          {filter?.toLowerCase() === 'team' ? (
+            <Select
+              label="Role"
+              name="role"
+              options={roleList}
+              styles={styles}
+              withAsterisk
+              errors={errors}
+              placeholder="Select"
+            />
+          ) : null}
         </div>
         <div className="flex flex-col gap-4">
-          <TextInput
-            label="Email ID"
-            name="email"
-            styles={styles}
-            withAsterisk
-            errors={errors}
-            placeholder="Email ID"
-          />
-          <TextInput
-            label="Confirm Password"
-            name="confirmPassword"
-            styles={styles}
-            withAsterisk
-            errors={errors}
-            placeholder="Confirm Password"
-          />
+          {filter?.toLowerCase() === 'team' ? (
+            <>
+              <TextInput
+                label="Email ID"
+                name="email"
+                styles={styles}
+                withAsterisk
+                errors={errors}
+                placeholder="Email ID"
+              />
+              <TextInput
+                label="Name"
+                name="name"
+                styles={styles}
+                withAsterisk
+                errors={errors}
+                placeholder="Name"
+              />
+            </>
+          ) : (
+            <TextInput
+              label="Search Email ID"
+              styles={styles}
+              withAsterisk
+              errors={errors}
+              placeholder="Search Email ID"
+              onChange={event => setSearchInput(event.target.value)}
+              defaultValue={searchInput}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -14,6 +14,8 @@ import NoMatch from './pages/NoMatch';
 import { useFetchUsersById } from './hooks/users.hooks';
 import useTokenIdStore from './store/user.store';
 import ProtectedRoutes from './utils/ProtectedRoutes';
+import ProtectedRoute from './utils/ProtectedRoute';
+import { ROLES } from './utils';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -86,6 +88,9 @@ const App = () => {
       location.pathname.includes('/forgot-password') ||
       location.pathname.includes('/change-password'))
   ) {
+    if (location.search.includes('setting')) {
+      return <Navigate to="/setting?type=change_password" replace />;
+    }
     return <Navigate to="/home" replace />;
   }
 
@@ -113,7 +118,6 @@ const App = () => {
             </Suspense>
           }
         />
-
         <Route
           path="/inventory"
           element={
@@ -122,14 +126,7 @@ const App = () => {
             </Suspense>
           }
         >
-          <Route
-            path=""
-            element={
-              <Suspense fallback={<Loader />}>
-                <InventoryHome />
-              </Suspense>
-            }
-          />
+          <Route path="" element={<InventoryHome />} />
           <Route
             path="create-space/single"
             element={
@@ -166,9 +163,11 @@ const App = () => {
         <Route
           path="/campaigns"
           element={
-            <Suspense fallback={<HeaderSidebarLoader />}>
-              <Campaigns />
-            </Suspense>
+            <ProtectedRoute accepted={ROLES.ADMIN}>
+              <Suspense fallback={<HeaderSidebarLoader />}>
+                <Campaigns />
+              </Suspense>
+            </ProtectedRoute>
           }
         >
           <Route
@@ -215,19 +214,12 @@ const App = () => {
           <Route
             path=""
             element={
-              <Suspense fallback={<Loader />}>
+              <Suspense fallback={<CustomLoader />}>
                 <ProposalsHome />
               </Suspense>
             }
           />
-          <Route
-            path="create-proposals"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <CreateProposals />
-              </Suspense>
-            }
-          />
+          <Route path="create-proposals" element={<CreateProposals />} />
           <Route
             path="edit-details/:id"
             element={
@@ -305,9 +297,13 @@ const App = () => {
         <Route
           path="users"
           element={
-            <Suspense fallback={<HeaderSidebarLoader />}>
-              <User />
-            </Suspense>
+            <ProtectedRoute
+              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
+            >
+              <Suspense fallback={<HeaderSidebarLoader />}>
+                <User />
+              </Suspense>
+            </ProtectedRoute>
           }
         >
           <Route
@@ -346,9 +342,13 @@ const App = () => {
         <Route
           path="/reports"
           element={
-            <Suspense fallback={<HeaderSidebarLoader />}>
-              <ReportHome />
-            </Suspense>
+            <ProtectedRoute
+              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
+            >
+              <Suspense fallback={<HeaderSidebarLoader />}>
+                <ReportHome />
+              </Suspense>
+            </ProtectedRoute>
           }
         >
           <Route
@@ -376,16 +376,16 @@ const App = () => {
             }
           />
         </Route>
-
         <Route
           path="/masters"
           element={
-            <Suspense fallback={<HeaderSidebarLoader />}>
-              <MasterHome />
-            </Suspense>
+            <ProtectedRoute accepted={ROLES.ADMIN}>
+              <Suspense fallback={<HeaderSidebarLoader />}>
+                <MasterHome />
+              </Suspense>
+            </ProtectedRoute>
           }
         />
-
         <Route
           path="/notification"
           element={
@@ -394,7 +394,6 @@ const App = () => {
             </Suspense>
           }
         />
-
         <Route
           path="/setting"
           element={
@@ -428,13 +427,26 @@ const App = () => {
             }
           />
         </Route>
-        <Route path="/landlords" element={<Landlords />} />
+        <Route
+          path="/landlords"
+          element={
+            <ProtectedRoute
+              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
+            >
+              <Landlords />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/"
           element={
-            <Suspense fallback={<HeaderSidebarLoader />}>
-              <Finance />
-            </Suspense>
+            <ProtectedRoute
+              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
+            >
+              <Suspense fallback={<HeaderSidebarLoader />}>
+                <Finance />
+              </Suspense>
+            </ProtectedRoute>
           }
         >
           <Route

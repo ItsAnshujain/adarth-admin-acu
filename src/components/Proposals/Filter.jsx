@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Accordion, Checkbox, Button, Drawer, RangeSlider, TextInput } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
+import { serialize } from '../../utils';
+import { useFetchMasters } from '../../hooks/masters.hooks';
 
 const styles = {
   title: { fontWeight: 'bold' },
@@ -23,15 +25,6 @@ const totalPlacesSlider = {
   },
 };
 
-const statusObj = {
-  'created': 'Created',
-  'draft': 'Draft',
-  'awaiting_response': 'Awaiting Response',
-  'shared_with_client': 'Shared With Client',
-  'iteration_in_progress': 'Iteration In Progress',
-  'booked': 'Booked',
-};
-
 const Filter = ({ isOpened, setShowFilter }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [minPrice, setMinPrice] = useState(0);
@@ -39,6 +32,10 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const [minPlace, setMinPlace] = useState(0);
   const [maxPlace, setMaxPlace] = useState(10000);
   const [statusArr, setStatusArr] = useState([]);
+
+  const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
+    serialize({ type: 'proposal_status', parentId: null, limit: 10 }),
+  );
 
   const handleStatusArr = stat => {
     let tempArr = [...statusArr]; // TODO: use immmer
@@ -51,15 +48,15 @@ const Filter = ({ isOpened, setShowFilter }) => {
     setStatusArr(tempArr);
   };
 
-  const renderStatus = useMemo(
-    () =>
-      Object.keys(statusObj).map(item => (
-        <div className="flex gap-2 mb-2" key={item}>
+  const renderStatus = useCallback(
+    data =>
+      data?.map(item => (
+        <div className="flex gap-2 mb-2" key={item?._id}>
           <Checkbox
             onChange={event => handleStatusArr(event.target.value)}
-            label={statusObj[item]}
-            defaultValue={item}
-            checked={statusArr.includes(item)}
+            label={item?.name}
+            defaultValue={item?._id}
+            checked={statusArr.includes(item._id)}
           />
         </div>
       )),
@@ -68,9 +65,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
   const handleNavigationByFilter = () => {
     searchParams.delete('status');
-    statusArr.forEach(item => {
-      searchParams.append('status', item);
-    });
+    statusArr.forEach(item => searchParams.append('status', item));
 
     setSearchParams(searchParams);
     setShowFilter(false);
@@ -125,11 +120,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
       <div className="flex text-gray-400 flex-col gap-4">
         <Accordion defaultValue="status">
           <Accordion.Item value="status" className="mb-4 rounded-xl border">
-            <Accordion.Control>
+            <Accordion.Control disabled={isProposalStatusLoading}>
               <p className="text-lg">Status</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStatus}</div>
+              <div className="mt-2">{renderStatus(proposalStatusData?.docs)}</div>
             </Accordion.Panel>
           </Accordion.Item>
 

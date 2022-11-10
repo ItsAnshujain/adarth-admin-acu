@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Badge, Box, Button, Image, Progress } from '@mantine/core';
+import { Badge, Box, Button, Image, Loader, Progress } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/Inventory/AreaHeader';
@@ -14,6 +14,7 @@ import { useDeleteInventory, useFetchInventory } from '../../hooks/inventory.hoo
 import MenuPopover from '../../components/Inventory/MenuPopover';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
+import { colors } from '../../utils';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -22,10 +23,12 @@ const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     limit: 10,
     page: 1,
+    sortOrder: 'asc',
+    sortBy: 'basicInformation.spaceName',
   });
   const viewType = useLayoutView(state => state.activeLayout);
   const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
-    `${searchParams.toString()}`,
+    searchParams.toString(),
   );
   const { mutate: deleteInventoryData, isLoading: isLoadingDeletedInventoryData } =
     useDeleteInventory();
@@ -52,7 +55,7 @@ const Home = () => {
       title: 'Preview',
       innerProps: {
         modalBody: (
-          <Box className=" flex justify-center" onClickCancel={id => modals.closeModal(id)}>
+          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
             {imgSrc ? (
               <Image src={imgSrc} height={580} width={580} alt="preview" />
             ) : (
@@ -62,6 +65,11 @@ const Home = () => {
         ),
       },
       ...modalConfig,
+    });
+
+  const handleInventoryDetails = itemId =>
+    navigate(`/inventory/view-details/${itemId}`, {
+      replace: true,
     });
 
   const COLUMNS = useMemo(
@@ -85,12 +93,12 @@ const Home = () => {
         accessor: 'spaceName',
         Cell: ({
           row: {
-            original: { _id, basicInformation },
+            original: { _id, basicInformation, isUnderMaintenance },
           },
         }) =>
           useMemo(
             () => (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 ">
                 <Box
                   className="bg-white border rounded-md cursor-zoom-in"
                   onClick={() => toggleImagePreviewModal(basicInformation?.spacePhotos)}
@@ -107,17 +115,19 @@ const Home = () => {
                   )}
                 </Box>
                 <Button
-                  className="text-black font-medium px-2"
-                  onClick={() =>
-                    navigate(`/inventory/view-details/${_id}`, {
-                      replace: true,
-                    })
-                  }
+                  className="text-black font-medium px-2 max-w-[180px]"
+                  onClick={() => handleInventoryDetails(_id)}
                 >
-                  {basicInformation?.spaceName}
+                  <span className="overflow-hidden text-ellipsis">
+                    {basicInformation?.spaceName}
+                  </span>
                 </Button>
-                <Badge className="capitalize" variant="filled" color="green">
-                  Available
+                <Badge
+                  className="capitalize"
+                  variant="filled"
+                  color={isUnderMaintenance ? 'yellow' : 'green'}
+                >
+                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
                 </Badge>
               </div>
             ),
@@ -126,17 +136,38 @@ const Home = () => {
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'landlord_name',
-        Cell: tableProps =>
-          useMemo(() => <div className="w-fit">{tableProps.row.original.landlord_name}</div>, []),
+        accessor: 'mediaOwner',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || 'NA'}</p>, []),
       },
       {
         Header: 'PEER',
         accessor: 'peer',
+        Cell: () => useMemo(() => <p>-</p>),
       },
       {
         Header: 'SPACE TYPE',
-        accessor: 'space_type',
+        accessor: 'spaceType',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(() => {
+            const colorType = Object.keys(colors).find(
+              key => colors[key] === basicInformation?.spaceType?.name,
+            );
+
+            return (
+              <Badge color={colorType} size="lg" className="capitalize">
+                {basicInformation?.spaceType?.name || <span>-</span>}
+              </Badge>
+            );
+          }),
       },
       {
         Header: 'DIMENSION',
@@ -148,7 +179,9 @@ const Home = () => {
         }) =>
           useMemo(
             () => (
-              <p>{`${specifications?.resolutions?.height}ft x ${specifications?.resolutions?.width}ft`}</p>
+              <p>{`${specifications?.size?.height || 0}ft x ${
+                specifications?.size?.width || 0
+              }ft`}</p>
             ),
             [],
           ),
@@ -160,11 +193,11 @@ const Home = () => {
           row: {
             original: { specifications },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.max}+`}</p>, []),
+        }) => useMemo(() => <p>{`${specifications?.impressions?.min}+`}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',
-        accessor: 'health_status',
+        accessor: 'health',
         Cell: ({
           row: {
             original: { specifications },
@@ -194,6 +227,15 @@ const Home = () => {
         }) => useMemo(() => <p>{location?.city}</p>, []),
       },
       {
+        Header: 'MEDIA TYPE',
+        accessor: 'mediaType',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) => useMemo(() => <p>{basicInformation?.mediaType?.name}</p>),
+      },
+      {
         Header: 'PRICING',
         accessor: 'price',
         Cell: ({
@@ -213,6 +255,7 @@ const Home = () => {
       {
         Header: '',
         accessor: 'details',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { _id },
@@ -224,7 +267,7 @@ const Home = () => {
   );
 
   const handleSearch = () => {
-    searchParams.set('spaceName', searchInput);
+    searchParams.set('search', searchInput);
     setSearchParams(searchParams);
   };
 
@@ -241,7 +284,7 @@ const Home = () => {
   useEffect(() => {
     handleSearch();
     if (searchInput === '') {
-      searchParams.delete('spaceName');
+      searchParams.delete('search');
       setSearchParams(searchParams);
     }
   }, [searchInput]);
@@ -262,7 +305,17 @@ const Home = () => {
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       )}
-      {viewType === 'grid' ? (
+      {isLoadingInventoryData && viewType === 'list' ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <Loader />
+        </div>
+      ) : null}
+      {inventoryData?.docs?.length === 0 && !isLoadingInventoryData ? (
+        <div className="w-full min-h-[400px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
+        </div>
+      ) : null}
+      {viewType === 'grid' && inventoryData?.docs?.length ? (
         <GridView
           count={limit}
           list={inventoryData?.docs || []}
@@ -273,7 +326,7 @@ const Home = () => {
           selectedCards={selectedCards}
           setSelectedCards={setSelectedCards}
         />
-      ) : viewType === 'list' ? (
+      ) : viewType === 'list' && inventoryData?.docs?.length ? (
         <Table
           COLUMNS={COLUMNS}
           data={inventoryData?.docs || []}

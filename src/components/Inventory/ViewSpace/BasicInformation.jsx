@@ -1,21 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button, Text, Image, Skeleton, Badge } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import { useToggle } from '@mantine/hooks';
-import dummy3 from '../../../assets/dummy3.png';
 import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
-
 import { useFetchInventoryById } from '../../../hooks/inventory.hooks';
 import MapView from '../CreateSpace/MapView';
-
-const badgeData = ['School', 'Youth', 'Student', 'College Students'];
 
 const BasicInfo = () => {
   const { id: inventoryId } = useParams();
   const [readMore, toggle] = useToggle();
-  const [scrollImage, setScrollImage] = useState([]);
-  const [posterImage, setPosterImage] = useState(dummy3);
+  const [otherImages, setOtherImages] = useState([]);
+  const [posterImage, setPosterImage] = useState(null);
 
   const { data: inventoryDetails, isLoading: isInventoryDetailsLoading } = useFetchInventoryById(
     inventoryId,
@@ -24,13 +20,50 @@ const BasicInfo = () => {
 
   const exchangeImages = index => {
     const temp = posterImage;
-    setPosterImage(scrollImage[index]);
-    setScrollImage(prev => {
+    setPosterImage(otherImages[index]);
+    setOtherImages(prev => {
       const newImgs = [...prev];
       newImgs[index] = temp;
       return newImgs;
     });
   };
+
+  const renderBadges = useCallback(
+    list =>
+      list?.map(item => (
+        <p key={item?._id} className="pr-1 text-black">
+          {item?.name},
+        </p>
+      )),
+    [inventoryDetails],
+  );
+
+  const renderColoredBadges = useCallback(
+    list =>
+      list?.map(item => (
+        <Badge
+          key={item?._id}
+          className="text-purple-450 bg-purple-100 capitalize mr-1 my-2"
+          size="lg"
+          variant="filled"
+          radius="sm"
+        >
+          {item?.name}
+        </Badge>
+      )),
+    [inventoryDetails],
+  );
+
+  useEffect(() => {
+    setPosterImage(inventoryDetails?.basicInformation?.spacePhotos);
+
+    if (inventoryDetails?.basicInformation?.otherPhotos) {
+      setOtherImages([...inventoryDetails.basicInformation.otherPhotos]);
+    }
+  }, [
+    inventoryDetails?.basicInformation?.spacePhotos,
+    inventoryDetails?.basicInformation?.otherPhotos,
+  ]);
 
   return (
     <div className="flex gap-8 pt-4">
@@ -38,10 +71,10 @@ const BasicInfo = () => {
         <div className="flex flex-col">
           {!isInventoryDetailsLoading ? (
             <div className="h-96">
-              {inventoryDetails?.basicInformation?.spacePhotos ? (
+              {posterImage ? (
                 <Image
                   height={384}
-                  src={inventoryDetails?.basicInformation?.spacePhotos}
+                  src={posterImage}
                   alt="poster"
                   fit="contain"
                   withPlaceholder
@@ -59,12 +92,15 @@ const BasicInfo = () => {
           <div className="flex overflow-scroll pt-4 gap-4 items-center">
             {!isInventoryDetailsLoading ? (
               <>
-                {scrollImage.map((src, index) => (
+                {otherImages.map((src, index) => (
                   <Image
                     key={src}
                     onClick={() => exchangeImages(index)}
-                    className="h-24 w-28 cursor-pointer"
+                    className="cursor-pointer bg-slate-300"
+                    height={96}
+                    width={112}
                     src={src}
+                    fit="contain"
                     alt="poster"
                   />
                 ))}
@@ -153,10 +189,10 @@ const BasicInfo = () => {
             <>
               <div className="flex gap-2">
                 <Text weight="bolder" size="xs" className="text-purple-450">
-                  Billboard
+                  {inventoryDetails?.basicInformation?.category?.name}
                 </Text>
                 <Text weight="bolder" size="xs">
-                  Premium Site
+                  {inventoryDetails?.specifications?.spaceStatus?.name}
                 </Text>
               </div>
               <Text weight="300" color="gray">
@@ -165,23 +201,44 @@ const BasicInfo = () => {
                   {readMore ? 'Read less' : 'Read more'}
                 </Button>
               </Text>
-              <Badge className="capitalize" variant="filled" color="green" size="lg" mt="xs">
-                Available
+              <Badge
+                className="capitalize"
+                variant="filled"
+                color={inventoryDetails?.isUnderMaintenance ? 'yellow' : 'green'}
+                size="lg"
+                mt="xs"
+              >
+                {inventoryDetails?.isUnderMaintenance ? 'Under maintenance' : 'Available'}
               </Badge>
               <Text weight="bold" className="my-2">
                 {toIndianCurrency(inventoryDetails?.basicInformation?.price || 0)}
               </Text>
-              <div className="flex gap-2 mb-8">
-                {badgeData.map(data => (
-                  <Badge
-                    className="text-purple-450 bg-purple-100 capitalize"
-                    size="lg"
-                    variant="filled"
-                    radius="md"
-                  >
-                    {data}
-                  </Badge>
-                ))}
+              <div className="flex gap-2 mb-3">
+                {inventoryDetails?.basicInformation?.audience?.length
+                  ? renderColoredBadges(inventoryDetails?.basicInformation?.audience)
+                  : null}
+              </div>
+              <div className="mb-2">
+                <p className="text-slate-400">Previously advertised brands</p>
+                <div className="flex w-full flex-wrap">
+                  {inventoryDetails?.specifications?.previousBrands?.length
+                    ? renderBadges(inventoryDetails?.specifications?.previousBrands)
+                    : null}
+                </div>
+              </div>
+              <div className="mb-2">
+                <p className="text-slate-400">Previously advertised tags</p>
+                <div className="flex w-full flex-wrap">
+                  {inventoryDetails?.specifications?.tags
+                    ? renderBadges(inventoryDetails?.specifications?.tags)
+                    : null}
+                </div>
+              </div>
+              <div className="mb-2">
+                <p className="text-slate-400">Demographics</p>
+                <div className="flex w-full flex-wrap">
+                  {inventoryDetails?.basicInformation?.demographic?.name || 'NA'}
+                </div>
               </div>
             </>
           ) : (
@@ -205,20 +262,20 @@ const BasicInfo = () => {
                     <Text color="gray" size="xs" weight="300">
                       Size
                     </Text>
-                    <Text className="mb-4">W X H</Text>
+                    <Text className="mb-4">
+                      {inventoryDetails?.specifications?.size?.height || 0}ft X{' '}
+                      {inventoryDetails?.specifications?.size?.width || 0}ft
+                    </Text>
                     <Text color="gray" size="xs" weight="300">
                       Impression
                     </Text>
                     <Text className="mb-4">
-                      {inventoryDetails?.specifications?.impressions?.max || 0}
+                      {inventoryDetails?.specifications?.impressions?.min || 0}
                     </Text>
                     <Text color="gray" size="xs" weight="300">
                       Resolution
                     </Text>
-                    <Text>
-                      {inventoryDetails?.specifications?.resolutions?.height || 0}px X{' '}
-                      {inventoryDetails?.specifications?.resolutions?.width || 0}px
-                    </Text>
+                    <Text>{inventoryDetails?.specifications?.resolutions || 'NA'}</Text>
                   </div>
                   <div>
                     <Text color="gray" size="xs" weight="300">
@@ -234,7 +291,7 @@ const BasicInfo = () => {
                     <Text color="gray" size="xs" weight="300">
                       Illumination
                     </Text>
-                    <Text>{'{illumination}'}</Text>
+                    <Text>{inventoryDetails?.specifications?.illuminations?.name || 'NA'}</Text>
                   </div>
                 </div>
               ) : (
@@ -250,7 +307,7 @@ const BasicInfo = () => {
                     <div className="grid grid-cols-2">
                       <div>
                         <Text color="gray" size="xs" weight="300">
-                          District
+                          City
                         </Text>
                         <Text className="mb-4">{inventoryDetails?.location?.city || 'NA'}</Text>
                       </div>

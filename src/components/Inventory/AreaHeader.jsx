@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Text, Button, Image, Checkbox } from '@mantine/core';
+import { Text, Button, Checkbox } from '@mantine/core';
 import classNames from 'classnames';
 import { Plus, ChevronDown, Server, Grid, MapPin } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
 import shallow from 'zustand/shallow';
-import calendar from '../../assets/data-table.svg';
-import DateRange from '../DateRange';
-import Filter from '../Filter';
+import Filter from './Filter';
 import useLayoutView from '../../store/layout.store';
+import RoleBased from '../RoleBased';
+import { ROLES } from '../../utils';
 
 const AreaHeader = ({
   text,
@@ -20,9 +20,7 @@ const AreaHeader = ({
 }) => {
   const { pathname } = useLocation();
   const [addDetailsClicked, setAddDetails] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
-  const dateRef = useClickOutside(() => setShowDatePicker(false));
   const addDetailsButtonRef = useClickOutside(() => setAddDetails(false));
 
   const { activeLayout, setActiveLayout } = useLayoutView(
@@ -33,13 +31,11 @@ const AreaHeader = ({
     shallow,
   );
 
+  const toggleFilter = () => setShowFilter(!showFilter);
+  const toggleAddDetails = () => setAddDetails(!addDetailsClicked);
   const handleListClick = () => setActiveLayout('list');
   const handleGridClick = () => setActiveLayout('grid');
   const handleMapClick = () => setActiveLayout('map');
-
-  const openDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -51,14 +47,18 @@ const AreaHeader = ({
       <div className="flex justify-around mr-7">
         {!pathname.includes('reports') && (
           <div className="mr-2 flex ">
-            <Button
-              onClick={onDeleteCards}
-              className="border-gray-450 text-black font-normal radius-md mr-2"
-              disabled={noOfCardsSelected === 0 || isLoading}
-              loading={isLoading}
+            <RoleBased
+              acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
             >
-              Delete items
-            </Button>
+              <Button
+                onClick={onDeleteCards}
+                className="border-gray-450 text-black font-normal radius-md mr-2"
+                disabled={noOfCardsSelected === 0 || isLoading}
+                loading={isLoading}
+              >
+                Delete items
+              </Button>
+            </RoleBased>
             {activeLayout === 'grid' ? (
               <Checkbox
                 className="mr-5"
@@ -66,7 +66,7 @@ const AreaHeader = ({
                 label="Select All Product"
                 classNames={{ root: 'flex flex-row-reverse', label: 'pr-2' }}
                 indeterminate={noOfCardsSelected > 0 && !(totalCards === noOfCardsSelected)}
-                checked={totalCards === noOfCardsSelected}
+                checked={totalCards === noOfCardsSelected && totalCards !== 0}
               />
             ) : null}
             <Button
@@ -116,35 +116,24 @@ const AreaHeader = ({
             </Button>
           </div>
         )}
-        <div ref={dateRef} className="mr-2 relative">
-          <Button onClick={openDatePicker} variant="default" type="button">
-            <Image src={calendar} height={20} alt="calendar" />
-          </Button>
-          {showDatePicker && (
-            <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
-              <DateRange handleClose={openDatePicker} />
-            </div>
-          )}
-        </div>
         <div className="mr-2">
-          <Button
-            onClick={() => setShowFilter(!showFilter)}
-            variant="default"
-            type="button"
-            className="font-medium"
-          >
+          <Button onClick={toggleFilter} variant="default" type="button" className="font-medium">
             <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
           </Button>
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
         </div>
         {!pathname.includes('reports') && (
           <div className="relative">
-            <Button
-              onClick={() => setAddDetails(!addDetailsClicked)}
-              className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"
+            <RoleBased
+              acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
             >
-              <Plus size={16} className="mt-[1px] mr-1" /> Add Space
-            </Button>
+              <Button
+                onClick={toggleAddDetails}
+                className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"
+              >
+                <Plus size={16} className="mt-[1px] mr-1" /> Add Space
+              </Button>
+            </RoleBased>
             {addDetailsClicked && (
               <div
                 ref={addDetailsButtonRef}
