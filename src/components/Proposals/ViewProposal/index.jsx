@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Badge, Box, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import RowsPerPage from '../../RowsPerPage';
@@ -20,9 +20,9 @@ import Filter from '../../Inventory/Filter';
 
 const ProposalDetails = () => {
   const modals = useModals();
+  const navigate = useNavigate();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [count, setCount] = useState('10');
-  const [showShare, setShowShare] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
@@ -61,6 +61,11 @@ const ProposalDetails = () => {
       ...modalConfig,
     });
 
+  const handleInventoryDetails = itemId =>
+    navigate(`/inventory/view-details/${itemId}`, {
+      replace: true,
+    });
+
   const COLUMNS = useMemo(
     () => [
       {
@@ -82,7 +87,7 @@ const ProposalDetails = () => {
         accessor: 'spaceName',
         Cell: ({
           row: {
-            original: { spaceName, spacePhoto, isUnderMaintenance },
+            original: { _id, spaceName, spacePhoto, isUnderMaintenance },
           },
         }) =>
           useMemo(
@@ -98,7 +103,10 @@ const ProposalDetails = () => {
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
                 </Box>
-                <Button className="flex-1 max-w-[180px] px-2 text-black font-medium">
+                <Button
+                  className="flex-1 max-w-[180px] px-2 text-black font-medium"
+                  onClick={() => handleInventoryDetails(_id)}
+                >
                   {spaceName}
                 </Button>
                 <Badge
@@ -235,7 +243,7 @@ const ProposalDetails = () => {
 
   return (
     <div>
-      <Header showShare={showShare} setShowShare={setShowShare} />
+      <Header />
       <Details
         proposalData={proposalData?.proposal}
         isProposalDataLoading={isProposalDataLoading}

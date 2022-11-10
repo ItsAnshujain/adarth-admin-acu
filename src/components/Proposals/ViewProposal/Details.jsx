@@ -26,7 +26,8 @@ const Details = ({ proposalData, isProposalDataLoading }) => (
             <Image
               src={proposalData?.image}
               alt="proposal-preview"
-              height={400}
+              height={200}
+              width={200}
               className="bg-slate-300"
               placeholder={
                 <Text align="center">Unexpected error occured. Image cannot be loaded</Text>

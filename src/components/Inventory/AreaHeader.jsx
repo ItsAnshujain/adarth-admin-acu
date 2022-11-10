@@ -7,6 +7,8 @@ import { useClickOutside } from '@mantine/hooks';
 import shallow from 'zustand/shallow';
 import Filter from './Filter';
 import useLayoutView from '../../store/layout.store';
+import RoleBased from '../RoleBased';
+import { ROLES } from '../../utils';
 
 const AreaHeader = ({
   text,
@@ -45,14 +47,18 @@ const AreaHeader = ({
       <div className="flex justify-around mr-7">
         {!pathname.includes('reports') && (
           <div className="mr-2 flex ">
-            <Button
-              onClick={onDeleteCards}
-              className="border-gray-450 text-black font-normal radius-md mr-2"
-              disabled={noOfCardsSelected === 0 || isLoading}
-              loading={isLoading}
+            <RoleBased
+              acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
             >
-              Delete items
-            </Button>
+              <Button
+                onClick={onDeleteCards}
+                className="border-gray-450 text-black font-normal radius-md mr-2"
+                disabled={noOfCardsSelected === 0 || isLoading}
+                loading={isLoading}
+              >
+                Delete items
+              </Button>
+            </RoleBased>
             {activeLayout === 'grid' ? (
               <Checkbox
                 className="mr-5"
@@ -118,12 +124,16 @@ const AreaHeader = ({
         </div>
         {!pathname.includes('reports') && (
           <div className="relative">
-            <Button
-              onClick={toggleAddDetails}
-              className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"
+            <RoleBased
+              acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
             >
-              <Plus size={16} className="mt-[1px] mr-1" /> Add Space
-            </Button>
+              <Button
+                onClick={toggleAddDetails}
+                className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"
+              >
+                <Plus size={16} className="mt-[1px] mr-1" /> Add Space
+              </Button>
+            </RoleBased>
             {addDetailsClicked && (
               <div
                 ref={addDetailsButtonRef}

@@ -38,8 +38,13 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
       ...modalConfig,
     });
 
+  const handleInventoryDetails = () =>
+    navigate(`/inventory/view-details/${data?._id}`, {
+      replace: true,
+    });
+
   return (
-    <Box className="drop-shadow-md w-[273px] cursor-pointer">
+    <Box className="drop-shadow-md w-[273px] cursor-pointer" onClick={handleInventoryDetails}>
       <div>
         {data?.basicInformation?.spacePhotos ? (
           <Image
@@ -57,7 +62,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
         )}
       </div>
       <div className="p-4 px-4 bg-white">
-        <div className="flex justify-between items-center mb-2 ">
+        <Box className="flex justify-between items-center mb-2 " onClick={e => e.stopPropagation()}>
           <Badge
             className="capitalize"
             variant="filled"
@@ -73,7 +78,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
             defaultValue={data?._id}
             checked={isSelected}
           />
-        </div>
+        </Box>
         <Text size="md" weight="bold" lineClamp={1} className="w-full">
           {data?.basicInformation?.spaceName}
         </Text>
@@ -98,7 +103,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
           </Text>
           <Menu shadow="md" width={180} className="mt-4" position="top-end">
             <Menu.Target>
-              <Button className="px-0">
+              <Button className="py-0" onClick={e => e.stopPropagation()}>
                 <MenuIcon />
               </Button>
             </Menu.Target>

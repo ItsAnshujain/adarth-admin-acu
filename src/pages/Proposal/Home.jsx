@@ -63,6 +63,8 @@ const Proposals = () => {
     update({ proposalId, data });
   };
 
+  const handleProposalDetails = itemId => navigate(`view-details/${itemId}`, { replace: true });
+
   const COLUMNS = useMemo(
     () => [
       {
@@ -91,7 +93,7 @@ const Proposals = () => {
             () => (
               <Button
                 className="text-black font-medium max-w-[250px] capitalize"
-                onClick={() => navigate(`view-details/${_id}`, { replace: true })}
+                onClick={() => handleProposalDetails(_id)}
               >
                 {name}
               </Button>

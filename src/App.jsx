@@ -297,9 +297,13 @@ const App = () => {
         <Route
           path="users"
           element={
-            <Suspense fallback={<HeaderSidebarLoader />}>
-              <User />
-            </Suspense>
+            <ProtectedRoute
+              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
+            >
+              <Suspense fallback={<HeaderSidebarLoader />}>
+                <User />
+              </Suspense>
+            </ProtectedRoute>
           }
         >
           <Route
@@ -338,9 +342,13 @@ const App = () => {
         <Route
           path="/reports"
           element={
-            <Suspense fallback={<HeaderSidebarLoader />}>
-              <ReportHome />
-            </Suspense>
+            <ProtectedRoute
+              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
+            >
+              <Suspense fallback={<HeaderSidebarLoader />}>
+                <ReportHome />
+              </Suspense>
+            </ProtectedRoute>
           }
         >
           <Route
@@ -419,13 +427,26 @@ const App = () => {
             }
           />
         </Route>
-        <Route path="/landlords" element={<Landlords />} />
+        <Route
+          path="/landlords"
+          element={
+            <ProtectedRoute
+              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
+            >
+              <Landlords />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/"
           element={
-            <Suspense fallback={<HeaderSidebarLoader />}>
-              <Finance />
-            </Suspense>
+            <ProtectedRoute
+              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
+            >
+              <Suspense fallback={<HeaderSidebarLoader />}>
+                <Finance />
+              </Suspense>
+            </ProtectedRoute>
           }
         >
           <Route

@@ -77,6 +77,7 @@ const Main = () => {
       <BasicInfo proposalId={proposalId} />
     ) : (
       <Spaces
+        selectedRow={selectedRow}
         setSelectedRow={setSelectedRow}
         selectedRowData={proposalData?.inventories.docs || []}
         noOfSelectedPlaces={selectedRow.length}
