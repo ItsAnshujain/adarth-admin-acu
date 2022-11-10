@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { NativeSelect, Menu, Progress, Image } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Trash, Edit2, Eye, Bookmark, ChevronDown } from 'react-feather';
 import classNames from 'classnames';
 import { useQueryClient } from '@tanstack/react-query';
+import { useDebouncedState } from '@mantine/hooks';
 import { useCampaigns, useDeleteCampaign, useUpdateCampaign } from '../../hooks/campaigns.hooks';
 import AreaHeader from '../../components/Campaigns/Header';
 import GridView from '../../components/GridView';
@@ -16,20 +17,30 @@ import { serialize } from '../../utils/index';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 
+const initialState = {
+  page: 1,
+  limit: 10,
+  sortBy: 'name',
+  sortOrder: 'asc',
+};
+
 const Home = () => {
   const queryClient = useQueryClient();
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useDebouncedState('', 500);
   const [view, setView] = useState('list');
 
-  const [query, setQuery] = useState({ page: 1, limit: 10, sortBy: 'name', sortOrder: 'asc' });
-  const { data: campaignData } = useCampaigns(serialize(query));
+  const [searchParams, setSearchParams] = useSearchParams(initialState);
+
+  const [query, setQuery] = useState(initialState);
+
+  const { data: campaignData } = useCampaigns(serialize(search ? { ...query, search } : query));
   const { mutate } = useUpdateCampaign();
   const { mutate: delCampaign } = useDeleteCampaign();
 
   const { data: campaignStatus } = useFetchMasters(serialize({ type: 'campaign_status' }));
 
   const invalidate = () => {
-    queryClient.invalidateQueries(['campaigns', serialize(query)]);
+    queryClient.invalidateQueries(['campaigns', serialize(search ? { ...query, search } : query)]);
   };
 
   const updateCampaign = (id, data) => {
@@ -224,12 +235,43 @@ const Home = () => {
         },
       },
     ],
-    [],
+    [campaignStatus],
   );
+
+  const onApplyFilter = data => {
+    setSearchParams(serialize({ ...query, ...data }));
+    setQuery(p => ({ ...p, ...data }));
+  };
+
+  const onResetFilter = () => {
+    setSearchParams(serialize(initialState));
+    setQuery(initialState);
+  };
+
+  useEffect(() => {
+    const obj = {};
+    searchParams.forEach((val, key) => {
+      if (val !== undefined) {
+        if (typeof initialState[key] === 'number') {
+          obj[key] = Number(val) || 0;
+        } else {
+          obj[key] = val || '';
+        }
+      }
+    });
+
+    setSearchParams(serialize(obj));
+    setQuery(obj);
+  }, []);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <AreaHeader text="Campaign List" setView={setView} />
+      <AreaHeader
+        text="Campaign List"
+        setView={setView}
+        onApplyFilter={onApplyFilter}
+        onResetFilter={onResetFilter}
+      />
       <div className="flex justify-between h-20 items-center">
         <RowsPerPage
           setCount={data => setQuery(prev => ({ ...prev, limit: Number(data) }))}
