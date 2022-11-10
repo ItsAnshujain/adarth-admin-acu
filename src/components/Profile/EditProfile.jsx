@@ -55,7 +55,12 @@ const schema = step =>
       .concat(step === 'first' ? requiredSchema('Pan is required') : null)
       .concat(
         step === 'first'
-          ? yup.string().matches(/[A-Z]{5}[0-9]{4}[A-Z]{1}/, 'Pan number must be valid')
+          ? yup
+              .string()
+              .matches(
+                /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/,
+                'Pan number must be valid and must be of 10 characters',
+              )
           : null,
       ),
     aadhaar: yup
@@ -68,7 +73,7 @@ const schema = step =>
               .string()
               .matches(
                 /(^[0-9]{4}[0-9]{4}[0-9]{4}$)|(^[0-9]{4}\s[0-9]{4}\s[0-9]{4}$)|(^[0-9]{4}-[0-9]{4}-[0-9]{4}$)/,
-                'Aadhaar number must be valid',
+                'Aadhaar number must be valid and must be of 12 digits',
               )
           : null,
       ),
