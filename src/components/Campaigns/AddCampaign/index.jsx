@@ -1,15 +1,17 @@
 import { useState, useRef } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
+import { useNavigate } from 'react-router-dom';
 import BasicInfo from './BasicInformation';
 import SuccessModal from '../../shared/Modal';
-import Preview from '../shared/Preview';
 import CoverImage from './CoverImage';
 import Header from './Header';
 import Spaces from './Spaces';
 import data from '../../../Dummydata/CAMPAIGN_SPACES.json';
 import column from './column';
 import { FormProvider, useForm } from '../../../context/formContext';
+import Preview from './Preview';
+import { useCreateCampaign } from '../../../hooks/campaigns.hooks';
 
 const requiredSchema = requiredText => yup.string().trim().required(requiredText);
 const numberRequiredSchema = (typeErrorText, requiredText) =>
@@ -17,9 +19,7 @@ const numberRequiredSchema = (typeErrorText, requiredText) =>
 
 const schema = formStep =>
   yup.object().shape({
-    campaignName: yup
-      .string()
-      .concat(formStep === 1 ? requiredSchema('Campaign name is required') : null),
+    name: yup.string().concat(formStep === 1 ? requiredSchema('Campaign name is required') : null),
     description: yup
       .string()
       .concat(formStep === 1 ? requiredSchema('Description is required') : null),
@@ -64,23 +64,31 @@ const schema = formStep =>
       ),
     tags: yup.mixed().concat(formStep === 1 ? yup.array().min(1, 'You must select one tag') : null),
     isFeatured: yup.boolean(),
+    thumbnail: yup.string(),
   });
 
 const initialValues = {
-  campaignName: '',
+  name: '',
   description: '',
   previousBrands: [],
   tags: [],
   minImpression: 200,
   maxImpression: 800,
   isFeatured: false,
+  // FIXME: confirm the logic for theses two fields
+  status: 'Created',
+  healthTag: 'Good',
 };
 
 const Create = () => {
   const submitRef = useRef();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
-  const [formStep, setFormStep] = useState(2);
+  const [formStep, setFormStep] = useState(1);
   const form = useForm({ initialValues, validate: yupResolver(schema(formStep)) });
+
+  const navigate = useNavigate();
+
+  const { mutate, isLoading } = useCreateCampaign();
 
   const getForm = () =>
     formStep === 1 ? (
@@ -96,7 +104,19 @@ const Create = () => {
   const handleSubmit = () => {
     if (formStep <= 3) setFormStep(formStep + 1);
     if (formStep === 4) {
-      // TODO: submit form
+      const newData = { ...form.values };
+
+      newData.place = newData.spaces.map(({ id }) => id);
+      delete newData.spaces;
+
+      newData.healthStatus = +newData.healthStatus || 0;
+      newData.price = +newData.price || 0;
+
+      mutate(newData, {
+        onSuccess: () => {
+          navigate('/campaign');
+        },
+      });
     }
   };
 
@@ -107,13 +127,14 @@ const Create = () => {
         formStep={formStep}
         setOpenSuccessModal={setOpenSuccessModal}
         submitRef={submitRef}
+        disabled={isLoading}
       />
       <div>
         <div>
           <FormProvider form={form}>
             <form onSubmit={form.onSubmit(handleSubmit)}>
               {getForm()}
-              <button type="submit" className="hidden" ref={submitRef}>
+              <button type="submit" className="hidden" ref={submitRef} disabled={isLoading}>
                 Submit
               </button>
             </form>

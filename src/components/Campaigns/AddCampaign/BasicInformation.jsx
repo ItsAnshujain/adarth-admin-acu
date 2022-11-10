@@ -73,8 +73,8 @@ const BasicInformation = ({ formData, setFormData }) => {
       <div className="grid grid-cols-2 gap-x-8 gap-y-4">
         <div className="flex flex-col gap-y-4">
           <TextInput
-            name="campaignName"
-            value={formData.campaignName}
+            name="name"
+            value={formData.name}
             onChange={handleChange}
             styles={styles}
             label="Campaign Name"

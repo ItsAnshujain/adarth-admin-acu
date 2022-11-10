@@ -1,29 +1,22 @@
-/* eslint-disable */
 import { Text, Pagination } from '@mantine/core';
 import classNames from 'classnames';
-import { useState } from 'react';
 import dummya from '../../../assets/dummya.png';
 import dummyb from '../../../assets/dummyb.png';
 import dummyc from '../../../assets/dummyc.png';
 import dummyd from '../../../assets/dummyd.png';
 import dummye from '../../../assets/dummye.png';
 import dummyf from '../../../assets/dummyf.png';
-import useCreateBookingSelectSpaceState from '../../../store/createBookingSelectSpace.store';
+import { useFormContext } from '../../../context/formContext';
 
 const IMAGES = [dummya, dummyb, dummyc, dummyd, dummye, dummyf];
-const initialState = new Array(IMAGES.length).fill(false);
 
 const CoverImage = () => {
-  const [checkbox, setCheckbox] = useState(initialState);
-  const selectedSpace = useCreateBookingSelectSpaceState(state => state.selectedSpace);
-  console.log(selectedSpace);
-  const handleClick = index => {
-    setCheckbox(prev => {
-      const newState = [...prev];
-      newState[index] = !prev[index];
-      return newState;
-    });
+  const { values, setFieldValue } = useFormContext();
+
+  const handleClick = img => {
+    setFieldValue('thumbnail', values.thumbnail === img ? '' : img);
   };
+
   return (
     <div className="pl-5 pr-7 mt-4 flex flex-col gap-y-4 relative mb-16">
       <Text weight="bold">Select Thumbnail Image</Text>
@@ -32,14 +25,17 @@ const CoverImage = () => {
         customer
       </Text>
       <div className="flex gap-8 flex-wrap mb-8">
-        {IMAGES.map((images, index) => (
+        {IMAGES.map(images => (
           <div
-            onClick={() => handleClick(index)}
+            aria-hidden
+            onClick={() => handleClick(images)}
             className={classNames(
-              `p-4 flex flex-col gap-y-4 border ${checkbox[index] ? 'border-purple-450' : ''} `,
+              `p-4 flex flex-col gap-y-4 border ${
+                values.thumbnail === images ? 'border-purple-450' : ''
+              } `,
             )}
           >
-            <img key={Math.random() * 1000000000000} src={images} alt="thumbnail" />
+            <img key={images} src={images} alt="thumbnail" />
             <Text weight="bold">Billboard mg road, market</Text>
             <Text className="mb-2" weight="200">
               32 mg road Kolkata, near ac market

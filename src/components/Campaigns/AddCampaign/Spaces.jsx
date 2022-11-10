@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, NumberInput, Progress } from '@mantine/core';
+import { Button, Progress } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import Filter from '../../Filter';
@@ -22,7 +22,7 @@ const SelectSpace = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [orderPrice, setOrderPrice] = useState(0);
 
-  const [inventoryQuery] = useState({ page: 1, limit: 1 });
+  const [inventoryQuery] = useState({ page: 1, limit: 1, sortBy: 'cratedAt', sortOrder: 'desc' });
   const { data: inventoryData } = useFetchInventory(serialize(inventoryQuery));
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
@@ -39,11 +39,15 @@ const SelectSpace = () => {
         obj.dimension = item.specifications.size;
         obj.impression = item.specifications.impressions.min;
         obj.health = item.specifications.health;
-        obj.location = item.location.city;
+        obj.location = item.location;
         obj.media_type = item.basicInformation.mediaType.name;
+        obj.supportedMedia = item.basicInformation.supportedMedia;
         obj.pricing = item.basicInformation.price;
         obj.landlord_name = '';
         obj.status = 'Available';
+        obj.illuminations = item.specifications.illuminations.name;
+        obj.unit = item.specifications.unit;
+        obj.resolutions = item.specifications.resolutions;
         finalData.push(obj);
       }
       setUpdatedInventoryData(finalData);
@@ -53,22 +57,39 @@ const SelectSpace = () => {
   useEffect(() => {
     const totalPrice = selectedSpace.reduce((acc, item) => acc + item.values.pricing, 0);
     setOrderPrice(totalPrice);
-    const formData = selectedSpace.map(item => ({
-      id: item.original._id,
-      price: item.original.pricing,
-    }));
+
+    const formData = selectedSpace.map(
+      ({
+        original: {
+          _id,
+          space_name,
+          photo,
+          pricing,
+          location,
+          media_type,
+          dimension,
+          illuminations,
+          unit,
+          resolutions,
+          supportedMedia,
+        },
+      }) => ({
+        id: _id,
+        space_name,
+        photo,
+        price: +pricing || 0,
+        location,
+        media_type,
+        dimension,
+        illuminations,
+        unit,
+        resolutions,
+        supportedMedia,
+      }),
+    );
+
     setFieldValue('spaces', [...formData]);
   }, [selectedSpace]);
-
-  const updatePrice = (price, id) => {
-    const copySpaces = [...updatedInventoryData];
-    for (const item of copySpaces) {
-      if (item._id === id) {
-        item.pricing = Number(price);
-      }
-    }
-    setUpdatedInventoryData([...copySpaces]);
-  };
 
   const COLUMNS = useMemo(
     () => [
@@ -204,7 +225,11 @@ const SelectSpace = () => {
       },
       {
         Header: 'LOCATION',
-        accessor: 'location',
+        Cell: ({
+          row: {
+            original: { location },
+          },
+        }) => location.city,
       },
       {
         Header: 'MEDIA TYPE',
@@ -213,24 +238,11 @@ const SelectSpace = () => {
       {
         Header: 'PRICING',
         accessor: 'pricing',
-        Cell: tableProps => {
-          const {
-            row: {
-              original: { pricing, _id },
-            },
-          } = tableProps;
-
-          return useMemo(
-            () => (
-              <NumberInput
-                hideControls
-                defaultValue={pricing}
-                onBlur={e => updatePrice(e.target.value, _id)}
-              />
-            ),
-            [],
-          );
-        },
+        Cell: ({
+          row: {
+            original: { pricing },
+          },
+        }) => pricing,
       },
       {
         Header: 'ACTION',

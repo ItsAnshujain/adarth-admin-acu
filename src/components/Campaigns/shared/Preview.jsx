@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Text, Pagination } from '@mantine/core';
-import Preview from '../../shared/Preview';
 import map from '../../../assets/mapplaceholder.png';
 import dummya from '../../../assets/dummya.png';
 import Places from '../ViewCampaigns/UI/Places';
+import Preview from '../AddCampaign/Preview';
 
 const dummyDataObj = {
   img: dummya,
