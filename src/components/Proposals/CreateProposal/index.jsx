@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as yup from 'yup';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { yupResolver } from '@mantine/form';
 import { useDebouncedState } from '@mantine/hooks';
@@ -49,12 +49,12 @@ const Main = () => {
   const form = useForm({ validate: yupResolver(schema), initialValues });
   const navigate = useNavigate();
   const { id: proposalId } = useParams();
-  const [searchParams] = useSearchParams({
-    'owner': 'all',
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'asc',
+  const [query] = useState({
+    owner: 'all',
+    page: 1,
+    limit: 10,
+    sortBy: 'createdAt',
+    sortOrder: 'asc',
   });
 
   const [selectedRow, setSelectedRow] = useState([]);
@@ -62,7 +62,7 @@ const Main = () => {
   const { mutate: create, isLoading: isCreateProposalLoading } = useCreateProposal();
   const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalData } = useFetchProposalById(
-    `${proposalId}?${searchParams.toString()}`,
+    `${proposalId}?${serialize(query)}`,
     !!proposalId,
   );
 
@@ -176,6 +176,7 @@ const Main = () => {
               formStep={formStep}
               isProposalLoading={isCreateProposalLoading || isUpdateProposalLoading}
               isEditable={!!proposalId}
+              proposalId={proposalId}
             />
           </div>
           {getForm()}

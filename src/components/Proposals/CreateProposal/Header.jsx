@@ -5,11 +5,11 @@ import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Basic Information', 'Specifications'];
 
-const Header = ({ setFormStep, formStep, isProposalLoading, isEditable }) => {
+const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposalId }) => {
   const navigate = useNavigate();
   const handleBack = () => {
     if (formStep === 1) {
-      navigate(-1);
+      navigate(`/proposals/view-details/${proposalId}`, { replace: true });
     } else {
       setFormStep(formStep - 1);
     }

@@ -11,7 +11,7 @@ import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
 import MenuPopover from './MenuPopover';
 import { useFetchInventory } from '../../hooks/inventory.hooks';
-import { colors, serialize } from '../../utils';
+import { colors } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
 import Filter from '../Inventory/Filter';
 
@@ -28,15 +28,16 @@ const Spaces = ({
   const ref = useClickOutside(() => setShowDatePicker(false));
   const [updatedSpaces, setUpdatedSpaces] = useState([]);
   const [totalProposedPrice, setTotalProposedPrice] = useState(0);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [showFilter, setShowFilter] = useState(false);
-  const [query] = useState({
-    limit: 10,
-    page: 1,
+  const [searchParams, setSearchParams] = useSearchParams({
+    'limit': 10,
+    'page': 1,
+    'sortOrder': 'asc',
+    'sortBy': 'basicInformation.spaceName',
   });
+  const [showFilter, setShowFilter] = useState(false);
 
   const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
-    serialize(query),
+    searchParams.toString(),
   );
   const page = searchParams.get('page');
 
@@ -252,13 +253,8 @@ const Spaces = ({
         }) => useMemo(() => <MenuPopover itemId={_id} />, []),
       },
     ],
-    [inventoryData?.docs],
+    [updatedSpaces],
   );
-
-  const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    setSearchParams(searchParams);
-  };
 
   const calcutateTotalPrice = useMemo(() => {
     const initialCost = 0;
@@ -286,6 +282,16 @@ const Spaces = ({
       setUpdatedSpaces(arrOfUpdatedPrices);
     }
   }, [inventoryData?.docs]);
+
+  const handleSearch = () => {
+    searchParams.set('search', searchInput);
+    setSearchParams(searchParams);
+  };
+
+  const handlePagination = currentPage => {
+    searchParams.set('page', currentPage);
+    setSearchParams(searchParams);
+  };
 
   useEffect(() => {
     handleSearch();
@@ -346,7 +352,7 @@ const Spaces = ({
           <Text size="sm" className="text-purple-450">
             Total Places{' '}
             <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-              {inventoryData?.docs?.length}
+              {inventoryData?.docs?.length || updatedSpaces.length}
             </span>
           </Text>
 
@@ -358,15 +364,19 @@ const Spaces = ({
           <Loader />
         </div>
       ) : null}
-      {inventoryData?.docs?.length === 0 && !isLoadingInventoryData ? (
+      {(inventoryData?.docs?.length === 0 || updatedSpaces?.length === 0) &&
+      !isLoadingInventoryData ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-      {inventoryData?.docs?.length ? (
+      {inventoryData?.docs?.length || updatedSpaces ? (
         <Table
-          data={updatedSpaces}
           COLUMNS={COLUMNS}
+          data={updatedSpaces}
+          activePage={inventoryData?.page || 1}
+          totalPages={inventoryData?.totalPages || 1}
+          setActivePage={handlePagination}
           allowRowsSelect
           setSelectedFlatRows={setSelectedRow}
           selectedRowData={selectedRowData}

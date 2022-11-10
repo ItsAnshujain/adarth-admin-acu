@@ -22,7 +22,6 @@ const ProposalDetails = () => {
   const modals = useModals();
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
-  const [count, setCount] = useState('10');
   const [showFilter, setShowFilter] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
@@ -42,7 +41,8 @@ const ProposalDetails = () => {
     `${proposalId}?${searchParams.toString()}`,
   );
 
-  const page = 1; // TODO: make api changes for pagination in spaces array
+  const page = searchParams.get('page');
+  const limit = searchParams.get('limit');
 
   const toggleImagePreviewModal = imgSrc =>
     modals.openContextModal('basic', {
@@ -78,7 +78,7 @@ const ProposalDetails = () => {
             if (page < 1) {
               currentPage = 1;
             }
-            rowCount = (currentPage - 1) * count;
+            rowCount = (currentPage - 1) * limit;
             return <div className="pl-2">{rowCount + row.index + 1}</div>;
           }, []),
       },
@@ -233,6 +233,16 @@ const ProposalDetails = () => {
     setSearchParams(searchParams);
   };
 
+  const handleRowCount = currentLimit => {
+    searchParams.set('limit', currentLimit);
+    setSearchParams(searchParams);
+  };
+
+  const handlePagination = currentPage => {
+    searchParams.set('page', currentPage);
+    setSearchParams(searchParams);
+  };
+
   useEffect(() => {
     handleSearch();
     if (searchInput === '') {
@@ -273,7 +283,7 @@ const ProposalDetails = () => {
       </div>
 
       <div className="flex justify-between h-20 items-center pr-7">
-        <RowsPerPage setCount={setCount} count={count} />
+        <RowsPerPage setCount={handleRowCount} count={limit} />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       {isProposalDataLoading ? (
@@ -288,7 +298,14 @@ const ProposalDetails = () => {
       ) : null}
       <div>
         {proposalData?.inventories?.docs?.length ? (
-          <Table COLUMNS={COLUMNS} data={proposalData?.inventories?.docs || []} />
+          <Table
+            COLUMNS={COLUMNS}
+            data={proposalData?.inventories?.docs || []}
+            activePage={proposalData?.inventories?.page || 1}
+            totalPages={proposalData?.inventories?.totalPages || 1}
+            setActivePage={handlePagination}
+            rowCountLimit={limit}
+          />
         ) : null}
       </div>
     </div>
