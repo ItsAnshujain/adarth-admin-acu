@@ -1,4 +1,4 @@
-import { Text, Pagination } from '@mantine/core';
+import { Text } from '@mantine/core';
 import classNames from 'classnames';
 import dummya from '../../../assets/dummya.png';
 import dummyb from '../../../assets/dummyb.png';

@@ -1,7 +1,6 @@
 import { useFormContext } from '../../../context/formContext';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
-
 import AutoCompleteLocationInput from '../../AutoCompleteLocationInput';
 import NativeSelect from '../../shared/NativeSelect';
 import NumberInput from '../../shared/NumberInput';
