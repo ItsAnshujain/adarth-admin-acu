@@ -132,7 +132,7 @@ const SelectSpace = () => {
             () => (
               <div
                 aria-hidden
-                onClick={() => navigate(`view-details/${id}`)}
+                onClick={() => navigate(`/view-details/${id}`)}
                 className="grid grid-cols-2 gap-2 items-center cursor-pointer"
               >
                 <div className="flex flex-1 gap-2 items-center w-44">

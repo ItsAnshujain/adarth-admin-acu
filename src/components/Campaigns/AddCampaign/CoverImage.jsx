@@ -1,4 +1,4 @@
-import { Text, Pagination } from '@mantine/core';
+import { Text } from '@mantine/core';
 import classNames from 'classnames';
 import dummya from '../../../assets/dummya.png';
 import dummyb from '../../../assets/dummyb.png';
@@ -36,7 +36,7 @@ const CoverImage = () => {
               } `,
             )}
           >
-            <img key={images} src={images} alt="thumbnail" />
+            <img src={images} alt="thumbnail" />
             <Text weight="bold">Billboard mg road, market</Text>
             <Text className="mb-2" weight="200">
               32 mg road Kolkata, near ac market
