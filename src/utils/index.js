@@ -1,3 +1,5 @@
+import { geocodeByAddress, getLatLng } from 'react-google-places-autocomplete';
+
 export const serialize = object => {
   const str = [];
   for (const p in object) {
@@ -89,4 +91,15 @@ export const ROLES = {
   MANAGER: 'manager',
   SUPERVISOR: 'supervisor',
   ASSOCIATE: 'associate',
+};
+
+/**
+ * Get latitute and longitude from address
+ * @param {string} address - Address to get latitute and longitude
+ * @returns {Promise} - Returns an promise which resolves into object with latitute and longitude
+ */
+export const getLatituteLongitude = async address => {
+  const results = await geocodeByAddress(address);
+  const latLng = await getLatLng(results[0]);
+  return latLng;
 };

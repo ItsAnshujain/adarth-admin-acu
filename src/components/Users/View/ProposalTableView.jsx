@@ -9,7 +9,7 @@ import Table from '../../Table/Table';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
-const ProposalTableView = () => {
+const ProposalTableView = ({ viewType }) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
@@ -18,7 +18,8 @@ const ProposalTableView = () => {
     'sortOrder': 'asc',
   });
   const { data: proposalsData, isLoading: isLoadingProposalsData } = useFetchProposals(
-    searchParams.toString(),
+    viewType ? searchParams.toString() : null,
+    viewType,
   );
 
   const page = searchParams.get('page');
