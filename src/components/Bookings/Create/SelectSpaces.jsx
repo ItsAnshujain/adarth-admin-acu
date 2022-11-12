@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, NumberInput, Progress } from '@mantine/core';
+import { Button, Image, NumberInput, Progress } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import Filter from '../../Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
-import useCreateBookingSelectSpaceState from '../../../store/createBookingSelectSpace.store';
 import { useFetchInventory } from '../../../hooks/inventory.hooks';
 import { serialize } from '../../../utils/index';
 import Badge from '../../shared/Badge';
@@ -15,14 +14,18 @@ import upload from '../../../assets/upload.svg';
 import { useFormContext } from '../../../context/formContext';
 
 const SelectSpace = () => {
-  const { setFieldValue } = useFormContext();
+  const { setFieldValue, values } = useFormContext();
 
   const [search, setSearch] = useState('');
-  const selectedSpace = useCreateBookingSelectSpaceState(state => state.selectedSpace);
   const [showFilter, setShowFilter] = useState(false);
   const [orderPrice, setOrderPrice] = useState(0);
 
-  const [inventoryQuery] = useState({ page: 1, limit: 1 });
+  const [inventoryQuery] = useState({
+    page: 1,
+    limit: 1,
+    sortOrder: 'asc',
+    sortBy: 'basicInformation.spaceName',
+  });
   const { data: inventoryData } = useFetchInventory(serialize(inventoryQuery));
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
@@ -30,18 +33,19 @@ const SelectSpace = () => {
   useEffect(() => {
     if (inventoryData) {
       const finalData = [];
+
       for (const item of inventoryData.docs) {
         const obj = {};
         obj.photo = item.basicInformation.spacePhotos;
         obj._id = item._id;
         obj.space_name = item.basicInformation.spaceName;
-        obj.space_type = item.basicInformation.spaceType;
+        obj.space_type = item.basicInformation.spaceType?.name;
         obj.dimension = item.specifications.resolutions;
         obj.dimension = item.specifications.resolutions;
         obj.impression = item.specifications.impressions.min;
         obj.health = item.specifications.health;
         obj.location = item.location.city;
-        obj.media_type = item.basicInformation.mediaType;
+        obj.media_type = item.basicInformation.mediaType?.name;
         obj.pricing = item.basicInformation.price;
         obj.landlord_name = '';
         obj.status = 'Available';
@@ -51,15 +55,15 @@ const SelectSpace = () => {
     }
   }, [inventoryData]);
 
-  useEffect(() => {
+  const setSelectedFlatRows = selectedSpace => {
     const totalPrice = selectedSpace.reduce((acc, item) => acc + item.values.pricing, 0);
     setOrderPrice(totalPrice);
     const formData = selectedSpace.map(item => ({
       id: item.original._id,
       price: item.original.pricing,
     }));
-    setFieldValue('spaces', [...formData]);
-  }, [selectedSpace]);
+    setFieldValue('spaces', formData);
+  };
 
   const updatePrice = (price, id) => {
     const copySpaces = [...updatedInventoryData];
@@ -97,14 +101,25 @@ const SelectSpace = () => {
             () => (
               <div
                 aria-hidden
-                onClick={() => navigate(`view-details/${id}`)}
+                onClick={() => navigate(`/bookings/view-details/${id}`)}
                 className="grid grid-cols-2 gap-2 items-center cursor-pointer"
               >
                 <div className="flex flex-1 gap-2 items-center w-44">
-                  <div className="bg-white h-8 w-8 border rounded-md">
-                    <img className="h-8 w-8 mx-auto" src={photo} alt="banner" />
-                  </div>
-                  <p>{space_name}</p>
+                  <Image
+                    withPlaceholder
+                    height={30}
+                    width={30}
+                    fit="cover"
+                    className="rounded overflow-hidden"
+                    src={photo}
+                    alt={space_name}
+                  />
+                  <span
+                    title={space_name}
+                    className="w-[150px] text-ellipsis overflow-hidden whitespace-nowrap"
+                  >
+                    {space_name}
+                  </span>
                 </div>
                 <div className="w-fit">
                   <Badge radius="xl" text={status} color={color} variant="filled" size="sm" />
@@ -139,8 +154,8 @@ const SelectSpace = () => {
 
           return useMemo(
             () =>
-              selectedSpace.length > 0 ? (
-                selectedSpace.map(selected => {
+              values?.spaces.length > 0 ? (
+                values?.spaces.map(selected => {
                   if (selected.original._id === id) {
                     return (
                       <button
@@ -178,7 +193,7 @@ const SelectSpace = () => {
           const {
             cell: { value },
           } = tableProps;
-          return useMemo(() => <p>{`${value.height}ft x ${value.width}ft`}</p>, []);
+          return useMemo(() => <p>{`${value.height || 0}ft x ${value.width || 0}ft`}</p>, []);
         },
       },
       {
@@ -284,7 +299,7 @@ const SelectSpace = () => {
         <div className="flex gap-4">
           <div>
             <p className="text-slate-400">Selected Places</p>
-            <p className="font-bold">{selectedSpace.length}</p>
+            <p className="font-bold">{values?.spaces?.length || 0}</p>
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
@@ -302,7 +317,16 @@ const SelectSpace = () => {
           <Search search={search} setSearch={setSearch} />
         </div>
       </div>
-      <Table data={updatedInventoryData} COLUMNS={COLUMNS} allowRowsSelect isBookingTable />
+      <Table
+        data={updatedInventoryData}
+        COLUMNS={COLUMNS}
+        allowRowsSelect
+        isBookingTable
+        setSelectedFlatRows={setSelectedFlatRows}
+        selectedRowData={values?.spaces?.map(item => ({
+          _id: item.id,
+        }))}
+      />
     </>
   );
 };

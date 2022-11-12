@@ -12,11 +12,11 @@ const styles = {
   },
   input: {
     borderRadius: 0,
-    padding: 8,
   },
 };
 const BasicInfo = () => {
   const { errors, setFieldValue } = useFormContext();
+
   return (
     <div className="pl-5 pr-7 mt-4">
       <p className="text-xl font-bold">Basic Information</p>
@@ -41,7 +41,11 @@ const BasicInfo = () => {
             name="paymentType"
             errors={errors}
             className="mr-2"
-            data={['neft', 'cheque', 'rtgs']}
+            data={[
+              { label: 'NEFT', value: 'neft' },
+              { label: 'RTGS', value: 'rtgs' },
+              { label: 'CHEQUE', value: 'cheque' },
+            ]}
             rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
             rightSectionWidth={40}
             onChange={e => setFieldValue('paymentType', e.target.value)}
