@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
 import { Accordion, Button, Drawer, NumberInput, Radio, RangeSlider } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
+import { useMemo, useState, useEffect } from 'react';
 import { serialize } from '../../utils';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 
@@ -25,55 +25,50 @@ const defaultValue = {
   totalSpacesMax: 0,
 };
 
-const MinMaxField = ({ state, minKey, maxKey, setState, label }) => (
-  <Accordion.Item value="price" className="mb-4 rounded-xl border">
-    <Accordion.Control>
-      <p className="text-lg">{label}</p>
-    </Accordion.Control>
-    <Accordion.Panel>
-      <div className="mt-2">
-        <div className="flex flex-col gap-2 mb-2">
-          <div className="flex justify-between gap-8">
-            <div>
-              <NumberInput
-                value={state[minKey]}
-                onChange={val => setState(p => ({ ...p, [minKey]: val }))}
-                label="Min"
-              />
+const MinMaxField = ({ minKey, maxKey, setQuery, state, label }) => {
+  const min = state[minKey];
+  const max = state[maxKey];
+
+  return (
+    <Accordion.Item value="price" className="mb-4 rounded-xl border">
+      <Accordion.Control>
+        <p className="text-lg">{label}</p>
+      </Accordion.Control>
+      <Accordion.Panel>
+        <div className="mt-2">
+          <div className="flex flex-col gap-2 mb-2">
+            <div className="flex justify-between gap-8">
+              <div>
+                <NumberInput value={min} onChange={val => setQuery(minKey, val)} label="Min" />
+              </div>
+              <div>
+                <NumberInput value={max} onChange={val => setQuery(maxKey, val)} label="Max" />
+              </div>
             </div>
             <div>
-              <NumberInput
-                value={state.priceMax}
-                onChange={val => setState(p => ({ ...p, [maxKey]: val }))}
-                label="Max"
+              <RangeSlider
+                onChange={val => {
+                  setQuery(minKey, val[0]);
+                  setQuery(maxKey, val[1]);
+                }}
+                min={0}
+                max={10000}
+                styles={sliderStyle}
+                value={[min, max]}
+                defaultValue={[0, 10000]}
               />
             </div>
-          </div>
-          <div>
-            <RangeSlider
-              onChange={val => setState(p => ({ ...p, [minKey]: val[0], [maxKey]: val[1] }))}
-              min={0}
-              max={10000}
-              styles={sliderStyle}
-              value={[state[minKey], state[maxKey]]}
-              defaultValue={[0, 10000]}
-            />
           </div>
         </div>
-      </div>
-    </Accordion.Panel>
-  </Accordion.Item>
-);
+      </Accordion.Panel>
+    </Accordion.Item>
+  );
+};
 
-const CampaignFilter = ({
-  isOpened,
-  onApply = () => {},
-  onReset = () => {},
-  onClose = () => {},
-}) => {
-  const [searchParams] = useSearchParams();
-
+const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [state, setState] = useState(defaultValue);
+
   const { data: campaignStatus } = useFetchMasters(
     serialize({ type: 'campaign_status', limit: 10 }),
   );
@@ -81,13 +76,22 @@ const CampaignFilter = ({
   const { data: campaignTypes } = useFetchMasters(serialize({ type: 'campaign_type', limit: 10 }));
 
   const handleApply = () => {
-    onApply(state);
+    setSearchParams(searchParams);
     onClose();
   };
 
   const handleReset = () => {
+    Object.keys(defaultValue).forEach(item => {
+      searchParams.delete(item);
+    });
+    setSearchParams(searchParams);
     setState(defaultValue);
-    onReset();
+  };
+
+  const setQuery = (key, val) => {
+    setState(p => ({ ...p, [key]: val }));
+    if (val) searchParams.set(key, val);
+    else searchParams.delete(key);
   };
 
   useEffect(() => {
@@ -105,7 +109,7 @@ const CampaignFilter = ({
       }
     });
 
-    setState(obj);
+    setState(p => ({ ...p, ...obj }));
   }, []);
 
   return (
@@ -141,12 +145,11 @@ const CampaignFilter = ({
             <Accordion.Panel>
               <div className="mt-2">
                 {campaignStatus?.docs?.map(item => (
-                  <div className="flex gap-2 mb-2" key={item.name}>
+                  <div className="flex gap-2 mb-2" key={item._id}>
                     <Radio
-                      onChange={() => setState(p => ({ ...p, status: item.name }))}
+                      onChange={() => setQuery('status', item._id)}
                       label={item.name}
-                      defaultValue={item}
-                      checked={state.status === item.name}
+                      checked={state.status === item._id}
                     />
                   </div>
                 ))}
@@ -160,12 +163,12 @@ const CampaignFilter = ({
             <Accordion.Panel>
               <div className="mt-2">
                 {campaignTypes?.docs?.map(item => (
-                  <div className="flex gap-2 mb-2" key={item.name}>
+                  <div className="flex gap-2 mb-2" key={item._id}>
                     <Radio
-                      onChange={() => setState(p => ({ ...p, status: item.name }))}
+                      onChange={() => setQuery('type', item._id)}
                       label={item.name}
                       defaultValue={item}
-                      checked={state.status === item.name}
+                      checked={state.type === item._id}
                     />
                   </div>
                 ))}
@@ -176,22 +179,22 @@ const CampaignFilter = ({
             label="Price"
             minKey="priceMin"
             maxKey="priceMax"
+            setQuery={setQuery}
             state={state}
-            setState={setState}
           />
           <MinMaxField
             label="Health"
             minKey="healthMin"
             maxKey="healthMax"
+            setQuery={setQuery}
             state={state}
-            setState={setState}
           />
           <MinMaxField
             label="Total Spaces"
             minKey="totalSpacesMin"
             maxKey="totalSpacesMax"
+            setQuery={setQuery}
             state={state}
-            setState={setState}
           />
         </Accordion>
       </div>

@@ -1,45 +1,62 @@
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { Button } from '@mantine/core';
 import { RangeCalendar, DatePicker } from '@mantine/dates';
 import { Calendar } from 'react-feather';
 
-const DateRange = ({ handleClose = () => {} }) => {
-  const navigate = useNavigate();
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate'] }) => {
   const [value, setValue] = useState([null, null]);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const handleSetStartDate = startingDate => {
-    setStartDate(startingDate);
+    searchParams.set('startDate', startingDate.toIsoString());
     setValue(prev => {
-      if (endDate < startingDate) return [startingDate, null];
+      if (prev[1] < startingDate) return [startingDate, null];
       return [startingDate, prev[1]];
     });
   };
+
   const handleSetEndDate = endingDate => {
-    setEndDate(endingDate);
+    searchParams.set('endDate', endingDate.toIsoString());
     setValue(prev => {
-      if (endingDate < startDate) return [null, endingDate];
+      if (endingDate < prev[0]) return [null, endingDate];
       return [prev[0], endingDate];
     });
   };
 
   const handleRangeSetting = val => {
-    setStartDate(val[0]);
-    setEndDate(val[1]);
     if (val[1] < val[0]) {
       setValue([null, val[1]]);
+      searchParams.set('endDate', val[1]);
+      searchParams.delete('startDate');
+
       return;
     }
+
+    dateKeys.forEach((item, index) => {
+      if (val[index]) searchParams.set(item, val[index]);
+      else searchParams.delete(item);
+    });
     setValue(val);
   };
 
   const handleClear = () => {
-    setStartDate(null);
-    setEndDate(null);
-    setValue(null);
+    setValue([null, null]);
+    dateKeys.forEach(item => searchParams.delete(item));
+    setSearchParams(searchParams);
   };
+
+  useEffect(() => {
+    setValue(p => {
+      const newState = [...p];
+      dateKeys.forEach((item, index) => {
+        newState[index] = new Date(searchParams.get(item)) || null;
+      });
+
+      return newState;
+    });
+  }, []);
 
   return (
     <div className="flex flex-col w-[605px] p-8 shadow-2xl">
@@ -56,7 +73,8 @@ const DateRange = ({ handleClose = () => {} }) => {
           </Button>
           <Button
             onClick={() => {
-              navigate(`?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`);
+              setSearchParams(searchParams);
+              handleClose();
             }}
             className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
           >
@@ -74,14 +92,14 @@ const DateRange = ({ handleClose = () => {} }) => {
           <DatePicker
             clearable={false}
             onChange={handleSetStartDate}
-            value={startDate}
+            value={value[0]}
             icon={<Calendar className="text-black absolute left-[500%]" />}
           />
           <p className="font-bold mt-3">Date To</p>
           <DatePicker
             clearable={false}
             onChange={handleSetEndDate}
-            value={endDate}
+            value={value[1]}
             icon={<Calendar className="text-black absolute left-[500%]" />}
           />
         </div>

@@ -1,6 +1,7 @@
 import { showNotification } from '@mantine/notifications';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
+  campaign,
   campaigns,
   createCampaign,
   deleteCampaign,
@@ -19,6 +20,18 @@ export const useCampaigns = (query, enabled = true) =>
     },
   );
 
+export const useCampaign = (id, enabled = true) =>
+  useQuery(
+    ['campaign', id],
+    async () => {
+      const res = await campaign(id);
+      return res.data;
+    },
+    {
+      enabled: !!id && enabled,
+    },
+  );
+
 export const useCreateCampaign = () =>
   useMutation(
     async data => {
@@ -26,6 +39,12 @@ export const useCreateCampaign = () =>
       return res.data;
     },
     {
+      onSuccess: data => {
+        showNotification({
+          title: data?.message,
+          color: 'green',
+        });
+      },
       onError: err => {
         showNotification({
           title: err?.message,
@@ -42,6 +61,12 @@ export const useUpdateCampaign = () =>
       return res.data;
     },
     {
+      onSuccess: data => {
+        showNotification({
+          title: data?.message,
+          color: 'green',
+        });
+      },
       onError: err => {
         showNotification({
           title: err?.message,
@@ -58,6 +83,12 @@ export const useDeleteCampaign = () =>
       return res.data;
     },
     {
+      onSuccess: data => {
+        showNotification({
+          title: data?.message,
+          color: 'green',
+        });
+      },
       onError: err => {
         showNotification({
           title: err?.message,

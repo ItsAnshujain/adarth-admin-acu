@@ -1,21 +1,26 @@
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Header from './Header';
-import PreviewCampaign from '../shared/Preview';
 import SpacesList from './SpacesList';
 import TotalBookings from './TotalBookings';
-import data from '../../../Dummydata/CAMPAIGN_SPACES.json';
+import sp from '../../../Dummydata/CAMPAIGN_SPACES.json';
 import column from './columnSpaceList';
 import bookingdata from '../../../Dummydata/BOOKING_DATA.json';
 import bookingColumn from './columnTotalBooking';
+import Preview from '../AddCampaign/Preview';
+
+import { useCampaign } from '../../../hooks/campaigns.hooks';
 
 const View = () => {
   const [tabs, setTabs] = useState(0);
+  const { id } = useParams();
+  const { data } = useCampaign(id);
 
   const getTabs = () =>
     tabs === 0 ? (
-      <PreviewCampaign />
+      <Preview data={data} />
     ) : tabs === 1 ? (
-      <SpacesList data={data} columns={column} />
+      <SpacesList data={sp} columns={column} />
     ) : (
       <TotalBookings data={bookingdata} columns={bookingColumn} />
     );
