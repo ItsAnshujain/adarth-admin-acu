@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Basic Information', 'Select Spaces', 'Cover Image'];
 
-const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
+const Header = ({ setFormStep, formStep, setOpenSuccessModal, submitRef }) => {
   const navigate = useNavigate();
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -65,17 +65,7 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal }) => {
           Back
         </Button>
 
-        <Button
-          onClick={() => {
-            if (formStep <= 2) setFormStep(formStep + 1);
-            if (formStep === 4) {
-              setOpenSuccessModal(true);
-              return;
-            }
-            setFormStep(formStep + 1);
-          }}
-          className="bg-purple-450"
-        >
+        <Button onClick={() => submitRef.current?.click()} className="bg-purple-450">
           {formStep === 3 ? 'Preview' : formStep === 4 ? 'Save' : 'Next'}
           {formStep < 3 && <ChevronRight className="ml-1 h-4" />}
         </Button>

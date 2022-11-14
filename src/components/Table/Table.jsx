@@ -6,6 +6,7 @@ import IndeterminateCheckbox from './Checkbox';
 import Ascending from '../../assets/Icons/Ascending';
 import Descending from '../../assets/Icons/Descending';
 
+// TODO: FIX table selected rows issue
 const Table = ({
   COLUMNS,
   data = [],

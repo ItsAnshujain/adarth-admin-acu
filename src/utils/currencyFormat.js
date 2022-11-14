@@ -1,4 +1,4 @@
-const toIndianCurrency = num => {
+const toIndianCurrency = (num = 0) => {
   const curr = num.toLocaleString('en-IN', {
     style: 'currency',
     currency: 'INR',
