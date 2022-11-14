@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Badge } from '@mantine/core';
 import PreviewCard from './UI/PreviewCard';
 import DragDropCard from './UI/DragDropCard';
 import { useFormContext } from '../../../context/formContext';
@@ -66,7 +67,11 @@ const Documents = ({ documents }) => {
 
   return (
     <div className="pl-5 pr-7 mt-4">
-      <p className="text-xl font-bold mb-8">Documents of the associates</p>
+      <p className="text-xl font-bold">Documents of the associates</p>
+      <p className="text-sm mb-8">
+        <span className="font-bold text-gray-500">Supported types</span>: <Badge>JPEG</Badge>{' '}
+        <Badge>JPG</Badge> <Badge>PNG</Badge>
+      </p>
 
       <div className="grid grid-cols-4 gap-8">
         {uploadImageList?.map((doc, index) => (
