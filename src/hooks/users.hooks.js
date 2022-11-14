@@ -9,7 +9,7 @@ import {
   updateUsers,
 } from '../requests/users.requests';
 
-export const useFetchUsers = (query, enabled = true) =>
+export const useFetchUsers = (query, enabled = true, retry = true) =>
   useQuery(
     ['users', query],
     async () => {
@@ -18,6 +18,7 @@ export const useFetchUsers = (query, enabled = true) =>
     },
     {
       enabled,
+      retry,
     },
   );
 

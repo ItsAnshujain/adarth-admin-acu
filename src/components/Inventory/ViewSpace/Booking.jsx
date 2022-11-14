@@ -22,7 +22,7 @@ const Booking = () => {
     'page': 1,
     'limit': 10,
     'sortBy': 'createdAt',
-    'sortOrder': 'asc',
+    'sortOrder': 'desc',
   });
 
   const page = searchParams.get('page');

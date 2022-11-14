@@ -73,7 +73,7 @@ const MainArea = () => {
         <form onSubmit={form.onSubmit(onSubmitUserForm)}>
           <Header
             isLoading={isLoading || isPeersLoading}
-            disabled={isLoading || isPeersLoading}
+            disabled={isLoading || isPeersLoading || !!form.errors.searchEmail}
             type={type}
           />
           <Credentials setType={setType} setPeerId={setPeerId} />

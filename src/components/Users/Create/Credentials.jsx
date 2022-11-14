@@ -30,7 +30,7 @@ const styles = {
 };
 
 const Credentials = ({ setType, setPeerId }) => {
-  const { errors } = useFormContext();
+  const { errors, setFieldError } = useFormContext();
   const [filter, setFilter] = useState('Team');
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const handleFilter = val => {
@@ -45,7 +45,11 @@ const Credentials = ({ setType, setPeerId }) => {
     'filter': 'peer',
   });
 
-  const { data: userData } = useFetchUsers(searchParams.toString(), searchInput !== '');
+  const { data: userData, isError } = useFetchUsers(
+    searchParams.toString(),
+    searchInput !== '',
+    false,
+  );
 
   const emailValidation = email => {
     if (!email || regex.test(email) === false) {
@@ -72,6 +76,10 @@ const Credentials = ({ setType, setPeerId }) => {
       setPeerId(userData?._id);
     }
   }, [searchInput, userData]);
+
+  useEffect(() => {
+    setFieldError('searchEmail', isError ? 'User does not exist' : '');
+  }, [isError]);
 
   return (
     <div className="pl-5 pr-7 mt-4">
@@ -123,6 +131,7 @@ const Credentials = ({ setType, setPeerId }) => {
             <TextInput
               label="Search Email ID"
               styles={styles}
+              name="searchEmail"
               withAsterisk
               errors={errors}
               placeholder="Search Email ID"
