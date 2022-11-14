@@ -237,7 +237,7 @@ const Home = () => {
   );
 
   const setQuery = (key, val) => {
-    if ([undefined, '', val].includes(val)) searchParams.set(key, val);
+    if (![undefined, '', null].includes(val)) searchParams.set(key, val);
     else searchParams.delete(key);
     setSearchParams(searchParams);
   };

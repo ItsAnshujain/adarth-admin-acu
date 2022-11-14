@@ -20,6 +20,7 @@ const View = () => {
     tabs === 0 ? (
       <Preview data={data} />
     ) : tabs === 1 ? (
+      // TODO: replace with data after api is done
       <SpacesList data={sp} columns={column} />
     ) : (
       <TotalBookings data={bookingdata} columns={bookingColumn} />
