@@ -13,7 +13,7 @@ const initialState = {
   list: { fill: false },
 };
 
-const AreaHeader = ({ text, setView, onApplyFilter, onResetFilter }) => {
+const AreaHeader = ({ text, setView }) => {
   const navigate = useNavigate();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -94,12 +94,7 @@ const AreaHeader = ({ text, setView, onApplyFilter, onResetFilter }) => {
             <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
           </Button>
           {showFilter && (
-            <CampaignFilter
-              isOpened={showFilter}
-              onApply={onApplyFilter}
-              onReset={onResetFilter}
-              onClose={() => setShowFilter(!showFilter)}
-            />
+            <CampaignFilter isOpened={showFilter} onClose={() => setShowFilter(!showFilter)} />
           )}
         </div>
         <div className="relative">

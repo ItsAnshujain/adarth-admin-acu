@@ -6,7 +6,6 @@ import Filter from '../../Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
-import useCreateBookingSelectSpaceState from '../../../store/createBookingSelectSpace.store';
 import { useFetchInventory } from '../../../hooks/inventory.hooks';
 import { serialize } from '../../../utils/index';
 import Badge from '../../shared/Badge';
@@ -23,13 +22,9 @@ const getHealthTag = score => {
 };
 
 const SelectSpace = () => {
-  const { setFieldValue } = useFormContext();
+  const { setFieldValue, values } = useFormContext();
 
   const [search, setSearch] = useState('');
-  const { selectedSpace, setSelectedSpace } = useCreateBookingSelectSpaceState(state => ({
-    selectedSpace: state.selectedSpace,
-    setSelectedSpace: state.setSelectedSpace,
-  }));
   const [showFilter, setShowFilter] = useState(false);
   const [orderPrice, setOrderPrice] = useState(0);
 
@@ -65,7 +60,7 @@ const SelectSpace = () => {
     }
   }, [inventoryData]);
 
-  useEffect(() => {
+  const setSelectedSpace = selectedSpace => {
     const totalPrice = selectedSpace.reduce((acc, item) => acc + item.values.pricing, 0);
     setOrderPrice(totalPrice);
 
@@ -102,9 +97,9 @@ const SelectSpace = () => {
       }),
     );
 
-    setFieldValue('spaces', [...formData]);
+    setFieldValue('place', [...formData]);
     setFieldValue('healthTag', getHealthTag(avgHealth));
-  }, [selectedSpace]);
+  };
 
   const COLUMNS = useMemo(
     () => [
@@ -132,7 +127,7 @@ const SelectSpace = () => {
             () => (
               <div
                 aria-hidden
-                onClick={() => navigate(`view-details/${id}`)}
+                onClick={() => navigate(`/view-details/${id}`)}
                 className="grid grid-cols-2 gap-2 items-center cursor-pointer"
               >
                 <div className="flex flex-1 gap-2 items-center w-44">
@@ -174,8 +169,8 @@ const SelectSpace = () => {
 
           return useMemo(
             () =>
-              selectedSpace.length > 0 ? (
-                selectedSpace.map(selected => {
+              values?.place.length > 0 ? (
+                values?.place.map(selected => {
                   if (selected.original._id === id) {
                     return (
                       <button
@@ -310,7 +305,7 @@ const SelectSpace = () => {
         <div className="flex gap-4">
           <div>
             <p className="text-slate-400">Selected Places</p>
-            <p className="font-bold">{selectedSpace.length}</p>
+            <p className="font-bold">{values?.place?.length}</p>
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
@@ -334,6 +329,7 @@ const SelectSpace = () => {
         allowRowsSelect
         isBookingTable
         setSelectedFlatRows={setSelectedSpace}
+        selectedRowData={values?.place?.map(item => ({ _id: item.id }))}
       />
     </>
   );

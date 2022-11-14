@@ -98,7 +98,7 @@ const initialValues = {
     gstNumber: '',
   },
   paymentReference: '',
-  paymentType: '',
+  paymentType: 'NEFT',
   campaignName: '',
   description: '',
   spaces: [],

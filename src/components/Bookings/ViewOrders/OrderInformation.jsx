@@ -63,7 +63,7 @@ const OrderInformation = ({ bookingData }) => {
           <div className="border rounded p-8  pr-20">
             <img src={completed} alt="ongoing" />
             <p className="my-2 text-xs font-lighter mt-3 text-muted">Total Places</p>
-            <p className="font-bold">386387</p>
+            <p className="font-bold">{bookingData?.totalSpaces || 0}</p>
           </div>
         </div>
         <div>
@@ -81,7 +81,7 @@ const OrderInformation = ({ bookingData }) => {
             </div>
             <div>
               <p className="text-slate-400">Price</p>
-              <p className="font-bold">{toIndianCurrency(bookingData?.totalPrice || 0)}</p>
+              <p className="font-bold">{toIndianCurrency(bookingData?.totalPrice)}</p>
             </div>
             <div>
               <p className="text-slate-400">Start Date</p>
@@ -117,7 +117,7 @@ const OrderInformation = ({ bookingData }) => {
             </div>
             <div>
               <p className="text-slate-400">Booking Type</p>
-              <p className="font-bold">Online</p>
+              <p className="font-bold">{bookingData?.type}</p>
             </div>
             <div>
               <p className="text-slate-400">Mounting Status</p>
@@ -140,15 +140,15 @@ const OrderInformation = ({ bookingData }) => {
           <div className="flex p-4 gap-8 border  flex-wrap">
             <div>
               <p className="text-slate-400">Campaign Id</p>
-              <p className="font-bold">#347894743</p>
+              <p className="font-bold">#{bookingData.campaign?._id}</p>
             </div>
             <div>
               <p className="text-slate-400">Campaign Name</p>
-              <p className="font-bold">Kolkata South City and New Town Campaign</p>
+              <p className="font-bold">{bookingData.campaign?.name}</p>
             </div>
             <div>
               <p className="text-slate-400">Booking Status</p>
-              <p className="font-bold">Booked</p>
+              <p className="font-bold">{bookingData.campaign?.status}</p>
             </div>
             <div>
               <p className="text-slate-400">Campaing Incharge</p>

@@ -19,29 +19,25 @@ import { useFetchMasters } from '../../hooks/masters.hooks';
 
 const initialState = {
   page: 1,
-  limit: 10,
+  limit: '10',
   sortBy: 'name',
   sortOrder: 'asc',
 };
 
 const Home = () => {
   const queryClient = useQueryClient();
-  const [search, setSearch] = useDebouncedState('', 500);
+  const [search, setSearch] = useDebouncedState('', 1000);
   const [view, setView] = useState('list');
 
   const [searchParams, setSearchParams] = useSearchParams(initialState);
 
-  const [query, setQuery] = useState(initialState);
-
-  const { data: campaignData } = useCampaigns(serialize(search ? { ...query, search } : query));
+  const { data: campaignData } = useCampaigns(searchParams.toString());
   const { mutate } = useUpdateCampaign();
   const { mutate: delCampaign } = useDeleteCampaign();
 
   const { data: campaignStatus } = useFetchMasters(serialize({ type: 'campaign_status' }));
 
-  const invalidate = () => {
-    queryClient.invalidateQueries(['campaigns', serialize(search ? { ...query, search } : query)]);
-  };
+  const invalidate = () => queryClient.invalidateQueries(['campaigns', searchParams.toString()]);
 
   const updateCampaign = (id, data) => {
     mutate(
@@ -75,7 +71,7 @@ const Home = () => {
             () => (
               <div
                 aria-hidden="true"
-                onClick={() => navigate(`view-details/${_id}`)}
+                onClick={() => navigate(`/campaigns/view-details/${_id}`)}
                 className="flex gap-2 items-center cursor-pointer"
               >
                 <div className="flex flex-1 gap-2 items-center ">
@@ -146,7 +142,9 @@ const Home = () => {
               <NativeSelect
                 defaultValue={status}
                 onChange={e => updateCampaign(_id, { status: e.target.value })}
-                data={campaignStatus?.docs?.map(item => item.name) || []}
+                data={
+                  campaignStatus?.docs?.map(item => ({ label: item.name, value: item._id })) || []
+                }
                 styles={{
                   rightSection: { pointerEvents: 'none' },
                 }}
@@ -191,7 +189,7 @@ const Home = () => {
                   <Menu.Item>
                     <div
                       aria-hidden
-                      onClick={() => navigate(`view-details/${_id}`)}
+                      onClick={() => navigate(`/campaigns/view-details/${_id}`)}
                       className="cursor-pointer flex items-center gap-1"
                     >
                       <Eye className="h-4" />
@@ -238,58 +236,45 @@ const Home = () => {
     [campaignStatus],
   );
 
-  const onApplyFilter = data => {
-    setSearchParams(serialize({ ...query, ...data }));
-    setQuery(p => ({ ...p, ...data }));
+  const setQuery = (key, val) => {
+    if (![undefined, '', null].includes(val)) searchParams.set(key, val);
+    else searchParams.delete(key);
+    setSearchParams(searchParams);
   };
 
-  const onResetFilter = () => {
-    setSearchParams(serialize(initialState));
-    setQuery(initialState);
-  };
+  const { limit, page } = useMemo(
+    () => ({
+      limit: searchParams.get('limit'),
+      page: Number(searchParams.get('page')),
+    }),
+    [searchParams],
+  );
 
   useEffect(() => {
-    const obj = {};
-    searchParams.forEach((val, key) => {
-      if (val !== undefined) {
-        if (typeof initialState[key] === 'number') {
-          obj[key] = Number(val) || 0;
-        } else {
-          obj[key] = val || '';
-        }
-      }
-    });
+    if (search) searchParams.set('search', search);
+    else searchParams.delete('search');
 
-    setSearchParams(serialize(obj));
-    setQuery(obj);
-  }, []);
+    setSearchParams(searchParams);
+  }, [search]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <AreaHeader
-        text="Campaign List"
-        setView={setView}
-        onApplyFilter={onApplyFilter}
-        onResetFilter={onResetFilter}
-      />
+      <AreaHeader text="Campaign List" setView={setView} />
       <div className="flex justify-between h-20 items-center">
-        <RowsPerPage
-          setCount={data => setQuery(prev => ({ ...prev, limit: Number(data) }))}
-          count={`${query.limit}`}
-        />
+        <RowsPerPage setCount={data => setQuery('limit', data)} count={limit} />
         <Search search={search} setSearch={setSearch} />
       </div>
       {view === 'grid' ? (
-        <GridView count={query.limit} Card={Card} list={campaignData?.docs || []} />
+        <GridView count={limit} Card={Card} list={campaignData?.docs || []} />
       ) : (
         <Table
           COLUMNS={COLUMNS}
           data={campaignData?.docs || []}
           allowRowsSelect
-          activePage={campaignData?.page || 1}
+          activePage={page}
           totalPages={campaignData?.totalPages || 1}
-          setActivePage={data => setQuery(prev => ({ ...prev, page: data }))}
-          rowCountLimit={query.limit}
+          setActivePage={data => setQuery('page', data)}
+          rowCountLimit={limit}
         />
       )}
     </div>

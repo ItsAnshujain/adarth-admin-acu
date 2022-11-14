@@ -1,17 +1,15 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import BasicInfo from './BasicInformation';
 import SuccessModal from '../../shared/Modal';
 import CoverImage from './CoverImage';
 import Header from './Header';
 import Spaces from './Spaces';
-import data from '../../../Dummydata/CAMPAIGN_SPACES.json';
-import column from './column';
 import { FormProvider, useForm } from '../../../context/formContext';
 import Preview from './Preview';
-import { useCreateCampaign } from '../../../hooks/campaigns.hooks';
+import { useCampaign, useCreateCampaign, useUpdateCampaign } from '../../../hooks/campaigns.hooks';
 
 const requiredSchema = requiredText => yup.string().trim().required(requiredText);
 const numberRequiredSchema = (typeErrorText, requiredText) =>
@@ -70,13 +68,18 @@ const schema = formStep =>
 const initialValues = {
   name: '',
   description: '',
+  price: 0,
+  healthStatus: 0,
+  status: 'Created',
+  isFeatured: false,
   previousBrands: [],
-  tags: [],
   minImpression: 200,
   maxImpression: 800,
-  isFeatured: false,
-  status: 'Created',
+  tags: [],
   healthTag: 'Good',
+  place: [],
+  thumbnail: '',
+  incharge: '',
 };
 
 const Create = () => {
@@ -86,18 +89,21 @@ const Create = () => {
   const form = useForm({ initialValues, validate: yupResolver(schema(formStep)) });
 
   const navigate = useNavigate();
+  const { id } = useParams();
 
-  const { mutate, isLoading } = useCreateCampaign();
+  const { data } = useCampaign(id);
+  const { mutate: add, isLoading: isSaving } = useCreateCampaign();
+  const { mutate: update, isLoading: isUpdating } = useUpdateCampaign();
 
   const getForm = () =>
     formStep === 1 ? (
       <BasicInfo formData={form.values} setFormData={form.setFieldValue} />
     ) : formStep === 2 ? (
-      <Spaces formData={form.values} setFormData={form.setFieldValue} data={data} column={column} />
+      <Spaces />
     ) : formStep === 3 ? (
       <CoverImage />
     ) : (
-      <Preview />
+      <Preview data={form.values} />
     );
 
   const handleSubmit = () => {
@@ -105,19 +111,29 @@ const Create = () => {
     if (formStep === 4) {
       const newData = { ...form.values };
 
-      newData.place = newData.spaces.map(({ id }) => id);
-      delete newData.spaces;
+      newData.place = newData.place.map(item => item.id);
 
       newData.healthStatus = +newData.healthStatus || 0;
       newData.price = +newData.price || 0;
 
-      mutate(newData, {
-        onSuccess: () => {
-          navigate('/campaigns');
-        },
-      });
+      if (id) {
+        update({ id, data: newData });
+      } else
+        add(newData, {
+          onSuccess: () => {
+            navigate('/campaigns');
+          },
+        });
     }
   };
+
+  useEffect(() => {
+    if (data) {
+      Object.keys(initialValues).forEach(item => {
+        form.setFieldValue(item, data[item]);
+      });
+    }
+  }, [data]);
 
   return (
     <div className="mb-24">
@@ -126,13 +142,18 @@ const Create = () => {
         formStep={formStep}
         setOpenSuccessModal={setOpenSuccessModal}
         submitRef={submitRef}
-        disabled={isLoading}
+        disabled={isSaving || isUpdating}
       />
       <div>
         <FormProvider form={form}>
           <form onSubmit={form.onSubmit(handleSubmit)}>
             {getForm()}
-            <button type="submit" className="hidden" ref={submitRef} disabled={isLoading}>
+            <button
+              type="submit"
+              className="hidden"
+              ref={submitRef}
+              disabled={isSaving || isUpdating}
+            >
               Submit
             </button>
           </form>
