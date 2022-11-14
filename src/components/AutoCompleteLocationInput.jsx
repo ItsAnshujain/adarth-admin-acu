@@ -4,7 +4,13 @@ import { useFormContext } from '../context/formContext';
 import { getLatituteLongitude } from '../utils';
 import { GOOGLE_MAPS_API_KEY } from '../utils/config';
 
-const AutoCompleteLocationInput = () => {
+const AutoCompleteLocationInput = ({
+  addressKeyName = '',
+  latitudeKeyName = '',
+  longitudeKeyName = '',
+  cityKeyName = '',
+  stateKeyName = '',
+}) => {
   const { setFieldValue, errors, values } = useFormContext();
   const getLatLong = async address => {
     const location = await getLatituteLongitude(address);
@@ -14,15 +20,15 @@ const AutoCompleteLocationInput = () => {
   const onChangeHandler = async e => {
     if (e) {
       const res = await getLatLong(e.label);
-      setFieldValue('location.address', e.label);
-      setFieldValue('location.latitude', res?.lat);
-      setFieldValue('location.longitude', res?.lng);
+      setFieldValue(addressKeyName, e.label);
+      setFieldValue(latitudeKeyName, res?.lat);
+      setFieldValue(longitudeKeyName, res?.lng);
       if (e.value.terms.length) {
-        setFieldValue('location.city', e.value.terms[e.value.terms.length - 3].value);
-        setFieldValue('location.state', e.value.terms[e.value.terms.length - 2].value);
+        setFieldValue(cityKeyName, e.value.terms[e.value.terms.length - 3].value);
+        setFieldValue(stateKeyName, e.value.terms[e.value.terms.length - 2].value);
       }
     } else {
-      setFieldValue('location.address', '');
+      setFieldValue(addressKeyName, '');
     }
   };
 
@@ -36,9 +42,9 @@ const AutoCompleteLocationInput = () => {
           styles: {
             control: provided => ({
               ...provided,
-              border: `0.5px solid ${errors['location.address'] ? 'red' : 'grey'} `,
+              border: `0.5px solid ${errors[addressKeyName] ? 'red' : 'grey'} `,
               ':hover': {
-                border: `0.5px solid ${errors['location.address'] ? 'red' : 'grey'}`,
+                border: `0.5px solid ${errors[addressKeyName] ? 'red' : 'grey'}`,
               },
               width: '100%',
               boxShadow: 'none',
@@ -62,8 +68,8 @@ const AutoCompleteLocationInput = () => {
           onChange: onChangeHandler,
         }}
       />
-      {errors['location.address'] ? (
-        <p className="text-xs mt-1 text-red-450">{errors['location.address']}</p>
+      {errors[addressKeyName] ? (
+        <p className="text-xs mt-1 text-red-450">{errors[addressKeyName]}</p>
       ) : null}
     </>
   );

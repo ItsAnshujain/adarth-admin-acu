@@ -51,7 +51,13 @@ const Location = () => {
       <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">
         <div>
           <p style={styles.label}>Address</p>
-          <AutoCompleteLocationInput />
+          <AutoCompleteLocationInput
+            addressKeyName="location.address"
+            latitudeKeyName="location.latitude"
+            longitudeKeyName="location.longitude"
+            cityKeyName="location.city"
+            stateKeyName="location.state"
+          />
           <TextInput
             label="State"
             name="location.state"
