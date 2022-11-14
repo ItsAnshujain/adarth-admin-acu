@@ -50,7 +50,9 @@ const Header = ({ setFormStep, formStep, submitRef }) => {
         ))}
       </div>
       <div className="flex gap-4 pr-7">
-        <Button className="border-black radius-md text-black">Cancel</Button>
+        <Button className="border-black radius-md text-black" onClick={() => navigate(-1)}>
+          Cancel
+        </Button>
         <Button
           onClick={() => {
             if (formStep === 1) {
