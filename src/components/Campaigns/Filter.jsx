@@ -1,6 +1,6 @@
 import { Accordion, Button, Drawer, NumberInput, Radio, RangeSlider } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
-import { useMemo, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { serialize } from '../../utils';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 
