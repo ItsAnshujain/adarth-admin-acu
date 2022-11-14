@@ -4,12 +4,12 @@ import { useParams } from 'react-router-dom';
 import { useFetchUsersById } from '../../../hooks/users.hooks';
 import ManagingCampaignSubHeader from './ManagingSubHeader';
 import OverviewUserDetails from './OverviewUserDetails';
-import CampaignTableView from './CampaignTableView';
+import BookingTableView from './CampaignTableView';
 import ProposalTableView from './ProposalTableView';
 
 const Header = () => {
   const [activeTab, setActiveTab] = useState('first');
-  const [activeTable, setActiveTable] = useState('campaign');
+  const [activeTable, setActiveTable] = useState('booking');
   const { id: userId } = useParams();
   const { data: userDetails, isLoading: isUserDetailsLoading } = useFetchUsersById(userId);
 
@@ -34,16 +34,16 @@ const Header = () => {
         <div>
           <Tabs value={activeTable} onTabChange={setActiveTable}>
             <Tabs.List className="h-16">
-              <Tabs.Tab className="hover:bg-transparent text-base" value="campaign">
-                Campaign
+              <Tabs.Tab className="hover:bg-transparent text-base" value="booking">
+                Bookings
               </Tabs.Tab>
               <Tabs.Tab className="hover:bg-transparent text-base" value="proposal">
                 Proposals
               </Tabs.Tab>
             </Tabs.List>
 
-            <Tabs.Panel value="campaign">
-              <CampaignTableView viewType={activeTable === 'campaign'} />
+            <Tabs.Panel value="booking">
+              <BookingTableView viewType={activeTable === 'booking'} />
             </Tabs.Panel>
             <Tabs.Panel value="proposal" className="mr-5">
               <ProposalTableView viewType={activeTable === 'proposal'} />

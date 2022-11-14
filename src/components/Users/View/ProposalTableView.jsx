@@ -15,7 +15,7 @@ const ProposalTableView = ({ viewType }) => {
     'page': 1,
     'limit': 10,
     'sortBy': 'createdAt',
-    'sortOrder': 'asc',
+    'sortOrder': 'desc',
   });
   const { data: proposalsData, isLoading: isLoadingProposalsData } = useFetchProposals(
     viewType ? searchParams.toString() : null,

@@ -27,7 +27,7 @@ const Proposals = () => {
     'page': 1,
     'limit': 10,
     'sortBy': 'createdAt',
-    'sortOrder': 'asc',
+    'sortOrder': 'desc',
   });
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
@@ -103,7 +103,7 @@ const Proposals = () => {
       },
       {
         Header: 'CREATOR',
-        accessor: 'creator',
+        accessor: 'creator.name',
         Cell: ({
           row: {
             original: { creator },
@@ -116,7 +116,7 @@ const Proposals = () => {
       },
       {
         Header: 'STATUS',
-        accessor: 'status',
+        accessor: 'status.name',
         Cell: ({
           row: {
             original: { _id, status },
@@ -179,7 +179,7 @@ const Proposals = () => {
       },
       {
         Header: 'CLIENT',
-        accessor: 'client',
+        accessor: 'client.name',
         Cell: ({
           row: {
             original: { client },
@@ -212,6 +212,22 @@ const Proposals = () => {
     ],
     [proposalsData?.docs, limit, proposalStatusData],
   );
+
+  const handleSortByColumn = colId => {
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
+      searchParams.set('sortOrder', 'asc');
+      setSearchParams(searchParams);
+      return;
+    }
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
+      searchParams.set('sortOrder', 'desc');
+      setSearchParams(searchParams);
+      return;
+    }
+
+    searchParams.set('sortBy', colId);
+    setSearchParams(searchParams);
+  };
 
   useEffect(() => {
     handleSearch();
@@ -246,6 +262,7 @@ const Proposals = () => {
           totalPages={proposalsData?.totalPages || 1}
           setActivePage={handlePagination}
           rowCountLimit={limit}
+          handleSorting={handleSortByColumn}
         />
       ) : viewType === 'grid' ? (
         <GridView

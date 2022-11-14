@@ -31,7 +31,7 @@ const Spaces = ({
   const [searchParams, setSearchParams] = useSearchParams({
     'limit': 10,
     'page': 1,
-    'sortOrder': 'asc',
+    'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
   });
   const [showFilter, setShowFilter] = useState(false);

@@ -22,7 +22,7 @@ const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
-    'sortOrder': 'asc',
+    'sortOrder': 'desc',
     'sortBy': 'createdAt',
     'filter': 'team',
   });

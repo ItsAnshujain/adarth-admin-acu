@@ -1,363 +1,325 @@
-import { Button, Image, Menu, NativeSelect, Progress } from '@mantine/core';
-import { useQueryClient } from '@tanstack/react-query';
-import classNames from 'classnames';
-import React, { useEffect, useMemo, useState } from 'react';
-import { ChevronDown, Eye, Trash, Download } from 'react-feather';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useCampaigns, useDeleteCampaign } from '../../../hooks/campaigns.hooks';
+import { useDebouncedState } from '@mantine/hooks';
+import { useLocation } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { ChevronDown } from 'react-feather';
+import { NativeSelect, Progress } from '@mantine/core';
+import dayjs from 'dayjs';
 import { serialize } from '../../../utils';
+import { useBookings, useUpdateBookingStatus } from '../../../hooks/booking.hooks';
+import { useFetchMasters } from '../../../hooks/masters.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
-import MenuIcon from '../../Menu';
+import MenuPopover from '../../../pages/Booking/MenuPopOver';
+import useSideBarState from '../../../store/sidebar.store';
+import Table from '../../Table/Table';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
-import Table from '../../Table/Table';
 
-const CampaignTableView = ({ viewType }) => {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams({
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'asc',
+const CampaignTableView = () => {
+  const setColor = useSideBarState(state => state.setColor);
+  const [search, setSearch] = useDebouncedState('', 1000);
+  const [filters, setFilters] = useState({
+    page: 1,
+    limit: 10,
+    sortBy: 'createdAt',
+    sortOrder: 'asc',
+    search: '',
   });
-  const [searchInput, setSearchInput] = useState('');
-  const { data: campaignData, isLoading: isLoadingCampaignData } = useCampaigns(
-    viewType ? searchParams.toString() : null,
-    viewType,
+
+  useEffect(() => {
+    setFilters(prev => ({ ...prev, search, page: 1 }));
+  }, [search]);
+
+  const { search: bookingQuery } = useLocation();
+
+  const { data: bookingData } = useBookings(
+    bookingQuery.slice(1) ? `${serialize(filters)}&${bookingQuery.slice(1)}` : serialize(filters),
   );
 
-  const { mutate: delCampaign } = useDeleteCampaign();
-
-  const page = searchParams.get('page');
-  const limit = searchParams.get('limit');
-
-  const invalidate = () => {
-    queryClient.invalidateQueries(['campaigns', searchParams.toString()]);
-  };
-
-  const deleteCampaign = id => {
-    delCampaign(serialize({ id }), {
-      onSuccess: invalidate,
-    });
-  };
-
-  const COLUMNS = useMemo(
-    () => [
-      {
-        Header: '#',
-        accessor: '_id',
-        Cell: ({ row }) =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
-          }, []),
-      },
-      {
-        Header: 'CLIENT',
-        accessor: 'client',
-        Cell: () => useMemo(() => <p className="pl-2">-</p>, []),
-      },
-      {
-        Header: 'ORDER DATE',
-        accessor: 'orderDate',
-        Cell: () => useMemo(() => <p className="pl-2">-</p>, []),
-      },
-      {
-        Header: 'ORDER TYPE',
-        accessor: 'orderType',
-        Cell: () => useMemo(() => <p className="pl-2">-</p>, []),
-      },
-      {
-        Header: 'CAMPAIGN NAME',
-        accessor: 'name',
-        Cell: ({
-          row: {
-            original: { name, _id, thumbnail },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div
-                aria-hidden="true"
-                onClick={() => navigate(`view-details/${_id}`)}
-                className="flex gap-2 items-center cursor-pointer"
-              >
-                <div className="flex flex-1 gap-2 items-center ">
-                  <Image
-                    height={30}
-                    width={32}
-                    alt={name}
-                    fit="cover"
-                    withPlaceholder
-                    src={thumbnail}
-                    className="rounded-md overflow-hidden"
-                  />
-                  <span className="truncate w-[100px]" title={name}>
-                    {name}
-                  </span>
-                </div>
-              </div>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'CAMPAIGN TYPE',
-        accessor: 'type',
-        Cell: ({
-          row: {
-            original: { isFeatured },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div className={classNames(`w-fit ${isFeatured ? 'text-purple-450' : 'text-black'}`)}>
-                {isFeatured ? 'Featured' : 'Predefine'}
-              </div>
-            ),
-            [isFeatured],
-          ),
-      },
-      {
-        Header: 'HEALTH',
-        accessor: 'healthStatus',
-        Cell: ({ cell: { value } }) =>
-          useMemo(
-            () => (
-              <div className="w-24">
-                <Progress
-                  sections={[
-                    { value, color: 'green' },
-                    { value: 100 - value, color: 'red' },
-                  ]}
-                />
-              </div>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'CAMPAIGN STATUS',
-        accessor: 'campaignStatus',
-        Cell: () =>
-          useMemo(
-            () => (
-              <NativeSelect
-                className="mr-2"
-                data={[]}
-                styles={{
-                  rightSection: { pointerEvents: 'none' },
-                }}
-                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-                rightSectionWidth={40}
-              />
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'PAYMENT STATUS',
-        accessor: 'paymentStatus',
-        Cell: () =>
-          useMemo(
-            () => (
-              <NativeSelect
-                data={[]}
-                styles={{
-                  rightSection: { pointerEvents: 'none' },
-                }}
-                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-                rightSectionWidth={40}
-              />
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'PRINTING STATUS',
-        accessor: 'printingStatus',
-        Cell: () =>
-          useMemo(
-            () => (
-              <NativeSelect
-                className="mr-2"
-                data={[]}
-                styles={{
-                  rightSection: { pointerEvents: 'none' },
-                }}
-                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-                rightSectionWidth={40}
-              />
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'MOUNTING STATUS',
-        accessor: 'mountingStatus',
-        Cell: () =>
-          useMemo(
-            () => (
-              <NativeSelect
-                className="mr-2"
-                data={[]}
-                styles={{
-                  rightSection: { pointerEvents: 'none' },
-                }}
-                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-                rightSectionWidth={40}
-              />
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'PAYMENT TYPE',
-        accessor: 'paymentType',
-        Cell: () => useMemo(() => <p className="w-36 capitalize">-</p>, []),
-      },
-      {
-        Header: 'SCHEDULE',
-        accessor: 'schedule',
-        Cell: () =>
-          useMemo(
-            () => (
-              <div className="flex items-center text-xs w-max">
-                <span className="py-1 px-1 bg-slate-200 mr-2  rounded-md ">-</span>
-                &gt;
-                <span className="py-1 px-1 bg-slate-200 mx-2  rounded-md">-</span>
-              </div>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'TOTAL PLACES',
-        accessor: 'place',
-
-        Cell: ({ cell: { value } }) => value?.length || 0,
-      },
-      {
-        Header: 'PRICING',
-        accessor: 'price',
-        Cell: ({ cell: { value } }) => toIndianCurrency(value || 0),
-      },
-      {
-        Header: 'PURCHASE ORDER',
-        accessor: 'purchaseOrder',
-        Cell: () => useMemo(() => <Button className="text-purple-350">Download</Button>, []),
-      },
-      {
-        Header: 'RELEASE ORDER',
-        accessor: 'releaseOrder',
-        Cell: () => useMemo(() => <Button className="text-purple-350">Download</Button>, []),
-      },
-      {
-        Header: 'INVOICE',
-        accessor: 'invoice',
-        Cell: () => useMemo(() => <Button className="text-purple-350 px-0">Download</Button>, []),
-      },
-      {
-        Header: 'ACTION',
-        accessor: 'action',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id, isFeatured },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <Menu shadow="md" width={150}>
-                <Menu.Target>
-                  <button type="button">
-                    <MenuIcon />
-                  </button>
-                </Menu.Target>
-
-                <Menu.Dropdown>
-                  <Menu.Item>
-                    <div
-                      aria-hidden
-                      onClick={() => navigate(`view-details/${_id}`)}
-                      className="cursor-pointer flex items-center gap-1"
-                    >
-                      <Eye className="h-4" />
-                      <span className="ml-1">View Details</span>
-                    </div>
-                  </Menu.Item>
-                  <Menu.Item aria-hidden>
-                    <div className="cursor-pointer flex items-center gap-1">
-                      <Download className="h-4" />
-                      <span className="ml-1">Download</span>
-                    </div>
-                  </Menu.Item>
-                  <Menu.Item aria-hidden onClick={() => deleteCampaign(_id)}>
-                    <div className="cursor-pointer flex items-center gap-1">
-                      <Trash className="h-4" />
-                      <span className="ml-1">Delete</span>
-                    </div>
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            ),
-            [isFeatured, _id],
-          ),
-      },
-    ],
-    [campaignData?.docs],
+  const { data: campaignStatus } = useFetchMasters(
+    serialize({ type: 'campaign_status', limit: 100 }),
+  );
+  const { data: PaymentStatus } = useFetchMasters(
+    serialize({ type: 'payment_status', limit: 100 }),
+  );
+  const { data: printingStatus } = useFetchMasters(
+    serialize({ type: 'printing_status', limit: 100 }),
+  );
+  const { data: mountingStatus } = useFetchMasters(
+    serialize({ type: 'mounting_status', limit: 100 }),
   );
 
-  const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    setSearchParams(searchParams);
+  const { mutateAsync: updateBooking } = useUpdateBookingStatus();
+
+  const handlePaymentUpdate = (bookingId, data) => {
+    updateBooking({ id: bookingId, query: serialize({ paymentStatus: data }) });
   };
 
-  const handleRowCount = currentLimit => {
-    searchParams.set('limit', currentLimit);
-    setSearchParams(searchParams);
+  const handleMountingUpdate = (bookingId, data) => {
+    updateBooking({ id: bookingId, query: serialize({ mountingStatus: data }) });
   };
 
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
-    setSearchParams(searchParams);
+  const handlePrintingUpdate = (bookingId, data) => {
+    updateBooking({ id: bookingId, query: serialize({ printingStatus: data }) });
+  };
+
+  const handleCampaignUpdate = (bookingId, data) => {
+    updateBooking({ id: bookingId, query: serialize({ campaignStatus: data }) });
   };
 
   useEffect(() => {
-    handleSearch();
-    if (searchInput === '') {
-      searchParams.delete('search');
-      setSearchParams(searchParams);
-    }
-  }, [searchInput]);
+    setColor(2);
+  }, []);
+
+  const column = useMemo(() => [
+    {
+      Header: '#',
+      accessor: '_id',
+      Cell: ({ row: { index } }) => index + 1,
+    },
+    {
+      Header: 'CLIENT',
+      accessor: 'client',
+      Cell: ({ cell: { value } }) => value.name,
+    },
+    {
+      Header: 'ORDER DATE',
+      Cell: ({ row: { original } }) => dayjs(original.client.createdAt).format('DD-MMMM-YYYY'),
+    },
+
+    {
+      Header: 'CAMPAIGN NAME',
+      Cell: ({ row: { original } }) => useMemo(() => original.campaign?.name, []),
+    },
+    {
+      Header: 'BOOKING TYPE',
+      accessor: 'type',
+    },
+    {
+      Header: 'CAMPAIGN STATUS',
+      Cell: ({
+        row: {
+          original: { _id, currentStatus },
+        },
+      }) =>
+        useMemo(
+          () => (
+            <NativeSelect
+              className="mr-2"
+              data={campaignStatus?.docs.map(item => item.name) || []}
+              styles={{
+                rightSection: { pointerEvents: 'none' },
+              }}
+              rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+              rightSectionWidth={40}
+              onChange={e => handleCampaignUpdate(_id, e.target.value)}
+              value={currentStatus?.campaignStatus || ''}
+            />
+          ),
+          [],
+        ),
+    },
+    {
+      Header: 'PAYMENT STATUS',
+      Cell: ({
+        row: {
+          original: { _id, currentStatus },
+        },
+      }) =>
+        useMemo(
+          () => (
+            <NativeSelect
+              data={PaymentStatus?.docs.map(item => item.name) || []}
+              styles={{
+                rightSection: { pointerEvents: 'none' },
+              }}
+              rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+              rightSectionWidth={40}
+              onChange={e => handlePaymentUpdate(_id, e.target.value)}
+              value={currentStatus?.paymentStatus || ''}
+            />
+          ),
+          [],
+        ),
+    },
+
+    {
+      Header: 'PRINTING STATUS',
+      Cell: ({
+        row: {
+          original: { _id, currentStatus },
+        },
+      }) =>
+        useMemo(
+          () => (
+            <NativeSelect
+              className="mr-2"
+              data={printingStatus?.docs.map(item => item.name) || []}
+              styles={{
+                rightSection: { pointerEvents: 'none' },
+              }}
+              rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+              rightSectionWidth={40}
+              onChange={e => handlePrintingUpdate(_id, e.target.value)}
+              value={currentStatus?.printingStatus || ''}
+            />
+          ),
+          [],
+        ),
+    },
+    {
+      Header: 'MOUNTING STATUS',
+      Cell: ({
+        row: {
+          original: { _id, currentStatus },
+        },
+      }) =>
+        useMemo(
+          () => (
+            <NativeSelect
+              className="mr-2"
+              data={mountingStatus?.docs.map(item => item.name) || []}
+              styles={{
+                rightSection: { pointerEvents: 'none' },
+              }}
+              rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+              rightSectionWidth={40}
+              onChange={e => handleMountingUpdate(_id, e.target.value)}
+              value={currentStatus?.mountingStatus || ''}
+            />
+          ),
+          [],
+        ),
+    },
+    {
+      Header: 'CAMPAIGN INCHARGE',
+      accessor: 'campaign_incharge',
+      Cell: () => '',
+    },
+    {
+      Header: 'HEALTH STATUS',
+      accessor: 'healthStatus',
+      Cell: tableProps => {
+        const {
+          row: {
+            original: { healthStatus, totalHealthStatus },
+          },
+        } = tableProps;
+        return useMemo(
+          () => (
+            <div className="w-24">
+              <Progress
+                sections={[
+                  { value: healthStatus, color: 'green' },
+                  { value: totalHealthStatus - healthStatus, color: 'red' },
+                ]}
+              />
+            </div>
+          ),
+          [],
+        );
+      },
+    },
+
+    {
+      Header: 'PAYMENT TYPE',
+      accessor: 'paymentType',
+    },
+    {
+      Header: 'SCHEDULE',
+      accessor: 'schedule',
+      Cell: tableProps => {
+        const {
+          row: {
+            original: { from_date, to_date },
+          },
+        } = tableProps;
+        return useMemo(
+          () => (
+            <div className="flex items-center text-xs w-max">
+              <span className="py-1 px-1 bg-slate-200 mr-2 rounded-md">{from_date}</span>
+              &gt;
+              <span className="py-1 px-1 bg-slate-200 mx-2 rounded-md">{to_date}</span>
+            </div>
+          ),
+          [],
+        );
+      },
+    },
+    {
+      Header: 'UPLOADED MEDIA',
+      accessor: 'uploaded_media',
+      Cell: () =>
+        useMemo(
+          () => '',
+          // <div className="bg-white border rounded-md">
+          //   <img className="h-10 mx-auto" src={photo} alt="banner" />
+          // </div>
+          [],
+        ),
+    },
+    {
+      Header: 'DOWNLOAD UPLOADED MEDIA',
+      accessor: '',
+      Cell: () => useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+    },
+    {
+      Header: 'TOTAL SPACES',
+      accessor: 'totalSpaces',
+    },
+    {
+      Header: 'PRICING',
+      accessor: 'price',
+      Cell: ({ cell: { value } }) => toIndianCurrency(value),
+    },
+    {
+      Header: 'PURCHASE ORDER',
+      accessor: '',
+      Cell: () => useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+    },
+    {
+      Header: 'RELEASE ORDER',
+      accessor: '',
+      Cell: () => useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+    },
+    {
+      Header: 'INVOICE',
+      accessor: '',
+      Cell: () => useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+    },
+    {
+      Header: 'ACTION',
+      disableSortBy: true,
+      Cell: tableProps => {
+        const {
+          row: {
+            original: { _id },
+          },
+        } = tableProps;
+
+        return useMemo(() => <MenuPopover itemId={_id} />, []);
+      },
+    },
+  ]);
 
   return (
-    <div className="pr-7">
-      <div className="flex justify-between h-20 items-center">
-        <RowsPerPage setCount={handleRowCount} count={limit} />
-        <Search search={searchInput} setSearch={setSearchInput} />
-      </div>
-      {campaignData?.docs?.length === 0 && !isLoadingCampaignData ? (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
+      <div className="pr-7">
+        <div className="flex justify-between h-20 items-center">
+          <RowsPerPage
+            setCount={data => setFilters(prev => ({ ...prev, limit: Number(data) }))}
+            count={`${filters.limit}`}
+          />
+          <Search search={search} setSearch={setSearch} />
         </div>
-      ) : null}
-      {campaignData?.docs?.length ? (
-        <Table
-          COLUMNS={COLUMNS}
-          data={campaignData?.docs || []}
-          activePage={campaignData?.page || 1}
-          totalPages={campaignData?.totalPages || 1}
-          setActivePage={handlePagination}
-          rowCountLimit={limit}
-        />
-      ) : null}
+      </div>
+      <Table
+        data={bookingData?.docs || []}
+        COLUMNS={column}
+        activePage={bookingData?.page || 1}
+        totalPages={bookingData?.totalPages || 1}
+        setActivePage={data => setFilters(prev => ({ ...prev, page: data }))}
+        rowCountLimit={filters.limit}
+      />
     </div>
   );
 };

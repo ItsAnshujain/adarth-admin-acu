@@ -23,7 +23,7 @@ const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     'limit': 10,
     'page': 1,
-    'sortOrder': 'asc',
+    'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
   });
   const viewType = useLayoutView(state => state.activeLayout);
@@ -90,7 +90,7 @@ const Home = () => {
       },
       {
         Header: 'SPACE NAME & PHOTO',
-        accessor: 'spaceName',
+        accessor: 'basicInformation.spaceName',
         Cell: ({
           row: {
             original: { _id, basicInformation, isUnderMaintenance },
@@ -136,7 +136,7 @@ const Home = () => {
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'mediaOwner',
+        accessor: 'landlord',
         Cell: ({
           row: {
             original: { basicInformation },
@@ -151,7 +151,7 @@ const Home = () => {
       },
       {
         Header: 'SPACE TYPE',
-        accessor: 'spaceType',
+        accessor: 'spaceType.name',
         Cell: ({
           row: {
             original: { basicInformation },
@@ -171,7 +171,7 @@ const Home = () => {
       },
       {
         Header: 'DIMENSION',
-        accessor: 'dimension',
+        accessor: 'specifications.size.min',
         Cell: ({
           row: {
             original: { specifications },
@@ -188,7 +188,7 @@ const Home = () => {
       },
       {
         Header: 'IMPRESSION',
-        accessor: 'impressions',
+        accessor: 'specifications.impressions.min',
         Cell: ({
           row: {
             original: { specifications },
@@ -197,7 +197,7 @@ const Home = () => {
       },
       {
         Header: 'HEALTH STATUS',
-        accessor: 'health',
+        accessor: 'specifications.health',
         Cell: ({
           row: {
             original: { specifications },
@@ -219,7 +219,7 @@ const Home = () => {
       },
       {
         Header: 'LOCATION',
-        accessor: 'city',
+        accessor: 'location.city',
         Cell: ({
           row: {
             original: { location },
@@ -265,6 +265,22 @@ const Home = () => {
     ],
     [inventoryData?.docs],
   );
+
+  const handleSortByColumn = colId => {
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
+      searchParams.set('sortOrder', 'asc');
+      setSearchParams(searchParams);
+      return;
+    }
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
+      searchParams.set('sortOrder', 'desc');
+      setSearchParams(searchParams);
+      return;
+    }
+
+    searchParams.set('sortBy', colId);
+    setSearchParams(searchParams);
+  };
 
   const handleSearch = () => {
     searchParams.set('search', searchInput);
@@ -337,6 +353,7 @@ const Home = () => {
           allowRowsSelect
           selectedRowData={selectedCards}
           setSelectedFlatRows={ele => setSelectedCards(ele?.map(itm => itm.original._id))}
+          handleSorting={handleSortByColumn}
         />
       ) : viewType === 'map' ? (
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto mt-5">
