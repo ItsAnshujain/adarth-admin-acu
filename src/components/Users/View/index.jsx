@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useFetchUsersById } from '../../../hooks/users.hooks';
 import ManagingCampaignSubHeader from './ManagingSubHeader';
 import OverviewUserDetails from './OverviewUserDetails';
-import BookingTableView from './CampaignTableView';
+import BookingTableView from './BookingTableView';
 import ProposalTableView from './ProposalTableView';
 
 const Header = () => {

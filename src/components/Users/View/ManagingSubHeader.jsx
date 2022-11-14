@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown, Plus } from 'react-feather';
 import { Button } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
+import classNames from 'classnames';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
 import greenfolder from '../../../assets/ongoing.svg';
@@ -10,6 +11,7 @@ import orangefolder from '../../../assets/upcoming.svg';
 import redfolder from '../../../assets/redfolder.svg';
 import bluefolder from '../../../assets/bluefolder.svg';
 import ProposalFilter from '../../Proposals/Filter';
+import BookingFilter from '../../Bookings/Filter';
 
 const ManagingSubHeader = ({ activeTable }) => {
   const navigate = useNavigate();
@@ -29,7 +31,12 @@ const ManagingSubHeader = ({ activeTable }) => {
               <img src={calendar} className="h-5" alt="calendar" />
             </Button>
             {showDatePicker && (
-              <div className="absolute z-20 -translate-x-1/2 bg-white -top-0.3">
+              <div
+                className={classNames(
+                  activeTable === 'booking' ? '-translate-x-[460px]' : '-translate-x-1/2',
+                  'absolute z-20 bg-white -top-0.3',
+                )}
+              >
                 <DateRange handleClose={toggleDatePicker} />
               </div>
             )}
@@ -43,7 +50,9 @@ const ManagingSubHeader = ({ activeTable }) => {
             >
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
-            {/* TODO:add campaign filter */}
+            {showFilter && activeTable === 'booking' && (
+              <BookingFilter isOpened={showFilter} setShowFilter={setShowFilter} />
+            )}
             {showFilter && activeTable === 'proposal' && (
               <ProposalFilter isOpened={showFilter} setShowFilter={setShowFilter} />
             )}

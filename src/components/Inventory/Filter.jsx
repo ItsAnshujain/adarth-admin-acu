@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Accordion, Button, Checkbox, Drawer, Radio, RangeSlider, TextInput } from '@mantine/core';
+import {
+  Accordion,
+  Button,
+  Checkbox,
+  Drawer,
+  NumberInput,
+  Radio,
+  RangeSlider,
+} from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { serialize } from '../../utils';
 import { useFetchMasters } from '../../hooks/masters.hooks';
@@ -23,7 +31,6 @@ const inititalFilterData = {
 const styles = { title: { fontWeight: 'bold' } };
 const sliderStyle = {
   label: {
-    // '&::after': { content: '"k"' },
     backgroundColor: '#4B0DAF',
   },
   markLabel: {
@@ -33,8 +40,7 @@ const sliderStyle = {
 
 const Filter = ({ isOpened, setShowFilter }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(10000);
+  const [priceRange, setPriceRange] = useState({ minPrice: 0, maxPrice: 10000 });
   const [filterOptions, setFilterOptions] = useState({
     owner: '',
     category: '',
@@ -48,6 +54,9 @@ const Filter = ({ isOpened, setShowFilter }) => {
     demographic: '',
     audience: '',
   });
+
+  const minPrice = searchParams.get('minPrice');
+  const maxPrice = searchParams.get('maxPrice');
 
   const owner = searchParams.get('owner');
   const category = searchParams.get('category');
@@ -184,15 +193,15 @@ const Filter = ({ isOpened, setShowFilter }) => {
   };
 
   const handleMinPrice = e => {
-    setMinPrice(e.target.value);
-    searchParams.set('minPrice', e.target.value);
+    setPriceRange(prevState => ({ ...prevState, minPrice: e }));
+    searchParams.set('minPrice', e);
   };
   const handleMaxPrice = e => {
-    setMinPrice(e.target.value);
-    searchParams.set('maxPrice', e.target.value);
+    setPriceRange(prevState => ({ ...prevState, maxPrice: e }));
+    searchParams.set('maxPrice', e);
   };
   const handleSliderChange = val => {
-    setMinPrice(val[0], setMaxPrice(val[1]));
+    setPriceRange({ minPrice: val[0], maxPrice: val[1] });
     searchParams.set('minPrice', val[0]);
     searchParams.set('maxPrice', val[1]);
   };
@@ -211,6 +220,12 @@ const Filter = ({ isOpened, setShowFilter }) => {
       tags: tags || [],
       demographic: demographic || '',
       audience: audience || '',
+    }));
+
+    setPriceRange(prevState => ({
+      ...prevState,
+      minPrice: Number(minPrice) ?? 0,
+      maxPrice: Number(maxPrice) ?? 10000,
     }));
   }, [searchParams]);
 
@@ -300,10 +315,18 @@ const Filter = ({ isOpened, setShowFilter }) => {
                 <div className="flex flex-col gap-2 mb-2">
                   <div className="flex justify-between gap-8">
                     <div>
-                      <TextInput value={minPrice} onChange={handleMinPrice} label="Min" />
+                      <NumberInput
+                        value={priceRange.minPrice}
+                        onChange={handleMinPrice}
+                        label="Min"
+                      />
                     </div>
                     <div>
-                      <TextInput value={maxPrice} onChange={handleMaxPrice} label="Max" />
+                      <NumberInput
+                        value={priceRange.maxPrice}
+                        onChange={handleMaxPrice}
+                        label="Max"
+                      />
                     </div>
                   </div>
                   <div>
@@ -312,8 +335,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                       min={0}
                       max={10000}
                       styles={sliderStyle}
-                      value={[minPrice, maxPrice]}
-                      defaultValue={[0, 10000]}
+                      defaultValuelue={[priceRange.minPrice, priceRange.maxPrice]}
                     />
                   </div>
                 </div>
