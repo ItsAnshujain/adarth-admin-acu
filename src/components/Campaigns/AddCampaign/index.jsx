@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import BasicInfo from './BasicInformation';
 import SuccessModal from '../../shared/Modal';
 import CoverImage from './CoverImage';
@@ -10,10 +10,12 @@ import Spaces from './Spaces';
 import { FormProvider, useForm } from '../../../context/formContext';
 import Preview from './Preview';
 import { useCampaign, useCreateCampaign, useUpdateCampaign } from '../../../hooks/campaigns.hooks';
+import { useFetchMasters } from '../../../hooks/masters.hooks';
+import { serialize } from '../../../utils';
 
 const requiredSchema = requiredText => yup.string().trim().required(requiredText);
 const numberRequiredSchema = (typeErrorText, requiredText) =>
-  yup.number().typeError(typeErrorText).required(requiredText);
+  yup.number().min(0).typeError(typeErrorText).required(requiredText);
 
 const schema = formStep =>
   yup.object().shape({
@@ -79,19 +81,22 @@ const initialValues = {
   healthTag: 'Good',
   place: [],
   thumbnail: '',
-  incharge: '',
 };
 
 const Create = () => {
   const submitRef = useRef();
+  const [publish, setPublish] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ initialValues, validate: yupResolver(schema(formStep)) });
+  const [searchParams] = useSearchParams({ page: 1, limit: 10, sortBy: 'name', sortOrder: 'desc' });
 
-  const navigate = useNavigate();
+  const { data: campaignStatus } = useFetchMasters(
+    serialize({ type: 'campaign_status', parentId: null, limit: 100, page: 1 }),
+  );
   const { id } = useParams();
 
-  const { data } = useCampaign(id);
+  const { data } = useCampaign({ id, query: searchParams.toString() }, !!id);
   const { mutate: add, isLoading: isSaving } = useCreateCampaign();
   const { mutate: update, isLoading: isUpdating } = useUpdateCampaign();
 
@@ -103,8 +108,13 @@ const Create = () => {
     ) : formStep === 3 ? (
       <CoverImage />
     ) : (
-      <Preview data={form.values} />
+      <Preview data={form.values} place={form.values?.place} />
     );
+
+  const handlePublish = () => {
+    setPublish(true);
+    submitRef.current.click();
+  };
 
   const handleSubmit = () => {
     if (formStep <= 3) setFormStep(formStep + 1);
@@ -116,21 +126,35 @@ const Create = () => {
       newData.healthStatus = +newData.healthStatus || 0;
       newData.price = +newData.price || 0;
 
+      if (publish) {
+        const publishedId = campaignStatus?.docs?.find(
+          item => item?.name?.toLowerCase() === 'published',
+        );
+        if (publishedId) {
+          newData.status = publishedId;
+        }
+      }
+
       if (id) {
         update({ id, data: newData });
       } else
         add(newData, {
           onSuccess: () => {
-            navigate('/campaigns');
+            setOpenSuccessModal(true);
           },
         });
     }
   };
 
   useEffect(() => {
-    if (data) {
-      Object.keys(initialValues).forEach(item => {
-        form.setFieldValue(item, data[item]);
+    if (data?.campaign) {
+      Object.keys(data.campaign).forEach(item => {
+        if (item === 'place') {
+          form.setFieldValue(
+            item,
+            data.campaign[item].map(m => ({ id: m })),
+          );
+        } else form.setFieldValue(item, data.campaign[item]);
       });
     }
   }, [data]);
@@ -140,7 +164,7 @@ const Create = () => {
       <Header
         setFormStep={setFormStep}
         formStep={formStep}
-        setOpenSuccessModal={setOpenSuccessModal}
+        handlePublish={handlePublish}
         submitRef={submitRef}
         disabled={isSaving || isUpdating}
       />
@@ -161,7 +185,7 @@ const Create = () => {
       </div>
       <SuccessModal
         title="Campaign Successfully Added"
-        text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+        text=""
         prompt="Go to campaign"
         open={openSuccessModal}
         setOpenSuccessModal={setOpenSuccessModal}

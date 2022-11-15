@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Progress } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useDebouncedState } from '@mantine/hooks';
+import { useQueryClient } from '@tanstack/react-query';
 import Filter from '../../Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
-import { useFetchInventory } from '../../../hooks/inventory.hooks';
-import { serialize } from '../../../utils/index';
+import { useDeleteInventoryById, useFetchInventory } from '../../../hooks/inventory.hooks';
 import Badge from '../../shared/Badge';
 import MenuIcon from '../../Menu';
 import upload from '../../../assets/upload.svg';
@@ -24,41 +25,35 @@ const getHealthTag = score => {
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
 
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useDebouncedState('', 500);
   const [showFilter, setShowFilter] = useState(false);
   const [orderPrice, setOrderPrice] = useState(0);
+  const navigate = useNavigate();
 
-  const [inventoryQuery] = useState({ page: 1, limit: 1, sortBy: 'cratedAt', sortOrder: 'desc' });
-  const { data: inventoryData } = useFetchInventory(serialize(inventoryQuery));
+  const [searchParams, setSearchParams] = useSearchParams({
+    page: 1,
+    limit: 10,
+    sortBy: 'name',
+    sortOrder: 'desc',
+  });
+  const { data: inventoryData, isLoading, isFetching } = useFetchInventory(searchParams.toString());
+  const { mutate } = useDeleteInventoryById();
+  const queryClient = useQueryClient();
+
+  const onDelete = id => {
+    mutate(
+      {
+        inventoryId: id,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries(['inventory']);
+        },
+      },
+    );
+  };
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
-
-  useEffect(() => {
-    if (inventoryData) {
-      const finalData = [];
-      for (const item of inventoryData.docs) {
-        const obj = {};
-        obj.photo = item.basicInformation.spacePhotos;
-        obj._id = item._id;
-        obj.space_name = item.basicInformation.spaceName;
-        obj.space_type = item.basicInformation.spaceType.name;
-        obj.dimension = item.specifications.size;
-        obj.impression = item.specifications.impressions.min;
-        obj.health = item.specifications.health;
-        obj.location = item.location;
-        obj.media_type = item.basicInformation.mediaType.name;
-        obj.supportedMedia = item.basicInformation.supportedMedia;
-        obj.pricing = item.basicInformation.price;
-        obj.landlord_name = '';
-        obj.status = 'Available';
-        obj.illuminations = item.specifications.illuminations.name;
-        obj.unit = item.specifications.unit;
-        obj.resolutions = item.specifications.resolutions;
-        finalData.push(obj);
-      }
-      setUpdatedInventoryData(finalData);
-    }
-  }, [inventoryData]);
 
   const setSelectedSpace = selectedSpace => {
     const totalPrice = selectedSpace.reduce((acc, item) => acc + item.values.pricing, 0);
@@ -97,7 +92,7 @@ const SelectSpace = () => {
       }),
     );
 
-    setFieldValue('place', [...formData]);
+    setFieldValue('place', formData);
     setFieldValue('healthTag', getHealthTag(avgHealth));
   };
 
@@ -112,8 +107,6 @@ const SelectSpace = () => {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'space_name_and_photo',
         Cell: tableProps => {
-          const navigate = useNavigate();
-
           const {
             row: {
               original: { status, photo, space_name, _id: id },
@@ -127,7 +120,7 @@ const SelectSpace = () => {
             () => (
               <div
                 aria-hidden
-                onClick={() => navigate(`/view-details/${id}`)}
+                onClick={() => navigate(`/campaigns/view-details/${id}`)}
                 className="grid grid-cols-2 gap-2 items-center cursor-pointer"
               >
                 <div className="flex flex-1 gap-2 items-center w-44">
@@ -169,9 +162,9 @@ const SelectSpace = () => {
 
           return useMemo(
             () =>
-              values?.place.length > 0 ? (
-                values?.place.map(selected => {
-                  if (selected.original._id === id) {
+              values?.place?.length > 0 ? (
+                values.place.map(selected => {
+                  if (selected?.original?._id === id) {
                     return (
                       <button
                         type="button"
@@ -270,15 +263,27 @@ const SelectSpace = () => {
               <div aria-hidden onClick={() => setShowMenu(!showMenu)}>
                 <div className="relative">
                   <MenuIcon />
-                  {/* {showMenu && (
-                <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
-                  <div onClick={() => navigate(`/inventory/view-details/${id}`)} className="bg-white">
-                    View Details
-                  </div>
-                  <div className="bg-white">Edit</div>
-                  <div className="bg-white">Delete</div>
-                </div>
-              )} */}
+                  {showMenu && (
+                    <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
+                      <div
+                        onClick={() => navigate(`/inventory/view-details/${id}`)}
+                        className="bg-white"
+                        aria-hidden
+                      >
+                        View Details
+                      </div>
+                      <div
+                        aria-hidden
+                        onClick={() => navigate(`/inventory/edit-details/${id}`)}
+                        className="bg-white"
+                      >
+                        Edit
+                      </div>
+                      <div className="bg-white" aria-hidden onClick={() => onDelete(id)}>
+                        Delete
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ),
@@ -289,6 +294,56 @@ const SelectSpace = () => {
     ],
     [updatedInventoryData],
   );
+
+  const handleSortByColumn = colId => {
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
+      searchParams.set('sortOrder', 'asc');
+      setSearchParams(searchParams);
+      return;
+    }
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
+      searchParams.set('sortOrder', 'desc');
+      setSearchParams(searchParams);
+      return;
+    }
+
+    searchParams.set('sortBy', colId);
+    setSearchParams(searchParams);
+  };
+
+  useEffect(() => {
+    if (search) searchParams.set('search', search);
+    else searchParams.delete('search');
+
+    setSearchParams(searchParams);
+  }, [search]);
+
+  useEffect(() => {
+    if (inventoryData) {
+      const finalData = [];
+      for (const item of inventoryData.docs) {
+        const obj = {};
+        obj.photo = item.basicInformation.spacePhotos;
+        obj._id = item._id;
+        obj.space_name = item.basicInformation.spaceName;
+        obj.space_type = item.basicInformation.spaceType.name;
+        obj.dimension = item.specifications.size;
+        obj.impression = item.specifications.impressions.min;
+        obj.health = item.specifications.health;
+        obj.location = item.location;
+        obj.media_type = item.basicInformation.mediaType.name;
+        obj.supportedMedia = item.basicInformation.supportedMedia;
+        obj.pricing = item.basicInformation.price;
+        obj.landlord_name = '';
+        obj.status = 'Available';
+        obj.illuminations = item.specifications.illuminations.name;
+        obj.unit = item.specifications.unit;
+        obj.resolutions = item.specifications.resolutions;
+        finalData.push(obj);
+      }
+      setUpdatedInventoryData(finalData);
+    }
+  }, [inventoryData]);
 
   return (
     <>
@@ -327,9 +382,10 @@ const SelectSpace = () => {
         data={updatedInventoryData}
         COLUMNS={COLUMNS}
         allowRowsSelect
-        isBookingTable
         setSelectedFlatRows={setSelectedSpace}
         selectedRowData={values?.place?.map(item => ({ _id: item.id }))}
+        isLoading={isLoading || isFetching}
+        handleSorting={handleSortByColumn}
       />
     </>
   );

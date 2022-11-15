@@ -20,11 +20,11 @@ export const useCampaigns = (query, enabled = true) =>
     },
   );
 
-export const useCampaign = (id, enabled = true) =>
+export const useCampaign = ({ id, query }, enabled = true) =>
   useQuery(
-    ['campaign', id],
+    ['campaign', id, query],
     async () => {
-      const res = await campaign(id);
+      const res = await campaign(id, query);
       return res.data;
     },
     {
@@ -39,9 +39,9 @@ export const useCreateCampaign = () =>
       return res.data;
     },
     {
-      onSuccess: data => {
+      onSuccess: () => {
         showNotification({
-          title: data?.message,
+          title: 'Campaign Successfully Added',
           color: 'green',
         });
       },
@@ -61,9 +61,9 @@ export const useUpdateCampaign = () =>
       return res.data;
     },
     {
-      onSuccess: data => {
+      onSuccess: () => {
         showNotification({
-          title: data?.message,
+          title: 'Campaign Successfully Updated',
           color: 'green',
         });
       },
