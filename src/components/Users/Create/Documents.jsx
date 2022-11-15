@@ -5,6 +5,8 @@ import DragDropCard from './UI/DragDropCard';
 import { useFormContext } from '../../../context/formContext';
 import { useDeleteUploadedFile, useUploadFile } from '../../../hooks/upload.hooks';
 
+const supportedType = ['JPG', 'JPEG', 'PNG', 'PDF'];
+
 const Documents = ({ documents }) => {
   const { setFieldValue } = useFormContext();
   const [uploadImageList, setUploadImageList] = useState([]);
@@ -69,8 +71,12 @@ const Documents = ({ documents }) => {
     <div className="pl-5 pr-7 mt-4">
       <p className="text-xl font-bold">Documents of the associates</p>
       <p className="text-sm mb-8">
-        <span className="font-bold text-gray-500">Supported types</span>: <Badge>JPEG</Badge>{' '}
-        <Badge>JPG</Badge> <Badge>PNG</Badge>
+        <span className="font-bold text-gray-500">Supported types</span> <Badge>JPEG</Badge>{' '}
+        {supportedType.map(item => (
+          <Badge key={item} className="mr-2">
+            {item}
+          </Badge>
+        ))}
       </p>
 
       <div className="grid grid-cols-4 gap-8">
