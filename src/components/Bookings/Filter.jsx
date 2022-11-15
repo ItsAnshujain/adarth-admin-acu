@@ -35,7 +35,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
     paymentStatus: '',
     bookingType: '',
   });
-  const [priceRange, setPriceRange] = useState({ minPrice: 0, maxPrice: 10000 });
   const [searchParams, setSearchParams] = useSearchParams();
 
   const minPrice = searchParams.get('minPrice');
@@ -118,24 +117,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
       paymentStatus: '',
       bookingType: '',
     });
-
-    setPriceRange({
-      minPrice: minPrice ?? 0,
-      maxPrice: maxPrice ?? 10000,
-    });
   };
 
-  const handleMinPrice = e => {
-    setPriceRange(prevState => ({ ...prevState, minPrice: e }));
-    searchParams.set('minPrice', e);
-  };
-  const handleMaxPrice = e => {
-    setPriceRange(prevState => ({ ...prevState, maxPrice: e }));
-    searchParams.set('maxPrice', e);
-  };
-
+  const handleMinPrice = e => searchParams.set('minPrice', e);
+  const handleMaxPrice = e => searchParams.set('maxPrice', e);
   const handleSliderChange = val => {
-    setPriceRange({ minPrice: val[0], maxPrice: val[1] });
     searchParams.set('minPrice', val[0]);
     searchParams.set('maxPrice', val[1]);
   };
@@ -149,12 +135,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
       mountingStatus: mountingStatus || '',
       paymentStatus: paymentStatus || '',
       bookingType: bookingType || '',
-    }));
-
-    setPriceRange(prevState => ({
-      ...prevState,
-      minPrice: Number(minPrice) ?? 0,
-      maxPrice: Number(maxPrice) ?? 10000,
     }));
   }, [searchParams]);
 
@@ -196,14 +176,22 @@ const Filter = ({ isOpened, setShowFilter }) => {
                   <div className="flex justify-between gap-8">
                     <div>
                       <NumberInput
-                        value={priceRange.minPrice}
+                        value={
+                          minPrice && !Number.isNaN(parseInt(minPrice, 10))
+                            ? parseInt(minPrice, 10)
+                            : 0
+                        }
                         onChange={handleMinPrice}
                         label="Min"
                       />
                     </div>
                     <div>
                       <NumberInput
-                        value={priceRange.maxPrice}
+                        value={
+                          maxPrice && !Number.isNaN(parseInt(maxPrice, 10))
+                            ? parseInt(maxPrice, 10)
+                            : 10000
+                        }
                         onChange={handleMaxPrice}
                         label="Max"
                       />
@@ -215,7 +203,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                       min={0}
                       max={10000}
                       styles={sliderStyle}
-                      defaultValue={[priceRange.minPrice, priceRange.maxPrice]}
+                      defaultValue={[minPrice, maxPrice]}
                     />
                   </div>
                 </div>

@@ -18,8 +18,6 @@ const sliderStyle = {
 
 const Filter = ({ isOpened, setShowFilter }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [priceRange, setPriceRange] = useState({ priceMin: 0, priceMax: 10000 });
-  const [placeRange, setPlaceRange] = useState({ totalPlacesMin: 0, totalPlacesMax: 10000 });
   const [statusArr, setStatusArr] = useState([]);
 
   const priceMin = searchParams.get('priceMin');
@@ -74,47 +72,22 @@ const Filter = ({ isOpened, setShowFilter }) => {
     setStatusArr([]);
   };
 
-  const handleMinPrice = e => {
-    setPriceRange(prevState => ({ ...prevState, priceMin: e }));
-    searchParams.set('priceMin', e);
-  };
-  const handleMaxPrice = e => {
-    setPriceRange(prevState => ({ ...prevState, priceMax: e }));
-    searchParams.set('priceMax', e);
-  };
+  const handleMinPrice = e => searchParams.set('priceMin', e);
+  const handleMaxPrice = e => searchParams.set('priceMax', e);
   const handleSliderChange = val => {
-    setPriceRange({ priceMin: val[0], priceMax: val[1] });
     searchParams.set('priceMin', val[0]);
     searchParams.set('priceMax', val[1]);
   };
 
-  const handleMinPlace = e => {
-    setPlaceRange(prevState => ({ ...prevState, totalPlacesMin: e }));
-    searchParams.set('totalPlacesMin', e);
-  };
-  const handleMaxPlace = e => {
-    setPlaceRange(prevState => ({ ...prevState, totalPlacesMax: e }));
-    searchParams.set('totalPlacesMax', e);
-  };
+  const handleMinPlace = e => searchParams.set('totalPlacesMin', e);
+  const handleMaxPlace = e => searchParams.set('totalPlacesMax', e);
   const handlePlacesSliderChange = val => {
-    setPlaceRange({ totalPlacesMin: val[0], totalPlacesMax: val[1] });
     searchParams.set('totalPlacesMin', val[0]);
     searchParams.set('totalPlacesMax', val[1]);
   };
 
   useEffect(() => {
     setStatusArr(searchParams.getAll('status'));
-    setPriceRange(prevState => ({
-      ...prevState,
-      priceMin: Number(priceMin) ?? 0,
-      priceMax: Number(priceMax) ?? 10000,
-    }));
-
-    setPlaceRange(prevState => ({
-      ...prevState,
-      totalPlacesMin: Number(totalPlacesMin) ?? 0,
-      totalPlacesMax: Number(totalPlacesMax) ?? 10000,
-    }));
   }, [searchParams]);
 
   return (
@@ -166,14 +139,22 @@ const Filter = ({ isOpened, setShowFilter }) => {
                   <div className="flex justify-between gap-8">
                     <div>
                       <NumberInput
-                        value={priceRange.priceMin}
+                        value={
+                          priceMin && !Number.isNaN(parseInt(priceMin, 10))
+                            ? parseInt(priceMin, 10)
+                            : 0
+                        }
                         onChange={handleMinPrice}
                         label="Min"
                       />
                     </div>
                     <div>
                       <NumberInput
-                        value={priceRange.priceMax}
+                        value={
+                          priceMax && !Number.isNaN(parseInt(priceMax, 10))
+                            ? parseInt(priceMax, 10)
+                            : 10000
+                        }
                         onChange={handleMaxPrice}
                         label="Max"
                       />
@@ -185,7 +166,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                       min={0}
                       max={10000}
                       styles={sliderStyle}
-                      defaultValue={[priceRange.priceMin, priceRange.priceMax]}
+                      defaultValue={[priceMin, priceMax]}
                     />
                   </div>
                 </div>
@@ -203,14 +184,22 @@ const Filter = ({ isOpened, setShowFilter }) => {
                   <div className="flex justify-between gap-8">
                     <div>
                       <NumberInput
-                        value={placeRange.totalPlacesMin}
+                        value={
+                          totalPlacesMin && !Number.isNaN(parseInt(totalPlacesMin, 10))
+                            ? parseInt(totalPlacesMin, 10)
+                            : 0
+                        }
                         onChange={handleMinPlace}
                         label="Min"
                       />
                     </div>
                     <div>
                       <NumberInput
-                        value={placeRange.totalPlacesMax}
+                        value={
+                          totalPlacesMax && !Number.isNaN(parseInt(totalPlacesMax, 10))
+                            ? parseInt(totalPlacesMax, 10)
+                            : 10000
+                        }
                         onChange={handleMaxPlace}
                         label="Max"
                       />
@@ -222,7 +211,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                       min={0}
                       max={10000}
                       styles={sliderStyle}
-                      defaultValue={[placeRange.totalPlacesMin, placeRange.totalPlacesMax]}
+                      defaultValue={[totalPlacesMin, totalPlacesMax]}
                     />
                   </div>
                 </div>
