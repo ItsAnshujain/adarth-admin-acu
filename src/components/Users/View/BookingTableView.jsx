@@ -2,20 +2,18 @@ import { useDebouncedState } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import { NativeSelect, Progress, Loader } from '@mantine/core';
+import { Loader, NativeSelect, Progress } from '@mantine/core';
 import dayjs from 'dayjs';
-import Table from '../../components/Table/Table';
-import RowsPerPage from '../../components/RowsPerPage';
-import Search from '../../components/Search';
-import AreaHeader from '../../components/Bookings/Header';
-import { useBookings, useBookingStats, useUpdateBookingStatus } from '../../hooks/booking.hooks';
-import { serialize } from '../../utils';
-import { useFetchMasters } from '../../hooks/masters.hooks';
-import MenuPopover from './MenuPopOver';
-import toIndianCurrency from '../../utils/currencyFormat';
-import BookingStatisticsView from './BookingStatisticsView';
+import { serialize } from '../../../utils';
+import { useBookings, useUpdateBookingStatus } from '../../../hooks/booking.hooks';
+import { useFetchMasters } from '../../../hooks/masters.hooks';
+import toIndianCurrency from '../../../utils/currencyFormat';
+import MenuPopover from '../../../pages/Booking/MenuPopOver';
+import Table from '../../Table/Table';
+import RowsPerPage from '../../RowsPerPage';
+import Search from '../../Search';
 
-const Bookings = () => {
+const BookingTableView = ({ viewType }) => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
@@ -28,9 +26,9 @@ const Bookings = () => {
   const limit = searchParams.get('limit');
 
   const { data: bookingData, isLoading: isLoadingBookingData } = useBookings(
-    searchParams.toString(),
+    viewType ? searchParams.toString() : null,
+    viewType,
   );
-  const { data: bookingStats } = useBookingStats();
   const { data: campaignStatus } = useFetchMasters(
     serialize({ type: 'campaign_status', limit: 100 }),
   );
@@ -345,9 +343,7 @@ const Bookings = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
-      <AreaHeader text="Order" />
       <div className="pr-7">
-        <BookingStatisticsView bookingStats={bookingStats} />
         <div className="flex justify-between h-20 items-center">
           <RowsPerPage setCount={handleRowCount} count={limit} />
           <Search search={searchInput} setSearch={setSearchInput} />
@@ -378,4 +374,4 @@ const Bookings = () => {
   );
 };
 
-export default Bookings;
+export default BookingTableView;
