@@ -1,12 +1,29 @@
 import { Button } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
+import shallow from 'zustand/shallow';
 import { useDeleteAccount } from '../../hooks/settings.hooks';
 import useUserStore from '../../store/user.store';
 
 const DeleteAccount = () => {
   const { mutateAsync, isLoading } = useDeleteAccount();
-  const userId = useUserStore(state => state.id);
+  const navigate = useNavigate();
+  const { setToken, setId, id } = useUserStore(
+    state => ({
+      setToken: state.setToken,
+      setId: state.setId,
+      id: state.id,
+    }),
+    shallow,
+  );
+
   const handleAccountDelete = () => {
-    mutateAsync(userId);
+    mutateAsync(id, {
+      onSuccess: () => {
+        setToken(null);
+        setId(null);
+        navigate('/login');
+      },
+    });
   };
   return (
     <div className="pl-5 pr-7 mt-4">

@@ -35,6 +35,7 @@ const ProposalTableView = ({ viewType }) => {
       {
         Header: '#',
         accessor: 'id',
+        disableSortBy: true,
         Cell: ({ row }) =>
           useMemo(() => {
             let currentPage = page;
@@ -149,8 +150,8 @@ const ProposalTableView = ({ viewType }) => {
         }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
       },
       {
-        Header: '',
-        accessor: 'details',
+        Header: 'ACTION',
+        accessor: 'action',
         disableSortBy: true,
         Cell: ({
           row: {

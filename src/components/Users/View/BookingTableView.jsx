@@ -65,6 +65,7 @@ const BookingTableView = ({ viewType }) => {
       {
         Header: '#',
         accessor: 'id',
+        disableSortBy: true,
         Cell: ({ row }) =>
           useMemo(() => {
             let currentPage = page;
@@ -273,24 +274,25 @@ const BookingTableView = ({ viewType }) => {
       },
       {
         Header: 'PURCHASE ORDER',
-        accessor: '',
+        accessor: 'purchaseOrder',
         Cell: () =>
           useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
       },
       {
         Header: 'RELEASE ORDER',
-        accessor: '',
+        accessor: 'releaseOrder',
         Cell: () =>
           useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
       },
       {
         Header: 'INVOICE',
-        accessor: '',
+        accessor: 'invoice',
         Cell: () =>
           useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
       },
       {
         Header: 'ACTION',
+        accessor: 'action',
         disableSortBy: true,
         Cell: ({
           row: {

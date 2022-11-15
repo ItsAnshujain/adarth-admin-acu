@@ -77,6 +77,7 @@ const Home = () => {
       {
         Header: '#',
         accessor: 'id',
+        disableSortBy: true,
         Cell: ({ row }) =>
           useMemo(() => {
             let currentPage = page;
@@ -253,8 +254,8 @@ const Home = () => {
           ),
       },
       {
-        Header: '',
-        accessor: 'details',
+        Header: 'ACTION',
+        accessor: 'action',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -315,13 +316,13 @@ const Home = () => {
         onDeleteCards={handleDeleteCards}
         isLoading={isLoadingDeletedInventoryData}
       />
-      {viewType !== 'map' && (
+      {viewType.inventory !== 'map' && (
         <div className="flex justify-between h-20 items-center pr-7">
           <RowsPerPage setCount={handleRowCount} count={limit} />
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       )}
-      {isLoadingInventoryData && viewType === 'list' ? (
+      {isLoadingInventoryData && viewType.inventory === 'list' ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
         </div>
@@ -331,7 +332,7 @@ const Home = () => {
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-      {viewType === 'grid' && inventoryData?.docs?.length ? (
+      {viewType.inventory === 'grid' && inventoryData?.docs?.length ? (
         <GridView
           count={limit}
           list={inventoryData?.docs || []}
@@ -342,7 +343,7 @@ const Home = () => {
           selectedCards={selectedCards}
           setSelectedCards={setSelectedCards}
         />
-      ) : viewType === 'list' && inventoryData?.docs?.length ? (
+      ) : viewType.inventory === 'list' && inventoryData?.docs?.length ? (
         <Table
           COLUMNS={COLUMNS}
           data={inventoryData?.docs || []}
@@ -355,7 +356,7 @@ const Home = () => {
           setSelectedFlatRows={ele => setSelectedCards(ele?.map(itm => itm.original._id))}
           handleSorting={handleSortByColumn}
         />
-      ) : viewType === 'map' ? (
+      ) : viewType.inventory === 'map' ? (
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto mt-5">
           <MapView lists={inventoryData?.docs} />
         </div>
