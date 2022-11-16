@@ -70,7 +70,7 @@ const Table = ({
     if (!isLoading) {
       setSelectedFlatRows(selectedFlatRows);
     }
-  }, [selectedFlatRows]);
+  }, [selectedFlatRows, isLoading]);
 
   return (
     <>
