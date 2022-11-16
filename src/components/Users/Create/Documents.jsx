@@ -71,7 +71,7 @@ const Documents = ({ documents }) => {
     <div className="pl-5 pr-7 mt-4">
       <p className="text-xl font-bold">Documents of the associates</p>
       <p className="text-sm mb-8">
-        <span className="font-bold text-gray-500">Supported types</span> <Badge>JPEG</Badge>{' '}
+        <span className="font-bold text-gray-500">Supported types</span>
         {supportedType.map(item => (
           <Badge key={item} className="mr-2">
             {item}
