@@ -6,6 +6,7 @@ import modalConfig from '../../utils/modalConfig';
 import DeleteConfirmContent from '../../components/DeleteConfirmContent';
 import MenuIcon from '../../components/Menu';
 import { useDeleteProposal } from '../../hooks/proposal.hooks';
+import { handleStopPropagation } from '../../utils';
 
 const MenuPopover = ({ itemId }) => {
   const modals = useModals();
@@ -46,14 +47,14 @@ const MenuPopover = ({ itemId }) => {
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Item
-          onClick={() => navigate(`/proposals/view-details/${itemId}`)}
+          onClick={e => handleStopPropagation(e, navigate(`/proposals/view-details/${itemId}`))}
           className="cursor-pointer flex items-center gap-1"
           icon={<Eye className="h-4" />}
         >
           <span className="ml-1">View</span>
         </Menu.Item>
         <Menu.Item
-          onClick={() => navigate(`/proposals/edit-details/${itemId}`)}
+          onClick={e => handleStopPropagation(e, navigate(`/proposals/edit-details/${itemId}`))}
           icon={<Edit2 className="h-4" />}
           className="cursor-pointer flex items-center gap-1"
         >
@@ -61,7 +62,7 @@ const MenuPopover = ({ itemId }) => {
         </Menu.Item>
         <Menu.Item
           icon={<Trash className="h-4" />}
-          onClick={() => toggleDeleteModal()}
+          onClick={e => handleStopPropagation(e, toggleDeleteModal())}
           disabled={isLoading}
           className="cursor-pointer flex items-center gap-1"
         >

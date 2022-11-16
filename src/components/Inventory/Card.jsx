@@ -7,6 +7,7 @@ import MenuIcon from '../Menu';
 import DeleteConfirmContent from '../DeleteConfirmContent';
 import modalConfig from '../../utils/modalConfig';
 import { useDeleteInventoryById } from '../../hooks/inventory.hooks';
+import { handleStopPropagation } from '../../utils';
 
 const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
   const modals = useModals();
@@ -109,7 +110,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
             </Menu.Target>
             <Menu.Dropdown>
               <Menu.Item
-                onClick={() => navigate(`view-details/${data?._id}`)}
+                onClick={e => handleStopPropagation(e, navigate(`view-details/${data?._id}`))}
                 className="cursor-pointer flex items-center gap-1"
                 icon={<Eye className="h-4" />}
                 disabled={isLoading}
@@ -117,7 +118,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
                 <span className="ml-1">View Details</span>
               </Menu.Item>
               <Menu.Item
-                onClick={() => navigate(`edit-details/${data?._id}`)}
+                onClick={e => handleStopPropagation(e, navigate(`edit-details/${data?._id}`))}
                 className="cursor-pointer flex items-center gap-1"
                 icon={<Edit2 className="h-4" />}
                 disabled={isLoading}
@@ -127,7 +128,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
               <Menu.Item
                 className="cursor-pointer flex items-center gap-1"
                 icon={<Trash className="h-4" />}
-                onClick={toggleDeleteModal}
+                onClick={e => handleStopPropagation(e, toggleDeleteModal)}
                 disabled={isLoading}
               >
                 <span className="ml-1">Delete</span>

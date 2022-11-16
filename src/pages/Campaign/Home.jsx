@@ -60,6 +60,7 @@ const Home = () => {
       {
         Header: '#',
         accessor: 'id',
+        disableSortBy: true,
         Cell: ({ row: { index } }) => index + 1,
       },
       {

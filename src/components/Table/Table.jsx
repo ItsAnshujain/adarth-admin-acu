@@ -84,7 +84,8 @@ const Table = ({
                     className="text-sm"
                     {...header.getHeaderProps(header.getSortByToggleProps())}
                     onClick={() => {
-                      if (!header.id.includes('selection')) onHandleHeader(header);
+                      if (header.id.includes('selection') || header.disableSortBy) return;
+                      onHandleHeader(header);
                     }}
                   >
                     <div className="w-max flex align-center text-left pl-2 text-gray-400 hover:text-black py-2 text-xs font-medium">
