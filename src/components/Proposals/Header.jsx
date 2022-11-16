@@ -19,9 +19,9 @@ const Header = ({ text }) => {
     shallow,
   );
 
-  const handleListClick = () => setActiveLayout('list');
+  const handleListClick = () => setActiveLayout({ ...activeLayout, proposal: 'list' });
 
-  const handleGridClick = () => setActiveLayout('grid');
+  const handleGridClick = () => setActiveLayout({ ...activeLayout, proposal: 'grid' });
 
   const toggleFilter = () => setShowFilter(!showFilter);
   const handleCreateProposal = () => navigate('create-proposals');
@@ -36,7 +36,7 @@ const Header = ({ text }) => {
           <Button
             className={classNames(
               `px-4 border-gray-300 border rounded-md ${
-                activeLayout === 'grid' ? 'bg-white' : 'bg-purple-450'
+                activeLayout.proposal === 'grid' ? 'bg-white' : 'bg-purple-450'
               }`,
             )}
             onClick={handleListClick}
@@ -44,14 +44,14 @@ const Header = ({ text }) => {
             <Server
               strokeWidth="3px"
               className={`max-h-5 ${classNames(
-                activeLayout === 'grid' ? 'text-black' : 'text-white',
+                activeLayout.proposal === 'grid' ? 'text-black' : 'text-white',
               )}`}
             />
           </Button>
           <Button
             className={classNames(
               `text-white border-gray-300 border px-4 rounded-md ${
-                activeLayout === 'list' ? 'bg-white' : 'bg-purple-450'
+                activeLayout.proposal === 'list' ? 'bg-white' : 'bg-purple-450'
               }`,
             )}
             onClick={handleGridClick}
@@ -59,7 +59,7 @@ const Header = ({ text }) => {
             <Grid
               strokeWidth="3px"
               className={`max-h-5 ${classNames(
-                activeLayout === 'list' ? 'text-black' : 'text-white',
+                activeLayout.proposal === 'list' ? 'text-black' : 'text-white',
               )}`}
             />
           </Button>

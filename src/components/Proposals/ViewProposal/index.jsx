@@ -71,6 +71,7 @@ const ProposalDetails = () => {
       {
         Header: '#',
         accessor: 'id',
+        disableSortBy: true,
         Cell: ({ row }) =>
           useMemo(() => {
             let currentPage = page;
@@ -215,8 +216,8 @@ const ProposalDetails = () => {
         }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
       },
       {
-        Header: '',
-        accessor: 'details',
+        Header: 'ACTION',
+        accessor: 'action',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -227,6 +228,22 @@ const ProposalDetails = () => {
     ],
     [proposalData?.inventories?.docs],
   );
+
+  const handleSortByColumn = colId => {
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
+      searchParams.set('sortOrder', 'asc');
+      setSearchParams(searchParams);
+      return;
+    }
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
+      searchParams.set('sortOrder', 'desc');
+      setSearchParams(searchParams);
+      return;
+    }
+
+    searchParams.set('sortBy', colId);
+    setSearchParams(searchParams);
+  };
 
   const handleSearch = () => {
     searchParams.set('search', searchInput);
@@ -305,6 +322,7 @@ const ProposalDetails = () => {
             totalPages={proposalData?.inventories?.totalPages || 1}
             setActivePage={handlePagination}
             rowCountLimit={limit}
+            handleSorting={handleSortByColumn}
           />
         ) : null}
       </div>

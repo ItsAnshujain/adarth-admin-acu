@@ -59,7 +59,7 @@ const Home = () => {
     () => [
       {
         Header: '#',
-        accessor: '_id',
+        accessor: 'id',
         Cell: ({ row: { index } }) => index + 1,
       },
       {
@@ -168,8 +168,8 @@ const Home = () => {
         Cell: ({ cell: { value } }) => toIndianCurrency(value || 0),
       },
       {
-        Header: '',
-        accessor: 'details',
+        Header: 'ACTION',
+        accessor: 'action',
         disableSortBy: true,
         Cell: ({
           row: {

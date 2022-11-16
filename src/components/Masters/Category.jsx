@@ -17,6 +17,8 @@ const Category = () => {
     'parentId': null,
     'limit': 10,
     'page': 1,
+    'sortOrder': 'desc',
+    'sortBy': 'name',
   });
   const navigate = useNavigate();
   const { data: masterData, isLoading: isMasterDataLoading } = useFetchMasters(
@@ -48,6 +50,7 @@ const Category = () => {
       {
         Header: '#',
         accessor: 'id',
+        disableSortBy: true,
         Cell: ({ row }) =>
           useMemo(() => {
             let currentPage = page;
@@ -91,8 +94,8 @@ const Category = () => {
           ),
       },
       {
-        Header: '',
-        accessor: '_id',
+        Header: 'ACTION',
+        accessor: 'action',
         footer: props => props.column.id,
         disableSortBy: true,
         Cell: ({ row }) => useMemo(() => <MenuPopover row={row} />, []),
@@ -100,6 +103,22 @@ const Category = () => {
     ],
     [masterData],
   );
+
+  const handleSortByColumn = colId => {
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
+      searchParams.set('sortOrder', 'asc');
+      setSearchParams(searchParams);
+      return;
+    }
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
+      searchParams.set('sortOrder', 'desc');
+      setSearchParams(searchParams);
+      return;
+    }
+
+    searchParams.set('sortBy', colId);
+    setSearchParams(searchParams);
+  };
 
   useEffect(() => {
     handleSearch();
@@ -134,6 +153,7 @@ const Category = () => {
           totalPages={masterData?.totalPages || 1}
           setActivePage={handlePagination}
           rowCountLimit={limit}
+          handleSorting={handleSortByColumn}
         />
       ) : null}
     </div>

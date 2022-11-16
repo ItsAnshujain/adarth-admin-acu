@@ -69,6 +69,7 @@ const Spaces = ({
       {
         Header: '#',
         accessor: 'id',
+        disableSortBy: true,
         Cell: ({ row }) =>
           useMemo(() => {
             let currentPage = page;
@@ -243,8 +244,8 @@ const Spaces = ({
           ),
       },
       {
-        Header: '',
-        accessor: 'details',
+        Header: 'ACTION',
+        accessor: 'action',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -266,6 +267,32 @@ const Spaces = ({
     return initialCost;
   }, [selectedRowData]);
 
+  const handleSortByColumn = colId => {
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
+      searchParams.set('sortOrder', 'asc');
+      setSearchParams(searchParams);
+      return;
+    }
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
+      searchParams.set('sortOrder', 'desc');
+      setSearchParams(searchParams);
+      return;
+    }
+
+    searchParams.set('sortBy', colId);
+    setSearchParams(searchParams);
+  };
+
+  const handleSearch = () => {
+    searchParams.set('search', searchInput);
+    setSearchParams(searchParams);
+  };
+
+  const handlePagination = currentPage => {
+    searchParams.set('page', currentPage);
+    setSearchParams(searchParams);
+  };
+
   useEffect(() => {
     if (inventoryData?.docs) {
       const arrOfIds = selectedRowData?.map(item => item._id);
@@ -282,16 +309,6 @@ const Spaces = ({
       setUpdatedSpaces(arrOfUpdatedPrices);
     }
   }, [inventoryData?.docs]);
-
-  const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    setSearchParams(searchParams);
-  };
-
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
-    setSearchParams(searchParams);
-  };
 
   useEffect(() => {
     handleSearch();
@@ -376,6 +393,7 @@ const Spaces = ({
           allowRowsSelect
           setSelectedFlatRows={setSelectedRow}
           selectedRowData={selectedRowData}
+          handleSorting={handleSortByColumn}
         />
       ) : null}
     </>
