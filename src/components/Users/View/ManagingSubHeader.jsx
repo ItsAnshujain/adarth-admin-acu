@@ -3,6 +3,7 @@ import { ChevronDown, Plus } from 'react-feather';
 import { Button } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
+import { useClickOutside } from '@mantine/hooks';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
 import greenfolder from '../../../assets/ongoing.svg';
@@ -17,7 +18,9 @@ const ManagingSubHeader = ({ activeTable }) => {
   const navigate = useNavigate();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+  const ref = useClickOutside(() => setShowDatePicker(false));
 
+  const toggleFilter = () => setShowFilter(!showFilter);
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const handleCreateProposal = () => navigate('/proposals/create-proposals');
 
@@ -26,8 +29,8 @@ const ManagingSubHeader = ({ activeTable }) => {
       <div className="h-20 border-b flex justify-between items-center pl-5 pr-7">
         <p className="font-bold">Managing Campaign</p>
         <div className="flex">
-          <div className="mr-2 relative">
-            <Button onClick={toggleDatePicker} variant="default" type="button">
+          <div ref={ref} className="mr-2 relative">
+            <Button onClick={toggleDatePicker} variant="default">
               <img src={calendar} className="h-5" alt="calendar" />
             </Button>
             {showDatePicker && (
@@ -42,12 +45,7 @@ const ManagingSubHeader = ({ activeTable }) => {
             )}
           </div>
           <div className="mr-2">
-            <Button
-              onClick={() => setShowFilter(!showFilter)}
-              variant="default"
-              type="button"
-              className="font-medium"
-            >
+            <Button onClick={toggleFilter} variant="default" className="font-medium">
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
             {showFilter && activeTable === 'booking' && (

@@ -1,4 +1,4 @@
-import { Divider, Image } from '@mantine/core';
+import { Button, Divider, Image } from '@mantine/core';
 import React, { useState } from 'react';
 
 import CheckIcon from '../assets/check.svg';
@@ -22,20 +22,18 @@ const DeleteConfirmContent = ({ onClickCancel = () => {}, setIsConfirmed = () =>
         </p>
         {!accept ? (
           <div className="flex gap-2  justify-end">
-            <button
+            <Button
               onClick={onClickCancel}
-              type="button"
               className="bg-black text-white rounded-md text-sm px-8 py-3"
             >
               No
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
               className="bg-purple-450 text-white rounded-md text-sm px-8 py-3"
               onClick={handleConfirm}
             >
               Yes
-            </button>
+            </Button>
           </div>
         ) : null}
       </div>
