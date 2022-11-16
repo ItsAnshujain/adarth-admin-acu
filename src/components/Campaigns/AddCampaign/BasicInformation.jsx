@@ -1,9 +1,11 @@
-import { Checkbox, NumberInput, RangeSlider } from '@mantine/core';
+import { Checkbox, RangeSlider } from '@mantine/core';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils/index';
 import TextInput from '../../shared/TextInput';
+import NumberInput from '../../shared/NumberInput';
 import TextareaInput from '../../shared/TextareaInput';
 import MultiSelect from '../../shared/MultiSelect';
+import { useFormContext } from '../../../context/formContext';
 
 const styles = {
   label: {
@@ -49,7 +51,9 @@ const multiSelectStyles = {
     color: 'white',
   },
 };
-const BasicInformation = ({ formData, setFormData }) => {
+const BasicInformation = () => {
+  const { values, errors, setFieldValue } = useFormContext();
+
   const { data: tagData } = useFetchMasters(serialize({ type: 'tag', parentId: null, limit: 100 }));
   const { data: brandData } = useFetchMasters(
     serialize({ type: 'brand', parentId: null, limit: 100 }),
@@ -60,40 +64,32 @@ const BasicInformation = ({ formData, setFormData }) => {
     { value: 800, label: '80%' },
   ];
 
-  const handleChange = e => {
-    const {
-      target: { name, value },
-    } = e;
-    setFormData(name, value);
-  };
-
   return (
     <div className="mt-4 pl-5 pr-7 flex flex-col gap-4 pb-20">
       <p className="text-md font-bold">Basic Information</p>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4">
         <div className="flex flex-col gap-y-4">
           <TextInput
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            styles={styles}
             label="Campaign Name"
-            placeholder="Write"
-          />
-          <NumberInput
-            name="price"
-            value={formData.price}
-            onChange={value => handleChange({ target: { name: 'price', value } })}
+            name="name"
             styles={styles}
+            errors={errors}
+            placeholder="Write..."
+          />
+
+          <NumberInput
             label="Price"
-            placeholder="Write"
-          />
-          <NumberInput
-            name="healthStatus"
-            value={formData.healthStatus}
-            onChange={value => handleChange({ target: { name: 'healthStatus', value } })}
+            name="price"
             styles={styles}
+            errors={errors}
+            placeholder="Write..."
+          />
+
+          <NumberInput
             label="Health Status"
+            name="healthStatus"
+            styles={styles}
+            errors={errors}
             placeholder="Write"
           />
         </div>
@@ -102,18 +98,17 @@ const BasicInformation = ({ formData, setFormData }) => {
           label="Description"
           placeholder="Maximum 200 characters"
           name="description"
-          value={formData.description}
-          onChange={handleChange}
         />
         <Checkbox
+          name=""
           label="Set as featured campaign"
-          onChange={e => setFormData('isFeatured', e.target.checked)}
+          onChange={e => setFieldValue('isFeatured', e.target.checked)}
         />
       </div>
       <MultiSelect
         styles={multiSelectStyles}
         label="Previous Brands"
-        onChange={e => setFormData('previousBrands', [...e])}
+        onChange={e => setFieldValue('previousBrands', [...e])}
         data={brandData?.docs.map(item => ({ label: item.name, value: item._id })) || []}
         name="previousBrands"
       />
@@ -124,20 +119,20 @@ const BasicInformation = ({ formData, setFormData }) => {
             className="border w-24 py-1 px-1"
             type="text"
             readOnly
-            value={formData.minImpression}
+            value={values.minImpression}
           />
           <p className="text-sm font-thin">Min</p>
         </div>
         <RangeSlider
           onChange={val => {
-            setFormData('minImpression', val[0]);
-            setFormData('maxImpression', val[1]);
+            setFieldValue('minImpression', val[0]);
+            setFieldValue('maxImpression', val[1]);
           }}
           styles={sliderStyle}
           className="mb-5 flex-auto"
           min={100}
           max={1000}
-          value={[formData.minImpression, formData.maxImpression]}
+          value={[values.minImpression, values.maxImpression]}
           defaultValue={[200, 1000]}
           marks={marks}
         />
@@ -146,7 +141,7 @@ const BasicInformation = ({ formData, setFormData }) => {
             className="border w-24 py-1 px-1"
             type="text"
             readOnly
-            value={formData.maxImpression}
+            value={values.maxImpression}
           />
           <p className="text-sm font-thin" size="sm">
             Max
@@ -156,7 +151,7 @@ const BasicInformation = ({ formData, setFormData }) => {
       <MultiSelect
         styles={multiSelectStyles}
         label="Tags"
-        onChange={e => setFormData('tags', [...e])}
+        onChange={e => setFieldValue('tags', [...e])}
         data={tagData?.docs.map(item => ({ label: item.name, value: item._id })) || []}
         name="tags"
       />

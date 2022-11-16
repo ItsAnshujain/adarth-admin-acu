@@ -1,11 +1,10 @@
 import { Button } from '@mantine/core';
 import classNames from 'classnames';
 import { ArrowLeft } from 'react-feather';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const Header = ({ tabs, setTabs }) => {
-  const { pathname } = useLocation();
-  const id = pathname.split('/')[3];
+  const { id } = useParams();
 
   const navigate = useNavigate();
   return (
@@ -61,7 +60,7 @@ const Header = ({ tabs, setTabs }) => {
           className="bg-purple-450"
           type="button"
         >
-          Edit Space
+          Edit Campaign
         </Button>
       </div>
     </div>

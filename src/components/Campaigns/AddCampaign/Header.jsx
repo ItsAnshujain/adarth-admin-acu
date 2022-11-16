@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Basic Information', 'Select Spaces', 'Cover Image'];
 
-const Header = ({ setFormStep, formStep, setOpenSuccessModal, submitRef }) => {
+const Header = ({ setFormStep, formStep, handlePublish, submitRef }) => {
   const navigate = useNavigate();
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -50,7 +50,9 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal, submitRef }) => {
         ))}
       </div>
       <div className="flex gap-4 pr-7">
-        <Button className="border-black radius-md text-black">Cancel</Button>
+        <Button onClick={() => navigate(-1)} className="border-black radius-md text-black">
+          Cancel
+        </Button>
         <Button
           onClick={() => {
             if (formStep === 1) {
@@ -70,7 +72,7 @@ const Header = ({ setFormStep, formStep, setOpenSuccessModal, submitRef }) => {
           {formStep < 3 && <ChevronRight className="ml-1 h-4" />}
         </Button>
         {formStep === 4 && (
-          <Button onClick={() => setOpenSuccessModal(true)} className="bg-purple-450">
+          <Button onClick={handlePublish} className="bg-purple-450">
             Save &amp; Publish
           </Button>
         )}

@@ -5,31 +5,45 @@ import MenuIcon from '../../Menu';
 import { useNavigate } from 'react-router-dom';
 import { useClickOutside } from '@mantine/hooks';
 import { Edit2, Trash, Eye } from 'react-feather';
+import { Image } from '@mantine/core';
+import toIndianCurrency from '../../../utils/currencyFormat';
+import { useDeleteInventoryById } from '../../../hooks/inventory.hooks';
 
 const COLUMNS = [
   {
     Header: '#',
-    accessor: 'id',
+    accessor: '_id',
+    Cell: ({ row: { index } }) => index + 1,
   },
   {
     Header: 'SPACE NAME & PHOTO',
     accessor: 'space_name_and_photo',
     Cell: tableProps => {
       const navigate = useNavigate();
-      const { status, photo, space_name, id } = tableProps.row.original;
+      const { spaceStatus, spacePhotos, name, _id } = tableProps.row.original;
       const color =
-        status === 'Available' ? 'green' : status === 'Unavailable' ? 'orange' : 'primary';
+        spaceStatus === 'Available'
+          ? 'green'
+          : spaceStatus === 'Unavailable'
+          ? 'orange'
+          : 'primary';
       return (
         <div
-          onClick={() => navigate(`view-details/${id}`)}
+          onClick={() => navigate(`/inventory/view-details/${_id}`)}
           className="flex items-center gap-2 cursor-pointer"
         >
-          <div className="bg-white border rounded-md">
-            <img className="h-8 mx-auto" src={photo} alt="banner" />
+          <div className="bg-white border ">
+            <Image
+              withPlaceholder
+              src={spacePhotos}
+              width={30}
+              height={30}
+              className="rounded-md"
+            />
           </div>
-          <p className="flex-1">{space_name}</p>
+          <p className="flex-1">{name}</p>
           <div className="flex-1">
-            <Badge radius="xl" text={status} color={color} variant="filled" size="sm" />
+            <Badge radius="xl" text={spaceStatus} color={color} variant="filled" size="sm" />
           </div>
         </div>
       );
@@ -37,24 +51,38 @@ const COLUMNS = [
   },
   {
     Header: 'SPACE TYPE',
-    accessor: 'space_type',
+    accessor: 'spaceType',
   },
   {
     Header: 'LANDLORD NAME',
     accessor: 'landlord_name',
-    Cell: tableProps => <div className="w-fit">{tableProps.row.original['landlord_name']}</div>,
+    Cell: ({
+      row: {
+        original: { landlord },
+      },
+    }) => landlord,
   },
   {
     Header: 'IMPRESSION',
     accessor: 'impression',
+    Cell: ({
+      row: {
+        original: { impression },
+      },
+    }) => impression?.min || 0,
   },
   {
     Header: 'MEDIA TYPE',
-    accessor: 'media_type',
+    accessor: 'mediaType',
   },
   {
     Header: 'PRICING',
-    accessor: 'pricing',
+    accessor: 'price',
+    Cell: ({
+      row: {
+        original: { price = 0 },
+      },
+    }) => toIndianCurrency(price),
   },
   {
     Header: '',
@@ -63,7 +91,9 @@ const COLUMNS = [
       const [showMenu, setShowMenu] = useState(false);
       const ref = useClickOutside(() => setShowMenu(false));
       const navigate = useNavigate();
-      const { id } = tableProps.row.original;
+      const { _id } = tableProps.row.original;
+
+      const { mutate, isLoading } = useDeleteInventoryById();
       return (
         <div ref={ref} onClick={() => setShowMenu(!showMenu)}>
           <div className="relative">
@@ -71,20 +101,25 @@ const COLUMNS = [
             {showMenu && (
               <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
                 <div
-                  onClick={() => navigate(`view-details/${id}`)}
+                  onClick={() => navigate(`/inventory/view-details/${_id}`)}
                   className="bg-white cursor-pointer flex items-center"
                 >
                   <Eye className="h-4 mr-2" />
                   <span>View Details</span>
                 </div>
                 <div
-                  onClick={() => navigate(`edit-details/${id}`)}
+                  onClick={() => navigate(`/inventory/edit-details/${_id}`)}
                   className="bg-white cursor-pointer flex items-center"
                 >
                   <Edit2 className="h-4 mr-2" />
                   <span>Edit</span>
                 </div>
-                <div className="bg-white cursor-pointer flex items-center">
+                <div
+                  className="bg-white cursor-pointer flex items-center"
+                  onClick={() => {
+                    if (!isLoading) mutate({ inventoryId: _id });
+                  }}
+                >
                   <Trash className="h-4 mr-2" />
                   <span>Delete</span>
                 </div>
