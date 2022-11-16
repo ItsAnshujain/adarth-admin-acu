@@ -103,3 +103,13 @@ export const getLatituteLongitude = async address => {
   const latLng = await getLatLng(results[0]);
   return latLng;
 };
+
+/**
+ * Prevent parent onClick event from bubbling
+ * @param {event} event - Native click event
+ * @param {function} callback - Callback function to invoke
+ */
+export const handleStopPropagation = (e, cb) => {
+  e.stopPropagation();
+  cb();
+};
