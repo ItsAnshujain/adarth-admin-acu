@@ -19,63 +19,58 @@ const Monthly = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
 
-  const openDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
 
   return (
     <div>
       <Header {...state} pageNumber={pageNumber} />
       <div className="flex pl-5 gap-3 items-center font-medium h-20 border-b">
-        <button
-          type="button"
+        <Button
           onClick={() => setPageNumber(0)}
           className={classNames(
             `${
               pageNumber === 0
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-8 after:bg-purple-450'
-                : ''
+                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
+                : 'text-black'
             }`,
           )}
         >
           Purchase Orders
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => setPageNumber(1)}
           className={classNames(
             `${
               pageNumber === 1
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-8 after:bg-purple-450'
-                : ''
+                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
+                : 'text-black'
             }`,
           )}
-          type="button"
         >
           Release Orders
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => setPageNumber(2)}
           className={classNames(
             `${
               pageNumber === 2
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-8 after:bg-purple-450'
-                : ''
+                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
+                : 'text-black'
             }`,
           )}
-          type="button"
         >
           Invoices
-        </button>
+        </Button>
       </div>
       <div className="py-4 flex justify-end pr-7 gap-2 text-right">
         <Search />
         <div ref={ref} className=" relative">
-          <Button onClick={openDatePicker} variant="default" type="button">
+          <Button onClick={toggleDatePicker} variant="default">
             <img src={calendar} className="h-5" alt="calendar" />
           </Button>
           {showDatePicker && (
             <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3 right-[-400px]">
-              <DateRange handleClose={openDatePicker} />
+              <DateRange handleClose={toggleDatePicker} />
             </div>
           )}
         </div>

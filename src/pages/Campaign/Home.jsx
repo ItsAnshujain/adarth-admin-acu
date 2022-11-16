@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
 import { NativeSelect, Menu, Progress, Image, Button } from '@mantine/core';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Trash, Edit2, Eye, Bookmark, ChevronDown } from 'react-feather';
@@ -15,6 +15,7 @@ import Search from '../../components/Search';
 import { serialize } from '../../utils/index';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { useFetchMasters } from '../../hooks/masters.hooks';
+import useLayoutView from '../../store/layout.store';
 
 const initialState = {
   page: 1,
@@ -26,7 +27,7 @@ const initialState = {
 const Home = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useDebouncedState('', 1000);
-  const [view, setView] = useState('list');
+  const viewType = useLayoutView(state => state.activeLayout);
 
   const [searchParams, setSearchParams] = useSearchParams(initialState);
 
@@ -277,12 +278,12 @@ const Home = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <AreaHeader text="Campaign List" setView={setView} />
+      <AreaHeader text="Campaign List" />
       <div className="flex justify-between h-20 items-center">
         <RowsPerPage setCount={data => setQuery('limit', data)} count={limit} />
         <Search search={search} setSearch={setSearch} />
       </div>
-      {view === 'grid' ? (
+      {viewType.campaign === 'grid' ? (
         <GridView
           count={limit}
           activePage={page}
@@ -291,7 +292,7 @@ const Home = () => {
           setActivePage={data => setQuery('page', data)}
           isLoadingList={isLoading}
         />
-      ) : (
+      ) : viewType.campaign === 'list' ? (
         <Table
           COLUMNS={COLUMNS}
           data={campaignData?.docs || []}
@@ -302,7 +303,7 @@ const Home = () => {
           rowCountLimit={limit}
           handleSorting={handleSortByColumn}
         />
-      )}
+      ) : null}
     </div>
   );
 };

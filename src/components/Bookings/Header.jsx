@@ -14,7 +14,7 @@ const AreaHeader = ({ text }) => {
   const ref = useClickOutside(() => setShowDatePicker(false));
 
   const toggleFilter = () => setShowFilter(!showFilter);
-  const openDatePicker = () => setShowDatePicker(!showDatePicker);
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const handleCreateOrder = () => navigate('create-order');
 
   return (
@@ -24,12 +24,12 @@ const AreaHeader = ({ text }) => {
       </div>
       <div className="flex justify-around mr-7">
         <div ref={ref} className="mr-2 relative">
-          <Button onClick={openDatePicker} variant="default">
+          <Button onClick={toggleDatePicker} variant="default">
             <img src={calendar} className="h-5" alt="calendar" />
           </Button>
           {showDatePicker && (
             <div className="absolute z-20 -translate-x-1/2 bg-white -top-0.3">
-              <DateRange handleClose={openDatePicker} />
+              <DateRange handleClose={toggleDatePicker} />
             </div>
           )}
         </div>

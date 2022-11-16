@@ -12,11 +12,7 @@ const SuccessModal = ({ open, setOpenSuccessModal, title, text, prompt, path }) 
           {title}
         </Text>
         <Text className="text-gray-500">{text}</Text>
-        <Button
-          className="bg-purple-450 text-white mb-2"
-          type="button"
-          onClick={() => navigate(`/${path}`)}
-        >
+        <Button className="bg-purple-450 text-white mb-2" onClick={() => navigate(`/${path}`)}>
           {prompt}
         </Button>
       </div>

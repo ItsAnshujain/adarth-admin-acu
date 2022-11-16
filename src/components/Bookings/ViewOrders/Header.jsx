@@ -28,48 +28,47 @@ const Header = ({ pageNumber, setPageNumber }) => {
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center flex-wrap">
       <div className="flex pl-5 gap-3 items-center font-medium">
-        <button onClick={() => navigate(-1)} className="mr-4" type="button">
+        <Button onClick={() => navigate(-1)} className="mr-4 px-0 text-black">
           <ArrowLeft />
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
           onClick={() => setPageNumber(0)}
           className={classNames(
             `${
               pageNumber === 0
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
-                : ''
+                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3 after:bg-purple-450'
+                : 'text-black'
             }`,
+            'px-0',
           )}
         >
           Order Information
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => setPageNumber(1)}
           className={classNames(
             `${
               pageNumber === 1
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
-                : ''
+                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3 after:bg-purple-450'
+                : 'text-black'
             }`,
           )}
-          type="button"
         >
           Process Pipeline
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => setPageNumber(2)}
           className={classNames(
             `${
               pageNumber === 2
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
-                : ''
+                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3 after:bg-purple-450'
+                : 'text-black'
             }`,
+            'px-0',
           )}
-          type="button"
         >
           Overview
-        </button>
+        </Button>
       </div>
       <div className="flex pr-7 gap-2 ml-4 flex-wrap">
         {pageNumber === 0 ? (
@@ -120,17 +119,17 @@ const Header = ({ pageNumber, setPageNumber }) => {
         ) : (
           <>
             <div>
-              <Button onClick={() => {}} className="bg-black text-sm  text-white" type="button">
+              <Button onClick={() => {}} className="bg-black text-sm  text-white">
                 Download Purchase Order
               </Button>
             </div>
             <div>
-              <Button onClick={() => {}} className="bg-black text-white" type="button">
+              <Button onClick={() => {}} className="bg-black text-white">
                 Download Release Order
               </Button>
             </div>
             <div>
-              <Button onClick={() => {}} className="bg-black text-white" type="button">
+              <Button onClick={() => {}} className="bg-black text-white">
                 Download Invoice
               </Button>
             </div>

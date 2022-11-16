@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Select } from '@mantine/core';
+import { Button, Select } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import dayjs from 'dayjs';
 import completed from '../../../assets/completed.svg';
@@ -107,13 +107,10 @@ const OrderInformation = ({ bookingData = {} }) => {
             </div>
             <div>
               <p className="text-slate-400">Upload Media</p>
-              <button
-                type="button"
-                className="py-1.5 px-2 ml-1  flex items-center gap-2 border border-slate-400 rounded"
-              >
-                <span className="text-sm">Upload</span>
+              <Button className="py-1.5 px-2 ml-1  flex items-center gap-2 border border-slate-400 rounded text-black font-thin">
+                <span className="text-sm mr-2">Upload</span>
                 <img src={upload} alt="Upload" className="mr-1 h-3" />
-              </button>
+              </Button>
             </div>
             <div>
               <p className="text-slate-400">Booking Type</p>

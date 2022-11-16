@@ -94,6 +94,8 @@ const Revenue = () => {
   const [showFilter, setShowFilter] = useState(false);
   const setColor = useSideBarState(state => state.setColor);
 
+  const toggleFilter = () => setShowFilter(!showFilter);
+
   useEffect(() => {
     setColor(7);
   }, []);
@@ -140,7 +142,6 @@ const Revenue = () => {
                 <Button
                   onClick={() => setShowDatePickerRevenue(!showDatePickerRevenue)}
                   variant="default"
-                  type="button"
                 >
                   <img src={calendar} className="h-5" alt="calendar" />
                 </Button>
@@ -161,7 +162,6 @@ const Revenue = () => {
                   <Button
                     onClick={() => setShowDateIndustry(!showDateIndustry)}
                     variant="default"
-                    type="button"
                   >
                     <img src={calendar} className="h-5" alt="calendar" />
                   </Button>
@@ -174,8 +174,7 @@ const Revenue = () => {
                 <div className="mr-2">
                   <Button
                     onClick={() => setShowFilter(!showFilter)}
-                    variant="default"
-                    type="button"
+                    variant="default"                    
                     className="font-medium"
                   >
                     <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
@@ -183,7 +182,7 @@ const Revenue = () => {
                   {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
                 </div>
               </div>
-                  </div> */}
+            </div> */}
             {/* <Bar height="80" data={barDataIndustry} options={options} /> */}
           </div>
           <div className="my-10">
@@ -191,11 +190,7 @@ const Revenue = () => {
               <p className="font-bold">City Or State</p>
               <div className="flex justify-around">
                 <div ref={dateCityRef} className="mr-2 relative">
-                  <Button
-                    onClick={() => setShowDateCity(!showDateCity)}
-                    variant="default"
-                    type="button"
-                  >
+                  <Button onClick={() => setShowDateCity(!showDateCity)} variant="default">
                     <img src={calendar} className="h-5" alt="calendar" />
                   </Button>
                   {showDateCity && (
@@ -206,12 +201,7 @@ const Revenue = () => {
                 </div>
 
                 <div className="mx-2">
-                  <Button
-                    onClick={() => setShowFilter(!showFilter)}
-                    variant="default"
-                    type="button"
-                    className="font-medium"
-                  >
+                  <Button onClick={toggleFilter} variant="default" className="font-medium">
                     <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
                   </Button>
                   {showFilter && (

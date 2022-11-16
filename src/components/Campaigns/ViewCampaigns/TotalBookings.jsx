@@ -11,32 +11,31 @@ const TotalBookings = ({ data, columns }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [search, setSearch] = useState('');
   const [count, setCount] = useState('20');
-  const openDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
+
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
+
   return (
     <>
       <div className="mt-5 pl-5 pr-7 flex justify-between">
         <Text>Booking History of the campaign</Text>
         <div className="flex">
           <div className="mr-2 relative">
-            <Button onClick={openDatePicker} variant="default" type="button">
+            <Button onClick={toggleDatePicker} variant="default">
               <img src={calendar} className="h-5" alt="calendar" />
             </Button>
             {showDatePicker && (
               <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
-                <DateRange handleClose={openDatePicker} />
+                <DateRange handleClose={toggleDatePicker} />
               </div>
             )}
           </div>
           <div>
-            <button
+            <Button
               onClick={() => {}}
               className="bg-purple-450 flex items-center align-center py-2 text-white rounded-md px-4"
-              type="button"
             >
               <Plus size={16} className="mt-[1px] mr-1" /> Add Space
-            </button>
+            </Button>
           </div>
         </div>
       </div>

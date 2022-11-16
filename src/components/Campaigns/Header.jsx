@@ -3,42 +3,31 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@mantine/core';
 import classNames from 'classnames';
 import { Plus, ChevronDown, Server, Grid } from 'react-feather';
+import shallow from 'zustand/shallow';
 import { useClickOutside } from '@mantine/hooks';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import CampaignFilter from './Filter';
+import useLayoutView from '../../store/layout.store';
 
-const initialState = {
-  grid: { fill: true },
-  list: { fill: false },
-};
-
-const AreaHeader = ({ text, setView }) => {
+const AreaHeader = ({ text }) => {
   const navigate = useNavigate();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
-  const [color, setColor] = useState(initialState);
   const ref = useClickOutside(() => setShowDatePicker(false));
+  const { activeLayout, setActiveLayout } = useLayoutView(
+    state => ({
+      activeLayout: state.activeLayout,
+      setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
 
-  const handleListClick = () => {
-    setColor({
-      grid: { fill: true },
-      list: { fill: false },
-    });
-    setView('list');
-  };
-
-  const handleGridClick = () => {
-    setColor({
-      grid: { fill: false },
-      list: { fill: true },
-    });
-    setView('grid');
-  };
-
-  const openDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
+  const handleListClick = () => setActiveLayout({ ...activeLayout, campaign: 'list' });
+  const handleGridClick = () => setActiveLayout({ ...activeLayout, campaign: 'grid' });
+  const toggleFilter = () => setShowFilter(!showFilter);
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
+  const handleCreateCampaign = () => navigate('create-campaign');
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -47,64 +36,60 @@ const AreaHeader = ({ text, setView }) => {
       </div>
       <div className="flex justify-around mr-7">
         <div className="mr-2 flex ">
-          <button
+          <Button
             className={classNames(
-              `px-4 border-gray-300 border rounded-md ${color.list.fill ? 'bg-white' : 'bg-black'}`,
+              `px-4 border-gray-300 border rounded-md ${
+                activeLayout.campaign === 'grid' ? 'bg-white' : 'bg-purple-450'
+              }`,
             )}
             onClick={handleListClick}
-            type="button"
           >
             <Server
               strokeWidth="3px"
-              className={`h-5 ${classNames(color.list.fill ? 'text-black' : 'text-white')}`}
+              className={`max-h-5 ${classNames(
+                activeLayout.campaign === 'grid' ? 'text-black' : 'text-white',
+              )}`}
             />
-          </button>
-          <button
+          </Button>
+          <Button
             className={classNames(
               `text-white border-gray-300 border px-4 rounded-md ${
-                color.grid.fill ? 'bg-white' : 'bg-black'
+                activeLayout.campaign === 'list' ? 'bg-white' : 'bg-purple-450'
               }`,
             )}
             onClick={handleGridClick}
-            type="button"
           >
             <Grid
               strokeWidth="3px"
-              className={`h-5 ${classNames(color.grid.fill ? 'text-black' : 'text-white')}`}
+              className={`max-h-5 ${classNames(
+                activeLayout.campaign === 'list' ? 'text-black' : 'text-white',
+              )}`}
             />
-          </button>
+          </Button>
         </div>
         <div ref={ref} className="mr-2 relative">
-          <Button onClick={openDatePicker} variant="default" type="button">
+          <Button onClick={toggleDatePicker} variant="default">
             <img src={calendar} className="h-5" alt="calendar" />
           </Button>
           {showDatePicker && (
             <div className="absolute z-20 -translate-x-1/2 bg-white -top-0.3">
-              <DateRange handleClose={openDatePicker} />
+              <DateRange handleClose={toggleDatePicker} />
             </div>
           )}
         </div>
         <div className="mr-2">
-          <Button
-            onClick={() => setShowFilter(!showFilter)}
-            variant="default"
-            type="button"
-            className="font-medium"
-          >
+          <Button onClick={toggleFilter} variant="default" className="font-medium">
             <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
           </Button>
-          {showFilter && (
-            <CampaignFilter isOpened={showFilter} onClose={() => setShowFilter(!showFilter)} />
-          )}
+          {showFilter && <CampaignFilter isOpened={showFilter} onClose={toggleFilter} />}
         </div>
         <div className="relative">
-          <button
-            onClick={() => navigate('create-campaign')}
+          <Button
+            onClick={handleCreateCampaign}
             className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
-            type="button"
           >
             <Plus size={16} className="mt-[1px] mr-1" /> Add Campaign
-          </button>
+          </Button>
         </div>
       </div>
     </div>
