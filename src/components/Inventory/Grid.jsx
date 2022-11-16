@@ -1,7 +1,6 @@
 import { Pagination, Skeleton } from '@mantine/core';
-import Card from './Inventory/Card';
+import Card from './Card';
 
-// TODO: remove this and use it from the required page component
 const skeletonList = () =>
   Array.apply('', Array(5)).map((_, index) => (
     // eslint-disable-next-line react/no-array-index-key
@@ -29,7 +28,7 @@ const GridView = ({
 
   return (
     <>
-      <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[70%] overflow-y-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 mx-5 justify-between mb-10">
         {list.map(item => (
           <Card
             key={item?._id}

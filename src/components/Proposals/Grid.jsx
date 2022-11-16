@@ -15,7 +15,7 @@ const GridView = ({
   isLoadingList,
 }) => (
   <>
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4  mx-5 justify-between gap-8 mb-10 pr-7">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 mx-5 justify-between gap-8 mb-10 pr-7">
       {list.map(item => (
         <Card key={item._id} proposalData={item} />
       ))}

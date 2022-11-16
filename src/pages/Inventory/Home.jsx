@@ -7,7 +7,7 @@ import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/Inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import GridView from '../../components/GridView';
+import GridView from '../../components/Inventory/Grid';
 import MapView from '../../components/Inventory/MapView';
 import useLayoutView from '../../store/layout.store';
 import { useDeleteInventory, useFetchInventory } from '../../hooks/inventory.hooks';

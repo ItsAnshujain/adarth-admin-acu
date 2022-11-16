@@ -1,4 +1,4 @@
-import { Box } from '@mantine/core';
+import { Box, Image, Text } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import MenuPopover from '../../pages/Proposal/MenuPopover';
 
@@ -10,9 +10,25 @@ const Card = ({ proposalData }) => {
 
   return (
     <Box
-      className="flex flex-col px-4 py-8 shadow-md gap-4 max-w-72 bg-white cursor-pointer"
+      className="flex flex-col px-4 pt-4 pb-8 shadow-md gap-4 max-w-72 bg-white cursor-pointer"
       onClick={handleProposalDetails}
     >
+      <div>
+        {proposalData.image ? (
+          <Image
+            className="w-full"
+            height={176}
+            src={proposalData.image}
+            alt="card"
+            withPlaceholder
+            placeholder={
+              <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
+            }
+          />
+        ) : (
+          <Image height={176} src={null} alt="card" fit="contain" withPlaceholder />
+        )}
+      </div>
       <p className="font-bold text-ellipsis w-full overflow-hidden capitalize">
         {proposalData?.name || 'NA'}
       </p>

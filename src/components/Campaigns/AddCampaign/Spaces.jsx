@@ -106,6 +106,7 @@ const SelectSpace = () => {
       {
         Header: '#',
         accessor: 'id',
+        disableSortBy: true,
         Cell: ({ row: { index } }) => index + 1,
       },
       {
@@ -257,6 +258,7 @@ const SelectSpace = () => {
       {
         Header: 'ACTION',
         accessor: 'action',
+        disableSortBy: true,
         Cell: tableProps => {
           const [showMenu, setShowMenu] = useState(false);
           const {
