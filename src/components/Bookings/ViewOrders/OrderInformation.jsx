@@ -26,7 +26,7 @@ const config = {
   options: { responsive: true },
 };
 
-const OrderInformation = ({ bookingData }) => {
+const OrderInformation = ({ bookingData = {} }) => {
   const [mountingStatus, setMountingStatus] = useState('');
   const [printingStatus, setPrintingStatus] = useState('');
   const [campaignIncharge, setCampaignIncharge] = useState('');

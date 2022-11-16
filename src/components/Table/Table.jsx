@@ -16,6 +16,7 @@ const Table = ({
   setActivePage = () => {},
   selectedRowData = [],
   handleSorting = () => {},
+  isLoading = false,
 }) => {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
 
@@ -66,8 +67,10 @@ const Table = ({
     );
 
   useEffect(() => {
-    setSelectedFlatRows(selectedFlatRows);
-  }, [selectedFlatRows]);
+    if (!isLoading) {
+      setSelectedFlatRows(selectedFlatRows);
+    }
+  }, [selectedFlatRows, isLoading]);
 
   return (
     <>

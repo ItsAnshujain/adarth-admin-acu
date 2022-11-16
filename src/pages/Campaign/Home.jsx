@@ -7,10 +7,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useDebouncedState } from '@mantine/hooks';
 import { useCampaigns, useDeleteCampaign, useUpdateCampaign } from '../../hooks/campaigns.hooks';
 import AreaHeader from '../../components/Campaigns/Header';
-import GridView from '../../components/GridView';
+import GridView from '../../components/Campaigns/GridView';
 import MenuIcon from '../../components/Menu';
 import Table from '../../components/Table/Table';
-import Card from '../../components/Campaigns/Card';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import { serialize } from '../../utils/index';
@@ -31,11 +30,13 @@ const Home = () => {
 
   const [searchParams, setSearchParams] = useSearchParams(initialState);
 
-  const { data: campaignData } = useCampaigns(searchParams.toString());
+  const { data: campaignData, isLoading } = useCampaigns(searchParams.toString());
   const { mutate } = useUpdateCampaign();
   const { mutate: delCampaign } = useDeleteCampaign();
 
-  const { data: campaignStatus } = useFetchMasters(serialize({ type: 'campaign_status' }));
+  const { data: campaignStatus } = useFetchMasters(
+    serialize({ type: 'campaign_status', parentId: null, limit: 100, page: 1 }),
+  );
 
   const invalidate = () => queryClient.invalidateQueries(['campaigns', searchParams.toString()]);
 
@@ -97,7 +98,7 @@ const Home = () => {
       },
       {
         Header: 'TYPE',
-        accessor: 'type',
+        accessor: 'isFeatured',
         Cell: ({
           row: {
             original: { isFeatured },
@@ -159,7 +160,7 @@ const Home = () => {
       {
         Header: 'TOTAL PLACES',
         accessor: 'place',
-
+        disableSortBy: true,
         Cell: ({ cell: { value } }) => value?.length || 0,
       },
       {
@@ -251,6 +252,22 @@ const Home = () => {
     [searchParams],
   );
 
+  const handleSortByColumn = colId => {
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
+      searchParams.set('sortOrder', 'asc');
+      setSearchParams(searchParams);
+      return;
+    }
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
+      searchParams.set('sortOrder', 'desc');
+      setSearchParams(searchParams);
+      return;
+    }
+
+    searchParams.set('sortBy', colId);
+    setSearchParams(searchParams);
+  };
+
   useEffect(() => {
     if (search) searchParams.set('search', search);
     else searchParams.delete('search');
@@ -266,7 +283,14 @@ const Home = () => {
         <Search search={search} setSearch={setSearch} />
       </div>
       {view === 'grid' ? (
-        <GridView count={limit} Card={Card} list={campaignData?.docs || []} />
+        <GridView
+          count={limit}
+          activePage={page}
+          totalPages={campaignData?.totalPages || 1}
+          list={campaignData?.docs || []}
+          setActivePage={data => setQuery('page', data)}
+          isLoadingList={isLoading}
+        />
       ) : (
         <Table
           COLUMNS={COLUMNS}
@@ -276,6 +300,7 @@ const Home = () => {
           totalPages={campaignData?.totalPages || 1}
           setActivePage={data => setQuery('page', data)}
           rowCountLimit={limit}
+          handleSorting={handleSortByColumn}
         />
       )}
     </div>

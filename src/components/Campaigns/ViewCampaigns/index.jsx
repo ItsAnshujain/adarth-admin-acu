@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import Header from './Header';
 import SpacesList from './SpacesList';
 import TotalBookings from './TotalBookings';
-import sp from '../../../Dummydata/CAMPAIGN_SPACES.json';
 import column from './columnSpaceList';
 import bookingdata from '../../../Dummydata/BOOKING_DATA.json';
 import bookingColumn from './columnTotalBooking';
@@ -14,14 +13,24 @@ import { useCampaign } from '../../../hooks/campaigns.hooks';
 const View = () => {
   const [tabs, setTabs] = useState(0);
   const { id } = useParams();
-  const { data } = useCampaign(id);
+  const [searchParams, setSearchParams] = useSearchParams({
+    page: 1,
+    limit: 10,
+    sortBy: 'name',
+    sortOrder: 'desc',
+  });
+  const { data } = useCampaign({ id, query: searchParams.toString() });
+
+  useEffect(() => {
+    setSearchParams(searchParams);
+  }, []);
 
   const getTabs = () =>
     tabs === 0 ? (
-      <Preview data={data} />
+      <Preview data={data?.campaign} place={data?.inventory} />
     ) : tabs === 1 ? (
       // TODO: replace with data after api is done
-      <SpacesList data={sp} columns={column} />
+      <SpacesList data={data?.inventory} columns={column} />
     ) : (
       <TotalBookings data={bookingdata} columns={bookingColumn} />
     );
