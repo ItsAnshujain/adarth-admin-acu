@@ -117,7 +117,7 @@ const AreaHeader = ({
           </div>
         )}
         <div className="mr-2">
-          <Button onClick={toggleFilter} variant="default" type="button" className="font-medium">
+          <Button onClick={toggleFilter} variant="default" className="font-medium">
             <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
           </Button>
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}

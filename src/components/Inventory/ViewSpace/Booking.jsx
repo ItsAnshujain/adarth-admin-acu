@@ -250,7 +250,7 @@ const Booking = () => {
         </div>
         <div className="flex">
           <div ref={ref} className="mr-2 relative">
-            <Button onClick={toggleDatePicker} variant="default" type="button">
+            <Button onClick={toggleDatePicker} variant="default">
               <Image src={calendar} className="h-5" alt="calendar" />
             </Button>
             {showDatePicker && (
@@ -260,7 +260,7 @@ const Booking = () => {
             )}
           </div>
           <div className="mr-2">
-            <Button onClick={toggleFilter} variant="default" type="button">
+            <Button onClick={toggleFilter} variant="default">
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
             {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}

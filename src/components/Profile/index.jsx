@@ -1,3 +1,4 @@
+import { Button } from '@mantine/core';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -35,12 +36,9 @@ const Profile = () => {
     <>
       <div className="h-[60px] flex justify-end items-center border-b pr-7">
         <Link to="/edit-profile">
-          <button
-            type="button"
-            className=" text-white p-2 px-4 font-thin text-sm bg-purple-450 rounded-lg"
-          >
+          <Button className=" text-white p-2 px-4 font-thin text-sm bg-purple-450 rounded-lg">
             Edit
-          </button>
+          </Button>
         </Link>
       </div>
       <div className="pl-5 pr-7 flex justify-between mt-8 mb-8">

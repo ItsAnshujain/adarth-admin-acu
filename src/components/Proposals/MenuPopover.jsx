@@ -1,7 +1,7 @@
 import { useModals } from '@mantine/modals';
-import { Menu } from '@mantine/core';
+import { Button, Menu } from '@mantine/core';
 import { Eye, Trash } from 'react-feather';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import modalConfig from '../../utils/modalConfig';
 import DeleteConfirmContent from '../DeleteConfirmContent';
@@ -10,7 +10,6 @@ import { useUpdateProposal } from '../../hooks/proposal.hooks';
 
 const MenuPopover = ({ itemId, proposalData }) => {
   const modals = useModals();
-  const navigate = useNavigate();
   const { id: proposalId } = useParams();
   const queryClient = useQueryClient();
 
@@ -61,17 +60,19 @@ const MenuPopover = ({ itemId, proposalData }) => {
       ...modalConfig,
     });
 
+  const handleInventoryDetails = id => window.open(`/inventory/view-details/${id}`, '_blank');
+
   return (
     <Menu shadow="md" width={180}>
       <Menu.Target>
-        <button type="button">
+        <Button>
           <MenuIcon />
-        </button>
+        </Button>
       </Menu.Target>
 
       <Menu.Dropdown>
         <Menu.Item
-          onClick={() => navigate(`/inventory/view-details/${itemId}`)}
+          onClick={() => handleInventoryDetails(itemId)}
           className="cursor-pointer flex items-center gap-1"
           icon={<Eye className="h-4" />}
         >

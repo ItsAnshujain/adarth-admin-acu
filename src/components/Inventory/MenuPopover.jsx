@@ -1,5 +1,5 @@
 import { useModals } from '@mantine/modals';
-import { Menu } from '@mantine/core';
+import { Button, Menu } from '@mantine/core';
 import { Edit2, Eye, Trash } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import modalConfig from '../../utils/modalConfig';
@@ -39,9 +39,9 @@ const MenuPopover = ({ itemId }) => {
   return (
     <Menu shadow="md" width={180}>
       <Menu.Target>
-        <button type="button">
+        <Button>
           <MenuIcon />
-        </button>
+        </Button>
       </Menu.Target>
 
       <Menu.Dropdown>

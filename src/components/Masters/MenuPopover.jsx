@@ -1,4 +1,4 @@
-import { Menu } from '@mantine/core';
+import { Button, Menu } from '@mantine/core';
 import React, { useState } from 'react';
 import { Edit2, Trash } from 'react-feather';
 import { useModals } from '@mantine/modals';
@@ -43,9 +43,9 @@ const MenuPopover = ({ row }) => {
     <>
       <Menu shadow="md" width={150}>
         <Menu.Target>
-          <button type="button">
+          <Button>
             <MenuIcon />
-          </button>
+          </Button>
         </Menu.Target>
         <Menu.Dropdown>
           <Menu.Item

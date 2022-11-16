@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { NativeSelect, Menu, Progress, Image } from '@mantine/core';
+import { NativeSelect, Menu, Progress, Image, Button } from '@mantine/core';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Trash, Edit2, Eye, Bookmark, ChevronDown } from 'react-feather';
 import classNames from 'classnames';
@@ -182,9 +182,9 @@ const Home = () => {
             () => (
               <Menu shadow="md" width={150}>
                 <Menu.Target>
-                  <button type="button">
+                  <Button>
                     <MenuIcon />
-                  </button>
+                  </Button>
                 </Menu.Target>
 
                 <Menu.Dropdown>
