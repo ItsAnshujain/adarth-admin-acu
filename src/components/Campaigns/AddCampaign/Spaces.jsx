@@ -105,7 +105,7 @@ const SelectSpace = () => {
     () => [
       {
         Header: '#',
-        accessor: '_id',
+        accessor: 'id',
         Cell: ({ row: { index } }) => index + 1,
       },
       {
@@ -256,7 +256,7 @@ const SelectSpace = () => {
       },
       {
         Header: 'ACTION',
-        accessor: 'details',
+        accessor: 'action',
         Cell: tableProps => {
           const [showMenu, setShowMenu] = useState(false);
           const {

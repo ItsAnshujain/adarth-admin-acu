@@ -70,6 +70,7 @@ const Proposals = () => {
       {
         Header: '#',
         accessor: 'id',
+        disableSortBy: true,
         Cell: ({ row }) =>
           useMemo(() => {
             let currentPage = page;
@@ -200,8 +201,8 @@ const Proposals = () => {
         }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
       },
       {
-        Header: '',
-        accessor: 'details',
+        Header: 'ACTION',
+        accessor: 'action',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -244,7 +245,7 @@ const Proposals = () => {
         <RowsPerPage setCount={handleRowCount} count={limit} />
         <Search search={searchInput} setSearch={setSearchinput} />
       </div>
-      {isLoadingProposalsData && viewType === 'list' ? (
+      {isLoadingProposalsData && viewType.proposal === 'list' ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
         </div>
@@ -254,7 +255,7 @@ const Proposals = () => {
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-      {viewType === 'list' && proposalsData?.docs?.length ? (
+      {viewType.proposal === 'list' && proposalsData?.docs?.length ? (
         <Table
           data={proposalsData?.docs || []}
           COLUMNS={COLUMNS}
@@ -264,7 +265,7 @@ const Proposals = () => {
           rowCountLimit={limit}
           handleSorting={handleSortByColumn}
         />
-      ) : viewType === 'grid' ? (
+      ) : viewType.proposal === 'grid' ? (
         <GridView
           count={limit}
           list={proposalsData?.docs || []}

@@ -1,7 +1,10 @@
 import create from 'zustand';
 import { combine, persist } from 'zustand/middleware';
 
-const initialValue = 'list';
+const initialValue = {
+  inventory: 'list',
+  proposal: 'list',
+};
 
 const useLayoutView = create(
   persist(

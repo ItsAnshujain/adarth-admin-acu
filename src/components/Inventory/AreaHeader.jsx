@@ -33,9 +33,9 @@ const AreaHeader = ({
 
   const toggleFilter = () => setShowFilter(!showFilter);
   const toggleAddDetails = () => setAddDetails(!addDetailsClicked);
-  const handleListClick = () => setActiveLayout('list');
-  const handleGridClick = () => setActiveLayout('grid');
-  const handleMapClick = () => setActiveLayout('map');
+  const handleListClick = () => setActiveLayout({ ...activeLayout, inventory: 'list' });
+  const handleGridClick = () => setActiveLayout({ ...activeLayout, inventory: 'grid' });
+  const handleMapClick = () => setActiveLayout({ ...activeLayout, inventory: 'map' });
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -59,7 +59,7 @@ const AreaHeader = ({
                 Delete items
               </Button>
             </RoleBased>
-            {activeLayout === 'grid' ? (
+            {activeLayout.inventory === 'grid' ? (
               <Checkbox
                 className="mr-5"
                 onChange={event => handleSelectedCards(event.target.checked)}
@@ -72,7 +72,7 @@ const AreaHeader = ({
             <Button
               className={classNames(
                 `px-4 border-gray-300 border rounded-md ${
-                  activeLayout === 'list' ? 'bg-purple-450' : 'bg-white'
+                  activeLayout.inventory === 'list' ? 'bg-purple-450' : 'bg-white'
                 }`,
               )}
               onClick={handleListClick}
@@ -80,14 +80,14 @@ const AreaHeader = ({
               <Server
                 strokeWidth="3px"
                 className={`max-h-5 ${classNames(
-                  activeLayout === 'list' ? 'text-white' : 'text-black',
+                  activeLayout.inventory === 'list' ? 'text-white' : 'text-black',
                 )}`}
               />
             </Button>
             <Button
               className={classNames(
                 `text-white border-gray-300 border px-4 rounded-md ${
-                  activeLayout === 'grid' ? 'bg-purple-450' : 'bg-white'
+                  activeLayout.inventory === 'grid' ? 'bg-purple-450' : 'bg-white'
                 }`,
               )}
               onClick={handleGridClick}
@@ -95,14 +95,14 @@ const AreaHeader = ({
               <Grid
                 strokeWidth="3px"
                 className={`max-h-5 ${classNames(
-                  activeLayout === 'grid' ? 'text-white' : 'text-black',
+                  activeLayout.inventory === 'grid' ? 'text-white' : 'text-black',
                 )}`}
               />
             </Button>
             <Button
               className={classNames(
                 `px-4 border-gray-300 border rounded-md ${
-                  activeLayout === 'map' ? 'bg-purple-450' : 'bg-white'
+                  activeLayout.inventory === 'map' ? 'bg-purple-450' : 'bg-white'
                 }`,
               )}
               onClick={handleMapClick}
@@ -110,7 +110,7 @@ const AreaHeader = ({
               <MapPin
                 strokeWidth="3px"
                 className={`max-h-5 ${classNames(
-                  activeLayout === 'map' ? 'text-white' : 'text-black',
+                  activeLayout.inventory === 'map' ? 'text-white' : 'text-black',
                 )}`}
               />
             </Button>

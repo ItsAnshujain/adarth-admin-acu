@@ -80,7 +80,9 @@ const Table = ({
                   <th
                     className="text-sm"
                     {...header.getHeaderProps(header.getSortByToggleProps())}
-                    onClick={() => onHandleHeader(header)}
+                    onClick={() => {
+                      if (!header.id.includes('selection')) onHandleHeader(header);
+                    }}
                   >
                     <div className="w-max flex align-center text-left pl-2 text-gray-400 hover:text-black py-2 text-xs font-medium">
                       <div className="w-fit tracking-wide">{header.render('Header')}</div>
