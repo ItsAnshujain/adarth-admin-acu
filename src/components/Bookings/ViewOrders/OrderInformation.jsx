@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Button, Select } from '@mantine/core';
@@ -7,6 +7,8 @@ import dayjs from 'dayjs';
 import completed from '../../../assets/completed.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import upload from '../../../assets/upload.svg';
+import { useFetchMasters } from '../../../hooks/masters.hooks';
+import { serialize } from '../../../utils';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -31,6 +33,52 @@ const OrderInformation = ({ bookingData = {} }) => {
   const [printingStatus, setPrintingStatus] = useState('');
   const [campaignIncharge, setCampaignIncharge] = useState('');
 
+  const printingStatusData = useFetchMasters(
+    serialize({ type: 'printing_status', parentId: null, page: 1, limit: 100 }),
+  );
+
+  const mountStatusData = useFetchMasters(
+    serialize({ type: 'mounting_status', parentId: null, page: 1, limit: 100 }),
+  );
+
+  const printList = useMemo(() => {
+    if (printingStatusData?.data?.docs?.length) {
+      return printingStatusData.data.docs.map(item => ({ label: item.name, value: item._id }));
+    }
+
+    return [];
+  }, [printingStatusData]);
+
+  const mountList = useMemo(() => {
+    if (mountStatusData?.data?.docs?.length) {
+      return mountStatusData.data.docs.map(item => ({ label: item.name, value: item._id }));
+    }
+
+    return [];
+  }, [mountStatusData]);
+
+  useEffect(() => {
+    if (bookingData.printingStatus && printList.length) {
+      const key = Object.keys(bookingData.printingStatus).pop();
+      const selected = printList.find(item => item.label.toLowerCase() === key.toLocaleLowerCase());
+      if (selected) {
+        setPrintingStatus(selected.value);
+      }
+    }
+  }, [bookingData.printingStatus, printList]);
+
+  useEffect(() => {
+    if (bookingData.mountingStatus && mountList.length) {
+      const key = Object.keys(bookingData.mountingStatus).pop();
+      const selected = mountList.find(item => item.label.toLowerCase() === key.toLocaleLowerCase());
+      if (selected) {
+        setPrintingStatus(selected.value);
+      }
+    }
+  }, [bookingData.mountingStatus, mountList]);
+
+  console.log(bookingData);
+
   return (
     <div className="pl-10 pr-7">
       <p className="mt-5 font-bold text-lg">Stats</p>
@@ -47,14 +95,14 @@ const OrderInformation = ({ bookingData = {} }) => {
                   <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                   <div>
                     <p className="text-xs font-lighter mb-1">Online Sale</p>
-                    <p className="font-bold text-md">1233</p>
+                    <p className="font-bold text-md">coming soon</p>
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                   <div>
                     <p className="font-lighter text-xs mb-1">Offline Sale</p>
-                    <p className="font-bold text-md">1233</p>
+                    <p className="font-bold text-md">coming soon</p>
                   </div>
                 </div>
               </div>
@@ -97,7 +145,7 @@ const OrderInformation = ({ bookingData = {} }) => {
                 className="mr-2"
                 value={printingStatus}
                 onChange={setPrintingStatus}
-                data={['Completed', 'Pending']}
+                data={printList}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
                 }}
@@ -122,7 +170,7 @@ const OrderInformation = ({ bookingData = {} }) => {
                 className="mr-2"
                 value={mountingStatus}
                 onChange={setMountingStatus}
-                data={['Completed', 'Pending']}
+                data={mountList}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
                 }}
@@ -149,7 +197,8 @@ const OrderInformation = ({ bookingData = {} }) => {
             </div>
             <div>
               <p className="text-slate-400">Campaing Incharge</p>
-              <Select
+              <p className="font-bold">{bookingData?.campaign?.incharge?.[0]?.name}</p>
+              {/* <Select
                 className="mr-2"
                 value={campaignIncharge}
                 onChange={setCampaignIncharge}
@@ -159,7 +208,7 @@ const OrderInformation = ({ bookingData = {} }) => {
                 }}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-              />
+              /> */}
             </div>
             <div>
               <p className="text-slate-400">Start Date</p>
@@ -171,7 +220,7 @@ const OrderInformation = ({ bookingData = {} }) => {
             </div>
             <div>
               <p className="text-slate-400">Campaign Type</p>
-              <p className="font-bold">Predefined</p>
+              <p className="font-bold">{bookingData?.campaign?.incharge?.[0]?.type}</p>
             </div>
           </div>
         </div>

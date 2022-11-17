@@ -29,7 +29,7 @@ const dummyDataObj = {
 
 const dummyData = new Array(3).fill(dummyDataObj);
 
-const Overview = () => {
+const Overview = ({ bookingData }) => {
   const [activePage, setPage] = useState(1);
   const [readMore, setReadMore] = useState(false);
   const [scrollImage, setScrollImage] = useState(imageUrl);
@@ -44,6 +44,8 @@ const Overview = () => {
       return newImgs;
     });
   };
+
+  console.log(bookingData);
 
   return (
     <>
@@ -88,7 +90,7 @@ const Overview = () => {
             </p>
           </div>
           <div className="flex mt-4 items-center gap-2 ">
-            <span>{toIndianCurrency(63667)}</span>
+            <span>{toIndianCurrency(bookingData.totalPrice || 0)}</span>
             <CustomBadge
               size="lg"
               text="497947947 Total Impressions"
