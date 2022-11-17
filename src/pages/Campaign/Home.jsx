@@ -99,20 +99,7 @@ const Home = () => {
       },
       {
         Header: 'TYPE',
-        accessor: 'isFeatured',
-        Cell: ({
-          row: {
-            original: { isFeatured },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div className={classNames(`w-fit ${isFeatured ? 'text-purple-450' : 'text-black'}`)}>
-                {isFeatured ? 'Featured' : 'Predefine'}
-              </div>
-            ),
-            [isFeatured],
-          ),
+        accessor: 'type',
       },
       {
         Header: 'HEALTH',
@@ -222,7 +209,11 @@ const Home = () => {
                         isFeatured ? 'text-purple-450' : '',
                       )}
                       aria-hidden
-                      onClick={() => updateCampaign(_id, { isFeatured: !isFeatured })}
+                      onClick={() =>
+                        updateCampaign(_id, {
+                          isFeatured: !isFeatured,
+                        })
+                      }
                     >
                       <Bookmark className="h-4 mr-2" />
                       <span>Set as Featured</span>

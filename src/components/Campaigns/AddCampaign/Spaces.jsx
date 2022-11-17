@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Progress } from '@mantine/core';
-import { ChevronDown } from 'react-feather';
+import { Button, Image, Progress } from '@mantine/core';
+import { ChevronDown, Edit2, Eye, Trash } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useDebouncedState } from '@mantine/hooks';
+import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useQueryClient } from '@tanstack/react-query';
 import Filter from '../../Filter';
 import Search from '../../Search';
@@ -127,10 +127,19 @@ const SelectSpace = () => {
                 className="grid grid-cols-2 gap-2 items-center cursor-pointer"
               >
                 <div className="flex flex-1 gap-2 items-center w-44">
-                  <div className="bg-white h-8 w-8 border rounded-md">
-                    <img className="h-8 w-8 mx-auto" src={photo} alt="banner" />
-                  </div>
-                  <p>{space_name}</p>
+                  <Image
+                    height={30}
+                    width={30}
+                    withPlaceholder
+                    className="rounded-md"
+                    src={photo}
+                  />
+                  <p
+                    title={space_name}
+                    className="w-[150px] text-ellipsis overflow-hidden whitespace-nowrap"
+                  >
+                    {space_name}
+                  </p>
                 </div>
                 <div className="w-fit">
                   <Badge radius="xl" text={status} color={color} variant="filled" size="sm" />
@@ -256,42 +265,52 @@ const SelectSpace = () => {
         disableSortBy: true,
         Cell: tableProps => {
           const [showMenu, setShowMenu] = useState(false);
+          const ref = useClickOutside(() => setShowMenu(false));
+
           const {
             row: {
-              // eslint-disable-next-line no-unused-vars
-              original: { id },
+              original: { _id: id },
             },
           } = tableProps;
           return useMemo(
             () => (
-              <div aria-hidden onClick={() => setShowMenu(!showMenu)}>
+              <div aria-hidden ref={ref} onClick={() => setShowMenu(!showMenu)}>
                 <div className="relative">
                   <MenuIcon />
                   {showMenu && (
                     <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
                       <div
                         onClick={() => navigate(`/inventory/view-details/${id}`)}
-                        className="bg-white"
+                        className="bg-white cursor-pointer flex items-center"
                         aria-hidden
                       >
-                        View Details
+                        <Eye className="h-4 mr-2" />
+                        <span>View Details</span>
                       </div>
                       <div
-                        aria-hidden
                         onClick={() => navigate(`/inventory/edit-details/${id}`)}
-                        className="bg-white"
+                        className="bg-white cursor-pointer flex items-center"
+                        aria-hidden
                       >
-                        Edit
+                        <Edit2 className="h-4 mr-2" />
+                        <span>Edit</span>
                       </div>
-                      <div className="bg-white" aria-hidden onClick={() => onDelete(id)}>
-                        Delete
+                      <div
+                        className="bg-white cursor-pointer flex items-center"
+                        onClick={() => {
+                          if (!isLoading) onDelete(id);
+                        }}
+                        aria-hidden
+                      >
+                        <Trash className="h-4 mr-2" />
+                        <span>Delete</span>
                       </div>
                     </div>
                   )}
                 </div>
               </div>
             ),
-            [],
+            [showMenu],
           );
         },
       },

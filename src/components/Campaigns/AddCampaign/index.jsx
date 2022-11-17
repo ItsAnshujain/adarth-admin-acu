@@ -81,6 +81,7 @@ const initialValues = {
   healthTag: 'Good',
   place: [],
   thumbnail: '',
+  type: 'predefined',
 };
 
 const Create = () => {
@@ -108,7 +109,7 @@ const Create = () => {
     ) : formStep === 3 ? (
       <CoverImage />
     ) : (
-      <Preview data={form.values} place={form.values?.place} />
+      <Preview data={form.values} place={{ docs: form.values?.place || [] }} />
     );
 
   const handlePublish = () => {
@@ -126,6 +127,9 @@ const Create = () => {
       newData.healthStatus = +newData.healthStatus || 0;
       newData.price = +newData.price || 0;
 
+      if (!['predefined', 'customized'].includes(newData.type)) {
+        newData.type = 'predefined';
+      }
       if (publish) {
         const publishedId = campaignStatus?.docs?.find(
           item => item?.name?.toLowerCase() === 'published',
