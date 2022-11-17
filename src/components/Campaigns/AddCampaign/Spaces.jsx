@@ -96,6 +96,8 @@ const SelectSpace = () => {
     setFieldValue('healthTag', getHealthTag(avgHealth));
   };
 
+  const toggleFilter = () => setShowFilter(!showFilter);
+
   const COLUMNS = useMemo(
     () => [
       {
@@ -353,7 +355,7 @@ const SelectSpace = () => {
         <div className="flex justify-between items-center">
           <p className="text-lg font-bold">Select Place for Order</p>
           <div>
-            <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
+            <Button onClick={toggleFilter} variant="default">
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
             {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}

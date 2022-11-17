@@ -109,11 +109,10 @@ const Inventory = () => {
     setAreaData(newLineData);
   }, []);
 
-  const openDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
-
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const setColor = useSideBarState(state => state.setColor);
+
+  const toggleFilter = () => setShowFilter(!showFilter);
 
   useEffect(() => {
     setColor(7);
@@ -159,22 +158,17 @@ const Inventory = () => {
               <p className="font-bold">Revenue Graph</p>
               <div className="flex justify-around">
                 <div className="mr-2 relative">
-                  <Button onClick={openDatePicker} variant="default" type="button">
+                  <Button onClick={toggleDatePicker} variant="default">
                     <img src={calendar} className="h-5" alt="calendar" />
                   </Button>
                   {showDatePicker && (
                     <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
-                      <DateRange handleClose={openDatePicker} />
+                      <DateRange handleClose={toggleDatePicker} />
                     </div>
                   )}
                 </div>
                 <div className="mr-2">
-                  <Button
-                    onClick={() => setShowFilter(!showFilter)}
-                    variant="default"
-                    type="button"
-                    className="font-medium"
-                  >
+                  <Button onClick={toggleFilter} variant="default" className="font-medium">
                     <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
                   </Button>
                   {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}

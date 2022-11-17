@@ -4,6 +4,7 @@ import { combine, persist } from 'zustand/middleware';
 const initialValue = {
   inventory: 'list',
   proposal: 'list',
+  campaign: 'list',
 };
 
 const useLayoutView = create(

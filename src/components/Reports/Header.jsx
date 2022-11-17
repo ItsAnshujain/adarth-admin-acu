@@ -8,9 +8,7 @@ const Header = ({ text }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
 
-  const openDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -21,12 +19,12 @@ const Header = ({ text }) => {
       </div>
       <div className="flex justify-around mr-7">
         <div ref={ref} className="mr-2 relative">
-          <Button onClick={openDatePicker} variant="default" type="button">
+          <Button onClick={toggleDatePicker} variant="default">
             <img src={calendar} className="h-5" alt="calendar" />
           </Button>
           {showDatePicker && (
             <div className="absolute z-20 -translate-x-[90%] bg-white -top-0.3">
-              <DateRange handleClose={openDatePicker} />
+              <DateRange handleClose={toggleDatePicker} />
             </div>
           )}
         </div>

@@ -74,9 +74,7 @@ const config = {
 const Campaign = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const openDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const setColor = useSideBarState(state => state.setColor);
 
   useEffect(() => {
@@ -152,12 +150,12 @@ const Campaign = () => {
               <p className="font-bold tracking-wide">Campaign Report</p>
               <div className="flex justify-around">
                 <div className="mr-2 relative">
-                  <Button onClick={openDatePicker} variant="default" type="button">
+                  <Button onClick={toggleDatePicker} variant="default">
                     <img src={calendar} className="h-5" alt="calendar" />
                   </Button>
                   {showDatePicker && (
                     <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
-                      <DateRange handleClose={openDatePicker} />
+                      <DateRange handleClose={toggleDatePicker} />
                     </div>
                   )}
                 </div>

@@ -158,25 +158,19 @@ const SelectSpace = () => {
                 values?.spaces.map(selected => {
                   if (selected.original._id === id) {
                     return (
-                      <button
-                        type="button"
-                        className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-350 text-white rounded-md cursor-pointer"
-                      >
-                        <span>Upload</span>
-                        <img src={upload} alt="Upload" />
-                      </button>
+                      <Button className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-350 text-white rounded-md cursor-pointer">
+                        Upload
+                        <img src={upload} alt="Upload" className="ml-2" />
+                      </Button>
                     );
                   }
                   return null;
                 })
               ) : (
-                <button
-                  type="button"
-                  className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-200 text-white rounded-md cursor-not-allowed "
-                >
-                  <span>Upload</span>
-                  <img src={upload} alt="Upload" />
-                </button>
+                <Button className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-200 text-white rounded-md cursor-not-allowed ">
+                  Upload
+                  <img src={upload} alt="Upload" className="ml-2" />
+                </Button>
               ),
             [],
           );
@@ -285,13 +279,15 @@ const SelectSpace = () => {
     [updatedInventoryData],
   );
 
+  const toggleFilter = () => setShowFilter(!showFilter);
+
   return (
     <>
       <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
         <div className="flex justify-between items-center">
           <p className="text-lg font-bold">Select Place for Order</p>
           <div>
-            <Button onClick={() => setShowFilter(!showFilter)} variant="default" type="button">
+            <Button onClick={toggleFilter} variant="default">
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
             {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
