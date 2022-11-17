@@ -10,15 +10,19 @@ const supportedType = ['JPG', 'JPEG', 'PNG', 'PDF'];
 const Documents = ({ documents }) => {
   const { setFieldValue } = useFormContext();
   const [uploadImageList, setUploadImageList] = useState([]);
-  const { mutateAsync: upload } = useUploadFile();
+  const [currentDrop, setCurrentDrop] = useState([]);
+  const { mutateAsync: upload, isLoading: isUploading } = useUploadFile();
   const { mutateAsync: deleteFile } = useDeleteUploadedFile();
 
   const handleDelete = async docIndex => {
-    await deleteFile(uploadImageList[docIndex].key);
+    if (uploadImageList[docIndex].key) {
+      await deleteFile(uploadImageList[docIndex].key);
+    }
     setUploadImageList(uploadImageList.filter((_, index) => index !== docIndex));
   };
 
   const onHandleDrop = async (data, docName) => {
+    setCurrentDrop(prev => [...prev, docName]);
     const isPresent = uploadImageList.find(item => item.type === docName);
     if (isPresent) {
       for (let i = 0; i < uploadImageList.length; i += 1) {
@@ -33,6 +37,7 @@ const Documents = ({ documents }) => {
     const formData = new FormData();
     formData.append('files', data?.[0]);
     const res = await upload(formData);
+    setCurrentDrop(prev => prev.filter(item => item !== docName));
     return { url: res[0]?.Location, key: res[0]?.key };
   };
 
@@ -71,7 +76,7 @@ const Documents = ({ documents }) => {
     <div className="pl-5 pr-7 mt-4">
       <p className="text-xl font-bold">Documents of the associates</p>
       <p className="text-sm mb-8">
-        <span className="font-bold text-gray-500">Supported types</span>
+        <span className="font-bold text-gray-500 mr-2">Supported types</span>
         {supportedType.map(item => (
           <Badge key={item} className="mr-2">
             {item}
@@ -92,6 +97,7 @@ const Documents = ({ documents }) => {
         ))}
         <DragDropCard
           cardText="Upload Your Landlord License photocopy"
+          isLoading={currentDrop.includes('landlordLicense') ? isUploading : false}
           onHandleDrop={async params => {
             const { url, key } = await onHandleDrop(params, 'landlordLicense');
             onPreviewDocuments(url, key, 'landlordLicense');
@@ -99,12 +105,14 @@ const Documents = ({ documents }) => {
         />
         <DragDropCard
           cardText="Upload Your Pan photocopy"
+          isLoading={currentDrop.includes('pan') ? isUploading : false}
           onHandleDrop={async params => {
             const { url, key } = await onHandleDrop(params, 'pan');
             onPreviewDocuments(url, key, 'pan');
           }}
         />
         <DragDropCard
+          isLoading={currentDrop.includes('aadhaar') ? isUploading : false}
           cardText="Upload Your Aadhaar photocopy"
           onHandleDrop={async params => {
             const { url, key } = await onHandleDrop(params, 'aadhaar');

@@ -8,6 +8,17 @@ const docs = {
   pan: 'Pan',
 };
 
+const PreviewImage = ({ ext }) => {
+  if (ext?.includes('pdf')) {
+    return <Image src={pdf} alt="file-type-icon" height={40} width={40} className="mb-3" />;
+  }
+
+  if (/jpg|png|jpeg|gif/i.test(ext))
+    return <Image src={ext} alt="file-type-icon" height="100%" width="100%" className="mb-3 " />;
+
+  return null;
+};
+
 const PreviewCard = ({
   filename,
   cardText,
@@ -19,15 +30,9 @@ const PreviewCard = ({
 }) => (
   <div className="flex flex-col ">
     <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-[100%] h-48 bg-slate-100">
-      <div className="flex justify-center flex-col">
-        {fileExtensionType?.includes('pdf') ? (
-          <Image src={pdf} alt="file-type-icon" className="h-8" />
-        ) : null}
-        {preview ? (
-          <p className="text-sm">{docs[Object.keys(filename)[0]]}</p>
-        ) : (
-          <p className="text-sm">{docs[filename]}</p>
-        )}
+      <div className="flex justify-center items-center flex-col relative">
+        <PreviewImage ext={fileExtensionType} />
+        <p className="text-sm">{docs[preview ? Object.keys(filename)[0] : filename]}</p>
       </div>
       {showTrashBtn ? (
         <Button className="absolute right-2 top-1 px-0" onClick={onClickDelete}>
