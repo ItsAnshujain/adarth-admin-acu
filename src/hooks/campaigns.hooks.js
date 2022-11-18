@@ -1,5 +1,5 @@
 import { showNotification } from '@mantine/notifications';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   campaign,
   campaigns,
@@ -76,18 +76,21 @@ export const useUpdateCampaign = () =>
     },
   );
 
-export const useDeleteCampaign = () =>
-  useMutation(
+export const useDeleteCampaign = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
     async query => {
       const res = await deleteCampaign(query);
       return res.data;
     },
     {
-      onSuccess: data => {
+      onSuccess: () => {
         showNotification({
-          title: data?.message,
+          title: 'Campaign Successfully Deleted',
           color: 'green',
         });
+        queryClient.invalidateQueries(['campaigns']);
       },
       onError: err => {
         showNotification({
@@ -97,3 +100,4 @@ export const useDeleteCampaign = () =>
       },
     },
   );
+};

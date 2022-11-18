@@ -31,7 +31,7 @@ const DragDropCard = ({
         </div>
       </Dropzone>
       {errors?.docs ? <p className="mt-1 text-xs text-red-450">{errors?.docs}</p> : null}
-      <div className="text-sm">
+      <div className="text-sm pt-1">
         <p className="font-medium">{cardText}</p>
         <p className="text-slate-400">{cardSubtext}</p>
       </div>

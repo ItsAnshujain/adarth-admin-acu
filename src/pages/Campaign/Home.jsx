@@ -50,8 +50,8 @@ const Home = () => {
     );
   };
 
-  const deleteCampaign = id => {
-    delCampaign(serialize({ id }), {
+  const deleteCampaign = ids => {
+    delCampaign(serialize({ ids }), {
       onSuccess: invalidate,
     });
   };

@@ -14,7 +14,7 @@ const PreviewImage = ({ ext }) => {
   }
 
   if (/jpg|png|jpeg|gif/i.test(ext))
-    return <Image src={ext} alt="file-type-icon" height="100%" width="100%" className="mb-3 " />;
+    return <Image src={ext} alt="file-type-icon" height={130} className="mb-3 " />;
 
   return null;
 };
@@ -40,7 +40,7 @@ const PreviewCard = ({
         </Button>
       ) : null}
     </div>
-    <div className="text-sm">
+    <div className="text-sm pt-1">
       {preview ? (
         <>
           <p className="font-medium">{docs[Object.keys(filename)[0]]}</p>
