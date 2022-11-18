@@ -30,7 +30,7 @@ const Bookings = () => {
   const { data: bookingData, isLoading: isLoadingBookingData } = useBookings(
     searchParams.toString(),
   );
-  const { data: bookingStats } = useBookingStats();
+  const { data: bookingStats } = useBookingStats('');
   const { data: campaignStatus } = useFetchMasters(
     serialize({ type: 'campaign_status', limit: 100 }),
   );

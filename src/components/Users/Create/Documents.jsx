@@ -7,6 +7,21 @@ import { useDeleteUploadedFile, useUploadFile } from '../../../hooks/upload.hook
 
 const supportedType = ['JPG', 'JPEG', 'PNG', 'PDF'];
 
+const docTypes = [
+  {
+    text: 'Upload Your Landlord License photocopy',
+    name: 'landlordLicense',
+  },
+  {
+    text: 'Upload Your Pan photocopy',
+    name: 'pan',
+  },
+  {
+    text: 'Upload Your Aadhaar photocopy',
+    name: 'aadhaar',
+  },
+];
+
 const Documents = ({ documents }) => {
   const { setFieldValue } = useFormContext();
   const [uploadImageList, setUploadImageList] = useState([]);
@@ -23,16 +38,9 @@ const Documents = ({ documents }) => {
 
   const onHandleDrop = async (data, docName) => {
     setCurrentDrop(prev => [...prev, docName]);
-    const isPresent = uploadImageList.find(item => item.type === docName);
-    if (isPresent) {
-      for (let i = 0; i < uploadImageList.length; i += 1) {
-        const item = uploadImageList[i];
-        if (item.type === docName) {
-          // eslint-disable-next-line no-await-in-loop
-          await handleDelete(i);
-          break;
-        }
-      }
+    const isPresent = uploadImageList.findIndex(item => item.type === docName);
+    if (isPresent > -1) {
+      await handleDelete(isPresent);
     }
     const formData = new FormData();
     formData.append('files', data?.[0]);
@@ -95,30 +103,18 @@ const Documents = ({ documents }) => {
             fileExtensionType={doc?.url}
           />
         ))}
-        <DragDropCard
-          cardText="Upload Your Landlord License photocopy"
-          isLoading={currentDrop.includes('landlordLicense') ? isUploading : false}
-          onHandleDrop={async params => {
-            const { url, key } = await onHandleDrop(params, 'landlordLicense');
-            onPreviewDocuments(url, key, 'landlordLicense');
-          }}
-        />
-        <DragDropCard
-          cardText="Upload Your Pan photocopy"
-          isLoading={currentDrop.includes('pan') ? isUploading : false}
-          onHandleDrop={async params => {
-            const { url, key } = await onHandleDrop(params, 'pan');
-            onPreviewDocuments(url, key, 'pan');
-          }}
-        />
-        <DragDropCard
-          isLoading={currentDrop.includes('aadhaar') ? isUploading : false}
-          cardText="Upload Your Aadhaar photocopy"
-          onHandleDrop={async params => {
-            const { url, key } = await onHandleDrop(params, 'aadhaar');
-            onPreviewDocuments(url, key, 'aadhaar');
-          }}
-        />
+
+        {docTypes.map(({ name, text }) => (
+          <DragDropCard
+            key={name}
+            cardText={text}
+            isLoading={currentDrop.includes(name) ? isUploading : false}
+            onHandleDrop={async params => {
+              const { url, key } = await onHandleDrop(params, name);
+              onPreviewDocuments(url, key, name);
+            }}
+          />
+        ))}
       </div>
     </div>
   );
