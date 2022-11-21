@@ -2,6 +2,7 @@ import { showNotification } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createInventory,
+  csvImport,
   deleteInventory,
   deleteInventoryById,
   fetchInventory,
@@ -139,3 +140,25 @@ export const useDeleteInventory = () => {
     },
   );
 };
+
+export const useCsvImport = () =>
+  useMutation(
+    async data => {
+      const res = csvImport(data);
+      return res.data;
+    },
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'File Successfully Imported',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );

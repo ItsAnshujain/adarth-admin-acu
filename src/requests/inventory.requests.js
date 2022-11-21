@@ -11,3 +11,5 @@ export const updateInventory = (inventoryId, data) => http.patch(`/inventory/${i
 export const deleteInventoryById = inventoryId => http.delete(`/inventory/${inventoryId}`);
 
 export const deleteInventory = query => http.delete(`/inventory${query}`);
+
+export const csvImport = data => http.post('/inventory/csv-import', data, { hasFiles: true });
