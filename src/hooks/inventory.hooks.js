@@ -150,7 +150,7 @@ export const useCsvImport = () =>
     {
       onSuccess: () => {
         showNotification({
-          title: 'File Successfully Imorted',
+          title: 'File Successfully Imported',
           color: 'green',
         });
       },
