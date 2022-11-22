@@ -104,17 +104,19 @@ const Documents = ({ documents }) => {
           />
         ))}
 
-        {docTypes.map(({ name, text }) => (
-          <DragDropCard
-            key={name}
-            cardText={text}
-            isLoading={currentDrop.includes(name) ? isUploading : false}
-            onHandleDrop={async params => {
-              const { url, key } = await onHandleDrop(params, name);
-              onPreviewDocuments(url, key, name);
-            }}
-          />
-        ))}
+        {docTypes
+          .filter(doc => !uploadImageList?.find(item => item.type === doc.name))
+          .map(({ name, text }) => (
+            <DragDropCard
+              key={name}
+              cardText={text}
+              isLoading={currentDrop.includes(name) ? isUploading : false}
+              onHandleDrop={async params => {
+                const { url, key } = await onHandleDrop(params, name);
+                onPreviewDocuments(url, key, name);
+              }}
+            />
+          ))}
       </div>
     </div>
   );
