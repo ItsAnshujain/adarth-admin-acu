@@ -11,12 +11,12 @@ const Main = () => {
   const [pageNumber, setPageNumber] = useState(0);
   const { id } = useParams();
 
-  const { data: bookingData } = useBookingById(id, !!id);
+  const { data: bookingData, isLoading } = useBookingById(id, !!id);
   return (
     <>
       <Header pageNumber={pageNumber} setPageNumber={setPageNumber} />
       {pageNumber === 0 ? (
-        <OrderInfo bookingData={bookingData} />
+        <OrderInfo bookingData={bookingData} isLoading={isLoading} />
       ) : pageNumber === 1 ? (
         <ProcessPipeline bookingData={bookingData} />
       ) : (

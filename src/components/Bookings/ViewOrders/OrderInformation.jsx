@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Button, Select } from '@mantine/core';
+import { Button, Loader, Select } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import dayjs from 'dayjs';
 import completed from '../../../assets/completed.svg';
@@ -9,6 +9,8 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import upload from '../../../assets/upload.svg';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
+import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
+import NoData from '../../shared/NoData';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -28,11 +30,7 @@ const config = {
   options: { responsive: true },
 };
 
-const OrderInformation = ({ bookingData = {} }) => {
-  const [mountingStatus, setMountingStatus] = useState('');
-  const [printingStatus, setPrintingStatus] = useState('');
-  const [campaignIncharge, setCampaignIncharge] = useState('');
-
+const OrderInformation = ({ bookingData = {}, isLoading = true }) => {
   const printingStatusData = useFetchMasters(
     serialize({ type: 'printing_status', parentId: null, page: 1, limit: 100 }),
   );
@@ -43,7 +41,7 @@ const OrderInformation = ({ bookingData = {} }) => {
 
   const printList = useMemo(() => {
     if (printingStatusData?.data?.docs?.length) {
-      return printingStatusData.data.docs.map(item => ({ label: item.name, value: item._id }));
+      return printingStatusData.data.docs.map(item => item.name);
     }
 
     return [];
@@ -51,35 +49,19 @@ const OrderInformation = ({ bookingData = {} }) => {
 
   const mountList = useMemo(() => {
     if (mountStatusData?.data?.docs?.length) {
-      return mountStatusData.data.docs.map(item => ({ label: item.name, value: item._id }));
+      return mountStatusData.data.docs.map(item => item.name);
     }
 
     return [];
   }, [mountStatusData]);
 
-  useEffect(() => {
-    if (bookingData.printingStatus && printList.length) {
-      const key = Object.keys(bookingData.printingStatus).pop();
-      const selected = printList.find(item => item.label.toLowerCase() === key.toLocaleLowerCase());
-      if (selected) {
-        setPrintingStatus(selected.value);
-      }
-    }
-  }, [bookingData.printingStatus, printList]);
+  const { mutate } = useUpdateBookingStatus();
 
-  useEffect(() => {
-    if (bookingData.mountingStatus && mountList.length) {
-      const key = Object.keys(bookingData.mountingStatus).pop();
-      const selected = mountList.find(item => item.label.toLowerCase() === key.toLocaleLowerCase());
-      if (selected) {
-        setPrintingStatus(selected.value);
-      }
-    }
-  }, [bookingData.mountingStatus, mountList]);
-
-  console.log(bookingData);
-
-  return (
+  return isLoading ? (
+    <div className="flex justify-center items-center h-[400px]">
+      <Loader />
+    </div>
+  ) : (
     <div className="pl-10 pr-7">
       <p className="mt-5 font-bold text-lg">Stats</p>
       <div className="mt-2 flex flex-col gap-8">
@@ -133,7 +115,9 @@ const OrderInformation = ({ bookingData = {} }) => {
             </div>
             <div>
               <p className="text-slate-400">Start Date</p>
-              <p className="font-bold">15 May 2037</p>
+              <p className="font-bold">
+                <NoData type="unknown" />
+              </p>
             </div>
             <div>
               <p className="text-slate-400">End Date</p>
@@ -143,8 +127,10 @@ const OrderInformation = ({ bookingData = {} }) => {
               <p className="text-slate-400">Printing Status</p>
               <Select
                 className="mr-2"
-                value={printingStatus}
-                onChange={setPrintingStatus}
+                defaultValue={bookingData?.currentStatus?.printingStatus}
+                onChange={val =>
+                  mutate({ id: bookingData._id, query: serialize({ printingStatus: val }) })
+                }
                 data={printList}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
@@ -168,8 +154,10 @@ const OrderInformation = ({ bookingData = {} }) => {
               <p className="text-slate-400">Mounting Status</p>
               <Select
                 className="mr-2"
-                value={mountingStatus}
-                onChange={setMountingStatus}
+                defaultValue={bookingData?.currentStatus?.mountingStatus}
+                onChange={val =>
+                  mutate({ id: bookingData._id, query: serialize({ mountingStatus: val }) })
+                }
                 data={mountList}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
@@ -193,11 +181,15 @@ const OrderInformation = ({ bookingData = {} }) => {
             </div>
             <div>
               <p className="text-slate-400">Booking Status</p>
-              <p className="font-bold">{bookingData.campaign?.status}</p>
+              <p className="font-bold">
+                {bookingData.campaign?.status || <NoData type="unknown" />}
+              </p>
             </div>
             <div>
               <p className="text-slate-400">Campaing Incharge</p>
-              <p className="font-bold">{bookingData?.campaign?.incharge?.[0]?.name}</p>
+              <p className="font-bold">
+                {bookingData?.campaign?.incharge?.[0]?.name || <NoData type="na" />}
+              </p>
               {/* <Select
                 className="mr-2"
                 value={campaignIncharge}
@@ -212,15 +204,20 @@ const OrderInformation = ({ bookingData = {} }) => {
             </div>
             <div>
               <p className="text-slate-400">Start Date</p>
-              <p className="font-bold">15 May 2037</p>
+              <p className="font-bold">
+                {/* 15 May 2037 comment for keeping format */}
+                <NoData type="unknown" />
+              </p>
             </div>
             <div>
               <p className="text-slate-400">End Date</p>
-              <p className="font-bold">15 May 2037</p>
+              <p className="font-bold">
+                <NoData type="unknown" />
+              </p>
             </div>
             <div>
               <p className="text-slate-400">Campaign Type</p>
-              <p className="font-bold">{bookingData?.campaign?.incharge?.[0]?.type}</p>
+              <p className="font-bold">{bookingData?.campaign?.type || <NoData type="na" />}</p>
             </div>
           </div>
         </div>
@@ -229,19 +226,27 @@ const OrderInformation = ({ bookingData = {} }) => {
           <div className="flex p-4 gap-y-6 gap-x-32 border flex-wrap">
             <div>
               <p className="text-slate-400">Payment Type</p>
-              <p className="font-bold">Card Online</p>
+              <p className="font-bold">
+                <NoData type="upcoming" />
+              </p>
             </div>
             <div>
               <p className="text-slate-400">Status</p>
-              <p className="font-bold">Paid</p>
+              <p className="font-bold">
+                <NoData type="upcoming" />
+              </p>
             </div>
             <div>
               <p className="text-slate-400">Card No</p>
-              <p className="font-bold">1234 1234 4312 1231</p>
+              <p className="font-bold">
+                <NoData type="upcoming" />
+              </p>
             </div>
             <div>
               <p className="text-slate-400">Payment Date</p>
-              <p className="font-bold">15 May 2037</p>
+              <p className="font-bold">
+                <NoData type="upcoming" />
+              </p>
             </div>
           </div>
         </div>

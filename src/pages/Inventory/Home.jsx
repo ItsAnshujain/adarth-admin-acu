@@ -238,7 +238,7 @@ const Home = () => {
       },
       {
         Header: 'PRICING',
-        accessor: 'price',
+        accessor: 'basicInformation.price',
         Cell: ({
           row: {
             original: { basicInformation },
