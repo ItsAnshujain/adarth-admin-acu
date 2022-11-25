@@ -106,7 +106,7 @@ const initialValues = {
 
 const MainArea = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
-  const [formStep, setFormStep] = useState(1);
+  const [formStep, setFormStep] = useState(3);
   const submitRef = useRef(null);
 
   const form = useForm({ validate: yupResolver(schema(formStep)), initialValues });

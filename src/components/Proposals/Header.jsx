@@ -1,15 +1,22 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import classNames from 'classnames';
-import { Text, Button } from '@mantine/core';
+import { Text, Button, Image } from '@mantine/core';
 import { Plus, ChevronDown, Server, Grid } from 'react-feather';
 import shallow from 'zustand/shallow';
+import { useClickOutside } from '@mantine/hooks';
 import Filter from './Filter';
 import useLayoutView from '../../store/layout.store';
+
+import calendar from '../../assets/data-table.svg';
+import DateRange from '../DateRange';
 
 const Header = ({ text }) => {
   const navigate = useNavigate();
   const [showFilter, setShowFilter] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const ref = useClickOutside(() => setShowDatePicker(false));
 
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
@@ -19,8 +26,8 @@ const Header = ({ text }) => {
     shallow,
   );
 
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const handleListClick = () => setActiveLayout({ ...activeLayout, proposal: 'list' });
-
   const handleGridClick = () => setActiveLayout({ ...activeLayout, proposal: 'grid' });
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -64,6 +71,18 @@ const Header = ({ text }) => {
             />
           </Button>
         </div>
+
+        <div ref={ref} className="relative">
+          <Button onClick={toggleDatePicker} variant="default">
+            <Image src={calendar} className="h-5" alt="calendar" />
+          </Button>
+          {showDatePicker && (
+            <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
+              <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
+            </div>
+          )}
+        </div>
+
         <Button onClick={toggleFilter} variant="default" className="font-medium">
           <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
         </Button>

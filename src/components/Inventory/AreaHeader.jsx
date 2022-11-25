@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Text, Button, Checkbox } from '@mantine/core';
+import { Text, Button, Checkbox, Image } from '@mantine/core';
 import classNames from 'classnames';
 import { Plus, ChevronDown, Server, Grid, MapPin } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
@@ -9,6 +9,9 @@ import Filter from './Filter';
 import useLayoutView from '../../store/layout.store';
 import RoleBased from '../RoleBased';
 import { ROLES } from '../../utils';
+
+import calendar from '../../assets/data-table.svg';
+import DateRange from '../DateRange';
 
 const AreaHeader = ({
   text,
@@ -21,6 +24,7 @@ const AreaHeader = ({
   const { pathname } = useLocation();
   const [addDetailsClicked, setAddDetails] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const addDetailsButtonRef = useClickOutside(() => setAddDetails(false));
 
   const { activeLayout, setActiveLayout } = useLayoutView(
@@ -31,8 +35,11 @@ const AreaHeader = ({
     shallow,
   );
 
+  const ref = useClickOutside(() => setShowDatePicker(false));
+
   const toggleFilter = () => setShowFilter(!showFilter);
   const toggleAddDetails = () => setAddDetails(!addDetailsClicked);
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const handleListClick = () => setActiveLayout({ ...activeLayout, inventory: 'list' });
   const handleGridClick = () => setActiveLayout({ ...activeLayout, inventory: 'grid' });
   const handleMapClick = () => setActiveLayout({ ...activeLayout, inventory: 'map' });
@@ -116,6 +123,18 @@ const AreaHeader = ({
             </Button>
           </div>
         )}
+
+        <div ref={ref} className="relative mr-2">
+          <Button onClick={toggleDatePicker} variant="default">
+            <Image src={calendar} className="h-5" alt="calendar" />
+          </Button>
+          {showDatePicker && (
+            <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
+              <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
+            </div>
+          )}
+        </div>
+
         <div className="mr-2">
           <Button onClick={toggleFilter} variant="default" className="font-medium">
             <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter

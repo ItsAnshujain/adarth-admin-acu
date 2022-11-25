@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@mantine/core';
 import { RangeCalendar, DatePicker } from '@mantine/dates';
 import { Calendar } from 'react-feather';
+import dayjs from 'dayjs';
 
 const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate'] }) => {
   const [value, setValue] = useState([null, null]);
@@ -10,7 +11,7 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
   const [searchParams, setSearchParams] = useSearchParams();
 
   const handleSetStartDate = startingDate => {
-    searchParams.set('startDate', startingDate.toIsoString());
+    searchParams.set(dateKeys[0], startingDate);
     setValue(prev => {
       if (prev[1] < startingDate) return [startingDate, null];
       return [startingDate, prev[1]];
@@ -18,7 +19,7 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
   };
 
   const handleSetEndDate = endingDate => {
-    searchParams.set('endDate', endingDate.toIsoString());
+    searchParams.set(dateKeys[1], endingDate);
     setValue(prev => {
       if (endingDate < prev[0]) return [null, endingDate];
       return [prev[0], endingDate];
@@ -28,8 +29,8 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
   const handleRangeSetting = val => {
     if (val[1] < val[0]) {
       setValue([null, val[1]]);
-      searchParams.set('endDate', val[1]);
-      searchParams.delete('startDate');
+      searchParams.set(dateKeys[1], val[1]);
+      searchParams.delete(dateKeys[0]);
 
       return;
     }
@@ -73,6 +74,9 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
           </Button>
           <Button
             onClick={() => {
+              dateKeys.forEach(item =>
+                searchParams.set(item, dayjs(searchParams.get(item)).format('YYYY-MM-DD')),
+              );
               setSearchParams(searchParams);
               handleClose();
             }}

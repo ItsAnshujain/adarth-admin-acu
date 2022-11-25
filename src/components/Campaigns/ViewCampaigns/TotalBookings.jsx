@@ -1,18 +1,357 @@
-import { useState } from 'react';
-import { Text, Button } from '@mantine/core';
-import { Plus } from 'react-feather';
+import { useEffect, useMemo, useState } from 'react';
+import { Text, Button, NativeSelect, Progress, Loader } from '@mantine/core';
+import { ChevronDown, Plus } from 'react-feather';
+import { useDebouncedState } from '@mantine/hooks';
+import { useSearchParams } from 'react-router-dom';
+import dayjs from 'dayjs';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
 import Table from '../../Table/Table';
+import { useBookings, useUpdateBookingStatus } from '../../../hooks/booking.hooks';
+import MenuPopover from '../../../pages/Booking/MenuPopOver';
+import { useFetchMasters } from '../../../hooks/masters.hooks';
+import { serialize } from '../../../utils';
+import toIndianCurrency from '../../../utils/currencyFormat';
 
-const TotalBookings = ({ data, columns }) => {
+const TotalBookings = ({ campaignId, isLoading }) => {
+  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchParams, setSearchParams] = useSearchParams({
+    page: 1,
+    limit: 10,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+    campaignId,
+  });
+
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [search, setSearch] = useState('');
-  const [count, setCount] = useState('20');
+  const toggleDatePicker = () => setShowDatePicker(prevState => !prevState);
 
-  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
+  const page = searchParams.get('page');
+  const limit = searchParams.get('limit');
+
+  const { data: bookingData, isLoading: isLoadingBookingData } = useBookings(
+    searchParams.toString(),
+    !!campaignId,
+  );
+  const { data: campaignStatus } = useFetchMasters(
+    serialize({ type: 'campaign_status', limit: 100 }),
+  );
+  const { data: paymentStatus } = useFetchMasters(
+    serialize({ type: 'payment_status', limit: 100 }),
+  );
+  const { data: printingStatus } = useFetchMasters(
+    serialize({ type: 'printing_status', limit: 100 }),
+  );
+  const { data: mountingStatus } = useFetchMasters(
+    serialize({ type: 'mounting_status', limit: 100 }),
+  );
+
+  const { mutateAsync: updateBooking } = useUpdateBookingStatus();
+
+  const handlePaymentUpdate = (bookingId, status) => {
+    updateBooking({ id: bookingId, query: serialize({ paymentStatus: status }) });
+  };
+
+  const handleMountingUpdate = (bookingId, status) => {
+    updateBooking({ id: bookingId, query: serialize({ mountingStatus: status }) });
+  };
+
+  const handlePrintingUpdate = (bookingId, status) => {
+    updateBooking({ id: bookingId, query: serialize({ printingStatus: status }) });
+  };
+
+  const handleCampaignUpdate = (bookingId, status) => {
+    updateBooking({ id: bookingId, query: serialize({ campaignStatus: status }) });
+  };
+
+  const column = useMemo(
+    () => [
+      {
+        Header: '#',
+        accessor: 'id',
+        disableSortBy: true,
+        Cell: ({ row }) =>
+          useMemo(() => {
+            let currentPage = page;
+            let rowCount = 0;
+            if (page < 1) {
+              currentPage = 1;
+            }
+            rowCount = (currentPage - 1) * limit;
+            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+          }, []),
+      },
+      {
+        Header: 'CLIENT',
+        accessor: 'client',
+        Cell: ({
+          row: {
+            original: { client },
+          },
+        }) => useMemo(() => <p>{client?.name}</p>, []),
+      },
+      {
+        Header: 'ORDER DATE',
+        Cell: ({ row: { original } }) => dayjs(original.client.createdAt).format('DD-MMMM-YYYY'),
+      },
+      {
+        Header: 'CAMPAIGN NAME',
+        accessor: 'campaign.name',
+        Cell: ({ row: { original } }) => useMemo(() => original.campaign?.name, []),
+      },
+      {
+        Header: 'BOOKING TYPE',
+        accessor: 'type',
+      },
+      {
+        Header: 'CAMPAIGN STATUS',
+        accessor: 'currentStatus.campaignStatus',
+        Cell: ({
+          row: {
+            original: { _id, currentStatus },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <NativeSelect
+                className="mr-2"
+                data={campaignStatus?.docs.map(item => item.name) || []}
+                styles={{
+                  rightSection: { pointerEvents: 'none' },
+                }}
+                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                rightSectionWidth={40}
+                onChange={e => handleCampaignUpdate(_id, e.target.value)}
+                value={currentStatus?.campaignStatus || ''}
+              />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'PAYMENT STATUS',
+        accessor: 'currentStatus.paymentStatus',
+        Cell: ({
+          row: {
+            original: { _id, currentStatus },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <NativeSelect
+                data={paymentStatus?.docs.map(item => item.name) || []}
+                styles={{
+                  rightSection: { pointerEvents: 'none' },
+                }}
+                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                rightSectionWidth={40}
+                onChange={e => handlePaymentUpdate(_id, e.target.value)}
+                value={currentStatus?.paymentStatus || ''}
+              />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'PRINTING STATUS',
+        accessor: 'currentStatus.printingStatus',
+        Cell: ({
+          row: {
+            original: { _id, currentStatus },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <NativeSelect
+                className="mr-2"
+                data={printingStatus?.docs.map(item => item.name) || []}
+                styles={{
+                  rightSection: { pointerEvents: 'none' },
+                }}
+                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                rightSectionWidth={40}
+                onChange={e => handlePrintingUpdate(_id, e.target.value)}
+                value={currentStatus?.printingStatus || ''}
+              />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'MOUNTING STATUS',
+        accessor: 'currentStatus.mountingStatus',
+        Cell: ({
+          row: {
+            original: { _id, currentStatus },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <NativeSelect
+                className="mr-2"
+                data={mountingStatus?.docs.map(item => item.name) || []}
+                styles={{
+                  rightSection: { pointerEvents: 'none' },
+                }}
+                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                rightSectionWidth={40}
+                onChange={e => handleMountingUpdate(_id, e.target.value)}
+                value={currentStatus?.mountingStatus || ''}
+              />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'CAMPAIGN INCHARGE',
+        accessor: 'campaign_incharge',
+        Cell: () => '',
+      },
+      {
+        Header: 'HEALTH STATUS',
+        accessor: 'healthStatus',
+        Cell: ({
+          row: {
+            original: { healthStatus, totalHealthStatus },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div className="w-24">
+                <Progress
+                  sections={[
+                    { value: healthStatus, color: 'green' },
+                    { value: totalHealthStatus - healthStatus, color: 'red' },
+                  ]}
+                />
+              </div>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'PAYMENT TYPE',
+        accessor: 'paymentType',
+      },
+      {
+        Header: 'SCHEDULE',
+        accessor: 'schedule',
+        Cell: ({
+          row: {
+            original: { from_date, to_date },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center text-xs w-max">
+                <span className="py-1 px-1 bg-slate-200 mr-2 rounded-md">{from_date}</span>
+                &gt;
+                <span className="py-1 px-1 bg-slate-200 mx-2 rounded-md">{to_date}</span>
+              </div>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'UPLOADED MEDIA',
+        accessor: 'uploaded_media',
+        Cell: () => useMemo(() => '', []),
+      },
+      {
+        Header: 'DOWNLOAD UPLOADED MEDIA',
+        accessor: '',
+        Cell: () =>
+          useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+      },
+      {
+        Header: 'TOTAL SPACES',
+        accessor: 'totalSpaces',
+      },
+      {
+        Header: 'PRICING',
+        accessor: 'price',
+        Cell: ({
+          row: {
+            original: { price },
+          },
+        }) => useMemo(() => toIndianCurrency(price), []),
+      },
+      {
+        Header: 'PURCHASE ORDER',
+        accessor: 'purchaseOrder',
+        Cell: () =>
+          useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+      },
+      {
+        Header: 'RELEASE ORDER',
+        accessor: 'releaseOrder',
+        Cell: () =>
+          useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+      },
+      {
+        Header: 'INVOICE',
+        accessor: 'invoice',
+        Cell: () =>
+          useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+      },
+      {
+        Header: 'ACTION',
+        accessor: 'action',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { _id },
+          },
+        }) => useMemo(() => <MenuPopover itemId={_id} />, []),
+      },
+    ],
+    [bookingData?.docs, campaignStatus, paymentStatus, printingStatus, mountingStatus],
+  );
+
+  const handleSortByColumn = colId => {
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
+      searchParams.set('sortOrder', 'asc');
+      setSearchParams(searchParams);
+      return;
+    }
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
+      searchParams.set('sortOrder', 'desc');
+      setSearchParams(searchParams);
+      return;
+    }
+
+    searchParams.set('sortBy', colId);
+    setSearchParams(searchParams);
+  };
+
+  const handleSearch = () => {
+    searchParams.set('search', searchInput);
+    setSearchParams(searchParams);
+  };
+
+  const handleRowCount = currentLimit => {
+    searchParams.set('limit', currentLimit);
+    setSearchParams(searchParams);
+  };
+
+  const handlePagination = currentPage => {
+    searchParams.set('page', currentPage);
+    setSearchParams(searchParams);
+  };
+
+  useEffect(() => {
+    handleSearch();
+    if (searchInput === '') {
+      searchParams.delete('search');
+      setSearchParams(searchParams);
+    }
+  }, [searchInput]);
+
+  useEffect(() => {
+    searchParams.set('sortBy', 'createdAt');
+  }, []);
 
   return (
     <>
@@ -41,10 +380,31 @@ const TotalBookings = ({ data, columns }) => {
       </div>
       <div>
         <div className="flex justify-between h-20 items-center">
-          <RowsPerPage setCount={setCount} count={count} />
-          <Search search={search} setSearch={setSearch} />
+          <RowsPerPage setCount={handleRowCount} count={limit} />
+          <Search search={searchInput} setSearch={setSearchInput} />
         </div>
-        <Table data={data} COLUMNS={columns} allowRowsSelect />
+        {isLoading ? (
+          <div className="flex justify-center items-center h-[400px]">
+            <Loader />
+          </div>
+        ) : null}
+
+        {bookingData?.docs?.length === 0 && !isLoadingBookingData ? (
+          <div className="w-full min-h-[400px] flex justify-center items-center">
+            <p className="text-xl">No records found</p>
+          </div>
+        ) : null}
+        {bookingData?.docs?.length ? (
+          <Table
+            data={bookingData?.docs || []}
+            COLUMNS={column}
+            activePage={bookingData?.page || 1}
+            totalPages={bookingData?.totalPages || 1}
+            setActivePage={handlePagination}
+            rowCountLimit={limit}
+            handleSorting={handleSortByColumn}
+          />
+        ) : null}
       </div>
     </>
   );

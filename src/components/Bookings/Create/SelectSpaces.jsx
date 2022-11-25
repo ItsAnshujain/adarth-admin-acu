@@ -22,7 +22,7 @@ const SelectSpace = () => {
 
   const [inventoryQuery] = useState({
     page: 1,
-    limit: 1,
+    limit: 10,
     sortOrder: 'asc',
     sortBy: 'basicInformation.spaceName',
   });
@@ -41,7 +41,7 @@ const SelectSpace = () => {
         obj.space_name = item.basicInformation.spaceName;
         obj.space_type = item.basicInformation.spaceType?.name;
         obj.dimension = item.specifications.resolutions;
-        obj.impression = item.specifications.impressions.min;
+        obj.impression = item.specifications.impressions?.min || 0;
         obj.health = item.specifications.health;
         obj.location = item.location.city;
         obj.media_type = item.basicInformation.mediaType?.name;
@@ -156,7 +156,7 @@ const SelectSpace = () => {
             () =>
               values?.spaces.length > 0 ? (
                 values?.spaces.map(selected => {
-                  if (selected.original._id === id) {
+                  if (selected.id === id) {
                     return (
                       <Button className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-350 text-white rounded-md cursor-pointer">
                         Upload
@@ -187,7 +187,7 @@ const SelectSpace = () => {
           const {
             cell: { value },
           } = tableProps;
-          return useMemo(() => <p>{`${value.height || 0}ft x ${value.width || 0}ft`}</p>, []);
+          return useMemo(() => <p>{`${value?.height || 0}ft x ${value?.width || 0}ft`}</p>, []);
         },
       },
       {
@@ -226,7 +226,7 @@ const SelectSpace = () => {
         Cell: tableProps => {
           const {
             row: {
-              original: { pricing, _id },
+              original: { pricing, id },
             },
           } = tableProps;
 
@@ -235,7 +235,7 @@ const SelectSpace = () => {
               <NumberInput
                 hideControls
                 defaultValue={pricing}
-                onBlur={e => updatePrice(e.target.value, _id)}
+                onBlur={e => updatePrice(e.target.value, id)}
               />
             ),
             [],

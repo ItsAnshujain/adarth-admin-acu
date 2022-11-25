@@ -4,7 +4,6 @@ import Header from './Header';
 import SpacesList from './SpacesList';
 import TotalBookings from './TotalBookings';
 import column from './columnSpaceList';
-import bookingdata from '../../../Dummydata/BOOKING_DATA.json';
 import bookingColumn from './columnTotalBooking';
 import Preview from '../AddCampaign/Preview';
 
@@ -32,7 +31,7 @@ const View = () => {
       // TODO: replace with data after api is done
       <SpacesList data={data?.inventory} columns={column} />
     ) : (
-      <TotalBookings data={bookingdata} columns={bookingColumn} />
+      <TotalBookings campaignId={data?.campaign?._id} columns={bookingColumn} />
     );
 
   return (
