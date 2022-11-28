@@ -62,6 +62,7 @@ const Bookings = () => {
     updateBooking({ id: bookingId, query: serialize({ campaignStatus: data }) });
   };
 
+  // TODO: remove disableSortBy when api is updated for sorting GET all bookings
   const column = useMemo(
     () => [
       {
@@ -90,6 +91,7 @@ const Bookings = () => {
       },
       {
         Header: 'ORDER DATE',
+        disableSortBy: true,
         Cell: ({ row: { original } }) => dayjs(original.client.createdAt).format('DD-MMMM-YYYY'),
       },
       {
@@ -203,11 +205,13 @@ const Bookings = () => {
       {
         Header: 'CAMPAIGN INCHARGE',
         accessor: 'campaign_incharge',
+        disableSortBy: true,
         Cell: () => '',
       },
       {
         Header: 'HEALTH STATUS',
         accessor: 'healthStatus',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { healthStatus, totalHealthStatus },
@@ -230,10 +234,12 @@ const Bookings = () => {
       {
         Header: 'PAYMENT TYPE',
         accessor: 'paymentType',
+        disableSortBy: true,
       },
       {
         Header: 'SCHEDULE',
         accessor: 'schedule',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { from_date, to_date },
@@ -253,11 +259,13 @@ const Bookings = () => {
       {
         Header: 'UPLOADED MEDIA',
         accessor: 'uploaded_media',
+        disableSortBy: true,
         Cell: () => useMemo(() => '', []),
       },
       {
         Header: 'DOWNLOAD UPLOADED MEDIA',
         accessor: '',
+        disableSortBy: true,
         Cell: () =>
           useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
       },
@@ -277,18 +285,21 @@ const Bookings = () => {
       {
         Header: 'PURCHASE ORDER',
         accessor: 'purchaseOrder',
+        disableSortBy: true,
         Cell: () =>
           useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
       },
       {
         Header: 'RELEASE ORDER',
         accessor: 'releaseOrder',
+        disableSortBy: true,
         Cell: () =>
           useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
       },
       {
         Header: 'INVOICE',
         accessor: 'invoice',
+        disableSortBy: true,
         Cell: () =>
           useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
       },
