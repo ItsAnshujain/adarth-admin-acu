@@ -20,7 +20,7 @@ const TotalBookings = ({ campaignId, isLoading }) => {
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
     limit: 10,
-    sortBy: 'createdAt',
+    sortBy: 'campaign.name',
     sortOrder: 'desc',
     campaignId,
   });
@@ -94,7 +94,8 @@ const TotalBookings = ({ campaignId, isLoading }) => {
       },
       {
         Header: 'ORDER DATE',
-        Cell: ({ row: { original } }) => dayjs(original.client.createdAt).format('DD-MMMM-YYYY'),
+        Cell: ({ row: { original } }) =>
+          dayjs(original.client.campaign.name).format('DD-MMMM-YYYY'),
       },
       {
         Header: 'CAMPAIGN NAME',
@@ -350,7 +351,8 @@ const TotalBookings = ({ campaignId, isLoading }) => {
   }, [searchInput]);
 
   useEffect(() => {
-    searchParams.set('sortBy', 'createdAt');
+    searchParams.set('sortBy', 'campaign.name');
+    setSearchParams(searchParams);
   }, []);
 
   return (

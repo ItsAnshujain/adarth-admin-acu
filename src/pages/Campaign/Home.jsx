@@ -93,13 +93,14 @@ const Home = () => {
                 </div>
               </div>
             ),
-            [],
+            [_id, thumbnail, name],
           );
         },
       },
       {
         Header: 'TYPE',
         accessor: 'type',
+        disableSortBy: true,
       },
       {
         Header: 'HEALTH',

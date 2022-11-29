@@ -56,7 +56,7 @@ const SelectSpace = () => {
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
   const setSelectedSpace = selectedSpace => {
-    const totalPrice = selectedSpace.reduce((acc, item) => acc + item.values.pricing, 0);
+    const totalPrice = selectedSpace.reduce((acc, item) => acc + +(item.values.pricing || 0), 0);
     setOrderPrice(totalPrice);
 
     const avgHealth =
@@ -213,7 +213,7 @@ const SelectSpace = () => {
           const {
             cell: { value },
           } = tableProps;
-          return useMemo(() => <p>{`${value.height}ft x ${value.width}ft`}</p>, []);
+          return useMemo(() => <p>{`${value?.height || 0}ft x ${value?.width || 0}ft`}</p>, []);
         },
       },
       {
@@ -349,17 +349,17 @@ const SelectSpace = () => {
         obj.photo = item.basicInformation.spacePhotos;
         obj._id = item._id;
         obj.space_name = item.basicInformation.spaceName;
-        obj.space_type = item.basicInformation.spaceType.name;
+        obj.space_type = item.basicInformation.spaceType?.name;
         obj.dimension = item.specifications.size;
-        obj.impression = item.specifications.impressions.min;
+        obj.impression = item.specifications.impressions?.min || 0;
         obj.health = item.specifications.health;
         obj.location = item.location;
-        obj.media_type = item.basicInformation.mediaType.name;
+        obj.media_type = item.basicInformation.mediaType?.name;
         obj.supportedMedia = item.basicInformation.supportedMedia;
         obj.pricing = item.basicInformation.price;
         obj.landlord_name = '';
         obj.status = 'Available';
-        obj.illuminations = item.specifications.illuminations.name;
+        obj.illuminations = item.specifications.illuminations?.name;
         obj.unit = item.specifications.unit;
         obj.resolutions = item.specifications.resolutions;
         finalData.push(obj);
