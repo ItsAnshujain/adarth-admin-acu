@@ -9,14 +9,16 @@ import Table from '../../Table/Table';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
-const ProposalTableView = ({ viewType }) => {
+const ProposalTableView = ({ viewType, userId = null }) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
     'sortBy': 'createdAt',
     'sortOrder': 'desc',
+    'userId': userId,
   });
+
   const { data: proposalsData, isLoading: isLoadingProposalsData } = useFetchProposals(
     viewType ? searchParams.toString() : null,
     viewType,
@@ -168,6 +170,11 @@ const ProposalTableView = ({ viewType }) => {
       {isLoadingProposalsData ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
+        </div>
+      ) : null}
+      {proposalsData?.docs?.length === 0 && !isLoadingProposalsData ? (
+        <div className="w-full min-h-[400px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
         </div>
       ) : null}
       {proposalsData?.docs?.length ? (

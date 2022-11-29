@@ -43,10 +43,10 @@ const Header = () => {
             </Tabs.List>
 
             <Tabs.Panel value="booking">
-              <BookingTableView viewType={activeTable === 'booking'} />
+              <BookingTableView viewType={activeTable === 'booking'} userId={userId} />
             </Tabs.Panel>
             <Tabs.Panel value="proposal" className="mr-5">
-              <ProposalTableView viewType={activeTable === 'proposal'} />
+              <ProposalTableView viewType={activeTable === 'proposal'} userId={userId} />
             </Tabs.Panel>
           </Tabs>
         </div>

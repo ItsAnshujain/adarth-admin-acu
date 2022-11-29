@@ -13,13 +13,14 @@ import Table from '../../Table/Table';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 
-const BookingTableView = ({ viewType }) => {
+const BookingTableView = ({ viewType, userId = null }) => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
     'sortBy': 'createdAt',
     'sortOrder': 'desc',
+    'userId': userId,
   });
 
   const page = searchParams.get('page');

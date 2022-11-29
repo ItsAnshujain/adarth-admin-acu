@@ -115,7 +115,7 @@ const Bookings = () => {
             () => (
               <NativeSelect
                 className="mr-2"
-                data={campaignStatus?.docs.map(item => item.name) || []}
+                data={campaignStatus?.docs?.map(item => item.name) || []}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
                 }}
@@ -139,7 +139,7 @@ const Bookings = () => {
           useMemo(
             () => (
               <NativeSelect
-                data={paymentStatus?.docs.map(item => item.name) || []}
+                data={paymentStatus?.docs?.map(item => item.name) || []}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
                 }}
@@ -164,7 +164,7 @@ const Bookings = () => {
             () => (
               <NativeSelect
                 className="mr-2"
-                data={printingStatus?.docs.map(item => item.name) || []}
+                data={printingStatus?.docs?.map(item => item.name) || []}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
                 }}
@@ -189,7 +189,7 @@ const Bookings = () => {
             () => (
               <NativeSelect
                 className="mr-2"
-                data={mountingStatus?.docs.map(item => item.name) || []}
+                data={mountingStatus?.docs?.map(item => item.name) || []}
                 styles={{
                   rightSection: { pointerEvents: 'none' },
                 }}
