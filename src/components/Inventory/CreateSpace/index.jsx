@@ -555,7 +555,6 @@ const MainArea = () => {
 
       <SuccessModal
         title="Inventory Successfully Added"
-        text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
         prompt="Go to inventory"
         open={openSuccessModal}
         setOpenSuccessModal={setOpenSuccessModal}

@@ -42,6 +42,14 @@ const multiSelectStyles = {
   },
 };
 
+const query = {
+  parentId: null,
+  limit: 100,
+  page: 1,
+  sortBy: 'name',
+  sortOrder: 'asc',
+};
+
 const BasicInfo = () => {
   const { errors, getInputProps, values, setFieldValue } = useFormContext();
   const {
@@ -63,35 +71,35 @@ const BasicInfo = () => {
     data: spaceTypeData,
     isSuccess: isSpaceTypeDataLoaded,
     isLoading: isSpaceTypeDataLoading,
-  } = useFetchMasters(serialize({ type: 'space_type', parentId: null, limit: 100 }));
+  } = useFetchMasters(serialize({ type: 'space_type', ...query }));
   const {
     data: categoryData,
     isSuccess: isCategoryLoaded,
     isLoading: isCategoryLoading,
-  } = useFetchMasters(serialize({ type: 'category', parentId: null, limit: 100 }));
+  } = useFetchMasters(serialize({ type: 'category', ...query }));
   const {
     data: subCategories,
     isSuccess: subCategoryLoaded,
     isLoading: isSubCategoryLoading,
   } = useFetchMasters(
-    serialize({ parentId: values?.basicInformation.category?.value }),
+    serialize({ ...query, parentId: values?.basicInformation.category?.value }),
     !!values?.basicInformation.category,
   );
   const {
     data: mediaType,
     isSuccess: mediaTypeLoaded,
     isLoading: isMediaTypeLoading,
-  } = useFetchMasters(serialize({ type: 'media_type', limit: 100 }));
+  } = useFetchMasters(serialize({ type: 'media_type', ...query }));
   const {
     data: audienceData,
     isSuccess: isAudienceDataLoaded,
     isLoading: isAudienceDataLoading,
-  } = useFetchMasters(serialize({ type: 'audience', parentId: null, limit: 100 }));
+  } = useFetchMasters(serialize({ type: 'audience', ...query }));
   const {
     data: demographicData,
     isSuccess: isDemographicDataLoaded,
     isLoading: isDemographicDataLoading,
-  } = useFetchMasters(serialize({ type: 'demographic', parentId: null, limit: 100 }));
+  } = useFetchMasters(serialize({ type: 'demographic', ...query }));
 
   const { mutateAsync: upload, isLoading } = useUploadFile();
 

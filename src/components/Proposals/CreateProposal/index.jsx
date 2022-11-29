@@ -184,7 +184,6 @@ const Main = () => {
       </FormProvider>
       <SuccessModal
         title="Proposal Successfully Created"
-        text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
         prompt="Visit Proposals"
         open={openSuccessModal}
         setOpenSuccessModal={setOpenSuccessModal}
