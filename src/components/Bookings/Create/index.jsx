@@ -106,7 +106,7 @@ const initialValues = {
 
 const MainArea = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
-  const [formStep, setFormStep] = useState(3);
+  const [formStep, setFormStep] = useState(1);
   const submitRef = useRef(null);
 
   const form = useForm({ validate: yupResolver(schema(formStep)), initialValues });
@@ -143,7 +143,6 @@ const MainArea = () => {
       </div>
       <SuccessModal
         title="Order Successfully Created"
-        text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
         prompt="Visit Order List"
         open={openSuccessModal}
         setOpenSuccessModal={setOpenSuccessModal}

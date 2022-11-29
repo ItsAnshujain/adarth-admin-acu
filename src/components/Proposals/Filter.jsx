@@ -166,7 +166,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
                       min={0}
                       max={10000}
                       styles={sliderStyle}
-                      defaultValue={[priceMin, priceMax]}
                     />
                   </div>
                 </div>
@@ -211,7 +210,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
                       min={0}
                       max={10000}
                       styles={sliderStyle}
-                      defaultValue={[totalPlacesMin, totalPlacesMax]}
                     />
                   </div>
                 </div>

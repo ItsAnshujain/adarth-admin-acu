@@ -5,7 +5,7 @@ import { useFetchMasters } from '../../hooks/masters.hooks';
 import { serialize } from '../../utils/index';
 
 const inititalFilterData = {
-  'bookingType': {
+  'type': {
     'online': 'Online',
     'offline': 'Offline',
   },
@@ -33,7 +33,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
     printingStatus: '',
     mountingStatus: '',
     paymentStatus: '',
-    bookingType: '',
+    type: '',
   });
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -45,7 +45,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const printingStatus = searchParams.get('printingStatus');
   const mountingStatus = searchParams.get('mountingStatus');
   const paymentStatus = searchParams.get('paymentStatus');
-  const bookingType = searchParams.get('bookingType');
+  const type = searchParams.get('type');
 
   const { data: campaignStatusData } = useFetchMasters(
     serialize({ type: 'campaign_status', limit: 100 }),
@@ -106,7 +106,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
     searchParams.delete('printingStatus');
     searchParams.delete('mountingStatus');
     searchParams.delete('paymentStatus');
-    searchParams.delete('bookingType');
+    searchParams.delete('type');
     searchParams.delete('minPrice');
     searchParams.delete('maxPrice');
     setSearchParams(searchParams);
@@ -115,7 +115,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       printingStatus: '',
       mountingStatus: '',
       paymentStatus: '',
-      bookingType: '',
+      type: '',
     });
   };
 
@@ -134,7 +134,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       printingStatus: printingStatus || '',
       mountingStatus: mountingStatus || '',
       paymentStatus: paymentStatus || '',
-      bookingType: bookingType || '',
+      type: type || '',
     }));
   }, [searchParams]);
 
@@ -203,7 +203,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
                       min={0}
                       max={10000}
                       styles={sliderStyle}
-                      defaultValue={[minPrice, maxPrice]}
                     />
                   </div>
                 </div>
@@ -218,10 +217,10 @@ const Filter = ({ isOpened, setShowFilter }) => {
             </Accordion.Panel>
           </Accordion.Item>
 
-          <Accordion.Item className="border-solid border-2 rounded-xl mb-2 p-1" value="bookingType">
+          <Accordion.Item className="border-solid border-2 rounded-xl mb-2 p-1" value="type">
             <Accordion.Control className="hover:bg-white">Booking Type</Accordion.Control>
             <Accordion.Panel>
-              {renderStaticOptions(inititalFilterData.bookingType, 'bookingType')}
+              {renderStaticOptions(inititalFilterData.type, 'type')}
             </Accordion.Panel>
           </Accordion.Item>
 

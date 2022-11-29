@@ -329,7 +329,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
                       min={0}
                       max={10000}
                       styles={sliderStyle}
-                      defaultValuelue={[minPrice, maxPrice]}
                     />
                   </div>
                 </div>

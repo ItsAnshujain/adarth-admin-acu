@@ -5,6 +5,11 @@ import { RangeCalendar, DatePicker } from '@mantine/dates';
 import { Calendar } from 'react-feather';
 import dayjs from 'dayjs';
 
+const styles = {
+  monthPickerControlActive: { backgroundColor: '#4B0DAF !important' },
+  yearPickerControlActive: { backgroundColor: '#4B0DAF !important' },
+};
+
 const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate'] }) => {
   const [value, setValue] = useState([null, null]);
 
@@ -98,6 +103,7 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
             onChange={handleSetStartDate}
             value={value[0]}
             icon={<Calendar className="text-black absolute left-[500%]" />}
+            styles={styles}
           />
           <p className="font-bold mt-3">Date To</p>
           <DatePicker
@@ -105,6 +111,7 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
             onChange={handleSetEndDate}
             value={value[1]}
             icon={<Calendar className="text-black absolute left-[500%]" />}
+            styles={styles}
           />
         </div>
       </div>
