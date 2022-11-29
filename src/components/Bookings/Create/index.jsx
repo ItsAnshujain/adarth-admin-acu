@@ -162,7 +162,6 @@ const MainArea = () => {
       </div>
       <SuccessModal
         title="Order Successfully Created"
-        text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
         prompt="Visit Order List"
         open={openSuccessModal}
         setOpenSuccessModal={setOpenSuccessModal}

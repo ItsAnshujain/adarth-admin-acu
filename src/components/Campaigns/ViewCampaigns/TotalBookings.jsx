@@ -66,6 +66,7 @@ const TotalBookings = ({ campaignId, isLoading }) => {
     updateBooking({ id: bookingId, query: serialize({ campaignStatus: status }) });
   };
 
+  // TODO: remove disableSortBy when api is updated for sorting GET all bookings
   const column = useMemo(
     () => [
       {
@@ -94,8 +95,8 @@ const TotalBookings = ({ campaignId, isLoading }) => {
       },
       {
         Header: 'ORDER DATE',
-        Cell: ({ row: { original } }) =>
-          dayjs(original.client.campaign.name).format('DD-MMMM-YYYY'),
+        disableSortBy: true,
+        Cell: ({ row: { original } }) => dayjs(original.client.createdAt).format('DD-MMMM-YYYY'),
       },
       {
         Header: 'CAMPAIGN NAME',
@@ -208,11 +209,13 @@ const TotalBookings = ({ campaignId, isLoading }) => {
       {
         Header: 'CAMPAIGN INCHARGE',
         accessor: 'campaign_incharge',
+        disableSortBy: true,
         Cell: () => '',
       },
       {
         Header: 'HEALTH STATUS',
         accessor: 'healthStatus',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { healthStatus, totalHealthStatus },
@@ -235,10 +238,12 @@ const TotalBookings = ({ campaignId, isLoading }) => {
       {
         Header: 'PAYMENT TYPE',
         accessor: 'paymentType',
+        disableSortBy: true,
       },
       {
         Header: 'SCHEDULE',
         accessor: 'schedule',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { from_date, to_date },
@@ -258,11 +263,13 @@ const TotalBookings = ({ campaignId, isLoading }) => {
       {
         Header: 'UPLOADED MEDIA',
         accessor: 'uploaded_media',
+        disableSortBy: true,
         Cell: () => useMemo(() => '', []),
       },
       {
         Header: 'DOWNLOAD UPLOADED MEDIA',
         accessor: '',
+        disableSortBy: true,
         Cell: () =>
           useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
       },
@@ -282,18 +289,21 @@ const TotalBookings = ({ campaignId, isLoading }) => {
       {
         Header: 'PURCHASE ORDER',
         accessor: 'purchaseOrder',
+        disableSortBy: true,
         Cell: () =>
           useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
       },
       {
         Header: 'RELEASE ORDER',
         accessor: 'releaseOrder',
+        disableSortBy: true,
         Cell: () =>
           useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
       },
       {
         Header: 'INVOICE',
         accessor: 'invoice',
+        disableSortBy: true,
         Cell: () =>
           useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
       },

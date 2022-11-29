@@ -29,6 +29,8 @@ const styles = {
     fontSize: '15px',
     letterSpacing: '0.5px',
   },
+  monthPickerControlActive: { backgroundColor: '#4B0DAF !important' },
+  yearPickerControlActive: { backgroundColor: '#4B0DAF !important' },
 };
 
 const BasicInfo = ({ proposalId }) => {
