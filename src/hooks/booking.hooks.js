@@ -70,6 +70,8 @@ export const useUpdateBookingStatus = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['bookings']);
+        queryClient.invalidateQueries(['booking-by-id']);
+
         showNotification({
           title: 'Booking updated successfully',
           color: 'green',

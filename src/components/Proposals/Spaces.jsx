@@ -234,7 +234,7 @@ const Spaces = ({
           useMemo(
             () => (
               <NumberInput
-                defaultValue={basicInformation?.price}
+                defaultValue={+(basicInformation?.price || 0)}
                 className="w-40"
                 hideControls
                 onChange={val => setProposedPrice(val, _id)}
@@ -321,7 +321,7 @@ const Spaces = ({
   useEffect(() => {
     const total = selectedRow
       .map(item => item?.original?.basicInformation?.price)
-      .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+      .reduce((previousValue, currentValue) => previousValue + +(currentValue || 0), 0);
     setTotalProposedPrice(total);
   }, [noOfSelectedPlaces]);
 

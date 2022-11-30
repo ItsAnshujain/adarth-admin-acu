@@ -151,7 +151,7 @@ const Sidebar = () => {
         path: '/campaigns',
         icon: CampaignIcon,
         activeIcon: CampaignActiveIcon,
-        acceptedRoles: [ROLES.ADMIN],
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR],
       },
       {
         label: 'Reports',
