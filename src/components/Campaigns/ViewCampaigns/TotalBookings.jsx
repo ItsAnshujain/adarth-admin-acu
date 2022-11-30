@@ -20,7 +20,7 @@ const TotalBookings = ({ campaignId, isLoading }) => {
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
     limit: 10,
-    sortBy: 'createdAt',
+    sortBy: 'campaign.name',
     sortOrder: 'desc',
     campaignId,
   });
@@ -361,7 +361,8 @@ const TotalBookings = ({ campaignId, isLoading }) => {
   }, [searchInput]);
 
   useEffect(() => {
-    searchParams.set('sortBy', 'createdAt');
+    searchParams.set('sortBy', 'campaign.name');
+    setSearchParams(searchParams);
   }, []);
 
   return (

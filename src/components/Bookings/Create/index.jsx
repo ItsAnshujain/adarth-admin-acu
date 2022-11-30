@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
+import dayjs from 'dayjs';
 import BasicInfo from './BasicInformation';
 import SelectSpaces from './SelectSpaces';
 import OrderInfo from './OrderInformation';
@@ -98,7 +99,7 @@ const initialValues = {
     gstNumber: '',
   },
   paymentReference: '',
-  paymentType: 'NEFT',
+  paymentType: 'neft',
   campaignName: '',
   description: '',
   spaces: [],
@@ -119,7 +120,25 @@ const MainArea = () => {
       return;
     }
 
-    await createBooking({ ...formData });
+    let minDate = null;
+    let maxDate = null;
+
+    formData.spaces.forEach(item => {
+      const start = item.startDate.setHours(0, 0, 0, 0);
+      const end = item.endDate.setHours(0, 0, 0, 0);
+
+      if (!minDate) minDate = start;
+      if (!maxDate) maxDate = end;
+
+      if (start < minDate) minDate = start;
+      if (end > maxDate) maxDate = end;
+    });
+
+    await createBooking({
+      ...formData,
+      startDate: dayjs(minDate).format('YYYY-MM-DD'),
+      endDate: dayjs(maxDate).format('YYYY-MM-DD'),
+    });
     setOpenSuccessModal(true);
   };
 

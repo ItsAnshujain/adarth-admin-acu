@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Image, NumberInput, Progress } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
+import { DatePicker } from '@mantine/dates';
+import dayjs from 'dayjs';
 import Filter from '../../Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -48,6 +50,9 @@ const SelectSpace = () => {
         obj.pricing = item.basicInformation.price;
         obj.landlord_name = '';
         obj.status = 'Available';
+        obj.startDate = item.startDate ? new Date(item.startDate) : new Date();
+        obj.endDate = item.endDate ? new Date(item.endDate) : dayjs().add(1, 'day').toDate();
+        obj.status = 'Available';
         finalData.push(obj);
       }
       setUpdatedInventoryData(finalData);
@@ -55,23 +60,27 @@ const SelectSpace = () => {
   }, [inventoryData]);
 
   const setSelectedFlatRows = selectedSpace => {
-    const totalPrice = selectedSpace.reduce((acc, item) => acc + item.values.pricing, 0);
+    const totalPrice = selectedSpace.reduce((acc, item) => acc + +(item.values.pricing || 0), 0);
     setOrderPrice(totalPrice);
     const formData = selectedSpace.map(item => ({
       id: item.original._id,
       price: item.original.pricing,
+      startDate: item.original.startDate,
+      endDate: item.original.endDate,
     }));
     setFieldValue('spaces', formData);
   };
 
   const updatePrice = (price, id) => {
-    const copySpaces = [...updatedInventoryData];
-    for (const item of copySpaces) {
-      if (item._id === id) {
-        item.pricing = price;
-      }
-    }
-    setUpdatedInventoryData([...copySpaces]);
+    setUpdatedInventoryData(prev =>
+      prev.map(item => (item._id === id ? { ...item, pricing: +price } : item)),
+    );
+  };
+
+  const updateDate = (key, val, id) => {
+    setUpdatedInventoryData(prev =>
+      prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+    );
   };
 
   const COLUMNS = useMemo(
@@ -90,7 +99,7 @@ const SelectSpace = () => {
 
           const {
             row: {
-              original: { status, photo, space_name, _id: id },
+              original: { status, photo, space_name, _id },
             },
           } = tableProps;
 
@@ -101,7 +110,7 @@ const SelectSpace = () => {
             () => (
               <div
                 aria-hidden
-                onClick={() => navigate(`/bookings/view-details/${id}`)}
+                onClick={() => navigate(`/bookings/view-details/${_id}`)}
                 className="grid grid-cols-2 gap-2 items-center cursor-pointer"
               >
                 <div className="flex flex-1 gap-2 items-center w-44">
@@ -148,7 +157,7 @@ const SelectSpace = () => {
         Cell: tableProps => {
           const {
             row: {
-              original: { _id: id },
+              original: { _id },
             },
           } = tableProps;
 
@@ -156,7 +165,7 @@ const SelectSpace = () => {
             () =>
               values?.spaces.length > 0 ? (
                 values?.spaces.map(selected => {
-                  if (selected.id === id) {
+                  if (selected.id === _id) {
                     return (
                       <Button className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-350 text-white rounded-md cursor-pointer">
                         Upload
@@ -223,24 +232,64 @@ const SelectSpace = () => {
       {
         Header: 'PRICING',
         accessor: 'pricing',
-        Cell: tableProps => {
-          const {
-            row: {
-              original: { pricing, id },
-            },
-          } = tableProps;
 
-          return useMemo(
+        Cell: ({
+          row: {
+            original: { pricing, _id },
+          },
+        }) =>
+          useMemo(
             () => (
               <NumberInput
                 hideControls
-                defaultValue={pricing}
-                onBlur={e => updatePrice(e.target.value, id)}
+                defaultValue={+(pricing || 0)}
+                onBlur={e => updatePrice(e.target.value, _id)}
               />
             ),
             [],
-          );
-        },
+          ),
+      },
+      {
+        Header: 'Start Date',
+        accessor: 'startDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { startDate, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <DatePicker
+                defaultValue={startDate}
+                placeholder="DD/MM/YYYY"
+                minDate={new Date()}
+                onChange={val => updateDate('startDate', val, _id)}
+              />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'End Date',
+        accessor: 'endDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { endDate, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <DatePicker
+                defaultValue={endDate}
+                placeholder="DD/MM/YYYY"
+                minDate={new Date()}
+                onChange={val => updateDate('endDate', val, _id)}
+              />
+            ),
+            [],
+          ),
       },
       {
         Header: 'ACTION',

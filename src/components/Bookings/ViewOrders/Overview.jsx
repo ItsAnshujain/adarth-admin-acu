@@ -1,16 +1,26 @@
-/* eslint-disable */
-import { useState } from 'react';
-import { Pagination } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { Button, Image, Pagination } from '@mantine/core';
+import { useToggle } from '@mantine/hooks';
+import GoogleMapReact from 'google-map-react';
+import { useSearchParams } from 'react-router-dom';
 import CustomBadge from '../../shared/Badge';
 import Places from './UI/Places';
-import dummy0 from '../../../assets/unsplash.png';
-import dummy1 from '../../../assets/dummy1.png';
-import dummy2 from '../../../assets/dummy2.png';
-import dummy3 from '../../../assets/dummy3.png';
-import map from '../../../assets/mapplaceholder.png';
 import toIndianCurrency from '../../../utils/currencyFormat';
+import MarkerIcon from '../../../assets/pin.svg';
+import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
+import NoData from '../../shared/NoData';
 
-const imageUrl = [dummy1, dummy2, dummy0, dummy2, dummy1, dummy0];
+import dummy1 from '../../../assets/dummy1.png';
+import dummy3 from '../../../assets/dummy3.png';
+
+const defaultProps = {
+  center: {
+    lat: 28.70406,
+    lng: 77.102493,
+  },
+  zoom: 10,
+};
+
 const dummyDataObj = {
   img: dummy1,
   status: 'Available',
@@ -27,25 +37,34 @@ const dummyDataObj = {
   media: dummy3,
 };
 
-const dummyData = new Array(3).fill(dummyDataObj);
+const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Overview = ({ bookingData }) => {
-  const [activePage, setPage] = useState(1);
-  const [readMore, setReadMore] = useState(false);
-  const [scrollImage, setScrollImage] = useState(imageUrl);
-  const [posterImage, setPosterImage] = useState(dummy3);
+  const [readMore, toggle] = useToggle();
+  const [posterImage, setPosterImage] = useState(null);
+  const [mapInstance, setMapInstance] = useState(null);
 
-  const exchangeImages = index => {
-    const temp = posterImage;
-    setPosterImage(scrollImage[index]);
-    setScrollImage(prev => {
-      const newImgs = [...prev];
-      newImgs[index] = temp;
-      return newImgs;
-    });
-  };
+  const [searchParams, setSearchParams] = useSearchParams({
+    page: 1,
+    limit: 6,
+  });
 
-  console.log(bookingData);
+  useEffect(() => {
+    if (mapInstance && bookingData?.spaces?.docs?.length) {
+      const bounds = new mapInstance.maps.LatLngBounds();
+
+      bookingData?.data?.docs?.forEach(item => {
+        bounds.extend({
+          lat: +(item.location?.latitude || 0),
+          lng: +(item.location?.longitude || 0),
+        });
+      });
+
+      mapInstance.map.fitBounds(bounds);
+      mapInstance.map.setCenter(bounds.getCenter());
+      mapInstance.map.setZoom(Math.min(10, mapInstance.map.getZoom()));
+    }
+  }, [bookingData?.spaces?.docs?.length, mapInstance]);
 
   return (
     <>
@@ -53,13 +72,24 @@ const Overview = ({ bookingData }) => {
         <div className="flex-1 pl-5 max-w-1/2">
           <div className="flex flex-col">
             <div>
-              <img className="w-full h-96 max-w-1/2" src={posterImage} alt="poster" />
+              <Image
+                withPlaceholder
+                className="w-full h-96 max-w-1/2"
+                src={posterImage}
+                alt="poster"
+                height="24rem"
+              />
             </div>
             <div className="flex overflow-scroll pt-4 gap-4 items-center">
-              {scrollImage.map((src, index) => (
-                <img
-                  onClick={() => exchangeImages(index)}
-                  className="h-24 w-28 cursor-pointer"
+              {(bookingData?.photos || Array.from({ length: 4 })).map(src => (
+                <Image
+                  key={src}
+                  aria-hidden
+                  withPlaceholder
+                  onClick={() => setPosterImage(src)}
+                  className="cursor-pointer"
+                  height="6rem"
+                  width="7rem"
                   src={src}
                   alt="poster"
                 />
@@ -68,32 +98,36 @@ const Overview = ({ bookingData }) => {
           </div>
         </div>
         <div className="flex-1 pr-7 max-w-1/2 gap-2">
-          <p className="font-bold text-2xl mb-2">Bangalore Station Bill Board</p>
+          <p className="font-bold text-2xl mb-2">
+            {bookingData?.campaign?.name || <NoData type="na" />}
+          </p>
           <div>
             <p className="text-slate-400 font-light text-[14px]">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis laudantium
-              officiis sunt temporibus est error non odit!{' '}
-              {!readMore && (
-                <button onClick={() => setReadMore(true)} type="button" className="text-purple-450">
-                  Read more
-                </button>
+              {bookingData?.campaign?.description?.split('\n')?.length > 4 ? (
+                readMore ? (
+                  `${bookingData?.campaign?.description?.split('\n')?.slice(0, 3).join('\n')}...`
+                ) : (
+                  bookingData?.campaign?.description
+                )
+              ) : (
+                <NoData type="na" />
               )}
-              {readMore && (
-                <span>
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum molestias
-                  perferendis aspernatur debitis pariatur dolores ipsa. Magni iusto, iure sapiente
-                  numquam consequuntur est provident nihil id voluptas placeat reiciendis nostrum!
-                  Pariatur temporibus et, suscipit unde impedit deleniti accusamus, possimus eos,
-                  beatae id recusandae.
-                </span>
-              )}
+              {bookingData?.campaign?.description?.split('\n')?.length > 4 ? (
+                <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
+                  {readMore ? 'Read more' : 'Read less'}
+                </Button>
+              ) : null}
             </p>
           </div>
           <div className="flex mt-4 items-center gap-2 ">
             <span>{toIndianCurrency(bookingData.totalPrice || 0)}</span>
             <CustomBadge
               size="lg"
-              text="497947947 Total Impressions"
+              text={
+                <>
+                  <NoData type="unknown" /> Total Impressions{' '}
+                </>
+              } // "497947947 "
               className="py-4 font-extralight bg-[#4B0DAF1A] capitalize "
             />
           </div>
@@ -103,46 +137,71 @@ const Overview = ({ bookingData }) => {
             <div className="p-4 py-6 grid grid-cols-2 grid-rows-2 border rounded-md gap-y-4 mt-2">
               <div>
                 <p className="text-slate-400 text-sm">Total Media</p>
-                <p>15 hoarding, 3 digital screen</p>
+                <p>
+                  <NoData type="unknown" /> hoarding, <NoData type="unknown" />
+                  digital screen
+                </p>
               </div>
               <div>
                 <p className="text-slate-400 text-sm">Impressions</p>
-                <p>38762874687</p>
+                <p>
+                  <NoData type="unknown" />
+                </p>
               </div>
               <div>
                 <p className="text-slate-400 text-sm">Number of Locations</p>
-                <p>867</p>
+                <p>
+                  <NoData type="unknown" />
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="pl-5 pr-7 flex flex-col mt-16 mb-8">
+      <div className="pl-5 pr-7 flex flex-col mt-16 mb-8 pb-10 relative">
         <p className="text-lg font-bold">Location Details</p>
         <p className="text-sm font-light text-slate-400">
           All the places been covered by this campaign
         </p>
-        <div className="mt-1 mb-8">
-          <img src={map} alt="map" />
+        <div className="mt-1 mb-8 h-[30vh]">
+          <GoogleMapReact
+            bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY, libraries: 'places' }}
+            defaultCenter={defaultProps.center}
+            defaultZoom={defaultProps.zoom}
+            yesIWantToUseGoogleMapApiInternals
+            onGoogleApiLoaded={({ map, maps }) => setMapInstance({ map, maps })}
+          >
+            {bookingData?.spaces?.docs?.map(item => (
+              <Marker key={item._id} lat={item.location?.latitude} lng={item.location?.longitude} />
+            ))}
+          </GoogleMapReact>
         </div>
-
         <p className="text-lg font-bold">Places in the campaign</p>
         <p className="text-sm font-light text-slate-400 mb-2">
           All the places been cover by this campaign
         </p>
         <div>
-          {dummyData.map(data => (
-            <Places data={data} />
-          ))}
+          {!bookingData?.spaces?.docs?.length ? (
+            Array.from({ length: 3 }).map(() => <Places data={dummyDataObj} />)
+          ) : (
+            <div className="w-full min-h-[7rem] flex justify-center items-center">
+              <p className="text-xl">No spaces found</p>
+            </div>
+          )}
         </div>
+        {bookingData?.spaces?.totalDocs > searchParams.get('limit') ? (
+          <Pagination
+            className="absolute bottom-0 right-10 gap-0"
+            page={searchParams.get('page')}
+            onChange={val => {
+              searchParams.set('page', val);
+              setSearchParams(searchParams);
+            }}
+            total={1}
+            color="dark"
+          />
+        ) : null}
       </div>
-      <Pagination
-        className="absolute bottom-0 right-10 gap-0"
-        page={activePage}
-        onChange={setPage}
-        total={1}
-        color="dark"
-      />
     </>
   );
 };
