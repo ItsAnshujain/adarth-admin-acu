@@ -11,6 +11,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import { Image } from '@mantine/core';
+import { useQueryClient } from '@tanstack/react-query';
 import AreaHeader from '../components/Home/Header';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
@@ -20,6 +21,7 @@ import CompletedCampaignIcon from '../assets/completed-campaign.svg';
 import VacantIcon from '../assets/vacant.svg';
 import OccupiedIcon from '../assets/occupied.svg';
 import TotalCampaignIcon from '../assets/total-campaign.svg';
+import useUserStore from '../store/user.store';
 
 ChartJS.register(
   CategoryScale,
@@ -81,92 +83,103 @@ const config = {
   options: { responsive: true },
 };
 
-const HomePage = () => (
-  <div className="absolute top-0">
-    <Header title="Home" />
-    <div className="grid grid-cols-12">
-      <Sidebar />
-      <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-        <AreaHeader text="Hello, Adarth" />
-        <div className="pr-7 pl-5 mt-5 mb-10">
-          <div className="grid grid-rows-2 mb-8 gap-y-4">
-            <div className="grid grid-cols-3 gap-8">
-              <div className="border rounded p-8 flex-1">
-                <Image src={TotalCampaignIcon} alt="folder" height={24} width={24} fit="contain" />
-                <p className="my-2 text-sm font-light text-slate-400">Total Campaign(Overall)</p>
-                <p className="font-bold">386387</p>
+const HomePage = () => {
+  const queryClient = useQueryClient();
+  const userId = useUserStore(state => state.id);
+  const user = queryClient.getQueryData(['users-by-id', userId]);
+  return (
+    <div className="absolute top-0">
+      <Header title="Home" />
+      <div className="grid grid-cols-12">
+        <Sidebar />
+        <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+          <AreaHeader text={`Hello, ${user?.name || 'User'}`} />
+          <div className="pr-7 pl-5 mt-5 mb-10">
+            <div className="grid grid-rows-2 mb-8 gap-y-4">
+              <div className="grid grid-cols-3 gap-8">
+                <div className="border rounded p-8 flex-1">
+                  <Image
+                    src={TotalCampaignIcon}
+                    alt="folder"
+                    height={24}
+                    width={24}
+                    fit="contain"
+                  />
+                  <p className="my-2 text-sm font-light text-slate-400">Total Campaign(Overall)</p>
+                  <p className="font-bold">386387</p>
+                </div>
+                <div className="border rounded p-8  flex-1">
+                  <Image
+                    src={OngoingCampaignIcon}
+                    alt="folder"
+                    height={24}
+                    width={24}
+                    fit="contain"
+                  />
+                  <p className="my-2 text-sm font-light text-slate-400">Total Ongoing Campaign</p>
+                  <p className="font-bold">386387</p>
+                </div>
+                <div className="border rounded p-8  flex-1">
+                  <Image
+                    src={UpcomingCampaignIcon}
+                    alt="folder"
+                    height={24}
+                    width={24}
+                    fit="contain"
+                  />
+                  <p className="my-2 text-sm font-light text-slate-400">Upcoming Campaign</p>
+                  <p className="font-bold">386387</p>
+                </div>
               </div>
-              <div className="border rounded p-8  flex-1">
-                <Image
-                  src={OngoingCampaignIcon}
-                  alt="folder"
-                  height={24}
-                  width={24}
-                  fit="contain"
-                />
-                <p className="my-2 text-sm font-light text-slate-400">Total Ongoing Campaign</p>
-                <p className="font-bold">386387</p>
-              </div>
-              <div className="border rounded p-8  flex-1">
-                <Image
-                  src={UpcomingCampaignIcon}
-                  alt="folder"
-                  height={24}
-                  width={24}
-                  fit="contain"
-                />
-                <p className="my-2 text-sm font-light text-slate-400">Upcoming Campaign</p>
-                <p className="font-bold">386387</p>
+              <div className="grid grid-cols-3 gap-8">
+                <div className="border rounded p-8 flex-1">
+                  <Image
+                    src={CompletedCampaignIcon}
+                    alt="folder"
+                    height={24}
+                    width={24}
+                    fit="contain"
+                  />
+                  <p className="my-2 text-sm font-light text-slate-400">Completed Campaign</p>
+                  <p className="font-bold">386387</p>
+                </div>
+                <div className="border rounded p-8 flex-1">
+                  <Image src={VacantIcon} alt="folder" height={24} width={24} fit="contain" />
+                  <p className="my-2 text-sm font-light text-slate-400">Vacant</p>
+                  <p className="font-bold">386387</p>
+                </div>
+                <div className="border rounded p-8  flex-1">
+                  <Image src={OccupiedIcon} alt="folder" height={24} width={24} fit="contain" />
+                  <p className="my-2 text-xs font-light text-slate-400">Occupied</p>
+                  <p className="font-bold">386387</p>
+                </div>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-8">
-              <div className="border rounded p-8 flex-1">
-                <Image
-                  src={CompletedCampaignIcon}
-                  alt="folder"
-                  height={24}
-                  width={24}
-                  fit="contain"
-                />
-                <p className="my-2 text-sm font-light text-slate-400">Completed Campaign</p>
-                <p className="font-bold">386387</p>
+            <div className="flex items-center gap-4 pr-7">
+              <div className="w-[68%]">
+                <p className="font-bold mb-5">Revenue Graph</p>
+                <Line height="80" data={lineData} options={options} />
               </div>
-              <div className="border rounded p-8 flex-1">
-                <Image src={VacantIcon} alt="folder" height={24} width={24} fit="contain" />
-                <p className="my-2 text-sm font-light text-slate-400">Vacant</p>
-                <p className="font-bold">386387</p>
-              </div>
-              <div className="border rounded p-8  flex-1">
-                <Image src={OccupiedIcon} alt="folder" height={24} width={24} fit="contain" />
-                <p className="my-2 text-xs font-light text-slate-400">Occupied</p>
-                <p className="font-bold">386387</p>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 pr-7">
-            <div className="w-[68%]">
-              <p className="font-bold mb-5">Revenue Graph</p>
-              <Line height="80" data={lineData} options={options} />
-            </div>
-            <div className="flex gap-4 p-4 border rounded-md items-center justify-center flex-1 flex-wrap-reverse">
-              <div className="w-32">
-                <Doughnut options={config.options} data={config.data} />
-              </div>
-              <div>
-                <p className="font-medium text-center">Health Status of Inventory</p>
-                <div className="flex gap-8 mt-6 flex-wrap">
-                  <div className="flex gap-2 items-center">
-                    <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
-                    <div>
-                      <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
-                      <p className="font-bold text-lg">1233</p>
+              <div className="flex gap-4 p-4 border rounded-md items-center justify-center flex-1 flex-wrap-reverse">
+                <div className="w-32">
+                  <Doughnut options={config.options} data={config.data} />
+                </div>
+                <div>
+                  <p className="font-medium text-center">Health Status of Inventory</p>
+                  <div className="flex gap-8 mt-6 flex-wrap">
+                    <div className="flex gap-2 items-center">
+                      <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+                      <div>
+                        <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
+                        <p className="font-bold text-lg">1233</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
-                    <div>
-                      <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
-                      <p className="font-bold text-lg">1233</p>
+                    <div className="flex gap-2 items-center">
+                      <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+                      <div>
+                        <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
+                        <p className="font-bold text-lg">1233</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -176,7 +189,7 @@ const HomePage = () => (
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default HomePage;
