@@ -1,7 +1,7 @@
 import { useFormContext } from '../../../context/formContext';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
-import AutoCompleteLocationInput from '../../AutoCompleteLocationInput';
+// import AutoCompleteLocationInput from '../../AutoCompleteLocationInput';
 import NativeSelect from '../../shared/NativeSelect';
 import NumberInput from '../../shared/NumberInput';
 import TextInput from '../../shared/TextInput';
@@ -50,14 +50,23 @@ const Location = () => {
       </p>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">
         <div>
-          <p style={styles.label}>Address</p>
-          <AutoCompleteLocationInput
+          <TextInput
+            label="Address"
+            name="location.address"
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+            className="mb-7"
+          />
+          {/* TODO: google maps script load issue */}
+          {/* <p style={styles.label}>Address</p> */}
+          {/* <AutoCompleteLocationInput
             addressKeyName="location.address"
             latitudeKeyName="location.latitude"
             longitudeKeyName="location.longitude"
             cityKeyName="location.city"
             stateKeyName="location.state"
-          />
+          /> */}
           <TextInput
             label="State"
             name="location.state"

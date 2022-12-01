@@ -111,5 +111,5 @@ export const getLatituteLongitude = async address => {
  */
 export const handleStopPropagation = (e, cb) => {
   e.stopPropagation();
-  cb();
+  if (cb) cb();
 };

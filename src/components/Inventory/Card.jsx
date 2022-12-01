@@ -45,7 +45,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
     });
 
   return (
-    <Box className="drop-shadow-md w-[273px] cursor-pointer" onClick={handleInventoryDetails}>
+    <Box className="drop-shadow-md w-[273px] cursor-pointer mb-4" onClick={handleInventoryDetails}>
       <div>
         {data?.basicInformation?.spacePhotos ? (
           <Image
