@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTable, useSortBy, useRowSelect, useFilters } from 'react-table';
 import { Pagination } from '@mantine/core';
+import classNames from 'classnames';
 import IndeterminateCheckbox from './Checkbox';
 import Ascending from '../../assets/Icons/Ascending';
 import Descending from '../../assets/Icons/Descending';
@@ -17,6 +18,8 @@ const Table = ({
   selectedRowData = [],
   handleSorting = () => {},
   isLoading = false,
+  showPagination = true,
+  className = '',
 }) => {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
 
@@ -74,7 +77,7 @@ const Table = ({
 
   return (
     <>
-      <div className="mr-7 max-w-screen overflow-x-auto  min-h-[450px]">
+      <div className={classNames('mr-7 max-w-screen overflow-x-auto min-h-[450px]', className)}>
         <table className="w-full overflow-y-visible relative z-10" {...getTableProps()}>
           <thead className="bg-gray-100">
             {headerGroups.map(headerGroup => (
@@ -127,19 +130,21 @@ const Table = ({
           </tbody>
         </table>
       </div>
-      <div className="flex justify-end my-4 pr-7">
-        <Pagination
-          styles={theme => ({
-            item: {
-              color: theme.colors.gray[5],
-              fontWeight: 700,
-            },
-          })}
-          page={activePage}
-          onChange={setActivePage}
-          total={totalPages}
-        />
-      </div>
+      {showPagination ? (
+        <div className="flex justify-end my-4 pr-7">
+          <Pagination
+            styles={theme => ({
+              item: {
+                color: theme.colors.gray[5],
+                fontWeight: 700,
+              },
+            })}
+            page={activePage}
+            onChange={setActivePage}
+            total={totalPages}
+          />
+        </div>
+      ) : null}
     </>
   );
 };

@@ -19,7 +19,7 @@ const releaseOrderList = [
   },
   {
     label: 'Upload',
-    path: '"/finance/create-order/release/upload',
+    path: '/finance/create-order/release/upload',
   },
 ];
 const invoiceList = [
