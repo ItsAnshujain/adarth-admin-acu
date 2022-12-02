@@ -163,7 +163,9 @@ const App = () => {
         <Route
           path="/campaigns"
           element={
-            <ProtectedRoute accepted={ROLES.ADMIN}>
+            <ProtectedRoute
+              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
+            >
               <Suspense fallback={<HeaderSidebarLoader />}>
                 <Campaigns />
               </Suspense>

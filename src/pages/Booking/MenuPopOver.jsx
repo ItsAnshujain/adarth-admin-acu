@@ -6,6 +6,8 @@ import modalConfig from '../../utils/modalConfig';
 import DeleteConfirmContent from '../../components/DeleteConfirmContent';
 import MenuIcon from '../../components/Menu';
 import { useDeleteBooking } from '../../hooks/booking.hooks';
+import RoleBased from '../../components/RoleBased';
+import { ROLES } from '../../utils';
 
 const MenuPopover = ({ itemId }) => {
   const modals = useModals();
@@ -52,14 +54,18 @@ const MenuPopover = ({ itemId }) => {
         >
           <span className="ml-1">View</span>
         </Menu.Item>
-        <Menu.Item
-          icon={<Trash className="h-4" />}
-          onClick={() => toggleDeleteModal()}
-          disabled={isLoading}
-          className="cursor-pointer flex items-center gap-1"
+        <RoleBased
+          acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
         >
-          <span className="ml-1">Delete</span>
-        </Menu.Item>
+          <Menu.Item
+            icon={<Trash className="h-4" />}
+            onClick={() => toggleDeleteModal()}
+            disabled={isLoading}
+            className="cursor-pointer flex items-center gap-1"
+          >
+            <span className="ml-1">Delete</span>
+          </Menu.Item>
+        </RoleBased>
       </Menu.Dropdown>
     </Menu>
   );

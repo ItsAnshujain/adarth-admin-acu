@@ -12,10 +12,11 @@ import MenuIcon from '../../components/Menu';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import { serialize } from '../../utils/index';
+import { ROLES, serialize } from '../../utils/index';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import useLayoutView from '../../store/layout.store';
+import RoleBased from '../../components/RoleBased';
 
 const initialState = {
   page: 1,
@@ -187,39 +188,41 @@ const Home = () => {
                       <span className="ml-1">View Details</span>
                     </div>
                   </Menu.Item>
-                  <Menu.Item>
-                    <div
-                      aria-hidden
-                      onClick={() => navigate(`edit-details/${_id}`)}
-                      className="cursor-pointer flex items-center gap-1"
-                    >
-                      <Edit2 className="h-4" />
-                      <span className="ml-1">Edit</span>
-                    </div>
-                  </Menu.Item>
-                  <Menu.Item aria-hidden onClick={() => deleteCampaign(_id)}>
-                    <div className="cursor-pointer flex items-center gap-1">
-                      <Trash className="h-4" />
-                      <span className="ml-1">Delete</span>
-                    </div>
-                  </Menu.Item>
-                  <Menu.Item>
-                    <div
-                      className={classNames(
-                        'bg-white cursor-pointer flex items-center text',
-                        isFeatured ? 'text-purple-450' : '',
-                      )}
-                      aria-hidden
-                      onClick={() =>
-                        updateCampaign(_id, {
-                          isFeatured: !isFeatured,
-                        })
-                      }
-                    >
-                      <Bookmark className="h-4 mr-2" />
-                      <span>Set as Featured</span>
-                    </div>
-                  </Menu.Item>
+                  <RoleBased acceptedRoles={[ROLES.ADMIN]}>
+                    <Menu.Item>
+                      <div
+                        aria-hidden
+                        onClick={() => navigate(`edit-details/${_id}`)}
+                        className="cursor-pointer flex items-center gap-1"
+                      >
+                        <Edit2 className="h-4" />
+                        <span className="ml-1">Edit</span>
+                      </div>
+                    </Menu.Item>
+                    <Menu.Item aria-hidden onClick={() => deleteCampaign(_id)}>
+                      <div className="cursor-pointer flex items-center gap-1">
+                        <Trash className="h-4" />
+                        <span className="ml-1">Delete</span>
+                      </div>
+                    </Menu.Item>
+                    <Menu.Item>
+                      <div
+                        className={classNames(
+                          'bg-white cursor-pointer flex items-center text',
+                          isFeatured ? 'text-purple-450' : '',
+                        )}
+                        aria-hidden
+                        onClick={() =>
+                          updateCampaign(_id, {
+                            isFeatured: !isFeatured,
+                          })
+                        }
+                      >
+                        <Bookmark className="h-4 mr-2" />
+                        <span>Set as Featured</span>
+                      </div>
+                    </Menu.Item>
+                  </RoleBased>
                 </Menu.Dropdown>
               </Menu>
             ),

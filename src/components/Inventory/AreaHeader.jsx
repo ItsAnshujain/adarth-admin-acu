@@ -143,9 +143,7 @@ const AreaHeader = ({
         </div>
         {!pathname.includes('reports') && (
           <div className="relative">
-            <RoleBased
-              acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
-            >
+            <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]}>
               <Button
                 onClick={toggleAddDetails}
                 className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"
