@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Button, Image } from '@mantine/core';
+import { Image } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
 import Table from '../../Table/Table';
 import data from './Data.json';
@@ -7,6 +7,7 @@ import TextareaInput from '../../shared/TextareaInput';
 import TextInput from '../../shared/TextInput';
 import image from '../../../assets/image.png';
 import toIndianCurrency from '../../../utils/currencyFormat';
+import { useFormContext } from '../../../context/formContext';
 
 const styles = {
   label: {
@@ -22,6 +23,8 @@ const styles = {
 };
 
 const ReleaseOrder = () => {
+  const { errors, getInputProps } = useFormContext();
+
   const onHandleDrop = async params => {
     const formData = new FormData();
     formData.append('files', params?.[0]);
@@ -77,7 +80,12 @@ const ReleaseOrder = () => {
     <div>
       <div className="pl-5 pr-7 pt-4 pb-8 border-b">
         <div className="grid grid-cols-2 gap-4">
-          <TextInput styles={styles} label="Release Order No" placeholder="Write..." />
+          <TextInput
+            styles={styles}
+            label="Release Order No"
+            name="releaseOrderNumber"
+            placeholder="Write..."
+          />
         </div>
       </div>
       <div className="flex justify-between pl-5 pr-7 items-center">
@@ -85,26 +93,54 @@ const ReleaseOrder = () => {
       </div>
       <div className="pl-5 pr-7 pt-4 pb-8 border-b">
         <div className="grid grid-cols-2 gap-4 pb-4">
-          <TextInput styles={styles} label="Company Name" placeholder="Write..." />
-          <TextInput styles={styles} label="Quotation No" placeholder="Write..." />
+          <TextInput
+            styles={styles}
+            label="Company Name"
+            name="companyName"
+            placeholder="Write..."
+          />
+          <TextInput
+            styles={styles}
+            label="Quotation No"
+            name="quotationNumber"
+            placeholder="Write..."
+          />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
-          <TextInput styles={styles} label="Contact Person" placeholder="Write..." />
-          <TextInput styles={styles} label="Phone" placeholder="Write..." />
+          <TextInput
+            styles={styles}
+            label="Contact Person"
+            name="contactPerson"
+            placeholder="Write..."
+          />
+          <TextInput styles={styles} label="Phone" name="phone" placeholder="Write..." />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
-          <TextInput styles={styles} label="Mobile" placeholder="Write..." />
-          <TextInput styles={styles} label="Email" placeholder="Write..." />
+          <TextInput styles={styles} label="Mobile" name="mobile" placeholder="Write..." />
+          <TextInput styles={styles} label="Email" name="email" placeholder="Write..." />
         </div>
         <div className="grid grid-cols-4 gap-4">
           <TextInput
             className="col-span-2"
             styles={styles}
             label="Street Address"
+            name="streetAddress"
             placeholder="Write..."
           />
-          <TextInput className="col-span-1" styles={styles} label="City" placeholder="Write..." />
-          <TextInput className="col-span-1" styles={styles} label="Pin" placeholder="Write..." />
+          <TextInput
+            className="col-span-1"
+            styles={styles}
+            label="City"
+            name="city"
+            placeholder="Write..."
+          />
+          <TextInput
+            className="col-span-1"
+            styles={styles}
+            label="Pin"
+            name="pin"
+            placeholder="Write..."
+          />
         </div>
       </div>
       <div className="flex justify-between pl-5 pr-7 items-center">
@@ -112,21 +148,31 @@ const ReleaseOrder = () => {
       </div>
       <div className="pl-5 pr-7 pt-4">
         <div className="grid grid-cols-2 gap-4 ">
-          <TextInput styles={styles} label="Supplier Name" placeholder="Write..." />
-          <TextInput styles={styles} label="Designation" placeholder="Write..." />
+          <TextInput
+            styles={styles}
+            label="Supplier Name"
+            name="supplierName"
+            placeholder="Write..."
+          />
+          <TextInput
+            styles={styles}
+            label="Designation"
+            name="designation"
+            placeholder="Write..."
+          />
         </div>
       </div>
       <div className="border-b">
         <p className="font-semibold text-lg pt-4 pl-5">Signature and Stamp</p>
-        <div className="h-[180px] w-[350px] mt-4 ml-4 mb-4">
+        <div className="h-[180px] w-[350px] mt-4 ml-4 mb-6">
           <Dropzone
             onDrop={onHandleDrop}
             accept={['image/png', 'image/jpeg']}
             className="h-full w-full flex justify-center items-center bg-slate-100"
             //   loading={isLoading}
-            name="photos"
+            name="signatureStampPhoto"
             multiple={false}
-            //   {...getInputProps('photos')}
+            {...getInputProps('signatureStampPhoto')}
           >
             <div className="flex items-center justify-center">
               <Image src={image} alt="placeholder" height={50} width={50} />
@@ -136,6 +182,9 @@ const ReleaseOrder = () => {
               <span className="text-purple-450 border-none">browse</span>
             </p>
           </Dropzone>
+          {errors?.signatureStampPhoto ? (
+            <p className="mt-1 text-xs text-red-450">{errors?.signatureStampPhoto}</p>
+          ) : null}
         </div>
       </div>
       <div className="pl-5 pr-7 py-4 mb-10 ">
@@ -145,25 +194,25 @@ const ReleaseOrder = () => {
         </div>
       </div>
       <div className="pl-5 pr-7 flex flex-col gap-4 pb-6 border-b">
-        <TextInput styles={styles} label="Amount Chargeable (in words)" placeholder="Write..." />
+        <TextInput
+          styles={styles}
+          label="Amount Chargeable (in words)"
+          name="amountChargeable"
+          placeholder="Write..."
+        />
       </div>
 
       <div className="pl-5 pr-7 pt-4 border-b">
         <div className="grid grid-cols-1 gap-4">
           <TextareaInput
             label="Terms &amp; Conditions"
+            name="termsAndConditions"
             styles={styles}
             maxLength={200}
             placeholder="Maximum 200 characters"
             className="mb-7"
           />
         </div>
-      </div>
-      <div className="flex justify-end pr-7 gap-3 pt-6">
-        <Button variant="outline" className="border rounded-md p-2 text-black">
-          Cancel
-        </Button>
-        <Button className="border rounded-md p-2 bg-purple-450 text-white">Create</Button>
       </div>
     </div>
   );
