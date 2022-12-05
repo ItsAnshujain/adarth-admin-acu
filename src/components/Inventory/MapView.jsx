@@ -49,7 +49,10 @@ const MapView = ({ lists = [] }) => {
           bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY }}
           yesIWantToUseGoogleMapApiInternals
           defaultZoom={defaultProps.zoom}
-          center={{ lat: lists[0]?.location?.latitude, lng: lists[0]?.location?.longitude }}
+          center={{
+            lat: parseInt(lists[0]?.location?.latitude || 0, 10),
+            lng: parseInt(lists[0]?.location?.longitude || 0, 10),
+          }}
         >
           {lists.length ? getAllLocations : null}
         </GoogleMapReact>

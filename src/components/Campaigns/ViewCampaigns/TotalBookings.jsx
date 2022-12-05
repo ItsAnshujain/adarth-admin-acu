@@ -12,8 +12,9 @@ import Table from '../../Table/Table';
 import { useBookings, useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import MenuPopover from '../../../pages/Booking/MenuPopOver';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
-import { serialize } from '../../../utils';
+import { ROLES, serialize } from '../../../utils';
 import toIndianCurrency from '../../../utils/currencyFormat';
+import RoleBased from '../../RoleBased';
 
 const TotalBookings = ({ campaignId, isLoading }) => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
@@ -380,14 +381,16 @@ const TotalBookings = ({ campaignId, isLoading }) => {
               </div>
             )}
           </div>
-          <div>
-            <Button
-              onClick={() => {}}
-              className="bg-purple-450 flex items-center align-center py-2 text-white rounded-md px-4"
-            >
-              <Plus size={16} className="mt-[1px] mr-1" /> Add Space
-            </Button>
-          </div>
+          <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]}>
+            <div>
+              <Button
+                onClick={() => {}}
+                className="bg-purple-450 flex items-center align-center py-2 text-white rounded-md px-4"
+              >
+                <Plus size={16} className="mt-[1px] mr-1" /> Add Space
+              </Button>
+            </div>
+          </RoleBased>
         </div>
       </div>
       <div>

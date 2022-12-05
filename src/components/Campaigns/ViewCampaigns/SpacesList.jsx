@@ -8,6 +8,8 @@ import Search from '../../Search';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
 import Table from '../../Table/Table';
+import RoleBased from '../../RoleBased';
+import { ROLES } from '../../../utils';
 
 const SpacesList = ({ data = {}, columns }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -57,14 +59,16 @@ const SpacesList = ({ data = {}, columns }) => {
               </div>
             )}
           </div>
-          <div>
-            <Button
-              onClick={() => navigate('/inventory/create-space/single')}
-              className="bg-purple-450 flex items-center align-center py-2 text-white rounded-md px-4 text-sm"
-            >
-              <Plus size={16} className="mt-[1px] mr-1" /> Add Space
-            </Button>
-          </div>
+          <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]}>
+            <div>
+              <Button
+                onClick={() => navigate('/inventory/create-space/single')}
+                className="bg-purple-450 flex items-center align-center py-2 text-white rounded-md px-4 text-sm"
+              >
+                <Plus size={16} className="mt-[1px] mr-1" /> Add Space
+              </Button>
+            </div>
+          </RoleBased>
         </div>
       </div>
       <div>

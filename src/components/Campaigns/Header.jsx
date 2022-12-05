@@ -9,6 +9,8 @@ import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import CampaignFilter from './Filter';
 import useLayoutView from '../../store/layout.store';
+import RoleBased from '../RoleBased';
+import { ROLES } from '../../utils';
 
 const AreaHeader = ({ text }) => {
   const navigate = useNavigate();
@@ -83,14 +85,16 @@ const AreaHeader = ({ text }) => {
           </Button>
           {showFilter && <CampaignFilter isOpened={showFilter} onClose={toggleFilter} />}
         </div>
-        <div className="relative">
-          <Button
-            onClick={handleCreateCampaign}
-            className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
-          >
-            <Plus size={16} className="mt-[1px] mr-1" /> Add Campaign
-          </Button>
-        </div>
+        <RoleBased acceptedRoles={[ROLES.ADMIN]}>
+          <div className="relative">
+            <Button
+              onClick={handleCreateCampaign}
+              className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
+            >
+              <Plus size={16} className="mt-[1px] mr-1" /> Add Campaign
+            </Button>
+          </div>
+        </RoleBased>
       </div>
     </div>
   );

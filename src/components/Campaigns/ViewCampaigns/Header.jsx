@@ -2,6 +2,8 @@ import { Button } from '@mantine/core';
 import classNames from 'classnames';
 import { ArrowLeft } from 'react-feather';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ROLES } from '../../../utils';
+import RoleBased from '../../RoleBased';
 
 const Header = ({ tabs, setTabs }) => {
   const { id } = useParams();
@@ -52,12 +54,16 @@ const Header = ({ tabs, setTabs }) => {
           Total Bookings
         </Button>
       </div>
-
-      <div className="pr-7">
-        <Button onClick={() => navigate(`/campaigns/edit-details/${id}`)} className="bg-purple-450">
-          Edit Campaign
-        </Button>
-      </div>
+      <RoleBased acceptedRoles={[ROLES.ADMIN]}>
+        <div className="pr-7">
+          <Button
+            onClick={() => navigate(`/campaigns/edit-details/${id}`)}
+            className="bg-purple-450"
+          >
+            Edit Campaign
+          </Button>
+        </div>
+      </RoleBased>
     </div>
   );
 };
