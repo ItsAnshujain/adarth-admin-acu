@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Image, NumberInput, Progress } from '@mantine/core';
-import { ChevronDown } from 'react-feather';
+import { ChevronDown, Edit2, Eye, Trash } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
+import { useQueryClient } from '@tanstack/react-query';
 import Filter from '../../Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
-import { useFetchInventory } from '../../../hooks/inventory.hooks';
+import { useDeleteInventoryById, useFetchInventory } from '../../../hooks/inventory.hooks';
 import { serialize } from '../../../utils/index';
 import Badge from '../../shared/Badge';
 import MenuIcon from '../../Menu';
@@ -17,7 +18,8 @@ import { useFormContext } from '../../../context/formContext';
 
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
-
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [showFilter, setShowFilter] = useState(false);
   const [orderPrice, setOrderPrice] = useState(0);
@@ -28,9 +30,23 @@ const SelectSpace = () => {
     sortOrder: 'asc',
     sortBy: 'basicInformation.spaceName',
   });
-  const { data: inventoryData } = useFetchInventory(serialize(inventoryQuery));
+  const { data: inventoryData, isLoading } = useFetchInventory(serialize(inventoryQuery));
+  const { mutate } = useDeleteInventoryById();
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
+
+  const onDelete = id => {
+    mutate(
+      {
+        inventoryId: id,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries(['inventory']);
+        },
+      },
+    );
+  };
 
   useEffect(() => {
     if (inventoryData) {
@@ -95,8 +111,6 @@ const SelectSpace = () => {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'space_name_and_photo',
         Cell: tableProps => {
-          const navigate = useNavigate();
-
           const {
             row: {
               original: { status, photo, space_name, _id },
@@ -250,7 +264,7 @@ const SelectSpace = () => {
           ),
       },
       {
-        Header: 'Start Date',
+        Header: 'START DATE',
         accessor: 'startDate',
         disableSortBy: true,
         Cell: ({
@@ -271,7 +285,7 @@ const SelectSpace = () => {
           ),
       },
       {
-        Header: 'End Date',
+        Header: 'END DATE',
         accessor: 'endDate',
         disableSortBy: true,
         Cell: ({
@@ -299,7 +313,6 @@ const SelectSpace = () => {
           const [showMenu, setShowMenu] = useState(false);
           const {
             row: {
-              // eslint-disable-next-line no-unused-vars
               original: { id },
             },
           } = tableProps;
@@ -308,15 +321,36 @@ const SelectSpace = () => {
               <div aria-hidden onClick={() => setShowMenu(!showMenu)}>
                 <div className="relative">
                   <MenuIcon />
-                  {/* {showMenu && (
-                <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
-                  <div onClick={() => navigate(`/inventory/view-details/${id}`)} className="bg-white">
-                    View Details
-                  </div>
-                  <div className="bg-white">Edit</div>
-                  <div className="bg-white">Delete</div>
-                </div>
-              )} */}
+                  {showMenu && (
+                    <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
+                      <div
+                        onClick={() => navigate(`/inventory/view-details/${id}`)}
+                        className="bg-white cursor-pointer flex items-center"
+                        aria-hidden
+                      >
+                        <Eye className="h-4 mr-2" />
+                        <span>View Details</span>
+                      </div>
+                      <div
+                        onClick={() => navigate(`/inventory/edit-details/${id}`)}
+                        className="bg-white cursor-pointer flex items-center"
+                        aria-hidden
+                      >
+                        <Edit2 className="h-4 mr-2" />
+                        <span>Edit</span>
+                      </div>
+                      <div
+                        className="bg-white cursor-pointer flex items-center"
+                        onClick={() => {
+                          if (!isLoading) onDelete(id);
+                        }}
+                        aria-hidden
+                      >
+                        <Trash className="h-4 mr-2" />
+                        <span>Delete</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ),

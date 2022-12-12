@@ -13,3 +13,12 @@ export const createBooking = data => http.post('/booking', data);
 export const bookingStats = filter => http.get(`/booking/stats?${filter}`);
 
 export const deleteBookings = id => http.delete(`/booking/${id}`);
+
+export const generateInvoiceReceipt = (id, data) =>
+  http.post(`/booking/${id}/generate-receipt/invoice`, data);
+
+export const generatePurchaseReceipt = (id, data) =>
+  http.post(`/booking/${id}/generate-receipt/purchase`, data);
+
+export const generateReleaseReceipt = (id, data) =>
+  http.post(`/booking/${id}/generate-receipt/release`, data);

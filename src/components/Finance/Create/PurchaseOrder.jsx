@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { Image } from '@mantine/core';
+import { Box, Image, Text } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
+import { useModals } from '@mantine/modals';
 import Table from '../../Table/Table';
 import data from './Data.json';
 import TextareaInput from '../../shared/TextareaInput';
@@ -8,6 +9,9 @@ import TextInput from '../../shared/TextInput';
 import image from '../../../assets/image.png';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { useFormContext } from '../../../context/formContext';
+import NumberInput from '../../shared/NumberInput';
+import { useUploadFile } from '../../../hooks/upload.hooks';
+import modalConfig from '../../../utils/modalConfig';
 
 const styles = {
   label: {
@@ -23,14 +27,33 @@ const styles = {
 };
 
 const PurchaseOrder = () => {
-  const { errors, getInputProps } = useFormContext();
+  const { errors, getInputProps, setFieldValue, values } = useFormContext();
+  const { mutateAsync: upload, isLoading } = useUploadFile();
+  const modals = useModals();
 
   const onHandleDrop = async params => {
     const formData = new FormData();
     formData.append('files', params?.[0]);
-    // const res = await upload(formData);
-    // setFieldValue('photos', res?.[0].Location);
+    const res = await upload(formData);
+    setFieldValue('signature', res?.[0].Location);
   };
+
+  const toggleImagePreviewModal = imgSrc =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
+            {imgSrc ? (
+              <Image src={imgSrc} height={580} width={580} alt="preview" fit="contain" />
+            ) : (
+              <Image src={null} height={580} width={580} withPlaceholder />
+            )}
+          </Box>
+        ),
+      },
+      ...modalConfig,
+    });
 
   const COLUMNS = [
     {
@@ -86,26 +109,26 @@ const PurchaseOrder = () => {
           className="w-full pb-4"
           styles={styles}
           label="Company Name"
-          name="companyName"
+          name="supplierName"
           errors={errors}
           placeholder="Write..."
         />
         <div className="grid grid-cols-2 gap-4 pb-4">
-          <TextInput
+          <NumberInput
             styles={styles}
             label="Voucher No"
-            name="voucherNumber"
+            name="invoiceNo"
             errors={errors}
             placeholder="Write..."
           />
-          <TextInput styles={styles} label="GST" name="companyGst" placeholder="Write..." />
+          <TextInput styles={styles} label="GST" name="supplierGst" placeholder="Write..." />
         </div>
         <div className="grid grid-cols-4 gap-4">
           <TextInput
             className="col-span-2"
             styles={styles}
             label="Street Address"
-            name="companyStreetAddress"
+            name="supplierStreetAddress"
             errors={errors}
             placeholder="Write..."
           />
@@ -113,15 +136,15 @@ const PurchaseOrder = () => {
             className="col-span-1"
             styles={styles}
             label="City"
-            name="companyCity"
+            name="supplierCity"
             errors={errors}
             placeholder="Write..."
           />
-          <TextInput
+          <NumberInput
             className="col-span-1"
             styles={styles}
             label="Pin"
-            name="companyPin"
+            name="supplierZip"
             errors={errors}
             placeholder="Write..."
           />
@@ -135,14 +158,14 @@ const PurchaseOrder = () => {
           <TextInput
             styles={styles}
             label="Supplier Name"
-            name="supplierName"
+            name="buyerName"
             errors={errors}
             placeholder="Write..."
           />
           <TextInput
             styles={styles}
             label="GST"
-            name="supplierGst"
+            name="buyerGst"
             errors={errors}
             placeholder="Write..."
           />
@@ -151,14 +174,14 @@ const PurchaseOrder = () => {
           <TextInput
             styles={styles}
             label="Supplier Ref"
-            name="supplierRef"
+            name="buyerRefNo" // TODO: should be buyerRefNo
             errors={errors}
             placeholder="Write..."
           />
           <TextInput
             styles={styles}
             label="Other Reference(s)"
-            name="otherReferences"
+            name="buyerOtherReference" // TODO: should be buyerOtherReference
             errors={errors}
             placeholder="Write..."
           />
@@ -184,7 +207,7 @@ const PurchaseOrder = () => {
             className="col-span-2"
             styles={styles}
             label="Street Address"
-            name="supplierStreetAddress"
+            name="buyerStreetAddress"
             errors={errors}
             placeholder="Write..."
           />
@@ -192,15 +215,15 @@ const PurchaseOrder = () => {
             className="col-span-1"
             styles={styles}
             label="City"
-            name="supplierCity"
+            name="buyerCity"
             errors={errors}
             placeholder="Write..."
           />
-          <TextInput
+          <NumberInput
             className="col-span-1"
             styles={styles}
             label="Pin"
-            name="supplierPin"
+            name="buyerZip"
             errors={errors}
             placeholder="Write..."
           />
@@ -208,7 +231,7 @@ const PurchaseOrder = () => {
         <div className="grid grid-cols-1 gap-4">
           <TextareaInput
             label="Terms of delivery"
-            name="termsOfDelivery"
+            name="termOfDelivery"
             errors={errors}
             styles={styles}
             maxLength={200}
@@ -229,34 +252,56 @@ const PurchaseOrder = () => {
           label="Amount Chargeable (in words)"
           name="amountChargeable"
           placeholder="Write..."
+          readOnly
+          disabled
         />
       </div>
       <div className="flex justify-between pl-5 pr-7 items-center">
         <p className="font-bold text-2xl pt-4">Authorized Signatory</p>
       </div>
       <div className="border-b">
-        <p className="font-semibold text-lg pt-4 pl-5">Signature and Stamp</p>
-        <div className="h-[180px] w-[350px] mt-4 ml-4 mb-6">
-          <Dropzone
-            onDrop={onHandleDrop}
-            accept={['image/png', 'image/jpeg']}
-            className="h-full w-full flex justify-center items-center bg-slate-100"
-            //   loading={isLoading}
-            name="signaturePhoto"
-            multiple={false}
-            {...getInputProps('signaturePhoto')}
+        <p className="font-semibold text-lg pt-4 pl-5 mb-3">Signature and Stamp</p>
+        <div className="flex items-start">
+          <div className="h-[180px] w-[350px] mx-4 mb-6">
+            <Dropzone
+              onDrop={onHandleDrop}
+              accept={['image/png', 'image/jpeg']}
+              className="h-full w-full flex justify-center items-center bg-slate-100"
+              loading={isLoading}
+              name="signature"
+              multiple={false}
+              {...getInputProps('signature')}
+            >
+              <div className="flex items-center justify-center">
+                <Image src={image} alt="placeholder" height={50} width={50} />
+              </div>
+              <p>
+                Drag and Drop your files here,or{' '}
+                <span className="text-purple-450 border-none">browse</span>
+              </p>
+            </Dropzone>
+            {errors?.signature ? (
+              <p className="mt-1 text-xs text-red-450">{errors?.signature}</p>
+            ) : null}
+          </div>
+          <Box
+            className="bg-white border rounded-md cursor-zoom-in"
+            onClick={() => toggleImagePreviewModal(values?.signature)}
           >
-            <div className="flex items-center justify-center">
-              <Image src={image} alt="placeholder" height={50} width={50} />
-            </div>
-            <p>
-              Drag and Drop your files here,or{' '}
-              <span className="text-purple-450 border-none">browse</span>
-            </p>
-          </Dropzone>
-          {errors?.signaturePhoto ? (
-            <p className="mt-1 text-xs text-red-450">{errors?.signaturePhoto}</p>
-          ) : null}
+            {values?.signature ? (
+              <Image
+                src={values?.signature}
+                alt="signature-preview"
+                height={180}
+                width={350}
+                className="bg-slate-100"
+                fit="contain"
+                placeholder={
+                  <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
+                }
+              />
+            ) : null}
+          </Box>
         </div>
       </div>
     </div>

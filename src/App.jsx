@@ -16,6 +16,7 @@ import useTokenIdStore from './store/user.store';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import ProtectedRoute from './utils/ProtectedRoute';
 import { ROLES } from './utils';
+import FileUpload from './components/Finance/Create/FileUpload';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -66,7 +67,6 @@ const FinanceHome = lazy(() => import('./pages/Finance/Home'));
 const FinanceMonthly = lazy(() => import('./pages/Finance/Monthly'));
 const FinanceMonthlyDetails = lazy(() => import('./pages/Finance/MonthlyDetails'));
 const FinanceCreateOrder = lazy(() => import('./pages/Finance/Create'));
-const FinanceCreateOrderUpload = lazy(() => import('./pages/Finance/CreateAuto'));
 
 const HeaderSidebarLoader = () => (
   <>
@@ -487,7 +487,7 @@ const App = () => {
             path="/finance/create-order/:type/upload"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <FinanceCreateOrderUpload />
+                <FileUpload />
               </Suspense>
             }
           />

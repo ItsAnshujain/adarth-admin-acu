@@ -1,42 +1,53 @@
 import { Button } from '@mantine/core';
 import classNames from 'classnames';
 import { ArrowLeft } from 'react-feather';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Menu from '../../Finance/Menu';
 
-const purchaseOrderList = [
-  {
-    label: 'Manual Entry',
-    path: '/finance/create-order/purchase',
-  },
-  {
-    label: 'Upload',
-    path: '/finance/create-order/purchase/upload',
-  },
-];
-const releaseOrderList = [
-  {
-    label: 'Manual Entry',
-    path: '/finance/create-order/release',
-  },
-  {
-    label: 'Upload',
-    path: '/finance/create-order/release/upload',
-  },
-];
-const invoiceList = [
-  {
-    label: 'Manual Entry',
-    path: '/finance/create-order/invoice',
-  },
-  {
-    label: 'Upload',
-    path: '/finance/create-order/invoice/upload',
-  },
-];
-
-const Header = ({ pageNumber, setPageNumber }) => {
+const Header = ({ pageNumber, setPageNumber, bookingId }) => {
   const navigate = useNavigate();
+
+  const purchaseOrderList = useMemo(
+    () => [
+      {
+        label: 'Manual Entry',
+        path: `/finance/create-order/purchase?id=${bookingId}`,
+      },
+      {
+        label: 'Upload',
+        path: `/finance/create-order/purchase/upload?id=${bookingId}`,
+      },
+    ],
+    [bookingId],
+  );
+  const releaseOrderList = useMemo(
+    () => [
+      {
+        label: 'Manual Entry',
+        path: `/finance/create-order/release?id=${bookingId}`,
+      },
+      {
+        label: 'Upload',
+        path: `/finance/create-order/release/upload?id=${bookingId}`,
+      },
+    ],
+    [bookingId],
+  );
+  const invoiceList = useMemo(
+    () => [
+      {
+        label: 'Manual Entry',
+        path: `/finance/create-order/invoice?id=${bookingId}`,
+      },
+      {
+        label: 'Upload',
+        path: `/finance/create-order/invoice/upload?id=${bookingId}`,
+      },
+    ],
+    [bookingId],
+  );
+
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center flex-wrap">
       <div className="flex pl-5 gap-3 items-center font-medium">

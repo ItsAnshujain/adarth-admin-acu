@@ -6,6 +6,9 @@ import {
   bookingStats,
   createBooking,
   deleteBookings,
+  generateInvoiceReceipt,
+  generatePurchaseReceipt,
+  generateReleaseReceipt,
   updateBooking,
   updateBookingStatus,
 } from '../requests/booking.requests';
@@ -39,7 +42,7 @@ export const useUpdateBooking = () => {
   return useMutation(
     async ({ id, data }) => {
       const res = await updateBooking(id, data);
-      return res;
+      return res?.data;
     },
     {
       onSuccess: () => {
@@ -135,6 +138,84 @@ export const useDeleteBooking = () => {
         queryClient.invalidateQueries(['bookings']);
         showNotification({
           title: 'Booking deleted successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: 'Error',
+          message: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
+
+export const useGenerateInvoice = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async ({ id, data }) => {
+      const res = await generateInvoiceReceipt(id, data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['bookings']);
+        showNotification({
+          title: 'Invoice receipt downloaded successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: 'Error',
+          message: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
+
+export const useGeneratePurchaseOrder = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async ({ id, data }) => {
+      const res = await generatePurchaseReceipt(id, data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['bookings']);
+        showNotification({
+          title: 'Purchase order receipt downloaded successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: 'Error',
+          message: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
+
+export const useGenerateReleaseOrder = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async ({ id, data }) => {
+      const res = await generateReleaseReceipt(id, data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['bookings']);
+        showNotification({
+          title: 'Release order receipt downloaded successfully',
           color: 'green',
         });
       },

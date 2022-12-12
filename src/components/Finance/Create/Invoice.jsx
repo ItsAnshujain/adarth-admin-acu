@@ -4,6 +4,7 @@ import data from './Data.json';
 import TextareaInput from '../../shared/TextareaInput';
 import TextInput from '../../shared/TextInput';
 import toIndianCurrency from '../../../utils/currencyFormat';
+import NumberInput from '../../shared/NumberInput';
 
 const styles = {
   label: {
@@ -67,12 +68,7 @@ const Invoice = () => {
     <div>
       <div className="pl-5 pr-7 pt-4 pb-8 border-b">
         <div className="grid grid-cols-2 gap-4">
-          <TextInput
-            styles={styles}
-            label="Invoice No"
-            name="invoiceNumber"
-            placeholder="Write..."
-          />
+          <NumberInput styles={styles} label="Invoice No" name="invoiceNo" placeholder="Write..." />
         </div>
       </div>
       <div className="flex justify-between pl-5 pr-7 items-center">
@@ -103,39 +99,39 @@ const Invoice = () => {
             name="supplierCity"
             placeholder="Write..."
           />
-          <TextInput
+          <NumberInput
             className="col-span-1"
             styles={styles}
             label="Pin"
-            name="supplierPin"
+            name="supplierZip"
             placeholder="Write..."
           />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
-          <TextInput
-            styles={styles}
-            label="Contact"
-            name="supplierContact"
-            placeholder="Write..."
-          />
+          <TextInput styles={styles} label="Contact" name="supplierPhone" placeholder="Write..." />
           <TextInput styles={styles} label="Email" name="supplierEmail" placeholder="Write..." />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
           <TextInput
             styles={styles}
             label="Supplier Ref"
-            name="supplierRef"
+            name="supplierRefNo"
             placeholder="Write..."
           />
           <TextInput
             styles={styles}
             label="Other Reference(s)"
-            name="otherReference"
+            name="supplierOtherReference"
             placeholder="Write..."
           />
         </div>
         <div className="grid grid-cols-1 gap-4 pb-4">
-          <TextInput styles={styles} label="Website" name="website" placeholder="Write..." />
+          <TextInput
+            styles={styles}
+            label="Website"
+            name="supplierWebsite"
+            placeholder="Write..."
+          />
         </div>
       </div>
       <div className="flex justify-between pl-5 pr-7 items-center">
@@ -147,12 +143,12 @@ const Invoice = () => {
           <TextInput
             styles={styles}
             label="Contact Person"
-            name="contactPerson"
+            name="buyerContactPerson"
             placeholder="Write..."
           />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
-          <TextInput styles={styles} label="Contact" name="buyerContact" placeholder="Write..." />
+          <TextInput styles={styles} label="Contact" name="buyerPhone" placeholder="Write..." />
           <TextInput styles={styles} label="GSTIN/UIN" name="buyerGst" placeholder="Write..." />
         </div>
         <div className="grid grid-cols-4 gap-4 pb-4">
@@ -170,11 +166,11 @@ const Invoice = () => {
             name="buyerCity"
             placeholder="Write..."
           />
-          <TextInput
+          <NumberInput
             className="col-span-1"
             styles={styles}
             label="Pin"
-            name="buyerPin"
+            name="buyerZip"
             placeholder="Write..."
           />
         </div>
@@ -190,13 +186,13 @@ const Invoice = () => {
           <TextInput
             styles={styles}
             label="Dispatched Document No."
-            name="dispatchedDocNumber"
+            name="dispatchDocumentNumber"
             placeholder="Write..."
           />
           <TextInput
             styles={styles}
             label="Dispatched through"
-            name="dispatchedThrough"
+            name="dispatchThrough"
             placeholder="Write..."
           />
           <TextInput
@@ -218,7 +214,7 @@ const Invoice = () => {
         <div className="grid grid-cols-1 gap-4">
           <TextareaInput
             label="Terms of Delivery"
-            name="termsOfDelivery"
+            name="termOfDelivery"
             styles={styles}
             maxLength={200}
             placeholder="Maximum 200 characters"
@@ -237,6 +233,8 @@ const Invoice = () => {
           label="Amount Chargeable (in words)"
           name="amountChargeable"
           placeholder="Write..."
+          readOnly
+          disabled
         />
       </div>
       <div className="flex justify-between pl-5 pr-7 items-center">
@@ -245,19 +243,19 @@ const Invoice = () => {
       <div className="pl-5 pr-7 pt-4 pb-4 border-b">
         <div className="grid grid-cols-2 gap-4 pb-4">
           <TextInput styles={styles} label="Bank Name" name="bankName" placeholder="Write..." />
-          <TextInput styles={styles} label="A/c No." name="acNumber" placeholder="Write..." />
+          <TextInput styles={styles} label="A/c No." name="accountNo" placeholder="Write..." />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
           <TextInput
             styles={styles}
             label="Branch &amp; IFSC Code"
-            name="branchIfscCode"
+            name="ifscCode"
             placeholder="Write..."
           />
           <TextInput
             styles={styles}
             label="Mode/Terms of Payment"
-            name="modeTermOfPayment"
+            name="modeOfPayment"
             placeholder="Write..."
           />
         </div>

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { Image } from '@mantine/core';
+import { Box, Image, Text } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
+import { useModals } from '@mantine/modals';
 import Table from '../../Table/Table';
 import data from './Data.json';
 import TextareaInput from '../../shared/TextareaInput';
@@ -8,6 +9,9 @@ import TextInput from '../../shared/TextInput';
 import image from '../../../assets/image.png';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { useFormContext } from '../../../context/formContext';
+import NumberInput from '../../shared/NumberInput';
+import { useUploadFile } from '../../../hooks/upload.hooks';
+import modalConfig from '../../../utils/modalConfig';
 
 const styles = {
   label: {
@@ -23,14 +27,33 @@ const styles = {
 };
 
 const ReleaseOrder = () => {
-  const { errors, getInputProps } = useFormContext();
+  const { errors, getInputProps, setFieldValue, values } = useFormContext();
+  const { mutateAsync: upload, isLoading } = useUploadFile();
+  const modals = useModals();
 
   const onHandleDrop = async params => {
     const formData = new FormData();
     formData.append('files', params?.[0]);
-    // const res = await upload(formData);
-    // setFieldValue('photos', res?.[0].Location);
+    const res = await upload(formData);
+    setFieldValue('signature', res?.[0].Location);
   };
+
+  const toggleImagePreviewModal = imgSrc =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
+            {imgSrc ? (
+              <Image src={imgSrc} height={580} width={580} alt="preview" fit="contain" />
+            ) : (
+              <Image src={null} height={580} width={580} withPlaceholder />
+            )}
+          </Box>
+        ),
+      },
+      ...modalConfig,
+    });
 
   const COLUMNS = [
     {
@@ -80,10 +103,10 @@ const ReleaseOrder = () => {
     <div>
       <div className="pl-5 pr-7 pt-4 pb-8 border-b">
         <div className="grid grid-cols-2 gap-4">
-          <TextInput
+          <NumberInput
             styles={styles}
             label="Release Order No"
-            name="releaseOrderNumber"
+            name="releaseOrderNo"
             placeholder="Write..."
           />
         </div>
@@ -134,11 +157,11 @@ const ReleaseOrder = () => {
             name="city"
             placeholder="Write..."
           />
-          <TextInput
+          <NumberInput
             className="col-span-1"
             styles={styles}
             label="Pin"
-            name="pin"
+            name="zip"
             placeholder="Write..."
           />
         </div>
@@ -157,34 +180,54 @@ const ReleaseOrder = () => {
           <TextInput
             styles={styles}
             label="Designation"
-            name="designation"
+            name="supplierDesignation"
             placeholder="Write..."
           />
         </div>
       </div>
       <div className="border-b">
-        <p className="font-semibold text-lg pt-4 pl-5">Signature and Stamp</p>
-        <div className="h-[180px] w-[350px] mt-4 ml-4 mb-6">
-          <Dropzone
-            onDrop={onHandleDrop}
-            accept={['image/png', 'image/jpeg']}
-            className="h-full w-full flex justify-center items-center bg-slate-100"
-            //   loading={isLoading}
-            name="signatureStampPhoto"
-            multiple={false}
-            {...getInputProps('signatureStampPhoto')}
+        <p className="font-semibold text-lg pt-4 pl-5 mb-3">Signature and Stamp</p>
+        <div className="flex items-start">
+          <div className="h-[180px] w-[350px] mx-4 mb-6">
+            <Dropzone
+              onDrop={onHandleDrop}
+              accept={['image/png', 'image/jpeg']}
+              className="h-full w-full flex justify-center items-center bg-slate-100"
+              loading={isLoading}
+              name="signature"
+              multiple={false}
+              {...getInputProps('signature')}
+            >
+              <div className="flex items-center justify-center">
+                <Image src={image} alt="placeholder" height={50} width={50} />
+              </div>
+              <p>
+                Drag and Drop your files here,or{' '}
+                <span className="text-purple-450 border-none">browse</span>
+              </p>
+            </Dropzone>
+            {errors?.signature ? (
+              <p className="mt-1 text-xs text-red-450">{errors?.signature}</p>
+            ) : null}
+          </div>
+          <Box
+            className="bg-white border rounded-md cursor-zoom-in"
+            onClick={() => toggleImagePreviewModal(values?.signature)}
           >
-            <div className="flex items-center justify-center">
-              <Image src={image} alt="placeholder" height={50} width={50} />
-            </div>
-            <p>
-              Drag and Drop your files here,or{' '}
-              <span className="text-purple-450 border-none">browse</span>
-            </p>
-          </Dropzone>
-          {errors?.signatureStampPhoto ? (
-            <p className="mt-1 text-xs text-red-450">{errors?.signatureStampPhoto}</p>
-          ) : null}
+            {values?.signature ? (
+              <Image
+                src={values?.signature}
+                alt="signature-preview"
+                height={180}
+                width={350}
+                className="bg-slate-100"
+                fit="contain"
+                placeholder={
+                  <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
+                }
+              />
+            ) : null}
+          </Box>
         </div>
       </div>
       <div className="pl-5 pr-7 py-4 mb-10 ">
@@ -199,6 +242,8 @@ const ReleaseOrder = () => {
           label="Amount Chargeable (in words)"
           name="amountChargeable"
           placeholder="Write..."
+          readOnly
+          disabled
         />
       </div>
 

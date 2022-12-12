@@ -14,7 +14,7 @@ const Main = () => {
   const { data: bookingData, isLoading } = useBookingById(id, !!id);
   return (
     <>
-      <Header pageNumber={pageNumber} setPageNumber={setPageNumber} />
+      <Header pageNumber={pageNumber} setPageNumber={setPageNumber} bookingId={id} />
       {pageNumber === 0 ? (
         <OrderInfo bookingData={bookingData} isLoading={isLoading} />
       ) : pageNumber === 1 ? (
