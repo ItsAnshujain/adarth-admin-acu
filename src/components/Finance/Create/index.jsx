@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button } from '@mantine/core';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
@@ -6,6 +6,11 @@ import PurchaseOrder from './PurchaseOrder';
 import ReleaseOrder from './ReleaseOrder';
 import Invoice from './Invoice';
 import { FormProvider, useForm } from '../../../context/formContext';
+import {
+  useGenerateInvoice,
+  useGeneratePurchaseOrder,
+  useGenerateReleaseOrder,
+} from '../../../hooks/booking.hooks';
 
 const orderView = {
   purchase: PurchaseOrder,
@@ -20,143 +25,166 @@ const title = {
 };
 
 const purchaseSchema = yup.object({
-  companyName: yup.string().trim().required('Company Name is required'),
-  voucherNumber: yup.string().trim().required('Voucher No is required'),
-  companyGst: yup.string().trim().required('GST is required'),
-  companyStreetAddress: yup.string().trim().required('Street Address is required'),
-  companyCity: yup.string().trim().required('City is required'),
-  companyPin: yup.string().trim().required('Pin is required'),
-  supplierName: yup.string().trim().required('Supplier Name is required'),
-  supplierGst: yup.string().trim().required('GST is required'),
-  supplierRef: yup.string().trim().required('Supplier Ref is required'),
-  otherReferences: yup.string().trim().required('Other Reference(s) is required'),
-  dispatchThrough: yup.string().trim().required('Dispatch Through is required'),
-  destination: yup.string().trim().required('Destination is required'),
-  supplierStreetAddress: yup.string().trim().required('Street Address is required'),
-  supplierCity: yup.string().trim().required('City is required'),
-  supplierPin: yup.string().trim().required('Pin is required'),
-  termsOfDelivery: yup.string().trim().required('Terms of Delivery is required'),
-  amountChargeable: yup.string().trim().required('Amount Chargeable is required'),
-  signaturePhoto: yup.string().trim().required('Photo is required'),
+  supplierName: yup.string().trim(),
+  invoiceNo: yup
+    .number()
+    .positive('Must be a positive number')
+    .typeError('Must be a number')
+    .nullable(),
+  supplierGst: yup.string().trim(),
+  supplierStreetAddress: yup.string().trim(),
+  supplierCity: yup.string().trim(),
+  supplierZip: yup
+    .number()
+    .positive('Must be a positive number')
+    .typeError('Must be a number')
+    .nullable(),
+  buyerName: yup.string().trim(),
+  buyerGst: yup.string().trim(),
+  buyerRefNo: yup.string().trim(), // TODO: key missing and should be buyerRefNo
+  buyerOtherReference: yup.string().trim(), // TODO: key missing and should be buyerOtherReference
+  dispatchThrough: yup.string().trim(),
+  destination: yup.string().trim(),
+  buyerStreetAddress: yup.string().trim(),
+  buyerCity: yup.string().trim(),
+  buyerZip: yup
+    .number()
+    .positive('Must be a positive number')
+    .typeError('Must be a number')
+    .nullable(),
+  termOfDelivery: yup.string().trim(),
+  signature: yup.string().trim(),
 });
 
 const initialPurchaseValues = {
-  companyName: '',
-  voucherNumber: '',
-  companyGst: '',
-  companyStreetAddress: '',
-  companyCity: '',
-  companyPin: '',
   supplierName: '',
+  invoiceNo: null,
   supplierGst: '',
-  supplierRef: '',
-  otherReferences: '',
-  dispatchThrough: '',
-  destination: '',
   supplierStreetAddress: '',
   supplierCity: '',
-  supplierPin: '',
-  termsOfDelivery: '',
-  amountChargeable: '',
-  signaturePhoto: '',
+  supplierZip: null,
+  buyerName: '',
+  buyerGst: '',
+  buyerRefNo: '', // TODO: key missing and should be buyerRefNo
+  buyerOtherReference: '', // TODO: key missing and should be buyerOtherReference
+  dispatchThrough: '',
+  destination: '',
+  buyerStreetAddress: '',
+  buyerCity: '',
+  buyerZip: null,
+  termOfDelivery: '',
+  signature: '', // TODO: key missing
 };
 
 const releaseSchema = yup.object({
-  releaseOrderNumber: yup.string().trim().required('Release Order No is required'),
-  companyName: yup.string().trim().required('Company Name is required'),
-  quotationNumber: yup.string().trim().required('Quotation No is required'),
-  contactPerson: yup.string().trim().required('Contact Person is required'),
-  phone: yup.string().trim().required('Phone is required'),
-  mobile: yup.string().trim().required('Mobile is required'),
-  email: yup.string().trim().required('Email is required'),
-  streetAddress: yup.string().trim().required('Street Address is required'),
-  city: yup.string().trim().required('City is required'),
-  pin: yup.string().trim().required('Pin is required'),
-  supplierName: yup.string().trim().required('Supplier Name is required'),
-  designation: yup.string().trim().required('Destination is required'),
-  amountChargeable: yup.string().trim().required('Amount Chargeable is required'),
-  signatureStampPhoto: yup.string().trim().required('Photo is required'),
-  termsAndConditions: yup.string().trim().required('Terms & Conditions is required'),
+  releaseOrderNo: yup
+    .number()
+    .positive('Must be a positive number')
+    .typeError('Must be a number')
+    .nullable(),
+  companyName: yup.string().trim(),
+  quotationNumber: yup.string().trim(),
+  contactPerson: yup.string().trim(),
+  phone: yup.string().trim(),
+  mobile: yup.string().trim(),
+  email: yup.string().trim(),
+  streetAddress: yup.string().trim(),
+  city: yup.string().trim(),
+  zip: yup.number().positive('Must be a positive number').typeError('Must be a number').nullable(),
+  supplierName: yup.string().trim(),
+  supplierdesignation: yup.string().trim(),
+  signature: yup.string().trim(),
+  termsAndConditions: yup.string().trim(),
 });
 
 const initialReleaseValues = {
-  releaseOrderNumber: '',
+  releaseOrderNo: null,
   companyName: '',
   quotationNumber: '',
   contactPerson: '',
   phone: '',
   mobile: '',
   email: '',
+  zip: null,
   supplierName: '',
-  designation: '',
-  signatureStampPhoto: '',
-  amountChargebale: '',
+  supplierDesignation: '',
+  signature: '',
   termsAndConditions: '',
 };
 
 const invoiceSchema = yup.object({
-  invoiceNumber: yup.string().trim().required('Invoice No is required'),
-  supplierName: yup.string().trim().required('Supplier Name is required'),
-  supplierGst: yup.string().trim().required('GSTIN/UIN is required'),
-  supplierStreetAddress: yup.string().trim().required('Street Address is required'),
-  supplierCity: yup.string().trim().required('City is required'),
-  supplierPin: yup.string().trim().required('Pin is required'),
-  supplierContact: yup.string().trim().required('Contact is required'),
-  supplierEmail: yup.string().trim().required('Email is required'),
-  supplierRef: yup.string().trim().required('Supplier Ref is required'),
-  otherReference: yup.string().trim().required('Other Reference(s) is required'),
-  website: yup.string().trim().required('Website is required'),
-  buyerName: yup.string().trim().required('Buyer Name is required'),
-  contactPerson: yup.string().trim().required('Contact Person is required'),
-  buyerContact: yup.string().trim().required('Contact is required'),
-  buyerGst: yup.string().trim().required('GSTIN/UIN is required'),
-  buyerStreetAddress: yup.string().trim().required('Street Address is required'),
-  buyerCity: yup.string().trim().required('City is required'),
-  buyerPin: yup.string().trim().required('Pin is required'),
-  buyerOrderNumber: yup.string().trim().required('Buyers Order No. is required'),
-  dispatchedDocNumber: yup.string().trim().required('Dispatched Document No. is required'),
-  dispatchedThrough: yup.string().trim().required('Dispatched through is required'),
-  destination: yup.string().trim().required('Destination is required'),
-  deliveryNote: yup.string().trim().required('Delivery Note is required'),
-  termsOfDelivery: yup.string().trim().required('Terms of Delivery is required'),
-  amountChargeable: yup.string().trim().required('Amount Chargeable is required'),
-  bankName: yup.string().trim().required('Bank Name is required'),
-  acNumber: yup.string().trim().required('A/c No. is required'),
-  branchIfscCode: yup.string().trim().required('Branch & IFSC Code is required'),
-  modeTermOfPayment: yup.string().trim().required('Mode/Terms of Payment is required'),
-  declaration: yup.string().trim().required('Declaration is required'),
+  invoiceNo: yup
+    .number()
+    .positive('Must be a positive number')
+    .typeError('Must be a number')
+    .nullable(),
+  supplierName: yup.string().trim(),
+  supplierGst: yup.string().trim(),
+  supplierStreetAddress: yup.string().trim(),
+  supplierCity: yup.string().trim(),
+  supplierZip: yup
+    .number()
+    .positive('Must be a positive number')
+    .typeError('Must be a number')
+    .nullable(),
+  supplierPhone: yup.string().trim(),
+  supplierEmail: yup.string().trim(),
+  supplierRefNo: yup.string().trim(),
+  supplierOtherReference: yup.string().trim(),
+  supplierWebsite: yup.string().trim(),
+  buyerName: yup.string().trim(),
+  buyerContactPerson: yup.string().trim(),
+  buyerPhone: yup.string().trim(),
+  buyerGst: yup.string().trim(),
+  buyerStreetAddress: yup.string().trim(),
+  buyerCity: yup.string().trim(),
+  buyerZip: yup
+    .number()
+    .positive('Must be a positive number')
+    .typeError('Must be a number')
+    .nullable(),
+  buyerOrderNumber: yup.string().trim(),
+  dispatchDocumentNumber: yup.string().trim(),
+  dispatchThrough: yup.string().trim(),
+  destination: yup.string().trim(),
+  deliveryNote: yup.string().trim(),
+  termOfDelivery: yup.string().trim(),
+  bankName: yup.string().trim(),
+  accountNo: yup.string().trim(),
+  ifscCode: yup.string().trim(),
+  modeOfPayment: yup.string().trim(),
+  declaration: yup.string().trim(),
 });
 
 const initialInvoiceValues = {
-  invoiceNumber: '',
+  invoiceNo: null,
   supplierName: '',
   supplierGst: '',
   supplierStreetAddress: '',
   supplierCity: '',
-  supplierPin: '',
-  supplierContact: '',
+  supplierZip: null,
+  supplierPhone: '',
   supplierEmail: '',
-  supplierRef: '',
-  otherReference: '',
-  website: '',
-  contactPerson: '',
+  supplierRefNo: '',
+  supplierOtherReference: '',
+  supplierWebsite: '',
   buyerName: '',
-  buyerContact: '',
+  buyerContactPerson: '',
+  buyerPhone: '',
   buyerGst: '',
   buyerStreetAddress: '',
   buyerCity: '',
-  buyerPin: '',
+  buyerZip: null,
   buyerOrderNumber: '',
-  dispatchedDocNumber: '',
-  dispatchedThrough: '',
+  dispatchDocumentNumber: '',
+  dispatchThrough: '',
   destination: '',
   deliveryNote: '',
-  termsOfDelivery: '',
-  amountChargeable: '',
+  termOfDelivery: '',
   bankName: '',
-  acNumber: '',
-  branchIfscCode: '',
-  modeTermOfPayment: '',
+  accountNo: '',
+  ifscCode: '',
+  modeOfPayment: '',
   declaration: '',
 };
 
@@ -174,13 +202,36 @@ const initialValues = {
 
 const Create = () => {
   const navigate = useNavigate();
+  const [searchParam] = useSearchParams();
   const { type } = useParams();
   const form = useForm({ validate: yupResolver(schema[type]), initialValues: initialValues[type] });
   const ManualEntryView = orderView[type] ?? <div />;
+  const bookingId = searchParam.get('id');
+
+  const { mutateAsync: generatePurchaseOrder } = useGeneratePurchaseOrder();
+  const { mutateAsync: generateRelease } = useGenerateReleaseOrder();
+  const { mutateAsync: generateInvoice } = useGenerateInvoice();
 
   const handleSubmit = formData => {
-    // eslint-disable-next-line no-console
-    console.log(formData);
+    const data = {
+      ...formData,
+    };
+    Object.keys(data).forEach(key => {
+      if (data[key] === '' || data[key] === null) {
+        delete data[key];
+      }
+    });
+
+    if (Object.keys(data).length === 0) return;
+
+    if (type === 'purchase') {
+      generatePurchaseOrder({ id: bookingId, data });
+    } else if (type === 'release') {
+      generateRelease({ id: bookingId, data });
+    } else if (type === 'invoice') {
+      generateInvoice({ id: bookingId, data });
+    }
+    form.reset();
   };
 
   const handleBack = () => navigate(-1);

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useTable, useSortBy, useRowSelect, useFilters } from 'react-table';
 import { Pagination } from '@mantine/core';
 import classNames from 'classnames';
+import { useSearchParams } from 'react-router-dom';
 import IndeterminateCheckbox from './Checkbox';
 import Ascending from '../../assets/Icons/Ascending';
 import Descending from '../../assets/Icons/Descending';
@@ -22,6 +23,8 @@ const Table = ({
   className = '',
 }) => {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
+  const [searchParams] = useSearchParams('');
+  const sortOrder = searchParams.get('sortOrder');
 
   const handleSelectedRows = () => {
     const obj = {};
@@ -95,7 +98,7 @@ const Table = ({
                       <div className="w-fit tracking-wide">{header.render('Header')}</div>
                       <div className="ml-2 gap-1 flex flex-col">
                         {header?.canSort ? (
-                          header.isSortedDesc ? (
+                          header.isSortedDesc || sortOrder === 'desc' ? (
                             <>
                               <Ascending fill="black" />
                               <Descending fill="#A1A9B8" />

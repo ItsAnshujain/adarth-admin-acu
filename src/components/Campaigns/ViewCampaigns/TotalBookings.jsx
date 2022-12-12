@@ -96,7 +96,7 @@ const TotalBookings = ({ campaignId, isLoading }) => {
       },
       {
         Header: 'ORDER DATE',
-        disableSortBy: true,
+        accessor: 'createdAt',
         Cell: ({ row: { original } }) => dayjs(original.client.createdAt).format('DD-MMMM-YYYY'),
       },
       {
@@ -209,14 +209,12 @@ const TotalBookings = ({ campaignId, isLoading }) => {
       },
       {
         Header: 'CAMPAIGN INCHARGE',
-        accessor: 'campaign_incharge',
-        disableSortBy: true,
+        accessor: 'campaign.incharge.name',
         Cell: () => '',
       },
       {
         Header: 'HEALTH STATUS',
-        accessor: 'healthStatus',
-        disableSortBy: true,
+        accessor: 'campaign.avgHealth',
         Cell: ({
           row: {
             original: { healthStatus, totalHealthStatus },
@@ -291,22 +289,73 @@ const TotalBookings = ({ campaignId, isLoading }) => {
         Header: 'PURCHASE ORDER',
         accessor: 'purchaseOrder',
         disableSortBy: true,
-        Cell: () =>
-          useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+        Cell: ({
+          row: {
+            original: { purchaseOrder },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <a
+                href={purchaseOrder}
+                className="text-purple-450 cursor-pointer font-medium"
+                target="_blank"
+                download
+                rel="noopener noreferrer"
+              >
+                Download
+              </a>
+            ),
+            [],
+          ),
       },
       {
         Header: 'RELEASE ORDER',
         accessor: 'releaseOrder',
         disableSortBy: true,
-        Cell: () =>
-          useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+        Cell: ({
+          row: {
+            original: { releaseOrder },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <a
+                href={releaseOrder}
+                className="text-purple-450 cursor-pointer font-medium"
+                target="_blank"
+                download
+                rel="noopener noreferrer"
+              >
+                Download
+              </a>
+            ),
+            [],
+          ),
       },
       {
         Header: 'INVOICE',
         accessor: 'invoice',
         disableSortBy: true,
-        Cell: () =>
-          useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+        Cell: ({
+          row: {
+            original: { invoice },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <a
+                href={invoice}
+                className="text-purple-450 cursor-pointer font-medium"
+                target="_blank"
+                download
+                rel="noopener noreferrer"
+              >
+                Download
+              </a>
+            ),
+            [],
+          ),
       },
       {
         Header: 'ACTION',

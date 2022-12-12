@@ -63,7 +63,7 @@ const Booking = () => {
       },
       {
         Header: 'CAMPAIGN INCHARGE',
-        accessor: 'booking_manager',
+        accessor: 'campaign.incharge.name',
         Cell: ({
           row: {
             original: { campaignName },
