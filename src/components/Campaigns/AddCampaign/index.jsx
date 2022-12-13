@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { useParams, useSearchParams } from 'react-router-dom';
+import dayjs from 'dayjs';
 import BasicInfo from './BasicInformation';
 import SuccessModal from '../../shared/Modal';
 import CoverImage from './CoverImage';
@@ -122,7 +123,27 @@ const Create = () => {
     if (formStep === 4) {
       const newData = { ...form.values };
 
-      newData.place = newData.place.map(item => item.id);
+      let minDate = null;
+      let maxDate = null;
+
+      newData.place = newData.place.map(item => {
+        const start = item.startDate.setHours(0, 0, 0, 0);
+        const end = item.endDate.setHours(0, 0, 0, 0);
+
+        if (!minDate) minDate = start;
+        if (!maxDate) maxDate = end;
+
+        if (start < minDate) minDate = start;
+        if (end > maxDate) maxDate = end;
+
+        return {
+          id: item.id,
+          price: item.price,
+          media: item.photo || undefined,
+          startDate: item.startDate,
+          endDate: item.endDate,
+        };
+      });
 
       newData.healthStatus = +newData.healthStatus || 0;
       newData.price = +newData.price || 0;
@@ -133,14 +154,21 @@ const Create = () => {
       if (publish) {
         const publishedId = campaignStatus?.docs?.find(
           item => item?.name?.toLowerCase() === 'published',
-        );
+        )?.value;
         if (publishedId) {
           newData.status = publishedId;
         }
       }
 
       if (id) {
-        update({ id, data: newData });
+        update({
+          id,
+          data: {
+            ...newData,
+            startDate: dayjs(minDate).format('YYYY-MM-DD'),
+            endDate: dayjs(maxDate).format('YYYY-MM-DD'),
+          },
+        });
       } else
         add(newData, {
           onSuccess: () => {
