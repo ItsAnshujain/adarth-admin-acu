@@ -28,7 +28,9 @@ const FileUpload = () => {
     mutate(fd, {
       onSuccess: () => {
         setFile(null);
-        navigate('/inventory');
+        setTimeout(() => {
+          navigate('/inventory');
+        }, 1000);
       },
     });
   };

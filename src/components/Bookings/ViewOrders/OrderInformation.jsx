@@ -30,7 +30,7 @@ const config = {
   options: { responsive: true },
 };
 
-const OrderInformation = ({ bookingData = {}, isLoading = true }) => {
+const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) => {
   const printingStatusData = useFetchMasters(
     serialize({ type: 'printing_status', parentId: null, page: 1, limit: 100 }),
   );
@@ -68,7 +68,19 @@ const OrderInformation = ({ bookingData = {}, isLoading = true }) => {
         <div className="flex flex-wrap">
           <div className="flex gap-x-4 p-4 border rounded-md items-center mr-20">
             <div className="w-32">
-              <Doughnut options={config.options} data={config.data} />
+              <Doughnut
+                options={config.options}
+                data={{
+                  datasets: [
+                    {
+                      data: [bookingStats?.data.online || 0, bookingStats?.data.offline || 0],
+                      backgroundColor: ['#FF900E', '#914EFB'],
+                      borderColor: ['#FF900E', '#914EFB'],
+                      borderWidth: 1,
+                    },
+                  ],
+                }}
+              />
             </div>
             <div>
               <p className="font-normal text -md">Revenue Status</p>
@@ -77,14 +89,14 @@ const OrderInformation = ({ bookingData = {}, isLoading = true }) => {
                   <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                   <div>
                     <p className="text-xs font-lighter mb-1">Online Sale</p>
-                    <p className="font-bold text-md">coming soon</p>
+                    <p className="font-bold text-md">{bookingStats?.data.online || 0}</p>
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                   <div>
                     <p className="font-lighter text-xs mb-1">Offline Sale</p>
-                    <p className="font-bold text-md">coming soon</p>
+                    <p className="font-bold text-md">{bookingStats?.data.offline || 0}</p>
                   </div>
                 </div>
               </div>
@@ -93,7 +105,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true }) => {
           <div className="border rounded p-8  pr-20">
             <img src={completed} alt="ongoing" />
             <p className="my-2 text-xs font-lighter mt-3 text-muted">Total Places</p>
-            <p className="font-bold">{bookingData?.totalSpaces || 0}</p>
+            <p className="font-bold">{bookingData?.campaign?.spaces.length || 0}</p>
           </div>
         </div>
         <div>
@@ -111,7 +123,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true }) => {
             </div>
             <div>
               <p className="text-slate-400">Price</p>
-              <p className="font-bold">{toIndianCurrency(bookingData?.totalPrice)}</p>
+              <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.totalPrice)}</p>
             </div>
             <div>
               <p className="text-slate-400">Start Date</p>
@@ -121,7 +133,9 @@ const OrderInformation = ({ bookingData = {}, isLoading = true }) => {
             </div>
             <div>
               <p className="text-slate-400">End Date</p>
-              <p className="font-bold">15 May 2037</p>
+              <p className="font-bold">
+                <NoData type="unknown" />
+              </p>
             </div>
             <div>
               <p className="text-slate-400">Printing Status</p>
@@ -148,7 +162,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true }) => {
             </div>
             <div>
               <p className="text-slate-400">Booking Type</p>
-              <p className="font-bold">{bookingData?.type}</p>
+              <p className="font-bold capitalize">{bookingData?.type}</p>
             </div>
             <div>
               <p className="text-slate-400">Mounting Status</p>
@@ -182,7 +196,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true }) => {
             <div>
               <p className="text-slate-400">Booking Status</p>
               <p className="font-bold">
-                {bookingData.campaign?.status || <NoData type="unknown" />}
+                {bookingData?.currentStatus?.campaignStatus || <NoData type="unknown" />}
               </p>
             </div>
             <div>
@@ -206,14 +220,12 @@ const OrderInformation = ({ bookingData = {}, isLoading = true }) => {
               <p className="text-slate-400">Start Date</p>
               <p className="font-bold">
                 {/* 15 May 2037 comment for keeping format */}
-                <NoData type="unknown" />
+                {bookingData?.campaign?.startDate || <NoData type="na" />}
               </p>
             </div>
             <div>
               <p className="text-slate-400">End Date</p>
-              <p className="font-bold">
-                <NoData type="unknown" />
-              </p>
+              <p className="font-bold">{bookingData?.campaign?.endDate || <NoData type="na" />}</p>
             </div>
             <div>
               <p className="text-slate-400">Campaign Type</p>
@@ -226,8 +238,8 @@ const OrderInformation = ({ bookingData = {}, isLoading = true }) => {
           <div className="flex p-4 gap-y-6 gap-x-32 border flex-wrap">
             <div>
               <p className="text-slate-400">Payment Type</p>
-              <p className="font-bold">
-                <NoData type="upcoming" />
+              <p className="font-bold uppercase">
+                {bookingData?.paymentType || <NoData type="upcoming" />}
               </p>
             </div>
             <div>

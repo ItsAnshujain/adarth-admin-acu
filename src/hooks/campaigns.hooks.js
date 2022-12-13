@@ -6,6 +6,7 @@ import {
   createCampaign,
   deleteCampaign,
   updateCampaign,
+  updateCampaignMedia,
 } from '../requests/campaigns.request';
 
 export const useCampaigns = (query, enabled = true) =>
@@ -101,3 +102,25 @@ export const useDeleteCampaign = () => {
     },
   );
 };
+
+export const useUpdateCampaignMedia = () =>
+  useMutation(
+    async ({ id, placeId, data }) => {
+      const res = await updateCampaignMedia(id, placeId, data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Campaign Successfully Updated',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );

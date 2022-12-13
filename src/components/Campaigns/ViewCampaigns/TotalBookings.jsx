@@ -4,6 +4,7 @@ import { ChevronDown, Plus } from 'react-feather';
 import { useDebouncedState } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
+import classNames from 'classnames';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import calendar from '../../../assets/data-table.svg';
@@ -297,8 +298,13 @@ const TotalBookings = ({ campaignId, isLoading }) => {
           useMemo(
             () => (
               <a
-                href={purchaseOrder}
-                className="text-purple-450 cursor-pointer font-medium"
+                href={purchaseOrder ?? null}
+                className={classNames(
+                  purchaseOrder
+                    ? 'text-purple-450 cursor-pointer'
+                    : 'pointer-events-none text-gray-450',
+                  'font-medium',
+                )}
                 target="_blank"
                 download
                 rel="noopener noreferrer"
@@ -321,8 +327,13 @@ const TotalBookings = ({ campaignId, isLoading }) => {
           useMemo(
             () => (
               <a
-                href={releaseOrder}
-                className="text-purple-450 cursor-pointer font-medium"
+                href={releaseOrder ?? null}
+                className={classNames(
+                  releaseOrder
+                    ? 'text-purple-450 cursor-pointer'
+                    : 'pointer-events-none text-gray-450',
+                  'font-medium',
+                )}
                 target="_blank"
                 download
                 rel="noopener noreferrer"
@@ -345,8 +356,11 @@ const TotalBookings = ({ campaignId, isLoading }) => {
           useMemo(
             () => (
               <a
-                href={invoice}
-                className="text-purple-450 cursor-pointer font-medium"
+                href={invoice ?? null}
+                className={classNames(
+                  invoice ? 'text-purple-450 cursor-pointer' : 'pointer-events-none text-gray-450',
+                  'font-medium',
+                )}
                 target="_blank"
                 download
                 rel="noopener noreferrer"

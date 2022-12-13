@@ -2,11 +2,10 @@ import { useMemo, useState, useEffect } from 'react';
 import { Text, Button, Progress, Image, NumberInput, Badge, Box, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useSearchParams } from 'react-router-dom';
-import { useClickOutside, useDebouncedState } from '@mantine/hooks';
+import { useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import DateRange from '../DateRange';
+import dayjs from 'dayjs';
 import Search from '../Search';
-import calendar from '../../assets/data-table.svg';
 import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
 import MenuPopover from './MenuPopover';
@@ -14,6 +13,7 @@ import { useFetchInventory } from '../../hooks/inventory.hooks';
 import { colors } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
 import Filter from '../Inventory/Filter';
+import { useFormContext } from '../../context/formContext';
 
 const Spaces = ({
   selectedRow,
@@ -24,8 +24,6 @@ const Spaces = ({
 }) => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const modals = useModals();
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const ref = useClickOutside(() => setShowDatePicker(false));
   const [updatedSpaces, setUpdatedSpaces] = useState([]);
   const [totalProposedPrice, setTotalProposedPrice] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -35,13 +33,13 @@ const Spaces = ({
     'sortBy': 'basicInformation.spaceName',
   });
   const [showFilter, setShowFilter] = useState(false);
+  const { values } = useFormContext();
 
   const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
     searchParams.toString(),
   );
   const page = searchParams.get('page');
 
-  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const toggleImagePreviewModal = imgSrc =>
@@ -124,7 +122,7 @@ const Spaces = ({
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'mediaOwner',
+        accessor: 'landlord',
         Cell: ({
           row: {
             original: { basicInformation },
@@ -159,7 +157,7 @@ const Spaces = ({
       },
       {
         Header: 'DIMENSION',
-        accessor: 'dimension',
+        accessor: 'specifications.size.min',
         Cell: ({
           row: {
             original: { specifications },
@@ -176,7 +174,7 @@ const Spaces = ({
       },
       {
         Header: 'IMPRESSION',
-        accessor: 'impressions',
+        accessor: 'specifications.impressions.min',
         Cell: ({
           row: {
             original: { specifications },
@@ -185,7 +183,7 @@ const Spaces = ({
       },
       {
         Header: 'HEALTH STATUS',
-        accessor: 'health',
+        accessor: 'specifications.health',
         Cell: ({
           row: {
             original: { specifications },
@@ -207,7 +205,7 @@ const Spaces = ({
       },
       {
         Header: 'LOCATION',
-        accessor: 'city',
+        accessor: 'location.city',
         Cell: ({
           row: {
             original: { location },
@@ -225,7 +223,7 @@ const Spaces = ({
       },
       {
         Header: 'PRICING',
-        accessor: 'price',
+        accessor: 'basicInformation.price',
         Cell: ({
           row: {
             original: { _id, basicInformation },
@@ -325,24 +323,22 @@ const Spaces = ({
     setTotalProposedPrice(total);
   }, [noOfSelectedPlaces]);
 
+  useEffect(() => {
+    if (values.startDate && values.endDate) {
+      searchParams.set('from', dayjs(values.startDate).format('YYYY-MM-DD'));
+      searchParams.set('to', dayjs(values.endDate).format('YYYY-MM-DD'));
+      setSearchParams(searchParams);
+    }
+  }, []);
+
   return (
     <>
       <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
         <div className="flex justify-between items-center">
           <Text size="lg" weight="bold">
-            Select Place for Campaign
+            Select Place for Proposal
           </Text>
           <div className="flex items-center gap-2">
-            <div ref={ref} className="relative">
-              <Button onClick={toggleDatePicker} variant="default">
-                <Image src={calendar} className="h-5" alt="calendar" />
-              </Button>
-              {showDatePicker && (
-                <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
-                  <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
-                </div>
-              )}
-            </div>
             <div className="mr-2">
               <Button onClick={toggleFilter} variant="default">
                 <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
