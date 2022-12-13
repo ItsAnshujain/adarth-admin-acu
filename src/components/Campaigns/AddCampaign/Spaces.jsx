@@ -4,6 +4,8 @@ import { ChevronDown, Edit2, Eye, Trash } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
+import { DatePicker } from '@mantine/dates';
 import Filter from '../../Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -76,6 +78,8 @@ const SelectSpace = () => {
           unit,
           resolutions,
           supportedMedia,
+          startDate,
+          endDate,
         },
       }) => ({
         id: _id,
@@ -89,11 +93,19 @@ const SelectSpace = () => {
         unit,
         resolutions,
         supportedMedia,
+        startDate,
+        endDate,
       }),
     );
 
     setFieldValue('place', formData);
     setFieldValue('healthTag', getHealthTag(avgHealth));
+  };
+
+  const updateDate = (key, val, id) => {
+    setUpdatedInventoryData(prev =>
+      prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+    );
   };
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -260,6 +272,48 @@ const SelectSpace = () => {
         }) => pricing,
       },
       {
+        Header: 'START DATE',
+        accessor: 'startDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { startDate, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <DatePicker
+                defaultValue={startDate}
+                placeholder="DD/MM/YYYY"
+                minDate={new Date()}
+                onChange={val => updateDate('startDate', val, _id)}
+              />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'END DATE',
+        accessor: 'endDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { endDate, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <DatePicker
+                defaultValue={endDate}
+                placeholder="DD/MM/YYYY"
+                minDate={new Date()}
+                onChange={val => updateDate('endDate', val, _id)}
+              />
+            ),
+            [],
+          ),
+      },
+      {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
@@ -362,6 +416,8 @@ const SelectSpace = () => {
         obj.illuminations = item.specifications.illuminations?.name;
         obj.unit = item.specifications.unit;
         obj.resolutions = item.specifications.resolutions;
+        obj.startDate = item.startDate ? new Date(item.startDate) : new Date();
+        obj.endDate = item.endDate ? new Date(item.endDate) : dayjs().add(1, 'day').toDate();
         finalData.push(obj);
       }
       setUpdatedInventoryData(finalData);
