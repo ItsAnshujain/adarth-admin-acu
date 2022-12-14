@@ -18,11 +18,15 @@ import { useFetchMasters } from '../../hooks/masters.hooks';
 import useLayoutView from '../../store/layout.store';
 import RoleBased from '../../components/RoleBased';
 
+const statusSelectStyle = {
+  rightSection: { pointerEvents: 'none' },
+};
+
 const initialState = {
   page: 1,
   limit: '10',
   sortBy: 'name',
-  sortOrder: 'asc',
+  sortOrder: 'desc',
 };
 
 const Home = () => {
@@ -137,9 +141,7 @@ const Home = () => {
                 data={
                   campaignStatus?.docs?.map(item => ({ label: item.name, value: item._id })) || []
                 }
-                styles={{
-                  rightSection: { pointerEvents: 'none' },
-                }}
+                styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
               />

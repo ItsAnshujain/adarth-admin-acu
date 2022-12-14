@@ -18,7 +18,7 @@ const View = () => {
     sortBy: 'name',
     sortOrder: 'desc',
   });
-  const { data } = useCampaign({ id, query: searchParams.toString() });
+  const { data } = useCampaign({ id, query: searchParams.toString() }, tabs === 0);
 
   useEffect(() => {
     setSearchParams(searchParams);

@@ -12,6 +12,10 @@ import { serialize } from '../../../utils';
 import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import NoData from '../../shared/NoData';
 
+const statusSelectStyle = {
+  rightSection: { pointerEvents: 'none' },
+};
+
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export const data = {
@@ -146,9 +150,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
                   mutate({ id: bookingData._id, query: serialize({ printingStatus: val }) })
                 }
                 data={printList}
-                styles={{
-                  rightSection: { pointerEvents: 'none' },
-                }}
+                styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
               />
@@ -173,9 +175,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
                   mutate({ id: bookingData._id, query: serialize({ mountingStatus: val }) })
                 }
                 data={mountList}
-                styles={{
-                  rightSection: { pointerEvents: 'none' },
-                }}
+                styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
               />
@@ -204,17 +204,6 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
               <p className="font-bold">
                 {bookingData?.campaign?.incharge?.[0]?.name || <NoData type="na" />}
               </p>
-              {/* <Select
-                className="mr-2"
-                value={campaignIncharge}
-                onChange={setCampaignIncharge}
-                data={['Completed', 'Pending']}
-                styles={{
-                  rightSection: { pointerEvents: 'none' },
-                }}
-                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-                rightSectionWidth={40}
-              /> */}
             </div>
             <div>
               <p className="text-slate-400">Start Date</p>

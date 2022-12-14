@@ -48,16 +48,16 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const type = searchParams.get('type');
 
   const { data: campaignStatusData } = useFetchMasters(
-    serialize({ type: 'campaign_status', limit: 100 }),
+    serialize({ type: 'campaign_status', parentId: null, page: 1, limit: 100 }),
   );
   const { data: paymentStatusData } = useFetchMasters(
-    serialize({ type: 'payment_status', limit: 100 }),
+    serialize({ type: 'payment_status', parentId: null, page: 1, limit: 100 }),
   );
   const { data: printingStatusData } = useFetchMasters(
-    serialize({ type: 'printing_status', limit: 100 }),
+    serialize({ type: 'printing_status', parentId: null, page: 1, limit: 100 }),
   );
   const { data: mountingStatusData } = useFetchMasters(
-    serialize({ type: 'mounting_status', limit: 100 }),
+    serialize({ type: 'mounting_status', parentId: null, page: 1, limit: 100 }),
   );
 
   const handleCheckedValues = (filterValues, filterKey) => {
