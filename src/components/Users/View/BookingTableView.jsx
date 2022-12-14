@@ -292,7 +292,7 @@ const BookingTableView = ({ viewType, userId = null }) => {
           useMemo(
             () => (
               <a
-                href={purchaseOrder ?? null}
+                href={purchaseOrder}
                 className={classNames(
                   purchaseOrder
                     ? 'text-purple-450 cursor-pointer'
@@ -321,7 +321,7 @@ const BookingTableView = ({ viewType, userId = null }) => {
           useMemo(
             () => (
               <a
-                href={releaseOrder ?? null}
+                href={releaseOrder}
                 className={classNames(
                   releaseOrder
                     ? 'text-purple-450 cursor-pointer'
@@ -350,7 +350,7 @@ const BookingTableView = ({ viewType, userId = null }) => {
           useMemo(
             () => (
               <a
-                href={invoice ?? null}
+                href={invoice}
                 className={classNames(
                   invoice ? 'text-purple-450 cursor-pointer' : 'pointer-events-none text-gray-450',
                   'font-medium',

@@ -104,7 +104,7 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
           <>
             <div>
               <a
-                href={bookingData?.purchaseOrder ?? null}
+                href={bookingData?.purchaseOrder}
                 className={classNames(
                   bookingData?.purchaseOrder
                     ? 'text-white cursor-pointer bg-black'
@@ -120,7 +120,7 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
             </div>
             <div>
               <a
-                href={bookingData?.releaseOrder ?? null}
+                href={bookingData?.releaseOrder}
                 className={classNames(
                   bookingData?.releaseOrder
                     ? 'text-white cursor-pointer bg-black'
@@ -136,7 +136,7 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
             </div>
             <div>
               <a
-                href={bookingData?.invoice ?? null}
+                href={bookingData?.invoice}
                 className={classNames(
                   bookingData?.invoice
                     ? 'text-white cursor-pointer bg-black'
