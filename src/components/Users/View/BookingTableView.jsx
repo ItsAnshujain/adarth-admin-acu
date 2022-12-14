@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
 import { Loader, NativeSelect, Progress } from '@mantine/core';
 import dayjs from 'dayjs';
+import classNames from 'classnames';
 import { serialize } from '../../../utils';
 import { useBookings, useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
@@ -291,8 +292,13 @@ const BookingTableView = ({ viewType, userId = null }) => {
           useMemo(
             () => (
               <a
-                href={purchaseOrder}
-                className="text-purple-450 cursor-pointer font-medium"
+                href={purchaseOrder ?? null}
+                className={classNames(
+                  purchaseOrder
+                    ? 'text-purple-450 cursor-pointer'
+                    : 'pointer-events-none text-gray-450',
+                  'font-medium',
+                )}
                 target="_blank"
                 download
                 rel="noopener noreferrer"
@@ -315,8 +321,13 @@ const BookingTableView = ({ viewType, userId = null }) => {
           useMemo(
             () => (
               <a
-                href={releaseOrder}
-                className="text-purple-450 cursor-pointer font-medium"
+                href={releaseOrder ?? null}
+                className={classNames(
+                  releaseOrder
+                    ? 'text-purple-450 cursor-pointer'
+                    : 'pointer-events-none text-gray-450',
+                  'font-medium',
+                )}
                 target="_blank"
                 download
                 rel="noopener noreferrer"
@@ -339,8 +350,11 @@ const BookingTableView = ({ viewType, userId = null }) => {
           useMemo(
             () => (
               <a
-                href={invoice}
-                className="text-purple-450 cursor-pointer font-medium"
+                href={invoice ?? null}
+                className={classNames(
+                  invoice ? 'text-purple-450 cursor-pointer' : 'pointer-events-none text-gray-450',
+                  'font-medium',
+                )}
                 target="_blank"
                 download
                 rel="noopener noreferrer"

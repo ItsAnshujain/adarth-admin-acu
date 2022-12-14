@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Menu from '../../Finance/Menu';
 
-const Header = ({ pageNumber, setPageNumber, bookingId }) => {
+const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
   const navigate = useNavigate();
 
   const purchaseOrderList = useMemo(
@@ -103,19 +103,52 @@ const Header = ({ pageNumber, setPageNumber, bookingId }) => {
         ) : (
           <>
             <div>
-              <Button onClick={() => {}} className="bg-black text-sm  text-white">
+              <a
+                href={bookingData?.purchaseOrder ?? null}
+                className={classNames(
+                  bookingData?.purchaseOrder
+                    ? 'text-white cursor-pointer bg-black'
+                    : 'pointer-events-none text-black bg-gray-450',
+                  'font-medium py-2 px-3 rounded-md',
+                )}
+                target="_blank"
+                download
+                rel="noopener noreferrer"
+              >
                 Download Purchase Order
-              </Button>
+              </a>
             </div>
             <div>
-              <Button onClick={() => {}} className="bg-black text-white">
+              <a
+                href={bookingData?.releaseOrder ?? null}
+                className={classNames(
+                  bookingData?.releaseOrder
+                    ? 'text-white cursor-pointer bg-black'
+                    : 'pointer-events-none text-black bg-gray-450',
+                  'font-medium py-2 px-3 rounded-md',
+                )}
+                target="_blank"
+                download
+                rel="noopener noreferrer"
+              >
                 Download Release Order
-              </Button>
+              </a>
             </div>
             <div>
-              <Button onClick={() => {}} className="bg-black text-white">
+              <a
+                href={bookingData?.invoice ?? null}
+                className={classNames(
+                  bookingData?.invoice
+                    ? 'text-white cursor-pointer bg-black'
+                    : 'pointer-events-none text-black bg-gray-450',
+                  'font-medium py-2 px-3 rounded-md',
+                )}
+                target="_blank"
+                download
+                rel="noopener noreferrer"
+              >
                 Download Invoice
-              </Button>
+              </a>
             </div>
           </>
         )}

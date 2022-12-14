@@ -82,7 +82,7 @@ const schema = step =>
       .string()
       .trim()
       .concat(step === 2 ? requiredSchema('Campaign description is required') : null),
-    spaces: yup
+    place: yup
       .mixed()
       .concat(
         step === 3 ? yup.array().of(yup.object()).min(1, 'Minimum 1 space is required') : null,
@@ -102,7 +102,7 @@ const initialValues = {
   paymentType: 'neft',
   campaignName: '',
   description: '',
-  spaces: [],
+  place: [],
 };
 
 const MainArea = () => {
@@ -123,7 +123,7 @@ const MainArea = () => {
     let minDate = null;
     let maxDate = null;
 
-    formData.spaces.forEach(item => {
+    formData.place.forEach(item => {
       const start = item.startDate.setHours(0, 0, 0, 0);
       const end = item.endDate.setHours(0, 0, 0, 0);
 

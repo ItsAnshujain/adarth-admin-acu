@@ -2,8 +2,9 @@ import { useDebouncedState } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import { NativeSelect, Progress, Loader } from '@mantine/core';
+import { NativeSelect, Progress, Loader, Button } from '@mantine/core';
 import dayjs from 'dayjs';
+import classNames from 'classnames';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
@@ -14,6 +15,8 @@ import { useFetchMasters } from '../../hooks/masters.hooks';
 import MenuPopover from './MenuPopOver';
 import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from './BookingStatisticsView';
+
+const DATE_FORMAT = 'DD MMM YYYY';
 
 const Bookings = () => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
@@ -62,7 +65,6 @@ const Bookings = () => {
     updateBooking({ id: bookingId, query: serialize({ campaignStatus: data }) });
   };
 
-  // TODO: remove disableSortBy when api is updated for sorting GET all bookings
   const column = useMemo(
     () => [
       {
@@ -92,7 +94,15 @@ const Bookings = () => {
       {
         Header: 'ORDER DATE',
         accessor: 'createdAt',
-        Cell: ({ row: { original } }) => dayjs(original.client.createdAt).format('DD-MMMM-YYYY'),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                {dayjs(original.client.createdAt).format(DATE_FORMAT)}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'CAMPAIGN NAME',
@@ -212,7 +222,7 @@ const Bookings = () => {
         accessor: 'campaign.avgHealth',
         Cell: ({
           row: {
-            original: { healthStatus, totalHealthStatus },
+            original: { campaign },
           },
         }) =>
           useMemo(
@@ -220,8 +230,8 @@ const Bookings = () => {
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: healthStatus, color: 'green' },
-                    { value: totalHealthStatus - healthStatus, color: 'red' },
+                    { value: campaign?.avgHealth, color: 'green' },
+                    { value: 100 - (campaign?.avgHealth || 0), color: 'red' },
                   ]}
                 />
               </div>
@@ -233,6 +243,11 @@ const Bookings = () => {
         Header: 'PAYMENT TYPE',
         accessor: 'paymentType',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { paymentType },
+          },
+        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
       },
       {
         Header: 'SCHEDULE',
@@ -264,8 +279,45 @@ const Bookings = () => {
         Header: 'DOWNLOAD UPLOADED MEDIA',
         accessor: '',
         disableSortBy: true,
-        Cell: () =>
-          useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <Button
+                className={classNames(
+                  campaign?.medias?.length
+                    ? 'text-purple-450 cursor-pointer'
+                    : 'pointer-events-none text-gray-450 bg-white',
+                  'font-medium  text-base',
+                )}
+                disabled={!campaign?.medias?.length}
+                onClick={() => {
+                  const downloadAll = urls => {
+                    const url = urls.pop();
+
+                    const a = document.createElement('a');
+                    a.setAttribute('href', url);
+                    a.setAttribute('download', '');
+                    a.setAttribute('target', '_blank');
+                    a.setAttributes('rel', 'noopener noreferrer');
+                    a.click();
+
+                    if (urls.length === 0) {
+                      // eslint-disable-next-line no-use-before-define
+                      clearInterval(interval);
+                    }
+                  };
+                  const interval = setInterval(downloadAll, 300, campaign?.medias);
+                }}
+              >
+                Download
+              </Button>
+            ),
+            [],
+          ),
       },
       {
         Header: 'TOTAL SPACES',
@@ -276,9 +328,9 @@ const Bookings = () => {
         accessor: 'price',
         Cell: ({
           row: {
-            original: { price },
+            original: { campaign },
           },
-        }) => useMemo(() => toIndianCurrency(price), []),
+        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
       },
       {
         Header: 'PURCHASE ORDER',
@@ -292,8 +344,13 @@ const Bookings = () => {
           useMemo(
             () => (
               <a
-                href={purchaseOrder}
-                className="text-purple-450 cursor-pointer font-medium"
+                href={purchaseOrder ?? null}
+                className={classNames(
+                  purchaseOrder
+                    ? 'text-purple-450 cursor-pointer'
+                    : 'pointer-events-none text-gray-450',
+                  'font-medium',
+                )}
                 target="_blank"
                 download
                 rel="noopener noreferrer"
@@ -316,8 +373,13 @@ const Bookings = () => {
           useMemo(
             () => (
               <a
-                href={releaseOrder}
-                className="text-purple-450 cursor-pointer font-medium"
+                href={releaseOrder ?? null}
+                className={classNames(
+                  releaseOrder
+                    ? 'text-purple-450 cursor-pointer'
+                    : 'pointer-events-none text-gray-450',
+                  'font-medium',
+                )}
                 target="_blank"
                 download
                 rel="noopener noreferrer"
@@ -340,8 +402,11 @@ const Bookings = () => {
           useMemo(
             () => (
               <a
-                href={invoice}
-                className="text-purple-450 cursor-pointer font-medium"
+                href={invoice ?? null}
+                className={classNames(
+                  invoice ? 'text-purple-450 cursor-pointer' : 'pointer-events-none text-gray-450',
+                  'font-medium',
+                )}
                 target="_blank"
                 download
                 rel="noopener noreferrer"

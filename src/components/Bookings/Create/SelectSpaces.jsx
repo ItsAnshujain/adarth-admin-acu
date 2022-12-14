@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Image, NumberInput, Progress } from '@mantine/core';
+import { Button, Image, NumberInput, Progress, Badge } from '@mantine/core';
 import { ChevronDown, Edit2, Eye, Trash } from 'react-feather';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
@@ -10,11 +10,10 @@ import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 import { useDeleteInventoryById, useFetchInventory } from '../../../hooks/inventory.hooks';
-import { serialize } from '../../../utils/index';
-import Badge from '../../shared/Badge';
 import MenuIcon from '../../Menu';
 import upload from '../../../assets/upload.svg';
 import { useFormContext } from '../../../context/formContext';
+import { colors } from '../../../utils';
 
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
@@ -23,23 +22,20 @@ const SelectSpace = () => {
   const [search, setSearch] = useState('');
   const [showFilter, setShowFilter] = useState(false);
   const [orderPrice, setOrderPrice] = useState(0);
-
-  const [inventoryQuery] = useState({
-    page: 1,
-    limit: 10,
-    sortOrder: 'asc',
-    sortBy: 'basicInformation.spaceName',
+  const [searchParams, setSearchParams] = useSearchParams({
+    'limit': 10,
+    'page': 1,
+    'sortOrder': 'desc',
+    'sortBy': 'basicInformation.spaceName',
   });
-  const { data: inventoryData, isLoading } = useFetchInventory(serialize(inventoryQuery));
+  const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
   const { mutate } = useDeleteInventoryById();
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
   const onDelete = id => {
     mutate(
-      {
-        inventoryId: id,
-      },
+      { inventoryId: id },
       {
         onSuccess: () => {
           queryClient.invalidateQueries(['inventory']);
@@ -56,19 +52,20 @@ const SelectSpace = () => {
         const obj = {};
         obj.photo = item.basicInformation.spacePhotos;
         obj._id = item._id;
-        obj.space_name = item.basicInformation.spaceName;
-        obj.space_type = item.basicInformation.spaceType?.name;
-        obj.dimension = item.specifications.resolutions;
-        obj.impression = item.specifications.impressions?.min || 0;
-        obj.health = item.specifications.health;
-        obj.location = item.location.city;
-        obj.media_type = item.basicInformation.mediaType?.name;
-        obj.pricing = item.basicInformation.price;
-        obj.landlord_name = '';
-        obj.status = 'Available';
+        obj.spaceName = item.basicInformation?.spaceName;
+        obj.isUnderMaintenance = item?.isUnderMaintenance;
+        obj.spaceType = item.basicInformation?.spaceType?.name;
+        obj.dimension = `${item.specifications?.size?.height || 0}ft x ${
+          item.specifications?.size?.width || 0
+        }ft`;
+        obj.impression = item.specifications?.impressions?.min || 0;
+        obj.health = item?.specifications?.health;
+        obj.location = item?.location?.city;
+        obj.mediaType = item.basicInformation?.mediaType?.name;
+        obj.pricing = item.basicInformation?.price || 0;
+        obj.landlord = item.basicInformation?.mediaOwner?.name;
         obj.startDate = item.startDate ? new Date(item.startDate) : new Date();
         obj.endDate = item.endDate ? new Date(item.endDate) : dayjs().add(1, 'day').toDate();
-        obj.status = 'Available';
         finalData.push(obj);
       }
       setUpdatedInventoryData(finalData);
@@ -76,7 +73,7 @@ const SelectSpace = () => {
   }, [inventoryData]);
 
   const setSelectedFlatRows = selectedSpace => {
-    const totalPrice = selectedSpace.reduce((acc, item) => acc + +(item.values.pricing || 0), 0);
+    const totalPrice = selectedSpace.reduce((acc, item) => acc + +(item.original.pricing || 0), 0);
     setOrderPrice(totalPrice);
     const formData = selectedSpace.map(item => ({
       id: item.original._id,
@@ -84,7 +81,7 @@ const SelectSpace = () => {
       startDate: item.original.startDate,
       endDate: item.original.endDate,
     }));
-    setFieldValue('spaces', formData);
+    setFieldValue('place', formData);
   };
 
   const updatePrice = (price, id) => {
@@ -109,18 +106,13 @@ const SelectSpace = () => {
       },
       {
         Header: 'SPACE NAME & PHOTO',
-        accessor: 'space_name_and_photo',
-        Cell: tableProps => {
-          const {
-            row: {
-              original: { status, photo, space_name, _id },
-            },
-          } = tableProps;
-
-          const color =
-            status === 'Available' ? 'green' : status === 'Unavailable' ? 'orange' : 'primary';
-
-          return useMemo(
+        accessor: 'spaceName',
+        Cell: ({
+          row: {
+            original: { photo, spaceName, isUnderMaintenance, _id },
+          },
+        }) =>
+          useMemo(
             () => (
               <div
                 aria-hidden
@@ -135,50 +127,51 @@ const SelectSpace = () => {
                     fit="cover"
                     className="rounded overflow-hidden"
                     src={photo}
-                    alt={space_name}
+                    alt={spaceName}
                   />
                   <span
-                    title={space_name}
+                    title={spaceName}
                     className="w-[150px] text-ellipsis overflow-hidden whitespace-nowrap"
                   >
-                    {space_name}
+                    {spaceName}
                   </span>
                 </div>
                 <div className="w-fit">
-                  <Badge radius="xl" text={status} color={color} variant="filled" size="sm" />
+                  <Badge
+                    className="capitalize"
+                    variant="filled"
+                    color={isUnderMaintenance ? 'yellow' : 'green'}
+                  >
+                    {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                  </Badge>
                 </div>
               </div>
             ),
-            [],
-          );
-        },
+            [isUnderMaintenance],
+          ),
       },
       {
-        Header: 'LANDLORD NAME',
-        accessor: 'landlord_name',
-        Cell: tableProps => {
-          const {
-            row: {
-              original: { landlord_name },
-            },
-          } = tableProps;
-          return useMemo(() => <div className="w-fit">{landlord_name}</div>, []);
-        },
+        Header: 'MEDIA OWNER NAME',
+        accessor: 'landlord',
+        Cell: ({
+          row: {
+            original: { landlord },
+          },
+        }) => useMemo(() => <p className="w-fit">{landlord || 'NA'}</p>, []),
       },
       {
         Header: 'UPLOAD MEDIA',
         accessor: '',
-        Cell: tableProps => {
-          const {
-            row: {
-              original: { _id },
-            },
-          } = tableProps;
-
-          return useMemo(
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { _id },
+          },
+        }) =>
+          useMemo(
             () =>
-              values?.spaces.length > 0 ? (
-                values?.spaces.map(selected => {
+              values?.place.length > 0 ? (
+                values?.place.map(selected => {
                   if (selected.id === _id) {
                     return (
                       <Button className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-350 text-white rounded-md cursor-pointer">
@@ -196,30 +189,47 @@ const SelectSpace = () => {
                 </Button>
               ),
             [],
-          );
-        },
+          ),
       },
       {
         Header: 'SPACE TYPE',
-        accessor: 'space_type',
+        accessor: 'spaceType',
+        Cell: ({
+          row: {
+            original: { spaceType },
+          },
+        }) =>
+          useMemo(() => {
+            const colorType = Object.keys(colors).find(key => colors[key] === spaceType);
+
+            return (
+              <Badge color={colorType} size="lg" className="capitalize">
+                {spaceType || <span>-</span>}
+              </Badge>
+            );
+          }),
       },
       {
         Header: 'DIMENSION',
-        accessor: 'dimension',
-        Cell: tableProps => {
-          const {
-            cell: { value },
-          } = tableProps;
-          return useMemo(() => <p>{`${value?.height || 0}ft x ${value?.width || 0}ft`}</p>, []);
-        },
+        accessor: 'specifications.size.min',
+        Cell: ({
+          row: {
+            original: { dimension },
+          },
+        }) => useMemo(() => <p>{dimension}</p>, []),
       },
       {
         Header: 'IMPRESSION',
-        accessor: 'impression',
+        accessor: 'specifications.impressions.min',
+        Cell: ({
+          row: {
+            original: { impression },
+          },
+        }) => useMemo(() => <p>{`${impression}+`}</p>, []),
       },
       {
         Header: 'HEALTH',
-        accessor: 'health',
+        accessor: 'specifications.health',
         Cell: ({ row: { original } }) =>
           useMemo(
             () => (
@@ -237,16 +247,20 @@ const SelectSpace = () => {
       },
       {
         Header: 'LOCATION',
-        accessor: 'location',
+        accessor: 'location.city',
+        Cell: ({
+          row: {
+            original: { location },
+          },
+        }) => useMemo(() => <p>{location?.city}</p>, []),
       },
       {
         Header: 'MEDIA TYPE',
-        accessor: 'media_type',
+        accessor: 'mediaType',
       },
       {
         Header: 'PRICING',
-        accessor: 'pricing',
-
+        accessor: 'basicInformation.price',
         Cell: ({
           row: {
             original: { pricing, _id },
@@ -309,13 +323,13 @@ const SelectSpace = () => {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
-        Cell: tableProps => {
+        Cell: ({
+          row: {
+            original: { id },
+          },
+        }) => {
           const [showMenu, setShowMenu] = useState(false);
-          const {
-            row: {
-              original: { id },
-            },
-          } = tableProps;
+
           return useMemo(
             () => (
               <div aria-hidden onClick={() => setShowMenu(!showMenu)}>
@@ -364,6 +378,27 @@ const SelectSpace = () => {
 
   const toggleFilter = () => setShowFilter(!showFilter);
 
+  const handleSortByColumn = colId => {
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
+      searchParams.set('sortOrder', 'asc');
+      setSearchParams(searchParams);
+      return;
+    }
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
+      searchParams.set('sortOrder', 'desc');
+      setSearchParams(searchParams);
+      return;
+    }
+
+    searchParams.set('sortBy', colId);
+    setSearchParams(searchParams);
+  };
+
+  const handlePagination = currentPage => {
+    searchParams.set('page', currentPage);
+    setSearchParams(searchParams);
+  };
+
   return (
     <>
       <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
@@ -379,7 +414,7 @@ const SelectSpace = () => {
         <div className="flex gap-4">
           <div>
             <p className="text-slate-400">Selected Places</p>
-            <p className="font-bold">{values?.spaces?.length || 0}</p>
+            <p className="font-bold">{values?.place?.length || 0}</p>
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
@@ -403,9 +438,13 @@ const SelectSpace = () => {
         allowRowsSelect
         isBookingTable
         setSelectedFlatRows={setSelectedFlatRows}
-        selectedRowData={values?.spaces?.map(item => ({
+        selectedRowData={values?.place?.map(item => ({
           _id: item.id,
         }))}
+        activePage={inventoryData?.page || 1}
+        totalPages={inventoryData?.totalPages || 1}
+        setActivePage={handlePagination}
+        handleSorting={handleSortByColumn}
       />
     </>
   );

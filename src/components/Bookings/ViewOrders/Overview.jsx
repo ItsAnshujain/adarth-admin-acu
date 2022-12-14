@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button, Image, Pagination } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import GoogleMapReact from 'google-map-react';
@@ -10,9 +10,6 @@ import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
 import NoData from '../../shared/NoData';
 
-import dummy1 from '../../../assets/dummy1.png';
-import dummy3 from '../../../assets/dummy3.png';
-
 const defaultProps = {
   center: {
     lat: 28.70406,
@@ -21,25 +18,9 @@ const defaultProps = {
   zoom: 10,
 };
 
-const dummyDataObj = {
-  img: dummy1,
-  status: 'Available',
-  name: 'Open Digital Billboard',
-  address: 'M G Road TOI Building Towards Brigade Road',
-  cost: 230000,
-  printing_status: 'Completed',
-  mounting_status: 'In mountain',
-  health_update: '90%',
-  format_support: 'JPEG,PNG',
-  ligting: 'Lighting',
-  from_date: '02/12/2022',
-  to_date: '02/12/2022',
-  media: dummy3,
-};
-
 const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
-const Overview = ({ bookingData }) => {
+const Overview = ({ bookingData = {} }) => {
   const [readMore, toggle] = useToggle();
   const [posterImage, setPosterImage] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
@@ -48,6 +29,26 @@ const Overview = ({ bookingData }) => {
     page: 1,
     limit: 6,
   });
+
+  const calculateTotalCities = useMemo(() => {
+    const initialCity = 0;
+    if (bookingData?.campaign?.spaces.length > 0) {
+      const filteredNamesArr = bookingData?.campaign?.spaces.map(item => item?.location?.city);
+      const uniqueNamesArr = Array.from(new Set(filteredNamesArr.map(item => item.toLowerCase())));
+      return uniqueNamesArr;
+    }
+    return initialCity;
+  }, [bookingData?.campaign?.spaces]);
+
+  const calcutateTotalMinimumImpressions = useMemo(() => {
+    const initialImpressions = 0;
+    if (bookingData?.campaign?.spaces.length > 0) {
+      return bookingData?.campaign?.spaces
+        .map(item => item?.specifications?.impressions?.min)
+        .reduce((previousValue, currentValue) => previousValue + currentValue, initialImpressions);
+    }
+    return initialImpressions;
+  }, [bookingData?.campaign?.spaces]);
 
   useEffect(() => {
     if (mapInstance && bookingData?.spaces?.docs?.length) {
@@ -120,14 +121,14 @@ const Overview = ({ bookingData }) => {
             </p>
           </div>
           <div className="flex mt-4 items-center gap-2 ">
-            <span>{toIndianCurrency(bookingData.totalPrice || 0)}</span>
+            <span>{toIndianCurrency(bookingData?.campaign?.totalPrice || 0)}</span>
             <CustomBadge
               size="lg"
               text={
                 <>
-                  <NoData type="unknown" /> Total Impressions{' '}
+                  {calcutateTotalMinimumImpressions ?? <NoData type="unknown" />} Total Impressions{' '}
                 </>
-              } // "497947947 "
+              }
               className="py-4 font-extralight bg-[#4B0DAF1A] capitalize "
             />
           </div>
@@ -137,22 +138,15 @@ const Overview = ({ bookingData }) => {
             <div className="p-4 py-6 grid grid-cols-2 grid-rows-2 border rounded-md gap-y-4 mt-2">
               <div>
                 <p className="text-slate-400 text-sm">Total Media</p>
-                <p>
-                  <NoData type="unknown" /> hoarding, <NoData type="unknown" />
-                  digital screen
-                </p>
+                <p>{bookingData?.campaign?.medias.length ?? <NoData type="na" />}</p>
               </div>
               <div>
                 <p className="text-slate-400 text-sm">Impressions</p>
-                <p>
-                  <NoData type="unknown" />
-                </p>
+                <p>{calcutateTotalMinimumImpressions ?? <NoData type="unknown" />}</p>
               </div>
               <div>
                 <p className="text-slate-400 text-sm">Number of Locations</p>
-                <p>
-                  <NoData type="unknown" />
-                </p>
+                <p>{calculateTotalCities.length ?? <NoData type="na" />}</p>
               </div>
             </div>
           </div>
@@ -181,8 +175,8 @@ const Overview = ({ bookingData }) => {
           All the places been cover by this campaign
         </p>
         <div>
-          {!bookingData?.spaces?.docs?.length ? (
-            Array.from({ length: 3 }).map(() => <Places data={dummyDataObj} />)
+          {bookingData?.campaign?.spaces?.length ? (
+            bookingData?.campaign?.spaces?.map(item => <Places data={item} />)
           ) : (
             <div className="w-full min-h-[7rem] flex justify-center items-center">
               <p className="text-xl">No spaces found</p>

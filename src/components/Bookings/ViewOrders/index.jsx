@@ -4,7 +4,7 @@ import Header from './Header';
 import Overview from './Overview';
 import OrderInfo from './OrderInformation';
 import ProcessPipeline from './ProcessPipeline';
-import { useBookingById } from '../../../hooks/booking.hooks';
+import { useBookingById, useBookingStats } from '../../../hooks/booking.hooks';
 
 // TODO:Add count prop to Booking to send it to table
 const Main = () => {
@@ -12,11 +12,18 @@ const Main = () => {
   const { id } = useParams();
 
   const { data: bookingData, isLoading } = useBookingById(id, !!id);
+  const { data: bookingStats } = useBookingStats('');
+
   return (
     <>
-      <Header pageNumber={pageNumber} setPageNumber={setPageNumber} bookingId={id} />
+      <Header
+        pageNumber={pageNumber}
+        setPageNumber={setPageNumber}
+        bookingId={id}
+        bookingData={bookingData}
+      />
       {pageNumber === 0 ? (
-        <OrderInfo bookingData={bookingData} isLoading={isLoading} />
+        <OrderInfo bookingData={bookingData} isLoading={isLoading} bookingStats={bookingStats} />
       ) : pageNumber === 1 ? (
         <ProcessPipeline bookingData={bookingData} />
       ) : (
