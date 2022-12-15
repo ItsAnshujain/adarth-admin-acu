@@ -32,7 +32,7 @@ const Overview = ({ bookingData = {} }) => {
 
   const calculateTotalCities = useMemo(() => {
     const initialCity = 0;
-    if (bookingData?.campaign?.spaces.length > 0) {
+    if (bookingData?.campaign?.spaces?.length > 0) {
       const filteredNamesArr = bookingData?.campaign?.spaces.map(item => item?.location?.city);
       const uniqueNamesArr = Array.from(new Set(filteredNamesArr.map(item => item.toLowerCase())));
       return uniqueNamesArr;
@@ -42,7 +42,7 @@ const Overview = ({ bookingData = {} }) => {
 
   const calcutateTotalMinimumImpressions = useMemo(() => {
     const initialImpressions = 0;
-    if (bookingData?.campaign?.spaces.length > 0) {
+    if (bookingData?.campaign?.spaces?.length > 0) {
       return bookingData?.campaign?.spaces
         .map(item => item?.specifications?.impressions?.min)
         .reduce((previousValue, currentValue) => previousValue + currentValue, initialImpressions);

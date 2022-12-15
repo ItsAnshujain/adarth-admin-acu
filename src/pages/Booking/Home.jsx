@@ -16,6 +16,10 @@ import MenuPopover from './MenuPopOver';
 import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from './BookingStatisticsView';
 
+const statusSelectStyle = {
+  rightSection: { pointerEvents: 'none' },
+};
+
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const Bookings = () => {
@@ -35,35 +39,60 @@ const Bookings = () => {
   );
   const { data: bookingStats } = useBookingStats('');
   const { data: campaignStatus } = useFetchMasters(
-    serialize({ type: 'campaign_status', limit: 100 }),
+    serialize({ type: 'campaign_status', parentId: null, page: 1, limit: 100 }),
   );
   const { data: paymentStatus } = useFetchMasters(
-    serialize({ type: 'payment_status', limit: 100 }),
+    serialize({ type: 'payment_status', parentId: null, page: 1, limit: 100 }),
   );
   const { data: printingStatus } = useFetchMasters(
-    serialize({ type: 'printing_status', limit: 100 }),
+    serialize({ type: 'printing_status', parentId: null, page: 1, limit: 100 }),
   );
   const { data: mountingStatus } = useFetchMasters(
-    serialize({ type: 'mounting_status', limit: 100 }),
+    serialize({ type: 'mounting_status', parentId: null, page: 1, limit: 100 }),
   );
 
   const { mutateAsync: updateBooking } = useUpdateBookingStatus();
 
   const handlePaymentUpdate = (bookingId, data) => {
-    updateBooking({ id: bookingId, query: serialize({ paymentStatus: data }) });
+    if (data) {
+      updateBooking({ id: bookingId, query: serialize({ paymentStatus: data }) });
+    }
   };
 
   const handleMountingUpdate = (bookingId, data) => {
-    updateBooking({ id: bookingId, query: serialize({ mountingStatus: data }) });
+    if (data) {
+      updateBooking({ id: bookingId, query: serialize({ mountingStatus: data }) });
+    }
   };
 
   const handlePrintingUpdate = (bookingId, data) => {
-    updateBooking({ id: bookingId, query: serialize({ printingStatus: data }) });
+    if (data) {
+      updateBooking({ id: bookingId, query: serialize({ printingStatus: data }) });
+    }
   };
 
   const handleCampaignUpdate = (bookingId, data) => {
-    updateBooking({ id: bookingId, query: serialize({ campaignStatus: data }) });
+    if (data) {
+      updateBooking({ id: bookingId, query: serialize({ campaignStatus: data }) });
+    }
   };
+
+  const paymentList = useMemo(
+    () => paymentStatus?.docs?.map(item => item.name) || [],
+    [paymentStatus],
+  );
+  const mountingList = useMemo(
+    () => mountingStatus?.docs?.map(item => item.name) || [],
+    [mountingStatus],
+  );
+  const printingList = useMemo(
+    () => printingStatus?.docs?.map(item => item.name) || [],
+    [printingStatus],
+  );
+  const campaignList = useMemo(
+    () => campaignStatus?.docs?.map(item => item.name) || [],
+    [campaignStatus],
+  );
 
   const column = useMemo(
     () => [
@@ -112,6 +141,11 @@ const Bookings = () => {
       {
         Header: 'BOOKING TYPE',
         accessor: 'type',
+        Cell: ({
+          row: {
+            original: { type },
+          },
+        }) => useMemo(() => <p className="capitalize">{type}</p>, []),
       },
       {
         Header: 'CAMPAIGN STATUS',
@@ -121,22 +155,23 @@ const Bookings = () => {
             original: { _id, currentStatus },
           },
         }) =>
-          useMemo(
-            () => (
+          useMemo(() => {
+            const updatedCampaignList = [...campaignList];
+            if (!currentStatus?.campaignStatus) {
+              updatedCampaignList.unshift({ label: 'Select', value: '' });
+            }
+            return (
               <NativeSelect
                 className="mr-2"
-                data={campaignStatus?.docs?.map(item => item.name) || []}
-                styles={{
-                  rightSection: { pointerEvents: 'none' },
-                }}
+                data={updatedCampaignList}
+                styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-                onChange={e => handleCampaignUpdate(_id, e.target.value)}
-                value={currentStatus?.campaignStatus || ''}
+                onChange={e => handleCampaignUpdate(_id, e.target.value.toLowerCase())}
+                value={currentStatus?.campaignStatus?.toLowerCase() || ''}
               />
-            ),
-            [],
-          ),
+            );
+          }, []),
       },
       {
         Header: 'PAYMENT STATUS',
@@ -146,21 +181,23 @@ const Bookings = () => {
             original: { _id, currentStatus },
           },
         }) =>
-          useMemo(
-            () => (
+          useMemo(() => {
+            const updatedPaymentList = [...paymentList];
+            if (!currentStatus?.paymentStatus) {
+              updatedPaymentList.unshift({ label: 'Select', value: '' });
+            }
+            return (
               <NativeSelect
-                data={paymentStatus?.docs?.map(item => item.name) || []}
-                styles={{
-                  rightSection: { pointerEvents: 'none' },
-                }}
+                className="mr-2"
+                data={updatedPaymentList}
+                styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
                 onChange={e => handlePaymentUpdate(_id, e.target.value)}
                 value={currentStatus?.paymentStatus || ''}
               />
-            ),
-            [],
-          ),
+            );
+          }, []),
       },
       {
         Header: 'PRINTING STATUS',
@@ -170,22 +207,23 @@ const Bookings = () => {
             original: { _id, currentStatus },
           },
         }) =>
-          useMemo(
-            () => (
+          useMemo(() => {
+            const updatedPrintingList = [...printingList];
+            if (!currentStatus?.printingStatus) {
+              updatedPrintingList.unshift({ label: 'Select', value: '' });
+            }
+            return (
               <NativeSelect
                 className="mr-2"
-                data={printingStatus?.docs?.map(item => item.name) || []}
-                styles={{
-                  rightSection: { pointerEvents: 'none' },
-                }}
+                data={updatedPrintingList}
+                styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
                 onChange={e => handlePrintingUpdate(_id, e.target.value)}
-                value={currentStatus?.printingStatus || ''}
+                defaultValue={currentStatus?.printingStatus || ''}
               />
-            ),
-            [],
-          ),
+            );
+          }, []),
       },
       {
         Header: 'MOUNTING STATUS',
@@ -195,22 +233,23 @@ const Bookings = () => {
             original: { _id, currentStatus },
           },
         }) =>
-          useMemo(
-            () => (
+          useMemo(() => {
+            const updatedMountingList = [...mountingList];
+            if (!currentStatus?.mountingStatus) {
+              updatedMountingList.unshift({ label: 'Select', value: '' });
+            }
+            return (
               <NativeSelect
                 className="mr-2"
-                data={mountingStatus?.docs?.map(item => item.name) || []}
-                styles={{
-                  rightSection: { pointerEvents: 'none' },
-                }}
+                data={updatedMountingList}
+                styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
                 onChange={e => handleMountingUpdate(_id, e.target.value)}
-                value={currentStatus?.mountingStatus || ''}
+                defaultValue={currentStatus?.mountingStatus || ''}
               />
-            ),
-            [],
-          ),
+            );
+          }, []),
       },
       {
         Header: 'CAMPAIGN INCHARGE',
@@ -268,12 +307,6 @@ const Bookings = () => {
             ),
             [],
           ),
-      },
-      {
-        Header: 'UPLOADED MEDIA',
-        accessor: 'uploaded_media',
-        disableSortBy: true,
-        Cell: () => useMemo(() => '', []),
       },
       {
         Header: 'DOWNLOAD UPLOADED MEDIA',
@@ -344,7 +377,7 @@ const Bookings = () => {
           useMemo(
             () => (
               <a
-                href={purchaseOrder ?? null}
+                href={purchaseOrder}
                 className={classNames(
                   purchaseOrder
                     ? 'text-purple-450 cursor-pointer'
@@ -373,7 +406,7 @@ const Bookings = () => {
           useMemo(
             () => (
               <a
-                href={releaseOrder ?? null}
+                href={releaseOrder}
                 className={classNames(
                   releaseOrder
                     ? 'text-purple-450 cursor-pointer'
@@ -402,7 +435,7 @@ const Bookings = () => {
           useMemo(
             () => (
               <a
-                href={invoice ?? null}
+                href={invoice}
                 className={classNames(
                   invoice ? 'text-purple-450 cursor-pointer' : 'pointer-events-none text-gray-450',
                   'font-medium',
