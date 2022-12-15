@@ -90,7 +90,7 @@ const Bookings = () => {
     [printingStatus],
   );
   const campaignList = useMemo(
-    () => campaignStatus?.docs?.map(item => item.name) || [],
+    () => campaignStatus?.docs?.map(item => item.name.toLowerCase()) || [],
     [campaignStatus],
   );
 
@@ -168,7 +168,7 @@ const Bookings = () => {
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
                 onChange={e => handleCampaignUpdate(_id, e.target.value.toLowerCase())}
-                value={currentStatus?.campaignStatus?.toLowerCase() || ''}
+                defaultValue={currentStatus?.campaignStatus?.toLowerCase() || ''}
               />
             );
           }, []),
@@ -194,7 +194,7 @@ const Bookings = () => {
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
                 onChange={e => handlePaymentUpdate(_id, e.target.value)}
-                value={currentStatus?.paymentStatus || ''}
+                defaultValue={currentStatus?.paymentStatus || ''}
               />
             );
           }, []),

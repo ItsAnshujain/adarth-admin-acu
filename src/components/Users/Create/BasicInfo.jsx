@@ -68,9 +68,7 @@ const BasicInfo = ({ setUploadingFile }) => {
             </Dropzone>
           </div>
         </div>
-        {uploadImage.length === 0 && errors?.image ? (
-          <p className="mt-1 text-xs text-red-450">{errors?.image}</p>
-        ) : null}
+        {errors?.image ? <p className="mt-1 text-xs text-red-450">{errors?.image}</p> : null}
       </div>
       <div className="grid grid-cols-2 gap-6 mt-4 mb-12">
         <TextInput
