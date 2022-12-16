@@ -67,7 +67,12 @@ const Home = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row: { index } }) => index + 1,
+        Cell: ({ row: { index } }) =>
+          useMemo(() => {
+            const currentPage = Math.max(searchParams.get('page'), 1);
+            const rowCount = (currentPage - 1) * +(searchParams.get('limit') || 0);
+            return <div className="pl-2">{rowCount + index + 1}</div>;
+          }, []),
       },
       {
         Header: 'CAMPAIGN NAME',
@@ -233,7 +238,7 @@ const Home = () => {
         },
       },
     ],
-    [campaignStatus],
+    [campaignStatus, campaignData?.docs],
   );
 
   const setQuery = (key, val) => {
