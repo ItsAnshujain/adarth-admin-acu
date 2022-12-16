@@ -144,7 +144,7 @@ export const useDeleteInventory = () => {
 export const useCsvImport = () =>
   useMutation(
     async data => {
-      const res = csvImport(data);
+      const res = await csvImport(data);
       return res.data;
     },
     {
@@ -154,9 +154,10 @@ export const useCsvImport = () =>
           color: 'green',
         });
       },
-      onError: err => {
+      onError: () => {
         showNotification({
-          title: err?.message,
+          title: 'Oops! Something went wrong',
+          message: 'Please provide correct values',
           color: 'red',
         });
       },

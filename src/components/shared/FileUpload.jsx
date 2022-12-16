@@ -1,3 +1,4 @@
+import { Button, Group } from '@mantine/core';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FilePlus } from 'react-feather';
@@ -30,7 +31,7 @@ const FileUpload = () => {
         setFile(null);
         setTimeout(() => {
           navigate('/inventory');
-        }, 1000);
+        }, 2000);
       },
     });
   };
@@ -47,6 +48,7 @@ const FileUpload = () => {
           <span>Close</span>
         </button>
       </header>
+
       <div
         {...getRootProps()}
         disabled
@@ -67,14 +69,25 @@ const FileUpload = () => {
           </>
         )}
       </div>
-      <button
+      <Group className="ml-5 mt-3 mb-5 flex justify-center">
+        <a
+          href="/sample.csv"
+          className="text-purple-450 cursor-pointer font-medium"
+          target="_blank"
+          download
+          rel="noopener noreferrer"
+        >
+          Download
+        </a>
+        <p className="-ml-2">the sample file for reference</p>
+      </Group>
+      <Button
         disabled={isLoading}
         onClick={file ? handleUpload : open}
         className="bg-purple-450 text-white p-2 rounded mx-auto block mt-3"
-        type="button"
       >
         Upload File
-      </button>
+      </Button>
     </>
   );
 };

@@ -1,16 +1,26 @@
 import { useMemo } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Button, Loader, Select } from '@mantine/core';
+import { Loader, NativeSelect, Select } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import dayjs from 'dayjs';
 import completed from '../../../assets/completed.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
-import upload from '../../../assets/upload.svg';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
 import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import NoData from '../../shared/NoData';
+import { useFetchUsers } from '../../../hooks/users.hooks';
+import { useUpdateCampaign } from '../../../hooks/campaigns.hooks';
+
+const styles = {
+  label: {
+    marginBottom: '4px',
+    fontWeight: 700,
+    fontSize: '15px',
+    letterSpacing: '0.5px',
+  },
+};
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -35,6 +45,19 @@ const config = {
 };
 
 const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) => {
+  const {
+    data: userData,
+    isSuccess: isUserDataLoaded,
+    isLoading: isLoadingUserData,
+  } = useFetchUsers(
+    serialize({
+      page: 1,
+      limit: 100,
+      sortOrder: 'asc',
+      sortBy: 'createdAt',
+      filter: 'team',
+    }),
+  );
   const printingStatusData = useFetchMasters(
     serialize({ type: 'printing_status', parentId: null, page: 1, limit: 100 }),
   );
@@ -58,8 +81,17 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
 
     return [];
   }, [mountStatusData]);
-
+  const { mutate: updateCampaign } = useUpdateCampaign();
   const { mutate } = useUpdateBookingStatus();
+
+  const handleAddIncharge = inchargeId => {
+    if (bookingData?.campaign) {
+      updateCampaign({
+        id: bookingData.campaign?._id,
+        data: { incharge: inchargeId },
+      });
+    }
+  };
 
   return isLoading ? (
     <div className="flex justify-center items-center h-[400px]">
@@ -156,13 +188,6 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
               />
             </div>
             <div>
-              <p className="text-slate-400">Upload Media</p>
-              <Button className="py-1.5 px-2 ml-1  flex items-center gap-2 border border-slate-400 rounded text-black font-thin">
-                <span className="text-sm mr-2">Upload</span>
-                <img src={upload} alt="Upload" className="mr-1 h-3" />
-              </Button>
-            </div>
-            <div>
               <p className="text-slate-400">Booking Type</p>
               <p className="font-bold capitalize">{bookingData?.type}</p>
             </div>
@@ -201,9 +226,18 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
             </div>
             <div>
               <p className="text-slate-400">Campaing Incharge</p>
-              <p className="font-bold">
-                {bookingData?.campaign?.incharge?.[0]?.name || <NoData type="na" />}
-              </p>
+              <NativeSelect
+                styles={styles}
+                disabled={isLoadingUserData}
+                placeholder="Select..."
+                data={
+                  isUserDataLoaded
+                    ? userData?.docs?.map(item => ({ label: item?.name, value: item?._id }))
+                    : []
+                }
+                onChange={e => handleAddIncharge(e.target.value)}
+                className="mb-7"
+              />
             </div>
             <div>
               <p className="text-slate-400">Start Date</p>

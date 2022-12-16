@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
+import classNames from 'classnames';
 import Filter from '../../Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -169,25 +170,17 @@ const SelectSpace = () => {
           },
         }) =>
           useMemo(
-            () =>
-              values?.place.length > 0 ? (
-                values?.place.map(selected => {
-                  if (selected.id === _id) {
-                    return (
-                      <Button className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-350 text-white rounded-md cursor-pointer">
-                        Upload
-                        <img src={upload} alt="Upload" className="ml-2" />
-                      </Button>
-                    );
-                  }
-                  return null;
-                })
-              ) : (
-                <Button className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-200 text-white rounded-md cursor-not-allowed ">
-                  Upload
-                  <img src={upload} alt="Upload" className="ml-2" />
-                </Button>
-              ),
+            () => (
+              <Button
+                className={classNames(
+                  values?.place?.find(item => item.id === _id) ? 'bg-purple-350' : 'bg-purple-200',
+                  'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md cursor-not-allowed',
+                )}
+              >
+                Upload
+                <img src={upload} alt="Upload" className="ml-2" />
+              </Button>
+            ),
             [],
           ),
       },

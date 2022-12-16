@@ -3,6 +3,7 @@ import { Button, Tabs } from '@mantine/core';
 import { yupResolver } from '@mantine/form';
 import { useQueryClient } from '@tanstack/react-query';
 import * as yup from 'yup';
+import { showNotification } from '@mantine/notifications';
 import BasicInfo from '../Users/Create/BasicInfo';
 import Documents from '../Users/Create/Documents';
 import useUserStore from '../../store/user.store';
@@ -26,7 +27,10 @@ const schema = step =>
       .string()
       .trim()
       .concat(step === 'first' ? requiredSchema('Company is required') : null),
-    about: yup.string().trim(),
+    about: yup
+      .string()
+      .trim()
+      .concat(step === 'first' ? requiredSchema('About is required') : null),
     city: yup
       .string()
       .trim()
@@ -134,6 +138,14 @@ const EditProfile = () => {
   }, [data]);
 
   const handleSubmit = formData => {
+    const hasFieldEmpty = Object.keys(form.values).find(key => form?.values[key] === '');
+    if (hasFieldEmpty) {
+      showNotification({
+        title: 'Please fill all the required fields in Basic Information first',
+        color: 'blue',
+      });
+      return;
+    }
     mutateAsync({ userId, data: formData });
   };
 
