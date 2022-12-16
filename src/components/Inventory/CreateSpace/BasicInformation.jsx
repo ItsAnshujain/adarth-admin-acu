@@ -107,7 +107,7 @@ const BasicInfo = () => {
     const formData = new FormData();
     formData.append('files', params?.[0]);
     const res = await upload(formData);
-    setFieldValue('basicInformation.spacePhotos', res?.[0].Location);
+    setFieldValue('basicInformation.spacePhoto', res?.[0].Location);
   };
 
   const onHandleMultipleImages = async params => {
@@ -304,9 +304,9 @@ const BasicInfo = () => {
               accept={['image/png', 'image/jpeg']}
               className="h-full w-full flex justify-center items-center bg-slate-100"
               loading={isLoading}
-              name="spacePhotos"
+              name="spacePhoto"
               multiple={false}
-              {...getInputProps('spacePhotos')}
+              {...getInputProps('spacePhoto')}
             >
               <div className="flex items-center justify-center">
                 <Image src={image} alt="placeholder" height={50} width={50} />
@@ -318,9 +318,9 @@ const BasicInfo = () => {
               <p className="text-gray-400 text-center">Supported png format only</p>
             </Dropzone>
           </div>
-          {values?.basicInformation?.spacePhotos ? (
+          {values?.basicInformation?.spacePhoto ? (
             <Image
-              src={values?.basicInformation?.spacePhotos}
+              src={values?.basicInformation?.spacePhoto}
               alt="more-preview"
               height={400}
               className="bg-slate-300"

@@ -47,11 +47,11 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
   return (
     <Box className="drop-shadow-md w-[273px] cursor-pointer mb-4" onClick={handleInventoryDetails}>
       <div>
-        {data?.basicInformation?.spacePhotos ? (
+        {data?.basicInformation?.spacePhoto ? (
           <Image
             className="w-full"
             height={176}
-            src={data?.basicInformation?.spacePhotos}
+            src={data?.basicInformation?.spacePhoto}
             alt="card"
             withPlaceholder
             placeholder={

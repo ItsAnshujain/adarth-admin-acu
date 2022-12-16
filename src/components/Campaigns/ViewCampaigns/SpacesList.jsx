@@ -55,7 +55,7 @@ const SpacesList = ({ data = {}, columns }) => {
             </Button>
             {showDatePicker && (
               <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
-                <DateRange handleClose={toggleDatePicker} />
+                <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
               </div>
             )}
           </div>

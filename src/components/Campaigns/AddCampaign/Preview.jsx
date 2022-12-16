@@ -126,7 +126,7 @@ const Preview = ({ data = {}, place = {} }) => {
             {place?.docs?.map(item => (
               <Places
                 data={{
-                  img: item.spacePhotos,
+                  img: item.spacePhoto,
                   status: item.spaceStatus,
                   name: item.name,
                   address: item.location?.address, //

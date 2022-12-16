@@ -400,7 +400,7 @@ const SelectSpace = () => {
       const finalData = [];
       for (const item of inventoryData.docs) {
         const obj = {};
-        obj.photo = item.basicInformation.spacePhotos;
+        obj.photo = item.basicInformation.spacePhoto;
         obj._id = item._id;
         obj.space_name = item.basicInformation.spaceName;
         obj.space_type = item.basicInformation.spaceType?.name;

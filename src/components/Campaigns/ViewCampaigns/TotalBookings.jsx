@@ -85,7 +85,7 @@ const TotalBookings = ({ campaignId, isLoading }) => {
     [printingStatus],
   );
   const campaignList = useMemo(
-    () => campaignStatus?.docs?.map(item => item.name.toLowerCase()) || [],
+    () => campaignStatus?.docs?.map(item => item.name?.toLowerCase()) || [],
     [campaignStatus],
   );
 
@@ -154,7 +154,7 @@ const TotalBookings = ({ campaignId, isLoading }) => {
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-                onChange={e => handleCampaignUpdate(_id, e.target.value.toLowerCase())}
+                onChange={e => handleCampaignUpdate(_id, e.target.value?.toLowerCase())}
                 defaultValue={currentStatus?.campaignStatus?.toLowerCase() || ''}
               />
             );
@@ -464,7 +464,7 @@ const TotalBookings = ({ campaignId, isLoading }) => {
             </Button>
             {showDatePicker && (
               <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
-                <DateRange handleClose={toggleDatePicker} />
+                <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
               </div>
             )}
           </div>

@@ -55,13 +55,13 @@ const BasicInfo = () => {
   );
 
   useEffect(() => {
-    setPosterImage(inventoryDetails?.basicInformation?.spacePhotos);
+    setPosterImage(inventoryDetails?.basicInformation?.spacePhoto);
 
     if (inventoryDetails?.basicInformation?.otherPhotos) {
       setOtherImages([...inventoryDetails.basicInformation.otherPhotos]);
     }
   }, [
-    inventoryDetails?.basicInformation?.spacePhotos,
+    inventoryDetails?.basicInformation?.spacePhoto,
     inventoryDetails?.basicInformation?.otherPhotos,
   ]);
 

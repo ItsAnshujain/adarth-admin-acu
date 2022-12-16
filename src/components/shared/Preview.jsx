@@ -47,12 +47,12 @@ const Preview = () => {
   );
 
   useEffect(() => {
-    setPosterImage(values?.basicInformation?.spacePhotos);
+    setPosterImage(values?.basicInformation?.spacePhoto);
 
     if (values?.basicInformation?.otherPhotos) {
       setOtherImages([...values.basicInformation.otherPhotos]);
     }
-  }, [values?.basicInformation?.spacePhotos, values?.basicInformation?.otherPhotos]);
+  }, [values?.basicInformation?.spacePhoto, values?.basicInformation?.otherPhotos]);
 
   return (
     <div className="grid grid-cols-2 gap-x-8 pl-5 pt-4">

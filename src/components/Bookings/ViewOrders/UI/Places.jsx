@@ -2,6 +2,7 @@ import { Button, Image } from '@mantine/core';
 import { useRef } from 'react';
 import { Calendar } from 'react-feather';
 import { Dropzone } from '@mantine/dropzone';
+import dayjs from 'dayjs';
 import CustomBadge from '../../../shared/Badge';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import uploadIcon from '../../../../assets/upload.svg';
@@ -12,6 +13,9 @@ import { useUploadFile } from '../../../../hooks/upload.hooks';
 const styles = {
   visibility: 'hidden',
 };
+
+const DATE_FORMAT = 'DD-MM-YYYY';
+
 const Places = ({ data }) => {
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const { mutate: update, isLoading: isUpdating } = useUpdateCampaignMedia();
@@ -33,8 +37,8 @@ const Places = ({ data }) => {
   return (
     <div className="flex gap-4 p-4 shadow-md bg-white mb-2">
       <div>
-        {data?.basicInformation?.spacePhotos ? (
-          <Image src={data?.basicInformation?.spacePhotos} alt="banner" height={140} width={140} />
+        {data?.basicInformation?.spacePhoto ? (
+          <Image src={data?.basicInformation?.spacePhoto} alt="banner" height={140} width={140} />
         ) : (
           <Image src={null} withPlaceholder height={140} width={140} fit="contain" />
         )}
@@ -60,14 +64,18 @@ const Places = ({ data }) => {
               <span className="mr-1">Upload File</span>
               <img src={uploadIcon} alt="Upload" className="mr-1" />
             </Button>
-
-            <div className="flex gap-2 border p-2 rounded-md">
+            <div className="flex gap-2 p-2 rounded-md">
               <Calendar />
-              <span> {data?.startDate || <NoData type="na" />}</span>
+              <span>
+                {data?.startDate ? dayjs(data.startDate).format(DATE_FORMAT) : <NoData type="na" />}
+              </span>
             </div>
-            <div className="flex gap-2 border p-2 rounded-md">
+            -
+            <div className="flex gap-2 p-2 rounded-md">
               <Calendar />
-              <span>{data?.endDate || <NoData type="na" />}</span>
+              <span>
+                {data?.endDate ? dayjs(data.endDate).format(DATE_FORMAT) : <NoData type="na" />}
+              </span>
             </div>
           </div>
         </div>
@@ -96,7 +104,7 @@ const Places = ({ data }) => {
           <div>
             <div className="mb-4">
               <p className="mb-2 text-sm font-light text-slate-400">Illumination</p>
-              <p>{data?.specifications?.illumination?.name || <NoData type="na" />}</p>
+              <p>{data?.specifications?.illuminations?.name || <NoData type="na" />}</p>
             </div>
           </div>
         </div>
