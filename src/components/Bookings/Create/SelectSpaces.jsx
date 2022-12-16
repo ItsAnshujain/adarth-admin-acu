@@ -6,6 +6,7 @@ import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
 import classNames from 'classnames';
+import { Dropzone } from '@mantine/dropzone';
 import Filter from '../../Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -15,6 +16,12 @@ import MenuIcon from '../../Menu';
 import upload from '../../../assets/upload.svg';
 import { useFormContext } from '../../../context/formContext';
 import { colors } from '../../../utils';
+import { useUploadFile } from '../../../hooks/upload.hooks';
+
+const styles = {
+  padding: 0,
+  border: 'none',
+};
 
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
@@ -31,6 +38,7 @@ const SelectSpace = () => {
   });
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
   const { mutate } = useDeleteInventoryById();
+  const { mutateAsync: uploadMedia, isLoading: isUploadMediaLoading } = useUploadFile();
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
@@ -51,7 +59,7 @@ const SelectSpace = () => {
 
       for (const item of inventoryData.docs) {
         const obj = {};
-        obj.photo = item.basicInformation.spacePhotos;
+        obj.photo = item.basicInformation.spacePhoto;
         obj._id = item._id;
         obj.spaceName = item.basicInformation?.spaceName;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
@@ -73,6 +81,22 @@ const SelectSpace = () => {
     }
   }, [inventoryData]);
 
+  const updateDateAndMedia = (key, val, id) => {
+    setUpdatedInventoryData(prev =>
+      prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+    );
+  };
+
+  const handleUpload = async (params, id) => {
+    const formData = new FormData();
+    formData.append('files', params?.[0]);
+    const res = await uploadMedia(formData);
+
+    if (res?.[0].Location) {
+      updateDateAndMedia('media', res[0].Location, id);
+    }
+  };
+
   const setSelectedFlatRows = selectedSpace => {
     const totalPrice = selectedSpace.reduce((acc, item) => acc + +(item.original.pricing || 0), 0);
     setOrderPrice(totalPrice);
@@ -81,6 +105,7 @@ const SelectSpace = () => {
       price: item.original.pricing,
       startDate: item.original.startDate,
       endDate: item.original.endDate,
+      media: item.original.media,
     }));
     setFieldValue('place', formData);
   };
@@ -88,12 +113,6 @@ const SelectSpace = () => {
   const updatePrice = (price, id) => {
     setUpdatedInventoryData(prev =>
       prev.map(item => (item._id === id ? { ...item, pricing: +price } : item)),
-    );
-  };
-
-  const updateDate = (key, val, id) => {
-    setUpdatedInventoryData(prev =>
-      prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
     );
   };
 
@@ -168,20 +187,32 @@ const SelectSpace = () => {
           row: {
             original: { _id },
           },
+          selectedFlatRows,
         }) =>
           useMemo(
             () => (
-              <Button
-                className={classNames(
-                  values?.place?.find(item => item.id === _id) ? 'bg-purple-350' : 'bg-purple-200',
-                  'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md cursor-not-allowed',
-                )}
+              <Dropzone
+                style={styles}
+                onDrop={files => handleUpload(files, _id)}
+                multiple={false}
+                disabled={!selectedFlatRows?.find(item => item.original._id === _id)}
               >
-                Upload
-                <img src={upload} alt="Upload" className="ml-2" />
-              </Button>
+                <Button
+                  disabled={isUploadMediaLoading}
+                  loading={isUploadMediaLoading}
+                  className={classNames(
+                    selectedFlatRows?.find(item => item.original._id === _id)
+                      ? 'bg-purple-350 cursor-pointer'
+                      : 'bg-purple-200 cursor-not-allowed',
+                    'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md',
+                  )}
+                >
+                  Upload
+                  <img src={upload} alt="Upload" className="ml-2" />
+                </Button>
+              </Dropzone>
             ),
-            [],
+            [selectedFlatRows, isUploadMediaLoading],
           ),
       },
       {
@@ -285,7 +316,7 @@ const SelectSpace = () => {
                 defaultValue={startDate}
                 placeholder="DD/MM/YYYY"
                 minDate={new Date()}
-                onChange={val => updateDate('startDate', val, _id)}
+                onChange={val => updateDateAndMedia('startDate', val, _id)}
               />
             ),
             [],
@@ -306,7 +337,7 @@ const SelectSpace = () => {
                 defaultValue={endDate}
                 placeholder="DD/MM/YYYY"
                 minDate={new Date()}
-                onChange={val => updateDate('endDate', val, _id)}
+                onChange={val => updateDateAndMedia('endDate', val, _id)}
               />
             ),
             [],

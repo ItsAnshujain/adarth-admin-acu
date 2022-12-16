@@ -40,7 +40,7 @@ const ManagingSubHeader = ({ activeTable }) => {
                   'absolute z-20 bg-white -top-0.3',
                 )}
               >
-                <DateRange handleClose={toggleDatePicker} />
+                <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
               </div>
             )}
           </div>

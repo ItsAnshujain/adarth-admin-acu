@@ -26,6 +26,8 @@ const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
 };
 
+const DATE_FORMAT = 'DD MMM YYYY';
+
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export const data = {
@@ -164,13 +166,21 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
             <div>
               <p className="text-slate-400">Start Date</p>
               <p className="font-bold">
-                <NoData type="unknown" />
+                {bookingData?.campaign?.startDate ? (
+                  dayjs(bookingData.campaign.startDate).format(DATE_FORMAT)
+                ) : (
+                  <NoData type="na" />
+                )}
               </p>
             </div>
             <div>
               <p className="text-slate-400">End Date</p>
               <p className="font-bold">
-                <NoData type="unknown" />
+                {bookingData?.campaign?.endDate ? (
+                  dayjs(bookingData.campaign.endDate).format(DATE_FORMAT)
+                ) : (
+                  <NoData type="na" />
+                )}
               </p>
             </div>
             <div>
@@ -237,18 +247,28 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
                 }
                 onChange={e => handleAddIncharge(e.target.value)}
                 className="mb-7"
+                defaultValue={bookingData?.campaign?.incharge?.map(item => item._id) || ''}
               />
             </div>
             <div>
               <p className="text-slate-400">Start Date</p>
               <p className="font-bold">
-                {/* 15 May 2037 comment for keeping format */}
-                {bookingData?.campaign?.startDate || <NoData type="na" />}
+                {bookingData?.campaign?.startDate ? (
+                  dayjs(bookingData.campaign.startDate).format(DATE_FORMAT)
+                ) : (
+                  <NoData type="na" />
+                )}
               </p>
             </div>
             <div>
               <p className="text-slate-400">End Date</p>
-              <p className="font-bold">{bookingData?.campaign?.endDate || <NoData type="na" />}</p>
+              <p className="font-bold">
+                {bookingData?.campaign?.startDate ? (
+                  dayjs(bookingData.campaign.endDate).format(DATE_FORMAT)
+                ) : (
+                  <NoData type="na" />
+                )}
+              </p>
             </div>
             <div>
               <p className="text-slate-400">Campaign Type</p>

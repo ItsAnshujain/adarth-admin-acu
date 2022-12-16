@@ -15,6 +15,7 @@ import { useFetchMasters } from '../../hooks/masters.hooks';
 import MenuPopover from './MenuPopOver';
 import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from './BookingStatisticsView';
+import NoData from '../../components/shared/NoData';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -90,7 +91,7 @@ const Bookings = () => {
     [printingStatus],
   );
   const campaignList = useMemo(
-    () => campaignStatus?.docs?.map(item => item.name.toLowerCase()) || [],
+    () => campaignStatus?.docs?.map(item => item.name?.toLowerCase()) || [],
     [campaignStatus],
   );
 
@@ -113,7 +114,7 @@ const Bookings = () => {
       },
       {
         Header: 'CLIENT',
-        accessor: 'client',
+        accessor: 'client.name',
         Cell: ({
           row: {
             original: { client },
@@ -127,7 +128,7 @@ const Bookings = () => {
           useMemo(
             () => (
               <p className="font-medium bg-gray-450 px-2 rounded-sm">
-                {dayjs(original.client.createdAt).format(DATE_FORMAT)}
+                {dayjs(original.createdAt).format(DATE_FORMAT)}
               </p>
             ),
             [],
@@ -136,7 +137,11 @@ const Bookings = () => {
       {
         Header: 'CAMPAIGN NAME',
         accessor: 'campaign.name',
-        Cell: ({ row: { original } }) => useMemo(() => original.campaign?.name, []),
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) => useMemo(() => <p>{campaign?.name || <NoData type="na" />}</p>, []),
       },
       {
         Header: 'BOOKING TYPE',
@@ -167,7 +172,7 @@ const Bookings = () => {
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-                onChange={e => handleCampaignUpdate(_id, e.target.value.toLowerCase())}
+                onChange={e => handleCampaignUpdate(_id, e.target.value?.toLowerCase())}
                 defaultValue={currentStatus?.campaignStatus?.toLowerCase() || ''}
               />
             );
@@ -254,7 +259,11 @@ const Bookings = () => {
       {
         Header: 'CAMPAIGN INCHARGE',
         accessor: 'campaign.incharge.name',
-        Cell: () => '',
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) => useMemo(() => <p>{campaign?.incharge?.name || <NoData type="na" />}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',
@@ -281,7 +290,6 @@ const Bookings = () => {
       {
         Header: 'PAYMENT TYPE',
         accessor: 'paymentType',
-        disableSortBy: true,
         Cell: ({
           row: {
             original: { paymentType },
@@ -294,15 +302,27 @@ const Bookings = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { from_date, to_date },
+            original: { campaign },
           },
         }) =>
           useMemo(
             () => (
-              <div className="flex items-center text-xs w-max">
-                <span className="py-1 px-1 bg-slate-200 mr-2 rounded-md">{from_date}</span>
-                &gt;
-                <span className="py-1 px-1 bg-slate-200 mx-2 rounded-md">{to_date}</span>
+              <div className="flex items-center w-max">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                  {campaign?.startDate ? (
+                    dayjs(campaign?.startDate).format(DATE_FORMAT)
+                  ) : (
+                    <NoData type="na" />
+                  )}
+                </p>
+                <span className="px-2">&gt;</span>
+                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                  {campaign?.endDate ? (
+                    dayjs(campaign?.endDate).format(DATE_FORMAT)
+                  ) : (
+                    <NoData type="na" />
+                  )}
+                </p>
               </div>
             ),
             [],

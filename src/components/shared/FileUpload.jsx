@@ -65,7 +65,10 @@ const FileUpload = () => {
               Drag and drop your files here, or{' '}
               <span className="text-purple-450 cursor-pointer">browse</span>
             </p>
-            <p className="text-slate-400 text-sm">Support CSV format only</p>
+            <p className="text-slate-400 text-sm">
+              <span className="text-red-450">Note:</span> For multiple values, use semicolon (;) to
+              separate
+            </p>
           </>
         )}
       </div>

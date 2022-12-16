@@ -12,7 +12,7 @@ const AreaHeader = ({ setFilter = () => {}, filter }) => {
   const navigate = useNavigate();
   const [showFilter, setShowFilter] = useState(false);
   const toggleFilter = () => setShowFilter(!showFilter);
-  const handleFilter = val => setFilter(val.toLowerCase());
+  const handleFilter = val => setFilter(val?.toLowerCase());
   const handleNavigate = () => navigate('create-user');
 
   return (

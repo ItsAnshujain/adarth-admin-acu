@@ -87,7 +87,7 @@ const BookingTableView = ({ viewType, userId = null }) => {
     [printingStatus],
   );
   const campaignList = useMemo(
-    () => campaignStatus?.docs?.map(item => item.name.toLowerCase()) || [],
+    () => campaignStatus?.docs?.map(item => item.name?.toLowerCase()) || [],
     [campaignStatus],
   );
 
@@ -156,7 +156,7 @@ const BookingTableView = ({ viewType, userId = null }) => {
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-                onChange={e => handleCampaignUpdate(_id, e.target.value.toLowerCase())}
+                onChange={e => handleCampaignUpdate(_id, e.target.value?.toLowerCase())}
                 defaultValue={currentStatus?.campaignStatus?.toLowerCase() || ''}
               />
             );

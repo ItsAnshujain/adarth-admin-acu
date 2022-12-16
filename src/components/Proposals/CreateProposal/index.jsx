@@ -134,7 +134,7 @@ const Main = () => {
         update({ proposalId, data });
       } else {
         const status = proposalStatusData?.docs?.filter(
-          item => item?.name.toLowerCase() === 'created',
+          item => item?.name?.toLowerCase() === 'created',
         )[0]?._id;
 
         data = {

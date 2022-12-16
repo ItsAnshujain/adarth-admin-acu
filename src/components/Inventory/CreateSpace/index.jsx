@@ -86,7 +86,7 @@ const schema = action =>
                 .nullable()
             : null,
         ),
-      spacePhotos: yup.string().trim(),
+      spacePhoto: yup.string().trim(),
       otherPhotos: yup.array().of(yup.string().trim()),
       footFall: yup
         .number()
@@ -315,7 +315,7 @@ const initialValues = {
     supportedMedia: '',
     description: '',
     price: null,
-    spacePhotos: '',
+    spacePhoto: '',
     otherPhotos: [''],
     footFall: null,
     demographic: { label: '', value: '' },
@@ -437,8 +437,14 @@ const MainArea = () => {
       form.setFieldValue('basicInformation.landlord', basicInformation?.landlord || '');
       form.setFieldValue('basicInformation.mediaOwner', basicInformation?.mediaOwner?._id || '');
       form.setFieldValue('basicInformation.description', basicInformation?.description || '');
-      form.setFieldValue('basicInformation.footFall', basicInformation?.footFall || null);
-      form.setFieldValue('basicInformation.price', basicInformation?.price || null);
+      form.setFieldValue(
+        'basicInformation.footFall',
+        basicInformation?.footFall ? parseInt(basicInformation.footFall, 10) : null,
+      );
+      form.setFieldValue(
+        'basicInformation.price',
+        basicInformation?.price ? parseInt(basicInformation?.price, 10) : null,
+      );
       form.setFieldValue('basicInformation.category.label', basicInformation?.category?.name || '');
       form.setFieldValue('basicInformation.category.value', basicInformation?.category?._id || '');
       if (basicInformation?.category) {
@@ -482,7 +488,7 @@ const MainArea = () => {
       }));
       form.setFieldValue('basicInformation.audience', arrOfAudience || []);
       form.setFieldValue('basicInformation.audience.value', basicInformation?.audience?._id || '');
-      form.setFieldValue('basicInformation.spacePhotos', basicInformation?.spacePhotos || '');
+      form.setFieldValue('basicInformation.spacePhoto', basicInformation?.spacePhoto || '');
       form.setFieldValue('basicInformation.otherPhotos', basicInformation?.otherPhotos || ['']);
       form.setFieldValue(
         'specifications.illuminations.label',
@@ -492,19 +498,31 @@ const MainArea = () => {
         'specifications.illuminations.value',
         specifications?.illuminations?._id || '',
       );
-      form.setFieldValue('specifications.unit', specifications?.unit || null);
-      form.setFieldValue('specifications.health', specifications?.health || null);
+      form.setFieldValue(
+        'specifications.unit',
+        specifications?.unit ? parseInt(specifications.unit, 10) : null,
+      );
+      form.setFieldValue(
+        'specifications.health',
+        specifications?.health ? parseInt(specifications.health, 10) : null,
+      );
       form.setFieldValue(
         'specifications.impressions.max',
-        specifications?.impressions?.max || null,
+        specifications?.impressions?.max ? parseInt(specifications.impressions.max, 10) : null,
       );
       form.setFieldValue(
         'specifications.impressions.min',
-        specifications?.impressions?.min || null,
+        specifications?.impressions?.min ? parseInt(specifications.impressions.min, 10) : null,
       );
       form.setFieldValue('specifications.resolutions', specifications?.resolutions || '');
-      form.setFieldValue('specifications.size.height', specifications?.size?.height || null);
-      form.setFieldValue('specifications.size.width', specifications?.size?.width || null);
+      form.setFieldValue(
+        'specifications.size.height',
+        specifications?.size?.height ? parseInt(specifications.size.height, 10) : null,
+      );
+      form.setFieldValue(
+        'specifications.size.width',
+        specifications?.size?.width ? parseInt(specifications.size.width, 10) : null,
+      );
       form.setFieldValue(
         'specifications.spaceStatus.label',
         specifications?.spaceStatus?.name || '',
@@ -526,12 +544,18 @@ const MainArea = () => {
         value: item?._id,
       }));
       form.setFieldValue('specifications.tags', arrOfTags?.length ? arrOfTags : []);
-      form.setFieldValue('location.latitude', location?.latitude || null);
-      form.setFieldValue('location.longitude', location?.longitude || null);
+      form.setFieldValue(
+        'location.latitude',
+        location?.latitude ? parseFloat(location.latitude, 10) : null,
+      );
+      form.setFieldValue(
+        'location.longitude',
+        location?.longitude ? parseFloat(location.longitude) : null,
+      );
       form.setFieldValue('location.address', location?.address || '');
       form.setFieldValue('location.city', location?.city || '');
       form.setFieldValue('location.state', location?.state || '');
-      form.setFieldValue('location.zip', location?.zip || null);
+      form.setFieldValue('location.zip', location?.zip ? parseInt(location.zip, 10) : null);
       form.setFieldValue('location.zone', location?.zone || '');
       form.setFieldValue('location.landmark', location?.landmark || '');
       form.setFieldValue('location.facing', location?.facing || '');

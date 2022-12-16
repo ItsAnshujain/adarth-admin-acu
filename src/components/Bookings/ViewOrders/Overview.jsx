@@ -34,7 +34,7 @@ const Overview = ({ bookingData = {} }) => {
     const initialCity = 0;
     if (bookingData?.campaign?.spaces?.length > 0) {
       const filteredNamesArr = bookingData?.campaign?.spaces.map(item => item?.location?.city);
-      const uniqueNamesArr = Array.from(new Set(filteredNamesArr.map(item => item.toLowerCase())));
+      const uniqueNamesArr = Array.from(new Set(filteredNamesArr.map(item => item?.toLowerCase())));
       return uniqueNamesArr;
     }
     return initialCity;
@@ -126,7 +126,11 @@ const Overview = ({ bookingData = {} }) => {
               size="lg"
               text={
                 <>
-                  {calcutateTotalMinimumImpressions ?? <NoData type="unknown" />} Total Impressions{' '}
+                  {calcutateTotalMinimumImpressions &&
+                  !Number.isNaN(calcutateTotalMinimumImpressions)
+                    ? calcutateTotalMinimumImpressions
+                    : 0}{' '}
+                  Total Impressions{' '}
                 </>
               }
               className="py-4 font-extralight bg-[#4B0DAF1A] capitalize "
@@ -142,7 +146,12 @@ const Overview = ({ bookingData = {} }) => {
               </div>
               <div>
                 <p className="text-slate-400 text-sm">Impressions</p>
-                <p>{calcutateTotalMinimumImpressions ?? <NoData type="unknown" />}</p>
+                <p>
+                  {calcutateTotalMinimumImpressions &&
+                  !Number.isNaN(calcutateTotalMinimumImpressions)
+                    ? calcutateTotalMinimumImpressions
+                    : 0}{' '}
+                </p>
               </div>
               <div>
                 <p className="text-slate-400 text-sm">Number of Locations</p>
