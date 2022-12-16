@@ -18,20 +18,23 @@ const View = () => {
     sortBy: 'name',
     sortOrder: 'desc',
   });
+
   const { data } = useCampaign({ id, query: searchParams.toString() }, tabs === 0);
 
   useEffect(() => {
-    setSearchParams(searchParams);
-  }, []);
+    if (tabs === 0) {
+      searchParams.set('sortBy', 'name');
+      setSearchParams(searchParams);
+    }
+  }, [tabs]);
 
   const getTabs = () =>
     tabs === 0 ? (
       <Preview data={data?.campaign} place={data?.inventory} />
     ) : tabs === 1 ? (
-      // TODO: replace with data after api is done
       <SpacesList data={data?.inventory} columns={column} />
     ) : (
-      <TotalBookings campaignId={data?.campaign?._id} columns={bookingColumn} />
+      <TotalBookings campaignId={id} columns={bookingColumn} />
     );
 
   return (

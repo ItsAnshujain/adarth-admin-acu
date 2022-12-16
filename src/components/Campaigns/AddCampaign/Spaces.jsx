@@ -31,6 +31,7 @@ const SelectSpace = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [orderPrice, setOrderPrice] = useState(0);
   const navigate = useNavigate();
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
 
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
@@ -397,8 +398,9 @@ const SelectSpace = () => {
 
   useEffect(() => {
     if (inventoryData) {
+      const { docs, ...page } = inventoryData;
       const finalData = [];
-      for (const item of inventoryData.docs) {
+      for (const item of docs) {
         const obj = {};
         obj.photo = item.basicInformation.spacePhoto;
         obj._id = item._id;
@@ -421,8 +423,14 @@ const SelectSpace = () => {
         finalData.push(obj);
       }
       setUpdatedInventoryData(finalData);
+      setPagination(page);
     }
   }, [inventoryData]);
+
+  useEffect(() => {
+    searchParams.set('page', pagination.page);
+    setSearchParams(searchParams);
+  }, [pagination]);
 
   return (
     <>
@@ -462,9 +470,12 @@ const SelectSpace = () => {
         COLUMNS={COLUMNS}
         allowRowsSelect
         setSelectedFlatRows={setSelectedSpace}
-        selectedRowData={values?.place?.map(item => ({ _id: item.id }))}
+        selectedRowData={values?.place?.map(({ id, ...item }) => ({ _id: id, ...item }))}
         isLoading={isLoading || isFetching}
         handleSorting={handleSortByColumn}
+        activePage={pagination.page}
+        totalPages={pagination.totalPages}
+        setActivePage={page => setPagination(p => ({ ...p, page }))}
       />
     </>
   );

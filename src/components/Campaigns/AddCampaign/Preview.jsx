@@ -126,19 +126,19 @@ const Preview = ({ data = {}, place = {} }) => {
             {place?.docs?.map(item => (
               <Places
                 data={{
-                  img: item.spacePhoto,
-                  status: item.spaceStatus,
-                  name: item.name,
-                  address: item.location?.address, //
+                  img: item.photo,
+                  status: item.spaceStatus || 'Available',
+                  name: item.space_name,
+                  address: item.location?.address,
                   cost: item.price,
                   impression: item.impression?.min || 0,
                   dimensions: `${item.dimension?.height || 0}ft x ${item.dimension?.width || 0}ft`, //
-                  format: item.supportedMedia, //
-                  lighting: item.mediaType,
-                  from_date: '02/12/2022', //
-                  to_date: '02/12/2022', //
-                  resolution: item.resolutions, //
-                  illumination: item.illuminations, //
+                  format: item.supportedMedia,
+                  lighting: item.media_type,
+                  from_date: item.startDate,
+                  to_date: item.endDate,
+                  resolution: item.resolutions,
+                  illumination: item.illuminations,
                   unit: item.unit,
                 }}
               />

@@ -99,7 +99,7 @@ const Create = () => {
   const { id } = useParams();
 
   const { data } = useCampaign({ id, query: searchParams.toString() }, !!id);
-  const { mutate: add, isLoading: isSaving } = useCreateCampaign();
+  const { mutateAsync: add, isLoading: isSaving } = useCreateCampaign();
   const { mutate: update, isLoading: isUpdating } = useUpdateCampaign();
 
   const getForm = () =>
@@ -118,7 +118,7 @@ const Create = () => {
     submitRef.current.click();
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (formStep <= 3) setFormStep(formStep + 1);
     if (formStep === 4) {
       const newData = { ...form.values };
@@ -170,7 +170,7 @@ const Create = () => {
           },
         });
       } else
-        add(newData, {
+        await add(newData, {
           onSuccess: () => {
             setOpenSuccessModal(true);
           },
@@ -182,10 +182,7 @@ const Create = () => {
     if (data?.campaign) {
       Object.keys(data.campaign).forEach(item => {
         if (item === 'place') {
-          form.setFieldValue(
-            item,
-            data.campaign[item].map(m => ({ id: m })),
-          );
+          form.setFieldValue(item, data.campaign[item]);
         } else form.setFieldValue(item, data.campaign[item]);
       });
     }
