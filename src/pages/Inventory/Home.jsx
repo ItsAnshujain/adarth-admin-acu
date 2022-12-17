@@ -147,7 +147,7 @@ const Home = () => {
       },
       {
         Header: 'SPACE TYPE',
-        accessor: 'spaceType.name',
+        accessor: 'basicInformation.spaceType.name',
         Cell: ({
           row: {
             original: { basicInformation },
@@ -189,7 +189,7 @@ const Home = () => {
           row: {
             original: { specifications },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.min}+`}</p>, []),
+        }) => useMemo(() => <p>{`${specifications?.impressions?.min || 0}+`}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',

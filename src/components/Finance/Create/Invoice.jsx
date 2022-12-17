@@ -221,10 +221,14 @@ const Invoice = () => {
           />
         </div>
       </div>
-      <div className="pl-5 pr-7 py-4 mb-10 ">
+      <div className="pl-5 pr-7 py-4 mb-2">
         <p className="font-bold text-2xl mb-4">Order Item Details</p>
         <div className="border-dashed border-0 border-black border-b-2 pb-4">
           <Table COLUMNS={COLUMNS} data={data} showPagination={false} className="min-h-[100px]" />
+        </div>
+        <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
+          <p>Total Price: </p>
+          <p>100000</p>
         </div>
       </div>
       <div className="pl-5 pr-7 flex flex-col gap-4 pb-6 border-b">

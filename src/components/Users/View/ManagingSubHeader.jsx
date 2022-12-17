@@ -13,13 +13,17 @@ import redfolder from '../../../assets/redfolder.svg';
 import bluefolder from '../../../assets/bluefolder.svg';
 import ProposalFilter from '../../Proposals/Filter';
 import BookingFilter from '../../Bookings/Filter';
+import { useBookingStatByIncharge } from '../../../hooks/booking.hooks';
+import { serialize } from '../../../utils';
 
-const ManagingSubHeader = ({ activeTable }) => {
+const ManagingSubHeader = ({ activeTable, userId, counts }) => {
   const navigate = useNavigate();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
-
+  const { data: bookingStatsByIncharge } = useBookingStatByIncharge(
+    serialize({ inCharge: userId }),
+  );
   const toggleFilter = () => setShowFilter(!showFilter);
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const handleCreateProposal = () => navigate('/proposals/create-proposals');
@@ -74,27 +78,27 @@ const ManagingSubHeader = ({ activeTable }) => {
           <div className="border rounded p-8  pr-20">
             <img src={purplefolder} alt="folder" />
             <p className="my-2 text-slate-400 text-sm">Ongoing Orders</p>
-            <p>0</p>
+            <p>{bookingStatsByIncharge?.ongoing}</p>
           </div>
           <div className="border rounded p-8 pr-20">
             <img src={orangefolder} alt="folder" />
             <p className="my-2 text-slate-400 text-sm">Upcoming Orders</p>
-            <p>0</p>
+            <p>{bookingStatsByIncharge?.upcoming}</p>
           </div>
           <div className="border rounded p-8 pr-20">
             <img src={bluefolder} alt="folder" />
             <p className="my-2 text-slate-400 text-sm">Completed Orders</p>
-            <p>0</p>
+            <p>{bookingStatsByIncharge?.completed}</p>
           </div>
           <div className="border rounded p-8 pr-20">
             <img src={redfolder} alt="folder" />
             <p className="my-2 text-slate-400 text-sm">Total Proposal</p>
-            <p>0</p>
+            <p>{counts?.proposals || 0}</p>
           </div>
           <div className="border rounded p-8 pr-20">
             <img src={greenfolder} alt="folder" />
-            <p className="my-2 text-slate-400 text-sm">Total Campaign</p>
-            <p>0</p>
+            <p className="my-2 text-slate-400 text-sm">Total Bookings</p>
+            <p>{counts?.bookings || 0}</p>
           </div>
         </div>
       </div>

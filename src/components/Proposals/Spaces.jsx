@@ -179,7 +179,7 @@ const Spaces = ({
           row: {
             original: { specifications },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.min}+`}</p>, []),
+        }) => useMemo(() => <p>{`${specifications?.impressions?.min || 0}+`}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',

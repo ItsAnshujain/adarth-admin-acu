@@ -174,7 +174,7 @@ const ProposalDetails = () => {
           row: {
             original: { impressions },
           },
-        }) => useMemo(() => <p>{`${impressions?.min}+`}</p>, []),
+        }) => useMemo(() => <p>{`${impressions?.min || 0}+`}</p>, []),
       },
       {
         Header: 'HEALTH',

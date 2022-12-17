@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Image, Text } from '@mantine/core';
+import { Badge, Box, Image, Text } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
 import { useModals } from '@mantine/modals';
 import Table from '../../Table/Table';
@@ -12,6 +12,8 @@ import { useFormContext } from '../../../context/formContext';
 import NumberInput from '../../shared/NumberInput';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import modalConfig from '../../../utils/modalConfig';
+
+const supportedType = ['JPG', 'JPEG', 'PNG'];
 
 const styles = {
   label: {
@@ -30,7 +32,6 @@ const PurchaseOrder = () => {
   const { errors, getInputProps, setFieldValue, values } = useFormContext();
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const modals = useModals();
-
   const onHandleDrop = async params => {
     const formData = new FormData();
     formData.append('files', params?.[0]);
@@ -98,6 +99,189 @@ const PurchaseOrder = () => {
       Cell: () => useMemo(() => <div className="w-[14%]">{toIndianCurrency(29834)}</div>, []),
     },
   ];
+
+  // const COLUMNS = useMemo(
+  //   () => [
+  //     {
+  //       Header: '#',
+  //       accessor: 'id',
+  //       disableSortBy: true,
+  //       Cell: ({ row: { index } }) => index + 1,
+  //     },
+  //     {
+  //       Header: 'SPACE NAME & PHOTO',
+  //       accessor: 'basicInformation.spaceName',
+  //       disableSortBy: true,
+  //       Cell: ({
+  //         row: {
+  //           original: { _id, basicInformation, isUnderMaintenance },
+  //         },
+  //       }) =>
+  //         useMemo(
+  //           () => (
+  //             <div className="flex items-center gap-2 ">
+  //               <Box
+  //                 className="bg-white border rounded-md cursor-zoom-in"
+  //                 onClick={() => toggleImagePreviewModal(basicInformation?.spacePhoto)}
+  //               >
+  //                 {basicInformation?.spacePhoto ? (
+  //                   <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
+  //                 ) : (
+  //                   <Image src={null} withPlaceholder height={32} width={32} />
+  //                 )}
+  //               </Box>
+  //               <Button
+  //                 className="text-black font-medium px-2 max-w-[180px]"
+  //                 // onClick={() => handleInventoryDetails(_id)}
+  //               >
+  //                 <span className="overflow-hidden text-ellipsis">
+  //                   {basicInformation?.spaceName}
+  //                 </span>
+  //               </Button>
+  //               <Badge
+  //                 className="capitalize"
+  //                 variant="filled"
+  //                 color={isUnderMaintenance ? 'yellow' : 'green'}
+  //               >
+  //                 {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+  //               </Badge>
+  //             </div>
+  //           ),
+  //           [],
+  //         ),
+  //     },
+  //     {
+  //       Header: 'MEDIA OWNER NAME',
+  //       accessor: 'landlord',
+  //       disableSortBy: true,
+  //       Cell: ({
+  //         row: {
+  //           original: { basicInformation },
+  //         },
+  //       }) =>
+  //         useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || 'NA'}</p>, []),
+  //     },
+  //     {
+  //       Header: 'PEER',
+  //       accessor: 'peer',
+  //       disableSortBy: true,
+  //       Cell: () => useMemo(() => <p>-</p>),
+  //     },
+  //     {
+  //       Header: 'SPACE TYPE',
+  //       accessor: 'basicInformation.spaceType.name',
+  //       disableSortBy: true,
+  //       Cell: ({
+  //         row: {
+  //           original: { basicInformation },
+  //         },
+  //       }) =>
+  //         useMemo(() => {
+  //           const colorType = Object.keys(colors).find(
+  //             key => colors[key] === basicInformation?.spaceType?.name,
+  //           );
+
+  //           return (
+  //             <Badge color={colorType} size="lg" className="capitalize">
+  //               {basicInformation?.spaceType?.name || <span>-</span>}
+  //             </Badge>
+  //           );
+  //         }),
+  //     },
+  //     {
+  //       Header: 'DIMENSION',
+  //       accessor: 'specifications.size.min',
+  //       disableSortBy: true,
+  //       Cell: ({
+  //         row: {
+  //           original: { specifications },
+  //         },
+  //       }) =>
+  //         useMemo(
+  //           () => (
+  //             <p>{`${specifications?.size?.height || 0}ft x ${
+  //               specifications?.size?.width || 0
+  //             }ft`}</p>
+  //           ),
+  //           [],
+  //         ),
+  //     },
+  //     {
+  //       Header: 'IMPRESSION',
+  //       accessor: 'specifications.impressions.min',
+  //       disableSortBy: true,
+  //       Cell: ({
+  //         row: {
+  //           original: { specifications },
+  //         },
+  //       }) => useMemo(() => <p>{`${specifications?.impressions?.min || 0}+`}</p>, []),
+  //     },
+  //     {
+  //       Header: 'HEALTH STATUS',
+  //       accessor: 'specifications.health',
+  //       disableSortBy: true,
+  //       Cell: ({
+  //         row: {
+  //           original: { specifications },
+  //         },
+  //       }) =>
+  //         useMemo(
+  //           () => (
+  //             <div className="w-24">
+  //               <Progress
+  //                 sections={[
+  //                   { value: specifications?.health, color: 'green' },
+  //                   { value: 100 - (specifications?.health || 0), color: 'red' },
+  //                 ]}
+  //               />
+  //             </div>
+  //           ),
+  //           [],
+  //         ),
+  //     },
+  //     {
+  //       Header: 'LOCATION',
+  //       accessor: 'location.city',
+  //       disableSortBy: true,
+  //       Cell: ({
+  //         row: {
+  //           original: { location },
+  //         },
+  //       }) => useMemo(() => <p>{location?.city}</p>, []),
+  //     },
+  //     {
+  //       Header: 'MEDIA TYPE',
+  //       accessor: 'mediaType',
+  //       disableSortBy: true,
+  //       Cell: ({
+  //         row: {
+  //           original: { basicInformation },
+  //         },
+  //       }) => useMemo(() => <p>{basicInformation?.mediaType?.name}</p>),
+  //     },
+  //     {
+  //       Header: 'PRICING',
+  //       accessor: 'basicInformation.price',
+  //       disableSortBy: true,
+  //       Cell: ({
+  //         row: {
+  //           original: { basicInformation },
+  //         },
+  //       }) =>
+  //         useMemo(
+  //           () => (
+  //             <p className="pl-2">
+  //               {basicInformation?.price
+  //                 ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
+  //                 : 0}
+  //             </p>
+  //           ),
+  //           [],
+  //         ),
+  //     },
+  //   ],
+  //   [spacesList],
+  // );
 
   return (
     <div>
@@ -240,10 +424,28 @@ const PurchaseOrder = () => {
           />
         </div>
       </div>
-      <div className="pl-5 pr-7 py-4 mb-10 ">
+      {/* <div className="pl-5 pr-7 py-4 mb-2">
+        <p className="font-bold text-2xl mb-4">Order Item Details</p>
+        {spacesList.length ? (
+          <>
+            <div className="border-dashed border-0 border-black border-b-2 pb-4">
+              <Table COLUMNS={COLUMNS} data={spacesList || []} showPagination={false} />
+            </div>
+            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
+              <p>Total Price: </p>
+              <p>100000</p>
+            </div>
+          </>
+        ) : null}
+      </div> */}
+      <div className="pl-5 pr-7 py-4 mb-2">
         <p className="font-bold text-2xl mb-4">Order Item Details</p>
         <div className="border-dashed border-0 border-black border-b-2 pb-4">
           <Table COLUMNS={COLUMNS} data={data} showPagination={false} className="min-h-[100px]" />
+        </div>
+        <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
+          <p>Total Price: </p>
+          <p>100000</p>
         </div>
       </div>
       <div className="pl-5 pr-7 flex flex-col gap-4 pb-6 border-b">
@@ -260,12 +462,19 @@ const PurchaseOrder = () => {
         <p className="font-bold text-2xl pt-4">Authorized Signatory</p>
       </div>
       <div className="border-b">
-        <p className="font-semibold text-lg pt-4 pl-5 mb-3">Signature and Stamp</p>
+        <p className="font-semibold text-lg pt-4 pl-5 mb-2">Signature and Stamp</p>
+        <div className="pl-5 mb-3">
+          {supportedType.map(item => (
+            <Badge key={item} className="mr-2">
+              {item}
+            </Badge>
+          ))}
+        </div>
         <div className="flex items-start">
           <div className="h-[180px] w-[350px] mx-4 mb-6">
             <Dropzone
               onDrop={onHandleDrop}
-              accept={['image/png', 'image/jpeg']}
+              accept={['image/png', 'image/jpeg', 'image/jpg']}
               className="h-full w-full flex justify-center items-center bg-slate-100"
               loading={isLoading}
               name="signature"

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Image, Text } from '@mantine/core';
+import { Badge, Box, Image, Text } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
 import { useModals } from '@mantine/modals';
 import Table from '../../Table/Table';
@@ -12,6 +12,8 @@ import { useFormContext } from '../../../context/formContext';
 import NumberInput from '../../shared/NumberInput';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import modalConfig from '../../../utils/modalConfig';
+
+const supportedType = ['JPG', 'JPEG', 'PNG'];
 
 const styles = {
   label: {
@@ -186,7 +188,14 @@ const ReleaseOrder = () => {
         </div>
       </div>
       <div className="border-b">
-        <p className="font-semibold text-lg pt-4 pl-5 mb-3">Signature and Stamp</p>
+        <p className="font-semibold text-lg pt-4 pl-5 mb-2">Signature and Stamp</p>
+        <div className="pl-5 mb-3">
+          {supportedType.map(item => (
+            <Badge key={item} className="mr-2">
+              {item}
+            </Badge>
+          ))}
+        </div>
         <div className="flex items-start">
           <div className="h-[180px] w-[350px] mx-4 mb-6">
             <Dropzone
@@ -230,10 +239,14 @@ const ReleaseOrder = () => {
           </Box>
         </div>
       </div>
-      <div className="pl-5 pr-7 py-4 mb-10 ">
+      <div className="pl-5 pr-7 py-4 mb-2">
         <p className="font-bold text-2xl mb-4">Order Item Details</p>
         <div className="border-dashed border-0 border-black border-b-2 pb-4">
           <Table COLUMNS={COLUMNS} data={data} showPagination={false} className="min-h-[100px]" />
+        </div>
+        <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
+          <p>Total Price: </p>
+          <p>100000</p>
         </div>
       </div>
       <div className="pl-5 pr-7 flex flex-col gap-4 pb-6 border-b">

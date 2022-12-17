@@ -7,6 +7,7 @@ import ReleaseOrder from './ReleaseOrder';
 import Invoice from './Invoice';
 import { FormProvider, useForm } from '../../../context/formContext';
 import {
+  useBookingById,
   useGenerateInvoice,
   useGeneratePurchaseOrder,
   useGenerateReleaseOrder,
@@ -207,7 +208,7 @@ const Create = () => {
   const form = useForm({ validate: yupResolver(schema[type]), initialValues: initialValues[type] });
   const ManualEntryView = orderView[type] ?? <div />;
   const bookingId = searchParam.get('id');
-
+  const { data: bookingData, isLoading } = useBookingById(bookingId, !!bookingId);
   const { mutateAsync: generatePurchaseOrder } = useGeneratePurchaseOrder();
   const { mutateAsync: generateRelease } = useGenerateReleaseOrder();
   const { mutateAsync: generateInvoice } = useGenerateInvoice();
@@ -255,7 +256,10 @@ const Create = () => {
               </Button>
             </div>
           </header>
-          <ManualEntryView />
+          <ManualEntryView
+            spacesList={bookingData?.campaign?.spaces}
+            isSpaceListLoading={isLoading}
+          />
         </form>
       </FormProvider>
     </div>
