@@ -98,10 +98,12 @@ const BasicInformation = () => {
           label="Description"
           placeholder="Maximum 200 characters"
           name="description"
+          maxLength={200}
         />
         <Checkbox
-          name=""
+          name="isFeatured"
           label="Set as featured campaign"
+          checked={values?.isFeatured}
           onChange={e => setFieldValue('isFeatured', e.target.checked)}
         />
       </div>

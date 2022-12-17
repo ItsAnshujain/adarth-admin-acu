@@ -75,7 +75,7 @@ const AreaHeader = ({ text }) => {
           </Button>
           {showDatePicker && (
             <div className="absolute z-20 -translate-x-1/2 bg-white -top-0.3">
-              <DateRange handleClose={toggleDatePicker} />
+              <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
             </div>
           )}
         </div>
