@@ -2,8 +2,9 @@ import React, { useMemo } from 'react';
 import { Badge, Box, Image, Text } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
 import { useModals } from '@mantine/modals';
+import dayjs from 'dayjs';
+import { ToWords } from 'to-words';
 import Table from '../../Table/Table';
-import data from './Data.json';
 import TextareaInput from '../../shared/TextareaInput';
 import TextInput from '../../shared/TextInput';
 import image from '../../../assets/image.png';
@@ -12,8 +13,11 @@ import { useFormContext } from '../../../context/formContext';
 import NumberInput from '../../shared/NumberInput';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import modalConfig from '../../../utils/modalConfig';
+import NoData from '../../shared/NoData';
 
 const supportedType = ['JPG', 'JPEG', 'PNG'];
+
+const DATE_FORMAT = 'DD MMM YYYY';
 
 const styles = {
   label: {
@@ -28,10 +32,12 @@ const styles = {
   },
 };
 
-const PurchaseOrder = () => {
+const PurchaseOrder = ({ spacesList, totalPrice }) => {
   const { errors, getInputProps, setFieldValue, values } = useFormContext();
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const modals = useModals();
+  const toWords = new ToWords();
+
   const onHandleDrop = async params => {
     const formData = new FormData();
     formData.append('files', params?.[0]);
@@ -56,232 +62,121 @@ const PurchaseOrder = () => {
       ...modalConfig,
     });
 
-  const COLUMNS = [
-    {
-      Header: '#',
-      accessor: 'id',
-    },
-    {
-      Header: 'DESCRIPTION OF GOODS AND SERVICE',
-      accessor: 'description_of_goods_and_services',
-      Cell: () =>
-        useMemo(() => (
-          <div className="w-fit">
-            <p>Hoarding Rent</p>
-            <p className="text-xs">At Lal Ganesh 30ft x 20ft</p>
-            <p className="text-xs">20th March to 19 April 2022</p>
-          </div>
-        )),
-    },
-    {
-      Header: 'DATE',
-      accessor: 'date',
-      Cell: () => useMemo(() => <div className="w-fit">2 Sep,2022</div>, []),
-    },
-    {
-      Header: 'QUANTITY',
-      accessor: 'quantity',
-      Cell: () => useMemo(() => <div className="w-[14%]">2</div>, []),
-    },
-    {
-      Header: 'RATE',
-      accessor: 'rate',
-      Cell: () => useMemo(() => <div className="w-[14%]">41.67</div>, []),
-    },
-    {
-      Header: 'PER',
-      accessor: 'per',
-      Cell: () => useMemo(() => <div className="w-[14%]">41.SQF</div>, []),
-    },
-    {
-      Header: 'PRICING',
-      accessor: 'pricing',
-      Cell: () => useMemo(() => <div className="w-[14%]">{toIndianCurrency(29834)}</div>, []),
-    },
-  ];
-
-  // const COLUMNS = useMemo(
-  //   () => [
-  //     {
-  //       Header: '#',
-  //       accessor: 'id',
-  //       disableSortBy: true,
-  //       Cell: ({ row: { index } }) => index + 1,
-  //     },
-  //     {
-  //       Header: 'SPACE NAME & PHOTO',
-  //       accessor: 'basicInformation.spaceName',
-  //       disableSortBy: true,
-  //       Cell: ({
-  //         row: {
-  //           original: { _id, basicInformation, isUnderMaintenance },
-  //         },
-  //       }) =>
-  //         useMemo(
-  //           () => (
-  //             <div className="flex items-center gap-2 ">
-  //               <Box
-  //                 className="bg-white border rounded-md cursor-zoom-in"
-  //                 onClick={() => toggleImagePreviewModal(basicInformation?.spacePhoto)}
-  //               >
-  //                 {basicInformation?.spacePhoto ? (
-  //                   <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
-  //                 ) : (
-  //                   <Image src={null} withPlaceholder height={32} width={32} />
-  //                 )}
-  //               </Box>
-  //               <Button
-  //                 className="text-black font-medium px-2 max-w-[180px]"
-  //                 // onClick={() => handleInventoryDetails(_id)}
-  //               >
-  //                 <span className="overflow-hidden text-ellipsis">
-  //                   {basicInformation?.spaceName}
-  //                 </span>
-  //               </Button>
-  //               <Badge
-  //                 className="capitalize"
-  //                 variant="filled"
-  //                 color={isUnderMaintenance ? 'yellow' : 'green'}
-  //               >
-  //                 {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
-  //               </Badge>
-  //             </div>
-  //           ),
-  //           [],
-  //         ),
-  //     },
-  //     {
-  //       Header: 'MEDIA OWNER NAME',
-  //       accessor: 'landlord',
-  //       disableSortBy: true,
-  //       Cell: ({
-  //         row: {
-  //           original: { basicInformation },
-  //         },
-  //       }) =>
-  //         useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || 'NA'}</p>, []),
-  //     },
-  //     {
-  //       Header: 'PEER',
-  //       accessor: 'peer',
-  //       disableSortBy: true,
-  //       Cell: () => useMemo(() => <p>-</p>),
-  //     },
-  //     {
-  //       Header: 'SPACE TYPE',
-  //       accessor: 'basicInformation.spaceType.name',
-  //       disableSortBy: true,
-  //       Cell: ({
-  //         row: {
-  //           original: { basicInformation },
-  //         },
-  //       }) =>
-  //         useMemo(() => {
-  //           const colorType = Object.keys(colors).find(
-  //             key => colors[key] === basicInformation?.spaceType?.name,
-  //           );
-
-  //           return (
-  //             <Badge color={colorType} size="lg" className="capitalize">
-  //               {basicInformation?.spaceType?.name || <span>-</span>}
-  //             </Badge>
-  //           );
-  //         }),
-  //     },
-  //     {
-  //       Header: 'DIMENSION',
-  //       accessor: 'specifications.size.min',
-  //       disableSortBy: true,
-  //       Cell: ({
-  //         row: {
-  //           original: { specifications },
-  //         },
-  //       }) =>
-  //         useMemo(
-  //           () => (
-  //             <p>{`${specifications?.size?.height || 0}ft x ${
-  //               specifications?.size?.width || 0
-  //             }ft`}</p>
-  //           ),
-  //           [],
-  //         ),
-  //     },
-  //     {
-  //       Header: 'IMPRESSION',
-  //       accessor: 'specifications.impressions.min',
-  //       disableSortBy: true,
-  //       Cell: ({
-  //         row: {
-  //           original: { specifications },
-  //         },
-  //       }) => useMemo(() => <p>{`${specifications?.impressions?.min || 0}+`}</p>, []),
-  //     },
-  //     {
-  //       Header: 'HEALTH STATUS',
-  //       accessor: 'specifications.health',
-  //       disableSortBy: true,
-  //       Cell: ({
-  //         row: {
-  //           original: { specifications },
-  //         },
-  //       }) =>
-  //         useMemo(
-  //           () => (
-  //             <div className="w-24">
-  //               <Progress
-  //                 sections={[
-  //                   { value: specifications?.health, color: 'green' },
-  //                   { value: 100 - (specifications?.health || 0), color: 'red' },
-  //                 ]}
-  //               />
-  //             </div>
-  //           ),
-  //           [],
-  //         ),
-  //     },
-  //     {
-  //       Header: 'LOCATION',
-  //       accessor: 'location.city',
-  //       disableSortBy: true,
-  //       Cell: ({
-  //         row: {
-  //           original: { location },
-  //         },
-  //       }) => useMemo(() => <p>{location?.city}</p>, []),
-  //     },
-  //     {
-  //       Header: 'MEDIA TYPE',
-  //       accessor: 'mediaType',
-  //       disableSortBy: true,
-  //       Cell: ({
-  //         row: {
-  //           original: { basicInformation },
-  //         },
-  //       }) => useMemo(() => <p>{basicInformation?.mediaType?.name}</p>),
-  //     },
-  //     {
-  //       Header: 'PRICING',
-  //       accessor: 'basicInformation.price',
-  //       disableSortBy: true,
-  //       Cell: ({
-  //         row: {
-  //           original: { basicInformation },
-  //         },
-  //       }) =>
-  //         useMemo(
-  //           () => (
-  //             <p className="pl-2">
-  //               {basicInformation?.price
-  //                 ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
-  //                 : 0}
-  //             </p>
-  //           ),
-  //           [],
-  //         ),
-  //     },
-  //   ],
-  //   [spacesList],
-  // );
+  const COLUMNS = useMemo(
+    () => [
+      {
+        Header: '#',
+        accessor: 'id',
+        disableSortBy: true,
+        Cell: ({ row: { index } }) => index + 1,
+      },
+      {
+        Header: 'DESCRIPTION OF GOODS AND SERVICE',
+        accessor: 'basicInformation.spaceName',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { basicInformation, location, startDate, endDate },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex flex-col items-start gap-1">
+                <div className="text-black font-medium px-2">
+                  <span className="overflow-hidden text-ellipsis">
+                    {basicInformation?.spaceName}
+                  </span>
+                </div>
+                <div className="text-black font-light px-2 text-sm">
+                  <span className="overflow-hidden text-ellipsis">{location?.address}</span>
+                </div>
+                <div className="text-black font-light px-2 text-xs">
+                  <span className="overflow-hidden text-ellipsis">
+                    {startDate ? dayjs(startDate).format(DATE_FORMAT) : <NoData type="na" />}
+                    {' to '}
+                  </span>
+                  <span className="overflow-hidden text-ellipsis">
+                    {endDate ? dayjs(endDate).format(DATE_FORMAT) : <NoData type="na" />}
+                  </span>
+                </div>
+              </div>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'DATE',
+        accessor: 'date',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { startDate },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div className="w-fit">
+                {startDate ? dayjs(startDate).format(DATE_FORMAT) : <NoData type="na" />}
+              </div>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'QUANTITY',
+        accessor: 'quantity',
+        disableSortBy: true,
+        Cell: () => useMemo(() => <p className="w-[14%]">1</p>, []),
+      },
+      {
+        Header: 'RATE',
+        accessor: 'rate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p className="pl-2">
+                {basicInformation?.price
+                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
+                  : 0}
+              </p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'PER',
+        accessor: 'per',
+        disableSortBy: true,
+        Cell: () => useMemo(() => <p className="w-[14%]">1</p>, []),
+      },
+      {
+        Header: 'PRICING',
+        accessor: 'basicInformation.price',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p className="pl-2">
+                {basicInformation?.price
+                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
+                  : 0}
+              </p>
+            ),
+            [],
+          ),
+      },
+    ],
+    [spacesList],
+  );
 
   return (
     <div>
@@ -424,29 +319,23 @@ const PurchaseOrder = () => {
           />
         </div>
       </div>
-      {/* <div className="pl-5 pr-7 py-4 mb-2">
+      <div className="pl-5 pr-7 py-4 mb-2">
         <p className="font-bold text-2xl mb-4">Order Item Details</p>
-        {spacesList.length ? (
+        {spacesList?.length ? (
           <>
             <div className="border-dashed border-0 border-black border-b-2 pb-4">
               <Table COLUMNS={COLUMNS} data={spacesList || []} showPagination={false} />
             </div>
             <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
               <p>Total Price: </p>
-              <p>100000</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
             </div>
           </>
-        ) : null}
-      </div> */}
-      <div className="pl-5 pr-7 py-4 mb-2">
-        <p className="font-bold text-2xl mb-4">Order Item Details</p>
-        <div className="border-dashed border-0 border-black border-b-2 pb-4">
-          <Table COLUMNS={COLUMNS} data={data} showPagination={false} className="min-h-[100px]" />
-        </div>
-        <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
-          <p>Total Price: </p>
-          <p>100000</p>
-        </div>
+        ) : (
+          <div className="w-full min-h-[100px] flex justify-center items-center">
+            <p className="text-xl">No records found</p>
+          </div>
+        )}
       </div>
       <div className="pl-5 pr-7 flex flex-col gap-4 pb-6 border-b">
         <TextInput
@@ -454,6 +343,7 @@ const PurchaseOrder = () => {
           label="Amount Chargeable (in words)"
           name="amountChargeable"
           placeholder="Write..."
+          value={toWords.convert(totalPrice)}
           readOnly
           disabled
         />
