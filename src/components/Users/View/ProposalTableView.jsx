@@ -1,16 +1,21 @@
-import { Button, Loader } from '@mantine/core';
+import { Button, Loader, Select } from '@mantine/core';
 import dayjs from 'dayjs';
 import React, { useEffect, useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useFetchProposals } from '../../../hooks/proposal.hooks';
+import { ChevronDown } from 'react-feather';
+import { useSearchParams } from 'react-router-dom';
+import { useFetchMasters } from '../../../hooks/masters.hooks';
+import { useFetchProposals, useUpdateProposal } from '../../../hooks/proposal.hooks';
 import MenuPopover from '../../../pages/Proposal/MenuPopover';
+import { serialize } from '../../../utils';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 
+const nativeSelectStyles = {
+  rightSection: { pointerEvents: 'none' },
+};
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const ProposalTableView = ({ viewType, userId = null, setCounts }) => {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
@@ -24,12 +29,22 @@ const ProposalTableView = ({ viewType, userId = null, setCounts }) => {
     viewType,
   );
 
+  const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
+  const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
+    serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
+  );
+
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
   const handlePagination = currentPage => {
     searchParams.set('page', currentPage);
     setSearchParams(searchParams);
+  };
+
+  const handleUpdateStatus = (proposalId, statusId) => {
+    const data = { status: statusId };
+    update({ proposalId, data });
   };
 
   const COLUMNS = useMemo(
@@ -59,19 +74,14 @@ const ProposalTableView = ({ viewType, userId = null, setCounts }) => {
         }) =>
           useMemo(
             () => (
-              <Button
-                className="text-black font-medium max-w-[250px] capitalize"
-                onClick={() => navigate(`view-details/${_id}`, { replace: true })}
-              >
-                {name}
-              </Button>
+              <Button className="text-black font-medium max-w-[250px] capitalize">{name}</Button>
             ),
             [],
           ),
       },
       {
         Header: 'CREATOR',
-        accessor: 'creator',
+        accessor: 'creator.name',
         Cell: ({
           row: {
             original: { creator },
@@ -84,14 +94,30 @@ const ProposalTableView = ({ viewType, userId = null, setCounts }) => {
       },
       {
         Header: 'STATUS',
-        accessor: 'status',
+        accessor: 'status.name',
         Cell: ({
           row: {
             original: { _id, status },
           },
         }) =>
           useMemo(
-            () => <p className="pl-2 font-bold text-purple-350">{status?.name || '-'}</p>,
+            () => (
+              <Select
+                className="mr-2"
+                value={status?._id || ''}
+                onChange={e => handleUpdateStatus(_id, e)}
+                data={
+                  proposalStatusData?.docs?.map(item => ({
+                    label: item?.name,
+                    value: item?._id,
+                  })) || []
+                }
+                styles={nativeSelectStyles}
+                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                rightSectionWidth={40}
+                disabled={isProposalStatusLoading || isUpdateProposalLoading}
+              />
+            ),
             [],
           ),
       },
@@ -131,7 +157,7 @@ const ProposalTableView = ({ viewType, userId = null, setCounts }) => {
       },
       {
         Header: 'CLIENT',
-        accessor: 'client',
+        accessor: 'client.name',
         Cell: ({
           row: {
             original: { client },
@@ -162,7 +188,7 @@ const ProposalTableView = ({ viewType, userId = null, setCounts }) => {
         }) => useMemo(() => <MenuPopover itemId={_id} />, []),
       },
     ],
-    [proposalsData?.docs, limit],
+    [proposalsData?.docs, limit, proposalStatusData],
   );
 
   useEffect(() => {

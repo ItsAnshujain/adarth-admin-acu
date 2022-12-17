@@ -2,7 +2,7 @@ import { useDebouncedState } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Loader, NativeSelect, Progress } from '@mantine/core';
+import { Button, Loader, NativeSelect, Progress } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { serialize } from '../../../utils';
@@ -13,10 +13,13 @@ import MenuPopover from '../../../pages/Booking/MenuPopOver';
 import Table from '../../Table/Table';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
+import NoData from '../../shared/NoData';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
 };
+
+const DATE_FORMAT = 'DD MMM YYYY';
 
 const BookingTableView = ({ viewType, userId = null, setCounts }) => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
@@ -110,7 +113,7 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
       },
       {
         Header: 'CLIENT',
-        accessor: 'client',
+        accessor: 'client.name',
         Cell: ({
           row: {
             original: { client },
@@ -120,12 +123,24 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
       {
         Header: 'ORDER DATE',
         accessor: 'createdAt',
-        Cell: ({ row: { original } }) => dayjs(original.client.createdAt).format('DD-MMMM-YYYY'),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                {dayjs(original.createdAt).format(DATE_FORMAT)}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'CAMPAIGN NAME',
         accessor: 'campaign.name',
-        Cell: ({ row: { original } }) => useMemo(() => original.campaign?.name, []),
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) => useMemo(() => <p>{campaign?.name || <NoData type="na" />}</p>, []),
       },
       {
         Header: 'BOOKING TYPE',
@@ -243,14 +258,18 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
       {
         Header: 'CAMPAIGN INCHARGE',
         accessor: 'campaign.incharge.name',
-        Cell: () => '',
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) => useMemo(() => <p>{campaign?.incharge?.name || <NoData type="na" />}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',
         accessor: 'campaign.avgHealth',
         Cell: ({
           row: {
-            original: { healthStatus, totalHealthStatus },
+            original: { campaign },
           },
         }) =>
           useMemo(
@@ -258,8 +277,8 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: healthStatus, color: 'green' },
-                    { value: totalHealthStatus - healthStatus, color: 'red' },
+                    { value: campaign?.avgHealth, color: 'green' },
+                    { value: 100 - (campaign?.avgHealth || 0), color: 'red' },
                   ]}
                 />
               </div>
@@ -270,7 +289,11 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
       {
         Header: 'PAYMENT TYPE',
         accessor: 'paymentType',
-        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { paymentType },
+          },
+        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
       },
       {
         Header: 'SCHEDULE',
@@ -278,15 +301,27 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { from_date, to_date },
+            original: { campaign },
           },
         }) =>
           useMemo(
             () => (
-              <div className="flex items-center text-xs w-max">
-                <span className="py-1 px-1 bg-slate-200 mr-2 rounded-md">{from_date}</span>
-                &gt;
-                <span className="py-1 px-1 bg-slate-200 mx-2 rounded-md">{to_date}</span>
+              <div className="flex items-center w-max">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                  {campaign?.startDate ? (
+                    dayjs(campaign?.startDate).format(DATE_FORMAT)
+                  ) : (
+                    <NoData type="na" />
+                  )}
+                </p>
+                <span className="px-2">&gt;</span>
+                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                  {campaign?.endDate ? (
+                    dayjs(campaign?.endDate).format(DATE_FORMAT)
+                  ) : (
+                    <NoData type="na" />
+                  )}
+                </p>
               </div>
             ),
             [],
@@ -296,8 +331,45 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
         Header: 'DOWNLOAD UPLOADED MEDIA',
         accessor: '',
         disableSortBy: true,
-        Cell: () =>
-          useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <Button
+                className={classNames(
+                  campaign?.medias?.length
+                    ? 'text-purple-450 cursor-pointer'
+                    : 'pointer-events-none text-gray-450 bg-white',
+                  'font-medium  text-base',
+                )}
+                disabled={!campaign?.medias?.length}
+                onClick={() => {
+                  const downloadAll = urls => {
+                    const url = urls.pop();
+
+                    const a = document.createElement('a');
+                    a.setAttribute('href', url);
+                    a.setAttribute('download', '');
+                    a.setAttribute('target', '_blank');
+                    a.setAttributes('rel', 'noopener noreferrer');
+                    a.click();
+
+                    if (urls.length === 0) {
+                      // eslint-disable-next-line no-use-before-define
+                      clearInterval(interval);
+                    }
+                  };
+                  const interval = setInterval(downloadAll, 300, campaign?.medias);
+                }}
+              >
+                Download
+              </Button>
+            ),
+            [],
+          ),
       },
       {
         Header: 'TOTAL SPACES',
@@ -308,9 +380,9 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
         accessor: 'price',
         Cell: ({
           row: {
-            original: { price },
+            original: { campaign },
           },
-        }) => useMemo(() => toIndianCurrency(price), []),
+        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
       },
       {
         Header: 'PURCHASE ORDER',
