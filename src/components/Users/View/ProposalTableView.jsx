@@ -1,6 +1,6 @@
 import { Button, Loader } from '@mantine/core';
 import dayjs from 'dayjs';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useFetchProposals } from '../../../hooks/proposal.hooks';
 import MenuPopover from '../../../pages/Proposal/MenuPopover';
@@ -9,7 +9,7 @@ import Table from '../../Table/Table';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
-const ProposalTableView = ({ viewType, userId = null }) => {
+const ProposalTableView = ({ viewType, userId = null, setCounts }) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
@@ -164,6 +164,11 @@ const ProposalTableView = ({ viewType, userId = null }) => {
     ],
     [proposalsData?.docs, limit],
   );
+
+  useEffect(() => {
+    if (proposalsData)
+      setCounts(prevState => ({ ...prevState, proposals: proposalsData?.totalDocs }));
+  }, [proposalsData]);
 
   return (
     <div className="mt-8">

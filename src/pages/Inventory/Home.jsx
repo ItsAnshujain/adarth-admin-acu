@@ -147,7 +147,7 @@ const Home = () => {
       },
       {
         Header: 'SPACE TYPE',
-        accessor: 'spaceType.name',
+        accessor: 'basicInformation.spaceType.name',
         Cell: ({
           row: {
             original: { basicInformation },

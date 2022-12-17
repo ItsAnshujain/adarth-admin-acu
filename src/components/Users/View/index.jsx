@@ -12,6 +12,10 @@ const Header = () => {
   const [activeTable, setActiveTable] = useState('booking');
   const { id: userId } = useParams();
   const { data: userDetails, isLoading: isUserDetailsLoading } = useFetchUsersById(userId);
+  const [counts, setCounts] = useState({
+    bookings: 0,
+    proposals: 0,
+  });
 
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>
@@ -30,7 +34,7 @@ const Header = () => {
         />
       </Tabs.Panel>
       <Tabs.Panel value="second">
-        <ManagingCampaignSubHeader activeTable={activeTable} />
+        <ManagingCampaignSubHeader activeTable={activeTable} userId={userId} counts={counts} />
         <div>
           <Tabs value={activeTable} onTabChange={setActiveTable}>
             <Tabs.List className="h-16">
@@ -43,10 +47,18 @@ const Header = () => {
             </Tabs.List>
 
             <Tabs.Panel value="booking">
-              <BookingTableView viewType={activeTable === 'booking'} userId={userId} />
+              <BookingTableView
+                viewType={activeTable === 'booking'}
+                userId={userId}
+                setCounts={setCounts}
+              />
             </Tabs.Panel>
             <Tabs.Panel value="proposal" className="mr-5">
-              <ProposalTableView viewType={activeTable === 'proposal'} userId={userId} />
+              <ProposalTableView
+                viewType={activeTable === 'proposal'}
+                userId={userId}
+                setCounts={setCounts}
+              />
             </Tabs.Panel>
           </Tabs>
         </div>

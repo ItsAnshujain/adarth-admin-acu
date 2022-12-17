@@ -4,6 +4,7 @@ import {
   bookingById,
   bookings,
   bookingStats,
+  bookingStatsByIncharge,
   createBooking,
   deleteBookings,
   generateInvoiceReceipt,
@@ -121,6 +122,18 @@ export const useBookingStats = (filter, enabled = true) =>
     async () => {
       const res = await bookingStats(filter);
       return res;
+    },
+    {
+      enabled,
+    },
+  );
+
+export const useBookingStatByIncharge = (filter, enabled = true) =>
+  useQuery(
+    ['booking-stats-by-incharge', filter],
+    async () => {
+      const res = await bookingStatsByIncharge(filter);
+      return res?.data;
     },
     {
       enabled,

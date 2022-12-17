@@ -7,7 +7,6 @@ import Booking from './Booking';
 import BasicInfo from './BasicInformation';
 import { useFetchInventoryById, useUpdateInventory } from '../../../hooks/inventory.hooks';
 
-// TODO:Add count prop to Booking to send it to table
 const Main = () => {
   const navigate = useNavigate();
   const { id: inventoryId } = useParams();
@@ -70,7 +69,7 @@ const Main = () => {
         <BasicInfo />
       </Tabs.Panel>
       <Tabs.Panel value="booking" pt="xs">
-        <Booking />
+        <Booking inventoryId={inventoryId} />
       </Tabs.Panel>
     </Tabs>
   );

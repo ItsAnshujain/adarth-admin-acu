@@ -1,19 +1,23 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Text, Button, Image, Loader } from '@mantine/core';
-import { ChevronDown } from 'react-feather';
-import { useSearchParams } from 'react-router-dom';
+import { Text, Button, Image, Loader, Menu } from '@mantine/core';
+import { ChevronDown, Eye } from 'react-feather';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
+import dayjs from 'dayjs';
 import DateRange from '../../DateRange';
 import Filter from '../../Filter';
 import calendar from '../../../assets/data-table.svg';
 import Table from '../../Table/Table';
-import { useBookings } from '../../../hooks/booking.hooks';
 import MenuIcon from '../../Menu';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
+import { useFetchBookingsByInventoryId } from '../../../hooks/inventory.hooks';
+import NoData from '../../shared/NoData';
 
-const Booking = () => {
+const DATE_FORMAT = 'DD MMM YYYY';
+
+const Booking = ({ inventoryId }) => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -24,13 +28,15 @@ const Booking = () => {
     'sortBy': 'createdAt',
     'sortOrder': 'desc',
   });
+  const navigate = useNavigate();
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
-  const { data: bookingData, isLoading: isLoadingBookingData } = useBookings(
-    searchParams.toString(),
-  );
+  const { data: bookingData, isLoading: isLoadingBookingData } = useFetchBookingsByInventoryId({
+    inventoryId,
+    query: searchParams.toString(),
+  });
 
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -54,147 +60,171 @@ const Booking = () => {
       },
       {
         Header: 'CLIENT',
-        accessor: 'client',
+        accessor: 'client.name',
         Cell: ({
           row: {
             original: { client },
           },
-        }) => useMemo(() => <p className="w-full">{client?.name}</p>, []),
+        }) => useMemo(() => <p>{client?.name}</p>, []),
+      },
+      {
+        Header: 'ORDER DATE',
+        accessor: 'createdAt',
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                {dayjs(original.createdAt).format(DATE_FORMAT)}
+              </p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'CAMPAIGN NAME',
+        accessor: 'campaign.name',
+        Cell: ({
+          row: {
+            original: { campaignName },
+          },
+        }) => useMemo(() => <p>{campaignName || <NoData type="na" />}</p>, []),
+      },
+      {
+        Header: 'BOOKING TYPE',
+        accessor: 'type',
+        Cell: ({
+          row: {
+            original: { type },
+          },
+        }) => useMemo(() => <p className="capitalize">{type}</p>, []),
+      },
+      {
+        Header: 'CAMPAIGN STATUS',
+        accessor: 'currentStatus.campaignStatus',
+        Cell: ({
+          row: {
+            original: { currentStatus },
+          },
+        }) => useMemo(() => <p className="w-36">{currentStatus?.campaignStatus || '-'}</p>, []),
+      },
+      {
+        Header: 'PAYMENT STATUS',
+        accessor: 'currentStatus.paymentStatus',
+        Cell: ({
+          row: {
+            original: { currentStatus },
+          },
+        }) => useMemo(() => <p className="w-36">{currentStatus?.paymentStatus || '-'}</p>, []),
+      },
+      {
+        Header: 'PRINTING STATUS',
+        accessor: 'currentStatus.printingStatus',
+        Cell: ({
+          row: {
+            original: { currentStatus },
+          },
+        }) => useMemo(() => <p className="w-36">{currentStatus?.printingStatus || '-'}</p>, []),
+      },
+      {
+        Header: 'MOUNTING STATUS',
+        accessor: 'currentStatus.mountingStatus',
+        Cell: ({
+          row: {
+            original: { currentStatus },
+          },
+        }) => useMemo(() => <p className="w-36">{currentStatus?.mountingStatus || '-'}</p>, []),
       },
       {
         Header: 'CAMPAIGN INCHARGE',
         accessor: 'campaign.incharge.name',
         Cell: ({
           row: {
-            original: { campaignName },
+            original: { incharge },
           },
-        }) => useMemo(() => <p className="w-36">{campaignName}</p>, []),
+        }) => useMemo(() => <p>{incharge?.name || <NoData type="na" />}</p>, []),
       },
       {
-        Header: 'CAMPAIGN NAME',
-        accessor: 'campaign',
+        Header: 'PAYMENT TYPE',
+        accessor: 'paymentType',
         Cell: ({
           row: {
-            original: { image, campaign },
+            original: { paymentType },
+          },
+        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
+      },
+      {
+        Header: 'SCHEDULE',
+        accessor: 'schedule',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { startDate, endDate },
           },
         }) =>
           useMemo(
             () => (
               <div className="flex items-center w-max">
-                {image ? (
-                  <Image src={image} alt="altered" height={32} width={32} />
-                ) : (
-                  <Image src={null} withPlaceholder height={32} width={32} />
-                )}
-                <p className="pl-2">{campaign?.name}</p>
+                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                  {startDate ? dayjs(startDate).format(DATE_FORMAT) : <NoData type="na" />}
+                </p>
+                <span className="px-2">&gt;</span>
+                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                  {endDate ? dayjs(endDate).format(DATE_FORMAT) : <NoData type="na" />}
+                </p>
               </div>
             ),
             [],
           ),
       },
       {
-        Header: 'PRINTING STATUS',
-        accessor: 'printingStatus',
+        Header: 'TOTAL SPACES',
+        accessor: 'totalSpaces',
         Cell: ({
           row: {
-            original: { currentStatus },
+            original: { price },
           },
-        }) =>
-          useMemo(() => {
-            const color =
-              currentStatus?.printingStatus === 'Completed'
-                ? 'green'
-                : currentStatus?.printingStatus === 'Upcoming'
-                ? 'red'
-                : 'blue';
-            return (
-              <p className="w-36" style={{ color }}>
-                {currentStatus?.printingStatus || '-'}
-              </p>
-            );
-          }, []),
-      },
-      {
-        Header: 'MOUNTING STATUS',
-        accessor: 'mountingStatus',
-        Cell: ({
-          row: {
-            original: { currentStatus },
-          },
-        }) =>
-          useMemo(() => {
-            const color = currentStatus?.mountingStatus === 'Completed' ? 'green' : 'red';
-            return (
-              <p className="w-36" style={{ color }}>
-                {currentStatus?.mountingStatus || '-'}
-              </p>
-            );
-          }, []),
-      },
-      {
-        Header: 'PAYMENT STATUS',
-        accessor: 'paymentStatus',
-        Cell: ({
-          row: {
-            original: { currentStatus },
-          },
-        }) =>
-          useMemo(() => {
-            const color = currentStatus?.paymentStatus === 'Paid' ? 'green' : 'red';
-            return (
-              <p className="w-36" style={{ color }}>
-                {currentStatus?.paymentStatus || '-'}
-              </p>
-            );
-          }, []),
-      },
-      {
-        Header: 'PAYMENT TYPE',
-        accessor: 'type',
-        Cell: ({
-          row: {
-            original: { type },
-          },
-        }) => useMemo(() => <p className="w-36 capitalize">{type}</p>, []),
-      },
-      {
-        Header: 'SCHEDULE',
-        accessor: 'schedule',
-        Cell: ({
-          row: {
-            original: { from_date, to_date },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div className="flex items-center text-xs w-max">
-                <span className="py-1 px-1 bg-slate-200 mr-2  rounded-md ">{from_date}</span>
-                &gt;
-                <span className="py-1 px-1 bg-slate-200 mx-2  rounded-md">{to_date}</span>
-              </div>
-            ),
-            [],
-          ),
+        }) => useMemo(() => <p className="pl-2">{price ? price.length : 0}</p>, []),
       },
       {
         Header: 'PRICING',
         accessor: 'price',
         Cell: ({
           row: {
-            original: { price },
+            original: { totalPrice },
           },
-        }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
+        }) =>
+          useMemo(
+            () => <p className="pl-2">{totalPrice ? toIndianCurrency(totalPrice) : 0}</p>,
+            [],
+          ),
       },
       {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
-        Cell: () =>
+        Cell: ({
+          row: {
+            original: { _id },
+          },
+        }) =>
           useMemo(
             () => (
-              <Button>
-                <MenuIcon />
-              </Button>
+              <Menu shadow="md" width={150}>
+                <Menu.Target>
+                  <Button>
+                    <MenuIcon />
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    onClick={() => navigate(`/bookings/view-details/${_id}`)}
+                    className="cursor-pointer flex items-center gap-1"
+                    icon={<Eye className="h-4" />}
+                  >
+                    <span className="ml-1">View</span>
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
             ),
             [],
           ),

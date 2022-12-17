@@ -18,14 +18,14 @@ const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
 };
 
-const BookingTableView = ({ viewType, userId = null }) => {
+const BookingTableView = ({ viewType, userId = null, setCounts }) => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
     'sortBy': 'createdAt',
     'sortOrder': 'desc',
-    'userId': userId,
+    'incharge': userId,
   });
 
   const page = searchParams.get('page');
@@ -449,6 +449,10 @@ const BookingTableView = ({ viewType, userId = null }) => {
       setSearchParams(searchParams);
     }
   }, [searchInput]);
+
+  useEffect(() => {
+    if (bookingData) setCounts(prevState => ({ ...prevState, bookings: bookingData?.totalDocs }));
+  }, [bookingData]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
