@@ -258,7 +258,7 @@ const SelectSpace = () => {
           row: {
             original: { impression },
           },
-        }) => useMemo(() => <p>{`${impression}+`}</p>, []),
+        }) => useMemo(() => <p>{`${impression || 0}+`}</p>, []),
       },
       {
         Header: 'HEALTH',
