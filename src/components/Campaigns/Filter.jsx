@@ -29,8 +29,18 @@ const MinMaxField = ({ minKey, maxKey, setQuery, state, label }) => {
   const min = state[minKey];
   const max = state[maxKey];
 
+  const handleMin = val => {
+    setQuery(minKey, val);
+    setQuery(maxKey, max || 0);
+  };
+
+  const handleMax = val => {
+    setQuery(maxKey, val);
+    setQuery(minKey, min || 0);
+  };
+
   return (
-    <Accordion.Item value="price" className="mb-4 rounded-xl border">
+    <Accordion.Item value={label} className="mb-4 rounded-xl border">
       <Accordion.Control>
         <p className="text-lg">{label}</p>
       </Accordion.Control>
@@ -39,10 +49,10 @@ const MinMaxField = ({ minKey, maxKey, setQuery, state, label }) => {
           <div className="flex flex-col gap-2 mb-2">
             <div className="flex justify-between gap-8">
               <div>
-                <NumberInput value={min} onChange={val => setQuery(minKey, val)} label="Min" />
+                <NumberInput value={min} onChange={handleMin} label="Min" />
               </div>
               <div>
-                <NumberInput value={max} onChange={val => setQuery(maxKey, val)} label="Max" />
+                <NumberInput value={max} onChange={handleMax} label="Max" />
               </div>
             </div>
             <div>
@@ -73,8 +83,6 @@ const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
     serialize({ type: 'campaign_status', limit: 10 }),
   );
 
-  const { data: campaignTypes } = useFetchMasters(serialize({ type: 'campaign_type', limit: 10 }));
-
   const handleApply = () => {
     setSearchParams(searchParams);
     onClose();
@@ -90,7 +98,7 @@ const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
 
   const setQuery = (key, val) => {
     setState(p => ({ ...p, [key]: val }));
-    if (val) searchParams.set(key, val);
+    if (val !== '') searchParams.set(key, val);
     else searchParams.delete(key);
   };
 
@@ -162,13 +170,16 @@ const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {campaignTypes?.docs?.map(item => (
+                {[
+                  { label: 'Predefined', value: 'predefined' },
+                  { label: 'Customized', value: 'customized' },
+                ].map(item => (
                   <div className="flex gap-2 mb-2" key={item._id}>
                     <Radio
-                      onChange={() => setQuery('type', item._id)}
-                      label={item.name}
+                      onChange={() => setQuery('type', item.value)}
+                      label={item.label}
                       defaultValue={item}
-                      checked={state.type === item._id}
+                      checked={state.type === item.value}
                     />
                   </div>
                 ))}

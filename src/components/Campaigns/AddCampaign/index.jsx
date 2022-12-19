@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import BasicInfo from './BasicInformation';
 import SuccessModal from '../../shared/Modal';
@@ -86,6 +86,7 @@ const initialValues = {
 };
 
 const Create = () => {
+  const navigate = useNavigate();
   const submitRef = useRef();
   const [publish, setPublish] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
@@ -148,6 +149,8 @@ const Create = () => {
       newData.healthStatus = +newData.healthStatus || 0;
       newData.price = +newData.price || 0;
 
+      delete newData.createdBy;
+
       if (!['predefined', 'customized'].includes(newData.type)) {
         newData.type = 'predefined';
       }
@@ -161,14 +164,21 @@ const Create = () => {
       }
 
       if (id) {
-        update({
-          id,
-          data: {
-            ...newData,
-            startDate: dayjs(minDate).format('YYYY-MM-DD'),
-            endDate: dayjs(maxDate).format('YYYY-MM-DD'),
+        update(
+          {
+            id,
+            data: {
+              ...newData,
+              startDate: dayjs(minDate).format('YYYY-MM-DD'),
+              endDate: dayjs(maxDate).format('YYYY-MM-DD'),
+            },
           },
-        });
+          {
+            onSuccess: () => {
+              setTimeout(() => navigate('/campaigns'), 2000);
+            },
+          },
+        );
       } else
         await add(newData, {
           onSuccess: () => {

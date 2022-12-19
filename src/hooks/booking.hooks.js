@@ -76,6 +76,7 @@ export const useUpdateBookingStatus = () => {
         queryClient.invalidateQueries(['bookings']);
         queryClient.invalidateQueries(['booking-by-id']);
         queryClient.invalidateQueries(['booking-stats']);
+        queryClient.invalidateQueries(['booking-stats-by-incharge']);
 
         showNotification({
           title: 'Booking updated successfully',

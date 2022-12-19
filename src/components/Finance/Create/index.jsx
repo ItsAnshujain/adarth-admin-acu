@@ -13,6 +13,7 @@ import {
   useGeneratePurchaseOrder,
   useGenerateReleaseOrder,
 } from '../../../hooks/booking.hooks';
+import { gstRegexMatch, mobileRegexMatch } from '../../../utils';
 
 const orderView = {
   purchase: PurchaseOrder,
@@ -37,10 +38,7 @@ const purchaseSchema = yup.object({
   supplierGst: yup
     .string()
     .trim()
-    .matches(
-      /^([0-9]){2}([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}([0-9]){1}([a-zA-Z]){1}([0-9]){1}?$/,
-      'GST number must be valid',
-    ),
+    .matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
   supplierStreetAddress: yup.string().trim().required('Street Address is required'),
   supplierCity: yup.string().trim().required('City is required'),
   supplierZip: yup
@@ -50,13 +48,7 @@ const purchaseSchema = yup.object({
     .nullable()
     .required('Pin is required'),
   buyerName: yup.string().trim().required('Supplier Name is required'),
-  buyerGst: yup
-    .string()
-    .trim()
-    .matches(
-      /^([0-9]){2}([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}([0-9]){1}([a-zA-Z]){1}([0-9]){1}?$/,
-      'GST number must be valid',
-    ),
+  buyerGst: yup.string().trim().matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
   buyerRefNo: yup.string().trim().required('Supplier Ref is required'), // TODO: key missing and should be buyerRefNo
   buyerOtherReference: yup.string().trim().required('Other Reference(s) is required'), // TODO: key missing and should be buyerOtherReference
   dispatchThrough: yup.string().trim().required('Dispatch Through is required'),
@@ -106,12 +98,12 @@ const releaseSchema = yup.object({
   phone: yup
     .string()
     .trim()
-    .matches(/^[6-9]\d{9}$/, 'Must be a valid number')
+    .matches(mobileRegexMatch, 'Must be a valid number')
     .required('Phone is required'),
   mobile: yup
     .string()
     .trim()
-    .matches(/^[6-9]\d{9}$/, 'Must be a valid number')
+    .matches(mobileRegexMatch, 'Must be a valid number')
     .required('Mobile is required'),
   email: yup.string().trim().required('Email is required').email('Invalid Email'),
   streetAddress: yup.string().trim().required('Street Address is required'),
@@ -154,10 +146,7 @@ const invoiceSchema = yup.object({
   supplierGst: yup
     .string()
     .trim()
-    .matches(
-      /^([0-9]){2}([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}([0-9]){1}([a-zA-Z]){1}([0-9]){1}?$/,
-      'GST number must be valid',
-    )
+    .matches(gstRegexMatch, 'GST number must be valid and in uppercase')
     .required('GST number is required'),
   supplierStreetAddress: yup.string().trim().required('Street Address is required'),
   supplierCity: yup.string().trim().required('City is required'),
@@ -170,7 +159,7 @@ const invoiceSchema = yup.object({
   supplierPhone: yup
     .string()
     .trim()
-    .matches(/^[6-9]\d{9}$/, 'Must be a valid number')
+    .matches(mobileRegexMatch, 'Must be a valid number')
     .required('Contact is required'),
   supplierEmail: yup.string().trim().required('Email is required').email('Invalid Email'),
   supplierRefNo: yup.string().trim().required('Supplier Ref is required'),
@@ -181,15 +170,12 @@ const invoiceSchema = yup.object({
   buyerPhone: yup
     .string()
     .trim()
-    .matches(/^[6-9]\d{9}$/, 'Must be a valid number')
+    .matches(mobileRegexMatch, 'Must be a valid number')
     .required('Contact is required'),
   buyerGst: yup
     .string()
     .trim()
-    .matches(
-      /^([0-9]){2}([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}([0-9]){1}([a-zA-Z]){1}([0-9]){1}?$/,
-      'GST number must be valid',
-    )
+    .matches(gstRegexMatch, 'GST number must be valid and in uppercase')
     .required('GST number is required'),
   buyerStreetAddress: yup.string().trim().required('Street Address is required'),
   buyerCity: yup.string().trim().required('City is required'),
@@ -308,6 +294,12 @@ const Create = () => {
     if (Object.keys(data).length === 0) return;
 
     if (type === 'purchase') {
+      if (data?.supplierGst) {
+        data.supplierGst = data.supplierGst?.toUpperCase();
+      }
+      if (data?.buyerGst) {
+        data.buyerGst = data.buyerGst?.toUpperCase();
+      }
       const purchaseOrderPdf = await generatePurchaseOrder({ id: bookingId, data });
       if (purchaseOrderPdf?.generatedPdf?.Location)
         downloadPdf(purchaseOrderPdf.generatedPdf.Location);
@@ -327,6 +319,12 @@ const Create = () => {
       }
       if (!data?.buyerPhone?.includes('+91')) {
         data.buyerPhone = `+91${data?.buyerPhone}`;
+      }
+      if (data?.supplierGst) {
+        data.supplierGst = data.supplierGst?.toUpperCase();
+      }
+      if (data?.buyerGst) {
+        data.buyerGst = data.buyerGst?.toUpperCase();
       }
       const invoicePdf = await generateInvoiceOrder({ id: bookingId, data });
       if (invoicePdf?.generatedPdf?.Location) downloadPdf(invoicePdf.generatedPdf.Location);

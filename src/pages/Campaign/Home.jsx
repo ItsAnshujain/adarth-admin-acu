@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from 'react';
-import { NativeSelect, Menu, Progress, Image, Button } from '@mantine/core';
+import { NativeSelect, Menu, Progress, Image, Button, Loader } from '@mantine/core';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Trash, Edit2, Eye, Bookmark, ChevronDown } from 'react-feather';
 import classNames from 'classnames';
@@ -285,26 +285,40 @@ const Home = () => {
         <RowsPerPage setCount={data => setQuery('limit', data)} count={limit} />
         <Search search={search} setSearch={setSearch} />
       </div>
-      {viewType.campaign === 'grid' ? (
-        <GridView
-          count={limit}
-          activePage={page}
-          totalPages={campaignData?.totalPages || 1}
-          list={campaignData?.docs || []}
-          setActivePage={data => setQuery('page', data)}
-          isLoadingList={isLoading}
-        />
-      ) : viewType.campaign === 'list' ? (
-        <Table
-          COLUMNS={COLUMNS}
-          data={campaignData?.docs || []}
-          allowRowsSelect
-          activePage={page}
-          totalPages={campaignData?.totalPages || 1}
-          setActivePage={data => setQuery('page', data)}
-          rowCountLimit={limit}
-          handleSorting={handleSortByColumn}
-        />
+      {isLoading ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <Loader />
+        </div>
+      ) : null}
+      {campaignData?.docs?.length === 0 && !isLoading ? (
+        <div className="w-full min-h-[400px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
+        </div>
+      ) : null}
+      {campaignData?.docs?.length ? (
+        <>
+          {viewType.campaign === 'grid' ? (
+            <GridView
+              count={limit}
+              activePage={page}
+              totalPages={campaignData?.totalPages || 1}
+              list={campaignData?.docs || []}
+              setActivePage={data => setQuery('page', data)}
+              isLoadingList={isLoading}
+            />
+          ) : viewType.campaign === 'list' ? (
+            <Table
+              COLUMNS={COLUMNS}
+              data={campaignData?.docs || []}
+              allowRowsSelect
+              activePage={page}
+              totalPages={campaignData?.totalPages || 1}
+              setActivePage={data => setQuery('page', data)}
+              rowCountLimit={limit}
+              handleSorting={handleSortByColumn}
+            />
+          ) : null}{' '}
+        </>
       ) : null}
     </div>
   );

@@ -1,12 +1,12 @@
 import { useDebouncedState } from '@mantine/hooks';
-import { useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
 import { Button, Loader, NativeSelect, Progress } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
+import { useSearchParams } from 'react-router-dom';
 import { serialize } from '../../../utils';
-import { useBookings, useUpdateBookingStatus } from '../../../hooks/booking.hooks';
+import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MenuPopover from '../../../pages/Booking/MenuPopOver';
@@ -19,25 +19,24 @@ const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
 };
 
+const sortOrders = order => {
+  switch (order) {
+    case 'asc':
+      return 'desc';
+    case 'desc':
+      return 'asc';
+
+    default:
+      return 'asc';
+  }
+};
+
 const DATE_FORMAT = 'DD MMM YYYY';
 
-const BookingTableView = ({ viewType, userId = null, setCounts }) => {
+const BookingTableView = ({ data: bookingData, isLoading }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
-  const [searchParams, setSearchParams] = useSearchParams({
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'desc',
-    'incharge': userId,
-  });
 
-  const page = searchParams.get('page');
-  const limit = searchParams.get('limit');
-
-  const { data: bookingData, isLoading: isLoadingBookingData } = useBookings(
-    viewType ? searchParams.toString() : null,
-    viewType,
-  );
   const { data: campaignStatus } = useFetchMasters(
     serialize({ type: 'campaign_status', parentId: null, page: 1, limit: 100 }),
   );
@@ -90,7 +89,7 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
     [printingStatus],
   );
   const campaignList = useMemo(
-    () => campaignStatus?.docs?.map(item => item.name?.toLowerCase()) || [],
+    () => campaignStatus?.docs?.map(item => item.name) || [],
     [campaignStatus],
   );
 
@@ -102,12 +101,9 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
         disableSortBy: true,
         Cell: ({ row }) =>
           useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
+            const currentPage = bookingData?.page < 1 ? 1 : bookingData.page;
+            const rowCount = (currentPage - 1) * bookingData.limit;
+
             return <div className="pl-2">{rowCount + row.index + 1}</div>;
           }, []),
       },
@@ -171,8 +167,8 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-                onChange={e => handleCampaignUpdate(_id, e.target.value?.toLowerCase())}
-                defaultValue={currentStatus?.campaignStatus?.toLowerCase() || ''}
+                onChange={e => handleCampaignUpdate(_id, e.target.value)}
+                defaultValue={currentStatus?.campaignStatus || ''}
               />
             );
           }, []),
@@ -484,62 +480,44 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
   );
 
   const handleSortByColumn = colId => {
-    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
-      searchParams.set('sortOrder', 'asc');
-      setSearchParams(searchParams);
-      return;
-    }
-    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
-      searchParams.set('sortOrder', 'desc');
-      setSearchParams(searchParams);
-      return;
-    }
-
     searchParams.set('sortBy', colId);
+    searchParams.set(
+      'sortOrder',
+      searchParams.get('sortBy') === colId ? sortOrders(searchParams.get('sortOrder')) : 'asc',
+    );
     setSearchParams(searchParams);
   };
 
-  const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    setSearchParams(searchParams);
-  };
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
 
-  const handleRowCount = currentLimit => {
-    searchParams.set('limit', currentLimit);
-    setSearchParams(searchParams);
-  };
-
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
     setSearchParams(searchParams);
   };
 
   useEffect(() => {
-    handleSearch();
-    if (searchInput === '') {
-      searchParams.delete('search');
-      setSearchParams(searchParams);
-    }
+    if (!searchInput) searchParams.delete('search');
+    else searchParams.set('searchParams');
+    setSearchParams(searchParams);
   }, [searchInput]);
-
-  useEffect(() => {
-    if (bookingData) setCounts(prevState => ({ ...prevState, bookings: bookingData?.totalDocs }));
-  }, [bookingData]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
       <div className="pr-7">
         <div className="flex justify-between h-20 items-center">
-          <RowsPerPage setCount={handleRowCount} count={limit} />
+          <RowsPerPage
+            setCount={limit => handlePagination('limit', limit)}
+            count={bookingData.limit}
+          />
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
-      {isLoadingBookingData ? (
+      {isLoading ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
         </div>
       ) : null}
-      {bookingData?.docs?.length === 0 && !isLoadingBookingData ? (
+      {bookingData?.docs?.length === 0 && !isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>
@@ -550,8 +528,8 @@ const BookingTableView = ({ viewType, userId = null, setCounts }) => {
           COLUMNS={column}
           activePage={bookingData?.page || 1}
           totalPages={bookingData?.totalPages || 1}
-          setActivePage={handlePagination}
-          rowCountLimit={limit}
+          setActivePage={page => handlePagination('page', page)}
+          rowCountLimit={bookingData?.limit || 10}
           handleSorting={handleSortByColumn}
         />
       ) : null}

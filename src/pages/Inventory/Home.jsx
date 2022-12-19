@@ -242,7 +242,9 @@ const Home = () => {
           useMemo(
             () => (
               <p className="pl-2">
-                {basicInformation?.price ? toIndianCurrency(basicInformation?.price) : 0}
+                {basicInformation?.price
+                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
+                  : 0}
               </p>
             ),
             [],

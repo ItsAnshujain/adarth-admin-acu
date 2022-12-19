@@ -198,7 +198,13 @@ const Proposals = () => {
           row: {
             original: { price },
           },
-        }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p className="pl-2">{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'ACTION',

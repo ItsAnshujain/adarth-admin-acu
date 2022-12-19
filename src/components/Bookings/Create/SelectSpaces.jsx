@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Image, NumberInput, Progress, Badge } from '@mantine/core';
+import { Button, Image, NumberInput, Progress, Badge, Loader } from '@mantine/core';
 import { ChevronDown, Edit2, Eye, Trash } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DatePicker } from '@mantine/dates';
@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
 import classNames from 'classnames';
 import { Dropzone } from '@mantine/dropzone';
-import Filter from '../../Filter';
+import { useDebouncedState } from '@mantine/hooks';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
@@ -17,6 +17,7 @@ import upload from '../../../assets/upload.svg';
 import { useFormContext } from '../../../context/formContext';
 import { colors } from '../../../utils';
 import { useUploadFile } from '../../../hooks/upload.hooks';
+import Filter from '../../Inventory/Filter';
 
 const styles = {
   padding: 0,
@@ -62,7 +63,7 @@ const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [showFilter, setShowFilter] = useState(false);
   const [orderPrice, setOrderPrice] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -411,6 +412,11 @@ const SelectSpace = () => {
 
   const toggleFilter = () => setShowFilter(!showFilter);
 
+  const handleSearch = () => {
+    searchParams.set('search', searchInput);
+    setSearchParams(searchParams);
+  };
+
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
       searchParams.set('sortOrder', 'asc');
@@ -431,6 +437,14 @@ const SelectSpace = () => {
     searchParams.set('page', currentPage);
     setSearchParams(searchParams);
   };
+
+  useEffect(() => {
+    handleSearch();
+    if (searchInput === '') {
+      searchParams.delete('search');
+      setSearchParams(searchParams);
+    }
+  }, [searchInput]);
 
   return (
     <>
@@ -458,27 +472,38 @@ const SelectSpace = () => {
           <p className="text-purple-450 text-sm">
             Total Places{' '}
             <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-              {updatedInventoryData.length}
+              {updatedInventoryData?.length}
             </span>
           </p>
-
-          <Search search={search} setSearch={setSearch} />
+          <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
-      <Table
-        data={updatedInventoryData}
-        COLUMNS={COLUMNS}
-        allowRowsSelect
-        isBookingTable
-        setSelectedFlatRows={setSelectedFlatRows}
-        selectedRowData={values?.place?.map(item => ({
-          _id: item.id,
-        }))}
-        activePage={inventoryData?.page || 1}
-        totalPages={inventoryData?.totalPages || 1}
-        setActivePage={handlePagination}
-        handleSorting={handleSortByColumn}
-      />
+      {isLoading ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <Loader />
+        </div>
+      ) : null}
+      {inventoryData?.docs?.length === 0 && !isLoading ? (
+        <div className="w-full min-h-[400px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
+        </div>
+      ) : null}
+      {inventoryData?.docs?.length ? (
+        <Table
+          data={updatedInventoryData}
+          COLUMNS={COLUMNS}
+          allowRowsSelect
+          isBookingTable
+          setSelectedFlatRows={setSelectedFlatRows}
+          selectedRowData={values?.place?.map(item => ({
+            _id: item.id,
+          }))}
+          activePage={inventoryData?.page || 1}
+          totalPages={inventoryData?.totalPages || 1}
+          setActivePage={handlePagination}
+          handleSorting={handleSortByColumn}
+        />
+      ) : null}
     </>
   );
 };
