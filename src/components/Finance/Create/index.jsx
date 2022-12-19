@@ -49,8 +49,8 @@ const purchaseSchema = yup.object({
     .required('Pin is required'),
   buyerName: yup.string().trim().required('Supplier Name is required'),
   buyerGst: yup.string().trim().matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
-  buyerRefNo: yup.string().trim().required('Supplier Ref is required'), // TODO: key missing and should be buyerRefNo
-  buyerOtherReference: yup.string().trim().required('Other Reference(s) is required'), // TODO: key missing and should be buyerOtherReference
+  buyerRefNo: yup.string().trim().required('Supplier Ref is required'),
+  buyerOtherReference: yup.string().trim().required('Other Reference(s) is required'),
   dispatchThrough: yup.string().trim().required('Dispatch Through is required'),
   destination: yup.string().trim().required('Destination is required'),
   buyerStreetAddress: yup.string().trim().required('Street Address is required'),
@@ -74,15 +74,15 @@ const initialPurchaseValues = {
   supplierZip: null,
   buyerName: '',
   buyerGst: '',
-  buyerRefNo: '', // TODO: key missing and should be buyerRefNo
-  buyerOtherReference: '', // TODO: key missing and should be buyerOtherReference
+  buyerRefNo: '',
+  buyerOtherReference: '',
   dispatchThrough: '',
   destination: '',
   buyerStreetAddress: '',
   buyerCity: '',
   buyerZip: null,
   termOfDelivery: '',
-  signature: '', // TODO: key missing
+  signature: '',
 };
 
 const releaseSchema = yup.object({

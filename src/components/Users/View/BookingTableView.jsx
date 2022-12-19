@@ -5,7 +5,7 @@ import { Button, Loader, NativeSelect, Progress } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { useSearchParams } from 'react-router-dom';
-import { serialize } from '../../../utils';
+import { downloadPdf, serialize } from '../../../utils';
 import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -92,6 +92,12 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
     () => campaignStatus?.docs?.map(item => item.name) || [],
     [campaignStatus],
   );
+
+  const downloadAll = urls => {
+    urls.forEach(item => {
+      downloadPdf(item);
+    });
+  };
 
   const column = useMemo(
     () => [
@@ -342,24 +348,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
                   'font-medium  text-base',
                 )}
                 disabled={!campaign?.medias?.length}
-                onClick={() => {
-                  const downloadAll = urls => {
-                    const url = urls.pop();
-
-                    const a = document.createElement('a');
-                    a.setAttribute('href', url);
-                    a.setAttribute('download', '');
-                    a.setAttribute('target', '_blank');
-                    a.setAttributes('rel', 'noopener noreferrer');
-                    a.click();
-
-                    if (urls.length === 0) {
-                      // eslint-disable-next-line no-use-before-define
-                      clearInterval(interval);
-                    }
-                  };
-                  const interval = setInterval(downloadAll, 300, campaign?.medias);
-                }}
+                onClick={() => downloadAll(campaign?.medias)}
               >
                 Download
               </Button>
