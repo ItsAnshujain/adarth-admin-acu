@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs } from '@mantine/core';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useFetchUsersById } from '../../../hooks/users.hooks';
 import ManagingCampaignSubHeader from './ManagingSubHeader';
 import OverviewUserDetails from './OverviewUserDetails';
@@ -10,27 +10,24 @@ import { useBookings } from '../../../hooks/booking.hooks';
 import { serialize } from '../../../utils';
 import { useFetchProposals } from '../../../hooks/proposal.hooks';
 
+const tableQueries = userId => ({
+  'page': 1,
+  'limit': 10,
+  'sortBy': 'createdAt',
+  'sortOrder': 'desc',
+  'incharge': userId,
+});
+
 const Header = () => {
   const [activeTab, setActiveTab] = useState('first');
   const [activeTable, setActiveTable] = useState('booking');
   const { id: userId } = useParams();
   const { data: userDetails, isLoading: isUserDetailsLoading } = useFetchUsersById(userId);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialValue = tableQueries(userId);
+  const [bookingsPagination, setBookingsPagination] = useState(initialValue);
 
-  const [bookingsPagination, setBookingsPagination] = useState({
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'desc',
-    'incharge': userId,
-  });
-
-  const [proposalPagination, setProposalPagination] = useState({
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'desc',
-    'incharge': userId,
-  });
+  const [proposalPagination, setProposalPagination] = useState(initialValue);
 
   const { data: bookingData = {}, isLoading: isLoadingBookingData } = useBookings(
     serialize(bookingsPagination),
@@ -39,6 +36,36 @@ const Header = () => {
   const { data: proposalsData = {}, isLoading: isLoadingProposalsData } = useFetchProposals(
     serialize(proposalPagination),
   );
+
+  const resetUrl = () => {
+    searchParams.forEach((_, key) => {
+      searchParams.delete(key);
+    });
+    setSearchParams(searchParams);
+  };
+
+  const handleTabChange = val => {
+    setActiveTable(val);
+    if (activeTab === 'booking') {
+      setBookingsPagination(initialValue);
+    } else if (activeTab === 'proposal') {
+      setProposalPagination(initialValue);
+    }
+    resetUrl();
+  };
+
+  useEffect(() => {
+    const obj = {};
+    searchParams.forEach((val, key) => {
+      obj[key] = val;
+    });
+
+    if (activeTable === 'booking') {
+      setBookingsPagination(p => ({ ...p, ...obj }));
+    } else if (activeTable === 'proposal') {
+      setProposalPagination(p => ({ ...p, ...obj }));
+    }
+  }, [activeTable, searchParams]);
 
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>
@@ -66,7 +93,7 @@ const Header = () => {
           }}
         />
         <div>
-          <Tabs value={activeTable} onTabChange={setActiveTable}>
+          <Tabs value={activeTable} onTabChange={handleTabChange}>
             <Tabs.List className="h-16">
               <Tabs.Tab className="hover:bg-transparent text-base" value="booking">
                 Bookings
