@@ -392,6 +392,7 @@ const MainArea = () => {
         mediaType: formData?.basicInformation?.mediaType?.value,
         spaceType: formData?.basicInformation?.spaceType?.value,
         subCategory: formData?.basicInformation?.subCategory?.value,
+        otherPhotos: formData.basicInformation?.otherPhotos?.map(item => item.trim()),
       },
       specifications: {
         ...formData.specifications,
