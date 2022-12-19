@@ -31,7 +31,7 @@ const ManagingSubHeader = ({ activeTable, userId, counts }) => {
   return (
     <div>
       <div className="h-20 border-b flex justify-between items-center pl-5 pr-7">
-        <p className="font-bold">Managing Campaign</p>
+        <p className="font-bold">Managing Bookings &amp; Proposals</p>
         <div className="flex">
           <div ref={ref} className="mr-2 relative">
             <Button onClick={toggleDatePicker} variant="default">

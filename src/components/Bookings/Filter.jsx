@@ -87,8 +87,8 @@ const Filter = ({ isOpened, setShowFilter }) => {
           <Radio
             onChange={event => handleCheckedValues(event.target.value, filterKey)}
             label={item?.name}
-            defaultValue={item?._id}
-            checked={filterOptions[filterKey] === item._id}
+            defaultValue={item?.name}
+            checked={filterOptions[filterKey] === item?.name}
           />
         </div>
       )),

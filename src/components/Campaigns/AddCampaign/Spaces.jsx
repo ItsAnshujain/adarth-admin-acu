@@ -270,7 +270,7 @@ const SelectSpace = () => {
           row: {
             original: { pricing },
           },
-        }) => pricing,
+        }) => toIndianCurrency(Number.parseInt(pricing, 10) || 0),
       },
       {
         Header: 'START DATE',

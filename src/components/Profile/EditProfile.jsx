@@ -9,6 +9,7 @@ import Documents from '../Users/Create/Documents';
 import useUserStore from '../../store/user.store';
 import { FormProvider, useForm } from '../../context/formContext';
 import { useUpdateUsers } from '../../hooks/users.hooks';
+import { aadhaarRegexMatch, panRegexMatch } from '../../utils';
 
 const requiredSchema = requiredText => yup.string().trim().required(requiredText);
 
@@ -61,10 +62,7 @@ const schema = step =>
         step === 'first'
           ? yup
               .string()
-              .matches(
-                /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/,
-                'Pan number must be valid and must be of 10 characters',
-              )
+              .matches(panRegexMatch, 'Pan number must be valid and must be of 10 characters')
           : null,
       ),
     aadhaar: yup
@@ -75,10 +73,7 @@ const schema = step =>
         step === 'first'
           ? yup
               .string()
-              .matches(
-                /(^[0-9]{4}[0-9]{4}[0-9]{4}$)|(^[0-9]{4}\s[0-9]{4}\s[0-9]{4}$)|(^[0-9]{4}-[0-9]{4}-[0-9]{4}$)/,
-                'Aadhaar number must be valid and must be of 12 digits',
-              )
+              .matches(aadhaarRegexMatch, 'Aadhaar number must be valid and must be of 12 digits')
           : null,
       ),
     image: yup
@@ -138,6 +133,7 @@ const EditProfile = () => {
   }, [data]);
 
   const handleSubmit = formData => {
+    const dataObj = { ...formData };
     const hasFieldEmpty = Object.keys(form.values).find(key => form?.values[key] === '');
     if (hasFieldEmpty) {
       showNotification({
@@ -146,7 +142,10 @@ const EditProfile = () => {
       });
       return;
     }
-    mutateAsync({ userId, data: formData });
+    if (dataObj?.pan) {
+      dataObj.pan = dataObj.pan?.toUpperCase();
+    }
+    mutateAsync({ userId, data: dataObj });
   };
 
   return (

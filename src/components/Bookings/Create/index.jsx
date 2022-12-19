@@ -9,6 +9,7 @@ import SuccessModal from '../../shared/Modal';
 import Header from './Header';
 import { FormProvider, useForm } from '../../../context/formContext';
 import { useCreateBookings } from '../../../hooks/booking.hooks';
+import { gstRegexMatch, panRegexMatch } from '../../../utils';
 
 const requiredSchema = text => yup.string().trim().required(text);
 
@@ -47,7 +48,7 @@ const schema = step =>
         .trim()
         .concat(
           step === 1
-            ? yup.string().matches(/[A-Z]{5}[0-9]{4}[A-Z]{1}/, 'Pan number must be valid')
+            ? yup.string().matches(panRegexMatch, 'Pan number must be valid and in uppercase')
             : null,
         )
         .concat(step === 1 ? requiredSchema('Pan number is required') : null),
@@ -56,12 +57,7 @@ const schema = step =>
         .trim()
         .concat(
           step === 1
-            ? yup
-                .string()
-                .matches(
-                  /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
-                  'GST number must be valid',
-                )
+            ? yup.string().matches(gstRegexMatch, 'GST number must be valid and in uppercase')
             : null,
         )
         .concat(step === 1 ? requiredSchema('GST number is required') : null),
@@ -115,6 +111,7 @@ const MainArea = () => {
   const { mutateAsync: createBooking } = useCreateBookings();
 
   const handleSubmit = async formData => {
+    const data = { ...formData };
     if (formStep <= 2) {
       setFormStep(prev => prev + 1);
       return;
@@ -123,7 +120,7 @@ const MainArea = () => {
     let minDate = null;
     let maxDate = null;
 
-    formData.place.forEach(item => {
+    data.place.forEach(item => {
       const start = item.startDate.setHours(0, 0, 0, 0);
       const end = item.endDate.setHours(0, 0, 0, 0);
 
@@ -134,10 +131,14 @@ const MainArea = () => {
       if (end > maxDate) maxDate = end;
     });
 
-    // console.log(formData);
-    // return;
+    if (data?.client?.panNumber) {
+      data.client.panNumber = data.client.panNumber?.toUpperCase();
+    }
+    if (data?.client?.gstNumber) {
+      data.client.gstNumber = data.client.gstNumber?.toUpperCase();
+    }
     await createBooking({
-      ...formData,
+      ...data,
       startDate: dayjs(minDate).format('YYYY-MM-DD'),
       endDate: dayjs(maxDate).format('YYYY-MM-DD'),
     });
