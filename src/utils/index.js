@@ -123,3 +123,15 @@ export const aadhaarRegexMatch =
   /(^[0-9]{4}[0-9]{4}[0-9]{4}$)|(^[0-9]{4}\s[0-9]{4}\s[0-9]{4}$)|(^[0-9]{4}-[0-9]{4}-[0-9]{4}$)/;
 
 export const mobileRegexMatch = /^[6-9]\d{9}$/;
+
+export const isValidURL = urlString => {
+  if (typeof urlString === typeof '') {
+    try {
+      return !!new URL(urlString);
+    } catch (_err) {
+      return false;
+    }
+  }
+
+  return false;
+};

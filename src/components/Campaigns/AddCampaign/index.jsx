@@ -12,7 +12,7 @@ import { FormProvider, useForm } from '../../../context/formContext';
 import Preview from './Preview';
 import { useCampaign, useCreateCampaign, useUpdateCampaign } from '../../../hooks/campaigns.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
-import { serialize } from '../../../utils';
+import { isValidURL, serialize } from '../../../utils';
 
 const requiredSchema = requiredText => yup.string().trim().required(requiredText);
 const numberRequiredSchema = (typeErrorText, requiredText) =>
@@ -140,7 +140,7 @@ const Create = () => {
         return {
           id: item.id,
           price: item.price,
-          media: item.photo || undefined,
+          media: isValidURL(item.photo) ? item.photo : undefined,
           startDate: item.startDate,
           endDate: item.endDate,
         };
@@ -148,6 +148,8 @@ const Create = () => {
 
       newData.healthStatus = +newData.healthStatus || 0;
       newData.price = +newData.price || 0;
+
+      delete newData.createdBy;
 
       if (!['predefined', 'customized'].includes(newData.type)) {
         newData.type = 'predefined';
