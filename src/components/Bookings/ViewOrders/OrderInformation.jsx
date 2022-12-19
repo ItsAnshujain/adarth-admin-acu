@@ -231,7 +231,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
             <div>
               <p className="text-slate-400">Booking Status</p>
               <p className="font-bold">
-                {bookingData?.currentStatus?.campaignStatus || <NoData type="unknown" />}
+                {bookingData?.currentStatus?.campaignStatus || <NoData type="na" />}
               </p>
             </div>
             <div>

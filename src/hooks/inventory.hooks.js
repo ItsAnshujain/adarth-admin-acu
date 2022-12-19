@@ -5,6 +5,7 @@ import {
   csvImport,
   deleteInventory,
   deleteInventoryById,
+  fetchBookingsByInventoryId,
   fetchInventory,
   fetchInventoryById,
   updateInventory,
@@ -162,4 +163,14 @@ export const useCsvImport = () =>
         });
       },
     },
+  );
+
+export const useFetchBookingsByInventoryId = ({ inventoryId, query }, enabled = true) =>
+  useQuery(
+    ['inventory-id-bookings', inventoryId, query],
+    async () => {
+      const res = await fetchBookingsByInventoryId(inventoryId, query);
+      return res?.data;
+    },
+    { enabled },
   );

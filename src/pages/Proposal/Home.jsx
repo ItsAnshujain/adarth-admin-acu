@@ -38,7 +38,7 @@ const Proposals = () => {
     searchParams.toString(),
   );
   const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
-    serialize({ type: 'proposal_status', parentId: null, limit: 100 }),
+    serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
   );
 
   const viewType = useLayoutView(state => state.activeLayout);

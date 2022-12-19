@@ -1,10 +1,14 @@
 import React, { useMemo } from 'react';
+import dayjs from 'dayjs';
+import { ToWords } from 'to-words';
 import Table from '../../Table/Table';
-import data from './Data.json';
 import TextareaInput from '../../shared/TextareaInput';
 import TextInput from '../../shared/TextInput';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import NumberInput from '../../shared/NumberInput';
+import NoData from '../../shared/NoData';
+
+const DATE_FORMAT = 'DD MMM YYYY';
 
 const styles = {
   label: {
@@ -19,50 +23,124 @@ const styles = {
   },
 };
 
-const Invoice = () => {
-  const COLUMNS = [
-    {
-      Header: '#',
-      accessor: 'id',
-    },
-    {
-      Header: 'DESCRIPTION OF GOODS AND SERVICE',
-      accessor: 'description_of_goods_and_services',
-      Cell: () =>
-        useMemo(() => (
-          <div className="w-fit">
-            <p>Hoarding Rent</p>
-            <p className="text-xs">At Lal Ganesh 30ft x 20ft</p>
-            <p className="text-xs">20th March to 19 April 2022</p>
-          </div>
-        )),
-    },
-    {
-      Header: 'DATE',
-      accessor: 'date',
-      Cell: () => useMemo(() => <div className="w-fit">2 Sep,2022</div>, []),
-    },
-    {
-      Header: 'QUANTITY',
-      accessor: 'quantity',
-      Cell: () => useMemo(() => <div className="w-[14%]">2</div>, []),
-    },
-    {
-      Header: 'RATE',
-      accessor: 'rate',
-      Cell: () => useMemo(() => <div className="w-[14%]">41.67</div>, []),
-    },
-    {
-      Header: 'PER',
-      accessor: 'per',
-      Cell: () => useMemo(() => <div className="w-[14%]">41.SQF</div>, []),
-    },
-    {
-      Header: 'PRICING',
-      accessor: 'pricing',
-      Cell: () => useMemo(() => <div className="w-[14%]">{toIndianCurrency(29834)}</div>, []),
-    },
-  ];
+const Invoice = ({ spacesList, totalPrice }) => {
+  const toWords = new ToWords();
+
+  const COLUMNS = useMemo(
+    () => [
+      {
+        Header: '#',
+        accessor: 'id',
+        disableSortBy: true,
+        Cell: ({ row: { index } }) => index + 1,
+      },
+      {
+        Header: 'DESCRIPTION OF GOODS AND SERVICE',
+        accessor: 'basicInformation.spaceName',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { basicInformation, location, startDate, endDate },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex flex-col items-start gap-1">
+                <div className="text-black font-medium px-2">
+                  <span className="overflow-hidden text-ellipsis">
+                    {basicInformation?.spaceName}
+                  </span>
+                </div>
+                <div className="text-black font-light px-2 text-sm">
+                  <span className="overflow-hidden text-ellipsis">{location?.address}</span>
+                </div>
+                <div className="text-black font-light px-2 text-xs">
+                  <span className="overflow-hidden text-ellipsis">
+                    {startDate ? dayjs(startDate).format(DATE_FORMAT) : <NoData type="na" />}
+                    {' to '}
+                  </span>
+                  <span className="overflow-hidden text-ellipsis">
+                    {endDate ? dayjs(endDate).format(DATE_FORMAT) : <NoData type="na" />}
+                  </span>
+                </div>
+              </div>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'DATE',
+        accessor: 'date',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { startDate },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div className="w-fit">
+                {startDate ? dayjs(startDate).format(DATE_FORMAT) : <NoData type="na" />}
+              </div>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'QUANTITY',
+        accessor: 'quantity',
+        disableSortBy: true,
+        Cell: () => useMemo(() => <p className="w-[14%]">1</p>, []),
+      },
+      {
+        Header: 'RATE',
+        accessor: 'rate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p className="pl-2">
+                {basicInformation?.price
+                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
+                  : 0}
+              </p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'PER',
+        accessor: 'per',
+        disableSortBy: true,
+        Cell: () => useMemo(() => <p className="w-[14%]">1</p>, []),
+      },
+      {
+        Header: 'PRICING',
+        accessor: 'basicInformation.price',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p className="pl-2">
+                {basicInformation?.price
+                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
+                  : 0}
+              </p>
+            ),
+            [],
+          ),
+      },
+    ],
+    [spacesList],
+  );
 
   return (
     <div>
@@ -221,11 +299,23 @@ const Invoice = () => {
           />
         </div>
       </div>
-      <div className="pl-5 pr-7 py-4 mb-10 ">
+      <div className="pl-5 pr-7 py-4 mb-2">
         <p className="font-bold text-2xl mb-4">Order Item Details</p>
-        <div className="border-dashed border-0 border-black border-b-2 pb-4">
-          <Table COLUMNS={COLUMNS} data={data} showPagination={false} className="min-h-[100px]" />
-        </div>
+        {spacesList?.length ? (
+          <>
+            <div className="border-dashed border-0 border-black border-b-2 pb-4">
+              <Table COLUMNS={COLUMNS} data={spacesList || []} showPagination={false} />
+            </div>
+            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
+              <p>Total Price: </p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+            </div>
+          </>
+        ) : (
+          <div className="w-full min-h-[100px] flex justify-center items-center">
+            <p className="text-xl">No records found</p>
+          </div>
+        )}
       </div>
       <div className="pl-5 pr-7 flex flex-col gap-4 pb-6 border-b">
         <TextInput
@@ -233,6 +323,7 @@ const Invoice = () => {
           label="Amount Chargeable (in words)"
           name="amountChargeable"
           placeholder="Write..."
+          value={toWords.convert(totalPrice)}
           readOnly
           disabled
         />

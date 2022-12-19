@@ -134,6 +134,8 @@ const MainArea = () => {
       if (end > maxDate) maxDate = end;
     });
 
+    // console.log(formData);
+    // return;
     await createBooking({
       ...formData,
       startDate: dayjs(minDate).format('YYYY-MM-DD'),

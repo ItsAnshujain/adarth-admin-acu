@@ -23,6 +23,41 @@ const styles = {
   border: 'none',
 };
 
+const UploadButton = ({ updateDateAndMedia, isActive, id }) => {
+  const { mutateAsync: uploadMedia, isLoading } = useUploadFile();
+
+  const handleUpload = async params => {
+    const formData = new FormData();
+    formData.append('files', params?.[0]);
+    const res = await uploadMedia(formData);
+
+    if (res?.[0].Location) {
+      updateDateAndMedia('media', res[0].Location, id);
+    }
+  };
+
+  return (
+    <Dropzone
+      style={styles}
+      onDrop={handleUpload}
+      multiple={false}
+      disabled={!isActive || isLoading}
+    >
+      <Button
+        disabled={isLoading}
+        loading={isLoading}
+        className={classNames(
+          isActive ? 'bg-purple-350 cursor-pointer' : 'bg-purple-200 cursor-not-allowed',
+          'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md',
+        )}
+      >
+        Upload
+        <img src={upload} alt="Upload" className="ml-2" />
+      </Button>
+    </Dropzone>
+  );
+};
+
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
   const navigate = useNavigate();
@@ -38,7 +73,6 @@ const SelectSpace = () => {
   });
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
   const { mutate } = useDeleteInventoryById();
-  const { mutateAsync: uploadMedia, isLoading: isUploadMediaLoading } = useUploadFile();
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
@@ -87,22 +121,12 @@ const SelectSpace = () => {
     );
   };
 
-  const handleUpload = async (params, id) => {
-    const formData = new FormData();
-    formData.append('files', params?.[0]);
-    const res = await uploadMedia(formData);
-
-    if (res?.[0].Location) {
-      updateDateAndMedia('media', res[0].Location, id);
-    }
-  };
-
   const setSelectedFlatRows = selectedSpace => {
     const totalPrice = selectedSpace.reduce((acc, item) => acc + +(item.original.pricing || 0), 0);
     setOrderPrice(totalPrice);
     const formData = selectedSpace.map(item => ({
       id: item.original._id,
-      price: item.original.pricing,
+      price: +item.original.pricing || 0,
       startDate: item.original.startDate,
       endDate: item.original.endDate,
       media: item.original.media,
@@ -191,28 +215,13 @@ const SelectSpace = () => {
         }) =>
           useMemo(
             () => (
-              <Dropzone
-                style={styles}
-                onDrop={files => handleUpload(files, _id)}
-                multiple={false}
-                disabled={!selectedFlatRows?.find(item => item.original._id === _id)}
-              >
-                <Button
-                  disabled={isUploadMediaLoading}
-                  loading={isUploadMediaLoading}
-                  className={classNames(
-                    selectedFlatRows?.find(item => item.original._id === _id)
-                      ? 'bg-purple-350 cursor-pointer'
-                      : 'bg-purple-200 cursor-not-allowed',
-                    'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md',
-                  )}
-                >
-                  Upload
-                  <img src={upload} alt="Upload" className="ml-2" />
-                </Button>
-              </Dropzone>
+              <UploadButton
+                updateDateAndMedia={updateDateAndMedia}
+                isActive={selectedFlatRows?.find(item => item.original._id === _id)}
+                id={_id}
+              />
             ),
-            [selectedFlatRows, isUploadMediaLoading],
+            [selectedFlatRows],
           ),
       },
       {
@@ -249,7 +258,7 @@ const SelectSpace = () => {
           row: {
             original: { impression },
           },
-        }) => useMemo(() => <p>{`${impression}+`}</p>, []),
+        }) => useMemo(() => <p>{`${impression || 0}+`}</p>, []),
       },
       {
         Header: 'HEALTH',

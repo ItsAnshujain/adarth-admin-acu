@@ -113,3 +113,15 @@ export const handleStopPropagation = (e, cb) => {
   e.stopPropagation();
   if (cb) cb();
 };
+
+export const isValidURL = urlString => {
+  if (typeof urlString === typeof '') {
+    try {
+      return !!new URL(urlString);
+    } catch (_err) {
+      return false;
+    }
+  }
+
+  return false;
+};
