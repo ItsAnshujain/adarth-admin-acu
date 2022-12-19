@@ -2,6 +2,7 @@ import { Button, Loader, Select } from '@mantine/core';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
+import { useSearchParams } from 'react-router-dom';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { useUpdateProposal } from '../../../hooks/proposal.hooks';
 import MenuPopover from '../../../pages/Proposal/MenuPopover';
@@ -13,31 +14,46 @@ const nativeSelectStyles = {
   rightSection: { pointerEvents: 'none' },
 };
 
-const sortOrders = {
-  asc: 'desc',
-  desc: 'asc',
+const sortOrders = order => {
+  switch (order) {
+    case 'asc':
+      return 'desc';
+    case 'desc':
+      return 'asc';
+
+    default:
+      return 'asc';
+  }
 };
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
-const ProposalTableView = ({ data, isLoading, setPagination }) => {
+const ProposalTableView = ({ data, isLoading }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
     serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
   );
 
-  const handlePagination = page => setPagination(p => ({ ...p, page }));
+  const handleSortByColumn = colId => {
+    searchParams.set('sortBy', colId);
+    searchParams.set(
+      'sortOrder',
+      searchParams.get('sortBy') === colId ? sortOrders(searchParams.get('sortOrder')) : 'asc',
+    );
+
+    setSearchParams(searchParams);
+  };
+
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
+
+    setSearchParams(searchParams);
+  };
 
   const handleUpdateStatus = (proposalId, statusId) =>
     update({ proposalId, data: { status: statusId } });
-
-  const handleSortByColumn = colId => {
-    setPagination(p => ({
-      ...p,
-      sortBy: colId,
-      sortOrder: p.sortBy === colId ? sortOrders[p.sortOrder] : 'asc',
-    }));
-  };
 
   const COLUMNS = useMemo(
     () => [
@@ -198,7 +214,7 @@ const ProposalTableView = ({ data, isLoading, setPagination }) => {
           COLUMNS={COLUMNS}
           activePage={data?.page || 1}
           totalPages={data?.totalPages || 1}
-          setActivePage={handlePagination}
+          setActivePage={page => handlePagination('page', page)}
           rowCountLimit={data.limit || 10}
           handleSorting={handleSortByColumn}
         />

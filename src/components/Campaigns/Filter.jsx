@@ -29,6 +29,16 @@ const MinMaxField = ({ minKey, maxKey, setQuery, state, label }) => {
   const min = state[minKey];
   const max = state[maxKey];
 
+  const handleMin = val => {
+    setQuery(minKey, val);
+    setQuery(maxKey, max || 0);
+  };
+
+  const handleMax = val => {
+    setQuery(maxKey, val);
+    setQuery(minKey, min || 0);
+  };
+
   return (
     <Accordion.Item value={label} className="mb-4 rounded-xl border">
       <Accordion.Control>
@@ -39,10 +49,10 @@ const MinMaxField = ({ minKey, maxKey, setQuery, state, label }) => {
           <div className="flex flex-col gap-2 mb-2">
             <div className="flex justify-between gap-8">
               <div>
-                <NumberInput value={min} onChange={val => setQuery(minKey, val)} label="Min" />
+                <NumberInput value={min} onChange={handleMin} label="Min" />
               </div>
               <div>
-                <NumberInput value={max} onChange={val => setQuery(maxKey, val)} label="Max" />
+                <NumberInput value={max} onChange={handleMax} label="Max" />
               </div>
             </div>
             <div>
@@ -88,7 +98,7 @@ const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
 
   const setQuery = (key, val) => {
     setState(p => ({ ...p, [key]: val }));
-    if (val) searchParams.set(key, val);
+    if (val !== '') searchParams.set(key, val);
     else searchParams.delete(key);
   };
 

@@ -4,6 +4,7 @@ import { ChevronDown } from 'react-feather';
 import { Button, Loader, NativeSelect, Progress } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
+import { useSearchParams } from 'react-router-dom';
 import { serialize } from '../../../utils';
 import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
@@ -18,14 +19,22 @@ const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
 };
 
-const sortOrders = {
-  asc: 'desc',
-  desc: 'asc',
+const sortOrders = order => {
+  switch (order) {
+    case 'asc':
+      return 'desc';
+    case 'desc':
+      return 'asc';
+
+    default:
+      return 'asc';
+  }
 };
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
-const BookingTableView = ({ data: bookingData, isLoading, setPagination }) => {
+const BookingTableView = ({ data: bookingData, isLoading }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
 
   const { data: campaignStatus } = useFetchMasters(
@@ -470,15 +479,26 @@ const BookingTableView = ({ data: bookingData, isLoading, setPagination }) => {
     [bookingData?.docs, campaignStatus, paymentStatus, printingStatus, mountingStatus],
   );
 
-  const handleSortByColumn = colId =>
-    setPagination(p => ({
-      sortBy: colId,
-      sortOrder: p.sortBy === colId ? sortOrders[p.sortOrder] : 'asc',
-      ...p,
-    }));
+  const handleSortByColumn = colId => {
+    searchParams.set('sortBy', colId);
+    searchParams.set(
+      'sortOrder',
+      searchParams.get('sortBy') === colId ? sortOrders(searchParams.get('sortOrder')) : 'asc',
+    );
+    setSearchParams(searchParams);
+  };
+
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
+
+    setSearchParams(searchParams);
+  };
 
   useEffect(() => {
-    setPagination(p => ({ ...p, search: searchInput }));
+    if (!searchInput) searchParams.delete('search');
+    else searchParams.set('searchParams');
+    setSearchParams(searchParams);
   }, [searchInput]);
 
   return (
@@ -486,7 +506,7 @@ const BookingTableView = ({ data: bookingData, isLoading, setPagination }) => {
       <div className="pr-7">
         <div className="flex justify-between h-20 items-center">
           <RowsPerPage
-            setCount={limit => setPagination(p => ({ ...p, limit }))}
+            setCount={limit => handlePagination('limit', limit)}
             count={bookingData.limit}
           />
           <Search search={searchInput} setSearch={setSearchInput} />
@@ -508,7 +528,7 @@ const BookingTableView = ({ data: bookingData, isLoading, setPagination }) => {
           COLUMNS={column}
           activePage={bookingData?.page || 1}
           totalPages={bookingData?.totalPages || 1}
-          setActivePage={page => setPagination(p => ({ ...p, page }))}
+          setActivePage={page => handlePagination('page', page)}
           rowCountLimit={bookingData?.limit || 10}
           handleSorting={handleSortByColumn}
         />

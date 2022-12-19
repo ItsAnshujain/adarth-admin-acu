@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Tabs } from '@mantine/core';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useFetchUsersById } from '../../../hooks/users.hooks';
@@ -7,7 +7,6 @@ import OverviewUserDetails from './OverviewUserDetails';
 import BookingTableView from './BookingTableView';
 import ProposalTableView from './ProposalTableView';
 import { useBookings } from '../../../hooks/booking.hooks';
-import { serialize } from '../../../utils';
 import { useFetchProposals } from '../../../hooks/proposal.hooks';
 
 const tableQueries = userId => ({
@@ -23,49 +22,26 @@ const Header = () => {
   const [activeTable, setActiveTable] = useState('booking');
   const { id: userId } = useParams();
   const { data: userDetails, isLoading: isUserDetailsLoading } = useFetchUsersById(userId);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [bookingSearchParams, setBookingSearchParams] = useSearchParams();
+  const [proposalSearchParams, setProposalSearchParams] = useSearchParams();
   const initialValue = tableQueries(userId);
-  const [bookingsPagination, setBookingsPagination] = useState(initialValue);
-
-  const [proposalPagination, setProposalPagination] = useState(initialValue);
 
   const { data: bookingData = {}, isLoading: isLoadingBookingData } = useBookings(
-    serialize(bookingsPagination),
+    bookingSearchParams.toString(),
   );
 
   const { data: proposalsData = {}, isLoading: isLoadingProposalsData } = useFetchProposals(
-    serialize(proposalPagination),
+    proposalSearchParams.toString(),
   );
-
-  const resetUrl = () => {
-    searchParams.forEach((_, key) => {
-      searchParams.delete(key);
-    });
-    setSearchParams(searchParams);
-  };
 
   const handleTabChange = val => {
     setActiveTable(val);
-    if (activeTab === 'booking') {
-      setBookingsPagination(initialValue);
-    } else if (activeTab === 'proposal') {
-      setProposalPagination(initialValue);
-    }
-    resetUrl();
+
+    const defaultValue = new URLSearchParams(initialValue);
+
+    if (val === 'booking') setBookingSearchParams(defaultValue);
+    else if (val === 'proposal') setProposalSearchParams(defaultValue);
   };
-
-  useEffect(() => {
-    const obj = {};
-    searchParams.forEach((val, key) => {
-      obj[key] = val;
-    });
-
-    if (activeTable === 'booking') {
-      setBookingsPagination(p => ({ ...p, ...obj }));
-    } else if (activeTable === 'proposal') {
-      setProposalPagination(p => ({ ...p, ...obj }));
-    }
-  }, [activeTable, searchParams]);
 
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>
@@ -104,11 +80,7 @@ const Header = () => {
             </Tabs.List>
 
             <Tabs.Panel value="booking">
-              <BookingTableView
-                data={bookingData}
-                isLoading={isLoadingBookingData}
-                setPagination={setBookingsPagination}
-              />
+              <BookingTableView data={bookingData} isLoading={isLoadingBookingData} />
             </Tabs.Panel>
             <Tabs.Panel value="proposal" className="mr-5">
               <ProposalTableView
@@ -116,7 +88,6 @@ const Header = () => {
                 userId={userId}
                 data={proposalsData}
                 isLoading={isLoadingProposalsData}
-                setPagination={setProposalPagination}
               />
             </Tabs.Panel>
           </Tabs>
