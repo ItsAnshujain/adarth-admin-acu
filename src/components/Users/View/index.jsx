@@ -6,16 +6,39 @@ import ManagingCampaignSubHeader from './ManagingSubHeader';
 import OverviewUserDetails from './OverviewUserDetails';
 import BookingTableView from './BookingTableView';
 import ProposalTableView from './ProposalTableView';
+import { useBookings } from '../../../hooks/booking.hooks';
+import { serialize } from '../../../utils';
+import { useFetchProposals } from '../../../hooks/proposal.hooks';
 
 const Header = () => {
   const [activeTab, setActiveTab] = useState('first');
   const [activeTable, setActiveTable] = useState('booking');
   const { id: userId } = useParams();
   const { data: userDetails, isLoading: isUserDetailsLoading } = useFetchUsersById(userId);
-  const [counts, setCounts] = useState({
-    bookings: 0,
-    proposals: 0,
+
+  const [bookingsPagination, setBookingsPagination] = useState({
+    'page': 1,
+    'limit': 10,
+    'sortBy': 'createdAt',
+    'sortOrder': 'desc',
+    'incharge': userId,
   });
+
+  const [proposalPagination, setProposalPagination] = useState({
+    'page': 1,
+    'limit': 10,
+    'sortBy': 'createdAt',
+    'sortOrder': 'desc',
+    'incharge': userId,
+  });
+
+  const { data: bookingData = {}, isLoading: isLoadingBookingData } = useBookings(
+    serialize(bookingsPagination),
+  );
+
+  const { data: proposalsData = {}, isLoading: isLoadingProposalsData } = useFetchProposals(
+    serialize(proposalPagination),
+  );
 
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>
@@ -34,7 +57,14 @@ const Header = () => {
         />
       </Tabs.Panel>
       <Tabs.Panel value="second">
-        <ManagingCampaignSubHeader activeTable={activeTable} userId={userId} counts={counts} />
+        <ManagingCampaignSubHeader
+          activeTable={activeTable}
+          userId={userId}
+          counts={{
+            bookings: bookingData?.totalDocs || 0,
+            proposals: proposalsData?.totalDocs || 0,
+          }}
+        />
         <div>
           <Tabs value={activeTable} onTabChange={setActiveTable}>
             <Tabs.List className="h-16">
@@ -48,16 +78,18 @@ const Header = () => {
 
             <Tabs.Panel value="booking">
               <BookingTableView
-                viewType={activeTable === 'booking'}
-                userId={userId}
-                setCounts={setCounts}
+                data={bookingData}
+                isLoading={isLoadingBookingData}
+                setPagination={setBookingsPagination}
               />
             </Tabs.Panel>
             <Tabs.Panel value="proposal" className="mr-5">
               <ProposalTableView
                 viewType={activeTable === 'proposal'}
                 userId={userId}
-                setCounts={setCounts}
+                data={proposalsData}
+                isLoading={isLoadingProposalsData}
+                setPagination={setProposalPagination}
               />
             </Tabs.Panel>
           </Tabs>

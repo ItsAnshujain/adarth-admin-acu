@@ -1,10 +1,9 @@
 import { Button, Loader, Select } from '@mantine/core';
 import dayjs from 'dayjs';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import { useSearchParams } from 'react-router-dom';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
-import { useFetchProposals, useUpdateProposal } from '../../../hooks/proposal.hooks';
+import { useUpdateProposal } from '../../../hooks/proposal.hooks';
 import MenuPopover from '../../../pages/Proposal/MenuPopover';
 import { serialize } from '../../../utils';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -13,38 +12,31 @@ import Table from '../../Table/Table';
 const nativeSelectStyles = {
   rightSection: { pointerEvents: 'none' },
 };
+
+const sortOrders = {
+  asc: 'desc',
+  desc: 'asc',
+};
+
 const DATE_FORMAT = 'DD MMM YYYY';
 
-const ProposalTableView = ({ viewType, userId = null, setCounts }) => {
-  const [searchParams, setSearchParams] = useSearchParams({
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'desc',
-    'userId': userId,
-  });
-
-  const { data: proposalsData, isLoading: isLoadingProposalsData } = useFetchProposals(
-    viewType ? searchParams.toString() : null,
-    viewType,
-  );
-
+const ProposalTableView = ({ data, isLoading, setPagination }) => {
   const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
     serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
   );
 
-  const page = searchParams.get('page');
-  const limit = searchParams.get('limit');
+  const handlePagination = page => setPagination(p => ({ ...p, page }));
 
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
-    setSearchParams(searchParams);
-  };
+  const handleUpdateStatus = (proposalId, statusId) =>
+    update({ proposalId, data: { status: statusId } });
 
-  const handleUpdateStatus = (proposalId, statusId) => {
-    const data = { status: statusId };
-    update({ proposalId, data });
+  const handleSortByColumn = colId => {
+    setPagination(p => ({
+      ...p,
+      sortBy: colId,
+      sortOrder: p.sortBy === colId ? sortOrders[p.sortOrder] : 'asc',
+    }));
   };
 
   const COLUMNS = useMemo(
@@ -55,12 +47,9 @@ const ProposalTableView = ({ viewType, userId = null, setCounts }) => {
         disableSortBy: true,
         Cell: ({ row }) =>
           useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
+            const currentPage = data?.page < 1 ? 1 : data.page;
+            const rowCount = (currentPage - 1) * data.limit;
+
             return <div className="pl-2">{rowCount + row.index + 1}</div>;
           }, []),
       },
@@ -188,34 +177,30 @@ const ProposalTableView = ({ viewType, userId = null, setCounts }) => {
         }) => useMemo(() => <MenuPopover itemId={_id} />, []),
       },
     ],
-    [proposalsData?.docs, limit, proposalStatusData],
+    [data?.docs, proposalStatusData],
   );
-
-  useEffect(() => {
-    if (proposalsData)
-      setCounts(prevState => ({ ...prevState, proposals: proposalsData?.totalDocs }));
-  }, [proposalsData]);
 
   return (
     <div className="mt-8">
-      {isLoadingProposalsData ? (
+      {isLoading ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
         </div>
       ) : null}
-      {proposalsData?.docs?.length === 0 && !isLoadingProposalsData ? (
+      {data?.docs?.length === 0 && !isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-      {proposalsData?.docs?.length ? (
+      {data?.docs?.length ? (
         <Table
-          data={proposalsData?.docs || []}
+          data={data?.docs || []}
           COLUMNS={COLUMNS}
-          activePage={proposalsData?.page || 1}
-          totalPages={proposalsData?.totalPages || 1}
+          activePage={data?.page || 1}
+          totalPages={data?.totalPages || 1}
           setActivePage={handlePagination}
-          rowCountLimit={limit}
+          rowCountLimit={data.limit || 10}
+          handleSorting={handleSortByColumn}
         />
       ) : null}
     </div>
