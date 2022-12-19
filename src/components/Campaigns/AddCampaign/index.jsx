@@ -148,6 +148,8 @@ const Create = () => {
       newData.healthStatus = +newData.healthStatus || 0;
       newData.price = +newData.price || 0;
 
+      delete newData.createdBy;
+
       if (!['predefined', 'customized'].includes(newData.type)) {
         newData.type = 'predefined';
       }

@@ -30,7 +30,7 @@ const MinMaxField = ({ minKey, maxKey, setQuery, state, label }) => {
   const max = state[maxKey];
 
   return (
-    <Accordion.Item value="price" className="mb-4 rounded-xl border">
+    <Accordion.Item value={label} className="mb-4 rounded-xl border">
       <Accordion.Control>
         <p className="text-lg">{label}</p>
       </Accordion.Control>
@@ -72,8 +72,6 @@ const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
   const { data: campaignStatus } = useFetchMasters(
     serialize({ type: 'campaign_status', limit: 10 }),
   );
-
-  const { data: campaignTypes } = useFetchMasters(serialize({ type: 'campaign_type', limit: 10 }));
 
   const handleApply = () => {
     setSearchParams(searchParams);
@@ -162,13 +160,16 @@ const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {campaignTypes?.docs?.map(item => (
+                {[
+                  { label: 'Predefined', value: 'predefined' },
+                  { label: 'Customized', value: 'customized' },
+                ].map(item => (
                   <div className="flex gap-2 mb-2" key={item._id}>
                     <Radio
-                      onChange={() => setQuery('type', item._id)}
-                      label={item.name}
+                      onChange={() => setQuery('type', item.value)}
+                      label={item.label}
                       defaultValue={item}
-                      checked={state.type === item._id}
+                      checked={state.type === item.value}
                     />
                   </div>
                 ))}
