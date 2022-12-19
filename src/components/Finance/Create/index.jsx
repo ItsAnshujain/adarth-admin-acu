@@ -164,7 +164,7 @@ const invoiceSchema = yup.object({
   supplierEmail: yup.string().trim().required('Email is required').email('Invalid Email'),
   supplierRefNo: yup.string().trim().required('Supplier Ref is required'),
   supplierOtherReference: yup.string().trim().required('Other Reference(s) is required'),
-  supplierWebsite: yup.string().trim().required('Website is required'),
+  supplierWebsite: yup.string().trim().required('Website is required').url('Invalid URL'),
   buyerName: yup.string().trim().required('Buyer Name is required'),
   buyerContactPerson: yup.string().trim().required('Contact Person is required'),
   buyerPhone: yup

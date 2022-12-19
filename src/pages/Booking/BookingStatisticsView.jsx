@@ -61,21 +61,21 @@ const BookingStatisticsView = ({ bookingStats }) => (
           <Text className="my-2" size="sm" weight="200">
             Ongoing Orders
           </Text>
-          <Text weight="bold">{bookingStats?.data.ongoing || 0}</Text>
+          <Text weight="bold">{bookingStats?.data?.Ongoing || 0}</Text>
         </div>
         <div className="border rounded p-8 pr-20">
           <Image src={UpcomingOrdersIcon} alt="upcoming" height={24} width={24} fit="contain" />
           <Text className="my-2" size="sm" weight="200">
             Upcoming Orders
           </Text>
-          <Text weight="bold">{bookingStats?.data.upcoming || 0}</Text>
+          <Text weight="bold">{bookingStats?.data?.Upcoming || 0}</Text>
         </div>
         <div className="border rounded p-8 pr-20">
           <Image src={CompletedOrdersIcon} alt="completed" height={24} width={24} fit="contain" />
           <Text className="my-2" size="sm" weight="200">
             Completed Orders
           </Text>
-          <Text weight="bold">{bookingStats?.data.completed || 0}</Text>
+          <Text weight="bold">{bookingStats?.data?.Completed || 0}</Text>
         </div>
       </div>
     </div>

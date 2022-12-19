@@ -17,10 +17,6 @@ const styles = {
     fontSize: 16,
     letterSpacing: '0.5px',
   },
-  input: {
-    borderRadius: 0,
-    padding: 8,
-  },
 };
 
 const Invoice = ({ spacesList, totalPrice }) => {
