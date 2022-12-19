@@ -13,7 +13,7 @@ import {
   useGeneratePurchaseOrder,
   useGenerateReleaseOrder,
 } from '../../../hooks/booking.hooks';
-import { gstRegexMatch, mobileRegexMatch } from '../../../utils';
+import { downloadPdf, gstRegexMatch, mobileRegexMatch } from '../../../utils';
 
 const orderView = {
   purchase: PurchaseOrder,
@@ -260,14 +260,6 @@ const Create = () => {
     useGenerateReleaseOrder();
   const { mutateAsync: generateInvoiceOrder, isLoading: isGenerateInvoiceOrderLoading } =
     useGenerateInvoice();
-
-  const downloadPdf = pdfLink => {
-    const link = document.createElement('a');
-    link.href = pdfLink;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const calcutateTotalPrice = useMemo(() => {
     const initialPrice = 0;
