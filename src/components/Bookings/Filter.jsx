@@ -119,8 +119,14 @@ const Filter = ({ isOpened, setShowFilter }) => {
     });
   };
 
-  const handleMinPrice = e => searchParams.set('minPrice', e);
-  const handleMaxPrice = e => searchParams.set('maxPrice', e);
+  const handleMinPrice = e => {
+    searchParams.set('minPrice', e);
+    searchParams.set('maxPrice', searchParams.get('maxPrice') || 10000);
+  };
+  const handleMaxPrice = e => {
+    searchParams.set('maxPrice', e);
+    searchParams.set('minPrice', searchParams.get('minPrice') || 0);
+  };
   const handleSliderChange = val => {
     searchParams.set('minPrice', val[0]);
     searchParams.set('maxPrice', val[1]);
