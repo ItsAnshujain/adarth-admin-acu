@@ -72,15 +72,27 @@ const Filter = ({ isOpened, setShowFilter }) => {
     setStatusArr([]);
   };
 
-  const handleMinPrice = e => searchParams.set('priceMin', e);
-  const handleMaxPrice = e => searchParams.set('priceMax', e);
+  const handleMinPrice = e => {
+    searchParams.set('priceMin', e);
+    searchParams.set('priceMax', searchParams.get('priceMax') || 10000);
+  };
+  const handleMaxPrice = e => {
+    searchParams.set('priceMax', e);
+    searchParams.set('priceMin', searchParams.get('priceMin') || 0);
+  };
   const handleSliderChange = val => {
     searchParams.set('priceMin', val[0]);
     searchParams.set('priceMax', val[1]);
   };
 
-  const handleMinPlace = e => searchParams.set('totalPlacesMin', e);
-  const handleMaxPlace = e => searchParams.set('totalPlacesMax', e);
+  const handleMinPlace = e => {
+    searchParams.set('totalPlacesMin', e);
+    searchParams.set('totalPlacesMax', searchParams.get('totalPlacesMax') || 10000);
+  };
+  const handleMaxPlace = e => {
+    searchParams.set('totalPlacesMax', e);
+    searchParams.set('totalPlacesMin', searchParams.get('totalPlacesMin') || 0);
+  };
   const handlePlacesSliderChange = val => {
     searchParams.set('totalPlacesMin', val[0]);
     searchParams.set('totalPlacesMax', val[1]);
