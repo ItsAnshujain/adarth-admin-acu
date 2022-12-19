@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Image, Progress } from '@mantine/core';
+import { Button, Image, Loader, Progress } from '@mantine/core';
 import { ChevronDown, Edit2, Eye, Trash } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
@@ -465,18 +465,31 @@ const SelectSpace = () => {
           <Search search={search} setSearch={setSearch} />
         </div>
       </div>
-      <Table
-        data={updatedInventoryData}
-        COLUMNS={COLUMNS}
-        allowRowsSelect
-        setSelectedFlatRows={setSelectedSpace}
-        selectedRowData={values?.place?.map(({ id, ...item }) => ({ _id: id, ...item }))}
-        isLoading={isLoading || isFetching}
-        handleSorting={handleSortByColumn}
-        activePage={pagination.page}
-        totalPages={pagination.totalPages}
-        setActivePage={page => setPagination(p => ({ ...p, page }))}
-      />
+      {isLoading ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <Loader />
+        </div>
+      ) : null}
+      {inventoryData?.docs?.length === 0 && !isLoading ? (
+        <div className="w-full min-h-[400px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
+        </div>
+      ) : null}
+
+      {inventoryData?.docs?.length ? (
+        <Table
+          data={updatedInventoryData}
+          COLUMNS={COLUMNS}
+          allowRowsSelect
+          setSelectedFlatRows={setSelectedSpace}
+          selectedRowData={values?.place?.map(({ id, ...item }) => ({ _id: id, ...item }))}
+          isLoading={isLoading || isFetching}
+          handleSorting={handleSortByColumn}
+          activePage={pagination.page}
+          totalPages={pagination.totalPages}
+          setActivePage={page => setPagination(p => ({ ...p, page }))}
+        />
+      ) : null}
     </>
   );
 };
