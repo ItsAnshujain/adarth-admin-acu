@@ -135,3 +135,11 @@ export const isValidURL = urlString => {
 
   return false;
 };
+
+export const downloadPdf = pdfLink => {
+  const link = document.createElement('a');
+  link.href = pdfLink;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
