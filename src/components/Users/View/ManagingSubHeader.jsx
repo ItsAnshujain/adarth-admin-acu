@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { ChevronDown, Plus } from 'react-feather';
-import { Button } from '@mantine/core';
+import { Button, Image } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 import { useClickOutside } from '@mantine/hooks';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
-import greenfolder from '../../../assets/ongoing.svg';
-import purplefolder from '../../../assets/completed.svg';
-import orangefolder from '../../../assets/upcoming.svg';
-import redfolder from '../../../assets/redfolder.svg';
-import bluefolder from '../../../assets/bluefolder.svg';
+import OngoingOrdersIcon from '../../../assets/ongoing-orders.svg';
+import CompletedOrdersIcon from '../../../assets/completed-orders.svg';
+import UpcomingOrdersIcon from '../../../assets/upcoming-orders.svg';
+import ProposalSentIcon from '../../../assets/proposal-sent.svg';
+import BookingsIcon from '../../../assets/total-bookings.svg';
 import ProposalFilter from '../../Proposals/Filter';
 import BookingFilter from '../../Bookings/Filter';
 import { useBookingStatByIncharge } from '../../../hooks/booking.hooks';
@@ -76,27 +76,27 @@ const ManagingSubHeader = ({ activeTable, userId, counts }) => {
       <div className="pl-5 pr-7 flex justify-between mt-8 mb-8">
         <div className="flex gap-3  flex-wrap">
           <div className="border rounded p-8  pr-20">
-            <img src={purplefolder} alt="folder" />
+            <Image src={OngoingOrdersIcon} alt="ongoing" height={24} width={24} fit="contain" />
             <p className="my-2 text-slate-400 text-sm">Ongoing Orders</p>
-            <p>{bookingStatsByIncharge?.ongoing}</p>
+            <p>{bookingStatsByIncharge?.Ongoing}</p>
           </div>
           <div className="border rounded p-8 pr-20">
-            <img src={orangefolder} alt="folder" />
+            <Image src={UpcomingOrdersIcon} alt="upcoming" height={24} width={24} fit="contain" />
             <p className="my-2 text-slate-400 text-sm">Upcoming Orders</p>
-            <p>{bookingStatsByIncharge?.upcoming}</p>
+            <p>{bookingStatsByIncharge?.Upcoming}</p>
           </div>
           <div className="border rounded p-8 pr-20">
-            <img src={bluefolder} alt="folder" />
+            <Image src={CompletedOrdersIcon} alt="completed" height={24} width={24} fit="contain" />
             <p className="my-2 text-slate-400 text-sm">Completed Orders</p>
-            <p>{bookingStatsByIncharge?.completed}</p>
+            <p>{bookingStatsByIncharge?.Completed}</p>
           </div>
           <div className="border rounded p-8 pr-20">
-            <img src={redfolder} alt="folder" />
+            <Image src={ProposalSentIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-slate-400 text-sm">Total Proposal</p>
             <p>{counts?.proposals || 0}</p>
           </div>
           <div className="border rounded p-8 pr-20">
-            <img src={greenfolder} alt="folder" />
+            <Image src={BookingsIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-slate-400 text-sm">Total Bookings</p>
             <p>{counts?.bookings || 0}</p>
           </div>

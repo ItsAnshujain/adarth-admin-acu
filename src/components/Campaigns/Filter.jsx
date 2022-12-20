@@ -18,11 +18,11 @@ const defaultValue = {
   status: '',
   type: '',
   priceMin: 0,
-  priceMax: 0,
+  priceMax: 10000,
   healthMin: 0,
-  healthMax: 0,
+  healthMax: 100,
   totalSpacesMin: 0,
-  totalSpacesMax: 0,
+  totalSpacesMax: 10000,
 };
 
 const MinMaxField = ({ minKey, maxKey, setQuery, state, label }) => {
@@ -31,7 +31,7 @@ const MinMaxField = ({ minKey, maxKey, setQuery, state, label }) => {
 
   const handleMin = val => {
     setQuery(minKey, val);
-    setQuery(maxKey, max || 0);
+    setQuery(maxKey, max || maxKey === 'healthMax' ? 100 : 10000);
   };
 
   const handleMax = val => {
@@ -62,10 +62,10 @@ const MinMaxField = ({ minKey, maxKey, setQuery, state, label }) => {
                   setQuery(maxKey, val[1]);
                 }}
                 min={0}
-                max={10000}
+                max={label === 'Health' ? 100 : 10000}
                 styles={sliderStyle}
                 value={[min, max]}
-                defaultValue={[0, 10000]}
+                defaultValue={[0, label === 'Health' ? 100 : 10000]}
               />
             </div>
           </div>
@@ -110,7 +110,12 @@ const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
 
       if (val !== undefined) {
         if (typeof defaultValue[item] === 'number') {
-          obj[item] = Number(val) || 0;
+          obj[item] =
+            Number(val) || item.toLowerCase().includes('max')
+              ? item === 'healthMax'
+                ? 100
+                : 10000
+              : 0;
         } else {
           obj[item] = val || '';
         }

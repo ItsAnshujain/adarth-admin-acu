@@ -44,7 +44,11 @@ const Overview = ({ bookingData = {} }) => {
     const initialImpressions = 0;
     if (bookingData?.campaign?.spaces?.length > 0) {
       return bookingData?.campaign?.spaces
-        .map(item => item?.specifications?.impressions?.min)
+        .map(item =>
+          item?.specifications?.impressions
+            ? Number.parseInt(item.specifications.impressions.min, 10)
+            : 0,
+        )
         .reduce((previousValue, currentValue) => previousValue + currentValue, initialImpressions);
     }
     return initialImpressions;
@@ -67,6 +71,10 @@ const Overview = ({ bookingData = {} }) => {
     }
   }, [bookingData?.spaces?.docs?.length, mapInstance]);
 
+  useEffect(() => {
+    if (bookingData?.campaign?.media) setPosterImage(bookingData?.campaign?.medias?.[0]);
+  }, []);
+
   return (
     <>
       <div className="flex gap-8 pt-4">
@@ -82,7 +90,7 @@ const Overview = ({ bookingData = {} }) => {
               />
             </div>
             <div className="flex overflow-scroll pt-4 gap-4 items-center">
-              {(bookingData?.photos || Array.from({ length: 4 })).map(src => (
+              {bookingData?.campaign?.medias.map(src => (
                 <Image
                   key={src}
                   aria-hidden
@@ -185,7 +193,9 @@ const Overview = ({ bookingData = {} }) => {
         </p>
         <div>
           {bookingData?.campaign?.spaces?.length ? (
-            bookingData?.campaign?.spaces?.map(item => <Places data={item} />)
+            bookingData?.campaign?.spaces?.map(item => (
+              <Places data={item} campaignId={bookingData?.campaign?._id} />
+            ))
           ) : (
             <div className="w-full min-h-[7rem] flex justify-center items-center">
               <p className="text-xl">No spaces found</p>
