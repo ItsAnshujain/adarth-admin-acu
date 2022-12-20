@@ -96,9 +96,16 @@ const Bookings = () => {
   );
 
   const downloadAll = urls => {
+    const link = document.createElement('a');
+    link.setAttribute('target', '_blank');
+    document.querySelector('body').appendChild(link);
+
     urls.forEach(item => {
-      downloadPdf(item);
+      link.href = item;
+      link.click();
     });
+
+    link.remove();
   };
 
   const column = useMemo(
