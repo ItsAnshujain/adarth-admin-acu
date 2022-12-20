@@ -73,7 +73,7 @@ const Overview = ({ bookingData = {} }) => {
 
   useEffect(() => {
     if (bookingData?.campaign?.media) setPosterImage(bookingData?.campaign?.medias?.[0]);
-  }, []);
+  }, [bookingData]);
 
   return (
     <>

@@ -204,7 +204,7 @@ const ReleaseOrder = ({ spacesList, totalPrice }) => {
           <TextInput
             styles={styles}
             label="Quotation No"
-            name="quotationNumber"
+            name="quotationNo"
             placeholder="Write..."
           />
         </div>

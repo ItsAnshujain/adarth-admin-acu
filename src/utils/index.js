@@ -136,10 +136,31 @@ export const isValidURL = urlString => {
   return false;
 };
 
+/**
+ * Download url
+ * @param {string} url - url to download
+ */
 export const downloadPdf = pdfLink => {
   const link = document.createElement('a');
   link.href = pdfLink;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+};
+
+/**
+ * Download multiple files at once
+ * @param {array} urls - Array of urls to download
+ */
+export const downloadAll = urls => {
+  const link = document.createElement('a');
+  link.setAttribute('target', '_blank');
+  document.querySelector('body').appendChild(link);
+
+  urls.forEach(item => {
+    link.href = item;
+    link.click();
+  });
+
+  link.remove();
 };

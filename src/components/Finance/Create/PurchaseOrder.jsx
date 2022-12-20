@@ -253,14 +253,14 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
           <TextInput
             styles={styles}
             label="Supplier Ref"
-            name="buyerRefNo" // TODO: should be buyerRefNo
+            name="supplierRefNo"
             errors={errors}
             placeholder="Write..."
           />
           <TextInput
             styles={styles}
             label="Other Reference(s)"
-            name="buyerOtherReference" // TODO: should be buyerOtherReference
+            name="supplierOtherReference"
             errors={errors}
             placeholder="Write..."
           />
