@@ -24,12 +24,19 @@ const getHealthTag = score => {
   return 'Best';
 };
 
+const getDate = (selectionItem, item, key, addDefault = true) => {
+  if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
+
+  if (item && item[key]) return new Date(item.startDate);
+
+  return addDefault ? new Date() : undefined;
+};
+
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
 
   const [search, setSearch] = useDebouncedState('', 500);
   const [showFilter, setShowFilter] = useState(false);
-  const [orderPrice, setOrderPrice] = useState(0);
   const navigate = useNavigate();
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
 
@@ -56,56 +63,21 @@ const SelectSpace = () => {
     );
   };
 
-  const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
-
-  const setSelectedSpace = selectedSpace => {
-    const totalPrice = selectedSpace.reduce((acc, item) => acc + +(item.values.pricing || 0), 0);
-    setOrderPrice(totalPrice);
-
-    const avgHealth =
-      selectedSpace.reduce((acc, item) => acc + item.values.health, 0) / selectedSpace.length;
-
-    const formData = selectedSpace.map(
-      ({
-        original: {
-          _id,
-          space_name,
-          photo,
-          pricing,
-          location,
-          media_type,
-          dimension,
-          illuminations,
-          unit,
-          resolutions,
-          supportedMedia,
-          startDate,
-          endDate,
-        },
-      }) => ({
-        id: _id,
-        space_name,
-        photo,
-        price: +pricing || 0,
-        location,
-        media_type,
-        dimension,
-        illuminations,
-        unit,
-        resolutions,
-        supportedMedia,
-        startDate,
-        endDate,
-      }),
-    );
-
-    setFieldValue('place', formData);
-    setFieldValue('healthTag', getHealthTag(avgHealth));
+  const getTotalPrice = (places = []) => {
+    const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
+    return totalPrice;
   };
 
-  const updateDate = (key, val, id) => {
+  const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
+
+  const updateData = (key, val, id) => {
     setUpdatedInventoryData(prev =>
       prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+    );
+
+    setFieldValue(
+      'place',
+      values.place.map(item => (item._id === id ? { ...item, [key]: val } : item)),
     );
   };
 
@@ -268,9 +240,9 @@ const SelectSpace = () => {
         accessor: 'pricing',
         Cell: ({
           row: {
-            original: { pricing },
+            original: { price },
           },
-        }) => toIndianCurrency(Number.parseInt(pricing, 10) || 0),
+        }) => toIndianCurrency(Number.parseInt(price, 10) || 0),
       },
       {
         Header: 'START DATE',
@@ -287,7 +259,7 @@ const SelectSpace = () => {
                 defaultValue={startDate}
                 placeholder="DD/MM/YYYY"
                 minDate={new Date()}
-                onChange={val => updateDate('startDate', val, _id)}
+                onChange={val => updateData('startDate', val, _id)}
               />
             ),
             [],
@@ -308,7 +280,7 @@ const SelectSpace = () => {
                 defaultValue={endDate}
                 placeholder="DD/MM/YYYY"
                 minDate={new Date()}
-                onChange={val => updateDate('endDate', val, _id)}
+                onChange={val => updateData('endDate', val, _id)}
               />
             ),
             [],
@@ -370,7 +342,7 @@ const SelectSpace = () => {
         },
       },
     ],
-    [updatedInventoryData],
+    [updatedInventoryData, values.place],
   );
 
   const handleSortByColumn = colId => {
@@ -388,6 +360,45 @@ const SelectSpace = () => {
     searchParams.set('sortBy', colId);
     setSearchParams(searchParams);
   };
+  const handleSelection = selectedRows => {
+    const avgHealth =
+      selectedRows.reduce((acc, item) => acc + item.health, 0) / selectedRows.length;
+
+    const formData = selectedRows.map(
+      ({
+        _id,
+        space_name,
+        photo,
+        price,
+        location,
+        media_type,
+        dimension,
+        illuminations,
+        unit,
+        resolutions,
+        supportedMedia,
+        startDate,
+        endDate,
+      }) => ({
+        _id,
+        space_name,
+        photo,
+        price: +price || 0,
+        location,
+        media_type,
+        dimension,
+        illuminations,
+        unit,
+        resolutions,
+        supportedMedia,
+        startDate,
+        endDate,
+      }),
+    );
+
+    setFieldValue('healthTag', getHealthTag(avgHealth));
+    setFieldValue('place', formData);
+  };
 
   useEffect(() => {
     if (search) searchParams.set('search', search);
@@ -400,7 +411,10 @@ const SelectSpace = () => {
     if (inventoryData) {
       const { docs, ...page } = inventoryData;
       const finalData = [];
+
       for (const item of docs) {
+        const selectionItem = values?.place?.find(pl => pl._id === item._id);
+
         const obj = {};
         obj.photo = item.basicInformation.spacePhoto;
         obj._id = item._id;
@@ -412,14 +426,15 @@ const SelectSpace = () => {
         obj.location = item.location;
         obj.media_type = item.basicInformation.mediaType?.name;
         obj.supportedMedia = item.basicInformation.supportedMedia;
-        obj.pricing = item.basicInformation.price;
+        obj.price = item.basicInformation.price;
         obj.landlord_name = '';
         obj.status = 'Available';
         obj.illuminations = item.specifications.illuminations?.name;
         obj.unit = item.specifications.unit;
         obj.resolutions = item.specifications.resolutions;
-        obj.startDate = item.startDate ? new Date(item.startDate) : new Date();
-        obj.endDate = item.endDate ? new Date(item.endDate) : dayjs().add(1, 'day').toDate();
+        obj.startDate = getDate(selectionItem, item, 'startDate');
+        obj.endDate =
+          getDate(selectionItem, item, 'endDate', false) || dayjs().add(1, 'day').toDate();
         finalData.push(obj);
       }
       setUpdatedInventoryData(finalData);
@@ -451,14 +466,14 @@ const SelectSpace = () => {
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
-            <p className="font-bold">{toIndianCurrency(orderPrice)}</p>
+            <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
           </div>
         </div>
         <div className="flex justify-between mb-4 items-center">
           <p className="text-purple-450 text-sm">
             Total Places{' '}
             <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-              {updatedInventoryData.length}
+              {inventoryData?.totalDocs}
             </span>
           </p>
 
@@ -475,14 +490,14 @@ const SelectSpace = () => {
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-
+      lo
       {inventoryData?.docs?.length ? (
         <Table
           data={updatedInventoryData}
           COLUMNS={COLUMNS}
           allowRowsSelect
-          setSelectedFlatRows={setSelectedSpace}
-          selectedRowData={values?.place?.map(({ id, ...item }) => ({ _id: id, ...item }))}
+          setSelectedFlatRows={handleSelection}
+          selectedRowData={values.place}
           isLoading={isLoading || isFetching}
           handleSorting={handleSortByColumn}
           activePage={pagination.page}
