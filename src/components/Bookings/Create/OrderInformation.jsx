@@ -51,6 +51,7 @@ const OrderInfo = () => {
             name="description"
             placeholder="Maximun 200 characters"
             errors={errors}
+            maxLength={200}
           />
         </div>
       </div>
