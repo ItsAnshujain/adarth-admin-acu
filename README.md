@@ -5,12 +5,12 @@
 - `src/components` - Individual components
 - `src/pages` - Routes
 - `src/styles` - Styles
-- `src/util`s - Reusable functions
-- `src/utils/config.j`s - Will include constants or other static data
+- `src/utils` - Reusable functions
+- `src/utils/config.js` - Constants or other static data
 - `src/utils/http.js` - Base structure for calling APIs
 - `src/requests` - Requests to call APIs which would be consumed by hooks
 - `src/hooks` - Hooks based off of requests
-- `src/store` - Stores which would be required
+- `src/store` - Stores for managing global state
 
 ## Getting started
 
