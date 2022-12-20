@@ -5,7 +5,7 @@ import { Button, Loader, NativeSelect, Progress } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { useSearchParams } from 'react-router-dom';
-import { downloadPdf, serialize } from '../../../utils';
+import { downloadAll, serialize } from '../../../utils';
 import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -92,12 +92,6 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
     () => campaignStatus?.docs?.map(item => item.name) || [],
     [campaignStatus],
   );
-
-  const downloadAll = urls => {
-    urls.forEach(item => {
-      downloadPdf(item);
-    });
-  };
 
   const column = useMemo(
     () => [

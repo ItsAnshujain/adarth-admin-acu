@@ -16,12 +16,12 @@ const styles = {
 
 const DATE_FORMAT = 'DD-MM-YYYY';
 
-const Places = ({ data }) => {
+const Places = ({ data, campaignId }) => {
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const { mutate: update, isLoading: isUpdating } = useUpdateCampaignMedia();
   const openRef = useRef(null);
   const handleSubmit = link => {
-    update({ id: data?._id, placeId: data?._id, data: { media: link } });
+    update({ id: campaignId, placeId: data?._id, data: { media: link } });
   };
 
   const handleUpload = async params => {
@@ -59,6 +59,7 @@ const Places = ({ data }) => {
             <Button
               onClick={() => openRef.current()}
               disabled={isUpdating || isLoading}
+              loading={isUpdating || isLoading}
               className="py-1 px-2 ml-1 h-[20%] flex items-center gap-2 border border-black rounded-md text-black font-medium text-base"
             >
               <span className="mr-1">Upload File</span>
@@ -87,7 +88,11 @@ const Places = ({ data }) => {
             <p className="mb-2 text-sm font-light text-slate-400">
               {data?.location?.address || <NoData type="na" />}
             </p>
-            <p className="font-bold">{toIndianCurrency(data?.basicInformation?.price || 0)}</p>
+            <p className="font-bold">
+              {data?.basicInformation?.price
+                ? toIndianCurrency(Number.parseInt(data.basicInformation.price, 10))
+                : 0}
+            </p>
           </div>
           <div>
             <div className="mb-4">
