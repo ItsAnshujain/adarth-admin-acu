@@ -1,5 +1,6 @@
 import { Image, Skeleton, Text } from '@mantine/core';
 import dayjs from 'dayjs';
+import toIndianCurrency from '../../../utils/currencyFormat';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
@@ -68,7 +69,9 @@ const Details = ({ proposalData, isProposalDataLoading }) => (
             <Text color="grey" weight="400">
               Price
             </Text>
-            <Text weight="bolder">{proposalData?.price || 0}</Text>
+            <Text weight="bolder">
+              {proposalData?.price ? toIndianCurrency(proposalData.price) : 0}
+            </Text>
           </div>
           <div>
             <Text color="grey" weight="400">

@@ -10,7 +10,7 @@ import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import AreaHeader from '../../components/Bookings/Header';
 import { useBookings, useBookingStats, useUpdateBookingStatus } from '../../hooks/booking.hooks';
-import { downloadPdf, serialize } from '../../utils';
+import { downloadAll, serialize } from '../../utils';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import MenuPopover from './MenuPopOver';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -94,19 +94,6 @@ const Bookings = () => {
     () => campaignStatus?.docs?.map(item => item.name) || [],
     [campaignStatus],
   );
-
-  const downloadAll = urls => {
-    const link = document.createElement('a');
-    link.setAttribute('target', '_blank');
-    document.querySelector('body').appendChild(link);
-
-    urls.forEach(item => {
-      link.href = item;
-      link.click();
-    });
-
-    link.remove();
-  };
 
   const column = useMemo(
     () => [
