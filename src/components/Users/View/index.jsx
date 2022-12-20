@@ -22,9 +22,9 @@ const Header = () => {
   const [activeTable, setActiveTable] = useState('booking');
   const { id: userId } = useParams();
   const { data: userDetails, isLoading: isUserDetailsLoading } = useFetchUsersById(userId);
-  const [bookingSearchParams, setBookingSearchParams] = useSearchParams();
-  const [proposalSearchParams, setProposalSearchParams] = useSearchParams();
   const initialValue = tableQueries(userId);
+  const [bookingSearchParams, setBookingSearchParams] = useSearchParams(initialValue);
+  const [proposalSearchParams, setProposalSearchParams] = useSearchParams(initialValue);
 
   const { data: bookingData = {}, isLoading: isLoadingBookingData } = useBookings(
     bookingSearchParams.toString(),

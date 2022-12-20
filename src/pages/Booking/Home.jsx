@@ -10,7 +10,7 @@ import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import AreaHeader from '../../components/Bookings/Header';
 import { useBookings, useBookingStats, useUpdateBookingStatus } from '../../hooks/booking.hooks';
-import { serialize } from '../../utils';
+import { downloadPdf, serialize } from '../../utils';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import MenuPopover from './MenuPopOver';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -94,6 +94,12 @@ const Bookings = () => {
     () => campaignStatus?.docs?.map(item => item.name) || [],
     [campaignStatus],
   );
+
+  const downloadAll = urls => {
+    urls.forEach(item => {
+      downloadPdf(item);
+    });
+  };
 
   const column = useMemo(
     () => [
@@ -347,24 +353,7 @@ const Bookings = () => {
                   'font-medium  text-base',
                 )}
                 disabled={!campaign?.medias?.length}
-                onClick={() => {
-                  const downloadAll = urls => {
-                    const url = urls.pop();
-
-                    const a = document.createElement('a');
-                    a.setAttribute('href', url);
-                    a.setAttribute('download', '');
-                    a.setAttribute('target', '_blank');
-                    a.setAttributes('rel', 'noopener noreferrer');
-                    a.click();
-
-                    if (urls.length === 0) {
-                      // eslint-disable-next-line no-use-before-define
-                      clearInterval(interval);
-                    }
-                  };
-                  const interval = setInterval(downloadAll, 300, campaign?.medias);
-                }}
+                onClick={() => downloadAll(campaign?.medias)}
               >
                 Download
               </Button>

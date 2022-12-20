@@ -13,7 +13,7 @@ import {
   useGeneratePurchaseOrder,
   useGenerateReleaseOrder,
 } from '../../../hooks/booking.hooks';
-import { gstRegexMatch, mobileRegexMatch } from '../../../utils';
+import { downloadPdf, gstRegexMatch, mobileRegexMatch } from '../../../utils';
 
 const orderView = {
   purchase: PurchaseOrder,
@@ -49,8 +49,8 @@ const purchaseSchema = yup.object({
     .required('Pin is required'),
   buyerName: yup.string().trim().required('Supplier Name is required'),
   buyerGst: yup.string().trim().matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
-  buyerRefNo: yup.string().trim().required('Supplier Ref is required'), // TODO: key missing and should be buyerRefNo
-  buyerOtherReference: yup.string().trim().required('Other Reference(s) is required'), // TODO: key missing and should be buyerOtherReference
+  buyerRefNo: yup.string().trim().required('Supplier Ref is required'),
+  buyerOtherReference: yup.string().trim().required('Other Reference(s) is required'),
   dispatchThrough: yup.string().trim().required('Dispatch Through is required'),
   destination: yup.string().trim().required('Destination is required'),
   buyerStreetAddress: yup.string().trim().required('Street Address is required'),
@@ -74,15 +74,15 @@ const initialPurchaseValues = {
   supplierZip: null,
   buyerName: '',
   buyerGst: '',
-  buyerRefNo: '', // TODO: key missing and should be buyerRefNo
-  buyerOtherReference: '', // TODO: key missing and should be buyerOtherReference
+  buyerRefNo: '',
+  buyerOtherReference: '',
   dispatchThrough: '',
   destination: '',
   buyerStreetAddress: '',
   buyerCity: '',
   buyerZip: null,
   termOfDelivery: '',
-  signature: '', // TODO: key missing
+  signature: '',
 };
 
 const releaseSchema = yup.object({
@@ -164,7 +164,7 @@ const invoiceSchema = yup.object({
   supplierEmail: yup.string().trim().required('Email is required').email('Invalid Email'),
   supplierRefNo: yup.string().trim().required('Supplier Ref is required'),
   supplierOtherReference: yup.string().trim().required('Other Reference(s) is required'),
-  supplierWebsite: yup.string().trim().required('Website is required'),
+  supplierWebsite: yup.string().trim().required('Website is required').url('Invalid URL'),
   buyerName: yup.string().trim().required('Buyer Name is required'),
   buyerContactPerson: yup.string().trim().required('Contact Person is required'),
   buyerPhone: yup
@@ -260,14 +260,6 @@ const Create = () => {
     useGenerateReleaseOrder();
   const { mutateAsync: generateInvoiceOrder, isLoading: isGenerateInvoiceOrderLoading } =
     useGenerateInvoice();
-
-  const downloadPdf = pdfLink => {
-    const link = document.createElement('a');
-    link.href = pdfLink;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const calcutateTotalPrice = useMemo(() => {
     const initialPrice = 0;
