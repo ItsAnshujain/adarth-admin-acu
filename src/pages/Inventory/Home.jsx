@@ -295,13 +295,8 @@ const Home = () => {
     setSearchParams(searchParams);
   };
 
-  const handleSelection = selectedRows => {
-    console.log(selectedRows);
-    const tempArr = [];
-    const formData = selectedRows.map(({ _id }) => _id);
-    tempArr.push(formData[0]);
-    console.log(tempArr);
-  };
+  // TODO: delete all or individaul row wip
+  const handleSelection = () => {};
 
   useEffect(() => {
     handleSearch();
