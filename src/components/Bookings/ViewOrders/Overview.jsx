@@ -112,16 +112,16 @@ const Overview = ({ bookingData = {} }) => {
           </p>
           <div>
             <p className="text-slate-400 font-light text-[14px]">
-              {bookingData?.campaign?.description?.split('\n')?.length > 4 ? (
+              {bookingData?.description?.split(' ')?.length > 4 ? (
                 readMore ? (
-                  `${bookingData?.campaign?.description?.split('\n')?.slice(0, 3).join('\n')}...`
+                  `${bookingData?.description?.split(' ')?.slice(0, 3).join(' ')}...`
                 ) : (
-                  bookingData?.campaign?.description
+                  bookingData?.description
                 )
               ) : (
                 <NoData type="na" />
               )}
-              {bookingData?.campaign?.description?.split('\n')?.length > 4 ? (
+              {bookingData?.description?.split(' ')?.length > 4 ? (
                 <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
                   {readMore ? 'Read more' : 'Read less'}
                 </Button>

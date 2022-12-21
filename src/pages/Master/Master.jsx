@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import useSideBarState from '../../store/sidebar.store';
-import Categories from '../../components/Masters/Category';
+import Home from '../../components/Masters';
 
 const Master = () => {
   const setColor = useSideBarState(state => state.setColor);
@@ -17,7 +17,7 @@ const Master = () => {
       <div className="grid grid-cols-12">
         <Sidebar />
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-          <Categories />
+          <Home />
         </div>
       </div>
     </div>

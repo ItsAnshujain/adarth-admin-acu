@@ -137,9 +137,9 @@ const Create = () => {
         if (end > maxDate) maxDate = end;
 
         return {
-          id: item.id,
+          id: item._id,
           price: item.price,
-          media: isValidURL(item.photo) ? item.photo : undefined,
+          media: isValidURL(item.media) ? item.media : undefined,
           startDate: item.startDate,
           endDate: item.endDate,
         };

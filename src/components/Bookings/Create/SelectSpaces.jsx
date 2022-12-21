@@ -24,7 +24,7 @@ const styles = {
   border: 'none',
 };
 
-const UploadButton = ({ updateDateAndMedia, isActive, id }) => {
+const UploadButton = ({ updateData, isActive, id }) => {
   const { mutateAsync: uploadMedia, isLoading } = useUploadFile();
 
   const handleUpload = async params => {
@@ -33,7 +33,7 @@ const UploadButton = ({ updateDateAndMedia, isActive, id }) => {
     const res = await uploadMedia(formData);
 
     if (res?.[0].Location) {
-      updateDateAndMedia('media', res[0].Location, id);
+      updateData('media', res[0].Location, id);
     }
   };
 
@@ -64,8 +64,8 @@ const SelectSpace = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
-  const [orderPrice, setOrderPrice] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams({
     'limit': 10,
     'page': 1,
@@ -88,58 +88,23 @@ const SelectSpace = () => {
     );
   };
 
-  useEffect(() => {
-    if (inventoryData) {
-      const finalData = [];
+  const getTotalPrice = (places = []) => {
+    const totalPrice = places.reduce((acc, item) => acc + +(item.pricing || 0), 0);
+    return totalPrice;
+  };
 
-      for (const item of inventoryData.docs) {
-        const obj = {};
-        obj.photo = item.basicInformation.spacePhoto;
-        obj._id = item._id;
-        obj.spaceName = item.basicInformation?.spaceName;
-        obj.isUnderMaintenance = item?.isUnderMaintenance;
-        obj.spaceType = item.basicInformation?.spaceType?.name;
-        obj.dimension = `${item.specifications?.size?.height || 0}ft x ${
-          item.specifications?.size?.width || 0
-        }ft`;
-        obj.impression = item.specifications?.impressions?.min || 0;
-        obj.health = item?.specifications?.health;
-        obj.location = item?.location?.city;
-        obj.mediaType = item.basicInformation?.mediaType?.name;
-        obj.pricing = item.basicInformation?.price || 0;
-        obj.landlord = item.basicInformation?.mediaOwner?.name;
-        obj.startDate = item.startDate ? new Date(item.startDate) : new Date();
-        obj.endDate = item.endDate ? new Date(item.endDate) : dayjs().add(1, 'day').toDate();
-        finalData.push(obj);
-      }
-      setUpdatedInventoryData(finalData);
-    }
-  }, [inventoryData]);
-
-  const updateDateAndMedia = (key, val, id) => {
+  const updateData = (key, val, id) => {
     setUpdatedInventoryData(prev =>
       prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
     );
-  };
 
-  const setSelectedFlatRows = selectedSpace => {
-    const totalPrice = selectedSpace.reduce((acc, item) => acc + +(item.original.pricing || 0), 0);
-    setOrderPrice(totalPrice);
-    const formData = selectedSpace.map(item => ({
-      id: item.original._id,
-      price: +item.original.pricing || 0,
-      startDate: item.original.startDate,
-      endDate: item.original.endDate,
-      media: item.original.media,
-    }));
-    setFieldValue('place', formData);
-  };
-
-  const updatePrice = (price, id) => {
-    setUpdatedInventoryData(prev =>
-      prev.map(item => (item._id === id ? { ...item, pricing: +price } : item)),
+    setFieldValue(
+      'place',
+      values.place.map(item => (item._id === id ? { ...item, [key]: val } : item)),
     );
   };
+
+  const handleSelection = selectedRows => setFieldValue('place', selectedRows);
 
   const COLUMNS = useMemo(
     () => [
@@ -212,17 +177,16 @@ const SelectSpace = () => {
           row: {
             original: { _id },
           },
-          selectedFlatRows,
         }) =>
           useMemo(
             () => (
               <UploadButton
-                updateDateAndMedia={updateDateAndMedia}
-                isActive={selectedFlatRows?.find(item => item.original._id === _id)}
+                updateData={updateData}
+                isActive={values?.place?.find(item => item._id === _id)}
                 id={_id}
               />
             ),
-            [selectedFlatRows],
+            [],
           ),
       },
       {
@@ -297,15 +261,15 @@ const SelectSpace = () => {
         accessor: 'basicInformation.price',
         Cell: ({
           row: {
-            original: { pricing, _id },
+            original: { price, _id },
           },
         }) =>
           useMemo(
             () => (
               <NumberInput
                 hideControls
-                defaultValue={+(pricing || 0)}
-                onBlur={e => updatePrice(e.target.value, _id)}
+                defaultValue={+(price || 0)}
+                onBlur={e => updateData('price', e.target.value, _id)}
               />
             ),
             [],
@@ -326,7 +290,7 @@ const SelectSpace = () => {
                 defaultValue={startDate}
                 placeholder="DD/MM/YYYY"
                 minDate={new Date()}
-                onChange={val => updateDateAndMedia('startDate', val, _id)}
+                onChange={val => updateData('startDate', val, _id)}
               />
             ),
             [],
@@ -347,7 +311,7 @@ const SelectSpace = () => {
                 defaultValue={endDate}
                 placeholder="DD/MM/YYYY"
                 minDate={new Date()}
-                onChange={val => updateDateAndMedia('endDate', val, _id)}
+                onChange={val => updateData('endDate', val, _id)}
               />
             ),
             [],
@@ -407,13 +371,14 @@ const SelectSpace = () => {
         },
       },
     ],
-    [updatedInventoryData],
+    [updatedInventoryData, values?.place],
   );
 
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const handleSearch = () => {
     searchParams.set('search', searchInput);
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
   };
 
@@ -439,6 +404,36 @@ const SelectSpace = () => {
   };
 
   useEffect(() => {
+    if (inventoryData) {
+      const { docs, ...page } = inventoryData;
+      const finalData = [];
+
+      for (const item of docs) {
+        const obj = {};
+        obj.photo = item.basicInformation.spacePhoto;
+        obj._id = item._id;
+        obj.spaceName = item.basicInformation?.spaceName;
+        obj.isUnderMaintenance = item?.isUnderMaintenance;
+        obj.spaceType = item.basicInformation?.spaceType?.name;
+        obj.dimension = `${item.specifications?.size?.height || 0}ft x ${
+          item.specifications?.size?.width || 0
+        }ft`;
+        obj.impression = item.specifications?.impressions?.min || 0;
+        obj.health = item?.specifications?.health;
+        obj.location = item?.location?.city;
+        obj.mediaType = item.basicInformation?.mediaType?.name;
+        obj.price = item.basicInformation?.price || 0;
+        obj.landlord = item.basicInformation?.mediaOwner?.name;
+        obj.startDate = item.startDate ? new Date(item.startDate) : new Date();
+        obj.endDate = item.endDate ? new Date(item.endDate) : dayjs().add(1, 'day').toDate();
+        finalData.push(obj);
+      }
+      setUpdatedInventoryData(finalData);
+      setPagination(page);
+    }
+  }, [inventoryData]);
+
+  useEffect(() => {
     handleSearch();
     if (searchInput === '') {
       searchParams.delete('search');
@@ -461,18 +456,18 @@ const SelectSpace = () => {
         <div className="flex gap-4">
           <div>
             <p className="text-slate-400">Selected Places</p>
-            <p className="font-bold">{values?.place?.length || 0}</p>
+            <p className="font-bold">{values?.place?.length}</p>
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
-            <p className="font-bold">{toIndianCurrency(orderPrice)}</p>
+            <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
           </div>
         </div>
         <div className="flex justify-between mb-4 items-center">
           <p className="text-purple-450 text-sm">
             Total Places{' '}
             <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-              {updatedInventoryData?.length}
+              {inventoryData?.totalDocs}
             </span>
           </p>
           <Search search={searchInput} setSearch={setSearchInput} />
@@ -493,15 +488,12 @@ const SelectSpace = () => {
           data={updatedInventoryData}
           COLUMNS={COLUMNS}
           allowRowsSelect
-          isBookingTable
-          setSelectedFlatRows={setSelectedFlatRows}
-          selectedRowData={values?.place?.map(item => ({
-            _id: item.id,
-          }))}
-          activePage={inventoryData?.page || 1}
-          totalPages={inventoryData?.totalPages || 1}
-          setActivePage={handlePagination}
+          setSelectedFlatRows={handleSelection}
+          selectedRowData={values?.place}
           handleSorting={handleSortByColumn}
+          activePage={pagination.page}
+          totalPages={pagination.totalPages}
+          setActivePage={handlePagination}
         />
       ) : null}
     </>

@@ -3,7 +3,6 @@ import * as yup from 'yup';
 import { useNavigate, useParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { yupResolver } from '@mantine/form';
-import { useDebouncedState } from '@mantine/hooks';
 import BasicInfo from './BasicInfo';
 import Spaces from '../Spaces';
 import SuccessModal from '../../shared/Modal';
@@ -41,6 +40,7 @@ const initialValues = {
   startDate: '',
   endDate: '',
   status: '',
+  spaces: [],
 };
 
 const Main = () => {
@@ -57,8 +57,6 @@ const Main = () => {
     sortOrder: 'asc',
   });
 
-  const [selectedRow, setSelectedRow] = useState([]);
-  const [proposedPrice, setProposedPrice] = useDebouncedState(null, 1000);
   const { mutate: create, isLoading: isCreateProposalLoading } = useCreateProposal();
   const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalData } = useFetchProposalById(
@@ -66,34 +64,18 @@ const Main = () => {
     !!proposalId,
   );
 
-  const handleUpdatedProposedPrice = (val, id) => setProposedPrice({ price: val, inventoryId: id });
-
   const { data: proposalStatusData } = useFetchMasters(
     serialize({ type: 'proposal_status', parentId: null, limit: 10 }),
   );
 
-  const getForm = () =>
-    formStep === 1 ? (
-      <BasicInfo proposalId={proposalId} />
-    ) : (
-      <Spaces
-        selectedRow={selectedRow}
-        setSelectedRow={setSelectedRow}
-        selectedRowData={proposalData?.inventories.docs || []}
-        noOfSelectedPlaces={selectedRow.length}
-        setProposedPrice={handleUpdatedProposedPrice}
-      />
-    );
+  const getForm = () => (formStep === 1 ? <BasicInfo proposalId={proposalId} /> : <Spaces />);
 
   const onSubmit = formData => {
     let data = {};
-
-    data = {
-      ...formData,
-    };
+    data = { ...formData };
     setFormStep(2);
     if (formStep === 2) {
-      if (selectedRow.length === 0) {
+      if (form.values?.spaces?.length === 0) {
         showNotification({
           title: 'Please select atleast one space to continue',
           color: 'blue',
@@ -101,28 +83,12 @@ const Main = () => {
         return;
       }
 
-      const spaceArray = [];
-      selectedRow?.map(item => {
-        const element = {
-          id: item.original._id,
-          price: item.original.basicInformation.price,
-        };
-        spaceArray.push(element);
-
-        return spaceArray;
-      });
-
-      data.spaces = [...spaceArray];
-
-      if (proposedPrice) {
-        const newSpaceArray = spaceArray.map(item => {
-          if (item.id === proposedPrice.inventoryId) {
-            return { ...item, price: proposedPrice.price };
-          }
-          return item;
-        });
-        data.spaces = [...newSpaceArray];
-      }
+      data.spaces = form.values?.spaces?.map(item => ({
+        id: item._id,
+        price: +item.price,
+        startDate: item.startDate,
+        endDate: item.endDate,
+      }));
 
       Object.keys(data).forEach(key => {
         if (data[key] === '' || data[key] === undefined) {
@@ -131,7 +97,10 @@ const Main = () => {
       });
 
       if (proposalId) {
-        update({ proposalId, data });
+        update(
+          { proposalId, data },
+          { onSuccess: () => setTimeout(() => navigate('/proposals'), 2000) },
+        );
       } else {
         const status = proposalStatusData?.docs?.filter(
           item => item?.name?.toLowerCase() === 'created',
@@ -141,28 +110,27 @@ const Main = () => {
           ...data,
           status,
         };
-
-        create(data);
+        create(data, { onSuccess: () => setTimeout(() => navigate('/proposals'), 2000) });
       }
       form.reset();
-
-      setTimeout(() => navigate('/proposals'), 2000);
     }
   };
 
   useEffect(() => {
     if (proposalData) {
-      form.setFieldValue('image', proposalData?.proposal?.image);
-      form.setFieldValue('name', proposalData?.proposal?.name);
-      form.setFieldValue('description', proposalData?.proposal?.description || '');
-      if (proposalData?.proposal?.startDate) {
-        form.setFieldValue('startDate', new Date(proposalData.proposal.startDate));
-      }
-
-      if (proposalData?.proposal?.endDate) {
-        form.setFieldValue('endDate', new Date(proposalData.proposal.endDate));
-      }
-      form.setFieldValue('status', proposalData?.proposal?.status);
+      form.setValues({
+        image: proposalData?.proposal?.image,
+        name: proposalData?.proposal?.name,
+        description: proposalData?.proposal?.description || '',
+        status: proposalData?.proposal?.status,
+        startDate: proposalData?.proposal?.startDate
+          ? new Date(proposalData.proposal.startDate)
+          : new Date(),
+        endDate: proposalData?.proposal?.endDate
+          ? new Date(proposalData.proposal.endDate)
+          : new Date(),
+        spaces: proposalData?.inventories.docs.map(({ ...item }) => ({ ...item })) || [],
+      });
     }
   }, [proposalData]);
 

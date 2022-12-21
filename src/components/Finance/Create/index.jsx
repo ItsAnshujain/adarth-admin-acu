@@ -261,6 +261,8 @@ const Create = () => {
   const { mutateAsync: generateInvoiceOrder, isLoading: isGenerateInvoiceOrderLoading } =
     useGenerateInvoice();
 
+  const redirectToHome = () => setTimeout(() => navigate('/bookings'), 2000);
+
   const calcutateTotalPrice = useMemo(() => {
     const initialPrice = 0;
     if (bookingData?.campaign?.spaces?.length > 0) {
@@ -292,7 +294,10 @@ const Create = () => {
       if (data?.buyerGst) {
         data.buyerGst = data.buyerGst?.toUpperCase();
       }
-      const purchaseOrderPdf = await generatePurchaseOrder({ id: bookingId, data });
+      const purchaseOrderPdf = await generatePurchaseOrder(
+        { id: bookingId, data },
+        { onSuccess: () => redirectToHome() },
+      );
       if (purchaseOrderPdf?.generatedPdf?.Location)
         downloadPdf(purchaseOrderPdf.generatedPdf.Location);
     } else if (type === 'release') {
@@ -302,7 +307,10 @@ const Create = () => {
       if (!data?.mobile?.includes('+91')) {
         data.mobile = `+91${data?.mobile}`;
       }
-      const releaseOrderPdf = await generateReleaseOrder({ id: bookingId, data });
+      const releaseOrderPdf = await generateReleaseOrder(
+        { id: bookingId, data },
+        { onSuccess: () => redirectToHome() },
+      );
       if (releaseOrderPdf?.generatedPdf?.Location)
         downloadPdf(releaseOrderPdf.generatedPdf.Location);
     } else if (type === 'invoice') {
@@ -318,7 +326,10 @@ const Create = () => {
       if (data?.buyerGst) {
         data.buyerGst = data.buyerGst?.toUpperCase();
       }
-      const invoicePdf = await generateInvoiceOrder({ id: bookingId, data });
+      const invoicePdf = await generateInvoiceOrder(
+        { id: bookingId, data },
+        { onSuccess: () => redirectToHome() },
+      );
       if (invoicePdf?.generatedPdf?.Location) downloadPdf(invoicePdf.generatedPdf.Location);
     }
     form.reset();

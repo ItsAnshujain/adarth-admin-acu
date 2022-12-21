@@ -6,6 +6,8 @@ import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { DatePicker } from '@mantine/dates';
+import { Dropzone } from '@mantine/dropzone';
+import classNames from 'classnames';
 import Filter from '../../Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -15,6 +17,47 @@ import Badge from '../../shared/Badge';
 import MenuIcon from '../../Menu';
 import upload from '../../../assets/upload.svg';
 import { useFormContext } from '../../../context/formContext';
+import { useUploadFile } from '../../../hooks/upload.hooks';
+
+const styles = {
+  padding: 0,
+  border: 'none',
+};
+
+const UploadButton = ({ updateData, isActive, id }) => {
+  const { mutateAsync: uploadMedia, isLoading } = useUploadFile();
+
+  const handleUpload = async params => {
+    const formData = new FormData();
+    formData.append('files', params?.[0]);
+    const res = await uploadMedia(formData);
+
+    if (res?.[0].Location) {
+      updateData('media', res[0].Location, id);
+    }
+  };
+
+  return (
+    <Dropzone
+      style={styles}
+      onDrop={handleUpload}
+      multiple={false}
+      disabled={!isActive || isLoading}
+    >
+      <Button
+        disabled={isLoading}
+        loading={isLoading}
+        className={classNames(
+          isActive ? 'bg-purple-350 cursor-pointer' : 'bg-purple-200 cursor-not-allowed',
+          'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md',
+        )}
+      >
+        Upload
+        <img src={upload} alt="Upload" className="ml-2" />
+      </Button>
+    </Dropzone>
+  );
+};
 
 const getHealthTag = score => {
   if (score <= 30) return 'Bad';
@@ -46,7 +89,7 @@ const SelectSpace = () => {
     sortBy: 'name',
     sortOrder: 'desc',
   });
-  const { data: inventoryData, isLoading, isFetching } = useFetchInventory(searchParams.toString());
+  const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
   const { mutate } = useDeleteInventoryById();
   const queryClient = useQueryClient();
 
@@ -150,42 +193,21 @@ const SelectSpace = () => {
       {
         Header: 'UPLOAD MEDIA',
         accessor: '',
-        Cell: tableProps => {
-          const {
-            row: {
-              original: { _id: id },
-            },
-          } = tableProps;
-
-          return useMemo(
-            () =>
-              values?.place?.length > 0 ? (
-                values.place.map(selected => {
-                  if (selected?.original?._id === id) {
-                    return (
-                      <button
-                        type="button"
-                        className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-350 text-white rounded-md cursor-pointer"
-                      >
-                        <span>Upload</span>
-                        <img src={upload} alt="Upload" />
-                      </button>
-                    );
-                  }
-                  return null;
-                })
-              ) : (
-                <button
-                  type="button"
-                  className="py-1 px-2 h-[70%] flex items-center gap-2 bg-purple-200 text-white rounded-md cursor-not-allowed "
-                >
-                  <span>Upload</span>
-                  <img src={upload} alt="Upload" />
-                </button>
-              ),
+        Cell: ({
+          row: {
+            original: { _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <UploadButton
+                updateData={updateData}
+                isActive={values?.place?.find(item => item._id === _id)}
+                id={_id}
+              />
+            ),
             [],
-          );
-        },
+          ),
       },
       {
         Header: 'SPACE TYPE',
@@ -490,7 +512,6 @@ const SelectSpace = () => {
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-      lo
       {inventoryData?.docs?.length ? (
         <Table
           data={updatedInventoryData}
@@ -498,7 +519,6 @@ const SelectSpace = () => {
           allowRowsSelect
           setSelectedFlatRows={handleSelection}
           selectedRowData={values.place}
-          isLoading={isLoading || isFetching}
           handleSorting={handleSortByColumn}
           activePage={pagination.page}
           totalPages={pagination.totalPages}

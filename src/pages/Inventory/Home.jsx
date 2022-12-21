@@ -295,6 +295,14 @@ const Home = () => {
     setSearchParams(searchParams);
   };
 
+  const handleSelection = selectedRows => {
+    console.log(selectedRows);
+    const tempArr = [];
+    const formData = selectedRows.map(({ _id }) => _id);
+    tempArr.push(formData[0]);
+    console.log(tempArr);
+  };
+
   useEffect(() => {
     handleSearch();
     if (searchInput === '') {
@@ -342,16 +350,15 @@ const Home = () => {
         />
       ) : viewType.inventory === 'list' && inventoryData?.docs?.length ? (
         <Table
-          COLUMNS={COLUMNS}
           data={inventoryData?.docs || []}
+          COLUMNS={COLUMNS}
+          allowRowsSelect
+          setSelectedFlatRows={handleSelection}
+          selectedRowData={selectedCards}
+          handleSorting={handleSortByColumn}
           activePage={inventoryData?.page || 1}
           totalPages={inventoryData?.totalPages || 1}
           setActivePage={handlePagination}
-          rowCountLimit={limit}
-          allowRowsSelect
-          selectedRowData={selectedCards}
-          setSelectedFlatRows={ele => setSelectedCards(ele?.map(itm => itm.original._id))}
-          handleSorting={handleSortByColumn}
         />
       ) : viewType.inventory === 'map' ? (
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto mt-5">

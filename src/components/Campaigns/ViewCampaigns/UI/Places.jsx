@@ -29,7 +29,9 @@ const Places = ({ data }) => (
             {data.name}
           </Text>
           <p className="text-slate-400 text-sm mb-2 tracking-wide">{data.address}</p>
-          <Text weight="bolder">{toIndianCurrency(data.cost)}</Text>
+          <Text weight="bolder">
+            {data?.cost ? toIndianCurrency(Number.parseInt(data.cost, 10)) : 0}
+          </Text>
         </div>
         <div className="ml-6">
           <div className="mb-4">
