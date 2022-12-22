@@ -32,6 +32,7 @@ const Home = () => {
 
   const handleSearch = () => {
     searchParams.set('name', searchInput);
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
   };
 

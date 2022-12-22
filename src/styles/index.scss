@@ -17,3 +17,7 @@
   border-radius: 10px;
   outline: 1px solid 'transparent';
 }
+
+table tbody tr:has(p[data-row-hightlight='true']) {
+  background: #eeeee4 !important;
+}

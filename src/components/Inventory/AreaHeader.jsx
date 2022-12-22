@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Text, Button, Checkbox, Image } from '@mantine/core';
 import classNames from 'classnames';
@@ -9,24 +9,17 @@ import Filter from './Filter';
 import useLayoutView from '../../store/layout.store';
 import RoleBased from '../RoleBased';
 import { ROLES } from '../../utils';
-
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
+import { useFormContext } from '../../context/formContext';
 
-const AreaHeader = ({
-  text,
-  handleSelectedCards = () => {},
-  noOfCardsSelected,
-  totalCards,
-  onDeleteCards = () => {},
-  isLoading = false,
-}) => {
+const AreaHeader = ({ text, isLoading = false, inventoryData }) => {
   const { pathname } = useLocation();
   const [addDetailsClicked, setAddDetails] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const addDetailsButtonRef = useClickOutside(() => setAddDetails(false));
-
+  const { values, setFieldValue } = useFormContext();
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
       activeLayout: state.activeLayout,
@@ -36,13 +29,34 @@ const AreaHeader = ({
   );
 
   const ref = useClickOutside(() => setShowDatePicker(false));
-
   const toggleFilter = () => setShowFilter(!showFilter);
   const toggleAddDetails = () => setAddDetails(!addDetailsClicked);
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const handleListClick = () => setActiveLayout({ ...activeLayout, inventory: 'list' });
   const handleGridClick = () => setActiveLayout({ ...activeLayout, inventory: 'grid' });
   const handleMapClick = () => setActiveLayout({ ...activeLayout, inventory: 'map' });
+
+  const selectedAll = useMemo(
+    () =>
+      inventoryData?.docs?.length &&
+      inventoryData.docs.every(
+        item => values?.spaces?.find(element => element._id === item._id) || false,
+      ),
+    [inventoryData?.docs, values?.spaces],
+  );
+
+  const handleSelectedCards = isCheckedSelected => {
+    if (inventoryData?.docs.length && isCheckedSelected) {
+      const tempSpaces = [...values.spaces];
+      const res = inventoryData.docs.filter(
+        item => !tempSpaces.find(element => element._id === item._id),
+      );
+      tempSpaces.push(...res);
+      setFieldValue('spaces', tempSpaces);
+    } else {
+      setFieldValue('spaces', []);
+    }
+  };
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -58,9 +72,9 @@ const AreaHeader = ({
               acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
             >
               <Button
-                onClick={onDeleteCards}
+                type="submit"
                 className="border-gray-450 text-black font-normal radius-md mr-2"
-                disabled={noOfCardsSelected === 0 || isLoading}
+                disabled={isLoading}
                 loading={isLoading}
               >
                 Delete items
@@ -72,8 +86,7 @@ const AreaHeader = ({
                 onChange={event => handleSelectedCards(event.target.checked)}
                 label="Select All Product"
                 classNames={{ root: 'flex flex-row-reverse', label: 'pr-2' }}
-                indeterminate={noOfCardsSelected > 0 && !(totalCards === noOfCardsSelected)}
-                checked={totalCards === noOfCardsSelected && totalCards !== 0}
+                checked={selectedAll}
               />
             ) : null}
             <Button

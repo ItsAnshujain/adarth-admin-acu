@@ -235,6 +235,7 @@ const Booking = ({ inventoryId }) => {
 
   const handleSearch = () => {
     searchParams.set('search', searchInput);
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
   };
 

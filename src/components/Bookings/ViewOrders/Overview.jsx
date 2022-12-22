@@ -112,15 +112,11 @@ const Overview = ({ bookingData = {} }) => {
           </p>
           <div>
             <p className="text-slate-400 font-light text-[14px]">
-              {bookingData?.description?.split(' ')?.length > 4 ? (
-                readMore ? (
-                  `${bookingData?.description?.split(' ')?.slice(0, 3).join(' ')}...`
-                ) : (
-                  bookingData?.description
-                )
-              ) : (
-                <NoData type="na" />
-              )}
+              {bookingData?.description?.split(' ')?.length > 4
+                ? readMore
+                  ? `${bookingData?.description?.split(' ')?.slice(0, 3).join(' ')}...`
+                  : bookingData?.description
+                : bookingData.description || <NoData type="na" />}
               {bookingData?.description?.split(' ')?.length > 4 ? (
                 <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
                   {readMore ? 'Read more' : 'Read less'}

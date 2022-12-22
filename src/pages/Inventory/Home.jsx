@@ -3,6 +3,7 @@ import { useDebouncedState } from '@mantine/hooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Badge, Box, Button, Image, Loader, Progress } from '@mantine/core';
 import { useModals } from '@mantine/modals';
+import { showNotification } from '@mantine/notifications';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/Inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -15,6 +16,11 @@ import MenuPopover from '../../components/Inventory/MenuPopover';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
 import { colors } from '../../utils';
+import { FormProvider, useForm } from '../../context/formContext';
+
+const initialValues = {
+  spaces: [],
+};
 
 const Home = () => {
   const navigate = useNavigate();
@@ -26,26 +32,14 @@ const Home = () => {
     'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
   });
+  const form = useForm({ initialValues });
   const viewType = useLayoutView(state => state.activeLayout);
-  const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
+  const { data: inventoryData, isLoading: isInventoryDataLoading } = useFetchInventory(
     searchParams.toString(),
   );
-  const { mutate: deleteInventoryData, isLoading: isLoadingDeletedInventoryData } =
+  const { mutate: deleteInventoryData, isLoading: isDeletedInventoryDataLoading } =
     useDeleteInventory();
   const [selectedCards, setSelectedCards] = useState([]);
-
-  const handleSelectedCards = isCheckedSelected => {
-    if (inventoryData?.docs.length > 0 && isCheckedSelected) {
-      setSelectedCards(inventoryData?.docs?.map(item => item._id));
-    } else {
-      setSelectedCards([]);
-    }
-  };
-
-  const handleDeleteCards = () => {
-    deleteInventoryData(selectedCards);
-    setSelectedCards([]);
-  };
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
@@ -282,6 +276,7 @@ const Home = () => {
 
   const handleSearch = () => {
     searchParams.set('search', searchInput);
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
   };
 
@@ -295,8 +290,21 @@ const Home = () => {
     setSearchParams(searchParams);
   };
 
-  // TODO: delete all or individaul row wip
-  const handleSelection = () => {};
+  const handleSelection = selectedRows => form.setFieldValue('spaces', selectedRows);
+
+  const handleSubmit = formData => {
+    let data = {};
+    data = formData.spaces.map(item => item._id);
+    if (data.length === 0) {
+      showNotification({
+        title: 'Please select atleast one place to delete',
+        color: 'blue',
+      });
+      return;
+    }
+
+    deleteInventoryData(data);
+  };
 
   useEffect(() => {
     handleSearch();
@@ -308,58 +316,59 @@ const Home = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <AreaHeader
-        text="List of spaces"
-        handleSelectedCards={handleSelectedCards}
-        noOfCardsSelected={selectedCards?.length}
-        totalCards={inventoryData?.docs?.length}
-        onDeleteCards={handleDeleteCards}
-        isLoading={isLoadingDeletedInventoryData}
-      />
-      {viewType.inventory !== 'map' && (
-        <div className="flex justify-between h-20 items-center pr-7">
-          <RowsPerPage setCount={handleRowCount} count={limit} />
-          <Search search={searchInput} setSearch={setSearchInput} />
-        </div>
-      )}
-      {isLoadingInventoryData && viewType.inventory === 'list' ? (
-        <div className="flex justify-center items-center h-[400px]">
-          <Loader />
-        </div>
-      ) : null}
-      {inventoryData?.docs?.length === 0 && !isLoadingInventoryData ? (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      ) : null}
-      {viewType.inventory === 'grid' && inventoryData?.docs?.length ? (
-        <GridView
-          count={limit}
-          list={inventoryData?.docs || []}
-          activePage={inventoryData?.page}
-          totalPages={inventoryData?.totalPages}
-          setActivePage={handlePagination}
-          isLoadingList={isLoadingInventoryData || isLoadingDeletedInventoryData}
-          selectedCards={selectedCards}
-          setSelectedCards={setSelectedCards}
-        />
-      ) : viewType.inventory === 'list' && inventoryData?.docs?.length ? (
-        <Table
-          data={inventoryData?.docs || []}
-          COLUMNS={COLUMNS}
-          allowRowsSelect
-          setSelectedFlatRows={handleSelection}
-          selectedRowData={selectedCards}
-          handleSorting={handleSortByColumn}
-          activePage={inventoryData?.page || 1}
-          totalPages={inventoryData?.totalPages || 1}
-          setActivePage={handlePagination}
-        />
-      ) : viewType.inventory === 'map' ? (
-        <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto mt-5">
-          <MapView lists={inventoryData?.docs} />
-        </div>
-      ) : null}
+      <FormProvider form={form}>
+        <form onSubmit={form.onSubmit(handleSubmit)}>
+          <AreaHeader
+            text="List of spaces"
+            isLoading={isDeletedInventoryDataLoading}
+            inventoryData={inventoryData}
+          />
+          {viewType.inventory !== 'map' && (
+            <div className="flex justify-between h-20 items-center pr-7">
+              <RowsPerPage setCount={handleRowCount} count={limit} />
+              <Search search={searchInput} setSearch={setSearchInput} />
+            </div>
+          )}
+          {isInventoryDataLoading && viewType.inventory === 'list' ? (
+            <div className="flex justify-center items-center h-[400px]">
+              <Loader />
+            </div>
+          ) : null}
+          {inventoryData?.docs?.length === 0 && !isInventoryDataLoading ? (
+            <div className="w-full min-h-[400px] flex justify-center items-center">
+              <p className="text-xl">No records found</p>
+            </div>
+          ) : null}
+          {viewType.inventory === 'grid' && inventoryData?.docs?.length ? (
+            <GridView
+              count={limit}
+              list={inventoryData?.docs || []}
+              activePage={inventoryData?.page}
+              totalPages={inventoryData?.totalPages}
+              setActivePage={handlePagination}
+              isLoadingList={isInventoryDataLoading || isDeletedInventoryDataLoading}
+              selectedCards={selectedCards}
+              setSelectedCards={setSelectedCards}
+            />
+          ) : viewType.inventory === 'list' && inventoryData?.docs?.length ? (
+            <Table
+              data={inventoryData?.docs || []}
+              COLUMNS={COLUMNS}
+              allowRowsSelect
+              setSelectedFlatRows={handleSelection}
+              selectedRowData={form.values?.spaces}
+              handleSorting={handleSortByColumn}
+              activePage={inventoryData?.page || 1}
+              totalPages={inventoryData?.totalPages || 1}
+              setActivePage={handlePagination}
+            />
+          ) : viewType.inventory === 'map' ? (
+            <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto mt-5">
+              <MapView lists={inventoryData?.docs} />
+            </div>
+          ) : null}
+        </form>
+      </FormProvider>
     </div>
   );
 };

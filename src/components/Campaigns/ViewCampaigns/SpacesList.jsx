@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Text, Button } from '@mantine/core';
 import { Plus } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useDebouncedState } from '@mantine/hooks';
+import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import calendar from '../../../assets/data-table.svg';
@@ -14,7 +14,7 @@ import { ROLES } from '../../../utils';
 const SpacesList = ({ data = {}, columns }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-
+  const ref = useClickOutside(() => setShowDatePicker(false));
   const [search, setSearch] = useDebouncedState('', 500);
   const navigate = useNavigate();
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
@@ -49,7 +49,7 @@ const SpacesList = ({ data = {}, columns }) => {
       <div className="mt-5 pl-5 pr-7 flex justify-between">
         <Text>List of space for the campaign</Text>
         <div className="flex">
-          <div className="mr-2 relative">
+          <div ref={ref} className="mr-2 relative">
             <Button onClick={toggleDatePicker} variant="default">
               <img src={calendar} className="h-5" alt="calendar" />
             </Button>
