@@ -20,7 +20,6 @@ const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Preview = ({ data = {}, place = {} }) => {
   const [readMore, toggle] = useToggle();
-
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [mapInstance, setMapInstance] = useState(null);

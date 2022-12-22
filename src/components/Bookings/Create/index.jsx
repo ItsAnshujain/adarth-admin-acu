@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
 import dayjs from 'dayjs';
+import { showNotification } from '@mantine/notifications';
 import BasicInfo from './BasicInformation';
 import SelectSpaces from './SelectSpaces';
 import OrderInfo from './OrderInformation';
@@ -9,7 +10,7 @@ import SuccessModal from '../../shared/Modal';
 import Header from './Header';
 import { FormProvider, useForm } from '../../../context/formContext';
 import { useCreateBookings } from '../../../hooks/booking.hooks';
-import { gstRegexMatch, panRegexMatch } from '../../../utils';
+import { gstRegexMatch, panRegexMatch, isValidURL } from '../../../utils';
 
 const requiredSchema = text => yup.string().trim().required(text);
 
@@ -78,11 +79,6 @@ const schema = step =>
       .string()
       .trim()
       .concat(step === 2 ? requiredSchema('Campaign description is required') : null),
-    place: yup
-      .mixed()
-      .concat(
-        step === 3 ? yup.array().of(yup.object()).min(1, 'Minimum 1 space is required') : null,
-      ),
   });
 
 const initialValues = {
@@ -104,45 +100,65 @@ const initialValues = {
 const MainArea = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
-  const submitRef = useRef(null);
-
   const form = useForm({ validate: yupResolver(schema(formStep)), initialValues });
 
-  const { mutateAsync: createBooking } = useCreateBookings();
+  const { mutateAsync: createBooking, isLoading } = useCreateBookings();
 
   const handleSubmit = async formData => {
-    const data = { ...formData };
-    if (formStep <= 2) {
-      setFormStep(prev => prev + 1);
-      return;
+    setFormStep(prevState => prevState + 1);
+    if (formStep === 3) {
+      const data = { ...formData };
+      setFormStep(3);
+      if (form.values?.place?.length === 0) {
+        showNotification({
+          title: 'Please select atleast one place to continue',
+          color: 'blue',
+        });
+        return;
+      }
+
+      let minDate = null;
+      let maxDate = null;
+
+      data.place = form.values?.place?.map(item => ({
+        id: item._id,
+        price: +item.price,
+        media: isValidURL(item.media) ? item.media : undefined,
+        startDate: item.startDate,
+        endDate: item.endDate,
+      }));
+
+      data.place.forEach(item => {
+        const start = item.startDate.setHours(0, 0, 0, 0);
+        const end = item.endDate.setHours(0, 0, 0, 0);
+
+        if (!minDate) minDate = start;
+        if (!maxDate) maxDate = end;
+
+        if (start < minDate) minDate = start;
+        if (end > maxDate) maxDate = end;
+      });
+
+      if (data?.client?.panNumber) {
+        data.client.panNumber = data.client.panNumber?.toUpperCase();
+      }
+      if (data?.client?.gstNumber) {
+        data.client.gstNumber = data.client.gstNumber?.toUpperCase();
+      }
+
+      await createBooking(
+        {
+          ...data,
+          startDate: dayjs(minDate).format('YYYY-MM-DD'),
+          endDate: dayjs(maxDate).format('YYYY-MM-DD'),
+        },
+        {
+          onSuccess: () => {
+            setOpenSuccessModal(true);
+          },
+        },
+      );
     }
-
-    let minDate = null;
-    let maxDate = null;
-
-    data.place.forEach(item => {
-      const start = item.startDate.setHours(0, 0, 0, 0);
-      const end = item.endDate.setHours(0, 0, 0, 0);
-
-      if (!minDate) minDate = start;
-      if (!maxDate) maxDate = end;
-
-      if (start < minDate) minDate = start;
-      if (end > maxDate) maxDate = end;
-    });
-
-    if (data?.client?.panNumber) {
-      data.client.panNumber = data.client.panNumber?.toUpperCase();
-    }
-    if (data?.client?.gstNumber) {
-      data.client.gstNumber = data.client.gstNumber?.toUpperCase();
-    }
-    await createBooking({
-      ...data,
-      startDate: dayjs(minDate).format('YYYY-MM-DD'),
-      endDate: dayjs(maxDate).format('YYYY-MM-DD'),
-    });
-    setOpenSuccessModal(true);
   };
 
   const getForm = () =>
@@ -150,19 +166,12 @@ const MainArea = () => {
 
   return (
     <>
-      <Header setFormStep={setFormStep} formStep={formStep} submitRef={submitRef} />
-      <div>
-        <div>
-          <FormProvider form={form}>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-              {getForm()}
-              <button type="submit" ref={submitRef} className="hidden">
-                submit
-              </button>
-            </form>
-          </FormProvider>
-        </div>
-      </div>
+      <FormProvider form={form}>
+        <form onSubmit={form.onSubmit(handleSubmit)}>
+          <Header setFormStep={setFormStep} formStep={formStep} isLoading={isLoading} />
+          {getForm()}
+        </form>
+      </FormProvider>
       <SuccessModal
         title="Order Successfully Created"
         prompt="Visit Order List"

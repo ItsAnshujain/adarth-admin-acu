@@ -4,6 +4,7 @@ import { ChevronDown } from 'react-feather';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
+import classNames from 'classnames';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import Header from './Header';
@@ -17,10 +18,12 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import { colors } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
 import Filter from '../../Inventory/Filter';
+import useUserStore from '../../../store/user.store';
 
 const ProposalDetails = () => {
   const modals = useModals();
   const navigate = useNavigate();
+  const userId = useUserStore(state => state.id);
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [showFilter, setShowFilter] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -137,9 +140,22 @@ const ProposalDetails = () => {
         accessor: 'peer',
         Cell: ({
           row: {
-            original: { peer },
+            original: { peer, peerId },
           },
-        }) => useMemo(() => <p className="w-fit">{peer || '-'}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p
+                className={classNames(
+                  peerId === userId ? 'text-purple-450' : 'text-gray-550',
+                  'w-fit',
+                )}
+              >
+                {peer || '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'SPACE TYPE',
@@ -321,7 +337,6 @@ const ProposalDetails = () => {
             activePage={proposalData?.inventories?.page || 1}
             totalPages={proposalData?.inventories?.totalPages || 1}
             setActivePage={handlePagination}
-            rowCountLimit={limit}
             handleSorting={handleSortByColumn}
           />
         ) : null}

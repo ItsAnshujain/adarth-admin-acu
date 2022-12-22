@@ -8,14 +8,14 @@ import modalConfig from '../../utils/modalConfig';
 import DeleteConfirmContent from '../DeleteConfirmContent';
 import { useDeleteMaster } from '../../hooks/masters.hooks';
 
-const MenuPopover = ({ row }) => {
+const MenuPopover = ({ itemId, name }) => {
   const [opened, setOpened] = useState(false);
   const modals = useModals();
 
   const { mutate: deleteItem, isLoading } = useDeleteMaster();
 
   const onSubmit = () => {
-    deleteItem({ masterId: row?.values?._id });
+    deleteItem({ masterId: itemId });
     setTimeout(() => modals.closeAll(), 2000);
   };
 
@@ -64,7 +64,7 @@ const MenuPopover = ({ row }) => {
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      <InputModal opened={opened} setOpened={setOpened} isEdit masterData={row?.values} />
+      <InputModal opened={opened} setOpened={setOpened} isEdit itemId={itemId} name={name} />
     </>
   );
 };

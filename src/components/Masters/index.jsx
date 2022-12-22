@@ -10,7 +10,7 @@ import MenuPopover from './MenuPopover';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import { masterTypes } from '../../utils';
 
-const Category = () => {
+const Home = () => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [searchParams, setSearchParams] = useSearchParams({
     'type': 'category',
@@ -45,6 +45,11 @@ const Category = () => {
     setSearchParams(searchParams);
   };
 
+  const handleNestedMasters = id =>
+    navigate(`/masters?type=${searchParams.get('type')}&parentId=${id}`, {
+      replace: true,
+    });
+
   const COLUMNS = useMemo(
     () => [
       {
@@ -77,15 +82,7 @@ const Category = () => {
                   (parentId === 'null' ? 'cursor-pointer' : 'cursor-text',
                   'text-black font-normal p-0')
                 }
-                onClick={
-                  parentId === 'null'
-                    ? () => {
-                        navigate(`/masters?type=${searchParams.get('type')}&parentId=${_id}`, {
-                          replace: true,
-                        });
-                      }
-                    : () => {}
-                }
+                onClick={parentId === 'null' ? () => handleNestedMasters(_id) : () => {}}
               >
                 {name}
               </Button>
@@ -98,7 +95,11 @@ const Category = () => {
         accessor: 'action',
         footer: props => props.column.id,
         disableSortBy: true,
-        Cell: ({ row }) => useMemo(() => <MenuPopover row={row} />, []),
+        Cell: ({
+          row: {
+            original: { _id, name },
+          },
+        }) => useMemo(() => <MenuPopover itemId={_id} name={name} />, []),
       },
     ],
     [masterData],
@@ -160,4 +161,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default Home;

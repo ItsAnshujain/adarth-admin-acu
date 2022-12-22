@@ -4,6 +4,7 @@ import { ChevronDown } from 'react-feather';
 import { useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
+import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
 import Search from '../Search';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -15,30 +16,29 @@ import modalConfig from '../../utils/modalConfig';
 import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';
 
-const Spaces = ({
-  selectedRow,
-  setSelectedRow = () => {},
-  selectedRowData = [],
-  noOfSelectedPlaces,
-  setProposedPrice = () => {},
-}) => {
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+const getDate = (selectionItem, item, key, addDefault = true) => {
+  if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
+
+  if (item && item[key]) return new Date(item.startDate);
+
+  return addDefault ? new Date() : undefined;
+};
+
+const Spaces = () => {
   const modals = useModals();
-  const [updatedSpaces, setUpdatedSpaces] = useState([]);
-  const [totalProposedPrice, setTotalProposedPrice] = useState(0);
+  const { values, setFieldValue } = useFormContext();
   const [searchParams, setSearchParams] = useSearchParams({
     'limit': 10,
     'page': 1,
     'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
   });
+  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
-  const { values } = useFormContext();
 
-  const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
-    searchParams.toString(),
-  );
-  const page = searchParams.get('page');
+  const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
 
   const toggleFilter = () => setShowFilter(!showFilter);
 
@@ -62,29 +62,31 @@ const Spaces = ({
   const handleInventoryDetails = itemId =>
     window.open(`/inventory/view-details/${itemId}`, '_blank');
 
+  const updateData = (key, val, id) => {
+    setUpdatedInventoryData(prev =>
+      prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+    );
+
+    setFieldValue(
+      'spaces',
+      values.spaces.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+    );
+  };
+
   const COLUMNS = useMemo(
     () => [
       {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * 10;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
-          }, []),
+        Cell: ({ row: { index } }) => index + 1,
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'spaceName',
         Cell: ({
           row: {
-            original: { _id, basicInformation, isUnderMaintenance },
+            original: { _id, spaceName, spacePhoto, isUnderMaintenance },
           },
         }) =>
           useMemo(
@@ -92,10 +94,10 @@ const Spaces = ({
               <div className="flex items-center gap-2">
                 <Box
                   className="bg-white border rounded-md cursor-zoom-in"
-                  onClick={() => toggleImagePreviewModal(basicInformation?.spacePhoto)}
+                  onClick={() => toggleImagePreviewModal(spacePhoto)}
                 >
-                  {basicInformation?.spacePhoto ? (
-                    <Image src={basicInformation.spacePhoto} alt="banner" height={32} width={32} />
+                  {spacePhoto ? (
+                    <Image src={spacePhoto} alt="banner" height={32} width={32} />
                   ) : (
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
@@ -104,9 +106,7 @@ const Spaces = ({
                   className="text-black px-2 font-medium max-w-[180px]"
                   onClick={() => handleInventoryDetails(_id)}
                 >
-                  <span className="overflow-hidden text-ellipsis">
-                    {basicInformation?.spaceName}
-                  </span>
+                  <span className="overflow-hidden text-ellipsis">{spaceName}</span>
                 </Button>
                 <Badge
                   className="capitalize"
@@ -125,32 +125,32 @@ const Spaces = ({
         accessor: 'landlord',
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { mediaOwner },
           },
-        }) =>
-          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || 'NA'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{mediaOwner || 'NA'}</p>, []),
       },
       {
         Header: 'PEER',
         accessor: 'peer',
-        Cell: () => useMemo(() => <p>-</p>),
+        Cell: ({
+          row: {
+            original: { peer },
+          },
+        }) => useMemo(() => <p className="w-fit">{peer || '-'}</p>, []),
       },
       {
         Header: 'SPACE TYPE',
         accessor: 'spaceType',
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { spaceType },
           },
         }) =>
           useMemo(() => {
-            const colorType = Object.keys(colors).find(
-              key => colors[key] === basicInformation?.spaceType?.name,
-            );
-
+            const colorType = Object.keys(colors).find(key => colors[key] === spaceType);
             return (
               <Badge color={colorType} size="lg" className="capitalize">
-                {basicInformation?.spaceType?.name || <span>-</span>}
+                {spaceType || <span>-</span>}
               </Badge>
             );
           }),
@@ -160,33 +160,25 @@ const Spaces = ({
         accessor: 'specifications.size.min',
         Cell: ({
           row: {
-            original: { specifications },
+            original: { height, width },
           },
-        }) =>
-          useMemo(
-            () => (
-              <p>{`${specifications?.size?.height || 0}ft x ${
-                specifications?.size?.width || 0
-              }ft`}</p>
-            ),
-            [],
-          ),
+        }) => useMemo(() => <p>{`${height || 0}ft x ${width || 0}ft`}</p>, []),
       },
       {
         Header: 'IMPRESSION',
         accessor: 'specifications.impressions.min',
         Cell: ({
           row: {
-            original: { specifications },
+            original: { impressions },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.min || 0}+`}</p>, []),
+        }) => useMemo(() => <p>{`${impressions || 0}+`}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',
         accessor: 'specifications.health',
         Cell: ({
           row: {
-            original: { specifications },
+            original: { health },
           },
         }) =>
           useMemo(
@@ -194,8 +186,8 @@ const Spaces = ({
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: specifications?.health, color: 'green' },
-                    { value: 100 - (specifications?.health || 0), color: 'red' },
+                    { value: health, color: 'green' },
+                    { value: 100 - (health || 0), color: 'red' },
                   ]}
                 />
               </div>
@@ -210,32 +202,74 @@ const Spaces = ({
           row: {
             original: { location },
           },
-        }) => useMemo(() => <p>{location?.city}</p>, []),
+        }) => useMemo(() => <p>{location || '-'}</p>, []),
       },
       {
         Header: 'MEDIA TYPE',
         accessor: 'mediaType',
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { mediaType },
           },
-        }) => useMemo(() => <p>{basicInformation?.mediaType?.name}</p>),
+        }) => useMemo(() => <p>{mediaType}</p>),
       },
       {
         Header: 'PRICING',
         accessor: 'basicInformation.price',
         Cell: ({
           row: {
-            original: { _id, basicInformation },
+            original: { _id, price },
           },
         }) =>
           useMemo(
             () => (
               <NumberInput
-                defaultValue={+(basicInformation?.price || 0)}
+                defaultValue={+(price || 0)}
                 className="w-40"
                 hideControls
-                onChange={val => setProposedPrice(val, _id)}
+                onBlur={e => updateData('price', e.target.value, _id)}
+              />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'START DATE',
+        accessor: 'startDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { startDate, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <DatePicker
+                defaultValue={startDate}
+                placeholder="DD/MM/YYYY"
+                minDate={new Date()}
+                onChange={val => updateData('startDate', val, _id)}
+              />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'END DATE',
+        accessor: 'endDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { endDate, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <DatePicker
+                defaultValue={endDate}
+                placeholder="DD/MM/YYYY"
+                minDate={new Date()}
+                onChange={val => updateData('endDate', val, _id)}
               />
             ),
             [],
@@ -252,18 +286,18 @@ const Spaces = ({
         }) => useMemo(() => <MenuPopover itemId={_id} />, []),
       },
     ],
-    [updatedSpaces],
+    [updatedInventoryData, values.spaces],
   );
 
-  const calcutateTotalPrice = useMemo(() => {
-    const initialCost = 0;
-    if (selectedRowData.length > 0) {
-      return selectedRowData
-        .map(item => item?.price)
-        .reduce((previousValue, currentValue) => previousValue + currentValue, initialCost);
-    }
-    return initialCost;
-  }, [selectedRowData]);
+  const getTotalPrice = (places = []) => {
+    const totalPrice = places.reduce(
+      (acc, item) => acc + +(item.price || item?.basicInformation?.price || 0),
+      0,
+    );
+    return totalPrice;
+  };
+
+  const handleSelection = selectedRows => setFieldValue('spaces', selectedRows);
 
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
@@ -283,6 +317,7 @@ const Spaces = ({
 
   const handleSearch = () => {
     searchParams.set('search', searchInput);
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
   };
 
@@ -292,21 +327,37 @@ const Spaces = ({
   };
 
   useEffect(() => {
-    if (inventoryData?.docs) {
-      const arrOfIds = selectedRowData?.map(item => item._id);
-      const arrOfUpdatedPrices = inventoryData?.docs?.map(item => {
-        if (arrOfIds.includes(item._id)) {
-          const spaceData = selectedRowData.find(rowData => rowData._id === item._id);
-          return {
-            ...item,
-            basicInformation: { ...item?.basicInformation, price: spaceData?.price },
-          };
-        }
-        return { ...item };
-      });
-      setUpdatedSpaces(arrOfUpdatedPrices);
+    if (inventoryData) {
+      const { docs, ...page } = inventoryData;
+      const finalData = [];
+
+      for (const item of docs) {
+        const selectionItem = values?.spaces?.find(pl => pl._id === item._id);
+
+        const obj = {};
+        obj._id = item._id;
+        obj.spaceName = item?.basicInformation?.spaceName;
+        obj.spacePhoto = item?.basicInformation?.spacePhoto;
+        obj.isUnderMaintenance = item?.isUnderMaintenance;
+        obj.mediaOwner = item?.basicInformation?.mediaOwner?.name;
+        obj.peer = item?.basicInformation?.companyName;
+        obj.spaceType = item?.basicInformation?.spaceType?.name;
+        obj.height = item?.specifications?.size?.height;
+        obj.width = item?.specifications?.size?.width;
+        obj.impressions = item?.specifications?.impressions?.min;
+        obj.health = item?.specifications?.health;
+        obj.location = item?.location?.city;
+        obj.mediaType = item?.basicInformation?.mediaType?.name;
+        obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
+        obj.startDate = getDate(selectionItem, item, 'startDate');
+        obj.endDate =
+          getDate(selectionItem, item, 'endDate', false) || dayjs().add(1, 'day').toDate();
+        finalData.push(obj);
+      }
+      setUpdatedInventoryData(finalData);
+      setPagination(page);
     }
-  }, [inventoryData?.docs]);
+  }, [inventoryData]);
 
   useEffect(() => {
     handleSearch();
@@ -315,13 +366,6 @@ const Spaces = ({
       setSearchParams(searchParams);
     }
   }, [searchInput]);
-
-  useEffect(() => {
-    const total = selectedRow
-      .map(item => item?.original?.basicInformation?.price)
-      .reduce((previousValue, currentValue) => previousValue + +(currentValue || 0), 0);
-    setTotalProposedPrice(total);
-  }, [noOfSelectedPlaces]);
 
   useEffect(() => {
     if (values.startDate && values.endDate) {
@@ -350,46 +394,45 @@ const Spaces = ({
         <div className="flex gap-4">
           <div>
             <Text color="gray">Selected Places</Text>
-            <Text weight="bold">{noOfSelectedPlaces}</Text>
+            <Text weight="bold">{values?.spaces?.length}</Text>
           </div>
           <div>
             <Text color="gray">Total Price</Text>
-            <Text weight="bold">{toIndianCurrency(totalProposedPrice ?? calcutateTotalPrice)}</Text>
+            <Text weight="bold">{toIndianCurrency(getTotalPrice(values?.spaces))}</Text>
           </div>
         </div>
         <div className="flex justify-between mb-4 items-center">
           <Text size="sm" className="text-purple-450">
             Total Places{' '}
             <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-              {inventoryData?.docs?.length || updatedSpaces.length}
+              {inventoryData?.totalDocs}
             </span>
           </Text>
 
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
-      {isLoadingInventoryData ? (
+      {isLoading ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
         </div>
       ) : null}
-      {(inventoryData?.docs?.length === 0 || updatedSpaces?.length === 0) &&
-      !isLoadingInventoryData ? (
+      {inventoryData?.docs?.length === 0 && !isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-      {inventoryData?.docs?.length && updatedSpaces?.length ? (
+      {inventoryData?.docs?.length ? (
         <Table
+          data={updatedInventoryData}
           COLUMNS={COLUMNS}
-          data={updatedSpaces}
-          activePage={inventoryData?.page || 1}
-          totalPages={inventoryData?.totalPages || 1}
-          setActivePage={handlePagination}
           allowRowsSelect
-          setSelectedFlatRows={setSelectedRow}
-          selectedRowData={selectedRowData}
+          setSelectedFlatRows={handleSelection}
+          selectedRowData={values.spaces}
           handleSorting={handleSortByColumn}
+          activePage={pagination.page}
+          totalPages={pagination.totalPages}
+          setActivePage={handlePagination}
         />
       ) : null}
     </>

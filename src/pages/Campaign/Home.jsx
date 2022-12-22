@@ -163,7 +163,11 @@ const Home = () => {
       {
         Header: 'PRICING',
         accessor: 'price',
-        Cell: ({ cell: { value } }) => toIndianCurrency(value || 0),
+        Cell: ({
+          row: {
+            original: { totalPrice },
+          },
+        }) => toIndianCurrency(totalPrice || 0),
       },
       {
         Header: 'ACTION',
@@ -272,8 +276,10 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (search) searchParams.set('search', search);
-    else searchParams.delete('search');
+    if (search) {
+      searchParams.set('search', search);
+      searchParams.set('page', 1);
+    } else searchParams.delete('search');
 
     setSearchParams(searchParams);
   }, [search]);
@@ -310,11 +316,9 @@ const Home = () => {
             <Table
               COLUMNS={COLUMNS}
               data={campaignData?.docs || []}
-              allowRowsSelect
               activePage={page}
               totalPages={campaignData?.totalPages || 1}
               setActivePage={data => setQuery('page', data)}
-              rowCountLimit={limit}
               handleSorting={handleSortByColumn}
             />
           ) : null}{' '}

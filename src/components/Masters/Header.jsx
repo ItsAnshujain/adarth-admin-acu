@@ -1,7 +1,7 @@
 import { Button } from '@mantine/core';
 import { useState } from 'react';
 import { Plus } from 'react-feather';
-import Modal from './InputModal';
+import InputModal from './InputModal';
 
 const Header = ({ text }) => {
   const [opened, setOpened] = useState(false);
@@ -20,7 +20,7 @@ const Header = ({ text }) => {
           <Plus size={16} className="mt-[1px] mr-1" /> Add {text}
         </Button>
       </div>
-      <Modal opened={opened} setOpened={setOpened} />
+      <InputModal opened={opened} setOpened={setOpened} />
     </>
   );
 };

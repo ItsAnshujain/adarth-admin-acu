@@ -93,7 +93,6 @@ const Create = () => {
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ initialValues, validate: yupResolver(schema(formStep)) });
   const [searchParams] = useSearchParams({ page: 1, limit: 10, sortBy: 'name', sortOrder: 'desc' });
-
   const { data: campaignStatus } = useFetchMasters(
     serialize({ type: 'campaign_status', parentId: null, limit: 100, page: 1 }),
   );
@@ -138,9 +137,9 @@ const Create = () => {
         if (end > maxDate) maxDate = end;
 
         return {
-          id: item.id,
+          id: item._id,
           price: item.price,
-          media: isValidURL(item.photo) ? item.photo : undefined,
+          media: isValidURL(item.media) ? item.media : undefined,
           startDate: item.startDate,
           endDate: item.endDate,
         };
@@ -189,14 +188,13 @@ const Create = () => {
   };
 
   useEffect(() => {
-    if (data?.campaign) {
-      Object.keys(data.campaign).forEach(item => {
-        if (item === 'place') {
-          form.setFieldValue(item, data.campaign[item]);
-        } else form.setFieldValue(item, data.campaign[item]);
+    if (data?.campaign && !form.isTouched()) {
+      form.setValues({
+        ...data.campaign,
+        place: data.campaign.place.map(({ id: _id, ...item }) => ({ ...item, _id })),
       });
     }
-  }, [data]);
+  }, [data, form.isTouched]);
 
   return (
     <div className="mb-24">

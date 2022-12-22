@@ -27,7 +27,7 @@ const initialValues = {
   parentId: '',
 };
 
-const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
+const InputModal = ({ opened, setOpened, isEdit = false, itemId, name }) => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState({
@@ -78,7 +78,7 @@ const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
     });
 
     if (isEdit) {
-      edit({ masterId: masterData?._id, data });
+      edit({ masterId: itemId, data });
     } else {
       create(data);
     }
@@ -102,7 +102,7 @@ const InputModal = ({ opened, setOpened, isEdit = false, masterData }) => {
 
   useEffect(() => {
     if (isEdit) {
-      form.setFieldValue('name', masterData?.name);
+      form.setFieldValue('name', name);
     }
   }, [isEdit]);
 
