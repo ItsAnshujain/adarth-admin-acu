@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Text, Button, NativeSelect, Progress, Loader } from '@mantine/core';
 import { ChevronDown, Plus } from 'react-feather';
-import { useDebouncedState } from '@mantine/hooks';
+import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
@@ -32,6 +32,7 @@ const TotalBookings = ({ campaignId, isLoading }) => {
   });
 
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const ref = useClickOutside(() => setShowDatePicker(false));
   const toggleDatePicker = () => setShowDatePicker(prevState => !prevState);
 
   const page = searchParams.get('page');
@@ -427,6 +428,7 @@ const TotalBookings = ({ campaignId, isLoading }) => {
 
   const handleSearch = () => {
     searchParams.set('search', searchInput);
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
   };
 
@@ -458,7 +460,7 @@ const TotalBookings = ({ campaignId, isLoading }) => {
       <div className="mt-5 pl-5 pr-7 flex justify-between">
         <Text>Booking History of the campaign</Text>
         <div className="flex">
-          <div className="mr-2 relative">
+          <div ref={ref} className="mr-2 relative">
             <Button onClick={toggleDatePicker} variant="default">
               <img src={calendar} className="h-5" alt="calendar" />
             </Button>

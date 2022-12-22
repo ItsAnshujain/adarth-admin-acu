@@ -1,4 +1,5 @@
 import { Pagination, Skeleton } from '@mantine/core';
+import { useFormContext } from '../../context/formContext';
 import Card from './Card';
 
 const skeletonList = () =>
@@ -13,16 +14,20 @@ const GridView = ({
   activePage = 1,
   setActivePage = () => {},
   isLoadingList,
-  selectedCards = [],
-  setSelectedCards = () => {},
 }) => {
-  const handleCardSelection = (cardId, itemId) => {
-    if (selectedCards.includes(itemId)) {
-      setSelectedCards(selectedCards.filter(ele => ele !== itemId));
+  const { values, setFieldValue } = useFormContext();
+
+  const handleCardSelection = (cardId, item) => {
+    if (values.spaces?.includes(item)) {
+      const tempArr = [...values.spaces];
+      setFieldValue(
+        'spaces',
+        tempArr.filter(existingitem => existingitem._id !== item._id),
+      );
     } else {
-      const tempArr = [...selectedCards];
-      tempArr.push(cardId);
-      setSelectedCards(tempArr); // TODO: use immmer
+      const tempArr = [...values.spaces];
+      tempArr.push(item);
+      setFieldValue('spaces', tempArr);
     }
   };
 
@@ -33,8 +38,8 @@ const GridView = ({
           <Card
             key={item?._id}
             data={item}
-            isSelected={selectedCards.includes(item._id)}
-            onSelect={cardId => handleCardSelection(cardId, item._id)}
+            isSelected={values?.spaces?.includes(item)}
+            onSelect={cardId => handleCardSelection(cardId, item)}
           />
         ))}
         {isLoadingList ? skeletonList() : null}

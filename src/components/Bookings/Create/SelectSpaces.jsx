@@ -89,7 +89,7 @@ const SelectSpace = () => {
   };
 
   const getTotalPrice = (places = []) => {
-    const totalPrice = places.reduce((acc, item) => acc + +(item.pricing || 0), 0);
+    const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
     return totalPrice;
   };
 

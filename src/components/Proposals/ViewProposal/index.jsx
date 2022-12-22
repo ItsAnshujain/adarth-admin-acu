@@ -146,6 +146,7 @@ const ProposalDetails = () => {
           useMemo(
             () => (
               <p
+                data-row-hightlight={peerId && peerId !== userId}
                 className={classNames(
                   peerId === userId ? 'text-purple-450' : 'text-gray-550',
                   'w-fit',
@@ -263,6 +264,7 @@ const ProposalDetails = () => {
 
   const handleSearch = () => {
     searchParams.set('search', searchInput);
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
   };
 
