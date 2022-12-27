@@ -35,8 +35,7 @@ const AutoCompleteLocationInput = ({
   return (
     <>
       <GooglePlacesAutocomplete
-        autocompletionRequest={{ componentRestrictions: { country: 'in' } }}
-        debounce={1000}
+        apiKey={GOOGLE_MAPS_API_KEY}
         selectProps={{
           defaultInputValue: values.location.address || '',
           isClearable: true,

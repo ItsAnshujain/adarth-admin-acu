@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Badge, Box, Image, Text } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
 import { useModals } from '@mantine/modals';
 import dayjs from 'dayjs';
 import { ToWords } from 'to-words';
-import { DatePicker } from '@mantine/dates';
 import Table from '../../Table/Table';
 import TextareaInput from '../../shared/TextareaInput';
 import TextInput from '../../shared/TextInput';
@@ -38,7 +37,6 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const modals = useModals();
   const toWords = new ToWords();
-  const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
   const onHandleDrop = async params => {
     const formData = new FormData();
@@ -63,17 +61,6 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
       },
       ...modalConfig,
     });
-
-  const updateData = (key, val, id) => {
-    setUpdatedInventoryData(prev =>
-      prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
-    );
-
-    setFieldValue(
-      'spaces',
-      values.spaces.map(item => (item._id === id ? { ...item, [key]: val } : item)),
-    );
-  };
 
   const COLUMNS = useMemo(
     () => [
@@ -123,17 +110,14 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { dueOn, _id },
+            original: { startDate },
           },
         }) =>
           useMemo(
             () => (
-              <DatePicker
-                defaultValue={dueOn}
-                placeholder="DD/MM/YYYY"
-                minDate={new Date()}
-                onChange={val => updateData('dueOn', val, _id)}
-              />
+              <div className="w-fit">
+                {startDate ? dayjs(startDate).format(DATE_FORMAT) : <NoData type="na" />}
+              </div>
             ),
             [],
           ),
@@ -168,21 +152,7 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
         Header: 'PER',
         accessor: 'per',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { per, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <NumberInput
-                hideControls
-                defaultValue={+(per || 1)}
-                onBlur={e => updateData('per', e.target.value, _id)}
-              />
-            ),
-            [],
-          ),
+        Cell: () => useMemo(() => <p className="w-[14%]">1</p>, []),
       },
       {
         Header: 'PRICING',
@@ -205,15 +175,8 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
           ),
       },
     ],
-    [updatedInventoryData],
+    [spacesList],
   );
-
-  useEffect(() => {
-    if (spacesList) {
-      setUpdatedInventoryData(spacesList);
-      setFieldValue('spaces', spacesList);
-    }
-  }, [spacesList]);
 
   return (
     <div>
@@ -358,10 +321,10 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
       </div>
       <div className="pl-5 pr-7 py-4 mb-2">
         <p className="font-bold text-2xl mb-4">Order Item Details</p>
-        {updatedInventoryData?.length ? (
+        {spacesList?.length ? (
           <>
             <div className="border-dashed border-0 border-black border-b-2 pb-4">
-              <Table COLUMNS={COLUMNS} data={updatedInventoryData || []} showPagination={false} />
+              <Table COLUMNS={COLUMNS} data={spacesList || []} showPagination={false} />
             </div>
             <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
               <p>Total Price: </p>

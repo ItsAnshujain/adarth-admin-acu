@@ -18,6 +18,6 @@
   outline: 1px solid 'transparent';
 }
 
-.has-peer {
-  background-color: #eeeee4 !important;
+table tbody tr:has(p[data-row-hightlight='true']) {
+  background: #eeeee4 !important;
 }
