@@ -370,9 +370,9 @@ const MainArea = () => {
   const getForm = () =>
     formStep === 1 ? (
       <BasicInfo basicInformation={inventoryDetails?.basicInformation} />
-    ) : formStep === 2 ? (
-      <Specification />
     ) : formStep === 3 ? (
+      <Specification />
+    ) : formStep === 2 ? (
       <Location />
     ) : formStep === 4 ? (
       <>

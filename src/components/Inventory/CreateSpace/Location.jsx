@@ -1,7 +1,9 @@
+import { showNotification } from '@mantine/notifications';
+import { useCallback, useEffect } from 'react';
 import { useFormContext } from '../../../context/formContext';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
-import { serialize } from '../../../utils';
-// import AutoCompleteLocationInput from '../../AutoCompleteLocationInput';
+import { debounce, getAddressByLatLng, serialize } from '../../../utils';
+import AutoCompleteLocationInput from '../../AutoCompleteLocationInput';
 import NativeSelect from '../../shared/NativeSelect';
 import NumberInput from '../../shared/NumberInput';
 import TextInput from '../../shared/TextInput';
@@ -42,6 +44,22 @@ const Location = () => {
     isSuccess: isFacingLoaded,
   } = useFetchMasters(serialize({ type: 'facing', limit: 100 }));
 
+  const verifyCoordinates = useCallback(
+    debounce(async (latitude, longitude) => {
+      const res = await getAddressByLatLng(latitude, longitude);
+      if (!res?.formatted_address.toLowerCase().includes('india')) {
+        showNotification({ message: 'Coordinates cannot be outside India' });
+      }
+    }, 1000),
+    [],
+  );
+
+  useEffect(() => {
+    if (values?.location?.latitude && values?.location?.longitude) {
+      verifyCoordinates(values?.location?.latitude, values?.location?.longitude);
+    }
+  }, [values?.location]);
+
   return (
     <div className="flex flex-col pl-5 pr-7 pt-4 mb-10">
       <p className="font-bold text-lg">Location</p>
@@ -50,23 +68,23 @@ const Location = () => {
       </p>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">
         <div>
-          <TextInput
+          {/* TODO: keep the below code if map issue persist */}
+          {/* <TextInput
             label="Address"
             name="location.address"
             styles={styles}
             errors={errors}
             placeholder="Write..."
             className="mb-7"
-          />
-          {/* TODO: google maps script load issue */}
-          {/* <p style={styles.label}>Address</p> */}
-          {/* <AutoCompleteLocationInput
+          /> */}
+          <p style={styles.label}>Address</p>
+          <AutoCompleteLocationInput
             addressKeyName="location.address"
             latitudeKeyName="location.latitude"
             longitudeKeyName="location.longitude"
             cityKeyName="location.city"
             stateKeyName="location.state"
-          /> */}
+          />
           <TextInput
             label="State"
             name="location.state"

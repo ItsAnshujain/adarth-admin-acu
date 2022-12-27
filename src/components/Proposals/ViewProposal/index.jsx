@@ -146,9 +146,8 @@ const ProposalDetails = () => {
           useMemo(
             () => (
               <p
-                data-row-hightlight={peerId && peerId !== userId}
                 className={classNames(
-                  peerId === userId ? 'text-purple-450' : 'text-gray-550',
+                  peerId === userId ? 'text-purple-450' : 'text-black',
                   'w-fit',
                 )}
               >
