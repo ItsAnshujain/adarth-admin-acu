@@ -1,4 +1,4 @@
-import { geocodeByAddress, getLatLng } from 'react-google-places-autocomplete';
+import { geocodeByAddress, getLatLng, geocodeByLatLng } from 'react-google-places-autocomplete';
 
 export const serialize = object => {
   const str = [];
@@ -102,6 +102,17 @@ export const getLatituteLongitude = async address => {
   const results = await geocodeByAddress(address);
   const latLng = await getLatLng(results[0]);
   return latLng;
+};
+
+/**
+ * Get latitute and longitude from address
+ * @param {number} lat - latitute to get Address
+ * @param {number} lng - longitude to get Address
+ * @returns {Promise} - Returns an promise which resolves into object with address
+ */
+export const getAddressByLatLng = async (lat, lng) => {
+  const address = await geocodeByLatLng({ lat, lng });
+  return address?.[0];
 };
 
 /**

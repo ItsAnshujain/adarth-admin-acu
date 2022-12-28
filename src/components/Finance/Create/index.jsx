@@ -83,6 +83,7 @@ const initialPurchaseValues = {
   buyerZip: null,
   termOfDelivery: '',
   signature: '',
+  spaces: [],
 };
 
 const releaseSchema = yup.object({
@@ -294,6 +295,12 @@ const Create = () => {
       if (data?.buyerGst) {
         data.buyerGst = data.buyerGst?.toUpperCase();
       }
+      data.spaces = form.values?.spaces?.map(item => ({
+        id: item._id,
+        per: +item.per || 1,
+        dueOn: item.dueOn || new Date(),
+      }));
+
       const purchaseOrderPdf = await generatePurchaseOrder(
         { id: bookingId, data },
         { onSuccess: () => redirectToHome() },

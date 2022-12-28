@@ -7,3 +7,5 @@ export const updateCampaign = (id, data) => http.patch(`/campaigns/${id}`, data)
 export const deleteCampaign = query => http.delete(`/campaigns?${query}`);
 export const updateCampaignMedia = (id, placeId, data) =>
   http.patch(`/campaigns/${id}/updateMedia/${placeId}`, data);
+export const updateCampaignStatus = (id, placeId, data) =>
+  http.patch(`/campaigns/${id}/updateStatus/${placeId}`, data);

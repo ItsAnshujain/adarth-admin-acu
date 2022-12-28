@@ -6,6 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 import IndeterminateCheckbox from './Checkbox';
 import Ascending from '../../assets/Icons/Ascending';
 import Descending from '../../assets/Icons/Descending';
+import useUserStore from '../../store/user.store';
 
 const Table = ({
   COLUMNS,
@@ -23,6 +24,7 @@ const Table = ({
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const [searchParams] = useSearchParams('');
   const sortOrder = searchParams.get('sortOrder');
+  const userId = useUserStore(state => state.id);
 
   const selection = useMemo(() => selectedRowData?.map(item => item._id), [selectedRowData]);
   const selectedAll = useMemo(
@@ -121,7 +123,13 @@ const Table = ({
             {rows?.map(row => {
               prepareRow(row);
               return (
-                <tr className="text-left overflow-auto border border-l-0" {...row.getRowProps()}>
+                <tr
+                  className={classNames(
+                    row.original?.peerId && row.original.peerId !== userId && 'has-peer',
+                    'text-left overflow-auto border border-l-0',
+                  )}
+                  {...row.getRowProps()}
+                >
                   {allowRowsSelect && (
                     <IndeterminateCheckbox
                       className="mx-2 mt-5"

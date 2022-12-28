@@ -7,6 +7,7 @@ import {
   deleteCampaign,
   updateCampaign,
   updateCampaignMedia,
+  updateCampaignStatus,
 } from '../requests/campaigns.request';
 
 export const useCampaigns = (query, enabled = true) =>
@@ -113,6 +114,28 @@ export const useUpdateCampaignMedia = () =>
       onSuccess: () => {
         showNotification({
           title: 'Campaign Successfully Updated',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+
+export const useUpdateCampaignStatus = () =>
+  useMutation(
+    async ({ id, placeId, data }) => {
+      const res = await updateCampaignStatus(id, placeId, data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Campaign status successfully updated',
           color: 'green',
         });
       },

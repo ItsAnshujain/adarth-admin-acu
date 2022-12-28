@@ -1,14 +1,20 @@
-import { Button, Image } from '@mantine/core';
-import { useRef } from 'react';
-import { Calendar } from 'react-feather';
+import { Button, Image, Select } from '@mantine/core';
+import { useMemo, useRef } from 'react';
+import { Calendar, ChevronDown } from 'react-feather';
 import { Dropzone } from '@mantine/dropzone';
 import dayjs from 'dayjs';
 import CustomBadge from '../../../shared/Badge';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import uploadIcon from '../../../../assets/upload.svg';
 import NoData from '../../../shared/NoData';
-import { useUpdateCampaignMedia } from '../../../../hooks/campaigns.hooks';
+import { useUpdateCampaignMedia, useUpdateCampaignStatus } from '../../../../hooks/campaigns.hooks';
 import { useUploadFile } from '../../../../hooks/upload.hooks';
+import { useFetchMasters } from '../../../../hooks/masters.hooks';
+import { serialize } from '../../../../utils';
+
+const statusSelectStyle = {
+  rightSection: { pointerEvents: 'none' },
+};
 
 const styles = {
   visibility: 'hidden',
@@ -19,6 +25,16 @@ const DATE_FORMAT = 'DD-MM-YYYY';
 const Places = ({ data, campaignId }) => {
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const { mutate: update, isLoading: isUpdating } = useUpdateCampaignMedia();
+  const printingStatusData = useFetchMasters(
+    serialize({ type: 'printing_status', parentId: null, page: 1, limit: 100 }),
+  );
+
+  const mountStatusData = useFetchMasters(
+    serialize({ type: 'mounting_status', parentId: null, page: 1, limit: 100 }),
+  );
+
+  const { mutate: updateCampaignStatus } = useUpdateCampaignStatus();
+
   const openRef = useRef(null);
   const handleSubmit = link => {
     update({ id: campaignId, placeId: data?._id, data: { media: link } });
@@ -33,6 +49,22 @@ const Places = ({ data, campaignId }) => {
       handleSubmit(res[0].Location);
     }
   };
+
+  const printList = useMemo(() => {
+    if (printingStatusData?.data?.docs?.length) {
+      return printingStatusData.data.docs.map(item => item.name);
+    }
+
+    return [];
+  }, [printingStatusData]);
+
+  const mountList = useMemo(() => {
+    if (mountStatusData?.data?.docs?.length) {
+      return mountStatusData.data.docs.map(item => item.name);
+    }
+
+    return [];
+  }, [mountStatusData]);
 
   return (
     <div className="flex gap-4 p-4 shadow-md bg-white mb-2">
@@ -96,11 +128,47 @@ const Places = ({ data, campaignId }) => {
           </div>
           <div>
             <div className="mb-4">
+              <p className="mb-2 text-sm text-slate-400">Printing Status</p>
+              <Select
+                className="mr-2"
+                defaultValue={data?.currentStatus?.printingStatus}
+                onChange={val => {
+                  updateCampaignStatus({
+                    id: campaignId,
+                    placeId: data?._id,
+                    data: { printingStatus: val },
+                  });
+                }}
+                data={printList}
+                styles={statusSelectStyle}
+                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                rightSectionWidth={40}
+              />
+            </div>
+            <div className="mb-4">
               <p className="mb-2 text-sm font-light text-slate-400">Health Update</p>
               <p>{data?.health || <NoData type="na" />}</p>
             </div>
           </div>
           <div>
+            <div className="mb-4">
+              <p className="mb-2 text-sm text-slate-400">Mounting Status</p>
+              <Select
+                className="mr-2"
+                defaultValue={data?.currentStatus?.mountingStatus}
+                onChange={val =>
+                  updateCampaignStatus({
+                    id: campaignId,
+                    placeId: data?._id,
+                    data: { mountingStatus: val },
+                  })
+                }
+                data={mountList}
+                styles={statusSelectStyle}
+                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                rightSectionWidth={40}
+              />
+            </div>
             <div>
               <p className="mb-2 text-sm font-light text-slate-400">Format Support</p>
               <p>{data?.basicInformation?.supportedMedia || <NoData type="na" />}</p>
