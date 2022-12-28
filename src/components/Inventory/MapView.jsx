@@ -12,6 +12,10 @@ const styles = {
 };
 
 const defaultProps = {
+  center: {
+    lat: 22.567646,
+    lng: 88.370743,
+  },
   zoom: 11,
 };
 
@@ -46,12 +50,16 @@ const MapView = ({ lists = [] }) => {
     <div className="relative px-5">
       <div className="h-[70vh] w-full">
         <GoogleMapReact
-          bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY }}
+          bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY, libraries: 'places' }}
           yesIWantToUseGoogleMapApiInternals
           defaultZoom={defaultProps.zoom}
           center={{
-            lat: parseInt(lists[0]?.location?.latitude || 0, 10),
-            lng: parseInt(lists[0]?.location?.longitude || 0, 10),
+            lat: lists?.[0]?.location?.latitude
+              ? +lists[0].location.latitude
+              : defaultProps.center.lat,
+            lng: lists?.[0]?.location?.longitude
+              ? +lists[0].location.longitude
+              : defaultProps.center.lng,
           }}
         >
           {lists.length ? getAllLocations : null}

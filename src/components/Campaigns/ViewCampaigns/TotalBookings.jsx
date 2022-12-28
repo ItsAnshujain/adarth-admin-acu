@@ -48,25 +48,11 @@ const TotalBookings = ({ campaignId, isLoading }) => {
   const { data: paymentStatus } = useFetchMasters(
     serialize({ type: 'payment_status', parentId: null, page: 1, limit: 100 }),
   );
-  const { data: printingStatus } = useFetchMasters(
-    serialize({ type: 'printing_status', parentId: null, page: 1, limit: 100 }),
-  );
-  const { data: mountingStatus } = useFetchMasters(
-    serialize({ type: 'mounting_status', parentId: null, page: 1, limit: 100 }),
-  );
 
   const { mutateAsync: updateBooking } = useUpdateBookingStatus();
 
   const handlePaymentUpdate = (bookingId, status) => {
     updateBooking({ id: bookingId, query: serialize({ paymentStatus: status }) });
-  };
-
-  const handleMountingUpdate = (bookingId, status) => {
-    updateBooking({ id: bookingId, query: serialize({ mountingStatus: status }) });
-  };
-
-  const handlePrintingUpdate = (bookingId, status) => {
-    updateBooking({ id: bookingId, query: serialize({ printingStatus: status }) });
   };
 
   const handleCampaignUpdate = (bookingId, status) => {
@@ -76,14 +62,6 @@ const TotalBookings = ({ campaignId, isLoading }) => {
   const paymentList = useMemo(
     () => paymentStatus?.docs?.map(item => item.name) || [],
     [paymentStatus],
-  );
-  const mountingList = useMemo(
-    () => mountingStatus?.docs?.map(item => item.name) || [],
-    [mountingStatus],
-  );
-  const printingList = useMemo(
-    () => printingStatus?.docs?.map(item => item.name) || [],
-    [printingStatus],
   );
   const campaignList = useMemo(
     () => campaignStatus?.docs?.map(item => item.name) || [],
@@ -192,24 +170,29 @@ const TotalBookings = ({ campaignId, isLoading }) => {
         accessor: 'currentStatus.printingStatus',
         Cell: ({
           row: {
-            original: { _id, currentStatus },
+            original: { campaign },
           },
         }) =>
           useMemo(() => {
-            const updatedPrintingList = [...printingList];
-            if (!currentStatus?.printingStatus) {
-              updatedPrintingList.unshift({ label: 'Select', value: '' });
-            }
+            let printCount = 0;
+            const totalSpaces = campaign?.spaces?.length;
+            campaign?.spaces?.map(item => {
+              if (item?.currentStatus?.printingStatus?.toLowerCase()?.includes('print')) {
+                printCount += 1;
+              }
+              return printCount;
+            });
+
             return (
-              <NativeSelect
-                className="mr-2"
-                data={updatedPrintingList}
-                styles={statusSelectStyle}
-                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-                rightSectionWidth={40}
-                onChange={e => handlePrintingUpdate(_id, e.target.value)}
-                defaultValue={currentStatus?.printingStatus || ''}
-              />
+              <p className="w-[200px]">
+                {printCount === 0
+                  ? 'Printing upcoming'
+                  : printCount > 0 && printCount < totalSpaces
+                  ? 'Printing in progress'
+                  : printCount === totalSpaces
+                  ? 'Printing completed'
+                  : '-'}
+              </p>
             );
           }, []),
       },
@@ -218,24 +201,29 @@ const TotalBookings = ({ campaignId, isLoading }) => {
         accessor: 'currentStatus.mountingStatus',
         Cell: ({
           row: {
-            original: { _id, currentStatus },
+            original: { campaign },
           },
         }) =>
           useMemo(() => {
-            const updatedMountingList = [...mountingList];
-            if (!currentStatus?.mountingStatus) {
-              updatedMountingList.unshift({ label: 'Select', value: '' });
-            }
+            let mountCount = 0;
+            const totalSpaces = campaign?.spaces?.length;
+            campaign?.spaces?.map(item => {
+              if (item?.currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')) {
+                mountCount += 1;
+              }
+              return mountCount;
+            });
+
             return (
-              <NativeSelect
-                className="mr-2"
-                data={updatedMountingList}
-                styles={statusSelectStyle}
-                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-                rightSectionWidth={40}
-                onChange={e => handleMountingUpdate(_id, e.target.value)}
-                defaultValue={currentStatus?.mountingStatus || ''}
-              />
+              <p className="w-[200px]">
+                {mountCount === 0
+                  ? 'Mounting upcoming'
+                  : mountCount > 0 && mountCount < totalSpaces
+                  ? 'Mounting in progress'
+                  : mountCount === totalSpaces
+                  ? 'Mounting completed'
+                  : '-'}
+              </p>
             );
           }, []),
       },
@@ -407,7 +395,7 @@ const TotalBookings = ({ campaignId, isLoading }) => {
         }) => useMemo(() => <MenuPopover itemId={_id} />, []),
       },
     ],
-    [bookingData?.docs, campaignStatus, paymentStatus, printingStatus, mountingStatus],
+    [bookingData?.docs, campaignStatus, paymentStatus],
   );
 
   const handleSortByColumn = colId => {
