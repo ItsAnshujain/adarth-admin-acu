@@ -1,14 +1,10 @@
-import { useMemo } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Loader, NativeSelect, Select } from '@mantine/core';
-import { ChevronDown } from 'react-feather';
+import { Loader, NativeSelect } from '@mantine/core';
 import dayjs from 'dayjs';
 import completed from '../../../assets/completed.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
-import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
-import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import NoData from '../../shared/NoData';
 import { useFetchUsers } from '../../../hooks/users.hooks';
 import { useUpdateCampaign } from '../../../hooks/campaigns.hooks';
@@ -20,10 +16,6 @@ const styles = {
     fontSize: '15px',
     letterSpacing: '0.5px',
   },
-};
-
-const statusSelectStyle = {
-  rightSection: { pointerEvents: 'none' },
 };
 
 const DATE_FORMAT = 'DD MMM YYYY';
@@ -46,7 +38,13 @@ const config = {
   options: { responsive: true },
 };
 
-const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) => {
+const OrderInformation = ({
+  bookingData = {},
+  isLoading = true,
+  bookingStats,
+  mountStatus,
+  printStatus,
+}) => {
   const {
     data: userData,
     isSuccess: isUserDataLoaded,
@@ -60,31 +58,8 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
       filter: 'team',
     }),
   );
-  const printingStatusData = useFetchMasters(
-    serialize({ type: 'printing_status', parentId: null, page: 1, limit: 100 }),
-  );
 
-  const mountStatusData = useFetchMasters(
-    serialize({ type: 'mounting_status', parentId: null, page: 1, limit: 100 }),
-  );
-
-  const printList = useMemo(() => {
-    if (printingStatusData?.data?.docs?.length) {
-      return printingStatusData.data.docs.map(item => item.name);
-    }
-
-    return [];
-  }, [printingStatusData]);
-
-  const mountList = useMemo(() => {
-    if (mountStatusData?.data?.docs?.length) {
-      return mountStatusData.data.docs.map(item => item.name);
-    }
-
-    return [];
-  }, [mountStatusData]);
   const { mutate: updateCampaign } = useUpdateCampaign();
-  const { mutate } = useUpdateBookingStatus();
 
   const handleAddIncharge = inchargeId => {
     if (bookingData?.campaign) {
@@ -185,17 +160,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
             </div>
             <div>
               <p className="text-slate-400">Printing Status</p>
-              <Select
-                className="mr-2"
-                defaultValue={bookingData?.currentStatus?.printingStatus}
-                onChange={val =>
-                  mutate({ id: bookingData._id, query: serialize({ printingStatus: val }) })
-                }
-                data={printList}
-                styles={statusSelectStyle}
-                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-                rightSectionWidth={40}
-              />
+              <p className="font-bold capitalize">{printStatus}</p>
             </div>
             <div>
               <p className="text-slate-400">Booking Type</p>
@@ -203,17 +168,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
             </div>
             <div>
               <p className="text-slate-400">Mounting Status</p>
-              <Select
-                className="mr-2"
-                defaultValue={bookingData?.currentStatus?.mountingStatus}
-                onChange={val =>
-                  mutate({ id: bookingData._id, query: serialize({ mountingStatus: val }) })
-                }
-                data={mountList}
-                styles={statusSelectStyle}
-                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-                rightSectionWidth={40}
-              />
+              <p className="font-bold capitalize">{mountStatus}</p>
             </div>
           </div>
         </div>

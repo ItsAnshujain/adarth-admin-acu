@@ -3,6 +3,7 @@ import { useMemo, useRef } from 'react';
 import { Calendar, ChevronDown } from 'react-feather';
 import { Dropzone } from '@mantine/dropzone';
 import dayjs from 'dayjs';
+import { useQueryClient } from '@tanstack/react-query';
 import CustomBadge from '../../../shared/Badge';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import uploadIcon from '../../../../assets/upload.svg';
@@ -22,7 +23,8 @@ const styles = {
 
 const DATE_FORMAT = 'DD-MM-YYYY';
 
-const Places = ({ data, campaignId }) => {
+const Places = ({ data, campaignId, bookingId }) => {
+  const queryClient = useQueryClient();
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const { mutate: update, isLoading: isUpdating } = useUpdateCampaignMedia();
   const printingStatusData = useFetchMasters(
@@ -133,11 +135,16 @@ const Places = ({ data, campaignId }) => {
                 className="mr-2"
                 defaultValue={data?.currentStatus?.printingStatus}
                 onChange={val => {
-                  updateCampaignStatus({
-                    id: campaignId,
-                    placeId: data?._id,
-                    data: { printingStatus: val },
-                  });
+                  updateCampaignStatus(
+                    {
+                      id: campaignId,
+                      placeId: data?._id,
+                      data: { printingStatus: val },
+                    },
+                    {
+                      onSuccess: () => queryClient.invalidateQueries(['booking-by-id', bookingId]),
+                    },
+                  );
                 }}
                 data={printList}
                 styles={statusSelectStyle}
@@ -157,11 +164,16 @@ const Places = ({ data, campaignId }) => {
                 className="mr-2"
                 defaultValue={data?.currentStatus?.mountingStatus}
                 onChange={val =>
-                  updateCampaignStatus({
-                    id: campaignId,
-                    placeId: data?._id,
-                    data: { mountingStatus: val },
-                  })
+                  updateCampaignStatus(
+                    {
+                      id: campaignId,
+                      placeId: data?._id,
+                      data: { mountingStatus: val },
+                    },
+                    {
+                      onSuccess: () => queryClient.invalidateQueries(['booking-by-id', bookingId]),
+                    },
+                  )
                 }
                 data={mountList}
                 styles={statusSelectStyle}
