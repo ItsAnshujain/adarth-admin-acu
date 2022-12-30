@@ -55,10 +55,10 @@ const Overview = ({ bookingData = {} }) => {
   }, [bookingData?.campaign?.spaces]);
 
   useEffect(() => {
-    if (mapInstance && bookingData?.spaces?.docs?.length) {
+    if (mapInstance && bookingData?.campaign?.spaces?.length) {
       const bounds = new mapInstance.maps.LatLngBounds();
 
-      bookingData?.data?.docs?.forEach(item => {
+      bookingData?.campaign?.spaces?.forEach(item => {
         bounds.extend({
           lat: +(item.location?.latitude || 0),
           lng: +(item.location?.longitude || 0),
@@ -69,7 +69,7 @@ const Overview = ({ bookingData = {} }) => {
       mapInstance.map.setCenter(bounds.getCenter());
       mapInstance.map.setZoom(Math.min(10, mapInstance.map.getZoom()));
     }
-  }, [bookingData?.spaces?.docs?.length, mapInstance]);
+  }, [bookingData?.campaign?.spaces?.length, mapInstance]);
 
   useEffect(() => {
     if (bookingData?.campaign?.media) setPosterImage(bookingData?.campaign?.medias?.[0]);
@@ -178,8 +178,12 @@ const Overview = ({ bookingData = {} }) => {
             yesIWantToUseGoogleMapApiInternals
             onGoogleApiLoaded={({ map, maps }) => setMapInstance({ map, maps })}
           >
-            {bookingData?.spaces?.docs?.map(item => (
-              <Marker key={item._id} lat={item.location?.latitude} lng={item.location?.longitude} />
+            {bookingData?.campaign?.spaces?.map(item => (
+              <Marker
+                key={item._id}
+                lat={item.location?.latitude && Number(item.location.latitude)}
+                lng={item.location?.longitude && Number(item.location.longitude)}
+              />
             ))}
           </GoogleMapReact>
         </div>
@@ -190,7 +194,11 @@ const Overview = ({ bookingData = {} }) => {
         <div>
           {bookingData?.campaign?.spaces?.length ? (
             bookingData?.campaign?.spaces?.map(item => (
-              <Places data={item} campaignId={bookingData?.campaign?._id} />
+              <Places
+                data={item}
+                campaignId={bookingData?.campaign?._id}
+                bookingId={bookingData?._id}
+              />
             ))
           ) : (
             <div className="w-full min-h-[7rem] flex justify-center items-center">
@@ -198,7 +206,7 @@ const Overview = ({ bookingData = {} }) => {
             </div>
           )}
         </div>
-        {bookingData?.spaces?.totalDocs > searchParams.get('limit') ? (
+        {bookingData?.campaign?.spaces?.totalDocs > searchParams.get('limit') ? (
           <Pagination
             className="absolute bottom-0 right-10 gap-0"
             page={searchParams.get('page')}
