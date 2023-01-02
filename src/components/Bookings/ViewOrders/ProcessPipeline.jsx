@@ -23,15 +23,13 @@ const ProcessPipeline = ({ bookingData = {}, printStatus, mountStatus }) => {
                 <div className="relative min-w-[200px]">
                   <div
                     className={classNames(
-                      `border rounded-xl p-5 border-slate-200 ${
-                        index !== 0
-                          ? 'before:content-[""] before:absolute before:h-[1px] before:-left-8 before:w-8 before:top-[50%] before:bg-green-400'
-                          : ''
-                      } ${
-                        index === 0 && outerIndex !== steps.length - 1
-                          ? 'after:content-[""] after:rotate-90 after:absolute after:h-[1px] after:left-24  after:w-8 after:top-[111%] after:bg-green-400'
-                          : ''
-                      }`,
+                      index !== 0
+                        ? 'before:content-[""] before:absolute before:h-[1px] before:-left-8 before:w-8 before:top-[50%] before:bg-green-400'
+                        : '',
+                      index === 0 && outerIndex !== steps.length - 1
+                        ? 'after:content-[""] after:rotate-90 after:absolute after:h-[1px] after:left-24  after:w-8 after:top-[111%] after:bg-green-400'
+                        : '',
+                      'border rounded-xl p-5 border-slate-200',
                     )}
                   >
                     <div className="flex gap-3">
@@ -55,13 +53,10 @@ const ProcessPipeline = ({ bookingData = {}, printStatus, mountStatus }) => {
               <div className="relative max-w-[220px]">
                 <div
                   className={classNames(
-                    `border rounded-xl p-5 border-slate-200 
-                    ${
-                      (steps.length !== 0 && index === 0) || index === 1
-                        ? 'after:content-[""] after:rotate-90 after:absolute after:h-[1px] after:left-24  after:w-8 after:top-[-10%] after:bg-green-400'
-                        : ''
-                    }
-                    `,
+                    (steps.length !== 0 && index === 0) || index === 1
+                      ? 'after:content-[""] after:rotate-90 after:absolute after:h-[1px] after:left-24  after:w-8 after:top-[-10%] after:bg-green-400'
+                      : '',
+                    'border rounded-xl p-5 border-slate-200',
                   )}
                 >
                   <div className="flex gap-3">
