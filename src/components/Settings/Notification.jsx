@@ -1,8 +1,8 @@
-/* eslint-disable no-useless-escape */
 import { useEffect } from 'react';
 import { Button, Switch } from '@mantine/core';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
+import validator from 'validator';
 import { useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from '../../context/formContext';
 import TextInput from '../shared/TextInput';
@@ -36,7 +36,7 @@ const inputStyles = {
 };
 
 const schema = yup.object().shape({
-  manualNotify: yup.boolean().required('Message notification is required'),
+  // manualNotify: yup.boolean().required('Message notification is required'),
   emailNotify: yup.boolean().required('Email notification is required'),
   notificationEmail: yup
     .string()
@@ -49,13 +49,7 @@ const schema = yup.object().shape({
       }
       return true;
     })
-    .test('valid', 'Email must be valid', function (val) {
-      if (this.from[0].value.emailNotify && val) {
-        const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        return pattern.test(val);
-      }
-      return true;
-    }),
+    .email('Email must be valid'),
   whatsappNotify: yup.boolean().required('Whatsapp is required'),
   whatsappNumber: yup
     .string()
@@ -70,8 +64,7 @@ const schema = yup.object().shape({
     })
     .test('valid', 'Whatsapp Number must be valid', function (val) {
       if (this.from[0].value.whatsappNotify && val) {
-        const pattern = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
-        return pattern.test(val);
+        return validator.isMobilePhone(val, 'en-IN');
       }
       return true;
     }),
@@ -106,7 +99,7 @@ const Notification = () => {
 
   useEffect(() => {
     if (data) {
-      form.setFieldValue('manualNotify', stringToBoolean(data.manualNotify));
+      // form.setFieldValue('manualNotify', stringToBoolean(data.manualNotify));
       form.setFieldValue('emailNotify', stringToBoolean(data.emailNotify));
       form.setFieldValue('whatsappNotify', stringToBoolean(data.whatsappNotify));
       form.setFieldValue('whatsappNumber', data.whatsappNumber);
@@ -123,13 +116,19 @@ const Notification = () => {
     if (!formDataCopy.whatsappNotify) {
       delete formDataCopy.whatsappNumber;
     }
+
+    if (formDataCopy?.whatsappNumber && !formData?.whatsappNumber?.includes('+91')) {
+      formDataCopy.whatsappNumber = `+91${formData.whatsappNumber}`;
+    }
+
     mutateAsync({ ...formDataCopy });
   };
   return (
     <FormProvider form={form}>
       <form onSubmit={form.onSubmit(onSubmitHandler)}>
         <div className="pl-5 pr-7">
-          <div className="py-8">
+          {/* TODO: hidden since message notification is not required for now */}
+          {/* <div className="py-8">
             <div className="w-4/12 flex justify-between">
               <p className="font-bold text-xl">Message Notification</p>
               <Switch
@@ -141,7 +140,7 @@ const Notification = () => {
             <p className="font-medium text-sm mt-2 text-slate-400">
               Get all update notification in your email
             </p>
-          </div>
+          </div> */}
           <div className="py-8 border border-l-0 border-r-0  border-t-slate-300 border-b-slate-300">
             <div className="w-4/12 flex justify-between">
               <p className="font-bold text-xl">Email Notification</p>

@@ -19,7 +19,7 @@ const Places = ({ data }) => (
         className="bg-green-200 text-green-700 w-24 mb-2 tracking-widest font-light"
         radius="lg"
         variant="filled"
-        text={data.spaceStatus}
+        text={data.status}
         size="md"
       />
 
@@ -30,13 +30,13 @@ const Places = ({ data }) => (
           </Text>
           <p className="text-slate-400 text-sm mb-2 tracking-wide">{data.address}</p>
           <Text weight="bolder">
-            {data?.price ? toIndianCurrency(Number.parseInt(data.price, 10)) : 0}
+            {data?.cost ? toIndianCurrency(Number.parseInt(data.cost, 10)) : 0}
           </Text>
         </div>
         <div className="ml-6">
           <div className="mb-4">
             <p className="text-slate-400 text-sm tracking-wide">Media Type</p>
-            <p className="font-normal">{data.mediaType}</p>
+            <p className="font-normal">{data.lighting}</p>
           </div>
           <div>
             <p className="text-slate-400 text-sm tracking-wide">Unit</p>
@@ -50,7 +50,7 @@ const Places = ({ data }) => (
           </div>
           <div>
             <p className="text-slate-400 text-sm tracking-wide">Supported Media</p>
-            <p className="font-normal">{data.supportedMedia}</p>
+            <p className="font-normal">{data.format}</p>
           </div>
         </div>
         <div>

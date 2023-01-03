@@ -21,7 +21,7 @@ const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
 };
 
-const TotalBookings = ({ campaignId, isLoading }) => {
+const TotalBookings = ({ campaignId }) => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
@@ -475,7 +475,7 @@ const TotalBookings = ({ campaignId, isLoading }) => {
           <RowsPerPage setCount={handleRowCount} count={limit} />
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
-        {isLoading ? (
+        {isLoadingBookingData ? (
           <div className="flex justify-center items-center h-[400px]">
             <Loader />
           </div>

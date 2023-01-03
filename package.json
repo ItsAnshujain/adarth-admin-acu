@@ -10,7 +10,8 @@
     "lint:scss": "stylelint \"src/**/*.scss\" --fix",
     "prettier": "prettier --write \"**/*.{js,jsx,scss}\"",
     "cm": "cz",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@hookform/resolvers": "^2.9.8",
@@ -39,6 +40,7 @@
     "react-select": "^5.4.0",
     "react-table": "^7.8.0",
     "to-words": "^3.3.2",
+    "validator": "^13.7.0",
     "yup": "^0.32.11",
     "zustand": "^4.1.1"
   },

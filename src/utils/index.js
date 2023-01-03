@@ -130,8 +130,7 @@ export const gstRegexMatch =
 
 export const panRegexMatch = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
 
-export const aadhaarRegexMatch =
-  /(^[0-9]{4}[0-9]{4}[0-9]{4}$)|(^[0-9]{4}\s[0-9]{4}\s[0-9]{4}$)|(^[0-9]{4}-[0-9]{4}-[0-9]{4}$)/;
+export const aadhaarRegexMatch = /^\d{12}$/;
 
 export const mobileRegexMatch = /^[6-9]\d{9}$/;
 

@@ -7,8 +7,8 @@ import RoleBased from '../../RoleBased';
 
 const Header = ({ tabs, setTabs }) => {
   const { id } = useParams();
-
   const navigate = useNavigate();
+
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <div className="flex pl-5 gap-6 items-center">
@@ -16,38 +16,32 @@ const Header = ({ tabs, setTabs }) => {
           <ArrowLeft />
         </Button>
         <Button
-          onClick={() => setTabs(0)}
+          onClick={() => setTabs('overview')}
           className={classNames(
-            `${
-              tabs === 0
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3  after:bg-purple-450'
-                : 'text-black'
-            }`,
+            tabs === 'overview'
+              ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3  after:bg-purple-450'
+              : 'text-black',
             'px-0',
           )}
         >
           Campaign Overview
         </Button>
         <Button
-          onClick={() => setTabs(1)}
+          onClick={() => setTabs('spaces')}
           className={classNames(
-            `${
-              tabs === 1
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3  after:bg-purple-450'
-                : 'text-black'
-            }`,
+            tabs === 'spaces'
+              ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3  after:bg-purple-450'
+              : 'text-black',
           )}
         >
           Spaces List
         </Button>
         <Button
-          onClick={() => setTabs(2)}
+          onClick={() => setTabs('bookings')}
           className={classNames(
-            `${
-              tabs === 2
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3  after:bg-purple-450'
-                : 'text-black'
-            }`,
+            tabs === 'bookings'
+              ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3  after:bg-purple-450'
+              : 'text-black',
             'px-0',
           )}
         >
