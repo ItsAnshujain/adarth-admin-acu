@@ -159,6 +159,7 @@ const Notification = () => {
               styles={inputStyles}
               className="w-4/12 mt-2"
               placeholder="Your email"
+              withAsterisk={form.values.emailNotify}
               label="Email"
               name="notificationEmail"
               errors={form.errors}
@@ -182,6 +183,7 @@ const Notification = () => {
               styles={inputStyles}
               className="w-4/12 mt-2 text-slate-400"
               placeholder="Your phone number"
+              withAsterisk={form.values.whatsappNotify}
               label="Whatsapp Number"
               name="whatsappNumber"
               errors={form.errors}

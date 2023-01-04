@@ -125,6 +125,7 @@ const BasicInfo = () => {
         <TextInput
           label="Space name"
           name="basicInformation.spaceName"
+          withAsterisk
           styles={styles}
           errors={errors}
           placeholder="Write..."
@@ -133,6 +134,7 @@ const BasicInfo = () => {
         <TextInput
           label="Landlord"
           name="basicInformation.landlord"
+          withAsterisk
           styles={styles}
           errors={errors}
           placeholder="Write..."
@@ -143,8 +145,8 @@ const BasicInfo = () => {
           name="basicInformation.mediaOwner"
           styles={styles}
           errors={errors}
-          disabled={isLoadingUserData}
-          placeholder="Select..."
+          disabled={isLoadingUserData || userData?.docs?.length === 0}
+          placeholder={userData?.docs?.length === 0 ? 'No Inventory Owner available' : 'Select...'}
           options={
             isUserDataLoaded
               ? userData?.docs?.map(item => ({ label: item?.name, value: item?._id }))
@@ -155,6 +157,7 @@ const BasicInfo = () => {
         <Select
           label="Space Type"
           name="basicInformation.spaceType"
+          withAsterisk
           styles={styles}
           errors={errors}
           disabled={isSpaceTypeDataLoading}
@@ -172,6 +175,7 @@ const BasicInfo = () => {
         <Select
           label="Category"
           name="basicInformation.category"
+          withAsterisk
           styles={styles}
           errors={errors}
           disabled={isCategoryLoading}
@@ -192,7 +196,9 @@ const BasicInfo = () => {
           styles={styles}
           errors={errors}
           disabled={isSubCategoryLoading || subCategories?.docs?.length === 0}
-          placeholder="Select..."
+          placeholder={
+            subCategories?.docs?.length === 0 ? 'No Sub Category available' : 'Select...'
+          }
           options={
             subCategoryLoaded
               ? subCategories.docs.map(subCategory => ({
@@ -201,14 +207,12 @@ const BasicInfo = () => {
                 }))
               : []
           }
-          className={!(subCategories?.docs?.length === 0) ? 'mb-7' : ''}
+          className="mb-7"
         />
-        {subCategories?.docs?.length === 0 ? (
-          <p className="mt-1 mb-7 text-xs text-red-450">No Sub Category available</p>
-        ) : null}
         <Select
           label="Media Type"
           name="basicInformation.mediaType"
+          withAsterisk
           styles={styles}
           errors={errors}
           disabled={isMediaTypeLoading}
@@ -235,6 +239,7 @@ const BasicInfo = () => {
         <NumberInput
           label="Price"
           name="basicInformation.price"
+          withAsterisk
           styles={styles}
           errors={errors}
           placeholder="Write..."
@@ -268,6 +273,7 @@ const BasicInfo = () => {
         <Select
           label="Demographics"
           name="basicInformation.demographic"
+          withAsterisk
           styles={styles}
           errors={errors}
           disabled={isDemographicDataLoading}

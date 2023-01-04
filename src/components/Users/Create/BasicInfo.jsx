@@ -37,7 +37,7 @@ const BasicInfo = ({ setUploadingFile }) => {
 
   return (
     <div className="pl-5 pr-7 mt-4">
-      <p className="text-xl font-bold">Basic information about the associates</p>
+      <p className="text-xl font-bold">Just some basic information about your profile</p>
       <div className="mt-8 flex flex-col">
         <p className="font-bold text-lg">Upload Profile Picture</p>
         <p className="text-md text-slate-400">Please upload png or jpeg photo(150x150 px)</p>
@@ -145,9 +145,10 @@ const BasicInfo = ({ setUploadingFile }) => {
           placeholder="Pan"
         />
         <TextInput
-          label="About"
+          label="About you"
           name="about"
           styles={styles}
+          withAsterisk
           errors={errors}
           placeholder="Write"
           className="col-span-2"

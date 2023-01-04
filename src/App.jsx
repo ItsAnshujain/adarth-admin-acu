@@ -22,45 +22,34 @@ const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
 const CreateSpaceSingle = lazy(() => import('./pages/Inventory/Create'));
 const CreateSpaceBulk = lazy(() => import('./pages/Inventory/CreateBulk'));
 const SpaceDetails = lazy(() => import('./pages/Inventory/View'));
-
 const CampaignHome = lazy(() => import('./pages/Campaign/Home'));
 const Campaigns = lazy(() => import('./pages/Campaign/Campaigns'));
 const CampaignCreate = lazy(() => import('./pages/Campaign/Create'));
 const CampaignView = lazy(() => import('./pages/Campaign/View'));
-
 const ProposalsHome = lazy(() => import('./pages/Proposal/Home'));
 const Proposals = lazy(() => import('./pages/Proposal/Proposals'));
 const CreateProposals = lazy(() => import('./pages/Proposal/Create'));
 const ViewProposal = lazy(() => import('./pages/Proposal/View'));
-
 const BookingHome = lazy(() => import('./pages/Booking/Home'));
 const Booking = lazy(() => import('./pages/Booking/Bookings'));
 const ViewBooking = lazy(() => import('./pages/Booking/View'));
 const Generate = lazy(() => import('./pages/Booking/Generate'));
 const CreateOrder = lazy(() => import('./pages/Booking/Create'));
-
 const UserHome = lazy(() => import('./pages/User/Home'));
 const User = lazy(() => import('./pages/User/Users'));
 const CreateUser = lazy(() => import('./pages/User/Create'));
 const ViewUser = lazy(() => import('./pages/User/View'));
-
 const ReportHome = lazy(() => import('./pages/Report/Report'));
 const ReportInventory = lazy(() => import('./pages/Report/Inventory'));
 const ReportRevenue = lazy(() => import('./pages/Report/Revenue'));
 const ReportCampaign = lazy(() => import('./pages/Report/Campaign'));
-
 const MasterHome = lazy(() => import('./pages/Master/Master'));
-// const MasterBrand = lazy(() => import('./pages/Master/Brands'));
-// const MasterCategory = lazy(() => import('./pages/Master/Category'));
-
 const HomePage = lazy(() => import('./pages/Home'));
 const Notifications = lazy(() => import('./pages/Notification'));
 const Settings = lazy(() => import('./pages/Setting/Home'));
-
 const Profile = lazy(() => import('./pages/Profile/Profile'));
 const ProfileHome = lazy(() => import('./pages/Profile/Home'));
 const ProfileEdit = lazy(() => import('./pages/Profile/Edit'));
-
 const Finance = lazy(() => import('./pages/Finance/Finance'));
 const FinanceHome = lazy(() => import('./pages/Finance/Home'));
 const FinanceMonthly = lazy(() => import('./pages/Finance/Monthly'));

@@ -1,4 +1,5 @@
 import { useFormContext } from '../../../context/formContext';
+import { tierList } from '../../../utils';
 import MapView from './MapView';
 
 const PreviewLocation = () => {
@@ -19,8 +20,19 @@ const PreviewLocation = () => {
             <p className="mb-4">{values?.location?.state || 'NA'}</p>
           </div>
         </div>
-        <p className="text-lg text-slate-400 font-light">Pin Code</p>
-        <p className="mb-4">{values?.location?.zip || 'NA'}</p>
+        <div className="grid grid-cols-2">
+          <div>
+            <p className="text-lg text-slate-400 font-light">Pin Code</p>
+            <p className="mb-4">{values?.location?.zip || 'NA'}</p>
+          </div>
+          <div>
+            <p className="text-lg text-slate-400 font-light">Tier</p>
+            <p className="mb-4">
+              {tierList.map(item => (item.value === values?.location?.tier ? item.label : null)) ||
+                'NA'}
+            </p>
+          </div>
+        </div>
       </div>
       <MapView latitude={+values.location.latitude} longitude={+values.location.longitude} />
     </div>

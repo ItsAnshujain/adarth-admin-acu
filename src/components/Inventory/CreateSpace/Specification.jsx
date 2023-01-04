@@ -1,9 +1,9 @@
+import { RangeSlider } from '@mantine/core';
 import { useFormContext } from '../../../context/formContext';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
 // import AsyncSelect from '../../shared/AsyncSelect';
 import TextInput from '../../shared/TextInput';
-import RangeSlider from '../../shared/RangeSlider';
 import Select from '../../shared/Select';
 import NumberInput from '../../shared/NumberInput';
 import AsyncMultiSelect from '../../shared/AsyncMultiSelect';
@@ -46,10 +46,10 @@ const sliderStyle = {
   },
 };
 
-const marks = [{ value: 6500 }, { value: 8500 }];
+const marks = [{ value: 1600000 }, { value: 3200000 }];
 
 const Specification = () => {
-  const { errors, setFieldValue } = useFormContext();
+  const { values, errors, setFieldValue } = useFormContext();
 
   const {
     data: illuminationData,
@@ -83,6 +83,7 @@ const Specification = () => {
           <Select
             label="Illumination"
             name="specifications.illuminations"
+            withAsterisk
             styles={styles}
             errors={errors}
             disabled={isIlluminationLoading}
@@ -110,6 +111,7 @@ const Specification = () => {
           <NumberInput
             label="Unit"
             name="specifications.unit"
+            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Write..."
@@ -119,6 +121,7 @@ const Specification = () => {
             <NumberInput
               label="Width"
               name="specifications.size.width"
+              withAsterisk
               styles={styles}
               errors={errors}
               placeholder="Write..."
@@ -127,6 +130,7 @@ const Specification = () => {
             <NumberInput
               label="Height"
               name="specifications.size.height"
+              withAsterisk
               styles={styles}
               errors={errors}
               placeholder="Write..."
@@ -148,6 +152,7 @@ const Specification = () => {
           <Select
             label="Space Status"
             name="specifications.spaceStatus"
+            withAsterisk
             styles={styles}
             errors={errors}
             disabled={isSpaceStatusLoading}
@@ -175,15 +180,16 @@ const Specification = () => {
             <p className="text-slate-400">Min</p>
           </div>
           <RangeSlider
-            min={5000}
-            max={10000}
+            onChange={val => {
+              setFieldValue('specifications.impressions.min', val[0]);
+              setFieldValue('specifications.impressions.max', val[1]);
+            }}
             styles={sliderStyle}
             className="pt-4 flex-auto"
+            min={0}
+            max={5000000}
+            value={[values.specifications.impressions.min, values.specifications.impressions.max]}
             marks={marks}
-            setControlledRangeValue={arrOfValues => {
-              setFieldValue('specifications.impressions.min', arrOfValues[0]);
-              setFieldValue('specifications.impressions.max', arrOfValues[1]);
-            }}
           />
           <div>
             <NumberInput
@@ -198,6 +204,7 @@ const Specification = () => {
         <AsyncMultiSelect
           label="Previous brands"
           name="specifications.previousBrands"
+          withAsterisk
           styles={multiSelectStyles}
           errors={errors}
           disabled={isBrandLoading}
@@ -218,6 +225,7 @@ const Specification = () => {
         <AsyncMultiSelect
           label="Tags"
           name="specifications.tags"
+          withAsterisk
           styles={multiSelectStyles}
           errors={errors}
           disabled={isTagLoading}

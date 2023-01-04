@@ -56,6 +56,7 @@ const ChangePassword = () => {
               label="Current Password"
               name="oldPassword"
               // disabled={isLoading}
+              withAsterisk
               size="md"
               placeholder="Your Current Password"
               styles={styles}
@@ -66,6 +67,7 @@ const ChangePassword = () => {
               label="New Password"
               name="password"
               // disabled={isLoading}
+              withAsterisk
               size="md"
               placeholder="Your New Password"
               styles={styles}
@@ -76,6 +78,7 @@ const ChangePassword = () => {
               label="Confirm Password"
               name="confirmPassword"
               // disabled={isLoading}
+              withAsterisk
               size="md"
               placeholder="Confirm New Password"
               styles={styles}

@@ -56,11 +56,26 @@ export const spaceTypes = {
 };
 
 export const colors = {
-  red: 'Billboard',
+  grape: 'Billboard',
   green: 'Digital Screen',
   blue: 'Transit Media',
   yellow: 'Street Furniture',
 };
+
+export const tierList = [
+  {
+    label: 'Tier 1',
+    value: 'tier_1',
+  },
+  {
+    label: 'Tier 2',
+    value: 'tier_2',
+  },
+  {
+    label: 'Tier 3',
+    value: 'tier_4',
+  },
+];
 
 export const aadhaarFormat = aadhaarNumber => {
   if (aadhaarNumber) {

@@ -40,7 +40,7 @@ export const useUpdateNotification = () => {
         queryClient.invalidateQueries(['users-by-id']);
         showNotification({
           title: 'Notification',
-          message: 'Notifications updated successfully',
+          message: 'Notification setting updated successfully',
           autoClose: 3000,
           color: 'green',
         });
