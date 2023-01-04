@@ -108,7 +108,6 @@ const schema = action =>
           : null,
       ),
       audience: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
-      // .test('audience', 'Audience is required', val => (action === 1 ? val?.length > 0 : true)),
     }),
     specifications: yup.object({
       illuminations: yup.mixed().concat(
