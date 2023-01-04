@@ -3,14 +3,17 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import Header from './Header';
 import SpacesList from './SpacesList';
 import TotalBookings from './TotalBookings';
-import column from './columnSpaceList';
-import bookingColumn from './columnTotalBooking';
-import Preview from '../AddCampaign/Preview';
-
+import Overview from './Overview';
 import { useCampaign } from '../../../hooks/campaigns.hooks';
 
+const campaignView = {
+  overview: Overview,
+  spaces: SpacesList,
+  bookings: TotalBookings,
+};
+
 const View = () => {
-  const [tabs, setTabs] = useState(0);
+  const [tabs, setTabs] = useState('overview');
   const { id } = useParams();
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
@@ -19,28 +22,31 @@ const View = () => {
     sortOrder: 'desc',
   });
 
-  const { data } = useCampaign({ id, query: searchParams.toString() }, tabs === 0);
+  const { data, isLoading } = useCampaign(
+    { id, query: searchParams.toString() },
+    tabs === 'overview' || tabs === 'spaces',
+  );
+
+  const TabView = campaignView[tabs];
 
   useEffect(() => {
-    if (tabs === 0) {
+    if (tabs === 'overview') {
       searchParams.set('sortBy', 'name');
       setSearchParams(searchParams);
     }
-  }, [tabs]);
-
-  const getTabs = () =>
-    tabs === 0 ? (
-      <Preview data={data?.campaign} place={data?.inventory} />
-    ) : tabs === 1 ? (
-      <SpacesList data={data?.inventory} columns={column} />
-    ) : (
-      <TotalBookings campaignId={id} columns={bookingColumn} />
-    );
+  }, [tabs, data]);
 
   return (
     <>
       <Header tabs={tabs} setTabs={setTabs} />
-      <div className="relative pb-12 mb-16">{getTabs()}</div>
+      <div className="relative pb-12 mb-16">
+        <TabView
+          campaignData={data?.campaign}
+          spacesData={data?.inventory}
+          campaignId={id}
+          isCampaignDataLoading={isLoading}
+        />
+      </div>
     </>
   );
 };

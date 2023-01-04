@@ -1,23 +1,223 @@
-import { useState, useEffect } from 'react';
-import { Text, Button } from '@mantine/core';
-import { Plus } from 'react-feather';
+import { useState, useEffect, useMemo } from 'react';
+import { Text, Button, Image, Box, Menu, Badge, Loader } from '@mantine/core';
+import { Edit2, Eye, Plus } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
+import { useModals } from '@mantine/modals';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
 import Table from '../../Table/Table';
 import RoleBased from '../../RoleBased';
-import { ROLES } from '../../../utils';
+import { colors, ROLES } from '../../../utils';
+import toIndianCurrency from '../../../utils/currencyFormat';
+import MenuIcon from '../../Menu';
+import modalConfig from '../../../utils/modalConfig';
 
-const SpacesList = ({ data = {}, columns }) => {
+const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams({
+    'limit': 10,
+    'page': 1,
+    'sortOrder': 'desc',
+    'sortBy': 'basicInformation.spaceName',
+  });
   const ref = useClickOutside(() => setShowDatePicker(false));
   const [search, setSearch] = useDebouncedState('', 500);
   const navigate = useNavigate();
+  const modals = useModals();
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
+
+  const page = searchParams.get('page');
+  const limit = searchParams.get('limit');
+
+  const handleInventoryDetails = itemId =>
+    navigate(`/inventory/view-details/${itemId}`, {
+      replace: true,
+    });
+
+  const toggleImagePreviewModal = imgSrc =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
+            {imgSrc ? (
+              <Image src={imgSrc} height={580} width={580} alt="preview" />
+            ) : (
+              <Image src={null} height={580} width={580} withPlaceholder />
+            )}
+          </Box>
+        ),
+      },
+      ...modalConfig,
+    });
+
+  const COLUMNS = useMemo(
+    () => [
+      {
+        Header: '#',
+        accessor: 'id',
+        disableSortBy: true,
+        Cell: ({ row }) =>
+          useMemo(() => {
+            let currentPage = page;
+            let rowCount = 0;
+            if (page < 1) {
+              currentPage = 1;
+            }
+            rowCount = (currentPage - 1) * limit;
+            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+          }, []),
+      },
+      {
+        Header: 'SPACE NAME & PHOTO',
+        accessor: 'basicInformation.spaceName',
+        Cell: ({
+          row: {
+            original: { basicInformation, isUnderMaintenance, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center gap-2 ">
+                <Box
+                  className="bg-white border rounded-md cursor-zoom-in"
+                  onClick={() => toggleImagePreviewModal(basicInformation?.spacePhoto)}
+                >
+                  {basicInformation?.spacePhoto ? (
+                    <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
+                  ) : (
+                    <Image src={null} withPlaceholder height={32} width={32} />
+                  )}
+                </Box>
+                <Button
+                  className="text-black font-medium px-2 max-w-[180px]"
+                  onClick={() => handleInventoryDetails(_id)}
+                >
+                  <span className="overflow-hidden text-ellipsis">
+                    {basicInformation?.spaceName}
+                  </span>
+                </Button>
+                <Badge
+                  className="capitalize"
+                  variant="filled"
+                  color={isUnderMaintenance ? 'yellow' : 'green'}
+                >
+                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                </Badge>
+              </div>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'SPACE TYPE',
+        accessor: 'basicInformation.spaceType.name',
+        Cell: ({
+          row: {
+            original: { spaceType },
+          },
+        }) =>
+          useMemo(() => {
+            const colorType = Object.keys(colors).find(key => colors[key] === spaceType?.name);
+
+            return (
+              <Badge color={colorType} size="lg" className="capitalize">
+                {spaceType?.name || <span>-</span>}
+              </Badge>
+            );
+          }),
+      },
+      {
+        Header: 'MEDIA OWNER NAME',
+        accessor: 'landlord',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || 'NA'}</p>, []),
+      },
+      {
+        Header: 'IMPRESSION',
+        accessor: 'specifications.impressions.min',
+        Cell: ({
+          row: {
+            original: { specifications },
+          },
+        }) => useMemo(() => <p>{`${specifications?.impressions?.min || 0}+`}</p>, []),
+      },
+      {
+        Header: 'MEDIA TYPE',
+        accessor: 'mediaType',
+        Cell: ({
+          row: {
+            original: { mediaType },
+          },
+        }) => useMemo(() => <p>{mediaType?.name}</p>),
+      },
+      {
+        Header: 'PRICING',
+        accessor: 'basicInformation.price',
+        Cell: ({
+          row: {
+            original: { basicInformation },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p className="pl-2">
+                {basicInformation?.price
+                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
+                  : 0}
+              </p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'ACTION',
+        accessor: 'action',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <Menu shadow="md" width={180}>
+                <Menu.Target>
+                  <Button>
+                    <MenuIcon />
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    onClick={() => navigate(`/inventory/view-details/${_id}`)}
+                    icon={<Eye className="h-4 mr-2" />}
+                    className="cursor-pointer flex items-center gap-1"
+                  >
+                    <span>View Details</span>
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={<Edit2 className="h-4 mr-2" />}
+                    onClick={() => navigate(`/inventory/edit-details/${_id}`)}
+                    className="cursor-pointer flex items-center gap-1"
+                  >
+                    <span>Edit</span>
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            ),
+            [],
+          ),
+      },
+    ],
+    [spacesData?.docs],
+  );
 
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
@@ -74,20 +274,31 @@ const SpacesList = ({ data = {}, columns }) => {
       <div>
         <div className="flex justify-between h-20 items-center">
           <RowsPerPage
-            setCount={limit => {
-              searchParams.set('limit', limit);
+            setCount={pageLimit => {
+              searchParams.set('limit', pageLimit);
               setSearchParams(searchParams);
             }}
             count={searchParams.get('limit')}
           />
           <Search search={search} setSearch={setSearch} />
         </div>
-        <Table
-          data={data?.docs || []}
-          COLUMNS={columns}
-          allowRowsSelect
-          handleSorting={handleSortByColumn}
-        />
+        {isCampaignDataLoading ? (
+          <div className="flex justify-center items-center h-[400px]">
+            <Loader />
+          </div>
+        ) : null}
+        {spacesData?.docs?.length === 0 && !isCampaignDataLoading ? (
+          <div className="w-full min-h-[400px] flex justify-center items-center">
+            <p className="text-xl">No records found</p>
+          </div>
+        ) : null}
+        {spacesData?.docs?.length ? (
+          <Table
+            data={spacesData?.docs || []}
+            COLUMNS={COLUMNS}
+            handleSorting={handleSortByColumn}
+          />
+        ) : null}
       </div>
     </>
   );
