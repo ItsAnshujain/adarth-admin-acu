@@ -22,8 +22,6 @@ import CampaignIcon from '../assets/campaign-default.svg';
 import CampaignActiveIcon from '../assets/campaign-active.svg';
 import ReportIcon from '../assets/report-default.svg';
 import ReportActiveIcon from '../assets/report-active.svg';
-import LandlordsIcon from '../assets/landlords-default.svg';
-import LandlordsActiveIcon from '../assets/landlords-active.svg';
 import FinanceIcon from '../assets/finance-default.svg';
 import FinanceActiveIcon from '../assets/finance-active.svg';
 import RoleBased from './RoleBased';
@@ -163,13 +161,6 @@ const Sidebar = () => {
         ],
         icon: ReportIcon,
         activeIcon: ReportActiveIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR],
-      },
-      {
-        label: 'Landlords',
-        path: '/landlords',
-        icon: LandlordsIcon,
-        activeIcon: LandlordsActiveIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR],
       },
       {

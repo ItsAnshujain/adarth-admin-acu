@@ -89,7 +89,7 @@ const HomePage = () => {
   const user = queryClient.getQueryData(['users-by-id', userId]);
   return (
     <div className="absolute top-0">
-      <Header title="Home" />
+      <Header title="" />
       <div className="grid grid-cols-12">
         <Sidebar />
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
@@ -145,12 +145,12 @@ const HomePage = () => {
                 </div>
                 <div className="border rounded p-8 flex-1">
                   <Image src={VacantIcon} alt="folder" height={24} width={24} fit="contain" />
-                  <p className="my-2 text-sm font-light text-slate-400">Vacant</p>
+                  <p className="my-2 text-sm font-light text-slate-400">Vacant Inventory</p>
                   <p className="font-bold">386387</p>
                 </div>
                 <div className="border rounded p-8  flex-1">
                   <Image src={OccupiedIcon} alt="folder" height={24} width={24} fit="contain" />
-                  <p className="my-2 text-xs font-light text-slate-400">Occupied</p>
+                  <p className="my-2 text-xs font-light text-slate-400">Occupied Inventory</p>
                   <p className="font-bold">386387</p>
                 </div>
               </div>

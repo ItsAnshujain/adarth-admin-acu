@@ -12,7 +12,6 @@ const sidebarText = [
   'Campaigns',
   'Reports',
   'Finance',
-  'Landlords',
 ];
 
 const DrawerSidebar = ({ opened, setOpened }) => {

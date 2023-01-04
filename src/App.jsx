@@ -5,7 +5,6 @@ import Login from './pages/Login/Login';
 import LoginMain from './pages/Login/Home';
 import ChangePassword from './pages/Login/ChangePassword';
 import ForgotPassword from './pages/Login/ForgotPassword';
-import Landlords from './pages/Landlords';
 import Header from './Loader/Header';
 import Loader from './Loader';
 import CustomLoader from './Loader/Loader';
@@ -429,16 +428,6 @@ const App = () => {
             }
           />
         </Route>
-        <Route
-          path="/landlords"
-          element={
-            <ProtectedRoute
-              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
-            >
-              <Landlords />
-            </ProtectedRoute>
-          }
-        />
         <Route
           path="/"
           element={
