@@ -42,7 +42,7 @@ const sliderStyle = {
     backgroundColor: 'black',
   },
   thumb: {
-    backgroundColor: 'black',
+    backgroundColor: 'white',
   },
 };
 

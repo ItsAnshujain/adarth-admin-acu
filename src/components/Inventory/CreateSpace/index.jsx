@@ -305,8 +305,8 @@ const initialValues = {
     },
     health: null,
     impressions: {
-      min: null,
-      max: null,
+      min: 1600000,
+      max: 3200000,
     },
     previousBrands: [],
     tags: [],
