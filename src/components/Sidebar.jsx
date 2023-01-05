@@ -20,12 +20,10 @@ import MastersIcon from '../assets/masters-default.svg';
 import MastersActiveIcon from '../assets/masters-active.svg';
 import CampaignIcon from '../assets/campaign-default.svg';
 import CampaignActiveIcon from '../assets/campaign-active.svg';
-import ReportIcon from '../assets/report-default.svg';
-import ReportActiveIcon from '../assets/report-active.svg';
-import LandlordsIcon from '../assets/landlords-default.svg';
-import LandlordsActiveIcon from '../assets/landlords-active.svg';
-import FinanceIcon from '../assets/finance-default.svg';
-import FinanceActiveIcon from '../assets/finance-active.svg';
+// import ReportIcon from '../assets/report-default.svg';
+// import ReportActiveIcon from '../assets/report-active.svg';
+// import FinanceIcon from '../assets/finance-default.svg';
+// import FinanceActiveIcon from '../assets/finance-active.svg';
 import RoleBased from './RoleBased';
 
 const Sidebar = () => {
@@ -153,32 +151,26 @@ const Sidebar = () => {
         activeIcon: CampaignActiveIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR],
       },
-      {
-        label: 'Reports',
-        path: '/reports',
-        nested: [
-          { label: 'Campaign Report', subPath: '/campaign' },
-          { label: 'Revenue Reports', subPath: '/revenue' },
-          { label: 'Inventory Report', subPath: '/inventory' },
-        ],
-        icon: ReportIcon,
-        activeIcon: ReportActiveIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR],
-      },
-      {
-        label: 'Landlords',
-        path: '/landlords',
-        icon: LandlordsIcon,
-        activeIcon: LandlordsActiveIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR],
-      },
-      {
-        label: 'Finance',
-        path: '/finance',
-        icon: FinanceIcon,
-        activeIcon: FinanceActiveIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR],
-      },
+      // TODO: hidden for now; will be done in the next phase
+      // {
+      //   label: 'Reports',
+      //   path: '/reports',
+      //   nested: [
+      //     { label: 'Campaign Report', subPath: '/campaign' },
+      //     { label: 'Revenue Reports', subPath: '/revenue' },
+      //     { label: 'Inventory Report', subPath: '/inventory' },
+      //   ],
+      //   icon: ReportIcon,
+      //   activeIcon: ReportActiveIcon,
+      //   acceptedRoles: [ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR],
+      // },
+      // {
+      //   label: 'Finance',
+      //   path: '/finance',
+      //   icon: FinanceIcon,
+      //   activeIcon: FinanceActiveIcon,
+      //   acceptedRoles: [ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR],
+      // },
     ],
     [isMasterLoaded],
   );

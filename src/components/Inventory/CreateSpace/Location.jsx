@@ -2,27 +2,13 @@ import { showNotification } from '@mantine/notifications';
 import { useCallback, useEffect } from 'react';
 import { useFormContext } from '../../../context/formContext';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
-import { debounce, getAddressByLatLng, serialize } from '../../../utils';
+import { debounce, getAddressByLatLng, serialize, tierList } from '../../../utils';
 import AutoCompleteLocationInput from '../../AutoCompleteLocationInput';
 import NativeSelect from '../../shared/NativeSelect';
 import NumberInput from '../../shared/NumberInput';
 import TextInput from '../../shared/TextInput';
 import MapView from './MapView';
 
-const tierList = [
-  {
-    label: 'Tier 1',
-    value: 'tier_1',
-  },
-  {
-    label: 'Tier 2',
-    value: 'tier_2',
-  },
-  {
-    label: 'Tier 3',
-    value: 'tier_4',
-  },
-];
 const styles = {
   label: {
     marginBottom: '10px',
@@ -68,7 +54,9 @@ const Location = () => {
       </p>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">
         <div>
-          <p style={styles.label}>Address</p>
+          <p style={styles.label}>
+            Address <span className="text-red-450">*</span>
+          </p>
           {typeof window.google !== 'undefined' ? (
             <AutoCompleteLocationInput
               addressKeyName="location.address"
@@ -81,6 +69,7 @@ const Location = () => {
             <TextInput
               label="Address"
               name="location.address"
+              withAsterisk
               styles={styles}
               errors={errors}
               placeholder="Write..."
@@ -90,6 +79,7 @@ const Location = () => {
           <TextInput
             label="State"
             name="location.state"
+            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Write..."
@@ -98,6 +88,7 @@ const Location = () => {
           <NumberInput
             label="Latitude"
             name="location.latitude"
+            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Write..."
@@ -107,6 +98,7 @@ const Location = () => {
           <NativeSelect
             label="Zone"
             name="location.zone"
+            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Select..."
@@ -124,6 +116,7 @@ const Location = () => {
           <NativeSelect
             label="Facing"
             name="location.facing"
+            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Select..."
@@ -143,6 +136,7 @@ const Location = () => {
           <TextInput
             label="City"
             name="location.city"
+            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Write..."
@@ -151,6 +145,7 @@ const Location = () => {
           <NumberInput
             label="Zip"
             name="location.zip"
+            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Write..."
@@ -159,6 +154,7 @@ const Location = () => {
           <NumberInput
             label="Longitude"
             name="location.longitude"
+            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Write..."
@@ -168,6 +164,7 @@ const Location = () => {
           <TextInput
             label="Landmark"
             name="location.landmark"
+            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Write..."
@@ -176,6 +173,7 @@ const Location = () => {
           <NativeSelect
             label="Tier"
             name="location.tier"
+            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Select..."

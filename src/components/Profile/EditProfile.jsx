@@ -157,7 +157,7 @@ const EditProfile = () => {
               Basic Information
             </Tabs.Tab>
             <Tabs.Tab className="text-base hover:bg-transparent" value="second">
-              Document
+              Documents
             </Tabs.Tab>
             <Button
               loading={isLoading || uploadingFile}

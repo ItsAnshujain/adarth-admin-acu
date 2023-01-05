@@ -89,7 +89,7 @@ const HomePage = () => {
   const user = queryClient.getQueryData(['users-by-id', userId]);
   return (
     <div className="absolute top-0">
-      <Header title="Home" />
+      <Header title="" />
       <div className="grid grid-cols-12">
         <Sidebar />
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
@@ -106,7 +106,7 @@ const HomePage = () => {
                     fit="contain"
                   />
                   <p className="my-2 text-sm font-light text-slate-400">Total Campaign(Overall)</p>
-                  <p className="font-bold">386387</p>
+                  <p className="font-bold">0</p>
                 </div>
                 <div className="border rounded p-8  flex-1">
                   <Image
@@ -117,7 +117,7 @@ const HomePage = () => {
                     fit="contain"
                   />
                   <p className="my-2 text-sm font-light text-slate-400">Total Ongoing Campaign</p>
-                  <p className="font-bold">386387</p>
+                  <p className="font-bold">0</p>
                 </div>
                 <div className="border rounded p-8  flex-1">
                   <Image
@@ -128,7 +128,7 @@ const HomePage = () => {
                     fit="contain"
                   />
                   <p className="my-2 text-sm font-light text-slate-400">Upcoming Campaign</p>
-                  <p className="font-bold">386387</p>
+                  <p className="font-bold">0</p>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-8">
@@ -141,17 +141,17 @@ const HomePage = () => {
                     fit="contain"
                   />
                   <p className="my-2 text-sm font-light text-slate-400">Completed Campaign</p>
-                  <p className="font-bold">386387</p>
+                  <p className="font-bold">0</p>
                 </div>
                 <div className="border rounded p-8 flex-1">
                   <Image src={VacantIcon} alt="folder" height={24} width={24} fit="contain" />
-                  <p className="my-2 text-sm font-light text-slate-400">Vacant</p>
-                  <p className="font-bold">386387</p>
+                  <p className="my-2 text-sm font-light text-slate-400">Vacant Inventory</p>
+                  <p className="font-bold">0</p>
                 </div>
                 <div className="border rounded p-8  flex-1">
                   <Image src={OccupiedIcon} alt="folder" height={24} width={24} fit="contain" />
-                  <p className="my-2 text-xs font-light text-slate-400">Occupied</p>
-                  <p className="font-bold">386387</p>
+                  <p className="my-2 text-xs font-light text-slate-400">Occupied Inventory</p>
+                  <p className="font-bold">0</p>
                 </div>
               </div>
             </div>
@@ -171,14 +171,14 @@ const HomePage = () => {
                       <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                       <div>
                         <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
-                        <p className="font-bold text-lg">1233</p>
+                        <p className="font-bold text-lg">0</p>
                       </div>
                     </div>
                     <div className="flex gap-2 items-center">
                       <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                       <div>
                         <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
-                        <p className="font-bold text-lg">1233</p>
+                        <p className="font-bold text-lg">0</p>
                       </div>
                     </div>
                   </div>

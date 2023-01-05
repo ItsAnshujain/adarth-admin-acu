@@ -69,10 +69,7 @@ const schema = action =>
           : null,
       ),
       supportedMedia: yup.string().trim(),
-      description: yup
-        .string()
-        .trim()
-        .concat(action === 1 ? requiredSchema('Description is required') : null),
+      description: yup.string().trim(),
       price: yup
         .number()
         .nullable()
@@ -97,7 +94,6 @@ const schema = action =>
                 .number()
                 .positive('FootFall must be a positive number')
                 .typeError('FootFall must be a number')
-                .required('Footfall is required')
                 .nullable()
             : null,
         ),
@@ -111,10 +107,7 @@ const schema = action =>
               .test('demographic', 'Demographics is required', obj => obj.value !== '')
           : null,
       ),
-      audience: yup
-        .array()
-        .of(yup.object({ label: yup.string(), value: yup.string() }))
-        .test('audience', 'Audience is required', val => (action === 1 ? val?.length > 0 : true)),
+      audience: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
     }),
     specifications: yup.object({
       illuminations: yup.mixed().concat(
@@ -150,10 +143,7 @@ const schema = action =>
                 .nullable()
             : null,
         ),
-      resolutions: yup
-        .string()
-        .trim()
-        .concat(action === 2 ? requiredSchema('Resolutions is required') : null),
+      resolutions: yup.string().trim(),
       size: yup.object({
         height: yup
           .number()
@@ -192,7 +182,6 @@ const schema = action =>
                 .positive('Health must be a positive number')
                 .typeError('Health must be a number')
                 .test('healthLimit', 'Health must be at max 100', val => val <= 100)
-                .required('Health is required')
                 .nullable()
             : null,
         ),
@@ -200,27 +189,11 @@ const schema = action =>
         min: yup
           .number()
           .nullable()
-          .concat(
-            action === 2
-              ? yup
-                  .number()
-                  .typeError('Min must be a number')
-                  .required('Min is required')
-                  .nullable()
-              : null,
-          ),
+          .concat(action === 2 ? yup.number().typeError('Min must be a number').nullable() : null),
         max: yup
           .number()
           .nullable()
-          .concat(
-            action === 2
-              ? yup
-                  .number()
-                  .typeError('Max must be a number')
-                  .required('Max is required')
-                  .nullable()
-              : null,
-          ),
+          .concat(action === 2 ? yup.number().typeError('Max must be a number').nullable() : null),
       }),
       previousBrands: yup
         .array()

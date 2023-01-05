@@ -6,6 +6,7 @@ import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { useFetchInventoryById } from '../../../hooks/inventory.hooks';
 import MapView from '../CreateSpace/MapView';
+import { tierList } from '../../../utils';
 
 const BasicInfo = () => {
   const { id: inventoryId } = useParams();
@@ -318,10 +319,24 @@ const BasicInfo = () => {
                         <Text className="mb-4">{inventoryDetails?.location?.state || 'NA'}</Text>
                       </div>
                     </div>
-                    <Text color="gray" size="xs" weight="300">
-                      Pin Code
-                    </Text>
-                    <Text className="mb-4">{inventoryDetails?.location?.zip || 'NA'}</Text>
+                    <div className="grid grid-cols-2">
+                      <div>
+                        <Text color="gray" size="xs" weight="300">
+                          Pin Code
+                        </Text>
+                        <Text className="mb-4">{inventoryDetails?.location?.zip || 'NA'}</Text>
+                      </div>
+                      <div>
+                        <Text color="gray" size="xs" weight="300">
+                          Tier
+                        </Text>
+                        <Text className="mb-4">
+                          {tierList.map(item =>
+                            item.value === inventoryDetails?.location?.tier ? item.label : null,
+                          ) || 'NA'}
+                        </Text>
+                      </div>
+                    </div>
                   </div>
                   <MapView
                     latitude={inventoryDetails?.location.latitude}
