@@ -87,7 +87,7 @@ const BasicInformation = () => {
             name="healthStatus"
             styles={styles}
             errors={errors}
-            placeholder="Write"
+            placeholder="Write..."
           />
         </div>
         <TextareaInput
@@ -107,6 +107,7 @@ const BasicInformation = () => {
       <MultiSelect
         styles={multiSelectStyles}
         label="Previous Brands"
+        placeholder="Select all that you like"
         withAsterisk
         onChange={e => setFieldValue('previousBrands', [...e])}
         data={brandData?.docs.map(item => ({ label: item.name, value: item._id })) || []}
@@ -150,6 +151,7 @@ const BasicInformation = () => {
       <MultiSelect
         styles={multiSelectStyles}
         label="Tags"
+        placeholder="Select all that you like"
         withAsterisk
         onChange={e => setFieldValue('tags', [...e])}
         data={tagData?.docs.map(item => ({ label: item.name, value: item._id })) || []}

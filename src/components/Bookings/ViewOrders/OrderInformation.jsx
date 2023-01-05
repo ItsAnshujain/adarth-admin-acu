@@ -96,7 +96,7 @@ const OrderInformation = ({
               />
             </div>
             <div>
-              <p className="font-normal text -md">Revenue Status</p>
+              <p className="font-medium">Health Status</p>
               <div className="flex gap-8 mt-6">
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />

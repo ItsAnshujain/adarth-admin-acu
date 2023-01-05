@@ -92,6 +92,8 @@ const SelectSpace = () => {
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
   const { mutate } = useDeleteInventoryById();
   const queryClient = useQueryClient();
+  const pages = searchParams.get('page');
+  const limit = searchParams.get('limit');
 
   const onDelete = id => {
     mutate(
@@ -132,7 +134,16 @@ const SelectSpace = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row: { index } }) => index + 1,
+        Cell: ({ row }) =>
+          useMemo(() => {
+            let currentPage = pages;
+            let rowCount = 0;
+            if (pages < 1) {
+              currentPage = 1;
+            }
+            rowCount = (currentPage - 1) * limit;
+            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+          }, []),
       },
       {
         Header: 'SPACE NAME & PHOTO',

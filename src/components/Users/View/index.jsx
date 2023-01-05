@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs } from '@mantine/core';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useFetchUsersById } from '../../../hooks/users.hooks';
@@ -9,7 +9,7 @@ import ProposalTableView from './ProposalTableView';
 import { useBookings } from '../../../hooks/booking.hooks';
 import { useFetchProposals } from '../../../hooks/proposal.hooks';
 
-const tableQueries = userId => ({
+const tableBookingQueries = userId => ({
   'page': 1,
   'limit': 10,
   'sortBy': 'createdAt',
@@ -17,31 +17,56 @@ const tableQueries = userId => ({
   'incharge': userId,
 });
 
+const tableProposalQueries = userId => ({
+  'page': 1,
+  'limit': 10,
+  'sortBy': 'createdAt',
+  'sortOrder': 'desc',
+  'userId': userId,
+});
+
 const Header = () => {
   const [activeTab, setActiveTab] = useState('first');
   const [activeTable, setActiveTable] = useState('booking');
   const { id: userId } = useParams();
   const { data: userDetails, isLoading: isUserDetailsLoading } = useFetchUsersById(userId);
-  const initialValue = tableQueries(userId);
-  const [bookingSearchParams, setBookingSearchParams] = useSearchParams(initialValue);
-  const [proposalSearchParams, setProposalSearchParams] = useSearchParams(initialValue);
+  const initialBookingValue = tableBookingQueries(userId);
+  const initalProposalValue = tableProposalQueries(userId);
+
+  const [bookingSearchParams, setBookingSearchParams] = useSearchParams(initialBookingValue);
+  const [proposalSearchParams, setProposalSearchParams] = useSearchParams(initalProposalValue);
 
   const { data: bookingData = {}, isLoading: isLoadingBookingData } = useBookings(
     bookingSearchParams.toString(),
+    activeTable === 'booking',
   );
 
   const { data: proposalsData = {}, isLoading: isLoadingProposalsData } = useFetchProposals(
     proposalSearchParams.toString(),
+    activeTable === 'proposal',
   );
 
   const handleTabChange = val => {
     setActiveTable(val);
 
-    const defaultValue = new URLSearchParams(initialValue);
-
-    if (val === 'booking') setBookingSearchParams(defaultValue);
-    else if (val === 'proposal') setProposalSearchParams(defaultValue);
+    const defaultBookingValue = new URLSearchParams(initialBookingValue);
+    const defaultProposalValue = new URLSearchParams(initalProposalValue);
+    if (val === 'booking') {
+      bookingSearchParams.delete('userId');
+      setBookingSearchParams(defaultBookingValue);
+    } else if (val === 'proposal') {
+      proposalSearchParams.delete('incharge');
+      setProposalSearchParams(defaultProposalValue);
+    }
   };
+
+  useEffect(() => {
+    // TODO: fix this to reduce one extra api call
+    if (activeTable === 'booking') {
+      bookingSearchParams.delete('userId');
+      setBookingSearchParams(bookingSearchParams);
+    }
+  }, []);
 
   return (
     <Tabs value={activeTab} onTabChange={setActiveTab}>

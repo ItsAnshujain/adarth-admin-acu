@@ -340,8 +340,8 @@ const BasicInfo = () => {
                     </div>
                   </div>
                   <MapView
-                    latitude={inventoryDetails?.location.latitude}
-                    longitude={inventoryDetails?.location.longitude}
+                    latitude={Number(inventoryDetails?.location.latitude)}
+                    longitude={Number(inventoryDetails?.location.longitude)}
                   />
                 </div>
               ) : (

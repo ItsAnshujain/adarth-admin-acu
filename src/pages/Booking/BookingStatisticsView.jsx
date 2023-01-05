@@ -28,7 +28,7 @@ const BookingStatisticsView = ({ bookingStats }) => (
           />
         </div>
         <div>
-          <Text size="md">Revenue Breakup</Text>
+          <p className="font-medium">Revenue Breakup</p>
           <div className="flex gap-8 mt-6">
             <div className="flex gap-2 items-center">
               <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
