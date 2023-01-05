@@ -40,6 +40,7 @@ const OrderInfo = () => {
           styles={styles}
           label="Campaign Name"
           name="campaignName"
+          withAsterisk
           placeholder="Write..."
           errors={errors}
         />

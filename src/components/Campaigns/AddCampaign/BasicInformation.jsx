@@ -29,8 +29,7 @@ const sliderStyle = {
     backgroundColor: 'black',
   },
   thumb: {
-    backgroundColor: 'black',
-    border: 'black',
+    backgroundColor: 'white',
   },
 };
 
@@ -59,10 +58,7 @@ const BasicInformation = () => {
     serialize({ type: 'brand', parentId: null, limit: 100 }),
   );
 
-  const marks = [
-    { value: 200, label: '20%' },
-    { value: 800, label: '80%' },
-  ];
+  const marks = [{ value: 1600000 }, { value: 3200000 }];
 
   return (
     <div className="mt-4 pl-5 pr-7 flex flex-col gap-4 pb-20">
@@ -72,6 +68,7 @@ const BasicInformation = () => {
           <TextInput
             label="Campaign Name"
             name="name"
+            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Write..."
@@ -110,6 +107,7 @@ const BasicInformation = () => {
       <MultiSelect
         styles={multiSelectStyles}
         label="Previous Brands"
+        withAsterisk
         onChange={e => setFieldValue('previousBrands', [...e])}
         data={brandData?.docs.map(item => ({ label: item.name, value: item._id })) || []}
         name="previousBrands"
@@ -132,10 +130,9 @@ const BasicInformation = () => {
           }}
           styles={sliderStyle}
           className="mb-5 flex-auto"
-          min={100}
-          max={1000}
+          min={0}
+          max={5000000}
           value={[values.minImpression, values.maxImpression]}
-          defaultValue={[200, 1000]}
           marks={marks}
         />
         <div className="text-right">
@@ -153,6 +150,7 @@ const BasicInformation = () => {
       <MultiSelect
         styles={multiSelectStyles}
         label="Tags"
+        withAsterisk
         onChange={e => setFieldValue('tags', [...e])}
         data={tagData?.docs.map(item => ({ label: item.name, value: item._id })) || []}
         name="tags"

@@ -26,19 +26,28 @@ const BasicInfo = () => {
             styles={styles}
             label="Company Name"
             name="client.companyName"
+            withAsterisk
             errors={errors}
           />
-          <TextInput styles={styles} label="Client Email" name="client.email" errors={errors} />
+          <TextInput
+            styles={styles}
+            label="Client Email"
+            name="client.email"
+            withAsterisk
+            errors={errors}
+          />
           <TextInput
             styles={styles}
             label="Client Pan Number"
             name="client.panNumber"
+            withAsterisk
             errors={errors}
           />
           <NativeSelect
             styles={styles}
             label="Payment Type"
             name="paymentType"
+            withAsterisk
             errors={errors}
             className="mr-2"
             data={[
@@ -52,23 +61,32 @@ const BasicInfo = () => {
           />
         </div>
         <div className="flex flex-col gap-4">
-          <TextInput styles={styles} label="Client Name" name="client.name" errors={errors} />
+          <TextInput
+            styles={styles}
+            label="Client Name"
+            name="client.name"
+            withAsterisk
+            errors={errors}
+          />
           <TextInput
             styles={styles}
             label="Client Contact Number"
             name="client.contactNumber"
+            withAsterisk
             errors={errors}
           />
           <TextInput
             styles={styles}
             label="Client GST Number"
             name="client.gstNumber"
+            withAsterisk
             errors={errors}
           />
           <TextInput
             styles={styles}
             label="Payment Reference Number"
             name="paymentReference"
+            withAsterisk
             errors={errors}
           />
         </div>

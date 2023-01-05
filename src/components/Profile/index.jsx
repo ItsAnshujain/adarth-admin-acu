@@ -1,8 +1,8 @@
-import { Button } from '@mantine/core';
+import { Button, Image } from '@mantine/core';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import image1 from '../../assets/image1.png';
+import image1 from '../../assets/placeholders/user-avatar.png';
 // import pdf from '../../assets/pdf.svg';
 import useUserStore from '../../store/user.store';
 import { aadhaarFormat } from '../../utils';
@@ -46,7 +46,7 @@ const Profile = () => {
           <div className="flex flex-col gap-8">
             <div className="flex gap-4">
               <div>
-                <img src={data?.image || image1} alt="profile pic" />
+                <Image src={data?.image || image1} alt="profile pic" height={160} />
               </div>
               <div className="flex flex-col">
                 <p className="text-xl font-bold">{data?.name || 'N/A'}</p>

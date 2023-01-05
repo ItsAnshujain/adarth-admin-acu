@@ -126,6 +126,7 @@ const InputModal = ({ opened, setOpened, isEdit = false, itemId, name }) => {
             <TextInput
               label={parentId !== 'null' ? `Sub ${masterType} Name` : `${masterType} Name`}
               name="name"
+              withAsterisk
               styles={styles}
               errors={form.errors}
               placeholder={parentId !== 'null' ? `Sub ${masterType} Name` : `${masterType} Name`}

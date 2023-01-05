@@ -95,6 +95,7 @@ const BasicInfo = ({ proposalId }) => {
           <TextInput
             label="Proposal Name"
             name="name"
+            withAsterisk
             styles={styles}
             errors={errors}
             className="mb-7"
@@ -104,6 +105,7 @@ const BasicInfo = ({ proposalId }) => {
             <DatePicker
               label="Start Date"
               name="startDate"
+              withAsterisk
               placeholder="DD/MM/YYYY"
               minDate={new Date()}
               styles={styles}
@@ -112,6 +114,7 @@ const BasicInfo = ({ proposalId }) => {
             <DatePicker
               label="End Date"
               name="endDate"
+              withAsterisk
               placeholder="DD/MM/YYYY"
               minDate={new Date()}
               styles={styles}

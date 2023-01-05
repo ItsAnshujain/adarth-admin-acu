@@ -75,10 +75,7 @@ const schema = step =>
       .string()
       .trim()
       .concat(step === 2 ? requiredSchema('Campaign name is required') : null),
-    description: yup
-      .string()
-      .trim()
-      .concat(step === 2 ? requiredSchema('Campaign description is required') : null),
+    description: yup.string().trim(),
   });
 
 const initialValues = {
