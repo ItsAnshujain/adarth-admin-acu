@@ -21,7 +21,7 @@ const numberRequiredSchema = (typeErrorText, requiredText) =>
 const schema = formStep =>
   yup.object().shape({
     name: yup.string().concat(formStep === 1 ? requiredSchema('Campaign name is required') : null),
-    description: yup.string(),
+    description: yup.string().trim(),
     price: yup
       .number()
       .concat(
