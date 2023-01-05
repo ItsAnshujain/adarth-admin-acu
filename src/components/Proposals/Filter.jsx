@@ -19,7 +19,12 @@ const sliderStyle = {
 const Filter = ({ isOpened, setShowFilter }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [statusArr, setStatusArr] = useState([]);
-
+  const [_, setDynamicNumInput] = useState({
+    minPrice: 0,
+    maxPrice: 10000,
+    minPlace: 0,
+    maxPlace: 10000,
+  });
   const priceMin = searchParams.get('priceMin');
   const priceMax = searchParams.get('priceMax');
   const totalPlacesMin = searchParams.get('totalPlacesMin');
@@ -58,6 +63,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const handleNavigationByFilter = () => {
     searchParams.delete('status');
     statusArr.forEach(item => searchParams.append('status', item));
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
     setShowFilter(false);
   };
@@ -73,27 +79,35 @@ const Filter = ({ isOpened, setShowFilter }) => {
   };
 
   const handleMinPrice = e => {
+    setDynamicNumInput(prevState => ({ ...prevState, minPrice: e }));
     searchParams.set('priceMin', e);
     searchParams.set('priceMax', searchParams.get('priceMax') || 10000);
   };
   const handleMaxPrice = e => {
+    setDynamicNumInput(prevState => ({ ...prevState, maxPrice: e }));
     searchParams.set('priceMax', e);
     searchParams.set('priceMin', searchParams.get('priceMin') || 0);
   };
   const handleSliderChange = val => {
+    setDynamicNumInput(prevState => ({ ...prevState, minPrice: val[0] }));
+    setDynamicNumInput(prevState => ({ ...prevState, maxPrice: val[1] }));
     searchParams.set('priceMin', val[0]);
     searchParams.set('priceMax', val[1]);
   };
 
   const handleMinPlace = e => {
+    setDynamicNumInput(prevState => ({ ...prevState, minPlace: e }));
     searchParams.set('totalPlacesMin', e);
     searchParams.set('totalPlacesMax', searchParams.get('totalPlacesMax') || 10000);
   };
   const handleMaxPlace = e => {
+    setDynamicNumInput(prevState => ({ ...prevState, maxPlace: e }));
     searchParams.set('totalPlacesMax', e);
     searchParams.set('totalPlacesMin', searchParams.get('totalPlacesMin') || 0);
   };
   const handlePlacesSliderChange = val => {
+    setDynamicNumInput(prevState => ({ ...prevState, minPlace: val[0] }));
+    setDynamicNumInput(prevState => ({ ...prevState, maxPlace: val[1] }));
     searchParams.set('totalPlacesMin', val[0]);
     searchParams.set('totalPlacesMax', val[1]);
   };
@@ -178,6 +192,14 @@ const Filter = ({ isOpened, setShowFilter }) => {
                       min={0}
                       max={10000}
                       styles={sliderStyle}
+                      value={[
+                        priceMin && !Number.isNaN(parseInt(priceMin, 10))
+                          ? parseInt(priceMin, 10)
+                          : 0,
+                        priceMax && !Number.isNaN(parseInt(priceMax, 10))
+                          ? parseInt(priceMax, 10)
+                          : 10000,
+                      ]}
                     />
                   </div>
                 </div>
@@ -222,6 +244,14 @@ const Filter = ({ isOpened, setShowFilter }) => {
                       min={0}
                       max={10000}
                       styles={sliderStyle}
+                      value={[
+                        totalPlacesMin && !Number.isNaN(parseInt(totalPlacesMin, 10))
+                          ? parseInt(totalPlacesMin, 10)
+                          : 0,
+                        totalPlacesMax && !Number.isNaN(parseInt(totalPlacesMax, 10))
+                          ? parseInt(totalPlacesMax, 10)
+                          : 10000,
+                      ]}
                     />
                   </div>
                 </div>

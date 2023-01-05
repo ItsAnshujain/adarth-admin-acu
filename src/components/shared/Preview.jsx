@@ -22,9 +22,10 @@ const Preview = () => {
 
   const renderBadges = useCallback(
     list =>
-      list?.map(item => (
+      list?.map((item, index) => (
         <p key={item._id} className="pr-1 text-black">
-          {item?.label},
+          {item?.label}
+          {list.length !== index + 1 && ','}
         </p>
       )),
     [values?.specifications?.previousBrands, values?.specifications?.tags],

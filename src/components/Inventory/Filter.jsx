@@ -53,7 +53,10 @@ const Filter = ({ isOpened, setShowFilter }) => {
     demographic: '',
     audience: '',
   });
-
+  const [_, setDynamicNumInput] = useState({
+    min: 0,
+    max: 10000,
+  });
   const minPrice = searchParams.get('minPrice');
   const maxPrice = searchParams.get('maxPrice');
 
@@ -159,6 +162,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const handleNavigationByFilter = () => {
     searchParams.delete('tags');
     filterOptions.tags.forEach(item => searchParams.append('tags', item));
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
     setShowFilter(false);
   };
@@ -192,14 +196,18 @@ const Filter = ({ isOpened, setShowFilter }) => {
   };
 
   const handleMinPrice = e => {
+    setDynamicNumInput(prevState => ({ ...prevState, min: e }));
     searchParams.set('minPrice', e);
     searchParams.set('maxPrice', searchParams.get('maxPrice') || 10000);
   };
   const handleMaxPrice = e => {
+    setDynamicNumInput(prevState => ({ ...prevState, max: e }));
     searchParams.set('maxPrice', e);
     searchParams.set('minPrice', searchParams.get('minPrice') || 0);
   };
   const handleSliderChange = val => {
+    setDynamicNumInput(prevState => ({ ...prevState, min: val[0] }));
+    setDynamicNumInput(prevState => ({ ...prevState, max: val[1] }));
     searchParams.set('minPrice', val[0]);
     searchParams.set('maxPrice', val[1]);
   };
@@ -335,6 +343,14 @@ const Filter = ({ isOpened, setShowFilter }) => {
                       min={0}
                       max={10000}
                       styles={sliderStyle}
+                      value={[
+                        minPrice && !Number.isNaN(parseInt(minPrice, 10))
+                          ? parseInt(minPrice, 10)
+                          : 0,
+                        maxPrice && !Number.isNaN(parseInt(maxPrice, 10))
+                          ? parseInt(maxPrice, 10)
+                          : 10000,
+                      ]}
                     />
                   </div>
                 </div>

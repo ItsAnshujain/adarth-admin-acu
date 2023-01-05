@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Badge, Box, Button, Image, Loader, Progress } from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Image, Loader, Progress } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
+import classNames from 'classnames';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/Inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -15,8 +16,10 @@ import { useDeleteInventory, useFetchInventory } from '../../hooks/inventory.hoo
 import MenuPopover from '../../components/Inventory/MenuPopover';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
-import { colors } from '../../utils';
+import { colors, ROLES } from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
+import TrashIcon from '../../assets/delete.png';
+import RoleBased from '../../components/RoleBased';
 
 const initialValues = {
   spaces: [],
@@ -317,7 +320,10 @@ const Home = () => {
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <FormProvider form={form}>
-        <form onSubmit={form.onSubmit(handleSubmit)}>
+        <form
+          onSubmit={form.onSubmit(handleSubmit)}
+          className={classNames(viewType.inventory === 'grid' ? 'h-[70%]' : '')}
+        >
           <AreaHeader
             text="List of spaces"
             isLoading={isDeletedInventoryDataLoading}
@@ -325,7 +331,20 @@ const Home = () => {
           />
           {viewType.inventory !== 'map' && (
             <div className="flex justify-between h-20 items-center pr-7">
-              <RowsPerPage setCount={handleRowCount} count={limit} />
+              <div className="flex items-center">
+                <RowsPerPage setCount={handleRowCount} count={limit} />
+                <RoleBased
+                  acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
+                >
+                  {isDeletedInventoryDataLoading ? (
+                    <p>Inventory deleting...</p>
+                  ) : (
+                    <ActionIcon size={20} type="submit">
+                      <Image src={TrashIcon} />
+                    </ActionIcon>
+                  )}
+                </RoleBased>
+              </div>
               <Search search={searchInput} setSearch={setSearchInput} />
             </div>
           )}

@@ -84,6 +84,7 @@ const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
   );
 
   const handleApply = () => {
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
     onClose();
   };

@@ -50,7 +50,8 @@ const schema = step =>
       .concat(step === 'first' ? requiredSchema('State is required') : null),
     pincode: yup
       .string()
-      .concat(step === 'first' ? yup.string().required('Pin code is required') : null)
+      .trim()
+      .concat(step === 'first' ? requiredSchema('Pin code is required') : null)
       .concat(
         step === 'first' ? yup.string().matches(/^(\d{4}|\d{6})$/, 'Pin code must be valid') : null,
       ),

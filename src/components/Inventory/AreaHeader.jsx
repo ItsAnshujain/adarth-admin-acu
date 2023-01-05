@@ -13,7 +13,7 @@ import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import { useFormContext } from '../../context/formContext';
 
-const AreaHeader = ({ text, isLoading = false, inventoryData }) => {
+const AreaHeader = ({ text, inventoryData }) => {
   const { pathname } = useLocation();
   const [addDetailsClicked, setAddDetails] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -68,18 +68,6 @@ const AreaHeader = ({ text, isLoading = false, inventoryData }) => {
       <div className="flex justify-around mr-7">
         {!pathname.includes('reports') && (
           <div className="mr-2 flex ">
-            <RoleBased
-              acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
-            >
-              <Button
-                type="submit"
-                className="border-gray-450 text-black font-normal radius-md mr-2"
-                disabled={isLoading}
-                loading={isLoading}
-              >
-                Delete items
-              </Button>
-            </RoleBased>
             {activeLayout.inventory === 'grid' ? (
               <Checkbox
                 className="mr-5"
