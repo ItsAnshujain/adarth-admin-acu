@@ -33,7 +33,7 @@ const GridView = ({
 
   return (
     <>
-      <div className="flex flex-wrap justify-evenly">
+      <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[100%] overflow-y-auto">
         {list.map(item => (
           <Card
             key={item?._id}

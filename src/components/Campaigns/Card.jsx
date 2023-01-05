@@ -1,4 +1,4 @@
-import { Image } from '@mantine/core';
+import { Image, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import Badge from '../shared/Badge';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -7,9 +7,21 @@ const Card = ({
   data: { _id, status, thumbnail, name = 'N/A', place = [], price = 0, isFeatured, minImpression },
 }) => (
   <Link to={`/campaigns/view-details/${_id}`}>
-    <div className="flex flex-col drop-shadow-md bg-white">
+    <div className="flex flex-col drop-shadow-md bg-white w-[270px] mb-6">
       <div className="flex-1 w-full">
-        <Image withPlaceholder src={thumbnail} width={270} height={170} alt={name} />
+        {thumbnail ? (
+          <Image
+            height={170}
+            src={thumbnail}
+            alt={name}
+            withPlaceholder
+            placeholder={
+              <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
+            }
+          />
+        ) : (
+          <Image height={170} src={null} alt="card" fit="contain" withPlaceholder />
+        )}
       </div>
       <div className="flex-1 p-4 pt-4 pb-7 flex flex-col gap-y-1">
         <div className="flex mb-2 items-center">
@@ -26,9 +38,9 @@ const Card = ({
           ) : null}
         </div>
 
-        <p size="lg" className="mt-2 font-bold text-lg">
+        <Text size="md" weight="bold" lineClamp={1} className="w-full">
           {name}
-        </p>
+        </Text>
         <div className="grid grid-cols-2 justify-between">
           <div className="mt-2">
             <p className="text-sm text-gray-400">No of Media</p>

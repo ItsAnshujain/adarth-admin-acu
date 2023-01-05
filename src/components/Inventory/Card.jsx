@@ -45,12 +45,14 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
     });
 
   return (
-    <Box className="drop-shadow-md w-[273px] cursor-pointer mb-4" onClick={handleInventoryDetails}>
-      <div>
+    <Box
+      className="flex flex-col drop-shadow-md bg-white w-[270px] max-h-[420px] mb-6"
+      onClick={handleInventoryDetails}
+    >
+      <div className="flex-1 w-full">
         {data?.basicInformation?.spacePhoto ? (
           <Image
-            className="w-full"
-            height={176}
+            height={170}
             src={data?.basicInformation?.spacePhoto}
             alt="card"
             withPlaceholder
@@ -59,10 +61,10 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
             }
           />
         ) : (
-          <Image height={176} src={null} alt="card" fit="contain" withPlaceholder />
+          <Image height={170} src={null} alt="card" fit="contain" withPlaceholder />
         )}
       </div>
-      <div className="p-4 px-4 bg-white">
+      <div className="flex-1 p-4 pt-4 pb-7 flex flex-col gap-y-1">
         <Box className="flex justify-between items-center mb-2 " onClick={e => e.stopPropagation()}>
           <Badge
             className="capitalize"

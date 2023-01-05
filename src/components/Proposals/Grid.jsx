@@ -4,7 +4,7 @@ import Card from './Card';
 const skeletonList = () =>
   Array.apply('', Array(5)).map((_, index) => (
     // eslint-disable-next-line react/no-array-index-key
-    <Skeleton height={230} width={257} radius="sm" key={index} />
+    <Skeleton height={270} width={270} radius="sm" key={index} />
   ));
 
 const GridView = ({
@@ -15,7 +15,7 @@ const GridView = ({
   isLoadingList,
 }) => (
   <>
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 mx-5 justify-between gap-8 mb-10 pr-7">
+    <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[70%] overflow-y-auto">
       {list.map(item => (
         <Card key={item._id} proposalData={item} />
       ))}
