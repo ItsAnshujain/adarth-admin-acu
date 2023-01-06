@@ -22,6 +22,8 @@ import VacantIcon from '../assets/vacant.svg';
 import OccupiedIcon from '../assets/occupied.svg';
 import TotalCampaignIcon from '../assets/total-campaign.svg';
 import useUserStore from '../store/user.store';
+import { useBookingStats } from '../hooks/booking.hooks';
+import { useInventoryStats } from '../hooks/inventory.hooks';
 
 ChartJS.register(
   CategoryScale,
@@ -67,19 +69,8 @@ const lineData = {
 };
 
 // Doughnut
-const data = {
-  datasets: [
-    {
-      data: [3425, 3425],
-      backgroundColor: ['#914EFB', '#FF900E'],
-      borderColor: ['#914EFB', '#FF900E'],
-      borderWidth: 1,
-    },
-  ],
-};
 const config = {
   type: 'line',
-  data,
   options: { responsive: true },
 };
 
@@ -87,6 +78,20 @@ const HomePage = () => {
   const queryClient = useQueryClient();
   const userId = useUserStore(state => state.id);
   const user = queryClient.getQueryData(['users-by-id', userId]);
+  const { data: bookingStats } = useBookingStats('');
+  const { data: inventoryStats } = useInventoryStats('');
+
+  const inventoryHealthStatus = {
+    datasets: [
+      {
+        data: [inventoryStats?.healthy, inventoryStats?.unHealthy],
+        backgroundColor: ['#FF900E', '#914EFB'],
+        borderColor: ['#FF900E', '#914EFB'],
+        borderWidth: 1,
+      },
+    ],
+  };
+
   return (
     <div className="absolute top-0">
       <Header title="" />
@@ -106,7 +111,7 @@ const HomePage = () => {
                     fit="contain"
                   />
                   <p className="my-2 text-sm font-light text-slate-400">Total Campaign(Overall)</p>
-                  <p className="font-bold">0</p>
+                  <p className="font-bold">{bookingStats?.totalCampaigns || 0}</p>
                 </div>
                 <div className="border rounded p-8  flex-1">
                   <Image
@@ -117,7 +122,7 @@ const HomePage = () => {
                     fit="contain"
                   />
                   <p className="my-2 text-sm font-light text-slate-400">Total Ongoing Campaign</p>
-                  <p className="font-bold">0</p>
+                  <p className="font-bold">{bookingStats?.Ongoing || 0}</p>
                 </div>
                 <div className="border rounded p-8  flex-1">
                   <Image
@@ -128,7 +133,7 @@ const HomePage = () => {
                     fit="contain"
                   />
                   <p className="my-2 text-sm font-light text-slate-400">Upcoming Campaign</p>
-                  <p className="font-bold">0</p>
+                  <p className="font-bold">{bookingStats?.Upcoming || 0}</p>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-8">
@@ -141,28 +146,30 @@ const HomePage = () => {
                     fit="contain"
                   />
                   <p className="my-2 text-sm font-light text-slate-400">Completed Campaign</p>
-                  <p className="font-bold">0</p>
+                  <p className="font-bold">{bookingStats?.Completed || 0}</p>
                 </div>
                 <div className="border rounded p-8 flex-1">
                   <Image src={VacantIcon} alt="folder" height={24} width={24} fit="contain" />
                   <p className="my-2 text-sm font-light text-slate-400">Vacant Inventory</p>
-                  <p className="font-bold">0</p>
+                  <p className="font-bold">{inventoryStats?.vacant || 0}</p>
                 </div>
                 <div className="border rounded p-8  flex-1">
                   <Image src={OccupiedIcon} alt="folder" height={24} width={24} fit="contain" />
                   <p className="my-2 text-xs font-light text-slate-400">Occupied Inventory</p>
-                  <p className="font-bold">0</p>
+                  <p className="font-bold">{inventoryStats?.occupied || 0}</p>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-4 pr-7">
               <div className="w-[68%]">
-                <p className="font-bold mb-5">Revenue Graph</p>
-                <Line height="80" data={lineData} options={options} />
+                <div className="opacity-50">
+                  <p className="font-bold mb-5">Revenue Graph (Upcoming)</p>
+                  <Line height="80" data={lineData} options={options} />
+                </div>
               </div>
               <div className="flex gap-4 p-4 border rounded-md items-center justify-center flex-1 flex-wrap-reverse">
                 <div className="w-32">
-                  <Doughnut options={config.options} data={config.data} />
+                  <Doughnut options={config.options} data={inventoryHealthStatus} />
                 </div>
                 <div>
                   <p className="font-medium text-center">Health Status of Inventory</p>
@@ -171,14 +178,14 @@ const HomePage = () => {
                       <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                       <div>
                         <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
-                        <p className="font-bold text-lg">0</p>
+                        <p className="font-bold text-lg">{inventoryStats?.healthy || 0}</p>
                       </div>
                     </div>
                     <div className="flex gap-2 items-center">
                       <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                       <div>
                         <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
-                        <p className="font-bold text-lg">0</p>
+                        <p className="font-bold text-lg">{inventoryStats?.unHealthy || 0}</p>
                       </div>
                     </div>
                   </div>

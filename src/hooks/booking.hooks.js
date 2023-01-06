@@ -122,7 +122,7 @@ export const useBookingStats = (filter, enabled = true) =>
     ['booking-stats', filter],
     async () => {
       const res = await bookingStats(filter);
-      return res;
+      return res?.data;
     },
     {
       enabled,

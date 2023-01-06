@@ -16,3 +16,5 @@ export const csvImport = data => http.post('/inventory/csv-import', data, { hasF
 
 export const fetchBookingsByInventoryId = (inventoryId, query) =>
   http.get(`/inventory/${inventoryId}/bookings?${query}`);
+
+export const inventoryStats = filter => http.get(`/inventory/stats?${filter}`);

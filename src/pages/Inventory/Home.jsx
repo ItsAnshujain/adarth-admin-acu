@@ -306,7 +306,11 @@ const Home = () => {
       return;
     }
 
-    deleteInventoryData(data);
+    deleteInventoryData(data, {
+      onSuccess: () => {
+        form.reset();
+      },
+    });
   };
 
   useEffect(() => {
@@ -345,7 +349,7 @@ const Home = () => {
                   )}
                 </RoleBased>
               </div>
-              <Search search={searchInput} setSearch={setSearchInput} />
+              <Search search={searchInput} setSearch={setSearchInput} form="nosubmit" />
             </div>
           )}
           {isInventoryDataLoading && viewType.inventory === 'list' ? (

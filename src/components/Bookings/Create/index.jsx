@@ -154,7 +154,10 @@ const MainArea = () => {
         {
           onSuccess: () => {
             setOpenSuccessModal(true);
-            setTimeout(() => navigate('/bookings'), 2000);
+            setTimeout(() => {
+              navigate('/bookings');
+              form.reset();
+            }, 2000);
           },
         },
       );
