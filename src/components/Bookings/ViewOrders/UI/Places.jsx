@@ -4,7 +4,6 @@ import { Calendar, ChevronDown } from 'react-feather';
 import { Dropzone } from '@mantine/dropzone';
 import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
-import CustomBadge from '../../../shared/Badge';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import uploadIcon from '../../../../assets/upload.svg';
 import NoData from '../../../shared/NoData';
@@ -70,7 +69,7 @@ const Places = ({ data, campaignId, bookingId }) => {
 
   return (
     <div className="flex gap-4 p-4 shadow-md bg-white mb-2">
-      <div>
+      <div className="flex items-center">
         {data?.basicInformation?.spacePhoto ? (
           <Image src={data?.basicInformation?.spacePhoto} alt="banner" height={140} width={140} />
         ) : (
@@ -78,14 +77,7 @@ const Places = ({ data, campaignId, bookingId }) => {
         )}
       </div>
       <div className="flex flex-col w-full">
-        <div className="flex justify-between items-center w-full mb-2">
-          <CustomBadge
-            className="bg-green-200 text-green-700 tracking-wider"
-            radius="lg"
-            variant="filled"
-            text={data.isUnderMaintenance ? 'Under maintenance' : 'Available'}
-            size="md"
-          />
+        <div className="flex justify-end items-center w-full mb-2">
           <div className="flex gap-2 items-center">
             <Dropzone openRef={openRef} style={styles} onDrop={handleUpload} multiple={false}>
               {/* children */}
@@ -132,7 +124,7 @@ const Places = ({ data, campaignId, bookingId }) => {
             <div className="mb-4">
               <p className="mb-2 text-sm text-slate-400">Printing Status</p>
               <Select
-                className="mr-2"
+                className="mr-2 w-[200px]"
                 defaultValue={data?.currentStatus?.printingStatus}
                 onChange={val => {
                   updateCampaignStatus(
@@ -154,14 +146,14 @@ const Places = ({ data, campaignId, bookingId }) => {
             </div>
             <div className="mb-4">
               <p className="mb-2 text-sm font-light text-slate-400">Health Update</p>
-              <p>{data?.health || <NoData type="na" />}</p>
+              <p>{`${data?.health}%` || <NoData type="na" />}</p>
             </div>
           </div>
           <div>
             <div className="mb-4">
               <p className="mb-2 text-sm text-slate-400">Mounting Status</p>
               <Select
-                className="mr-2"
+                className="mr-2 w-[200px]"
                 defaultValue={data?.currentStatus?.mountingStatus}
                 onChange={val =>
                   updateCampaignStatus(

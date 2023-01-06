@@ -24,24 +24,27 @@ const schema = formStep =>
     description: yup.string().trim(),
     price: yup
       .number()
+      .nullable()
       .concat(
-        formStep === 1 ? numberRequiredSchema('Price must be a number', 'Price is required') : null,
+        formStep === 1
+          ? yup
+              .number()
+              .positive('Price must be a positive number')
+              .typeError('Price must be a number')
+              .nullable()
+          : null,
       ),
     healthStatus: yup
       .number()
+      .nullable()
       .concat(
         formStep === 1
-          ? numberRequiredSchema('Health status must be a number', 'Health status is required')
-          : null,
-      )
-      .concat(
-        formStep === 1
-          ? yup.number().max(100, 'Health status must be less than or equal to 100')
-          : null,
-      )
-      .concat(
-        formStep === 1
-          ? yup.number().min(0, 'Health status must be greater than or equal to 0')
+          ? yup
+              .number()
+              .positive('Health status must be a positive number')
+              .typeError('Health status must be a number')
+              .test('healthLimit', 'Health status must be at max 100', val => val <= 100)
+              .nullable()
           : null,
       ),
     previousBrands: yup
@@ -69,8 +72,8 @@ const schema = formStep =>
 const initialValues = {
   name: '',
   description: '',
-  price: 0,
-  healthStatus: 0,
+  price: null,
+  healthStatus: null,
   status: 'Created',
   isFeatured: false,
   previousBrands: [],

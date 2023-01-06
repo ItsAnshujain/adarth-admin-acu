@@ -3,6 +3,7 @@ import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
 import dayjs from 'dayjs';
 import { showNotification } from '@mantine/notifications';
+import { useNavigate } from 'react-router-dom';
 import BasicInfo from './BasicInformation';
 import SelectSpaces from './SelectSpaces';
 import OrderInfo from './OrderInformation';
@@ -95,6 +96,7 @@ const initialValues = {
 };
 
 const MainArea = () => {
+  const navigate = useNavigate();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ validate: yupResolver(schema(formStep)), initialValues });
@@ -152,6 +154,7 @@ const MainArea = () => {
         {
           onSuccess: () => {
             setOpenSuccessModal(true);
+            setTimeout(() => navigate('/bookings'), 2000);
           },
         },
       );
