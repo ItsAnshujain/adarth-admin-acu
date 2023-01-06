@@ -4,6 +4,7 @@ import shallow from 'zustand/shallow';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import randomWords from 'random-words';
+import { showNotification } from '@mantine/notifications';
 import { useDeleteAccount } from '../../hooks/settings.hooks';
 import useUserStore from '../../store/user.store';
 import { useForm, FormProvider } from '../../context/formContext';
@@ -42,10 +43,16 @@ const TwoStepDeleteAccountContent = ({ onClickCancel = () => {}, navigate }) => 
 
   const handleAccountDelete = formData => {
     const data = { ...formData };
-    if (data.randomText?.toLowerCase() === typeWord?.toLowerCase()) {
-      delete data.randomText;
+    if (data.randomText?.toLowerCase() !== typeWord?.toLowerCase()) {
+      showNotification({
+        title: 'The entered word does not match the given word',
+        color: 'red',
+      });
+
+      return;
     }
 
+    delete data.randomText;
     mutateAsync(
       { userId: id, data },
       {
