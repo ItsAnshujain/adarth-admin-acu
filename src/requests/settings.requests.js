@@ -4,4 +4,4 @@ export const changePassword = data => http.patch('/settings/change-password', da
 
 export const updateNotification = data => http.patch('/settings/notification', data);
 
-export const deleteAccount = userId => http.delete(`/users/${userId}`);
+export const deleteAccount = (userId, data) => http.patch(`/users/${userId}/delete`, data);
