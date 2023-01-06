@@ -18,7 +18,7 @@ const BookingStatisticsView = ({ bookingStats }) => (
             data={{
               datasets: [
                 {
-                  data: [bookingStats?.data.online || 0, bookingStats?.data.offline || 0],
+                  data: [bookingStats?.online || 0, bookingStats?.offline || 0],
                   backgroundColor: ['#FF900E', '#914EFB'],
                   borderColor: ['#FF900E', '#914EFB'],
                   borderWidth: 1,
@@ -37,7 +37,7 @@ const BookingStatisticsView = ({ bookingStats }) => (
                   Online Sale
                 </Text>
                 <Text weight="bolder" size="xl">
-                  {bookingStats?.data.online || 0}
+                  {bookingStats?.online || 0}
                 </Text>
               </div>
             </div>
@@ -48,7 +48,7 @@ const BookingStatisticsView = ({ bookingStats }) => (
                   Offline Sale
                 </Text>
                 <Text weight="bolder" size="xl">
-                  {bookingStats?.data.offline || 0}
+                  {bookingStats?.offline || 0}
                 </Text>
               </div>
             </div>
@@ -61,21 +61,21 @@ const BookingStatisticsView = ({ bookingStats }) => (
           <Text className="my-2" size="sm" weight="200">
             Ongoing Orders
           </Text>
-          <Text weight="bold">{bookingStats?.data?.Ongoing || 0}</Text>
+          <Text weight="bold">{bookingStats?.Ongoing || 0}</Text>
         </div>
         <div className="border rounded p-8 pr-20">
           <Image src={UpcomingOrdersIcon} alt="upcoming" height={24} width={24} fit="contain" />
           <Text className="my-2" size="sm" weight="200">
             Upcoming Orders
           </Text>
-          <Text weight="bold">{bookingStats?.data?.Upcoming || 0}</Text>
+          <Text weight="bold">{bookingStats?.Upcoming || 0}</Text>
         </div>
         <div className="border rounded p-8 pr-20">
           <Image src={CompletedOrdersIcon} alt="completed" height={24} width={24} fit="contain" />
           <Text className="my-2" size="sm" weight="200">
             Completed Orders
           </Text>
-          <Text weight="bold">{bookingStats?.data?.Completed || 0}</Text>
+          <Text weight="bold">{bookingStats?.Completed || 0}</Text>
         </div>
       </div>
     </div>

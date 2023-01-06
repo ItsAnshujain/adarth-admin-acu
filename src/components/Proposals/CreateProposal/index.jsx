@@ -99,7 +99,14 @@ const Main = () => {
       if (proposalId) {
         update(
           { proposalId, data },
-          { onSuccess: () => setTimeout(() => navigate('/proposals'), 2000) },
+          {
+            onSuccess: () => {
+              setTimeout(() => {
+                navigate('/proposals');
+                form.reset();
+              }, 2000);
+            },
+          },
         );
       } else {
         const status = proposalStatusData?.docs?.filter(
@@ -110,9 +117,15 @@ const Main = () => {
           ...data,
           status,
         };
-        create(data, { onSuccess: () => setTimeout(() => navigate('/proposals'), 2000) });
+        create(data, {
+          onSuccess: () => {
+            setTimeout(() => {
+              navigate('/proposals');
+              form.reset();
+            }, 2000);
+          },
+        });
       }
-      form.reset();
     }
   };
 

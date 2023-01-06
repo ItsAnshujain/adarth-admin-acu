@@ -86,7 +86,7 @@ const OrderInformation = ({
                 data={{
                   datasets: [
                     {
-                      data: [bookingStats?.data.online || 0, bookingStats?.data.offline || 0],
+                      data: [bookingStats?.online || 0, bookingStats?.offline || 0],
                       backgroundColor: ['#FF900E', '#914EFB'],
                       borderColor: ['#FF900E', '#914EFB'],
                       borderWidth: 1,
@@ -102,14 +102,14 @@ const OrderInformation = ({
                   <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                   <div>
                     <p className="text-xs font-lighter mb-1">Online Sale</p>
-                    <p className="font-bold text-md">{bookingStats?.data.online || 0}</p>
+                    <p className="font-bold text-md">{bookingStats?.online || 0}</p>
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                   <div>
                     <p className="font-lighter text-xs mb-1">Offline Sale</p>
-                    <p className="font-bold text-md">{bookingStats?.data.offline || 0}</p>
+                    <p className="font-bold text-md">{bookingStats?.offline || 0}</p>
                   </div>
                 </div>
               </div>
