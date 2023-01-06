@@ -59,8 +59,8 @@ export const useUpdateNotification = () => {
 
 export const useDeleteAccount = () =>
   useMutation(
-    async userId => {
-      const res = await deleteAccount(userId);
+    async ({ userId, data }) => {
+      const res = await deleteAccount(userId, data);
       return res;
     },
     {

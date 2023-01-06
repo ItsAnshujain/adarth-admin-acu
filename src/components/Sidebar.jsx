@@ -70,7 +70,7 @@ const Sidebar = () => {
   const checkActive = path => {
     if (pathname === '/' && path === '/') return true;
 
-    if (path !== '/' && pathname === path) return true;
+    if (path !== '/' && pathname.includes(path)) return true;
 
     return false;
   };

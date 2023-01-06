@@ -179,10 +179,9 @@ const schema = action =>
           action === 2
             ? yup
                 .number()
-                .positive('Health must be a positive number')
-                .typeError('Health must be a number')
-                .test('healthLimit', 'Health must be at max 100', val => val <= 100)
-                .nullable()
+                .min(0, 'Health Status must be greater than or equal to 0')
+                .max(100, 'Health Status must be less than or equal to 100')
+                .nullable(true)
             : null,
         ),
       impressions: yup.object({

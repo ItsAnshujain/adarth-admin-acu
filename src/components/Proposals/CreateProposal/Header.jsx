@@ -2,10 +2,12 @@ import { Chip, Button } from '@mantine/core';
 import classNames from 'classnames';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
+import { useFormContext } from '../../../context/formContext';
 
 const initialState = ['Basic Information', 'Specifications'];
 
 const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposalId }) => {
+  const { values } = useFormContext();
   const navigate = useNavigate();
   const handleBack = () => {
     if (formStep === 1) {
@@ -79,7 +81,11 @@ const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposal
             disabled={isProposalLoading}
             loading={isProposalLoading}
           >
-            {isProposalLoading ? 'Saving...' : isEditable ? 'Edit' : 'Save'}
+            {isProposalLoading
+              ? 'Saving...'
+              : isEditable && !values?.spaces.length
+              ? 'Edit'
+              : 'Save'}
           </Button>
         ) : null}
       </div>

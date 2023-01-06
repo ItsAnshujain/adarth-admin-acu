@@ -27,11 +27,7 @@ const schema = formStep =>
       .nullable()
       .concat(
         formStep === 1
-          ? yup
-              .number()
-              .positive('Price must be a positive number')
-              .typeError('Price must be a number')
-              .nullable()
+          ? yup.number().min(0, 'Price must be greater than or equal to 0').nullable(true)
           : null,
       ),
     healthStatus: yup
@@ -41,10 +37,9 @@ const schema = formStep =>
         formStep === 1
           ? yup
               .number()
-              .positive('Health status must be a positive number')
-              .typeError('Health status must be a number')
-              .test('healthLimit', 'Health status must be at max 100', val => val <= 100)
-              .nullable()
+              .min(0, 'Health Status must be greater than or equal to 0')
+              .max(100, 'Health Status must be less than or equal to 100')
+              .nullable(true)
           : null,
       ),
     previousBrands: yup
