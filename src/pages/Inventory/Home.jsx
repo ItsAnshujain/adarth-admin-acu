@@ -181,12 +181,12 @@ const Home = () => {
       },
       {
         Header: 'IMPRESSION',
-        accessor: 'specifications.impressions.min',
+        accessor: 'specifications.impressions.max',
         Cell: ({
           row: {
             original: { specifications },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.min || 0}+`}</p>, []),
+        }) => useMemo(() => <p>{`${specifications?.impressions?.max || 0}+`}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',

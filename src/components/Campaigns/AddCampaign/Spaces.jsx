@@ -236,7 +236,12 @@ const SelectSpace = () => {
       },
       {
         Header: 'IMPRESSION',
-        accessor: 'impression',
+        accessor: 'specifications.impressions.max',
+        Cell: ({
+          row: {
+            original: { impression },
+          },
+        }) => useMemo(() => <p>{`${impression || 0}+`}</p>, []),
       },
       {
         Header: 'HEALTH',
@@ -454,7 +459,7 @@ const SelectSpace = () => {
         obj.space_name = item.basicInformation.spaceName;
         obj.space_type = item.basicInformation.spaceType?.name;
         obj.dimension = item.specifications.size;
-        obj.impression = item.specifications.impressions?.min || 0;
+        obj.impression = item.specifications.impressions?.max || 0;
         obj.health = item.specifications.health;
         obj.location = item.location;
         obj.media_type = item.basicInformation.mediaType?.name;

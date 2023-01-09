@@ -177,7 +177,7 @@ const Spaces = () => {
       },
       {
         Header: 'IMPRESSION',
-        accessor: 'specifications.impressions.min',
+        accessor: 'specifications.impressions.max',
         Cell: ({
           row: {
             original: { impressions },
@@ -355,7 +355,7 @@ const Spaces = () => {
         obj.spaceType = item?.basicInformation?.spaceType?.name;
         obj.height = item?.specifications?.size?.height;
         obj.width = item?.specifications?.size?.width;
-        obj.impressions = item?.specifications?.impressions?.min;
+        obj.impressions = item?.specifications?.impressions?.max;
         obj.health = item?.specifications?.health;
         obj.location = item?.location?.city;
         obj.mediaType = item?.basicInformation?.mediaType?.name;

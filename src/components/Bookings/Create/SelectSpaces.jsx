@@ -229,7 +229,7 @@ const SelectSpace = () => {
       },
       {
         Header: 'IMPRESSION',
-        accessor: 'specifications.impressions.min',
+        accessor: 'specifications.impressions.max',
         Cell: ({
           row: {
             original: { impression },
@@ -429,7 +429,7 @@ const SelectSpace = () => {
         obj.dimension = `${item.specifications?.size?.height || 0}ft x ${
           item.specifications?.size?.width || 0
         }ft`;
-        obj.impression = item.specifications?.impressions?.min || 0;
+        obj.impression = item.specifications?.impressions?.max || 0;
         obj.health = item?.specifications?.health;
         obj.location = item?.location?.city;
         obj.mediaType = item.basicInformation?.mediaType?.name;

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Text, Button, NativeSelect, Progress, Loader } from '@mantine/core';
-import { ChevronDown, Plus } from 'react-feather';
+import { ChevronDown } from 'react-feather';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -13,9 +13,8 @@ import Table from '../../Table/Table';
 import { useBookings, useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import MenuPopover from '../../../pages/Booking/MenuPopOver';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
-import { ROLES, serialize } from '../../../utils';
+import { serialize } from '../../../utils';
 import toIndianCurrency from '../../../utils/currencyFormat';
-import RoleBased from '../../RoleBased';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -453,21 +452,11 @@ const TotalBookings = ({ campaignId }) => {
               <img src={calendar} className="h-5" alt="calendar" />
             </Button>
             {showDatePicker && (
-              <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
+              <div className="absolute z-20 -translate-x-[90%] bg-white -top-0.3">
                 <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
               </div>
             )}
           </div>
-          <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]}>
-            <div>
-              <Button
-                onClick={() => {}}
-                className="bg-purple-450 flex items-center align-center py-2 text-white rounded-md px-4"
-              >
-                <Plus size={16} className="mt-[1px] mr-1" /> Add Space
-              </Button>
-            </div>
-          </RoleBased>
         </div>
       </div>
       <div>

@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Image, Pagination } from '@mantine/core';
+import { Badge, Button, Image, Pagination } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import GoogleMapReact from 'google-map-react';
 import { useSearchParams } from 'react-router-dom';
-import CustomBadge from '../../shared/Badge';
 import Places from './UI/Places';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
@@ -40,13 +39,13 @@ const Overview = ({ bookingData = {} }) => {
     return initialCity;
   }, [bookingData?.campaign?.spaces]);
 
-  const calcutateTotalMinimumImpressions = useMemo(() => {
+  const calcutateTotalImpressions = useMemo(() => {
     const initialImpressions = 0;
     if (bookingData?.campaign?.spaces?.length > 0) {
       return bookingData?.campaign?.spaces
         .map(item =>
           item?.specifications?.impressions
-            ? Number.parseInt(item.specifications.impressions.min, 10)
+            ? Number.parseInt(item.specifications.impressions.max, 10)
             : 0,
         )
         .reduce((previousValue, currentValue) => previousValue + currentValue, initialImpressions);
@@ -126,19 +125,17 @@ const Overview = ({ bookingData = {} }) => {
           </div>
           <div className="flex mt-4 items-center gap-2 ">
             <span>{toIndianCurrency(bookingData?.campaign?.totalPrice || 0)}</span>
-            <CustomBadge
+            <Badge
+              className="text-purple-450 bg-purple-100 capitalize"
               size="lg"
-              text={
-                <>
-                  {calcutateTotalMinimumImpressions &&
-                  !Number.isNaN(calcutateTotalMinimumImpressions)
-                    ? calcutateTotalMinimumImpressions
-                    : 0}{' '}
-                  Total Impressions{' '}
-                </>
-              }
-              className="py-4 font-extralight bg-[#4B0DAF1A] capitalize "
-            />
+              variant="filled"
+              radius="md"
+            >
+              {calcutateTotalImpressions && !Number.isNaN(calcutateTotalImpressions)
+                ? calcutateTotalImpressions
+                : 0}
+              + Total Impressions{' '}
+            </Badge>
           </div>
           <div className="mt-8">
             <p>Specifications</p>
@@ -151,9 +148,8 @@ const Overview = ({ bookingData = {} }) => {
               <div>
                 <p className="text-slate-400 text-sm">Impressions</p>
                 <p>
-                  {calcutateTotalMinimumImpressions &&
-                  !Number.isNaN(calcutateTotalMinimumImpressions)
-                    ? calcutateTotalMinimumImpressions
+                  {calcutateTotalImpressions && !Number.isNaN(calcutateTotalImpressions)
+                    ? calcutateTotalImpressions
                     : 0}{' '}
                 </p>
               </div>
