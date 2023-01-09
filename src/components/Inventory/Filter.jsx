@@ -43,15 +43,15 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const [filterOptions, setFilterOptions] = useState({
     owner: '',
     category: '',
-    subCategory: '',
-    mediaType: '',
+    subCategory: [],
+    mediaType: [],
     tier: '',
-    zone: '',
+    zone: [],
     footFall: '',
-    facing: '',
+    facing: [],
     tags: [],
-    demographic: '',
-    audience: '',
+    demographic: [],
+    audience: [],
   });
   const [_, setDynamicNumInput] = useState({
     min: 0,
@@ -68,34 +68,34 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const zone = searchParams.get('zone');
   const footFall = searchParams.get('footFall');
   const facing = searchParams.get('facing');
-  const tags = searchParams.getAll('tags');
+  const tags = searchParams.get('tags');
   const demographic = searchParams.get('demographic');
   const audience = searchParams.get('audience');
 
   const { data: categoryData, isLoading: isCategoryLoading } = useFetchMasters(
-    serialize({ type: 'category', parentId: null, limit: 10 }),
+    serialize({ type: 'category', parentId: null, limit: 100, page: 1 }),
   );
   const { data: subCategoryData, isLoading: isSubCategoryLoading } = useFetchMasters(
-    serialize({ parentId: category, limit: 10 }),
+    serialize({ parentId: category, limit: 100, page: 1 }),
     !!category,
   );
   const { data: mediaTypeData, isLoading: isMediaTypeLoading } = useFetchMasters(
-    serialize({ type: 'media_type', parentId: null, limit: 10 }),
+    serialize({ type: 'media_type', parentId: null, limit: 100, page: 1 }),
   );
   const { data: zoneData, isLoading: isZoneLoading } = useFetchMasters(
-    serialize({ type: 'facing', parentId: null, limit: 10 }),
+    serialize({ type: 'zone', parentId: null, limit: 100, page: 1 }),
   );
   const { data: tagData, isLoading: isTagLoading } = useFetchMasters(
-    serialize({ type: 'tag', parentId: null, limit: 10 }),
+    serialize({ type: 'tag', parentId: null, limit: 100, page: 1 }),
   );
   const { data: facingData, isLoading: isFacingLoading } = useFetchMasters(
-    serialize({ type: 'facing', parentId: null, limit: 10 }),
+    serialize({ type: 'facing', parentId: null, limit: 100, page: 1 }),
   );
   const { data: demographicsData, isLoading: isDemographicsDataLoading } = useFetchMasters(
-    serialize({ type: 'demographic', parentId: null, limit: 10 }),
+    serialize({ type: 'demographic', parentId: null, limit: 100, page: 1 }),
   );
   const { data: audienceData, isLoading: isAudienceLoading } = useFetchMasters(
-    serialize({ type: 'audience', parentId: null, limit: 10 }),
+    serialize({ type: 'audience', parentId: null, limit: 100, page: 1 }),
   );
 
   const handleCheckedValues = (filterValues, filterKey) => {
@@ -103,15 +103,15 @@ const Filter = ({ isOpened, setShowFilter }) => {
     searchParams.set(filterKey, filterValues);
   };
 
-  const handleStatusArr = stat => {
-    let tempArr = [...filterOptions.tags]; // TODO: use immmer
+  const handleStatusArr = (stat, key) => {
+    let tempArr = [...filterOptions[key]]; // TODO: use immmer
     if (tempArr.some(item => item === stat)) {
       tempArr = tempArr.filter(item => item !== stat);
     } else {
       tempArr.push(stat);
     }
 
-    setFilterOptions({ ...filterOptions, tags: [...tempArr] });
+    setFilterOptions({ ...filterOptions, [key]: [...tempArr] });
   };
 
   const renderStaticOptions = useCallback(
@@ -145,29 +145,57 @@ const Filter = ({ isOpened, setShowFilter }) => {
   );
 
   const renderDynamicOptionsArr = useCallback(
-    data =>
+    (data, filterKey) =>
       data?.map(item => (
         <div className="flex gap-2 mb-2" key={item?._id}>
           <Checkbox
-            onChange={event => handleStatusArr(event.target.value)}
+            onChange={event => handleStatusArr(event.target.value, filterKey)}
             label={item?.name}
             defaultValue={item?._id}
-            checked={filterOptions.tags.includes(item._id)}
+            checked={filterOptions[filterKey].includes(item._id)}
           />
         </div>
       )),
-    [filterOptions.tags],
+    [
+      filterOptions.subCategory,
+      filterOptions.mediaType,
+      filterOptions.zone,
+      filterOptions.facing,
+      filterOptions.tags,
+      filterOptions.demographic,
+      filterOptions.audience,
+    ],
   );
 
   const handleNavigationByFilter = () => {
+    // searchParams.delete('category');
+    searchParams.delete('subCategory');
+    searchParams.delete('mediaType');
+    searchParams.delete('zone');
+    searchParams.delete('facing');
     searchParams.delete('tags');
-    filterOptions.tags.forEach(item => searchParams.append('tags', item));
+    searchParams.delete('demographic');
+    searchParams.delete('audience');
+    // if (filterOptions.category.length)
+    //   searchParams.append('category', filterOptions.category.join(','));
+    if (filterOptions.subCategory.length)
+      searchParams.append('subCategory', filterOptions.subCategory.join(','));
+    if (filterOptions.mediaType.length)
+      searchParams.append('mediaType', filterOptions.mediaType.join(','));
+    if (filterOptions.zone.length) searchParams.append('zone', filterOptions.zone.join(','));
+    if (filterOptions.facing.length) searchParams.append('facing', filterOptions.facing.join(','));
+    if (filterOptions.tags.length) searchParams.append('tags', filterOptions.tags.join(','));
+    if (filterOptions.demographic.length)
+      searchParams.append('demographic', filterOptions.demographic.join(','));
+    if (filterOptions.audience.length)
+      searchParams.append('audience', filterOptions.audience.join(','));
     searchParams.set('page', 1);
     setSearchParams(searchParams);
     setShowFilter(false);
   };
 
   const handleResetParams = () => {
+    searchParams.delete('owner');
     searchParams.delete('category');
     searchParams.delete('subCategory');
     searchParams.delete('mediaType');
@@ -182,16 +210,17 @@ const Filter = ({ isOpened, setShowFilter }) => {
     searchParams.delete('audience');
     setSearchParams(searchParams);
     setFilterOptions({
+      owner: '',
       category: '',
-      subCategory: '',
-      mediaType: '',
+      subCategory: [],
+      mediaType: [],
       tier: '',
-      zone: '',
+      zone: [],
       footFall: '',
-      facing: '',
+      facing: [],
       tags: [],
-      demographic: '',
-      audience: '',
+      demographic: [],
+      audience: [],
     });
   };
 
@@ -217,15 +246,15 @@ const Filter = ({ isOpened, setShowFilter }) => {
       ...prevState,
       owner: owner || '',
       category: category || '',
-      subCategory: subCategory || '',
-      mediaType: mediaType || '',
+      subCategory: subCategory?.split(',') || '',
+      mediaType: mediaType?.split(',') || '',
       tier: tier || '',
-      zone: zone || '',
+      zone: zone?.split(',') || '',
       footFall: footFall || '',
-      facing: facing || '',
-      tags: tags || [],
-      demographic: demographic || '',
-      audience: audience || '',
+      facing: facing?.split(',') || '',
+      tags: tags?.split(',') || [],
+      demographic: demographic?.split(',') || [],
+      audience: audience?.split(',') || [],
     }));
   }, [searchParams]);
 
@@ -283,7 +312,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderDynamicOptions(subCategoryData?.docs, 'subCategory')}
+                {renderDynamicOptionsArr(subCategoryData?.docs, 'subCategory')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
@@ -293,7 +322,9 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Media Type</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicOptions(mediaTypeData?.docs, 'mediaType')}</div>
+              <div className="mt-2">
+                {renderDynamicOptionsArr(mediaTypeData?.docs, 'mediaType')}
+              </div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -363,7 +394,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Zone</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicOptions(zoneData?.docs, 'zone')}</div>
+              <div className="mt-2">{renderDynamicOptionsArr(zoneData?.docs, 'zone')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -381,7 +412,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Facing</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicOptions(facingData?.docs, 'facing')}</div>
+              <div className="mt-2">{renderDynamicOptionsArr(facingData?.docs, 'facing')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -390,7 +421,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Tags</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicOptionsArr(tagData?.docs)}</div>
+              <div className="mt-2">{renderDynamicOptionsArr(tagData?.docs, 'tags')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -400,7 +431,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderDynamicOptions(demographicsData?.docs, 'demographic')}
+                {renderDynamicOptionsArr(demographicsData?.docs, 'demographic')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
@@ -410,7 +441,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Audience</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicOptions(audienceData?.docs, 'audience')}</div>
+              <div className="mt-2">{renderDynamicOptionsArr(audienceData?.docs, 'audience')}</div>
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>
