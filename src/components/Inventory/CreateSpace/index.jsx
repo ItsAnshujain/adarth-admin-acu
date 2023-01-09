@@ -395,11 +395,13 @@ const MainArea = () => {
       });
 
       if (inventoryId) {
-        update({ inventoryId, data });
+        update(
+          { inventoryId, data },
+          { onSuccess: () => setTimeout(() => navigate('/inventory'), 2000) },
+        );
       } else {
-        create(data);
+        create(data, { onSuccess: () => setTimeout(() => navigate('/inventory'), 2000) });
       }
-      setTimeout(() => navigate('/inventory'), 2000);
     }
   };
 
