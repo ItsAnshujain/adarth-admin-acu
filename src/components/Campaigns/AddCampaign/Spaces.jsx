@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Image, Loader, Progress } from '@mantine/core';
+import { Button, Chip, Image, Loader, Progress } from '@mantine/core';
 import { ChevronDown, Edit2, Eye, Trash } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
@@ -24,7 +24,7 @@ const styles = {
   border: 'none',
 };
 
-const UploadButton = ({ updateData, isActive, id }) => {
+const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
   const { mutateAsync: uploadMedia, isLoading } = useUploadFile();
 
   const handleUpload = async params => {
@@ -52,7 +52,21 @@ const UploadButton = ({ updateData, isActive, id }) => {
           'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md',
         )}
       >
-        Upload
+        {hasMedia ? (
+          <>
+            <Chip
+              classNames={{ checkIcon: 'text-white', label: 'bg-transparent' }}
+              checked
+              variant="filled"
+              color="green"
+              radius="lg"
+              size="xs"
+            />
+            Uploaded
+          </>
+        ) : (
+          'Upload'
+        )}
         <img src={upload} alt="Upload" className="ml-2" />
       </Button>
     </Dropzone>
@@ -214,6 +228,7 @@ const SelectSpace = () => {
               <UploadButton
                 updateData={updateData}
                 isActive={values?.place?.find(item => item._id === _id)}
+                hasMedia={values?.place?.find(item => (item._id === _id ? !!item?.media : false))}
                 id={_id}
               />
             ),

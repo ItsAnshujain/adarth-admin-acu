@@ -53,21 +53,23 @@ const sliderStyle = {
   },
 };
 
+const defaultValue = {
+  owner: '',
+  category: [],
+  subCategory: [],
+  mediaType: [],
+  tier: [],
+  zone: [],
+  footFall: [],
+  facing: [],
+  tags: [],
+  demographic: [],
+  audience: [],
+};
+
 const Filter = ({ isOpened, setShowFilter }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [filterOptions, setFilterOptions] = useState({
-    owner: '',
-    category: [],
-    subCategory: [],
-    mediaType: [],
-    tier: [],
-    zone: [],
-    footFall: [],
-    facing: [],
-    tags: [],
-    demographic: [],
-    audience: [],
-  });
+  const [filterOptions, setFilterOptions] = useState(defaultValue);
   const [_, setDynamicNumInput] = useState({
     min: 0,
     max: 10000,
@@ -171,65 +173,28 @@ const Filter = ({ isOpened, setShowFilter }) => {
   );
 
   const handleNavigationByFilter = () => {
-    searchParams.delete('category');
-    searchParams.delete('subCategory');
-    searchParams.delete('mediaType');
-    searchParams.delete('zone');
-    searchParams.delete('footFall');
-    searchParams.delete('tier');
-    searchParams.delete('facing');
-    searchParams.delete('tags');
-    searchParams.delete('demographic');
-    searchParams.delete('audience');
-    if (filterOptions.category.length)
-      searchParams.append('category', filterOptions.category.join(','));
-    if (filterOptions.subCategory.length)
-      searchParams.append('subCategory', filterOptions.subCategory.join(','));
-    if (filterOptions.mediaType.length)
-      searchParams.append('mediaType', filterOptions.mediaType.join(','));
-    if (filterOptions.tier.length) searchParams.append('tier', filterOptions.tier.join(','));
-    if (filterOptions.zone.length) searchParams.append('zone', filterOptions.zone.join(','));
-    if (filterOptions.footFall.length)
-      searchParams.append('footFall', filterOptions.footFall.join(','));
-    if (filterOptions.facing.length) searchParams.append('facing', filterOptions.facing.join(','));
-    if (filterOptions.tags.length) searchParams.append('tags', filterOptions.tags.join(','));
-    if (filterOptions.demographic.length)
-      searchParams.append('demographic', filterOptions.demographic.join(','));
-    if (filterOptions.audience.length)
-      searchParams.append('audience', filterOptions.audience.join(','));
     searchParams.set('page', 1);
+    if (!filterOptions.owner) {
+      Object.keys(filterOptions).forEach(item => {
+        searchParams.delete(item);
+      });
+    }
+
+    Object.keys(filterOptions).forEach(key => {
+      if (filterOptions[key].length && Array.isArray(filterOptions[key])) {
+        searchParams.append(key, filterOptions[key].join(','));
+      }
+    });
     setSearchParams(searchParams);
     setShowFilter(false);
   };
 
   const handleResetParams = () => {
-    searchParams.delete('owner');
-    searchParams.delete('category');
-    searchParams.delete('subCategory');
-    searchParams.delete('mediaType');
-    searchParams.delete('tier');
-    searchParams.delete('minPrice');
-    searchParams.delete('maxPrice');
-    searchParams.delete('zone');
-    searchParams.delete('footFall');
-    searchParams.delete('facing');
-    searchParams.delete('tags');
-    searchParams.delete('demographic');
-    searchParams.delete('audience');
-    setSearchParams(searchParams);
-    setFilterOptions({
-      owner: '',
-      category: [],
-      subCategory: [],
-      mediaType: [],
-      tier: '',
-      zone: [],
-      footFall: '',
-      facing: [],
-      tags: [],
-      demographic: [],
-      audience: [],
+    Object.keys(defaultValue).forEach(item => {
+      searchParams.delete(item);
     });
+    setSearchParams(searchParams);
+    setFilterOptions(defaultValue);
   };
 
   const handleMinPrice = e => {
