@@ -288,7 +288,7 @@ const initialValues = {
     description: '',
     price: null,
     spacePhoto: '',
-    otherPhotos: [''],
+    otherPhotos: [],
     footFall: null,
     demographic: { label: '', value: '' },
     audience: [],

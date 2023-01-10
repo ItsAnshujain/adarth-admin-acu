@@ -10,7 +10,7 @@ const Card = ({ proposalData }) => {
 
   return (
     <Box
-      className="flex flex-col drop-shadow-md bg-white w-[270px] mb-6"
+      className="flex flex-col drop-shadow-md bg-white w-[270px] max-h-[380px] mb-6"
       onClick={handleProposalDetails}
     >
       <div className="flex-1 w-full">
