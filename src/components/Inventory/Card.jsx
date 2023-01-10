@@ -97,7 +97,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
           </div>
           <div className="mt-2">
             <p className="text-sm text-gray-400">Impressions</p>
-            <p className="text-sm mt-1">{data?.specifications?.impressions?.min}+</p>
+            <p className="text-sm mt-1">{data?.specifications?.impressions?.max}+</p>
           </div>
         </div>
         <div className="flex justify-between items-center">

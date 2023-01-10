@@ -34,7 +34,8 @@ const Places = ({ data, campaignId, bookingId }) => {
     serialize({ type: 'mounting_status', parentId: null, page: 1, limit: 100 }),
   );
 
-  const { mutate: updateCampaignStatus } = useUpdateCampaignStatus();
+  const { mutate: updateCampaignStatus, isLoading: isUpdateCampaignStatusLoading } =
+    useUpdateCampaignStatus();
 
   const openRef = useRef(null);
   const handleSubmit = link => {
@@ -66,6 +67,21 @@ const Places = ({ data, campaignId, bookingId }) => {
 
     return [];
   }, [mountStatusData]);
+
+  const handleCampaignStatusUpdate = (val, statusKey) => {
+    if (data) {
+      updateCampaignStatus(
+        {
+          id: campaignId,
+          placeId: data?._id,
+          data: { [statusKey]: val },
+        },
+        {
+          onSuccess: () => queryClient.invalidateQueries(['booking-by-id', bookingId]),
+        },
+      );
+    }
+  };
 
   return (
     <div className="flex gap-4 p-4 shadow-md bg-white mb-2">
@@ -126,27 +142,17 @@ const Places = ({ data, campaignId, bookingId }) => {
               <Select
                 className="mr-2 w-[200px]"
                 defaultValue={data?.currentStatus?.printingStatus}
-                onChange={val => {
-                  updateCampaignStatus(
-                    {
-                      id: campaignId,
-                      placeId: data?._id,
-                      data: { printingStatus: val },
-                    },
-                    {
-                      onSuccess: () => queryClient.invalidateQueries(['booking-by-id', bookingId]),
-                    },
-                  );
-                }}
+                onChange={val => handleCampaignStatusUpdate(val, 'printingStatus')}
                 data={printList}
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
+                disabled={isUpdateCampaignStatusLoading}
               />
             </div>
             <div className="mb-4">
               <p className="mb-2 text-sm font-light text-slate-400">Health Update</p>
-              <p>{`${data?.health}%` || <NoData type="na" />}</p>
+              <p>{`${data?.health || 0}%` || <NoData type="na" />}</p>
             </div>
           </div>
           <div>
@@ -155,22 +161,12 @@ const Places = ({ data, campaignId, bookingId }) => {
               <Select
                 className="mr-2 w-[200px]"
                 defaultValue={data?.currentStatus?.mountingStatus}
-                onChange={val =>
-                  updateCampaignStatus(
-                    {
-                      id: campaignId,
-                      placeId: data?._id,
-                      data: { mountingStatus: val },
-                    },
-                    {
-                      onSuccess: () => queryClient.invalidateQueries(['booking-by-id', bookingId]),
-                    },
-                  )
-                }
+                onChange={val => handleCampaignStatusUpdate(val, 'mountingStatus')}
                 data={mountList}
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
+                disabled={isUpdateCampaignStatusLoading}
               />
             </div>
             <div>

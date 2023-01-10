@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import Header from './Header';
 import SpacesList from './SpacesList';
@@ -15,10 +15,10 @@ const campaignView = {
 const View = () => {
   const [tabs, setTabs] = useState('overview');
   const { id } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams({
+  const [searchParams] = useSearchParams({
     page: 1,
     limit: 10,
-    sortBy: 'name',
+    sortBy: 'basicInformation.spaceName',
     sortOrder: 'desc',
   });
 
@@ -28,13 +28,6 @@ const View = () => {
   );
 
   const TabView = campaignView[tabs];
-
-  useEffect(() => {
-    if (tabs === 'overview') {
-      searchParams.set('sortBy', 'name');
-      setSearchParams(searchParams);
-    }
-  }, [tabs, data]);
 
   return (
     <>

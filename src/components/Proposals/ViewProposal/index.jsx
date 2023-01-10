@@ -190,7 +190,7 @@ const ProposalDetails = () => {
           row: {
             original: { impressions },
           },
-        }) => useMemo(() => <p>{`${impressions?.min || 0}+`}</p>, []),
+        }) => useMemo(() => <p>{`${impressions?.max || 0}+`}</p>, []),
       },
       {
         Header: 'HEALTH',

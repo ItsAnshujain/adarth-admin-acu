@@ -33,7 +33,7 @@ const Home = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useDebouncedState('', 1000);
   const viewType = useLayoutView(state => state.activeLayout);
-
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams(initialState);
 
   const { data: campaignData, isLoading } = useCampaigns(searchParams.toString());
@@ -78,7 +78,6 @@ const Home = () => {
         Header: 'CAMPAIGN NAME',
         accessor: 'name',
         Cell: tableProps => {
-          const navigate = useNavigate();
           const { name, _id, thumbnail } = tableProps.row.original;
           return useMemo(
             () => (
@@ -177,9 +176,8 @@ const Home = () => {
           row: {
             original: { _id, isFeatured },
           },
-        }) => {
-          const navigate = useNavigate();
-          return useMemo(
+        }) =>
+          useMemo(
             () => (
               <Menu shadow="md" width={150}>
                 <Menu.Target>
@@ -238,8 +236,7 @@ const Home = () => {
               </Menu>
             ),
             [isFeatured, _id],
-          );
-        },
+          ),
       },
     ],
     [campaignStatus, campaignData?.docs],
