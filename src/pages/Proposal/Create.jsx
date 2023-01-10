@@ -7,7 +7,6 @@ import BasicInfo from '../../components/Proposals/CreateProposal/BasicInfo';
 import Spaces from '../../components/Proposals/Spaces';
 import SuccessModal from '../../components/shared/Modal';
 import Header from '../../components/Proposals/CreateProposal/Header';
-import useSideBarState from '../../store/sidebar.store';
 import {
   useCreateProposal,
   useUpdateProposal,
@@ -45,12 +44,6 @@ const initialValues = {
 };
 
 const CreateProposals = () => {
-  const setColor = useSideBarState(state => state.setColor);
-
-  useEffect(() => {
-    setColor(3);
-  }, []);
-
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ validate: yupResolver(schema), initialValues });

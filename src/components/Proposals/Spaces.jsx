@@ -39,7 +39,8 @@ const Spaces = () => {
   const [showFilter, setShowFilter] = useState(false);
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
-
+  const fromDate = searchParams.get('from');
+  const toDate = searchParams.get('to');
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -258,7 +259,8 @@ const Spaces = () => {
               <DatePicker
                 defaultValue={startDate}
                 placeholder="DD/MM/YYYY"
-                minDate={new Date()}
+                minDate={new Date(fromDate)}
+                maxDate={new Date(toDate)}
                 onChange={val => updateData('startDate', val, _id)}
               />
             ),
@@ -279,7 +281,8 @@ const Spaces = () => {
               <DatePicker
                 defaultValue={endDate}
                 placeholder="DD/MM/YYYY"
-                minDate={new Date()}
+                minDate={new Date(fromDate)}
+                maxDate={new Date(toDate)}
                 onChange={val => updateData('endDate', val, _id)}
               />
             ),

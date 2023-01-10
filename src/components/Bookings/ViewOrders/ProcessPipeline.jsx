@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import { useMemo } from 'react';
 import dayjs from 'dayjs';
-// import checkgreen from '../../../assets/check-success.svg';
-import checkbw from '../../../assets/check-other.svg';
+import checkgreen from '../../../assets/check-success.svg';
+// import checkbw from '../../../assets/check-other.svg';
 
 const ProcessPipeline = ({ bookingData = {}, printStatus, mountStatus }) => {
   const steps = useMemo(
@@ -12,7 +12,8 @@ const ProcessPipeline = ({ bookingData = {}, printStatus, mountStatus }) => {
         .reverse(),
     [bookingData],
   );
-
+  // TODO: wip
+  // console.log({ bookingData });
   return (
     <div className="flex flex-col gap-8 pl-5 p7-7 mt-4 mb-10">
       {steps?.length || printStatus || mountStatus ? (
@@ -20,7 +21,7 @@ const ProcessPipeline = ({ bookingData = {}, printStatus, mountStatus }) => {
           {steps.map((step, outerIndex) => (
             <div className="flex gap-8">
               {Object.keys(bookingData[step]).map((process, index) => (
-                <div className="relative min-w-[200px]">
+                <div className="relative min-w-[220px]">
                   <div
                     className={classNames(
                       index !== 0
@@ -32,14 +33,17 @@ const ProcessPipeline = ({ bookingData = {}, printStatus, mountStatus }) => {
                       'border rounded-xl p-5 border-slate-200',
                     )}
                   >
-                    <div className="flex gap-3">
-                      <img src={checkbw} alt="checked" />
-                      <p className="text-xl font-bold">{process.toUpperCase()}</p>
+                    <div className="flex gap-3 items-start">
+                      <img src={checkgreen} alt="checked" className="mt-1" />
+                      <div>
+                        <p className="text-xl font-bold">{process.toUpperCase()}</p>
+                        <p className="text-green-500 font-medium">Successful</p>
+                      </div>
                     </div>
-                    <div className="mt-4 relative left-8">
-                      <p className="text-sm text-slate-400">Date &amp; Time</p>
+                    <div className="mt-3 relative left-8">
+                      <p className="text-sm text-slate-400 font-medium">Date &amp; Time</p>
                       <p className="font-semibold mt-1">
-                        {dayjs(bookingData[step][process]).format('YYYY-MM-DD h A')}
+                        {dayjs(bookingData[step][process]).format('YYYY-MM-DD hh a')}
                       </p>
                     </div>
                   </div>
@@ -59,13 +63,16 @@ const ProcessPipeline = ({ bookingData = {}, printStatus, mountStatus }) => {
                     'border rounded-xl p-5 border-slate-200',
                   )}
                 >
-                  <div className="flex gap-3">
-                    <img src={checkbw} alt="checked" />
-                    <p className="text-xl font-bold">{item.toUpperCase()}</p>
+                  <div className="flex gap-3 items-start">
+                    <img src={checkgreen} alt="checked" className="mt-1" />
+                    <div>
+                      <p className="text-xl font-bold">{item.toUpperCase()}</p>
+                      <p className="text-green-500 font-medium">Successful</p>
+                    </div>
                   </div>
-                  <div className="mt-4 relative left-8">
-                    <p className="text-sm text-slate-400">Date &amp; Time</p>
-                    <p className="font-semibold mt-1">{dayjs().format('YYYY-MM-DD h A')}</p>
+                  <div className="mt-3 relative left-8">
+                    <p className="text-sm text-slate-400 font-medium">Date &amp; Time</p>
+                    <p className="font-semibold mt-1">{dayjs().format('YYYY-MM-DD h a')}</p>
                   </div>
                 </div>
               </div>

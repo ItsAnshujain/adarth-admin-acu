@@ -115,7 +115,8 @@ const BasicInfo = () => {
     params?.forEach(item => formData.append('files', item));
     const res = await upload(formData);
     const arrayOfImages = res.map(item => item?.Location);
-    setFieldValue('basicInformation.otherPhotos', arrayOfImages);
+    const tempSpacePhotos = values?.basicInformation?.otherPhotos;
+    setFieldValue('basicInformation.otherPhotos', [...tempSpacePhotos, ...arrayOfImages]);
   };
 
   return (
