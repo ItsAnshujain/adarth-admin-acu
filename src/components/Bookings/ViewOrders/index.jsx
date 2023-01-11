@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from './Header';
 import Overview from './Overview';
@@ -12,25 +12,32 @@ const Main = () => {
 
   const { data: bookingData, isLoading } = useBookingById(id, !!id);
   const { data: bookingStats } = useBookingStats('');
+  const [updatedBookingData, setUpdatedBookingData] = useState();
 
-  const currentPrintingStatus = useMemo(() => {
-    let printCount = 0;
-    const totalSpaces = bookingData?.campaign?.spaces?.length;
-    bookingData?.campaign?.spaces?.map(item => {
-      if (item?.currentStatus?.printingStatus?.toLowerCase()?.includes('print')) {
-        printCount += 1;
-      }
-      return printCount;
-    });
+  // TODO: wip
+  // const currentPrintingStatus = () => {
+  //   let printingStatus = null;
+  //   let currentStatus = 'Printing Upcoming';
+  //   bookingData?.campaign?.spaces?.map(item => {
+  //     const statusKeys = Object.keys(item?.printingStatus);
+  //     const recentStatus = statusKeys.slice(-1);
+  //     if (recentStatus.includes('print')) {
+  //       printingStatus = item?.printingStatus;
+  //       currentStatus = 'Printing In Progress';
+  //     } else if (recentStatus.includes('completed')) {
+  //       if (!printingStatus) {
+  //         printingStatus = item?.printingStatus;
+  //         currentStatus = 'Printing Completed';
+  //       }
+  //     } else if (!printingStatus) {
+  //       printingStatus = item?.printingStatus;
+  //     }
+  //     console.log(printingStatus);
 
-    return printCount === 0
-      ? 'Printing upcoming'
-      : printCount > 0 && printCount < totalSpaces
-      ? 'Printing in progress'
-      : printCount === totalSpaces
-      ? 'Printing completed'
-      : '-';
-  }, [bookingData]);
+  //     // setUpdatedBookingData(prevState => ({ ...prevState, printingStatus }));
+  //     return printingStatus;
+  //   }
+  // };
 
   const currentMountingStatus = useMemo(() => {
     let mountCount = 0;
@@ -51,6 +58,10 @@ const Main = () => {
       : '-';
   }, [bookingData]);
 
+  useEffect(() => {
+    setUpdatedBookingData(bookingData);
+  }, [bookingData]);
+
   return (
     <>
       <Header
@@ -64,13 +75,13 @@ const Main = () => {
           bookingData={bookingData}
           isLoading={isLoading}
           bookingStats={bookingStats}
-          printStatus={currentPrintingStatus}
+          printStatus=""
           mountStatus={currentMountingStatus}
         />
       ) : pageNumber === 1 ? (
         <ProcessPipeline
-          bookingData={bookingData}
-          printStatus={currentPrintingStatus}
+          bookingData={updatedBookingData}
+          printStatus=""
           mountStatus={currentMountingStatus}
         />
       ) : (

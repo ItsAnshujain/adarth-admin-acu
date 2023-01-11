@@ -99,7 +99,7 @@ const Notification = () => {
 
   useEffect(() => {
     if (data) {
-      // form.setFieldValue('manualNotify', stringToBoolean(data.manualNotify));
+      form.setFieldValue('mobileNotify', stringToBoolean(data.mobileNotify));
       form.setFieldValue('emailNotify', stringToBoolean(data.emailNotify));
       form.setFieldValue('whatsappNotify', stringToBoolean(data.whatsappNotify));
       form.setFieldValue('whatsappNumber', data.whatsappNumber);
@@ -127,20 +127,29 @@ const Notification = () => {
     <FormProvider form={form}>
       <form onSubmit={form.onSubmit(onSubmitHandler)}>
         <div className="pl-5 pr-7">
-          {/* TODO: hidden since message notification is not required for now */}
-          {/* <div className="py-8">
+          {/* TODO: api not done */}
+          <div className="py-8">
             <div className="w-4/12 flex justify-between">
               <p className="font-bold text-xl">Message Notification</p>
               <Switch
                 styles={switchStyles}
-                checked={form.values.manualNotify}
-                onChange={e => form.setFieldValue('manualNotify', e.target.checked)}
+                checked={form.values.mobileNotify}
+                onChange={e => form.setFieldValue('mobileNotify', e.target.checked)}
               />
             </div>
             <p className="font-medium text-sm mt-2 text-slate-400">
               Get all update notification in your email
             </p>
-          </div> */}
+            <TextInput
+              styles={inputStyles}
+              className="w-4/12 mt-2 text-slate-400"
+              placeholder="Your phone number"
+              withAsterisk={form.values.mobileNotify}
+              label="Mobile Number"
+              name="mobileNumber"
+              errors={form.errors}
+            />
+          </div>
           <div className="py-8 border border-l-0 border-r-0  border-t-slate-300 border-b-slate-300">
             <div className="w-4/12 flex justify-between">
               <p className="font-bold text-xl">Email Notification</p>

@@ -10,9 +10,8 @@ const sidebarText = [
   'Users',
   'Masters',
   'Campaigns',
-  // TODO: hidden for now; will be done in the next phase
-  // 'Reports',
-  // 'Finance',
+  'Reports',
+  'Finance',
 ];
 
 const DrawerSidebar = ({ opened, setOpened }) => {

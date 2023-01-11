@@ -35,6 +35,7 @@ import OccupiedIcon from '../../assets/occupied.svg';
 import UnderMaintenaceIcon from '../../assets/under-maintenance.svg';
 import BestIcon from '../../assets/best-performing-inventory.svg';
 import WorstIcon from '../../assets/worst-performing-inventory.svg';
+import { FormProvider, useForm } from '../../context/formContext';
 
 ChartJS.register(
   ArcElement,
@@ -84,6 +85,7 @@ const Inventory = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [areaData, setAreaData] = useState({ datasets: [] });
   const chartRef = useRef(null);
+  const form = useForm();
 
   useEffect(() => {
     const chart = chartRef.current;
@@ -216,23 +218,27 @@ const Inventory = () => {
           </div>
         </div>
         <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mt-10">
-          <AreaHeader
-            selectAll={selectAll}
-            setSelectAll={setSelectAll}
-            text="List of spaces"
-            setView={setView}
-          />
-          {view !== 'map' && (
-            <div className="flex justify-between h-20 items-center pr-7">
-              <RowsPerPage setCount={setCount} count={count} />
-              <Search search={search} setSearch={setSearch} />
-            </div>
-          )}
-          {view === 'grid' ? (
-            <GridView selectAll={selectAll} count={count} Card={Card} />
-          ) : view === 'list' ? (
-            <Table COLUMNS={COLUMNS} data={dummy} count={count} allowRowsSelect />
-          ) : null}
+          <FormProvider form={form}>
+            <form>
+              <AreaHeader
+                selectAll={selectAll}
+                setSelectAll={setSelectAll}
+                text="List of spaces"
+                setView={setView}
+              />
+              {view !== 'map' && (
+                <div className="flex justify-between h-20 items-center pr-7">
+                  <RowsPerPage setCount={setCount} count={count} />
+                  <Search search={search} setSearch={setSearch} />
+                </div>
+              )}
+              {view === 'grid' ? (
+                <GridView selectAll={selectAll} count={count} Card={Card} />
+              ) : view === 'list' ? (
+                <Table COLUMNS={COLUMNS} data={dummy} count={count} allowRowsSelect />
+              ) : null}
+            </form>
+          </FormProvider>
         </div>
       </div>
     </div>

@@ -13,7 +13,6 @@ const ProcessPipeline = ({ bookingData = {}, printStatus, mountStatus }) => {
     [bookingData],
   );
   // TODO: wip
-  // console.log({ bookingData });
   return (
     <div className="flex flex-col gap-8 pl-5 p7-7 mt-4 mb-10">
       {steps?.length || printStatus || mountStatus ? (
