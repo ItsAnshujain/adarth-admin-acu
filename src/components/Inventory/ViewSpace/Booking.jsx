@@ -1,19 +1,19 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Text, Button, Image, Loader, Menu } from '@mantine/core';
-import { ChevronDown, Eye } from 'react-feather';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Text, Button, Image, Loader } from '@mantine/core';
+import { ChevronDown } from 'react-feather';
+import { useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import DateRange from '../../DateRange';
 import Filter from '../../Filter';
 import calendar from '../../../assets/data-table.svg';
 import Table from '../../Table/Table';
-import MenuIcon from '../../Menu';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import { useFetchBookingsByInventoryId } from '../../../hooks/inventory.hooks';
 import NoData from '../../shared/NoData';
+import BookingsMenuPopover from '../../Popovers/BookingsMenuPopover';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
@@ -28,7 +28,6 @@ const Booking = ({ inventoryId }) => {
     'sortBy': 'createdAt',
     'sortOrder': 'desc',
   });
-  const navigate = useNavigate();
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
@@ -206,28 +205,7 @@ const Booking = ({ inventoryId }) => {
           row: {
             original: { _id },
           },
-        }) =>
-          useMemo(
-            () => (
-              <Menu shadow="md" width={150}>
-                <Menu.Target>
-                  <Button>
-                    <MenuIcon />
-                  </Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    onClick={() => navigate(`/bookings/view-details/${_id}`)}
-                    className="cursor-pointer flex items-center gap-1"
-                    icon={<Eye className="h-4" />}
-                  >
-                    <span className="ml-1">View</span>
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            ),
-            [],
-          ),
+        }) => useMemo(() => <BookingsMenuPopover itemId={_id} enableDelete={false} />, []),
       },
     ],
     [bookingData?.docs],

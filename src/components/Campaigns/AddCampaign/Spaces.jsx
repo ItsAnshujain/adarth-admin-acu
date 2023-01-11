@@ -1,77 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Chip, Image, Loader, Progress } from '@mantine/core';
-import { ChevronDown, Edit2, Eye, Trash } from 'react-feather';
+import { Badge, Box, Button, Image, Loader, Progress } from '@mantine/core';
+import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useClickOutside, useDebouncedState } from '@mantine/hooks';
-import { useQueryClient } from '@tanstack/react-query';
+import { useDebouncedState } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { DatePicker } from '@mantine/dates';
-import { Dropzone } from '@mantine/dropzone';
-import classNames from 'classnames';
 import Filter from '../../Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
-import { useDeleteInventoryById, useFetchInventory } from '../../../hooks/inventory.hooks';
-import Badge from '../../shared/Badge';
-import MenuIcon from '../../Menu';
-import upload from '../../../assets/upload.svg';
+import { useFetchInventory } from '../../../hooks/inventory.hooks';
 import { useFormContext } from '../../../context/formContext';
-import { useUploadFile } from '../../../hooks/upload.hooks';
-
-const styles = {
-  padding: 0,
-  border: 'none',
-};
-
-const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
-  const { mutateAsync: uploadMedia, isLoading } = useUploadFile();
-
-  const handleUpload = async params => {
-    const formData = new FormData();
-    formData.append('files', params?.[0]);
-    const res = await uploadMedia(formData);
-
-    if (res?.[0].Location) {
-      updateData('media', res[0].Location, id);
-    }
-  };
-
-  return (
-    <Dropzone
-      style={styles}
-      onDrop={handleUpload}
-      multiple={false}
-      disabled={!isActive || isLoading}
-    >
-      <Button
-        disabled={isLoading}
-        loading={isLoading}
-        className={classNames(
-          isActive ? 'bg-purple-350 cursor-pointer' : 'bg-purple-200 cursor-not-allowed',
-          'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md',
-        )}
-      >
-        {hasMedia ? (
-          <>
-            <Chip
-              classNames={{ checkIcon: 'text-white', label: 'bg-transparent' }}
-              checked
-              variant="filled"
-              color="green"
-              radius="lg"
-              size="xs"
-            />
-            Uploaded
-          </>
-        ) : (
-          'Upload'
-        )}
-        <img src={upload} alt="Upload" className="ml-2" />
-      </Button>
-    </Dropzone>
-  );
-};
+import { colors } from '../../../utils';
+import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 
 const getHealthTag = score => {
   if (score <= 30) return 'Bad';
@@ -100,27 +41,12 @@ const SelectSpace = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
     limit: 10,
-    sortBy: 'name',
+    sortBy: 'basicInformation.spaceName',
     sortOrder: 'desc',
   });
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
-  const { mutate } = useDeleteInventoryById();
-  const queryClient = useQueryClient();
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
-
-  const onDelete = id => {
-    mutate(
-      {
-        inventoryId: id,
-      },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries(['inventory']);
-        },
-      },
-    );
-  };
 
   const getTotalPrice = (places = []) => {
     const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
@@ -161,22 +87,16 @@ const SelectSpace = () => {
       },
       {
         Header: 'SPACE NAME & PHOTO',
-        accessor: 'space_name_and_photo',
-        Cell: tableProps => {
-          const {
-            row: {
-              original: { status, photo, space_name, _id: id },
-            },
-          } = tableProps;
-
-          const color =
-            status === 'Available' ? 'green' : status === 'Unavailable' ? 'orange' : 'primary';
-
-          return useMemo(
+        accessor: 'basicInformation.spaceName',
+        Cell: ({
+          row: {
+            original: { isUnderMaintenance, photo, space_name, _id },
+          },
+        }) =>
+          useMemo(
             () => (
-              <div
-                aria-hidden
-                onClick={() => navigate(`/campaigns/view-details/${id}`)}
+              <Box
+                onClick={() => navigate(`/campaigns/view-details/${_id}`)}
                 className="grid grid-cols-2 gap-2 items-center cursor-pointer"
               >
                 <div className="flex flex-1 gap-2 items-center w-44">
@@ -195,59 +115,60 @@ const SelectSpace = () => {
                   </p>
                 </div>
                 <div className="w-fit">
-                  <Badge radius="xl" text={status} color={color} variant="filled" size="sm" />
+                  <Badge
+                    className="capitalize"
+                    variant="filled"
+                    color={isUnderMaintenance ? 'yellow' : 'green'}
+                  >
+                    {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                  </Badge>
                 </div>
-              </div>
-            ),
-            [],
-          );
-        },
-      },
-      {
-        Header: 'LANDLORD NAME',
-        accessor: 'landlord_name',
-        Cell: tableProps => {
-          const {
-            row: {
-              original: { landlord_name },
-            },
-          } = tableProps;
-          return useMemo(() => <div className="w-fit">{landlord_name}</div>, []);
-        },
-      },
-      {
-        Header: 'UPLOAD MEDIA',
-        accessor: '',
-        Cell: ({
-          row: {
-            original: { _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <UploadButton
-                updateData={updateData}
-                isActive={values?.place?.find(item => item._id === _id)}
-                hasMedia={values?.place?.find(item => (item._id === _id ? !!item?.media : false))}
-                id={_id}
-              />
+              </Box>
             ),
             [],
           ),
       },
       {
+        Header: 'MEDIA OWNER NAME',
+        accessor: 'landlord',
+        Cell: ({
+          row: {
+            original: { landlord_name },
+          },
+        }) => useMemo(() => <div className="w-fit">{landlord_name || 'NA'}</div>, []),
+      },
+      {
         Header: 'SPACE TYPE',
-        accessor: 'space_type',
+        accessor: 'basicInformation.spaceType.name',
+        Cell: ({
+          row: {
+            original: { spaceType },
+          },
+        }) =>
+          useMemo(() => {
+            const colorType = Object.keys(colors).find(key => colors[key] === spaceType);
+
+            return (
+              <div>
+                {spaceType ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {spaceType}
+                  </Badge>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
+            );
+          }, []),
       },
       {
         Header: 'DIMENSION',
-        accessor: 'dimension',
-        Cell: tableProps => {
-          const {
-            cell: { value },
-          } = tableProps;
-          return useMemo(() => <p>{`${value?.height || 0}ft x ${value?.width || 0}ft`}</p>, []);
-        },
+        accessor: 'specifications.size.min',
+        Cell: ({
+          row: {
+            original: { value },
+          },
+        }) => useMemo(() => <p>{`${value?.height || 0}ft x ${value?.width || 0}ft`}</p>, []),
       },
       {
         Header: 'IMPRESSION',
@@ -260,7 +181,7 @@ const SelectSpace = () => {
       },
       {
         Header: 'HEALTH',
-        accessor: 'health',
+        accessor: 'specifications.health',
         Cell: ({ row: { original } }) =>
           useMemo(
             () => (
@@ -278,6 +199,7 @@ const SelectSpace = () => {
       },
       {
         Header: 'LOCATION',
+        accessor: 'location.city',
         Cell: ({
           row: {
             original: { location },
@@ -286,11 +208,11 @@ const SelectSpace = () => {
       },
       {
         Header: 'MEDIA TYPE',
-        accessor: 'media_type',
+        accessor: 'mediaType',
       },
       {
         Header: 'PRICING',
-        accessor: 'pricing',
+        accessor: 'basicInformation.price',
         Cell: ({
           row: {
             original: { price },
@@ -343,56 +265,15 @@ const SelectSpace = () => {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
-        Cell: tableProps => {
-          const [showMenu, setShowMenu] = useState(false);
-          const ref = useClickOutside(() => setShowMenu(false));
-
-          const {
-            row: {
-              original: { _id: id },
-            },
-          } = tableProps;
-          return useMemo(
-            () => (
-              <div aria-hidden ref={ref} onClick={() => setShowMenu(!showMenu)}>
-                <div className="relative">
-                  <MenuIcon />
-                  {showMenu && (
-                    <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
-                      <div
-                        onClick={() => navigate(`/inventory/view-details/${id}`)}
-                        className="bg-white cursor-pointer flex items-center"
-                        aria-hidden
-                      >
-                        <Eye className="h-4 mr-2" />
-                        <span>View Details</span>
-                      </div>
-                      <div
-                        onClick={() => navigate(`/inventory/edit-details/${id}`)}
-                        className="bg-white cursor-pointer flex items-center"
-                        aria-hidden
-                      >
-                        <Edit2 className="h-4 mr-2" />
-                        <span>Edit</span>
-                      </div>
-                      <div
-                        className="bg-white cursor-pointer flex items-center"
-                        onClick={() => {
-                          if (!isLoading) onDelete(id);
-                        }}
-                        aria-hidden
-                      >
-                        <Trash className="h-4 mr-2" />
-                        <span>Delete</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ),
-            [showMenu],
-          );
-        },
+        Cell: ({
+          row: {
+            original: { _id },
+          },
+        }) =>
+          useMemo(
+            () => <SpacesMenuPopover itemId={_id} openInNewWindow enableDelete={false} />,
+            [],
+          ),
       },
     ],
     [updatedInventoryData, values.place],
@@ -424,7 +305,7 @@ const SelectSpace = () => {
         photo,
         price,
         location,
-        media_type,
+        mediaType,
         dimension,
         illuminations,
         unit,
@@ -438,7 +319,7 @@ const SelectSpace = () => {
         photo,
         price: +price || 0,
         location,
-        media_type,
+        mediaType,
         dimension,
         illuminations,
         unit,
@@ -472,15 +353,16 @@ const SelectSpace = () => {
         obj.photo = item.basicInformation.spacePhoto;
         obj._id = item._id;
         obj.space_name = item.basicInformation.spaceName;
-        obj.space_type = item.basicInformation.spaceType?.name;
+        obj.isUnderMaintenance = item?.isUnderMaintenance;
+        obj.spaceType = item.basicInformation?.spaceType?.name;
         obj.dimension = item.specifications.size;
         obj.impression = item.specifications.impressions?.max || 0;
         obj.health = item.specifications.health;
         obj.location = item.location;
-        obj.media_type = item.basicInformation.mediaType?.name;
+        obj.mediaType = item.basicInformation.mediaType?.name;
         obj.supportedMedia = item.basicInformation.supportedMedia;
         obj.price = item.basicInformation.price;
-        obj.landlord_name = '';
+        obj.landlord_name = item?.basicInformation?.mediaOwner?.name;
         obj.status = 'Available';
         obj.illuminations = item.specifications.illuminations?.name;
         obj.unit = item.specifications.unit;
@@ -525,9 +407,11 @@ const SelectSpace = () => {
         <div className="flex justify-between mb-4 items-center">
           <p className="text-purple-450 text-sm">
             Total Places{' '}
-            <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-              {inventoryData?.totalDocs}
-            </span>
+            {inventoryData?.totalDocs ? (
+              <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
+                {inventoryData.totalDocs}
+              </span>
+            ) : null}
           </p>
 
           <Search search={search} setSearch={setSearch} />

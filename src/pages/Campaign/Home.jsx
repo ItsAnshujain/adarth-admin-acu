@@ -1,22 +1,20 @@
 import { useMemo, useEffect } from 'react';
-import { NativeSelect, Menu, Progress, Image, Button, Loader } from '@mantine/core';
+import { NativeSelect, Progress, Image, Loader } from '@mantine/core';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Trash, Edit2, Eye, Bookmark, ChevronDown } from 'react-feather';
-import classNames from 'classnames';
+import { ChevronDown } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDebouncedState } from '@mantine/hooks';
 import { useCampaigns, useDeleteCampaign, useUpdateCampaign } from '../../hooks/campaigns.hooks';
 import AreaHeader from '../../components/Campaigns/Header';
 import GridView from '../../components/Campaigns/GridView';
-import MenuIcon from '../../components/Menu';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import { ROLES, serialize } from '../../utils/index';
+import { serialize } from '../../utils/index';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import useLayoutView from '../../store/layout.store';
-import RoleBased from '../../components/RoleBased';
+import CampaignsMenuPopover from '../../components/Popovers/CampaignsMenuPopover';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -77,9 +75,12 @@ const Home = () => {
       {
         Header: 'CAMPAIGN NAME',
         accessor: 'name',
-        Cell: tableProps => {
-          const { name, _id, thumbnail } = tableProps.row.original;
-          return useMemo(
+        Cell: ({
+          row: {
+            original: { name, _id, thumbnail },
+          },
+        }) =>
+          useMemo(
             () => (
               <div
                 aria-hidden="true"
@@ -103,8 +104,7 @@ const Home = () => {
               </div>
             ),
             [_id, thumbnail, name],
-          );
-        },
+          ),
       },
       {
         Header: 'TYPE',
@@ -179,61 +179,16 @@ const Home = () => {
         }) =>
           useMemo(
             () => (
-              <Menu shadow="md" width={150}>
-                <Menu.Target>
-                  <Button>
-                    <MenuIcon />
-                  </Button>
-                </Menu.Target>
-
-                <Menu.Dropdown>
-                  <Menu.Item>
-                    <div
-                      aria-hidden
-                      onClick={() => navigate(`/campaigns/view-details/${_id}`)}
-                      className="cursor-pointer flex items-center gap-1"
-                    >
-                      <Eye className="h-4" />
-                      <span className="ml-1">View Details</span>
-                    </div>
-                  </Menu.Item>
-                  <RoleBased acceptedRoles={[ROLES.ADMIN]}>
-                    <Menu.Item>
-                      <div
-                        aria-hidden
-                        onClick={() => navigate(`edit-details/${_id}`)}
-                        className="cursor-pointer flex items-center gap-1"
-                      >
-                        <Edit2 className="h-4" />
-                        <span className="ml-1">Edit</span>
-                      </div>
-                    </Menu.Item>
-                    <Menu.Item aria-hidden onClick={() => deleteCampaign(_id)}>
-                      <div className="cursor-pointer flex items-center gap-1">
-                        <Trash className="h-4" />
-                        <span className="ml-1">Delete</span>
-                      </div>
-                    </Menu.Item>
-                    <Menu.Item>
-                      <div
-                        className={classNames(
-                          'bg-white cursor-pointer flex items-center text',
-                          isFeatured ? 'text-purple-450' : '',
-                        )}
-                        aria-hidden
-                        onClick={() =>
-                          updateCampaign(_id, {
-                            isFeatured: !isFeatured,
-                          })
-                        }
-                      >
-                        <Bookmark className="h-4 mr-2" />
-                        <span>Set as Featured</span>
-                      </div>
-                    </Menu.Item>
-                  </RoleBased>
-                </Menu.Dropdown>
-              </Menu>
+              <CampaignsMenuPopover
+                itemId={_id}
+                isFeatured={isFeatured}
+                onClickSetAsFeature={() =>
+                  updateCampaign(_id, {
+                    isFeatured: !isFeatured,
+                  })
+                }
+                onClickDelete={() => deleteCampaign(_id)}
+              />
             ),
             [isFeatured, _id],
           ),

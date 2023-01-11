@@ -8,6 +8,7 @@ import TextInput from '../../shared/TextInput';
 import { serialize } from '../../../utils';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import NativeSelect from '../../shared/NativeSelect';
+import { useStyles } from '../../DateRange';
 
 const nativeSelectStyles = {
   rightSection: { pointerEvents: 'none' },
@@ -31,6 +32,8 @@ const styles = {
 };
 
 const BasicInfo = ({ proposalId }) => {
+  const { classes, cx } = useStyles();
+
   const [showNotesOne, setShowNotesOne] = useState(false);
   const [showNotesTwo, setShowNotesTwo] = useState(false);
   const { errors } = useFormContext();
@@ -63,6 +66,9 @@ const BasicInfo = ({ proposalId }) => {
               minDate={new Date()}
               styles={styles}
               errors={errors}
+              dayClassName={(_, modifiers) =>
+                cx({ [classes.outside]: modifiers.outside, [classes.weekend]: modifiers.weekend })
+              }
             />
             <DatePicker
               label="End Date"
@@ -72,6 +78,9 @@ const BasicInfo = ({ proposalId }) => {
               minDate={new Date()}
               styles={styles}
               errors={errors}
+              dayClassName={(_, modifiers) =>
+                cx({ [classes.outside]: modifiers.outside, [classes.weekend]: modifiers.weekend })
+              }
             />
           </div>
           {proposalId ? (

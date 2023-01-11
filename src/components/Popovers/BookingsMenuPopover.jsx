@@ -3,13 +3,13 @@ import { useModals } from '@mantine/modals';
 import { useNavigate } from 'react-router-dom';
 import { Eye, Trash } from 'react-feather';
 import modalConfig from '../../utils/modalConfig';
-import DeleteConfirmContent from '../../components/DeleteConfirmContent';
-import MenuIcon from '../../components/Menu';
+import DeleteConfirmContent from '../DeleteConfirmContent';
+import MenuIcon from '../Menu';
 import { useDeleteBooking } from '../../hooks/booking.hooks';
-import RoleBased from '../../components/RoleBased';
+import RoleBased from '../RoleBased';
 import { ROLES } from '../../utils';
 
-const MenuPopover = ({ itemId }) => {
+const BookingsMenuPopover = ({ itemId, enableView = true, enableDelete = true }) => {
   const modals = useModals();
   const navigate = useNavigate();
   const { mutateAsync: deleteBooking, isLoading } = useDeleteBooking();
@@ -47,28 +47,32 @@ const MenuPopover = ({ itemId }) => {
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <Menu.Item
-          onClick={() => navigate(`/bookings/view-details/${itemId}`)}
-          className="cursor-pointer flex items-center gap-1"
-          icon={<Eye className="h-4" />}
-        >
-          <span className="ml-1">View</span>
-        </Menu.Item>
-        <RoleBased
-          acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
-        >
+        {enableView ? (
           <Menu.Item
-            icon={<Trash className="h-4" />}
-            onClick={() => toggleDeleteModal()}
-            disabled={isLoading}
+            onClick={() => navigate(`/bookings/view-details/${itemId}`)}
             className="cursor-pointer flex items-center gap-1"
+            icon={<Eye className="h-4" />}
           >
-            <span className="ml-1">Delete</span>
+            <span className="ml-1">View</span>
           </Menu.Item>
-        </RoleBased>
+        ) : null}
+        {enableDelete ? (
+          <RoleBased
+            acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
+          >
+            <Menu.Item
+              icon={<Trash className="h-4" />}
+              onClick={() => toggleDeleteModal()}
+              disabled={isLoading}
+              className="cursor-pointer flex items-center gap-1"
+            >
+              <span className="ml-1">Delete</span>
+            </Menu.Item>
+          </RoleBased>
+        ) : null}
       </Menu.Dropdown>
     </Menu>
   );
 };
 
-export default MenuPopover;
+export default BookingsMenuPopover;

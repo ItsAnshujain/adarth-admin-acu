@@ -12,7 +12,7 @@ import { FormProvider, useForm } from '../../context/formContext';
 import Preview from '../../components/Campaigns/AddCampaign/Preview';
 import { useCampaign, useCreateCampaign, useUpdateCampaign } from '../../hooks/campaigns.hooks';
 import { useFetchMasters } from '../../hooks/masters.hooks';
-import { isValidURL, serialize } from '../../utils';
+import { serialize } from '../../utils';
 
 const requiredSchema = requiredText => yup.string().trim().required(requiredText);
 const numberRequiredSchema = (typeErrorText, requiredText) =>
@@ -88,7 +88,12 @@ const CreateCampaign = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ initialValues, validate: yupResolver(schema(formStep)) });
-  const [searchParams] = useSearchParams({ page: 1, limit: 10, sortBy: 'name', sortOrder: 'desc' });
+  const [searchParams] = useSearchParams({
+    page: 1,
+    limit: 10,
+    sortBy: 'basicInformation.spaceName',
+    sortOrder: 'desc',
+  });
   const { data: campaignStatus } = useFetchMasters(
     serialize({ type: 'campaign_status', parentId: null, limit: 100, page: 1 }),
   );
@@ -123,8 +128,8 @@ const CreateCampaign = () => {
       let maxDate = null;
 
       newData.place = newData.place.map(item => {
-        const start = item.startDate.setHours(0, 0, 0, 0);
-        const end = item.endDate.setHours(0, 0, 0, 0);
+        const start = new Date(item.startDate).setHours(0, 0, 0, 0);
+        const end = new Date(item.endDate).setHours(0, 0, 0, 0);
 
         if (!minDate) minDate = start;
         if (!maxDate) maxDate = end;
@@ -135,7 +140,6 @@ const CreateCampaign = () => {
         return {
           id: item._id,
           price: item.price,
-          media: isValidURL(item.media) ? item.media : undefined,
           startDate: item.startDate,
           endDate: item.endDate,
         };
@@ -178,6 +182,7 @@ const CreateCampaign = () => {
         await add(newData, {
           onSuccess: () => {
             setOpenSuccessModal(true);
+            setTimeout(() => navigate('/campaigns'), 2000);
           },
         });
     }

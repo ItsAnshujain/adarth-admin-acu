@@ -56,7 +56,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                 {previewSpacesPhotos?.map(
                   (src, index) =>
                     index < 4 && (
-                      <div className="mr-2 mb-4 border-[1px] border-gray">
+                      <div key={src} className="mr-2 mb-4 border-[1px] border-gray">
                         <Image
                           key={src}
                           className="bg-slate-100"

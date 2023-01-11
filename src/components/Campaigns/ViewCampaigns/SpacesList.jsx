@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Text, Button, Image, Box, Menu, Badge, Loader } from '@mantine/core';
-import { Edit2, Eye, Plus } from 'react-feather';
+import { Text, Button, Image, Box, Badge, Loader } from '@mantine/core';
+import { Plus } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
@@ -12,8 +12,8 @@ import Table from '../../Table/Table';
 import RoleBased from '../../RoleBased';
 import { colors, ROLES } from '../../../utils';
 import toIndianCurrency from '../../../utils/currencyFormat';
-import MenuIcon from '../../Menu';
 import modalConfig from '../../../utils/modalConfig';
+import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 
 const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -124,11 +124,17 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
             const colorType = Object.keys(colors).find(key => colors[key] === spaceType?.name);
 
             return (
-              <Badge color={colorType} size="lg" className="capitalize">
-                {spaceType?.name || <span>-</span>}
-              </Badge>
+              <div>
+                {spaceType?.name ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {spaceType.name}
+                  </Badge>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
             );
-          }),
+          }, []),
       },
       {
         Header: 'MEDIA OWNER NAME',
@@ -185,35 +191,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
           row: {
             original: { _id },
           },
-        }) =>
-          useMemo(
-            () => (
-              <Menu shadow="md" width={180}>
-                <Menu.Target>
-                  <Button>
-                    <MenuIcon />
-                  </Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    onClick={() => navigate(`/inventory/view-details/${_id}`)}
-                    icon={<Eye className="h-4 mr-2" />}
-                    className="cursor-pointer flex items-center gap-1"
-                  >
-                    <span>View Details</span>
-                  </Menu.Item>
-                  <Menu.Item
-                    icon={<Edit2 className="h-4 mr-2" />}
-                    onClick={() => navigate(`/inventory/edit-details/${_id}`)}
-                    className="cursor-pointer flex items-center gap-1"
-                  >
-                    <span>Edit</span>
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            ),
-            [],
-          ),
+        }) => useMemo(() => <SpacesMenuPopover itemId={_id} enableDelete={false} />, []),
       },
     ],
     [spacesData?.docs],

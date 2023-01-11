@@ -1,43 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { Badge, Box, Button, Checkbox, Image, Menu, Text } from '@mantine/core';
-import { Eye, Edit2, Trash } from 'react-feather';
-import { useModals } from '@mantine/modals';
+import { Badge, Box, Checkbox, Image, Text } from '@mantine/core';
 import toIndianCurrency from '../../utils/currencyFormat';
-import MenuIcon from '../Menu';
-import DeleteConfirmContent from '../DeleteConfirmContent';
-import modalConfig from '../../utils/modalConfig';
-import { useDeleteInventoryById } from '../../hooks/inventory.hooks';
-import { handleStopPropagation } from '../../utils';
+import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
 
 const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
-  const modals = useModals();
   const navigate = useNavigate();
-  const { mutate: deleteInventory, isLoading } = useDeleteInventoryById();
-
-  const onSubmit = () => {
-    deleteInventory({ inventoryId: data?._id });
-    setTimeout(() => modals.closeAll(), 2000);
-  };
-
-  const checkConfirmation = isConfirmed => {
-    if (isConfirmed) {
-      onSubmit();
-    }
-  };
-
-  const toggleDeleteModal = () =>
-    modals.openContextModal('basic', {
-      title: '',
-      innerProps: {
-        modalBody: (
-          <DeleteConfirmContent
-            onClickCancel={id => modals.closeModal(id)}
-            setIsConfirmed={checkConfirmation}
-          />
-        ),
-      },
-      ...modalConfig,
-    });
 
   const handleInventoryDetails = () =>
     navigate(`/inventory/view-details/${data?._id}`, {
@@ -104,39 +71,7 @@ const Card = ({ data, isSelected = false, onSelect = () => {} }) => {
           <Text size="lg" className="mt-4 font-bold" color="purple">
             {data?.basicInformation?.price ? toIndianCurrency(data.basicInformation.price) : 'NA'}
           </Text>
-          <Menu shadow="md" width={180} className="mt-4" position="top-end">
-            <Menu.Target>
-              <Button className="py-0" onClick={e => e.stopPropagation()}>
-                <MenuIcon />
-              </Button>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item
-                onClick={e => handleStopPropagation(e, navigate(`view-details/${data?._id}`))}
-                className="cursor-pointer flex items-center gap-1"
-                icon={<Eye className="h-4" />}
-                disabled={isLoading}
-              >
-                <span className="ml-1">View Details</span>
-              </Menu.Item>
-              <Menu.Item
-                onClick={e => handleStopPropagation(e, navigate(`edit-details/${data?._id}`))}
-                className="cursor-pointer flex items-center gap-1"
-                icon={<Edit2 className="h-4" />}
-                disabled={isLoading}
-              >
-                <span className="ml-1">Edit</span>
-              </Menu.Item>
-              <Menu.Item
-                className="cursor-pointer flex items-center gap-1"
-                icon={<Trash className="h-4" />}
-                onClick={e => handleStopPropagation(e, toggleDeleteModal)}
-                disabled={isLoading}
-              >
-                <span className="ml-1">Delete</span>
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+          <SpacesMenuPopover itemId={data?._id} />
         </div>
       </div>
     </Box>

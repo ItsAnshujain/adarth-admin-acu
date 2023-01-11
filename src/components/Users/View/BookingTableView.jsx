@@ -9,11 +9,11 @@ import { downloadAll, serialize } from '../../../utils';
 import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
-import MenuPopover from '../../../pages/Booking/MenuPopOver';
 import Table from '../../Table/Table';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import NoData from '../../shared/NoData';
+import BookingsMenuPopover from '../../Popovers/BookingsMenuPopover';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -440,7 +440,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           row: {
             original: { _id },
           },
-        }) => useMemo(() => <MenuPopover itemId={_id} />, []),
+        }) => useMemo(() => <BookingsMenuPopover itemId={_id} />, []),
       },
     ],
     [bookingData?.docs, campaignStatus, paymentStatus],
