@@ -291,6 +291,7 @@ const ProposalDetails = () => {
       <Details
         proposalData={proposalData?.proposal}
         isProposalDataLoading={isProposalDataLoading}
+        inventoryData={proposalData?.inventories}
       />
       <div className="pl-5 pr-7 flex justify-between mt-4">
         <Text size="xl" weight="bolder">

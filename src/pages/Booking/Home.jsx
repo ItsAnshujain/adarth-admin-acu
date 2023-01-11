@@ -1,5 +1,5 @@
 import { useDebouncedState } from '@mantine/hooks';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
 import { NativeSelect, Progress, Loader, Button } from '@mantine/core';
@@ -31,7 +31,7 @@ const Bookings = () => {
     'sortBy': 'createdAt',
     'sortOrder': 'desc',
   });
-
+  const navigate = useNavigate();
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
@@ -68,6 +68,11 @@ const Bookings = () => {
     () => campaignStatus?.docs?.map(item => item.name) || [],
     [campaignStatus],
   );
+
+  const handleBookingDetails = itemId =>
+    navigate(`/bookings/view-details/${itemId}`, {
+      replace: true,
+    });
 
   const column = useMemo(
     () => [
@@ -113,9 +118,20 @@ const Bookings = () => {
         accessor: 'campaign.name',
         Cell: ({
           row: {
-            original: { campaign },
+            original: { campaign, _id },
           },
-        }) => useMemo(() => <p>{campaign?.name || <NoData type="na" />}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <Button
+                className="text-black font-medium px-2 max-w-[180px]"
+                onClick={() => handleBookingDetails(_id)}
+              >
+                <span className="overflow-hidden text-ellipsis">{campaign?.name}</span>
+              </Button>
+            ),
+            [],
+          ),
       },
       {
         Header: 'BOOKING TYPE',

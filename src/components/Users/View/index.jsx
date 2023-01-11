@@ -25,7 +25,7 @@ const tableProposalQueries = userId => ({
   'userId': userId,
 });
 
-const Header = () => {
+const UserDetails = () => {
   const [activeTab, setActiveTab] = useState('first');
   const [activeTable, setActiveTable] = useState('booking');
   const { id: userId } = useParams();
@@ -122,4 +122,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default UserDetails;
