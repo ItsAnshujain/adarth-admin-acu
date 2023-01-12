@@ -81,16 +81,16 @@ const schema = step =>
 
 const initialValues = {
   client: {
-    companyName: '',
-    name: '',
-    email: '',
-    contactNumber: '',
-    panNumber: '',
-    gstNumber: '',
+    companyName: 'Arup Dey CC 1',
+    name: 'Arup Dey 1',
+    email: 'arupdey@codebuddy.co',
+    contactNumber: '9879879870',
+    panNumber: 'LLLLL1232L',
+    gstNumber: '19AABCU9603R1ZK',
   },
-  paymentReference: '',
-  paymentType: '',
-  campaignName: '',
+  paymentReference: '1234567890',
+  paymentType: 'neft',
+  campaignName: 'Arup Dey CC 1',
   description: '',
   place: [],
 };

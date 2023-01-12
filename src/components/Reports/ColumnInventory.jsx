@@ -70,11 +70,11 @@ const COLUMNS = [
     accessor: 'total_booking',
     Cell: () => <div className="w-fit">{527}</div>,
   },
-  {
-    Header: 'TOTAL OPERATIONAL COST',
-    accessor: 'total_operational_cost',
-    Cell: () => <div className="w-fit mr-2">{toIndianCurrency(48967984)}</div>,
-  },
+  // {
+  //   Header: 'TOTAL OPERATIONAL COST',
+  //   accessor: 'total_operational_cost',
+  //   Cell: () => <div className="w-fit mr-2">{toIndianCurrency(48967984)}</div>,
+  // },
   {
     Header: 'DIMENSION',
     accessor: 'dimension',

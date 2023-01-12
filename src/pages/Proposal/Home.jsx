@@ -186,7 +186,7 @@ const Proposals = () => {
           row: {
             original: { client },
           },
-        }) => useMemo(() => <p className="pl-2">{client?.company}</p>, []),
+        }) => useMemo(() => <p className="pl-2">{client?.company || '-'}</p>, []),
       },
       {
         Header: 'TOTAL PLACES',

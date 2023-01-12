@@ -13,6 +13,7 @@ import { useFetchInventory } from '../../../hooks/inventory.hooks';
 import { useFormContext } from '../../../context/formContext';
 import { colors } from '../../../utils';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
+import { useStyles } from '../../DateRange';
 
 const getHealthTag = score => {
   if (score <= 30) return 'Bad';
@@ -32,7 +33,7 @@ const getDate = (selectionItem, item, key, addDefault = true) => {
 
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
-
+  const { classes, cx } = useStyles();
   const [search, setSearch] = useDebouncedState('', 500);
   const [showFilter, setShowFilter] = useState(false);
   const navigate = useNavigate();
@@ -205,11 +206,16 @@ const SelectSpace = () => {
           row: {
             original: { location },
           },
-        }) => location.city,
+        }) => useMemo(() => <p>{location?.city || '-'}</p>),
       },
       {
         Header: 'MEDIA TYPE',
         accessor: 'mediaType',
+        Cell: ({
+          row: {
+            original: { mediaType },
+          },
+        }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
         Header: 'PRICING',
@@ -236,6 +242,12 @@ const SelectSpace = () => {
                 placeholder="DD/MM/YYYY"
                 minDate={new Date()}
                 onChange={val => updateData('startDate', val, _id)}
+                dayClassName={(_, modifiers) =>
+                  cx({
+                    [classes.weekend]: modifiers.weekend,
+                    [classes.disabled]: modifiers.disabled,
+                  })
+                }
               />
             ),
             [],
@@ -257,6 +269,12 @@ const SelectSpace = () => {
                 placeholder="DD/MM/YYYY"
                 minDate={new Date()}
                 onChange={val => updateData('endDate', val, _id)}
+                dayClassName={(_, modifiers) =>
+                  cx({
+                    [classes.weekend]: modifiers.weekend,
+                    [classes.disabled]: modifiers.disabled,
+                  })
+                }
               />
             ),
             [],

@@ -1,10 +1,20 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Text, Button, Progress, Image, NumberInput, Badge, Box, Loader } from '@mantine/core';
+import {
+  Text,
+  Button,
+  Progress,
+  Image,
+  NumberInput,
+  Badge,
+  Box,
+  Loader,
+  Indicator,
+} from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import { DatePicker } from '@mantine/dates';
+import { DatePicker, DateRangePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
 import Search from '../Search';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -15,6 +25,7 @@ import modalConfig from '../../utils/modalConfig';
 import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
+import { useStyles } from '../DateRange';
 
 const getDate = (selectionItem, item, key, addDefault = true) => {
   if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
@@ -27,6 +38,7 @@ const getDate = (selectionItem, item, key, addDefault = true) => {
 const Spaces = () => {
   const modals = useModals();
   const { values, setFieldValue } = useFormContext();
+  const { classes, cx } = useStyles();
   const [searchParams, setSearchParams] = useSearchParams({
     'limit': 10,
     'page': 1,
@@ -40,8 +52,8 @@ const Spaces = () => {
   const [showFilter, setShowFilter] = useState(false);
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
-  const fromDate = searchParams.get('from');
-  const toDate = searchParams.get('to');
+  // const fromDate = searchParams.get('from');
+  // const toDate = searchParams.get('to');
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -76,6 +88,9 @@ const Spaces = () => {
       values.spaces.map(item => (item._id === id ? { ...item, [key]: val } : item)),
     );
   };
+
+  const handleDates = (dateRange, date) =>
+    dateRange.filter(item => dayjs(item).isSame(dayjs(date)))[0];
 
   const COLUMNS = useMemo(
     () => [
@@ -230,7 +245,7 @@ const Spaces = () => {
           row: {
             original: { mediaType },
           },
-        }) => useMemo(() => <p>{mediaType}</p>),
+        }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
         Header: 'PRICING',
@@ -253,6 +268,28 @@ const Spaces = () => {
           ),
       },
       {
+        Header: 'OCCUPANCY DATE',
+        accessor: 'scheduledDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { startDate, endDate, _id },
+          },
+        }) =>
+          useMemo(() => (
+            <div className="min-w-[300px]">
+              <DateRangePicker
+                placeholder="Pick dates range"
+                onChange={val => console.log(val)}
+                excludeDate={date => {
+                  const dateRanges = [startDate, endDate];
+                  return handleDates(dateRanges, date);
+                }}
+              />
+            </div>
+          )),
+      },
+      {
         Header: 'START DATE',
         accessor: 'startDate',
         disableSortBy: true,
@@ -266,9 +303,14 @@ const Spaces = () => {
               <DatePicker
                 defaultValue={startDate}
                 placeholder="DD/MM/YYYY"
-                minDate={new Date(fromDate)}
-                maxDate={new Date(toDate)}
+                minDate={new Date()}
                 onChange={val => updateData('startDate', val, _id)}
+                dayClassName={(_, modifiers) =>
+                  cx({
+                    [classes.weekend]: modifiers.weekend,
+                    [classes.disabled]: modifiers.disabled,
+                  })
+                }
               />
             ),
             [],
@@ -288,9 +330,14 @@ const Spaces = () => {
               <DatePicker
                 defaultValue={endDate}
                 placeholder="DD/MM/YYYY"
-                minDate={new Date(fromDate)}
-                maxDate={new Date(toDate)}
+                minDate={new Date()}
                 onChange={val => updateData('endDate', val, _id)}
+                dayClassName={(_, modifiers) =>
+                  cx({
+                    [classes.weekend]: modifiers.weekend,
+                    [classes.disabled]: modifiers.disabled,
+                  })
+                }
               />
             ),
             [],

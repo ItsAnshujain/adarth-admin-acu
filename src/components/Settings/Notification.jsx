@@ -36,7 +36,25 @@ const inputStyles = {
 };
 
 const schema = yup.object().shape({
-  // manualNotify: yup.boolean().required('Message notification is required'),
+  // TODO: api dependent
+  // messageNotify: yup.boolean().required('Message notification is required'),
+  // mobileNumber: yup
+  //   .string()
+  //   .trim()
+  //   .test('rqd', 'Mobile Number is required', function (val) {
+  //     if (this.from[0].value.messageNotify) {
+  //       if (!val) {
+  //         return false;
+  //       }
+  //     }
+  //     return true;
+  //   })
+  //   .test('valid', 'Mobile Number must be valid', function (val) {
+  //     if (this.from[0].value.messageNotify && val) {
+  //       return validator.isMobilePhone(val, 'en-IN');
+  //     }
+  //     return true;
+  //   }),
   emailNotify: yup.boolean().required('Email notification is required'),
   notificationEmail: yup
     .string()
@@ -71,6 +89,7 @@ const schema = yup.object().shape({
 });
 
 const initialValues = {
+  mobileNumber: '',
   manualNotify: false,
   emailNotify: false,
   notificationEmail: '',
@@ -99,11 +118,12 @@ const Notification = () => {
 
   useEffect(() => {
     if (data) {
-      form.setFieldValue('mobileNotify', stringToBoolean(data.mobileNotify));
+      form.setFieldValue('messageNotify', stringToBoolean(data.messageNotify));
       form.setFieldValue('emailNotify', stringToBoolean(data.emailNotify));
       form.setFieldValue('whatsappNotify', stringToBoolean(data.whatsappNotify));
       form.setFieldValue('whatsappNumber', data.whatsappNumber);
       form.setFieldValue('notificationEmail', data.notificationEmail);
+      // form.setFieldValue('mobileNumber', data.mobileNumber);
     }
   }, [data]);
 
@@ -133,8 +153,8 @@ const Notification = () => {
               <p className="font-bold text-xl">Message Notification</p>
               <Switch
                 styles={switchStyles}
-                checked={form.values.mobileNotify}
-                onChange={e => form.setFieldValue('mobileNotify', e.target.checked)}
+                checked={form.values.messageNotify}
+                onChange={e => form.setFieldValue('messageNotify', e.target.checked)}
               />
             </div>
             <p className="font-medium text-sm mt-2 text-slate-400">
@@ -144,7 +164,7 @@ const Notification = () => {
               styles={inputStyles}
               className="w-4/12 mt-2 text-slate-400"
               placeholder="Your phone number"
-              withAsterisk={form.values.mobileNotify}
+              withAsterisk={form.values.messageNotify}
               label="Mobile Number"
               name="mobileNumber"
               errors={form.errors}
