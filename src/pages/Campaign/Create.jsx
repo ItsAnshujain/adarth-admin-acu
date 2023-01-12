@@ -89,10 +89,10 @@ const CreateCampaign = () => {
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ initialValues, validate: yupResolver(schema(formStep)) });
   const [searchParams] = useSearchParams({
-    page: 1,
-    limit: 10,
-    sortBy: 'basicInformation.spaceName',
-    sortOrder: 'desc',
+    'page': 1,
+    'limit': 10,
+    'sortBy': 'basicInformation.spaceName',
+    'sortOrder': 'desc',
   });
   const { data: campaignStatus } = useFetchMasters(
     serialize({ type: 'campaign_status', parentId: null, limit: 100, page: 1 }),

@@ -82,6 +82,7 @@ const SelectSpace = () => {
     'page': 1,
     'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
+    'isUnderMaintenance': false,
   });
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');

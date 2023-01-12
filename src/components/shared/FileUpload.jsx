@@ -86,6 +86,7 @@ const FileUpload = () => {
       </Group>
       <Button
         disabled={isLoading}
+        loading={isLoading}
         onClick={file ? handleUpload : open}
         className="bg-purple-450 text-white p-2 rounded mx-auto block mt-3"
       >

@@ -10,7 +10,10 @@ const styles = {
   yearPickerControlActive: { backgroundColor: '#4B0DAF !important' },
 };
 
-export const useStyles = createStyles({ weekend: { color: '#495057 !important' } });
+export const useStyles = createStyles({
+  disabled: { color: 'transparent !important' },
+  weekend: { color: '#495057 !important' },
+});
 
 const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate'] }) => {
   const { classes, cx } = useStyles();
