@@ -5,9 +5,9 @@ import { ChevronDown } from 'react-feather';
 import { useSearchParams } from 'react-router-dom';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { useUpdateProposal } from '../../../hooks/proposal.hooks';
-import MenuPopover from '../../../pages/Proposal/MenuPopover';
 import { serialize } from '../../../utils';
 import toIndianCurrency from '../../../utils/currencyFormat';
+import ProposalsMenuPopover from '../../Popovers/ProposalsMenuPopover';
 import Table from '../../Table/Table';
 
 const nativeSelectStyles = {
@@ -190,7 +190,7 @@ const ProposalTableView = ({ data, isLoading }) => {
           row: {
             original: { _id },
           },
-        }) => useMemo(() => <MenuPopover itemId={_id} />, []),
+        }) => useMemo(() => <ProposalsMenuPopover itemId={_id} />, []),
       },
     ],
     [data?.docs, proposalStatusData],

@@ -13,13 +13,13 @@ import GridView from '../../components/Inventory/Grid';
 import MapView from '../../components/Inventory/MapView';
 import useLayoutView from '../../store/layout.store';
 import { useDeleteInventory, useFetchInventory } from '../../hooks/inventory.hooks';
-import MenuPopover from '../../components/Inventory/MenuPopover';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
 import { colors, ROLES } from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
 import TrashIcon from '../../assets/delete.png';
 import RoleBased from '../../components/RoleBased';
+import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
 
 const initialValues = {
   spaces: [],
@@ -156,11 +156,17 @@ const Home = () => {
             );
 
             return (
-              <Badge color={colorType} size="lg" className="capitalize">
-                {basicInformation?.spaceType?.name || <span>-</span>}
-              </Badge>
+              <div>
+                {basicInformation?.spaceType?.name ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {basicInformation.spaceType.name}
+                  </Badge>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
             );
-          }),
+          }, []),
       },
       {
         Header: 'DIMENSION',
@@ -255,7 +261,7 @@ const Home = () => {
           row: {
             original: { _id },
           },
-        }) => useMemo(() => <MenuPopover itemId={_id} />, []),
+        }) => useMemo(() => <SpacesMenuPopover itemId={_id} />, []),
       },
     ],
     [inventoryData?.docs],

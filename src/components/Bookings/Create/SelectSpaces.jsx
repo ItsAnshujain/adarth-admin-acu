@@ -1,23 +1,22 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Image, NumberInput, Progress, Badge, Loader, Chip } from '@mantine/core';
-import { ChevronDown, Edit2, Eye, Trash } from 'react-feather';
+import { Button, Image, NumberInput, Progress, Badge, Loader, Chip, Box } from '@mantine/core';
+import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
-import { useQueryClient } from '@tanstack/react-query';
 import classNames from 'classnames';
 import { Dropzone } from '@mantine/dropzone';
 import { useDebouncedState } from '@mantine/hooks';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
-import { useDeleteInventoryById, useFetchInventory } from '../../../hooks/inventory.hooks';
-import MenuIcon from '../../Menu';
+import { useFetchInventory } from '../../../hooks/inventory.hooks';
 import upload from '../../../assets/upload.svg';
 import { useFormContext } from '../../../context/formContext';
 import { colors } from '../../../utils';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import Filter from '../../Inventory/Filter';
+import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 
 const styles = {
   padding: 0,
@@ -75,7 +74,6 @@ const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
@@ -88,20 +86,8 @@ const SelectSpace = () => {
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
-  const { mutate } = useDeleteInventoryById();
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
-
-  const onDelete = id => {
-    mutate(
-      { inventoryId: id },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries(['inventory']);
-        },
-      },
-    );
-  };
 
   const getTotalPrice = (places = []) => {
     const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
@@ -140,7 +126,7 @@ const SelectSpace = () => {
       },
       {
         Header: 'SPACE NAME & PHOTO',
-        accessor: 'spaceName',
+        accessor: 'basicInformation.spaceName',
         Cell: ({
           row: {
             original: { photo, spaceName, isUnderMaintenance, _id },
@@ -148,8 +134,7 @@ const SelectSpace = () => {
         }) =>
           useMemo(
             () => (
-              <div
-                aria-hidden
+              <Box
                 onClick={() => navigate(`/bookings/view-details/${_id}`)}
                 className="grid grid-cols-2 gap-2 items-center cursor-pointer"
               >
@@ -179,7 +164,7 @@ const SelectSpace = () => {
                     {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
                   </Badge>
                 </div>
-              </div>
+              </Box>
             ),
             [isUnderMaintenance],
           ),
@@ -216,7 +201,7 @@ const SelectSpace = () => {
       },
       {
         Header: 'SPACE TYPE',
-        accessor: 'spaceType',
+        accessor: 'basicInformation.spaceType.name',
         Cell: ({
           row: {
             original: { spaceType },
@@ -226,11 +211,17 @@ const SelectSpace = () => {
             const colorType = Object.keys(colors).find(key => colors[key] === spaceType);
 
             return (
-              <Badge color={colorType} size="lg" className="capitalize">
-                {spaceType || <span>-</span>}
-              </Badge>
+              <div>
+                {spaceType ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {spaceType}
+                  </Badge>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
             );
-          }),
+          }, []),
       },
       {
         Header: 'DIMENSION',
@@ -348,52 +339,13 @@ const SelectSpace = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { id },
+            original: { _id },
           },
-        }) => {
-          const [showMenu, setShowMenu] = useState(false);
-
-          return useMemo(
-            () => (
-              <div aria-hidden onClick={() => setShowMenu(!showMenu)}>
-                <div className="relative">
-                  <MenuIcon />
-                  {showMenu && (
-                    <div className="absolute w-36 shadow-lg text-sm gap-2 flex flex-col border z-10  items-start right-4 top-0 bg-white py-4 px-2">
-                      <div
-                        onClick={() => navigate(`/inventory/view-details/${id}`)}
-                        className="bg-white cursor-pointer flex items-center"
-                        aria-hidden
-                      >
-                        <Eye className="h-4 mr-2" />
-                        <span>View Details</span>
-                      </div>
-                      <div
-                        onClick={() => navigate(`/inventory/edit-details/${id}`)}
-                        className="bg-white cursor-pointer flex items-center"
-                        aria-hidden
-                      >
-                        <Edit2 className="h-4 mr-2" />
-                        <span>Edit</span>
-                      </div>
-                      <div
-                        className="bg-white cursor-pointer flex items-center"
-                        onClick={() => {
-                          if (!isLoading) onDelete(id);
-                        }}
-                        aria-hidden
-                      >
-                        <Trash className="h-4 mr-2" />
-                        <span>Delete</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ),
+        }) =>
+          useMemo(
+            () => <SpacesMenuPopover itemId={_id} enableDelete={false} openInNewWindow />,
             [],
-          );
-        },
+          ),
       },
     ],
     [updatedInventoryData, values?.place],
@@ -491,9 +443,11 @@ const SelectSpace = () => {
         <div className="flex justify-between mb-4 items-center">
           <p className="text-purple-450 text-sm">
             Total Places{' '}
-            <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-              {inventoryData?.totalDocs}
-            </span>
+            {inventoryData?.totalDocs ? (
+              <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
+                {inventoryData.totalDocs}
+              </span>
+            ) : null}
           </p>
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>

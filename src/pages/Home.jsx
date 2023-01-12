@@ -6,6 +6,7 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  Legend,
   Title,
   BarElement,
   Tooltip,
@@ -32,6 +33,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   BarElement,
+  Legend,
   Tooltip,
   Title,
 );
@@ -160,11 +162,17 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-4 pr-7">
+            <div className="flex items-center gap-4">
               <div className="w-[68%]">
                 <div className="opacity-50">
                   <p className="font-bold mb-5">Revenue Graph (Upcoming)</p>
-                  <Line height="80" data={lineData} options={options} />
+                  <div className="flex flex-col pl-7 relative">
+                    <p className="font-sans transform rotate-[-90deg] absolute left-[-28px] top-[40%]">
+                      In Lakhs {'-->'}{' '}
+                    </p>
+                    <Line height="80" data={lineData} options={options} />
+                    <p className="font-sans text-center">Months {'-->'} </p>
+                  </div>
                 </div>
               </div>
               <div className="flex gap-4 p-4 border rounded-md items-center justify-center flex-1 flex-wrap-reverse">

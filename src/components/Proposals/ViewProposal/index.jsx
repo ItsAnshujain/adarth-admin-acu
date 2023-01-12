@@ -12,13 +12,13 @@ import Details from './Details';
 import DateRange from '../../DateRange';
 import calendar from '../../../assets/data-table.svg';
 import Table from '../../Table/Table';
-import MenuPopover from '../MenuPopover';
 import { useFetchProposalById } from '../../../hooks/proposal.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { colors } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
 import Filter from '../../Inventory/Filter';
 import useUserStore from '../../../store/user.store';
+import MenuPopover from './MenuPopover';
 
 const ProposalDetails = () => {
   const modals = useModals();
@@ -168,11 +168,17 @@ const ProposalDetails = () => {
           useMemo(() => {
             const colorType = Object.keys(colors).find(key => colors[key] === spaceType);
             return (
-              <Badge color={colorType} size="lg" className="capitalize">
-                {spaceType || <span>-</span>}
-              </Badge>
+              <div>
+                {spaceType ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {spaceType}
+                  </Badge>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
             );
-          }),
+          }, []),
       },
       {
         Header: 'DIMENSION',
@@ -239,7 +245,11 @@ const ProposalDetails = () => {
           row: {
             original: { _id },
           },
-        }) => useMemo(() => <MenuPopover itemId={_id} proposalData={proposalData} />, []),
+        }) =>
+          useMemo(
+            () => <MenuPopover itemId={_id} spacesData={proposalData?.inventories?.docs} />,
+            [],
+          ),
       },
     ],
     [proposalData?.inventories?.docs],

@@ -1,6 +1,6 @@
 import { Box, Image, Text } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import MenuPopover from '../../pages/Proposal/MenuPopover';
+import ProposalsMenuPopover from '../Popovers/ProposalsMenuPopover';
 
 const Card = ({ proposalData }) => {
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ const Card = ({ proposalData }) => {
         </div>
         <div className="flex justify-between items-center">
           <p className="text-purple-450 font-bold">₹{proposalData?.price || 0}</p>
-          <MenuPopover itemId={proposalData?._id} />
+          <ProposalsMenuPopover itemId={proposalData?._id} />
         </div>
       </div>
     </Box>

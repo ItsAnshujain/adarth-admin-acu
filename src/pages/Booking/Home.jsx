@@ -12,10 +12,10 @@ import AreaHeader from '../../components/Bookings/Header';
 import { useBookings, useBookingStats, useUpdateBookingStatus } from '../../hooks/booking.hooks';
 import { downloadAll, serialize } from '../../utils';
 import { useFetchMasters } from '../../hooks/masters.hooks';
-import MenuPopover from './MenuPopOver';
 import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from './BookingStatisticsView';
 import NoData from '../../components/shared/NoData';
+import BookingsMenuPopover from '../../components/Popovers/BookingsMenuPopover';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -461,7 +461,7 @@ const Bookings = () => {
           row: {
             original: { _id },
           },
-        }) => useMemo(() => <MenuPopover itemId={_id} />, []),
+        }) => useMemo(() => <BookingsMenuPopover itemId={_id} />, []),
       },
     ],
     [bookingData?.docs, campaignStatus, paymentStatus],

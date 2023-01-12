@@ -11,10 +11,10 @@ import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
 import Table from '../../Table/Table';
 import { useBookings, useUpdateBookingStatus } from '../../../hooks/booking.hooks';
-import MenuPopover from '../../../pages/Booking/MenuPopOver';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
 import toIndianCurrency from '../../../utils/currencyFormat';
+import BookingsMenuPopover from '../../Popovers/BookingsMenuPopover';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -391,7 +391,7 @@ const TotalBookings = ({ campaignId }) => {
           row: {
             original: { _id },
           },
-        }) => useMemo(() => <MenuPopover itemId={_id} />, []),
+        }) => useMemo(() => <BookingsMenuPopover itemId={_id} enableDelete={false} />, []),
       },
     ],
     [bookingData?.docs, campaignStatus, paymentStatus],

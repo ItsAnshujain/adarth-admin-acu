@@ -137,7 +137,7 @@ export const getAddressByLatLng = async (lat, lng) => {
  */
 export const handleStopPropagation = (e, cb) => {
   e.stopPropagation();
-  if (cb) cb();
+  cb?.();
 };
 
 export const gstRegexMatch =

@@ -9,12 +9,12 @@ import dayjs from 'dayjs';
 import Search from '../Search';
 import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
-import MenuPopover from './MenuPopover';
 import { useFetchInventory } from '../../hooks/inventory.hooks';
 import { colors } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
 import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';
+import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
 
 const getDate = (selectionItem, item, key, addDefault = true) => {
   if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
@@ -95,7 +95,7 @@ const Spaces = () => {
       },
       {
         Header: 'SPACE NAME & PHOTO',
-        accessor: 'spaceName',
+        accessor: 'basicInformation.spaceName',
         Cell: ({
           row: {
             original: { _id, spaceName, spacePhoto, isUnderMaintenance },
@@ -152,7 +152,7 @@ const Spaces = () => {
       },
       {
         Header: 'SPACE TYPE',
-        accessor: 'spaceType',
+        accessor: 'basicInformation.spaceType.name',
         Cell: ({
           row: {
             original: { spaceType },
@@ -161,11 +161,17 @@ const Spaces = () => {
           useMemo(() => {
             const colorType = Object.keys(colors).find(key => colors[key] === spaceType);
             return (
-              <Badge color={colorType} size="lg" className="capitalize">
-                {spaceType || <span>-</span>}
-              </Badge>
+              <div>
+                {spaceType ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {spaceType}
+                  </Badge>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
             );
-          }),
+          }, []),
       },
       {
         Header: 'DIMENSION',
@@ -297,7 +303,11 @@ const Spaces = () => {
           row: {
             original: { _id },
           },
-        }) => useMemo(() => <MenuPopover itemId={_id} />, []),
+        }) =>
+          useMemo(
+            () => <SpacesMenuPopover itemId={_id} enableDelete={false} openInNewWindow />,
+            [],
+          ),
       },
     ],
     [updatedInventoryData, values.spaces],
@@ -381,13 +391,13 @@ const Spaces = () => {
     }
   }, [searchInput]);
 
-  useEffect(() => {
-    if (values.startDate && values.endDate) {
-      searchParams.set('from', dayjs(values.startDate).format('YYYY-MM-DD'));
-      searchParams.set('to', dayjs(values.endDate).format('YYYY-MM-DD'));
-      setSearchParams(searchParams);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (values.startDate && values.endDate) {
+  //     searchParams.set('from', dayjs(values.startDate).format('YYYY-MM-DD'));
+  //     searchParams.set('to', dayjs(values.endDate).format('YYYY-MM-DD'));
+  //     setSearchParams(searchParams);
+  //   }
+  // }, []);
 
   return (
     <>
@@ -418,9 +428,11 @@ const Spaces = () => {
         <div className="flex justify-between mb-4 items-center">
           <Text size="sm" className="text-purple-450">
             Total Places{' '}
-            <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-              {inventoryData?.totalDocs}
-            </span>
+            {inventoryData?.totalDocs ? (
+              <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
+                {inventoryData.totalDocs}
+              </span>
+            ) : null}
           </Text>
 
           <Search search={searchInput} setSearch={setSearchInput} />
