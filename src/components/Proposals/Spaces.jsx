@@ -32,6 +32,7 @@ const Spaces = () => {
     'page': 1,
     'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
+    'isUnderMaintenance': false,
   });
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);

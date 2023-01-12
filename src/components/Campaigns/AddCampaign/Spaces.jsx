@@ -39,10 +39,11 @@ const SelectSpace = () => {
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
 
   const [searchParams, setSearchParams] = useSearchParams({
-    page: 1,
-    limit: 10,
-    sortBy: 'basicInformation.spaceName',
-    sortOrder: 'desc',
+    'page': 1,
+    'limit': 10,
+    'sortBy': 'basicInformation.spaceName',
+    'sortOrder': 'desc',
+    'isUnderMaintenance': false,
   });
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
   const pages = searchParams.get('page');

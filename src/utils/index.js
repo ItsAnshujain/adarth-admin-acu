@@ -73,7 +73,7 @@ export const tierList = [
   },
   {
     label: 'Tier 3',
-    value: 'tier_4',
+    value: 'tier_3',
   },
 ];
 

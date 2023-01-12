@@ -143,7 +143,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
           />
         </div>
       )),
-    [filterOptions],
+    [filterOptions.owner],
   );
 
   const renderDynamicOptionsArr = useCallback(
@@ -159,6 +159,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
         </div>
       )),
     [
+      filterOptions.owner,
       filterOptions.category,
       filterOptions.subCategory,
       filterOptions.mediaType,

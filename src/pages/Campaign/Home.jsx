@@ -110,6 +110,11 @@ const Home = () => {
         Header: 'TYPE',
         accessor: 'type',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { type },
+          },
+        }) => useMemo(() => <p className="w-24 capitalize">{type}</p>, []),
       },
       {
         Header: 'HEALTH',
