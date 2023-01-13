@@ -15,6 +15,8 @@ import modalConfig from '../../utils/modalConfig';
 import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
+import { useStyles } from '../DateRange';
+import DateRangeSelector from '../DateRangeSelector';
 
 const getDate = (selectionItem, item, key, addDefault = true) => {
   if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
@@ -27,6 +29,7 @@ const getDate = (selectionItem, item, key, addDefault = true) => {
 const Spaces = () => {
   const modals = useModals();
   const { values, setFieldValue } = useFormContext();
+  const { classes, cx } = useStyles();
   const [searchParams, setSearchParams] = useSearchParams({
     'limit': 10,
     'page': 1,
@@ -40,8 +43,8 @@ const Spaces = () => {
   const [showFilter, setShowFilter] = useState(false);
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
-  const fromDate = searchParams.get('from');
-  const toDate = searchParams.get('to');
+  // const fromDate = searchParams.get('from');
+  // const toDate = searchParams.get('to');
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -230,7 +233,7 @@ const Spaces = () => {
           row: {
             original: { mediaType },
           },
-        }) => useMemo(() => <p>{mediaType}</p>),
+        }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
         Header: 'PRICING',
@@ -252,6 +255,22 @@ const Spaces = () => {
             [],
           ),
       },
+      // TODO: disabled for now
+      {
+        Header: 'OCCUPANCY DATE',
+        accessor: 'scheduledDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { startDate, endDate, _id },
+          },
+        }) =>
+          useMemo(() => (
+            <div className="min-w-[300px]">
+              <DateRangeSelector disabled startDate={startDate} endDate={endDate} />
+            </div>
+          )),
+      },
       {
         Header: 'START DATE',
         accessor: 'startDate',
@@ -266,9 +285,14 @@ const Spaces = () => {
               <DatePicker
                 defaultValue={startDate}
                 placeholder="DD/MM/YYYY"
-                minDate={new Date(fromDate)}
-                maxDate={new Date(toDate)}
+                minDate={new Date()}
                 onChange={val => updateData('startDate', val, _id)}
+                dayClassName={(_, modifiers) =>
+                  cx({
+                    [classes.weekend]: modifiers.weekend,
+                    [classes.disabled]: modifiers.disabled,
+                  })
+                }
               />
             ),
             [],
@@ -288,9 +312,14 @@ const Spaces = () => {
               <DatePicker
                 defaultValue={endDate}
                 placeholder="DD/MM/YYYY"
-                minDate={new Date(fromDate)}
-                maxDate={new Date(toDate)}
+                minDate={new Date()}
                 onChange={val => updateData('endDate', val, _id)}
+                dayClassName={(_, modifiers) =>
+                  cx({
+                    [classes.weekend]: modifiers.weekend,
+                    [classes.disabled]: modifiers.disabled,
+                  })
+                }
               />
             ),
             [],

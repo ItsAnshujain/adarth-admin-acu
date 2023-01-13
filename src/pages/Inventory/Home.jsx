@@ -224,7 +224,7 @@ const Home = () => {
           row: {
             original: { location },
           },
-        }) => useMemo(() => <p>{location?.city}</p>, []),
+        }) => useMemo(() => <p>{location?.city || '-'}</p>, []),
       },
       {
         Header: 'MEDIA TYPE',
@@ -233,7 +233,7 @@ const Home = () => {
           row: {
             original: { basicInformation },
           },
-        }) => useMemo(() => <p>{basicInformation?.mediaType?.name}</p>),
+        }) => useMemo(() => <p>{basicInformation?.mediaType?.name || '-'}</p>),
       },
       {
         Header: 'PRICING',

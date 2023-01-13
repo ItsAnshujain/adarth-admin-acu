@@ -223,10 +223,20 @@ const ProposalDetails = () => {
       {
         Header: 'LOCATION',
         accessor: 'location',
+        Cell: ({
+          row: {
+            original: { location },
+          },
+        }) => useMemo(() => <p>{location || '-'}</p>),
       },
       {
         Header: 'MEDIA TYPE',
         accessor: 'mediaType',
+        Cell: ({
+          row: {
+            original: { mediaType },
+          },
+        }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
         Header: 'PRICING',
