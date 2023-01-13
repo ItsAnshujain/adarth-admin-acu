@@ -1,87 +1,130 @@
-import classNames from 'classnames';
 import { useMemo } from 'react';
-import dayjs from 'dayjs';
-import checkgreen from '../../../assets/check-success.svg';
-// import checkbw from '../../../assets/check-other.svg';
+import { v4 as uuidv4 } from 'uuid';
+import StatusNode from './StatusNode';
 
-const ProcessPipeline = ({ bookingData = {}, printStatus, mountStatus }) => {
-  const steps = useMemo(
-    () =>
-      ['campaignStatus', 'mountingStatus', 'printingStatus', 'paymentStatus']
-        .filter(item => !!bookingData[item])
-        .reverse(),
-    [bookingData],
+const ProcessPipeline = () => {
+  const pipelineList = useMemo(
+    () => [
+      {
+        id: uuidv4(),
+        status: 'Order Processed',
+        date: new Date(),
+        hasRightEdge: false,
+        isSuccess: true,
+      },
+      {
+        id: uuidv4(),
+        status: 'Order Confirmed',
+        date: new Date(),
+        hasRightEdge: false,
+      },
+      {
+        id: uuidv4(),
+        statusArr: [
+          {
+            id: uuidv4(),
+            status: 'Media Received',
+            date: new Date(),
+          },
+          {
+            id: uuidv4(),
+            status: 'Sent For Printing',
+            date: new Date(),
+            hasBottomEdge: false,
+            className: 'ml-[55px]',
+          },
+          {
+            id: uuidv4(),
+            status: 'Printing Completed',
+            date: new Date(),
+            hasRightEdge: false,
+            hasBottomEdge: false,
+            className: 'ml-[55px]',
+          },
+        ],
+      },
+      {
+        id: uuidv4(),
+        statusArr: [
+          {
+            id: uuidv4(),
+            status: 'Mounting Upcoming',
+            date: new Date(),
+          },
+          {
+            id: uuidv4(),
+            status: 'Mounting in Progress',
+            date: new Date(),
+            hasBottomEdge: false,
+            className: 'ml-[55px]',
+          },
+          {
+            id: uuidv4(),
+            status: 'Mounting Completed',
+            date: new Date(),
+            hasRightEdge: false,
+            hasBottomEdge: false,
+            className: 'ml-[55px]',
+          },
+        ],
+      },
+      {
+        id: uuidv4(),
+        statusArr: [
+          {
+            status: 'Campaign Upcoming',
+            date: new Date(),
+            hasBottomEdge: false,
+          },
+          {
+            id: uuidv4(),
+            status: 'Campaign Started',
+            date: new Date(),
+            hasBottomEdge: false,
+            className: 'ml-[55px]',
+          },
+          {
+            id: uuidv4(),
+            status: 'Campaign Completed',
+            date: new Date(),
+            hasRightEdge: false,
+            hasBottomEdge: false,
+            className: 'ml-[55px]',
+          },
+        ],
+      },
+    ],
+    [],
   );
-  // TODO: wip
+
   return (
-    <div className="flex flex-col gap-8 pl-5 p7-7 mt-4 mb-10">
-      {steps?.length || printStatus || mountStatus ? (
+    <div className="p-5">
+      {pipelineList.map(item => (
         <>
-          {steps.map((step, outerIndex) => (
-            <div className="flex gap-8">
-              {Object.keys(bookingData[step]).map((process, index) => (
-                <div className="relative min-w-[220px]">
-                  <div
-                    className={classNames(
-                      index !== 0
-                        ? 'before:content-[""] before:absolute before:h-[1px] before:-left-8 before:w-8 before:top-[50%] before:bg-green-400'
-                        : '',
-                      index === 0 && outerIndex !== steps.length - 1
-                        ? 'after:content-[""] after:rotate-90 after:absolute after:h-[1px] after:left-24  after:w-8 after:top-[111%] after:bg-green-400'
-                        : '',
-                      'border rounded-xl p-5 border-slate-200',
-                    )}
-                  >
-                    <div className="flex gap-3 items-start">
-                      <img src={checkgreen} alt="checked" className="mt-1" />
-                      <div>
-                        <p className="text-xl font-bold">{process.toUpperCase()}</p>
-                        <p className="text-green-500 font-medium">Successful</p>
-                      </div>
-                    </div>
-                    <div className="mt-3 relative left-8">
-                      <p className="text-sm text-slate-400 font-medium">Date &amp; Time</p>
-                      <p className="font-semibold mt-1">
-                        {dayjs(bookingData[step][process]).format('YYYY-MM-DD hh a')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ))}
-          {[printStatus, mountStatus]
-            .filter(item => !!item)
-            .map((item, index) => (
-              <div className="relative max-w-[220px]">
-                <div
-                  className={classNames(
-                    (steps.length !== 0 && index === 0) || index === 1
-                      ? 'after:content-[""] after:rotate-90 after:absolute after:h-[1px] after:left-24  after:w-8 after:top-[-10%] after:bg-green-400'
-                      : '',
-                    'border rounded-xl p-5 border-slate-200',
-                  )}
-                >
-                  <div className="flex gap-3 items-start">
-                    <img src={checkgreen} alt="checked" className="mt-1" />
-                    <div>
-                      <p className="text-xl font-bold">{item.toUpperCase()}</p>
-                      <p className="text-green-500 font-medium">Successful</p>
-                    </div>
-                  </div>
-                  <div className="mt-3 relative left-8">
-                    <p className="text-sm text-slate-400 font-medium">Date &amp; Time</p>
-                    <p className="font-semibold mt-1">{dayjs().format('YYYY-MM-DD h a')}</p>
-                  </div>
-                </div>
-              </div>
+          {item?.status ? (
+            <StatusNode
+              status={item.status}
+              isSuccess={item?.isSuccess}
+              dateAndTime={item?.date}
+              hasRightEdge={item?.hasRightEdge}
+              hasBottomEdge={item?.hasBottomEdge}
+              className={item?.className}
+            />
+          ) : null}
+          <div className="flex flex-row">
+            {item?.statusArr?.map(subItem => (
+              <StatusNode
+                status={subItem.status}
+                isSuccess={subItem?.isSuccess}
+                dateAndTime={subItem?.date}
+                hasRightEdge={subItem?.hasRightEdge}
+                hasBottomEdge={subItem?.hasBottomEdge}
+                className={subItem?.className}
+              />
             ))}
+          </div>
         </>
-      ) : (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
-          <p className="text-xl">No status found</p>
-        </div>
-      )}
+      ))}
     </div>
   );
 };
