@@ -174,13 +174,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
   );
 
   const handleNavigationByFilter = () => {
+    Object.keys(filterOptions).forEach(item => {
+      searchParams.delete(item);
+    });
     searchParams.set('page', 1);
-    if (!filterOptions.owner) {
-      Object.keys(filterOptions).forEach(item => {
-        searchParams.delete(item);
-      });
-    }
-
+    searchParams.set('owner', filterOptions.owner);
     Object.keys(filterOptions).forEach(key => {
       if (filterOptions[key].length && Array.isArray(filterOptions[key])) {
         searchParams.append(key, filterOptions[key].join(','));

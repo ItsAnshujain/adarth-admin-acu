@@ -17,6 +17,8 @@ import { colors } from '../../../utils';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import Filter from '../../Inventory/Filter';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
+import { useStyles } from '../../DateRange';
+import DateRangeSelector from '../../DateRangeSelector';
 
 const styles = {
   padding: 0,
@@ -73,6 +75,7 @@ const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
 
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
+  const { classes, cx } = useStyles();
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
@@ -267,11 +270,16 @@ const SelectSpace = () => {
           row: {
             original: { location },
           },
-        }) => useMemo(() => <p>{location?.city}</p>, []),
+        }) => useMemo(() => <p>{location?.city || '-'}</p>, []),
       },
       {
         Header: 'MEDIA TYPE',
         accessor: 'mediaType',
+        Cell: ({
+          row: {
+            original: { mediaType },
+          },
+        }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
         Header: 'PRICING',
@@ -292,6 +300,22 @@ const SelectSpace = () => {
             [],
           ),
       },
+      // TODO: disabled for now
+      {
+        Header: 'OCCUPANCY DATE',
+        accessor: 'scheduledDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { startDate, endDate, _id },
+          },
+        }) =>
+          useMemo(() => (
+            <div className="min-w-[300px]">
+              <DateRangeSelector disabled startDate={startDate} endDate={endDate} />
+            </div>
+          )),
+      },
       {
         Header: 'START DATE',
         accessor: 'startDate',
@@ -308,6 +332,12 @@ const SelectSpace = () => {
                 placeholder="DD/MM/YYYY"
                 minDate={new Date()}
                 onChange={val => updateData('startDate', val, _id)}
+                dayClassName={(_, modifiers) =>
+                  cx({
+                    [classes.weekend]: modifiers.weekend,
+                    [classes.disabled]: modifiers.disabled,
+                  })
+                }
               />
             ),
             [],
@@ -329,6 +359,12 @@ const SelectSpace = () => {
                 placeholder="DD/MM/YYYY"
                 minDate={new Date()}
                 onChange={val => updateData('endDate', val, _id)}
+                dayClassName={(_, modifiers) =>
+                  cx({
+                    [classes.weekend]: modifiers.weekend,
+                    [classes.disabled]: modifiers.disabled,
+                  })
+                }
               />
             ),
             [],

@@ -27,6 +27,7 @@ const BasicInfo = () => {
             label="Company Name"
             name="client.companyName"
             withAsterisk
+            placeholder="Write..."
             errors={errors}
           />
           <TextInput
@@ -34,6 +35,7 @@ const BasicInfo = () => {
             label="Client Email"
             name="client.email"
             withAsterisk
+            placeholder="Write..."
             errors={errors}
           />
           <TextInput
@@ -41,6 +43,7 @@ const BasicInfo = () => {
             label="Client Pan Number"
             name="client.panNumber"
             withAsterisk
+            placeholder="Write..."
             errors={errors}
           />
           <NativeSelect
@@ -66,6 +69,7 @@ const BasicInfo = () => {
             label="Client Name"
             name="client.name"
             withAsterisk
+            placeholder="Write..."
             errors={errors}
           />
           <TextInput
@@ -73,6 +77,7 @@ const BasicInfo = () => {
             label="Client Contact Number"
             name="client.contactNumber"
             withAsterisk
+            placeholder="Write..."
             errors={errors}
           />
           <TextInput
@@ -80,6 +85,7 @@ const BasicInfo = () => {
             label="Client GST Number"
             name="client.gstNumber"
             withAsterisk
+            placeholder="Write..."
             errors={errors}
           />
           <TextInput
@@ -87,6 +93,7 @@ const BasicInfo = () => {
             label="Payment Reference Number"
             name="paymentReference"
             withAsterisk
+            placeholder="Write..."
             errors={errors}
           />
         </div>

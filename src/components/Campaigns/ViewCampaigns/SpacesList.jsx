@@ -162,7 +162,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
           row: {
             original: { mediaType },
           },
-        }) => useMemo(() => <p>{mediaType?.name}</p>),
+        }) => useMemo(() => <p>{mediaType?.name || '-'}</p>),
       },
       {
         Header: 'PRICING',
