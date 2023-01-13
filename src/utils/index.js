@@ -189,13 +189,3 @@ export const downloadAll = urls => {
 
   link.remove();
 };
-
-export const stringToBoolean = data => {
-  if (typeof data === 'string') {
-    if (data === 'false') {
-      return false;
-    }
-    return true;
-  }
-  return data;
-};

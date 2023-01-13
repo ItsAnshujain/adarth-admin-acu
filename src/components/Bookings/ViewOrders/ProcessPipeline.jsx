@@ -1,40 +1,33 @@
 import { useMemo } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import StatusNode from './StatusNode';
 
 const ProcessPipeline = () => {
   const pipelineList = useMemo(
     () => [
       {
-        id: uuidv4(),
         status: 'Order Processed',
         date: new Date(),
         hasRightEdge: false,
         isSuccess: true,
       },
       {
-        id: uuidv4(),
         status: 'Order Confirmed',
         date: new Date(),
         hasRightEdge: false,
       },
       {
-        id: uuidv4(),
         statusArr: [
           {
-            id: uuidv4(),
             status: 'Media Received',
             date: new Date(),
           },
           {
-            id: uuidv4(),
             status: 'Sent For Printing',
             date: new Date(),
             hasBottomEdge: false,
             className: 'ml-[55px]',
           },
           {
-            id: uuidv4(),
             status: 'Printing Completed',
             date: new Date(),
             hasRightEdge: false,
@@ -44,22 +37,18 @@ const ProcessPipeline = () => {
         ],
       },
       {
-        id: uuidv4(),
         statusArr: [
           {
-            id: uuidv4(),
             status: 'Mounting Upcoming',
             date: new Date(),
           },
           {
-            id: uuidv4(),
             status: 'Mounting in Progress',
             date: new Date(),
             hasBottomEdge: false,
             className: 'ml-[55px]',
           },
           {
-            id: uuidv4(),
             status: 'Mounting Completed',
             date: new Date(),
             hasRightEdge: false,
@@ -69,7 +58,6 @@ const ProcessPipeline = () => {
         ],
       },
       {
-        id: uuidv4(),
         statusArr: [
           {
             status: 'Campaign Upcoming',
@@ -77,14 +65,12 @@ const ProcessPipeline = () => {
             hasBottomEdge: false,
           },
           {
-            id: uuidv4(),
             status: 'Campaign Started',
             date: new Date(),
             hasBottomEdge: false,
             className: 'ml-[55px]',
           },
           {
-            id: uuidv4(),
             status: 'Campaign Completed',
             date: new Date(),
             hasRightEdge: false,

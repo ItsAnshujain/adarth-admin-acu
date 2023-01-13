@@ -8,7 +8,6 @@ import { FormProvider, useForm } from '../../context/formContext';
 import TextInput from '../shared/TextInput';
 import { useUpdateNotification } from '../../hooks/settings.hooks';
 import useUserStore from '../../store/user.store';
-import { stringToBoolean } from '../../utils';
 
 const switchStyles = {
   root: {
@@ -108,9 +107,9 @@ const Notification = () => {
 
   useEffect(() => {
     if (data) {
-      form.setFieldValue('messageNotify', stringToBoolean(data.messageNotify));
-      form.setFieldValue('emailNotify', stringToBoolean(data.emailNotify));
-      form.setFieldValue('whatsappNotify', stringToBoolean(data.whatsappNotify));
+      form.setFieldValue('messageNotify', data.messageNotify);
+      form.setFieldValue('emailNotify', data.emailNotify);
+      form.setFieldValue('whatsappNotify', data.whatsappNotify);
       form.setFieldValue('whatsappNumber', data.whatsappNumber);
       form.setFieldValue('notificationEmail', data.notificationEmail);
       form.setFieldValue('number', data.number);
