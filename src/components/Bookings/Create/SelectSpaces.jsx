@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Image, NumberInput, Progress, Badge, Loader, Chip, Box } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { DatePicker, DateRangePicker } from '@mantine/dates';
+import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { Dropzone } from '@mantine/dropzone';
@@ -18,6 +18,7 @@ import { useUploadFile } from '../../../hooks/upload.hooks';
 import Filter from '../../Inventory/Filter';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 import { useStyles } from '../../DateRange';
+import DateRangeSelector from '../../DateRangeSelector';
 
 const styles = {
   padding: 0,
@@ -299,6 +300,7 @@ const SelectSpace = () => {
             [],
           ),
       },
+      // TODO: disabled for now
       {
         Header: 'OCCUPANCY DATE',
         accessor: 'scheduledDate',
@@ -310,11 +312,7 @@ const SelectSpace = () => {
         }) =>
           useMemo(() => (
             <div className="min-w-[300px]">
-              <DateRangePicker
-                placeholder="Pick dates range"
-                value={[startDate, endDate]}
-                // onChange={setValue}
-              />
+              <DateRangeSelector disabled startDate={startDate} endDate={endDate} />
             </div>
           )),
       },

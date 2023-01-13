@@ -1,20 +1,10 @@
 import { useMemo, useState, useEffect } from 'react';
-import {
-  Text,
-  Button,
-  Progress,
-  Image,
-  NumberInput,
-  Badge,
-  Box,
-  Loader,
-  Indicator,
-} from '@mantine/core';
+import { Text, Button, Progress, Image, NumberInput, Badge, Box, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import { DatePicker, DateRangePicker } from '@mantine/dates';
+import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
 import Search from '../Search';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -26,6 +16,7 @@ import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
 import { useStyles } from '../DateRange';
+import DateRangeSelector from '../DateRangeSelector';
 
 const getDate = (selectionItem, item, key, addDefault = true) => {
   if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
@@ -88,9 +79,6 @@ const Spaces = () => {
       values.spaces.map(item => (item._id === id ? { ...item, [key]: val } : item)),
     );
   };
-
-  const handleDates = (dateRange, date) =>
-    dateRange.filter(item => dayjs(item).isSame(dayjs(date)))[0];
 
   const COLUMNS = useMemo(
     () => [
@@ -267,6 +255,7 @@ const Spaces = () => {
             [],
           ),
       },
+      // TODO: disabled for now
       {
         Header: 'OCCUPANCY DATE',
         accessor: 'scheduledDate',
@@ -278,14 +267,7 @@ const Spaces = () => {
         }) =>
           useMemo(() => (
             <div className="min-w-[300px]">
-              <DateRangePicker
-                placeholder="Pick dates range"
-                onChange={val => console.log(val)}
-                excludeDate={date => {
-                  const dateRanges = [startDate, endDate];
-                  return handleDates(dateRanges, date);
-                }}
-              />
+              <DateRangeSelector disabled startDate={startDate} endDate={endDate} />
             </div>
           )),
       },

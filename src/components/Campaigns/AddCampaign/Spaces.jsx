@@ -14,6 +14,7 @@ import { useFormContext } from '../../../context/formContext';
 import { colors } from '../../../utils';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 import { useStyles } from '../../DateRange';
+import DateRangeSelector from '../../DateRangeSelector';
 
 const getHealthTag = score => {
   if (score <= 30) return 'Bad';
@@ -225,6 +226,22 @@ const SelectSpace = () => {
             original: { price },
           },
         }) => toIndianCurrency(Number.parseInt(price, 10) || 0),
+      },
+      // TODO: disabled for now
+      {
+        Header: 'OCCUPANCY DATE',
+        accessor: 'scheduledDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { startDate, endDate, _id },
+          },
+        }) =>
+          useMemo(() => (
+            <div className="min-w-[300px]">
+              <DateRangeSelector disabled startDate={startDate} endDate={endDate} />
+            </div>
+          )),
       },
       {
         Header: 'START DATE',
