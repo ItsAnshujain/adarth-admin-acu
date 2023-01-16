@@ -7,7 +7,6 @@ import { masterTypes } from '../utils';
 const NestedSidebarContent = ({ list, path, onNavigate }) => {
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
-
   const type = searchParams.get('type');
 
   const isActive = React.useMemo(() => {
@@ -17,7 +16,7 @@ const NestedSidebarContent = ({ list, path, onNavigate }) => {
     }
     return path.includes(pathName) || list.some(item => item.subPath.includes(subPathName));
   }, [list, pathname]);
-  // TODO: fix active state
+
   const checkActive = (label, subPath) => {
     if (pathname.includes(subPath)) return true;
     if (masterTypes[type] === label) return true;
@@ -26,7 +25,7 @@ const NestedSidebarContent = ({ list, path, onNavigate }) => {
 
   return (
     <Collapse in={isActive}>
-      <div className="flex flex-col items-start pl-5">
+      <div className="flex flex-col items-start pl-5 bg-gray-100">
         {list.map(item => (
           <Button
             key={item.label}

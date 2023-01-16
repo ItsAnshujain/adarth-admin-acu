@@ -1,12 +1,22 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import GoogleMapReact from 'google-map-react';
-import { Badge, Button, Image, Pagination, Text } from '@mantine/core';
+import {
+  BackgroundImage,
+  Badge,
+  Button,
+  Center,
+  Image,
+  Pagination,
+  Skeleton,
+  Text,
+} from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
 import Places from './UI/Places';
+import NoData from '../../shared/NoData';
 
 const defaultProps = {
   center: {
@@ -16,13 +26,41 @@ const defaultProps = {
   zoom: 10,
 };
 
+const SkeletonTopWrapper = () => (
+  <div className="flex flex-col gap-2">
+    <Skeleton height={300} width={400} mb="md" />
+    <div className="flex flex-row">
+      <Skeleton height={96} width={112} mr="md" />
+      <Skeleton height={96} width={112} mr="md" />
+      <Skeleton height={96} width={122} mr="md" />
+    </div>
+  </div>
+);
+
 const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
-const Overview = ({ campaignData = {}, spacesData = {} }) => {
+const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading }) => {
   const [readMore, toggle] = useToggle();
   const [searchParams, setSearchParams] = useSearchParams();
   const [mapInstance, setMapInstance] = useState(null);
   const [updatedPlace, setUpdatedPlace] = useState();
+  const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
+
+  const getAllSpacePhotos = useMemo(
+    () => () => {
+      const tempPics = [];
+      const tempArr = spacesData;
+      tempArr?.docs?.map(item => {
+        if (item?.basicInformation?.spacePhoto) tempPics.push(item.basicInformation.spacePhoto);
+        if (item?.basicInformation?.otherPhotos)
+          tempPics.push(...item.basicInformation.otherPhotos);
+        return tempPics;
+      });
+
+      return tempPics;
+    },
+    [spacesData],
+  );
 
   const handlePagination = currentPage => {
     searchParams.set('page', currentPage);
@@ -61,35 +99,61 @@ const Overview = ({ campaignData = {}, spacesData = {} }) => {
     updatePriceAndDates();
   }, [campaignData, spacesData]);
 
+  useEffect(() => {
+    const result = getAllSpacePhotos();
+    setPreviewSpacesPhotos(result);
+  }, [spacesData]);
+
   return (
     <div className="grid grid-cols-2 gap-x-8 pl-5 pr-7 pt-4">
       <div className="flex flex-col">
-        <div className="h-96">
-          {campaignData?.thumbnail ? (
-            <Image
-              height={384}
-              src={campaignData.thumbnail}
-              alt="poster"
-              fit="contain"
-              withPlaceholder
-              placeholder={
-                <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
-              }
-            />
-          ) : (
-            <Image height={384} src={null} alt="poster" fit="contain" withPlaceholder />
-          )}
-        </div>
+        {isCampaignDataLoading ? (
+          <SkeletonTopWrapper />
+        ) : (
+          <div className="flex flex-1 flex-col max-w-[500px]">
+            <div className="flex flex-row flex-wrap justify-start">
+              {previewSpacesPhotos?.map(
+                (src, index) =>
+                  index < 4 && (
+                    <div key={src} className="mr-2 mb-4 border-[1px] border-gray">
+                      <Image
+                        key={src}
+                        className="bg-slate-100"
+                        height={index === 0 ? 300 : 96}
+                        width={index === 0 ? 400 : 112}
+                        src={src}
+                        fit="contain"
+                        alt="poster"
+                      />
+                    </div>
+                  ),
+              )}
+              {previewSpacesPhotos?.length > 4 && (
+                <div className="border-[1px] border-gray mr-2 mb-4">
+                  <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
+                    <Center className="h-full">
+                      <Text weight="bold" color="white" className="mix-blend-difference">
+                        +{previewSpacesPhotos.length - 4} more
+                      </Text>
+                    </Center>
+                  </BackgroundImage>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
       <div>
         <div className="flex-1 pr-7 max-w-1/2">
           <p className="text-lg font-bold">{campaignData.name || 'NA'}</p>
           <div>
-            <p className="font-light text-slate-400 whitespace-pre">
-              {readMore
-                ? `${campaignData?.description?.split('\n')?.slice(0, 3).join('\n')}...`
-                : campaignData?.description}{' '}
-              {campaignData?.description?.split('\n')?.length > 4 ? (
+            <p className="text-slate-400 font-light text-[14px]">
+              {campaignData?.description?.split(' ')?.length > 4
+                ? readMore
+                  ? `${campaignData?.description?.split(' ')?.slice(0, 3).join(' ')}...`
+                  : campaignData?.description
+                : campaignData.description || <NoData type="na" />}
+              {campaignData?.description?.split(' ')?.length > 4 ? (
                 <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
                   {readMore ? 'Read more' : 'Read less'}
                 </Button>

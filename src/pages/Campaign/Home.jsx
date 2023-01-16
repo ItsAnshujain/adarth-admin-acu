@@ -59,6 +59,11 @@ const Home = () => {
     });
   };
 
+  const campaignList = useMemo(
+    () => campaignStatus?.docs?.map(item => item.name) || [],
+    [campaignStatus],
+  );
+
   const COLUMNS = useMemo(
     () => [
       {
@@ -142,21 +147,23 @@ const Home = () => {
             original: { _id, status },
           },
         }) =>
-          useMemo(
-            () => (
+          useMemo(() => {
+            const updatedCampaignList = [...campaignList];
+            if (!status) {
+              updatedCampaignList.unshift({ label: 'Select', value: '' });
+            }
+
+            return (
               <NativeSelect
-                defaultValue={status}
+                defaultValue={status || ''}
                 onChange={e => updateCampaign(_id, { status: e.target.value })}
-                data={
-                  campaignStatus?.docs?.map(item => ({ label: item.name, value: item._id })) || []
-                }
+                data={updatedCampaignList}
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
               />
-            ),
-            [status, _id],
-          ),
+            );
+          }, [status, _id]),
       },
       {
         Header: 'TOTAL PLACES',

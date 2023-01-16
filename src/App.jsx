@@ -342,7 +342,7 @@ const App = () => {
           }
         >
           <Route
-            path="inventory"
+            path="inventories"
             element={
               <Suspense fallback={<Loader />}>
                 <ReportInventory />

@@ -10,10 +10,15 @@ const styles = {
   yearPickerControlActive: { backgroundColor: '#4B0DAF !important' },
 };
 
-export const useStyles = createStyles({
+export const useStyles = createStyles(theme => ({
+  outside: { opacity: 0 },
   disabled: { color: 'transparent !important' },
   weekend: { color: '#495057 !important' },
-});
+  firstInRange: { color: `${theme.white} !important` },
+  lastInRange: { color: `${theme.white} !important` },
+  selectedInRange: { color: `${theme.white} !important` },
+  selected: { color: `${theme.white} !important` },
+}));
 
 const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate'] }) => {
   const { classes, cx } = useStyles();
@@ -100,9 +105,14 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
         <div className="border rounded-md flex-1 p-4 py-6">
           <RangeCalendar
             value={value}
+            disableOutsideEvents
             onChange={handleRangeSetting}
             dayClassName={(_, modifiers) =>
-              cx({ [classes.outside]: modifiers.outside, [classes.weekend]: modifiers.weekend })
+              cx({
+                [classes.outside]: modifiers.outside,
+                [classes.weekend]: modifiers.weekend,
+                [classes.selectedInRange]: modifiers.selectedInRange,
+              })
             }
           />
         </div>
@@ -115,8 +125,13 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
             value={value[0]}
             icon={<Calendar className="text-black absolute left-[500%]" />}
             styles={styles}
+            disableOutsideEvents
             dayClassName={(_, modifiers) =>
-              cx({ [classes.outside]: modifiers.outside, [classes.weekend]: modifiers.weekend })
+              cx({
+                [classes.outside]: modifiers.outside,
+                [classes.weekend]: modifiers.weekend,
+                [classes.selected]: modifiers.selected,
+              })
             }
           />
           <p className="font-bold mt-3">Date To</p>
@@ -126,8 +141,13 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
             value={value[1]}
             icon={<Calendar className="text-black absolute left-[500%]" />}
             styles={styles}
+            disableOutsideEvents
             dayClassName={(_, modifiers) =>
-              cx({ [classes.outside]: modifiers.outside, [classes.weekend]: modifiers.weekend })
+              cx({
+                [classes.outside]: modifiers.outside,
+                [classes.weekend]: modifiers.weekend,
+                [classes.selected]: modifiers.selected,
+              })
             }
           />
         </div>
