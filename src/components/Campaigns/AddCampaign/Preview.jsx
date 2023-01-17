@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import GoogleMapReact from 'google-map-react';
 import { BackgroundImage, Badge, Button, Center, Image, Pagination, Text } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
@@ -25,7 +25,7 @@ const Preview = ({ data = {}, place = {} }) => {
   const [mapInstance, setMapInstance] = useState(null);
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
-  const getAllSpacePhotos = useMemo(
+  const getAllSpacePhotos = useCallback(
     () => () => {
       const tempPics = [];
       const tempArr = place;
