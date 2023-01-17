@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useCallback } from 'react';
 import GoogleMapReact from 'google-map-react';
 import {
   BackgroundImage,
@@ -46,7 +46,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
   const [updatedPlace, setUpdatedPlace] = useState();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
-  const getAllSpacePhotos = useMemo(
+  const getAllSpacePhotos = useCallback(
     () => () => {
       const tempPics = [];
       const tempArr = spacesData;
