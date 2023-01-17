@@ -108,7 +108,6 @@ const BasicInformation = () => {
         styles={multiSelectStyles}
         label="Previous Brands"
         placeholder="Select all that you like"
-        withAsterisk
         onChange={e => setFieldValue('previousBrands', [...e])}
         data={brandData?.docs.map(item => ({ label: item.name, value: item._id })) || []}
         name="previousBrands"
@@ -152,7 +151,6 @@ const BasicInformation = () => {
         styles={multiSelectStyles}
         label="Tags"
         placeholder="Select all that you like"
-        withAsterisk
         onChange={e => setFieldValue('tags', [...e])}
         data={tagData?.docs.map(item => ({ label: item.name, value: item._id })) || []}
         name="tags"

@@ -43,9 +43,7 @@ const schema = formStep =>
               .nullable(true)
           : null,
       ),
-    previousBrands: yup
-      .mixed()
-      .concat(formStep === 1 ? yup.array().min(1, 'You must select one previous brand') : null),
+    previousBrands: yup.array().of(yup.string().trim()),
     minImpression: yup
       .number()
       .concat(
@@ -60,7 +58,7 @@ const schema = formStep =>
           ? numberRequiredSchema('Maximum Impression must be a number', 'Impression is required')
           : null,
       ),
-    tags: yup.mixed().concat(formStep === 1 ? yup.array().min(1, 'You must select one tag') : null),
+    tags: yup.array().of(yup.string().trim()),
     isFeatured: yup.boolean(),
     thumbnail: yup.string(),
   });
