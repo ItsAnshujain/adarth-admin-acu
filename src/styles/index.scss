@@ -21,3 +21,11 @@
 .has-peer {
   background-color: #eeeee4 !important;
 }
+
+.primary-button {
+  @apply font-sans bg-purple-450 text-white disabled:bg-purple-300 #{!important};
+}
+
+.danger-buton {
+  @apply font-sans bg-orange-450 text-white disabled:bg-orange-400 #{!important};
+}
