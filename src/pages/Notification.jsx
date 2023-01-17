@@ -52,7 +52,7 @@ const Notifications = () => {
             <div className="flex justify-end pr-7 pt-4">
               <Button
                 onClick={handleReadAll}
-                className="font-sans mr-2 bg-purple-450"
+                className="primary-button mr-2"
                 variant="filled"
                 loading={isReadAllNotificationsLoading}
                 disabled={isReadAllNotificationsLoading}
@@ -61,7 +61,7 @@ const Notifications = () => {
               </Button>
               <Button
                 onClick={handleClearAll}
-                className="font-sans bg-orange-450"
+                className="danger-buton"
                 variant="filled"
                 loading={isDeleteAllNotificationsLoading}
                 disabled={isDeleteAllNotificationsLoading}
@@ -107,8 +107,7 @@ const Notifications = () => {
                     <div className="flex justify-end">
                       <Button
                         onClick={() => handleRead(messages?._id)}
-                        className="font-sans mr-2"
-                        variant="subtle"
+                        className="primary-button mr-2"
                         loading={
                           (activeButtonId === messages?._id && isReadNotificationByIdLoading) ||
                           (activeButtonId === messages?._id && isReadAllNotificationsLoading)
@@ -124,8 +123,7 @@ const Notifications = () => {
                       </Button>
                       <Button
                         onClick={() => handleClear(messages?._id)}
-                        className="font-sans"
-                        variant="subtle"
+                        className="danger-buton"
                         loading={
                           (activeButtonId === messages?._id && isDeleteNotificationByIdLoading) ||
                           (activeButtonId === messages?._id && isDeleteAllNotificationsLoading)
