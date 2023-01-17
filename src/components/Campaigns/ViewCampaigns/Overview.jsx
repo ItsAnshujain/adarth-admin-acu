@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useCallback } from 'react';
 import GoogleMapReact from 'google-map-react';
 import {
   BackgroundImage,
@@ -46,21 +46,17 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
   const [updatedPlace, setUpdatedPlace] = useState();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
-  const getAllSpacePhotos = useMemo(
-    () => () => {
-      const tempPics = [];
-      const tempArr = spacesData;
-      tempArr?.docs?.map(item => {
-        if (item?.basicInformation?.spacePhoto) tempPics.push(item.basicInformation.spacePhoto);
-        if (item?.basicInformation?.otherPhotos)
-          tempPics.push(...item.basicInformation.otherPhotos);
-        return tempPics;
-      });
-
+  const getAllSpacePhotos = useCallback(() => {
+    const tempPics = [];
+    const tempArr = spacesData;
+    tempArr?.docs?.map(item => {
+      if (item?.basicInformation?.spacePhoto) tempPics.push(item.basicInformation.spacePhoto);
+      if (item?.basicInformation?.otherPhotos) tempPics.push(...item.basicInformation.otherPhotos);
       return tempPics;
-    },
-    [spacesData],
-  );
+    });
+
+    return tempPics;
+  }, [spacesData]);
 
   const handlePagination = currentPage => {
     searchParams.set('page', currentPage);

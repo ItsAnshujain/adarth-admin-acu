@@ -51,7 +51,7 @@ const Card = ({
             <p className="text-sm mt-1">{minImpression}</p>
           </div>
         </div>
-        <p className="mt-4 font-extrabold text-lg">{toIndianCurrency(price)}</p>
+        <p className="mt-4 font-extrabold text-lg">{price ? toIndianCurrency(price) : 0}</p>
       </div>
     </div>
   </Link>
