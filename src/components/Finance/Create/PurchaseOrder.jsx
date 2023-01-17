@@ -15,6 +15,7 @@ import NumberInput from '../../shared/NumberInput';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import modalConfig from '../../../utils/modalConfig';
 import NoData from '../../shared/NoData';
+import { useStyles } from '../../DateRange';
 
 const supportedType = ['JPG', 'JPEG', 'PNG'];
 
@@ -34,6 +35,7 @@ const styles = {
 };
 
 const PurchaseOrder = ({ spacesList, totalPrice }) => {
+  const { classes, cx } = useStyles();
   const { errors, getInputProps, setFieldValue, values } = useFormContext();
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const modals = useModals();
@@ -133,6 +135,13 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
                 placeholder="DD/MM/YYYY"
                 minDate={new Date()}
                 onChange={val => updateData('dueOn', val, _id)}
+                dayClassName={(_, modifiers) =>
+                  cx({
+                    [classes.outside]: modifiers.outside,
+                    [classes.weekend]: modifiers.weekend,
+                    [classes.selected]: modifiers.selected,
+                  })
+                }
               />
             ),
             [],

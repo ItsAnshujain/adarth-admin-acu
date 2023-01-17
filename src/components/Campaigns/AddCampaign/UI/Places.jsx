@@ -1,5 +1,4 @@
 import { Image, Text } from '@mantine/core';
-import CustomBadge from '../../../shared/Badge';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 
 const Places = ({ data }) => (
@@ -15,14 +14,6 @@ const Places = ({ data }) => (
       />
     </div>
     <div className="flex flex-col w-full">
-      <CustomBadge
-        className="bg-green-200 text-green-700 w-24 mb-2 tracking-widest font-light"
-        radius="lg"
-        variant="filled"
-        text={data.status}
-        size="md"
-      />
-
       <div className="grid grid-cols-4">
         <div>
           <Text weight="bolder" className="mb-2">

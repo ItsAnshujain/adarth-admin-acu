@@ -29,8 +29,7 @@ import RoleBased from './RoleBased';
 const Sidebar = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-
-  const { data, isSuccess: isMasterLoaded } = useFetchMastersTypes(!!pathname.includes('/masters'));
+  const { data, isSuccess: isMasterLoaded } = useFetchMastersTypes();
 
   const renderList = useMemo(() => {
     const queries = serialize({
@@ -64,6 +63,14 @@ const Sidebar = () => {
       navigate(`${path}${subPath}`);
     } else {
       navigate(path);
+    }
+  };
+
+  const handleRoutes = item => {
+    if (item.nested) {
+      navigate(`${item.path}${item.nested[0]?.subPath}`);
+    } else {
+      handleNavigate(item.path);
     }
   };
 
@@ -157,7 +164,7 @@ const Sidebar = () => {
         nested: [
           { label: 'Campaign Report', subPath: '/campaign' },
           { label: 'Revenue Reports', subPath: '/revenue' },
-          { label: 'Inventory Report', subPath: '/inventory' },
+          { label: 'Inventory Report', subPath: '/inventories' },
         ],
         icon: ReportIcon,
         activeIcon: ReportActiveIcon,
@@ -176,28 +183,28 @@ const Sidebar = () => {
 
   return (
     <div className="hidden lg:block lg:col-span-2 mt-4">
-      <div className="flex flex-col items-start gap-2 px-5">
+      <div className="flex flex-col items-start gap-3 px-5">
         {sidebarMenuList.map(item => (
           <RoleBased acceptedRoles={item.acceptedRoles} key={item.label}>
             <div className="w-full flex flex-col border-gray-450 border" key={item.label}>
-              <div className="flex items-center justify-between ">
+              <div
+                className={classNames(
+                  'flex items-center justify-between',
+                  pathname.includes(item.path) && item.nested && 'bg-gray-100',
+                )}
+              >
                 <Button
-                  onClick={() => {
-                    if (isMasterLoaded && item.nested) {
-                      navigate(`${item.path}${item.nested[0]?.subPath}`);
-                    } else {
-                      handleNavigate(item.path);
-                    }
-                  }}
-                  className="p-2 flex w-full h-[40px]"
+                  onClick={() => handleRoutes(item)}
+                  className={classNames('p-2 flex w-full h-[40px]')}
+                  leftIcon={
+                    <Image
+                      src={checkActive(item.path) ? item.activeIcon : item.icon}
+                      height={24}
+                      width={24}
+                      fit="contain"
+                    />
+                  }
                 >
-                  <Image
-                    src={checkActive(item.path) ? item.activeIcon : item.icon}
-                    height={24}
-                    width={24}
-                    className="mr-2"
-                    fit="contain"
-                  />
                   <span
                     className={classNames(
                       checkActive(item.path) ? 'text-purple-450' : 'text-gray-400',

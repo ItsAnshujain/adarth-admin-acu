@@ -93,7 +93,7 @@ const SelectSpace = () => {
         accessor: 'basicInformation.spaceName',
         Cell: ({
           row: {
-            original: { isUnderMaintenance, photo, space_name, _id },
+            original: { isUnderMaintenance, photo, spaceName, _id },
           },
         }) =>
           useMemo(
@@ -111,10 +111,10 @@ const SelectSpace = () => {
                     src={photo}
                   />
                   <p
-                    title={space_name}
+                    title={spaceName}
                     className="w-[150px] text-ellipsis overflow-hidden whitespace-nowrap"
                   >
-                    {space_name}
+                    {spaceName}
                   </p>
                 </div>
                 <div className="w-fit">
@@ -337,13 +337,15 @@ const SelectSpace = () => {
     const formData = selectedRows.map(
       ({
         _id,
-        space_name,
+        spaceName,
         photo,
+        otherPhotos,
         price,
         location,
         mediaType,
         dimension,
         illuminations,
+        impression,
         unit,
         resolutions,
         supportedMedia,
@@ -351,13 +353,15 @@ const SelectSpace = () => {
         endDate,
       }) => ({
         _id,
-        space_name,
+        spaceName,
         photo,
+        otherPhotos,
         price: +price || 0,
         location,
         mediaType,
         dimension,
         illuminations,
+        impression,
         unit,
         resolutions,
         supportedMedia,
@@ -387,8 +391,9 @@ const SelectSpace = () => {
 
         const obj = {};
         obj.photo = item.basicInformation.spacePhoto;
+        obj.otherPhotos = item?.basicInformation?.otherPhotos;
         obj._id = item._id;
-        obj.space_name = item.basicInformation.spaceName;
+        obj.spaceName = item.basicInformation.spaceName;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.spaceType = item.basicInformation?.spaceType?.name;
         obj.dimension = item.specifications.size;
@@ -399,7 +404,6 @@ const SelectSpace = () => {
         obj.supportedMedia = item.basicInformation.supportedMedia;
         obj.price = item.basicInformation.price;
         obj.landlord_name = item?.basicInformation?.mediaOwner?.name;
-        obj.status = 'Available';
         obj.illuminations = item.specifications.illuminations?.name;
         obj.unit = item.specifications.unit;
         obj.resolutions = item.specifications.resolutions;

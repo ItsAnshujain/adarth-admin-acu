@@ -14,12 +14,14 @@ const DatePicker = ({ name = '', styles, errors, ...props }) => {
       defaultValue={new Date()}
       styles={styles}
       error={errors}
+      disableOutsideEvents
       classNames={{ disabled: '' }}
       dayClassName={(_, modifiers) =>
         cx({
           [classes.outside]: modifiers.outside,
           [classes.weekend]: modifiers.weekend,
           [classes.disabled]: modifiers.disabled,
+          [classes.selected]: modifiers.selected,
         })
       }
       {...form.getInputProps(name)}

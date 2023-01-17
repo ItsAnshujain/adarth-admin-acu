@@ -46,10 +46,12 @@ const DateRangeSelector = ({ startDate, endDate, ...props }) => {
       placeholder="Pick dates range"
       onChange={val => setDateValue(val)}
       excludeDate={date => excludeBookedDates(date, startDate, endDate)}
+      disableOutsideEvents
       dayClassName={(_, modifiers) =>
         cx({
           [classes.weekend]: modifiers.weekend,
           [classes.disabled]: modifiers.disabled,
+          [classes.selectedInRange]: modifiers.selectedInRange,
         })
       }
       {...props}
