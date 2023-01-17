@@ -25,21 +25,18 @@ const Preview = ({ data = {}, place = {} }) => {
   const [mapInstance, setMapInstance] = useState(null);
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
-  const getAllSpacePhotos = useCallback(
-    () => () => {
-      const tempPics = [];
-      const tempArr = place;
-      tempArr?.docs?.filter(item => {
-        if (item?.photo) tempPics.push(item.photo);
-        if (item?.otherPhotos) tempPics.push(...item.otherPhotos);
-
-        return tempPics;
-      });
+  const getAllSpacePhotos = useCallback(() => {
+    const tempPics = [];
+    const tempArr = place;
+    tempArr?.docs?.filter(item => {
+      if (item?.photo) tempPics.push(item.photo);
+      if (item?.otherPhotos) tempPics.push(...item.otherPhotos);
 
       return tempPics;
-    },
-    [place],
-  );
+    });
+
+    return tempPics;
+  }, [place]);
 
   const getTotalPrice = useMemo(() => {
     const totalPrice = place.docs.reduce((acc, item) => acc + +(item.price || 0), 0);

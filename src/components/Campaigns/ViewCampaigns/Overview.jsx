@@ -46,21 +46,17 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
   const [updatedPlace, setUpdatedPlace] = useState();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
-  const getAllSpacePhotos = useCallback(
-    () => () => {
-      const tempPics = [];
-      const tempArr = spacesData;
-      tempArr?.docs?.map(item => {
-        if (item?.basicInformation?.spacePhoto) tempPics.push(item.basicInformation.spacePhoto);
-        if (item?.basicInformation?.otherPhotos)
-          tempPics.push(...item.basicInformation.otherPhotos);
-        return tempPics;
-      });
-
+  const getAllSpacePhotos = useCallback(() => {
+    const tempPics = [];
+    const tempArr = spacesData;
+    tempArr?.docs?.map(item => {
+      if (item?.basicInformation?.spacePhoto) tempPics.push(item.basicInformation.spacePhoto);
+      if (item?.basicInformation?.otherPhotos) tempPics.push(...item.basicInformation.otherPhotos);
       return tempPics;
-    },
-    [spacesData],
-  );
+    });
+
+    return tempPics;
+  }, [spacesData]);
 
   const handlePagination = currentPage => {
     searchParams.set('page', currentPage);
