@@ -1,6 +1,6 @@
 import { BackgroundImage, Center, Image, Skeleton, Text } from '@mantine/core';
 import dayjs from 'dayjs';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import toIndianCurrency from '../../../utils/currencyFormat';
 
 const DATE_FORMAT = 'DD MMM YYYY';
@@ -15,7 +15,7 @@ const SkeletonTopWrapper = () => (
 const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
-  const getAllSpacePhotos = useMemo(
+  const getAllSpacePhotos = useCallback(
     () => () => {
       const tempPics = [];
       const tempArr = inventoryData;

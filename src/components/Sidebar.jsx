@@ -156,15 +156,15 @@ const Sidebar = () => {
         path: '/campaigns',
         icon: CampaignIcon,
         activeIcon: CampaignActiveIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR],
+        acceptedRoles: [ROLES.ADMIN],
       },
       {
         label: 'Reports',
         path: '/reports',
         nested: [
-          { label: 'Campaign Report', subPath: '/campaign' },
+          { label: 'Campaign Reports', subPath: '/campaign' },
           { label: 'Revenue Reports', subPath: '/revenue' },
-          { label: 'Inventory Report', subPath: '/inventories' },
+          { label: 'Inventory Reports', subPath: '/inventories' },
         ],
         icon: ReportIcon,
         activeIcon: ReportActiveIcon,

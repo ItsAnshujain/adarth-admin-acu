@@ -156,8 +156,10 @@ const CreateCampaign = () => {
         };
       });
 
+      const totalPrice = newData.place.reduce((acc, item) => acc + +(item.price || 0), 0);
+
       newData.healthStatus = +newData.healthStatus || 0;
-      newData.price = +newData.price || 0;
+      newData.price = totalPrice || 0;
 
       delete newData.createdBy;
 

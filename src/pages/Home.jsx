@@ -13,6 +13,7 @@ import {
 } from 'chart.js';
 import { Image } from '@mantine/core';
 import { useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import AreaHeader from '../components/Home/Header';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
@@ -23,8 +24,9 @@ import VacantIcon from '../assets/vacant.svg';
 import OccupiedIcon from '../assets/occupied.svg';
 import TotalCampaignIcon from '../assets/total-campaign.svg';
 import useUserStore from '../store/user.store';
-import { useBookingStats } from '../hooks/booking.hooks';
+import { useBookingStats, useFetchBookingRevenue } from '../hooks/booking.hooks';
 import { useInventoryStats } from '../hooks/inventory.hooks';
+import { serialize } from '../utils';
 
 ChartJS.register(
   CategoryScale,
@@ -57,23 +59,16 @@ const labels = [
   'Dec',
 ];
 
-const lineData = {
-  labels,
-  datasets: [
-    {
-      label: 'Revenue',
-      data: [10, 0, 23, 23, 31, 23, 5, 21, 22, 12, 3, 4],
-      borderColor: '#914EFB',
-      backgroundColor: '#914EFB',
-      cubicInterpolationMode: 'monotone',
-    },
-  ],
-};
-
 // Doughnut
 const config = {
   type: 'line',
   options: { responsive: true },
+};
+
+const query = {
+  startDate: new Date('01-01-2023').toISOString(),
+  endDate: new Date('12-31-2023').toISOString(),
+  type: 'month',
 };
 
 const HomePage = () => {
@@ -82,17 +77,41 @@ const HomePage = () => {
   const user = queryClient.getQueryData(['users-by-id', userId]);
   const { data: bookingStats } = useBookingStats('');
   const { data: inventoryStats } = useInventoryStats('');
+  const { data: bookingRevenue } = useFetchBookingRevenue(serialize(query));
+  const inventoryHealthStatus = useMemo(
+    () => ({
+      datasets: [
+        {
+          data: [inventoryStats?.healthy, inventoryStats?.unHealthy],
+          backgroundColor: ['#FF900E', '#914EFB'],
+          borderColor: ['#FF900E', '#914EFB'],
+          borderWidth: 1,
+        },
+      ],
+    }),
+    [inventoryStats],
+  );
 
-  const inventoryHealthStatus = {
-    datasets: [
-      {
-        data: [inventoryStats?.healthy, inventoryStats?.unHealthy],
-        backgroundColor: ['#FF900E', '#914EFB'],
-        borderColor: ['#FF900E', '#914EFB'],
-        borderWidth: 1,
-      },
-    ],
-  };
+  const getRevenueValues = useMemo(
+    () => bookingRevenue?.map(item => (item?.price ? item.price / 100000 : 0)),
+    [bookingRevenue],
+  );
+
+  const lineData = useMemo(
+    () => ({
+      labels,
+      datasets: [
+        {
+          label: 'Revenue',
+          data: getRevenueValues,
+          borderColor: '#914EFB',
+          backgroundColor: '#914EFB',
+          cubicInterpolationMode: 'monotone',
+        },
+      ],
+    }),
+    [getRevenueValues],
+  );
 
   return (
     <div className="absolute top-0">
@@ -164,15 +183,13 @@ const HomePage = () => {
             </div>
             <div className="flex items-center gap-4">
               <div className="w-[68%]">
-                <div className="opacity-50">
-                  <p className="font-bold mb-5">Revenue Graph (Upcoming)</p>
-                  <div className="flex flex-col pl-7 relative">
-                    <p className="font-sans transform rotate-[-90deg] absolute left-[-28px] top-[40%]">
-                      In Lakhs {'-->'}{' '}
-                    </p>
-                    <Line height="80" data={lineData} options={options} />
-                    <p className="font-sans text-center">Months {'-->'} </p>
-                  </div>
+                <p className="font-bold mb-5">Revenue Graph</p>
+                <div className="flex flex-col pl-7 relative">
+                  <p className="font-sans transform rotate-[-90deg] absolute left-[-28px] top-[40%]">
+                    In Lakhs {'-->'}{' '}
+                  </p>
+                  <Line height="80" data={lineData} options={options} />
+                  <p className="font-sans text-center">Months {'-->'} </p>
                 </div>
               </div>
               <div className="flex gap-4 p-4 border rounded-md items-center justify-center flex-1 flex-wrap-reverse">

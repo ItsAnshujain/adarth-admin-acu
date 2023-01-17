@@ -2,6 +2,7 @@ import { showNotification } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   bookingById,
+  bookingRevenue,
   bookings,
   bookingStats,
   bookingStatsByIncharge,
@@ -244,3 +245,13 @@ export const useGenerateReleaseOrder = () => {
     },
   );
 };
+
+export const useFetchBookingRevenue = (query, enabled = true) =>
+  useQuery(
+    ['booking-revenue', query],
+    async () => {
+      const res = await bookingRevenue(query);
+      return res?.data;
+    },
+    { enabled: !!enabled },
+  );

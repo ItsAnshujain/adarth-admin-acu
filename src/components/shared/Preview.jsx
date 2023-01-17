@@ -1,24 +1,26 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Badge, Button, Image, Text } from '@mantine/core';
+import { Badge, Button, Image, Text, BackgroundImage, Center } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { useFormContext } from '../../context/formContext';
 
 const Preview = () => {
   const [readMore, toggle] = useToggle();
-  const [otherImages, setOtherImages] = useState([]);
-  const [posterImage, setPosterImage] = useState(null);
   const { values } = useFormContext();
+  const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
-  const exchangeImages = index => {
-    const temp = posterImage;
-    setPosterImage(otherImages[index]);
-    setOtherImages(prev => {
-      const newImgs = [...prev];
-      newImgs[index] = temp;
-      return newImgs;
-    });
-  };
+  const getAllSpacePhotos = useCallback(
+    () => () => {
+      const tempPics = [];
+
+      if (values?.basicInformation?.spacePhoto) tempPics.push(values.basicInformation.spacePhoto);
+      if (values?.basicInformation?.otherPhotos)
+        tempPics.push(...values.basicInformation.otherPhotos);
+
+      return tempPics;
+    },
+    [values],
+  );
 
   const renderBadges = useCallback(
     list =>
@@ -48,49 +50,44 @@ const Preview = () => {
   );
 
   useEffect(() => {
-    setPosterImage(values?.basicInformation?.spacePhoto);
-
-    if (values?.basicInformation?.otherPhotos) {
-      setOtherImages([...values.basicInformation.otherPhotos]);
-    }
-  }, [values?.basicInformation?.spacePhoto, values?.basicInformation?.otherPhotos]);
+    const result = getAllSpacePhotos();
+    setPreviewSpacesPhotos(result);
+  }, [values]);
 
   return (
-    <div className="grid grid-cols-2 gap-x-8 pl-5 pt-4">
-      <div className="flex flex-col">
-        <div className="h-96">
-          {posterImage ? (
-            <Image
-              height={384}
-              src={posterImage}
-              alt="poster"
-              fit="contain"
-              withPlaceholder
-              placeholder={
-                <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
-              }
-            />
-          ) : (
-            <Image height={384} src={null} alt="poster" fit="contain" withPlaceholder />
+    <div className="grid grid-cols-2 pl-5 pt-4">
+      <div className="flex flex-1 flex-col max-w-[500px]">
+        <div className="flex flex-row flex-wrap justify-start">
+          {previewSpacesPhotos?.map(
+            (src, index) =>
+              index < 4 && (
+                <div key={src} className="mr-2 mb-4 border-[1px] border-gray">
+                  <Image
+                    key={src}
+                    className="bg-slate-100"
+                    height={index === 0 ? 300 : 96}
+                    width={index === 0 ? 500 : 112}
+                    src={src}
+                    fit="contain"
+                    alt="poster"
+                  />
+                </div>
+              ),
+          )}
+          {previewSpacesPhotos?.length > 4 && (
+            <div className="border-[1px] border-gray mr-2 mb-4">
+              <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
+                <Center className="h-full">
+                  <Text weight="bold" color="white" className="mix-blend-difference">
+                    +{previewSpacesPhotos.length - 4} more
+                  </Text>
+                </Center>
+              </BackgroundImage>
+            </div>
           )}
         </div>
-        <div className="flex overflow-scroll pt-4 gap-4 items-center ">
-          {otherImages.length > 0 && otherImages?.[0] !== ''
-            ? otherImages.map((src, index) => (
-                <Image
-                  key={src}
-                  onClick={() => exchangeImages(index)}
-                  className="cursor-pointer bg-slate-300"
-                  height={96}
-                  width={112}
-                  src={src}
-                  fit="contain"
-                  alt="poster"
-                />
-              ))
-            : null}
-        </div>
       </div>
+
       <div>
         <div className="flex-1 pr-7 max-w-1/2">
           <p className="text-lg font-bold">{values?.basicInformation?.spaceName || 'NA'}</p>

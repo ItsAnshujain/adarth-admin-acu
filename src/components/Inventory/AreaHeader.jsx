@@ -74,7 +74,7 @@ const AreaHeader = ({ text, inventoryData }) => {
                 onChange={event => handleSelectedCards(event.target.checked)}
                 label="Select All Product"
                 classNames={{ root: 'flex flex-row-reverse', label: 'pr-2' }}
-                checked={selectedAll}
+                defaultChecked={selectedAll}
               />
             ) : null}
             <Button

@@ -72,7 +72,6 @@ const schema = action =>
       description: yup.string().trim(),
       price: yup
         .number()
-        .nullable()
         .concat(
           action === 1
             ? yup
@@ -80,7 +79,6 @@ const schema = action =>
                 .positive('Price must be a positive number')
                 .typeError('Price must be a number')
                 .required('Price is required')
-                .nullable()
             : null,
         ),
       spacePhoto: yup.string().trim(),
@@ -132,7 +130,6 @@ const schema = action =>
       ),
       unit: yup
         .number()
-        .nullable()
         .concat(
           action === 2
             ? yup
@@ -140,14 +137,12 @@ const schema = action =>
                 .positive('Unit must be a positive number')
                 .typeError('Unit must be a number')
                 .required('Unit is required')
-                .nullable()
             : null,
         ),
       resolutions: yup.string().trim(),
       size: yup.object({
         height: yup
           .number()
-          .nullable()
           .concat(
             action === 2
               ? yup
@@ -155,12 +150,10 @@ const schema = action =>
                   .positive('Height must be a positive number')
                   .typeError('Height must be a number')
                   .required('Height is required')
-                  .nullable()
               : null,
           ),
         width: yup
           .number()
-          .nullable()
           .concat(
             action === 2
               ? yup
@@ -168,7 +161,6 @@ const schema = action =>
                   .positive('Width must be a positive number')
                   .typeError('Width must be a number')
                   .required('Width is required')
-                  .nullable()
               : null,
           ),
       }),
@@ -194,16 +186,8 @@ const schema = action =>
           .nullable()
           .concat(action === 2 ? yup.number().typeError('Max must be a number').nullable() : null),
       }),
-      previousBrands: yup
-        .array()
-        .of(yup.object({ label: yup.string(), value: yup.string() }))
-        .test('previousBrands', 'Previous Brand is required', val =>
-          action === 2 ? val?.length > 0 : true,
-        ),
-      tags: yup
-        .array()
-        .of(yup.object({ label: yup.string(), value: yup.string() }))
-        .test('tags', 'Tag is required', val => (action === 2 ? val?.length > 0 : true)),
+      previousBrands: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
+      tags: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
     }),
     location: yup.object({
       latitude: yup
@@ -286,7 +270,7 @@ const initialValues = {
     mediaType: { label: '', value: '' },
     supportedMedia: '',
     description: '',
-    price: null,
+    price: 0,
     spacePhoto: '',
     otherPhotos: [],
     footFall: null,
@@ -296,11 +280,11 @@ const initialValues = {
   specifications: {
     illuminations: { label: '', value: '' },
     spaceStatus: { label: '', value: '' },
-    unit: null,
+    unit: 0,
     resolutions: '',
     size: {
-      height: null,
-      width: null,
+      height: 0,
+      width: 0,
     },
     health: null,
     impressions: {

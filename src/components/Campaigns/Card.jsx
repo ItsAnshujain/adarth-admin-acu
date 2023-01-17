@@ -1,6 +1,5 @@
-import { Image, Text } from '@mantine/core';
+import { Image, Text, Badge } from '@mantine/core';
 import { Link } from 'react-router-dom';
-import Badge from '../shared/Badge';
 import toIndianCurrency from '../../utils/currencyFormat';
 
 const Card = ({
@@ -25,14 +24,9 @@ const Card = ({
       </div>
       <div className="flex-1 p-4 pt-4 pb-7 flex flex-col gap-y-1">
         <div className="flex mb-2 items-center">
-          <Badge
-            className="normal-case py-2 px-1"
-            radius="md"
-            color="green"
-            variant="filled"
-            text={status}
-            size="xs"
-          />
+          <Badge p="sm" radius="xl" color="green" variant="filled">
+            {status || 'Created'}
+          </Badge>
           {isFeatured ? (
             <p className="flex gap-1 text-xs items-center ml-2 text-purple-450">Featured</p>
           ) : null}
@@ -48,7 +42,7 @@ const Card = ({
           </div>
           <div className="mt-2">
             <p className="text-sm text-gray-400">Impressions</p>
-            <p className="text-sm mt-1">{minImpression}</p>
+            <p className="text-sm mt-1">{minImpression || 0}</p>
           </div>
         </div>
         <p className="mt-4 font-extrabold text-lg">{price ? toIndianCurrency(price) : 0}</p>

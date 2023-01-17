@@ -24,3 +24,5 @@ export const generatePurchaseReceipt = (id, data) =>
 
 export const generateReleaseReceipt = (id, data) =>
   http.post(`/booking/${id}/generate-receipt/release`, data);
+
+export const bookingRevenue = query => http.get(`/booking/revenue?${query}`);
