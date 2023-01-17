@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import GoogleMapReact from 'google-map-react';
-import { Badge, Button, Image, Pagination, Text } from '@mantine/core';
+import { BackgroundImage, Badge, Button, Center, Image, Pagination, Text } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
 import Places from './UI/Places';
+import NoData from '../../shared/NoData';
 
 const defaultProps = {
   center: {
@@ -21,8 +22,34 @@ const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 const Preview = ({ data = {}, place = {} }) => {
   const [readMore, toggle] = useToggle();
   const [searchParams, setSearchParams] = useSearchParams();
-
   const [mapInstance, setMapInstance] = useState(null);
+  const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
+
+  const getAllSpacePhotos = useMemo(
+    () => () => {
+      const tempPics = [];
+      const tempArr = place;
+      tempArr?.docs?.filter(item => {
+        if (item?.photo) tempPics.push(item.photo);
+        if (item?.otherPhotos) tempPics.push(...item.otherPhotos);
+
+        return tempPics;
+      });
+
+      return tempPics;
+    },
+    [place],
+  );
+
+  const getTotalPrice = useMemo(() => {
+    const totalPrice = place.docs.reduce((acc, item) => acc + +(item.price || 0), 0);
+    return totalPrice;
+  }, [place]);
+
+  const getTotalImpressions = useMemo(() => {
+    const totalImpressions = place.docs.reduce((acc, item) => acc + +(item.impression || 0), 0);
+    return totalImpressions;
+  }, [place]);
 
   useEffect(() => {
     if (mapInstance && place?.docs?.length) {
@@ -41,42 +68,67 @@ const Preview = ({ data = {}, place = {} }) => {
     }
   }, [place?.docs?.length, mapInstance]);
 
+  useEffect(() => {
+    const result = getAllSpacePhotos();
+    setPreviewSpacesPhotos(result);
+  }, [place]);
+
   return (
     <div className="grid grid-cols-2 gap-x-8 pl-5 pr-7 pt-4">
       <div className="flex flex-col">
-        <div className="h-96">
-          {data?.thumbnail ? (
-            <Image
-              height={384}
-              src={data.thumbnail}
-              alt="poster"
-              fit="contain"
-              withPlaceholder
-              placeholder={
-                <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
-              }
-            />
-          ) : (
-            <Image height={384} src={null} alt="poster" fit="contain" withPlaceholder />
-          )}
+        <div className="flex flex-col">
+          <div className="flex flex-1 flex-col max-w-[500px]">
+            <div className="flex flex-row flex-wrap justify-start">
+              {previewSpacesPhotos?.map(
+                (src, index) =>
+                  index < 4 && (
+                    <div key={src} className="mr-2 mb-4 border-[1px] border-gray">
+                      <Image
+                        key={src}
+                        className="bg-slate-100"
+                        height={index === 0 ? 300 : 96}
+                        width={index === 0 ? 400 : 112}
+                        src={index === 0 ? data?.thumbnail : src}
+                        fit="contain"
+                        alt="poster"
+                      />
+                    </div>
+                  ),
+              )}
+
+              {previewSpacesPhotos?.length > 4 && (
+                <div className="border-[1px] border-gray mr-2 mb-4">
+                  <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
+                    <Center className="h-full">
+                      <Text weight="bold" color="white" className="mix-blend-difference">
+                        +{previewSpacesPhotos.length - 4} more
+                      </Text>
+                    </Center>
+                  </BackgroundImage>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
       <div>
         <div className="flex-1 pr-7 max-w-1/2">
           <p className="text-lg font-bold">{data.name || 'NA'}</p>
           <div>
-            <p className="font-light text-slate-400 whitespace-pre">
-              {readMore
-                ? `${data?.description?.split('\n')?.slice(0, 3).join('\n')}...`
-                : data?.description}{' '}
-              {data?.description?.split('\n')?.length > 4 ? (
+            <p className="text-slate-400 font-light text-[14px]">
+              {data?.description?.split(' ')?.length > 4
+                ? readMore
+                  ? `${data?.description?.split(' ')?.slice(0, 3).join(' ')}...`
+                  : data?.description
+                : data.description || <NoData type="na" />}
+              {data?.description?.split(' ')?.length > 4 ? (
                 <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
                   {readMore ? 'Read more' : 'Read less'}
                 </Button>
               ) : null}
             </p>
             <div className="flex gap-3 items-center">
-              <p className="font-bold my-2">{toIndianCurrency(+(data?.price || 0))}</p>
+              <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
 
               <Badge
                 className="text-purple-450 bg-purple-100 capitalize"
@@ -84,7 +136,7 @@ const Preview = ({ data = {}, place = {} }) => {
                 variant="filled"
                 radius="md"
               >
-                {`${data?.maxImpression || 0} + Total Impressions`}
+                {`${getTotalImpressions || 0} + Total Impressions`}
               </Badge>
             </div>
           </div>
@@ -130,7 +182,6 @@ const Preview = ({ data = {}, place = {} }) => {
                   name: item.space_name,
                   address: item.location?.address,
                   cost: item.price,
-                  impression: item.impression?.min || 0,
                   dimensions: `${item.dimension?.height || 0}ft x ${item.dimension?.width || 0}ft`, //
                   format: item.supportedMedia,
                   lighting: item.media_type,

@@ -3,6 +3,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { showNotification } from '@mantine/notifications';
 import BasicInfo from '../../components/Campaigns/AddCampaign/BasicInformation';
 import SuccessModal from '../../components/shared/Modal';
 import CoverImage from '../../components/Campaigns/AddCampaign/CoverImage';
@@ -78,6 +79,7 @@ const initialValues = {
   healthTag: 'Good',
   place: [],
   thumbnail: '',
+  thumbnailId: '',
   type: 'predefined',
 };
 
@@ -120,7 +122,18 @@ const CreateCampaign = () => {
   };
 
   const handleSubmit = async () => {
+    if (formStep === 2) {
+      if (form.values?.place?.length === 0) {
+        showNotification({
+          title: 'Please select atleast one place to continue',
+          color: 'blue',
+        });
+        return;
+      }
+    }
+
     if (formStep <= 3) setFormStep(formStep + 1);
+
     if (formStep === 4) {
       const newData = { ...form.values };
 
@@ -161,6 +174,8 @@ const CreateCampaign = () => {
           newData.status = publishedId;
         }
       }
+
+      delete newData.thumbnailId;
 
       if (id) {
         update(
