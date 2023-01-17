@@ -68,10 +68,7 @@ const schema = step =>
       .string()
       .trim()
       .concat(step === 1 ? requiredSchema('Payment reference number is required') : null),
-    paymentType: yup
-      .string()
-      .trim()
-      .concat(step === 1 ? requiredSchema('Payment type is required') : null),
+    paymentType: yup.string().trim(),
     campaignName: yup
       .string()
       .trim()
@@ -89,7 +86,7 @@ const initialValues = {
     gstNumber: '',
   },
   paymentReference: '',
-  paymentType: '',
+  paymentType: 'neft',
   campaignName: '',
   description: '',
   place: [],

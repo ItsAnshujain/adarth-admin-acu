@@ -1,18 +1,46 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import classNames from 'classnames';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import { Avatar, Box, Button, Loader } from '@mantine/core';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import user from '../assets/user.png';
-import useSideBarState from '../store/sidebar.store';
+import {
+  useDeleteAllNotifications,
+  useDeleteNotificationById,
+  useFetchAllNotifications,
+  useMarkAllNotifications,
+  useMarkNotificationById,
+} from '../hooks/notifications.hooks';
+import { serialize } from '../utils';
 
-const notification = new Array(5).fill(false);
+dayjs.extend(relativeTime);
 
+const query = {
+  page: 1,
+  limit: 10,
+  sortBy: 'createdAt',
+  sortOrder: 'asc',
+};
 const Notifications = () => {
-  const setColor = useSideBarState(state => state.setColor);
+  const [activeButtonId, setActiveButtonId] = useState(-1);
+  const { data, isLoading: isFetchAllNotificationsLoading } = useFetchAllNotifications(
+    serialize(query),
+  );
+  const { mutate: readAll, isLoading: isReadAllNotificationsLoading } = useMarkAllNotifications();
+  const { mutate: readById, isLoading: isReadNotificationByIdLoading } = useMarkNotificationById();
+  const { mutate: deleteAll, isLoading: isDeleteAllNotificationsLoading } =
+    useDeleteAllNotifications();
+  const { mutate: deleteById, isLoading: isDeleteNotificationByIdLoading } =
+    useDeleteNotificationById();
 
-  useEffect(() => {
-    setColor(3);
-  }, []);
+  const handleReadAll = () => readAll();
+  const handleRead = messageId => {
+    setActiveButtonId(messageId);
+    readById(messageId);
+  };
+  const handleClearAll = () => deleteAll();
+  const handleClear = messageId => deleteById(messageId);
 
   return (
     <div className="absolute top-0 w-screen ">
@@ -20,29 +48,100 @@ const Notifications = () => {
       <div className="grid grid-cols-12">
         <Sidebar />
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-          <div className="flex flex-col gap-4 pl-5 pr-7 mt-4 mb-10">
-            {notification.map((item, index) => (
-              <div
-                key={Math.random()}
-                className={classNames(
-                  `border p-4 ${
-                    index === 2 || index === 3 ? 'text-purple-450 bg-[#4B0DAF1A]' : ''
-                  }`,
-                )}
+          {data?.docs?.length ? (
+            <div className="flex justify-end pr-7 pt-4">
+              <Button
+                onClick={handleReadAll}
+                className="font-sans mr-2 bg-purple-450"
+                variant="filled"
+                loading={isReadAllNotificationsLoading}
+                disabled={isReadAllNotificationsLoading}
               >
-                <div className="flex justify-between">
-                  <div className="flex gap-2 items-center">
-                    <img className="h-5" src={user} alt="User" />
-                    <p className="font-bold">Emilia Clarke</p>
-                  </div>
-                  <p className="text-slate-400 text-sm">2 hours ago</p>
-                </div>
-                <p className="mt-2 text-sm">
-                  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aspernatur cumque
-                  ratione at aperiam adipisci blanditiis.
-                </p>
+                Mark all as read
+              </Button>
+              <Button
+                onClick={handleClearAll}
+                className="font-sans bg-orange-450"
+                variant="filled"
+                loading={isDeleteAllNotificationsLoading}
+                disabled={isDeleteAllNotificationsLoading}
+              >
+                Clear all
+              </Button>
+            </div>
+          ) : null}
+          <div className="flex flex-col gap-4 pl-5 pr-7 mt-4 mb-10">
+            {isFetchAllNotificationsLoading ? (
+              <div className="flex justify-center mt-40">
+                <Loader />
               </div>
-            ))}
+            ) : null}
+            {!data?.docs?.length && !isFetchAllNotificationsLoading ? (
+              <p className=" text-lg font-sans font-medium text-center mt-20">
+                No new notifications found
+              </p>
+            ) : null}
+            {data?.docs
+              ? data.docs.map(messages => (
+                  <Box
+                    key={messages?._id}
+                    className={classNames(
+                      'border p-4',
+                      !messages?.isRead ? 'text-purple-450 bg-[#4B0DAF1A]' : '',
+                    )}
+                  >
+                    <div className="flex justify-between">
+                      <div className="flex gap-2 items-center">
+                        {messages?.userId?.image ? (
+                          <Avatar src={messages?.userId?.image} alt="user" radius="xl" />
+                        ) : (
+                          <Avatar alt="placeholder" radius="xl" />
+                        )}
+                        <p className="font-bold font-sans">{messages?.userId?.name || 'NA'}</p>
+                      </div>
+                      <p className="text-slate-400 text-sm font-sans">
+                        {dayjs(messages?.updatedAt).fromNow()}
+                      </p>
+                    </div>
+                    <p className="mt-2 text-sm font-sans">{messages?.description || 'NA'}</p>
+                    <div className="flex justify-end">
+                      <Button
+                        onClick={() => handleRead(messages?._id)}
+                        className="font-sans mr-2"
+                        variant="subtle"
+                        loading={
+                          (activeButtonId === messages?._id && isReadNotificationByIdLoading) ||
+                          (activeButtonId === messages?._id && isReadAllNotificationsLoading)
+                        }
+                        disabled={
+                          messages?.isRead ||
+                          isReadNotificationByIdLoading ||
+                          isReadAllNotificationsLoading ||
+                          isDeleteAllNotificationsLoading
+                        }
+                      >
+                        {messages?.isRead ? 'Marked as read' : 'Mark as read'}
+                      </Button>
+                      <Button
+                        onClick={() => handleClear(messages?._id)}
+                        className="font-sans"
+                        variant="subtle"
+                        loading={
+                          (activeButtonId === messages?._id && isDeleteNotificationByIdLoading) ||
+                          (activeButtonId === messages?._id && isDeleteAllNotificationsLoading)
+                        }
+                        disabled={
+                          isDeleteNotificationByIdLoading ||
+                          isDeleteAllNotificationsLoading ||
+                          isReadAllNotificationsLoading
+                        }
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </Box>
+                ))
+              : null}
           </div>
         </div>
       </div>
