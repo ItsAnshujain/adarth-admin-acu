@@ -126,7 +126,7 @@ const Table = ({
                 <tr
                   className={classNames(
                     row.original?.peerId && row.original.peerId !== userId && 'has-peer',
-                    'text-left overflow-auto border border-l-0',
+                    'text-left overflow-auto border border-l-0 hover:bg-slate-100',
                   )}
                   {...row.getRowProps()}
                 >

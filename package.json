@@ -41,6 +41,7 @@
     "react-select": "^5.4.0",
     "react-table": "^7.8.0",
     "to-words": "^3.3.2",
+    "uuid": "^9.0.0",
     "validator": "^13.7.0",
     "yup": "^0.32.11",
     "zustand": "^4.1.1"

@@ -41,7 +41,7 @@ const ChangePassword = () => {
   const { mutateAsync, isLoading } = useChangePassword();
 
   const onSubmitHandler = formData => {
-    mutateAsync({ ...formData });
+    mutateAsync({ ...formData }, { onSuccess: () => form.reset() });
   };
   return (
     <div className="pl-5 pr-7 mt-4">

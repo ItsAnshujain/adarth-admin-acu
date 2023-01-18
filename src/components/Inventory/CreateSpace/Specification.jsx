@@ -204,7 +204,6 @@ const Specification = () => {
         <AsyncMultiSelect
           label="Previous brands"
           name="specifications.previousBrands"
-          withAsterisk
           styles={multiSelectStyles}
           errors={errors}
           disabled={isBrandLoading}
@@ -216,7 +215,7 @@ const Specification = () => {
                 }))
               : []
           }
-          placeholder="Select all that you like"
+          placeholder={brandData?.docs?.length ? 'Select all that you like' : 'None'}
           className="mb-5 mt-4"
           searchable
           clearable
@@ -225,7 +224,6 @@ const Specification = () => {
         <AsyncMultiSelect
           label="Tags"
           name="specifications.tags"
-          withAsterisk
           styles={multiSelectStyles}
           errors={errors}
           disabled={isTagLoading}
@@ -237,7 +235,7 @@ const Specification = () => {
                 }))
               : []
           }
-          placeholder="Select all that you like"
+          placeholder={tagData?.docs?.length ? 'Select all that you like' : 'None'}
           searchable
           clearable
           maxDropdownHeight={160}

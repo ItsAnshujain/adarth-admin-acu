@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Button, Text, Image, Skeleton, Badge } from '@mantine/core';
+import { Button, Text, Image, Skeleton, Badge, BackgroundImage, Center } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import { useToggle } from '@mantine/hooks';
 import layers from '../../../assets/layers.svg';
@@ -8,26 +8,37 @@ import { useFetchInventoryById } from '../../../hooks/inventory.hooks';
 import MapView from '../CreateSpace/MapView';
 import { tierList } from '../../../utils';
 
+const SkeletonTopWrapper = () => (
+  <div className="flex flex-col gap-2">
+    <Skeleton height={300} width={500} mb="md" />
+    <div className="flex flex-row">
+      <Skeleton height={96} width={112} mr="md" />
+      <Skeleton height={96} width={112} mr="md" />
+      <Skeleton height={96} width={122} mr="md" />
+    </div>
+  </div>
+);
+
 const BasicInfo = () => {
   const { id: inventoryId } = useParams();
   const [readMore, toggle] = useToggle();
-  const [otherImages, setOtherImages] = useState([]);
-  const [posterImage, setPosterImage] = useState(null);
+  const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
   const { data: inventoryDetails, isLoading: isInventoryDetailsLoading } = useFetchInventoryById(
     inventoryId,
     !!inventoryId,
   );
 
-  const exchangeImages = index => {
-    const temp = posterImage;
-    setPosterImage(otherImages[index]);
-    setOtherImages(prev => {
-      const newImgs = [...prev];
-      newImgs[index] = temp;
-      return newImgs;
-    });
-  };
+  const getAllSpacePhotos = useCallback(() => {
+    const tempPics = [];
+
+    if (inventoryDetails?.basicInformation?.spacePhoto)
+      tempPics.push(inventoryDetails.basicInformation.spacePhoto);
+    if (inventoryDetails?.basicInformation?.otherPhotos)
+      tempPics.push(...inventoryDetails.basicInformation.otherPhotos);
+
+    return tempPics;
+  }, [inventoryDetails]);
 
   const renderBadges = useCallback(
     list =>
@@ -57,66 +68,49 @@ const BasicInfo = () => {
   );
 
   useEffect(() => {
-    setPosterImage(inventoryDetails?.basicInformation?.spacePhoto);
-
-    if (inventoryDetails?.basicInformation?.otherPhotos) {
-      setOtherImages([...inventoryDetails.basicInformation.otherPhotos]);
-    }
-  }, [
-    inventoryDetails?.basicInformation?.spacePhoto,
-    inventoryDetails?.basicInformation?.otherPhotos,
-  ]);
+    const result = getAllSpacePhotos();
+    setPreviewSpacesPhotos(result);
+  }, [inventoryDetails]);
 
   return (
     <div className="flex gap-8 pt-4">
       <div className="flex-1 pl-5 max-w-1/2">
-        <div className="flex flex-col">
-          {!isInventoryDetailsLoading ? (
-            <div className="h-96">
-              {posterImage ? (
-                <Image
-                  height={384}
-                  src={posterImage}
-                  alt="poster"
-                  fit="contain"
-                  withPlaceholder
-                  placeholder={
-                    <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
-                  }
-                />
-              ) : (
-                <Image height={384} src={null} alt="poster" fit="contain" withPlaceholder />
+        {isInventoryDetailsLoading ? (
+          <SkeletonTopWrapper />
+        ) : (
+          <div className="flex flex-1 flex-col max-w-[500px]">
+            <div className="flex flex-row flex-wrap justify-start">
+              {previewSpacesPhotos?.map(
+                (src, index) =>
+                  index < 4 && (
+                    <div key={src} className="mr-2 mb-4 border-[1px] border-gray">
+                      <Image
+                        key={src}
+                        className="bg-slate-100"
+                        height={index === 0 ? 300 : 96}
+                        width={index === 0 ? 500 : 112}
+                        src={src}
+                        fit="contain"
+                        alt="poster"
+                      />
+                    </div>
+                  ),
+              )}
+              {previewSpacesPhotos?.length > 4 && (
+                <div className="border-[1px] border-gray mr-2 mb-4">
+                  <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
+                    <Center className="h-full">
+                      <Text weight="bold" color="white" className="mix-blend-difference">
+                        +{previewSpacesPhotos.length - 4} more
+                      </Text>
+                    </Center>
+                  </BackgroundImage>
+                </div>
               )}
             </div>
-          ) : (
-            <Skeleton className="flex flex-col w-full h-96 max-w-1/2" />
-          )}
-          <div className="flex overflow-scroll pt-4 gap-4 items-center">
-            {!isInventoryDetailsLoading ? (
-              <>
-                {otherImages.map((src, index) => (
-                  <Image
-                    key={src}
-                    onClick={() => exchangeImages(index)}
-                    className="cursor-pointer bg-slate-300"
-                    height={96}
-                    width={112}
-                    src={src}
-                    fit="contain"
-                    alt="poster"
-                  />
-                ))}
-              </>
-            ) : (
-              <>
-                <Skeleton className="h-24 w-28" />
-                <Skeleton className="h-24 w-28" />
-                <Skeleton className="h-24 w-28" />
-                <Skeleton className="h-24 w-28" />
-              </>
-            )}
           </div>
-        </div>
+        )}
+
         <div className="grid grid-cols-2 grid-rows-2 mt-7 gap-4 mb-8">
           {!isInventoryDetailsLoading ? (
             <>
