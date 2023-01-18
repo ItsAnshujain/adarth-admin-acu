@@ -29,19 +29,16 @@ const BasicInfo = () => {
     !!inventoryId,
   );
 
-  const getAllSpacePhotos = useCallback(
-    () => () => {
-      const tempPics = [];
+  const getAllSpacePhotos = useCallback(() => {
+    const tempPics = [];
 
-      if (inventoryDetails?.basicInformation?.spacePhoto)
-        tempPics.push(inventoryDetails.basicInformation.spacePhoto);
-      if (inventoryDetails?.basicInformation?.otherPhotos)
-        tempPics.push(...inventoryDetails.basicInformation.otherPhotos);
+    if (inventoryDetails?.basicInformation?.spacePhoto)
+      tempPics.push(inventoryDetails.basicInformation.spacePhoto);
+    if (inventoryDetails?.basicInformation?.otherPhotos)
+      tempPics.push(...inventoryDetails.basicInformation.otherPhotos);
 
-      return tempPics;
-    },
-    [inventoryDetails],
-  );
+    return tempPics;
+  }, [inventoryDetails]);
 
   const renderBadges = useCallback(
     list =>

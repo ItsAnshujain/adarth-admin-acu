@@ -9,18 +9,15 @@ const Preview = () => {
   const { values } = useFormContext();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
-  const getAllSpacePhotos = useCallback(
-    () => () => {
-      const tempPics = [];
+  const getAllSpacePhotos = useCallback(() => {
+    const tempPics = [];
 
-      if (values?.basicInformation?.spacePhoto) tempPics.push(values.basicInformation.spacePhoto);
-      if (values?.basicInformation?.otherPhotos)
-        tempPics.push(...values.basicInformation.otherPhotos);
+    if (values?.basicInformation?.spacePhoto) tempPics.push(values.basicInformation.spacePhoto);
+    if (values?.basicInformation?.otherPhotos)
+      tempPics.push(...values.basicInformation.otherPhotos);
 
-      return tempPics;
-    },
-    [values],
-  );
+    return tempPics;
+  }, [values]);
 
   const renderBadges = useCallback(
     list =>

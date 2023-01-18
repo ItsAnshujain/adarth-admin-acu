@@ -253,5 +253,5 @@ export const useFetchBookingRevenue = (query, enabled = true) =>
       const res = await bookingRevenue(query);
       return res?.data;
     },
-    { enabled: !!enabled },
+    { enabled },
   );

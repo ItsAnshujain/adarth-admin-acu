@@ -15,20 +15,17 @@ const SkeletonTopWrapper = () => (
 const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
-  const getAllSpacePhotos = useCallback(
-    () => () => {
-      const tempPics = [];
-      const tempArr = inventoryData;
-      tempArr?.docs?.map(item => {
-        if (item?.spacePhoto) tempPics.push(item.spacePhoto);
-        if (item?.otherPhotos) tempPics.push(...item.otherPhotos);
-        return tempPics;
-      });
-
+  const getAllSpacePhotos = useCallback(() => {
+    const tempPics = [];
+    const tempArr = inventoryData;
+    tempArr?.docs?.map(item => {
+      if (item?.spacePhoto) tempPics.push(item.spacePhoto);
+      if (item?.otherPhotos) tempPics.push(...item.otherPhotos);
       return tempPics;
-    },
-    [inventoryData],
-  );
+    });
+
+    return tempPics;
+  }, [inventoryData]);
 
   useEffect(() => {
     const result = getAllSpacePhotos();
