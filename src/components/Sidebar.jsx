@@ -3,6 +3,7 @@ import { Button, Image } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import classNames from 'classnames';
 import React, { useMemo } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { useFetchMastersTypes } from '../hooks/masters.hooks';
 import { masterTypes, ROLES, serialize } from '../utils';
 import NestedSidebarContent from './NestedSidebarContent';
@@ -185,8 +186,8 @@ const Sidebar = () => {
     <div className="hidden lg:block lg:col-span-2 mt-4">
       <div className="flex flex-col items-start gap-3 px-5">
         {sidebarMenuList.map(item => (
-          <RoleBased acceptedRoles={item.acceptedRoles} key={item.label}>
-            <div className="w-full flex flex-col border-gray-450 border" key={item.label}>
+          <RoleBased acceptedRoles={item.acceptedRoles} key={uuidv4()}>
+            <div className="w-full flex flex-col border-gray-450 border">
               <div
                 className={classNames(
                   'flex items-center justify-between',

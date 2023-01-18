@@ -3,6 +3,7 @@ import { Badge, Button, Image, Pagination } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import GoogleMapReact from 'google-map-react';
 import { useSearchParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import Places from './UI/Places';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
@@ -91,7 +92,7 @@ const Overview = ({ bookingData = {} }) => {
             <div className="flex overflow-scroll pt-4 gap-4 items-center">
               {bookingData?.campaign?.medias.map(src => (
                 <Image
-                  key={src}
+                  key={uuidv4()}
                   aria-hidden
                   withPlaceholder
                   onClick={() => setPosterImage(src)}

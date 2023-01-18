@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button, Text, Image, Skeleton, Badge, BackgroundImage, Center } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import { useToggle } from '@mantine/hooks';
+import { v4 as uuidv4 } from 'uuid';
 import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { useFetchInventoryById } from '../../../hooks/inventory.hooks';
@@ -83,9 +84,8 @@ const BasicInfo = () => {
               {previewSpacesPhotos?.map(
                 (src, index) =>
                   index < 4 && (
-                    <div key={src} className="mr-2 mb-4 border-[1px] border-gray">
+                    <div key={uuidv4()} className="mr-2 mb-4 border-[1px] border-gray">
                       <Image
-                        key={src}
                         className="bg-slate-100"
                         height={index === 0 ? 300 : 96}
                         width={index === 0 ? 500 : 112}

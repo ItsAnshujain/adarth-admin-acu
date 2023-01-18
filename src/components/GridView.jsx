@@ -1,11 +1,10 @@
 import { Pagination, Skeleton } from '@mantine/core';
+import { v4 as uuidv4 } from 'uuid';
 import Card from './Inventory/Card';
 
-// TODO: remove this and use it from the required page component
 const skeletonList = () =>
-  Array.apply('', Array(5)).map((_, index) => (
-    // eslint-disable-next-line react/no-array-index-key
-    <Skeleton height={410} width={273} radius="sm" key={index} />
+  Array.apply('', Array(5)).map(_ => (
+    <Skeleton height={410} width={273} radius="sm" key={uuidv4()} />
   ));
 
 const GridView = ({

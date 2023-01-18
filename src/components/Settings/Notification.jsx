@@ -109,10 +109,10 @@ const Notification = () => {
     if (data) {
       form.setFieldValue('messageNotify', data.messageNotify);
       form.setFieldValue('emailNotify', data.emailNotify);
-      form.setFieldValue('whatsappNotify', data.whatsappNotify);
+      form.setFieldValue('whatsappNotify', data.whatsappNotify || false);
       form.setFieldValue('whatsappNumber', data.whatsappNumber);
       form.setFieldValue('notificationEmail', data.notificationEmail);
-      form.setFieldValue('number', data.number);
+      form.setFieldValue('number', data.number || '');
     }
   }, [data]);
 
@@ -129,10 +129,10 @@ const Notification = () => {
       delete formDataCopy.number;
     }
 
-    if (formDataCopy?.whatsappNumber && !formData?.whatsappNumber?.includes('+91')) {
+    if (formDataCopy?.whatsappNumber && !formData?.whatsappNumber?.startsWith('+91')) {
       formDataCopy.whatsappNumber = `+91${formData.whatsappNumber}`;
     }
-    if (formDataCopy?.number && !formData?.number?.includes('+91')) {
+    if (formDataCopy?.number && !formData?.number?.startsWith('+91')) {
       formDataCopy.number = `+91${formData.number}`;
     }
 

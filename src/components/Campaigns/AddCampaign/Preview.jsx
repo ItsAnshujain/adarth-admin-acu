@@ -3,6 +3,7 @@ import GoogleMapReact from 'google-map-react';
 import { BackgroundImage, Badge, Button, Center, Image, Pagination, Text } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
@@ -79,9 +80,8 @@ const Preview = ({ data = {}, place = {} }) => {
               {previewSpacesPhotos?.map(
                 (src, index) =>
                   index < 4 && (
-                    <div key={src} className="mr-2 mb-4 border-[1px] border-gray">
+                    <div key={uuidv4()} className="mr-2 mb-4 border-[1px] border-gray">
                       <Image
-                        key={src}
                         className="bg-slate-100"
                         height={index === 0 ? 300 : 96}
                         width={index === 0 ? 400 : 112}

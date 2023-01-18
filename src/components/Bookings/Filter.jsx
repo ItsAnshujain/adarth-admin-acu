@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Accordion, Button, Drawer, NumberInput, Radio, RangeSlider } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import { serialize } from '../../utils/index';
 
@@ -71,7 +72,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const renderStaticOptions = useCallback(
     (filterDataObj, filterKey) =>
       Object.keys(filterDataObj).map(item => (
-        <div className="flex gap-2 mb-2" key={item}>
+        <div className="flex gap-2 mb-2" key={uuidv4()}>
           <Radio
             onChange={event => handleCheckedValues(event.target.value, filterKey)}
             label={filterDataObj[item]}

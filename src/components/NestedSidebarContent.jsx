@@ -2,6 +2,7 @@ import { Button, Collapse } from '@mantine/core';
 import classNames from 'classnames';
 import React from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import { masterTypes } from '../utils';
 
 const NestedSidebarContent = ({ list, path, onNavigate }) => {
@@ -28,7 +29,7 @@ const NestedSidebarContent = ({ list, path, onNavigate }) => {
       <div className="flex flex-col items-start pl-5 bg-gray-100">
         {list.map(item => (
           <Button
-            key={item.label}
+            key={uuidv4()}
             onClick={() => onNavigate(path, item.subPath)}
             className={classNames(
               `${checkActive(item?.label, item?.subPath) ? 'text-black' : 'text-gray-400'}`,

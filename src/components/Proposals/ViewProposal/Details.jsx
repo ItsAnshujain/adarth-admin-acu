@@ -1,6 +1,7 @@
 import { BackgroundImage, Center, Image, Skeleton, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useEffect, useState, useCallback } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../utils/currencyFormat';
 
 const DATE_FORMAT = 'DD MMM YYYY';
@@ -53,9 +54,8 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                 {previewSpacesPhotos?.map(
                   (src, index) =>
                     index < 4 && (
-                      <div key={src} className="mr-2 mb-4 border-[1px] border-gray">
+                      <div key={uuidv4()} className="mr-2 mb-4 border-[1px] border-gray">
                         <Image
-                          key={src}
                           className="bg-slate-100"
                           height={index === 0 ? 300 : 96}
                           width={index === 0 ? 400 : 112}

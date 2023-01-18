@@ -1,5 +1,6 @@
 import { Dropzone } from '@mantine/dropzone';
 import { Button, FileButton, Image, Text } from '@mantine/core';
+import { v4 as uuidv4 } from 'uuid';
 import image from '../../../assets/image.png';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
@@ -345,7 +346,7 @@ const BasicInfo = () => {
           <div className="grid grid-cols-2 gap-4">
             {values?.basicInformation?.otherPhotos?.[0] !== '' &&
               values?.basicInformation?.otherPhotos?.map(item => (
-                <div className="w-full" key={item}>
+                <div className="w-full" key={uuidv4()}>
                   <Image src={item} alt="more-preview" height={200} className="bg-slate-300" />
                 </div>
               ))}
