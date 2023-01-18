@@ -32,7 +32,7 @@ const NestedSidebarContent = ({ list, path, onNavigate }) => {
             key={uuidv4()}
             onClick={() => onNavigate(path, item.subPath)}
             className={classNames(
-              `${checkActive(item?.label, item?.subPath) ? 'text-black' : 'text-gray-400'}`,
+              checkActive(item?.label, item?.subPath) ? 'text-black' : 'text-gray-400',
               'font-normal text-sm font-sans',
             )}
           >

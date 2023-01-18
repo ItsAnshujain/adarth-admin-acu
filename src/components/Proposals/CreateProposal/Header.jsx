@@ -28,11 +28,10 @@ const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposal
         {initialState.map((val, index) => (
           <Chip
             className={classNames(
-              `relative ${
-                formStep > 1 &&
+              'relative',
+              formStep > 1 &&
                 index === 0 &&
-                'after:content-[""] after:absolute after:h-[2px] after:w-8 after:top-[50%] after:bg-purple-450'
-              } `,
+                'after:content-[""] after:absolute after:h-[2px] after:w-8 after:top-[50%] after:bg-purple-450',
             )}
             key={val}
             styles={() => ({
@@ -53,7 +52,7 @@ const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposal
             radius="xs"
             size="md"
           >
-            <span className={classNames(`${index + 1 <= formStep ? 'text-purple-450' : ''}`)}>
+            <span className={classNames(index + 1 <= formStep ? 'text-purple-450' : '')}>
               {val}
             </span>
           </Chip>
