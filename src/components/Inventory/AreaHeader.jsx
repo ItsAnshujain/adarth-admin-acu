@@ -79,17 +79,17 @@ const AreaHeader = ({ text, inventoryData }) => {
             ) : null}
             <Button
               className={classNames(
-                `px-4 border-gray-300 border rounded-md ${
-                  activeLayout.inventory === 'list' ? 'bg-purple-450' : 'bg-white'
-                }`,
+                'px-4 border-gray-300 border rounded-md',
+                activeLayout.inventory === 'list' ? 'bg-purple-450' : 'bg-white',
               )}
               onClick={handleListClick}
             >
               <Server
                 strokeWidth="3px"
-                className={`max-h-5 ${classNames(
+                className={classNames(
                   activeLayout.inventory === 'list' ? 'text-white' : 'text-black',
-                )}`}
+                  'max-h-5',
+                )}
               />
             </Button>
             <Button
@@ -102,9 +102,10 @@ const AreaHeader = ({ text, inventoryData }) => {
             >
               <Grid
                 strokeWidth="3px"
-                className={`max-h-5 ${classNames(
+                className={classNames(
                   activeLayout.inventory === 'grid' ? 'text-white' : 'text-black',
-                )}`}
+                  'max-h-5',
+                )}
               />
             </Button>
             <Button
@@ -117,9 +118,10 @@ const AreaHeader = ({ text, inventoryData }) => {
             >
               <MapPin
                 strokeWidth="3px"
-                className={`max-h-5 ${classNames(
+                className={classNames(
                   activeLayout.inventory === 'map' ? 'text-white' : 'text-black',
-                )}`}
+                  'max-h-5',
+                )}
               />
             </Button>
           </div>

@@ -57,11 +57,9 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
         <Button
           onClick={() => setPageNumber(0)}
           className={classNames(
-            `${
-              pageNumber === 0
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3 after:bg-purple-450'
-                : 'text-black'
-            }`,
+            pageNumber === 0
+              ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3 after:bg-purple-450'
+              : 'text-black',
             'px-0',
           )}
         >
@@ -70,11 +68,9 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
         <Button
           onClick={() => setPageNumber(1)}
           className={classNames(
-            `${
-              pageNumber === 1
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3 after:bg-purple-450'
-                : 'text-black'
-            }`,
+            pageNumber === 1
+              ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3 after:bg-purple-450'
+              : 'text-black',
           )}
         >
           Process Pipeline
@@ -82,11 +78,9 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
         <Button
           onClick={() => setPageNumber(2)}
           className={classNames(
-            `${
-              pageNumber === 2
-                ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3 after:bg-purple-450'
-                : 'text-black'
-            }`,
+            pageNumber === 2
+              ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3 after:bg-purple-450'
+              : 'text-black',
             'px-0',
           )}
         >

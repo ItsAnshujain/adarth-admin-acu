@@ -40,32 +40,32 @@ const AreaHeader = ({ text }) => {
         <div className="mr-2 flex ">
           <Button
             className={classNames(
-              `px-4 border-gray-300 border rounded-md ${
-                activeLayout.campaign === 'grid' ? 'bg-white' : 'bg-purple-450'
-              }`,
+              'px-4 border-gray-300 border rounded-md',
+              activeLayout.campaign === 'grid' ? 'bg-white' : 'bg-purple-450',
             )}
             onClick={handleListClick}
           >
             <Server
               strokeWidth="3px"
-              className={`max-h-5 ${classNames(
+              className={classNames(
+                'max-h-5',
                 activeLayout.campaign === 'grid' ? 'text-black' : 'text-white',
-              )}`}
+              )}
             />
           </Button>
           <Button
             className={classNames(
-              `text-white border-gray-300 border px-4 rounded-md ${
-                activeLayout.campaign === 'list' ? 'bg-white' : 'bg-purple-450'
-              }`,
+              'text-white border-gray-300 border px-4 rounded-md',
+              activeLayout.campaign === 'list' ? 'bg-white' : 'bg-purple-450',
             )}
             onClick={handleGridClick}
           >
             <Grid
               strokeWidth="3px"
-              className={`max-h-5 ${classNames(
+              className={classNames(
+                'max-h-5',
                 activeLayout.campaign === 'list' ? 'text-black' : 'text-white',
-              )}`}
+              )}
             />
           </Button>
         </div>

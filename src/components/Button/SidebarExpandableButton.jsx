@@ -3,10 +3,9 @@ import { Accordion, Button } from '@mantine/core';
 import classNames from 'classnames';
 import { Mail } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
-import useSideBarState from '../../store/sidebar.store';
 
 const AccordionLabel = props => {
-  const { label, sidebarText, color } = props;
+  const { label, sidebarText } = props;
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -18,15 +17,7 @@ const AccordionLabel = props => {
   };
   return (
     <div aria-hidden onClick={handleClick} className="flex">
-      <Mail
-        className={classNames(
-          `h-5 ${
-            (sidebarText === 'Reports' && color[7]) || (sidebarText === 'Masters' && color[5])
-              ? 'text-purple-450'
-              : 'text-[#969EA1]'
-          }`,
-        )}
-      />
+      <Mail className="h-5" />
       <span className="text-gray-400 font-medium text-sm ml-2">{label}</span>{' '}
     </div>
   );
@@ -35,19 +26,13 @@ const AccordionLabel = props => {
 // TODO : add Links to text field in Accordion Item
 const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
   const id = useId();
-  const { reports, masters, setReportColor, setMasterColor } = useSideBarState(state => ({
-    reports: state.reports,
-    masters: state.masters,
-    setReportColor: state.setReportColor,
-    setMasterColor: state.setMasterColor,
-  }));
-
   const navigate = useNavigate();
 
   return (
     <Accordion
       className={classNames(
-        `${setOpened ? 'w-[207px]' : 'w-[213px]'} lg:max-w-[139px] xl:max-w-[213px]`,
+        setOpened ? 'w-[207px]' : 'w-[213px]',
+        'lg:max-w-[139px] xl:max-w-[213px]',
       )}
       styles={theme => ({
         item: {
@@ -75,12 +60,6 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
             {item.content.map((obj, index) => (
               <Button
                 onClick={() => {
-                  if (sidebarText === 'Reports') {
-                    setReportColor(index);
-                  } else if (sidebarText === 'Masters') {
-                    setMasterColor(index);
-                  }
-
                   if (index === 0 && sidebarText === 'Reports') {
                     navigate(`/${sidebarText.toLowerCase()}/campaign`);
                   } else if (index === 1 && sidebarText === 'Reports') {
@@ -96,14 +75,7 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
                   if (setOpened) setOpened(false);
                 }}
                 key={obj.name}
-                className={classNames(
-                  ` font-medium text-xs block mt-0.5 ${
-                    (sidebarText === 'Reports' && reports[index]) ||
-                    (sidebarText === 'Masters' && masters[index])
-                      ? 'text-black'
-                      : 'text-gray-400'
-                  }`,
-                )}
+                className={classNames('font-medium text-xs block mt-0.5')}
               >
                 {obj.name}
               </Button>

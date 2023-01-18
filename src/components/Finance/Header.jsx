@@ -35,7 +35,7 @@ const invoiceList = [
 
 const Header = ({ operationalCost, totalSale, year, month, pageNumber }) => (
   <header className="flex justify-between gap-2 pr-7 h-[60px] border-b items-center flex-wrap">
-    <div className={classNames(`${!year ? 'invisible' : 'flex gap-4 items-center pl-5'}`)}>
+    <div className={classNames(!year ? 'invisible' : 'flex gap-4 items-center pl-5')}>
       <p className="font-bold text-lg">{!month ? `Year ${year}` : ` ${month} ${year}`}</p>
       {pageNumber === 0 && (
         <>

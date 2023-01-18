@@ -7,7 +7,6 @@ import shallow from 'zustand/shallow';
 import { useClickOutside } from '@mantine/hooks';
 import Filter from './Filter';
 import useLayoutView from '../../store/layout.store';
-
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 
@@ -42,32 +41,32 @@ const Header = ({ text }) => {
         <div className="flex">
           <Button
             className={classNames(
-              `px-4 border-gray-300 border rounded-md ${
-                activeLayout.proposal === 'grid' ? 'bg-white' : 'bg-purple-450'
-              }`,
+              'px-4 border-gray-300 border rounded-md',
+              activeLayout.proposal === 'grid' ? 'bg-white' : 'bg-purple-450',
             )}
             onClick={handleListClick}
           >
             <Server
               strokeWidth="3px"
-              className={`max-h-5 ${classNames(
+              className={classNames(
+                'max-h-5',
                 activeLayout.proposal === 'grid' ? 'text-black' : 'text-white',
-              )}`}
+              )}
             />
           </Button>
           <Button
             className={classNames(
-              `text-white border-gray-300 border px-4 rounded-md ${
-                activeLayout.proposal === 'list' ? 'bg-white' : 'bg-purple-450'
-              }`,
+              'text-white border-gray-300 border px-4 rounded-md',
+              activeLayout.proposal === 'list' ? 'bg-white' : 'bg-purple-450',
             )}
             onClick={handleGridClick}
           >
             <Grid
               strokeWidth="3px"
-              className={`max-h-5 ${classNames(
+              className={classNames(
                 activeLayout.proposal === 'list' ? 'text-black' : 'text-white',
-              )}`}
+                'max-h-5',
+              )}
             />
           </Button>
         </div>

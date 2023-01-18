@@ -21,16 +21,13 @@ const Header = ({ setFormStep, formStep, isLoading }) => {
         {initialState.map((val, index) => (
           <Chip
             className={classNames(
-              `relative ${
-                formStep >= 3 &&
+              'relative',
+              formStep >= 3 &&
                 index === 1 &&
-                'after:content-[""] after:absolute after:h-[2px] after:w-8 after:top-[50%] after:bg-purple-450 before:content-[""] before:absolute before:h-[2px] before:-left-6 before:w-6 before:top-[50%] before:bg-purple-450'
-              }
-                ${
-                  formStep === 2 &&
-                  index === 1 &&
-                  'before:content-[""] before:absolute before:h-[2px] before:-left-6 before:w-6 before:top-[50%] before:bg-purple-450'
-                }`,
+                'after:content-[""] after:absolute after:h-[2px] after:w-8 after:top-[50%] after:bg-purple-450 before:content-[""] before:absolute before:h-[2px] before:-left-6 before:w-6 before:top-[50%] before:bg-purple-450',
+              formStep === 2 &&
+                index === 1 &&
+                'before:content-[""] before:absolute before:h-[2px] before:-left-6 before:w-6 before:top-[50%] before:bg-purple-450',
             )}
             key={val}
             styles={() => ({
@@ -51,7 +48,7 @@ const Header = ({ setFormStep, formStep, isLoading }) => {
             radius="xs"
             size="md"
           >
-            <span className={classNames(`${index + 1 <= formStep ? 'text-purple-450' : ''}`)}>
+            <span className={classNames(index + 1 <= formStep ? 'text-purple-450' : '')}>
               {val}
             </span>
           </Chip>
