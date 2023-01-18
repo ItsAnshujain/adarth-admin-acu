@@ -77,7 +77,7 @@ const App = () => {
       location.pathname.includes('/change-password'))
   ) {
     if (location.search.includes('setting')) {
-      return <Navigate to="/setting?type=change_password" replace />;
+      return <Navigate to="/settings?type=change_password" replace />;
     }
     return <Navigate to="/home" replace />;
   }
@@ -383,7 +383,7 @@ const App = () => {
           }
         />
         <Route
-          path="/setting"
+          path="/settings"
           element={
             <Suspense fallback={<HeaderSidebarLoader />}>
               <Settings />

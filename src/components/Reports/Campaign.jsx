@@ -1,6 +1,6 @@
 import { Button, Image } from '@mantine/core';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -11,7 +11,6 @@ import {
   BarElement,
   Title,
 } from 'chart.js';
-import useSideBarState from '../../store/sidebar.store';
 import Header from './Header';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
@@ -73,13 +72,7 @@ const config = {
 
 const Campaign = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
-
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
-  const setColor = useSideBarState(state => state.setColor);
-
-  useEffect(() => {
-    setColor(7);
-  }, []);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto pb-28">

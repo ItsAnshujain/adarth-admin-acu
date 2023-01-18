@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Line, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -18,7 +18,6 @@ import toIndianCurrency from '../../utils/currencyFormat';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 import FilterRevenue from './FilterRevenue';
-import useSideBarState from '../../store/sidebar.store';
 import TotalRevenueIcon from '../../assets/total-revenue.svg';
 import OfflineRevenueIcon from '../../assets/offline-revenue.svg';
 import OnlineRevenueIcon from '../../assets/online-revenue.svg';
@@ -84,21 +83,11 @@ const lineData = {
 
 const Revenue = () => {
   const [showDatePickerRevenue, setShowDatePickerRevenue] = useState(false);
-  // const [showDateIndustry, setShowDateIndustry] = useState(false);
   const [showDateCity, setShowDateCity] = useState(false);
-
   const revenueRef = useClickOutside(() => setShowDatePickerRevenue(false));
-  // const dateIndustryRef = useClickOutside(() => setShowDateIndustry(false));
   const dateCityRef = useClickOutside(() => setShowDateCity(false));
-
   const [showFilter, setShowFilter] = useState(false);
-  const setColor = useSideBarState(state => state.setColor);
-
   const toggleFilter = () => setShowFilter(!showFilter);
-
-  useEffect(() => {
-    setColor(7);
-  }, []);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto pb-32">
