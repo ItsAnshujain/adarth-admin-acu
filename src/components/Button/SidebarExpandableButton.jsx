@@ -6,16 +6,14 @@ import { useNavigate } from 'react-router-dom';
 import useSideBarState from '../../store/sidebar.store';
 
 const AccordionLabel = props => {
-  const { label, sidebarText, color, setColor } = props;
+  const { label, sidebarText, color } = props;
   const navigate = useNavigate();
 
   const handleClick = () => {
     if (label === 'Reports') {
       navigate(`/${sidebarText.toLowerCase()}/campaign`);
-      setColor(7);
     } else if (label === 'Masters') {
       navigate(`/${sidebarText.toLowerCase()}?type=category&parentId=null&limit=10`);
-      setColor(5);
     }
   };
   return (
@@ -37,16 +35,12 @@ const AccordionLabel = props => {
 // TODO : add Links to text field in Accordion Item
 const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
   const id = useId();
-  const { reports, masters, setReportColor, setMasterColor, setColor, color } = useSideBarState(
-    state => ({
-      reports: state.reports,
-      masters: state.masters,
-      setReportColor: state.setReportColor,
-      setMasterColor: state.setMasterColor,
-      color: state.color,
-      setColor: state.setColor,
-    }),
-  );
+  const { reports, masters, setReportColor, setMasterColor } = useSideBarState(state => ({
+    reports: state.reports,
+    masters: state.masters,
+    setReportColor: state.setReportColor,
+    setMasterColor: state.setMasterColor,
+  }));
 
   const navigate = useNavigate();
 
@@ -65,8 +59,7 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
           margin: '0px',
         },
       })}
-      sx={theme => ({
-        backgroundColor: sidebarText === 'Reports' && color[6] ? '#F9FAFD' : theme.colors.white,
+      sx={() => ({
         'button': {
           padding: '8px',
         },
@@ -75,7 +68,7 @@ const SidebarExpandableButton = ({ item, setOpened, sidebarText }) => {
     >
       <Accordion.Item value={id}>
         <Accordion.Control>
-          <AccordionLabel {...item} sidebarText={sidebarText} color={color} setColor={setColor} />
+          <AccordionLabel {...item} sidebarText={sidebarText} />
         </Accordion.Control>
         <Accordion.Panel>
           <div className="ml-5">

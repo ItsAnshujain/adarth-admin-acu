@@ -27,7 +27,6 @@ import GridView from '../GridView';
 import COLUMNS from './ColumnInventory';
 import dummy from '../../Dummydata/Inventory.json';
 import Card from '../Inventory/Card';
-import useSideBarState from '../../store/sidebar.store';
 import InventoryIcon from '../../assets/inventory-active.svg';
 import OperationalCostIcon from '../../assets/operational-cost.svg';
 import VacantIcon from '../../assets/vacant.svg';
@@ -86,6 +85,8 @@ const Inventory = () => {
   const [areaData, setAreaData] = useState({ datasets: [] });
   const chartRef = useRef(null);
   const form = useForm();
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
+  const toggleFilter = () => setShowFilter(!showFilter);
 
   useEffect(() => {
     const chart = chartRef.current;
@@ -109,15 +110,6 @@ const Inventory = () => {
     };
 
     setAreaData(newLineData);
-  }, []);
-
-  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
-  const setColor = useSideBarState(state => state.setColor);
-
-  const toggleFilter = () => setShowFilter(!showFilter);
-
-  useEffect(() => {
-    setColor(7);
   }, []);
 
   return (

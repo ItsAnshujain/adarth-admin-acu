@@ -16,13 +16,6 @@ const useSideBarState = create(
       masters: masterValues,
     },
     set => ({
-      setColor: index =>
-        set(state => {
-          const newColor = [...state.color];
-          newColor.fill(false);
-          newColor[index] = true;
-          return { color: newColor };
-        }),
       setReportColor: index =>
         set(state => {
           const newColor = [...state.reports];

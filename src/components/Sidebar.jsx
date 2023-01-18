@@ -209,7 +209,7 @@ const Sidebar = () => {
                   <span
                     className={classNames(
                       checkActive(item.path) ? 'text-purple-450' : 'text-gray-400',
-                      'font-medium text-sm',
+                      'font-medium text-sm font-sans',
                     )}
                   >
                     {item.label}
