@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Badge } from '@mantine/core';
+import { v4 as uuidv4 } from 'uuid';
 import PreviewCard from './UI/PreviewCard';
 import DragDropCard from './UI/DragDropCard';
 import { useFormContext } from '../../../context/formContext';
@@ -86,7 +87,7 @@ const Documents = ({ documents }) => {
       <p className="text-sm mb-8">
         <span className="font-bold text-gray-500 mr-2">Supported types</span>
         {supportedType.map(item => (
-          <Badge key={item} className="mr-2">
+          <Badge key={uuidv4()} className="mr-2">
             {item}
           </Badge>
         ))}
@@ -95,7 +96,7 @@ const Documents = ({ documents }) => {
       <div className="grid grid-cols-4 gap-8">
         {uploadImageList?.map((doc, index) => (
           <PreviewCard
-            key={Math.random()}
+            key={uuidv4()}
             onClickDelete={() => handleDelete(index)}
             filename={doc?.type}
             cardText={doc?.type}
@@ -108,7 +109,7 @@ const Documents = ({ documents }) => {
           .filter(doc => !uploadImageList?.find(item => item.type === doc.name))
           .map(({ name, text }) => (
             <DragDropCard
-              key={name}
+              key={uuidv4()}
               cardText={text}
               isLoading={currentDrop.includes(name) ? isUploading : false}
               onHandleDrop={async params => {

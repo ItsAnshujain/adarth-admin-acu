@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Pagination, Skeleton } from '@mantine/core';
 import { useDebouncedState } from '@mantine/hooks';
+import { v4 as uuidv4 } from 'uuid';
 import AreaHeader from '../../components/Users/Header';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
@@ -15,8 +16,7 @@ const paginationStyles = {
 };
 
 const skeletonList = () =>
-  // eslint-disable-next-line react/no-array-index-key
-  Array.apply('', Array(8)).map((_, index) => <Skeleton height={178} radius="sm" key={index} />);
+  Array.apply('', Array(8)).map(_ => <Skeleton height={178} radius="sm" key={uuidv4()} />);
 
 const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams({

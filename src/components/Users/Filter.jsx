@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Accordion, Button, Drawer, Radio } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import { roleTypes } from '../../utils';
 
 const styles = { title: { fontWeight: 'bold' } };
@@ -20,7 +21,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const renderRoles = useMemo(
     () =>
       Object.keys(roleTypes).map(item => (
-        <div className="flex gap-2 mb-2" key={item}>
+        <div className="flex gap-2 mb-2" key={uuidv4()}>
           <Radio
             onChange={event => handleRoleChange(event.currentTarget.value)}
             label={roleTypes[item]}

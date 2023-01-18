@@ -177,8 +177,9 @@ const Filter = ({ isOpened, setShowFilter }) => {
     Object.keys(filterOptions).forEach(item => {
       searchParams.delete(item);
     });
+
     searchParams.set('page', 1);
-    searchParams.set('owner', filterOptions.owner);
+    if (filterOptions.owner !== '') searchParams.set('owner', filterOptions.owner);
     Object.keys(filterOptions).forEach(key => {
       if (filterOptions[key].length && Array.isArray(filterOptions[key])) {
         searchParams.append(key, filterOptions[key].join(','));
@@ -192,6 +193,8 @@ const Filter = ({ isOpened, setShowFilter }) => {
     Object.keys(defaultValue).forEach(item => {
       searchParams.delete(item);
     });
+    searchParams.delete('maxPrice');
+    searchParams.delete('minPrice');
     setSearchParams(searchParams);
     setFilterOptions(defaultValue);
   };

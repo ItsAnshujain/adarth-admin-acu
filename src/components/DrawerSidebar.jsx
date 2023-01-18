@@ -1,4 +1,5 @@
 import { Drawer } from '@mantine/core';
+import { v4 as uuidv4 } from 'uuid';
 import useSideBarState from '../store/sidebar.store';
 import SidebarButton from './Button/SidebarButton';
 
@@ -32,7 +33,7 @@ const DrawerSidebar = ({ opened, setOpened }) => {
         <div className="flex flex-col items-start gap-2">
           {sidebarText.map((text, index) => (
             <SidebarButton
-              key={text}
+              key={uuidv4()}
               color={color}
               clickHandler={setColor}
               index={index}
