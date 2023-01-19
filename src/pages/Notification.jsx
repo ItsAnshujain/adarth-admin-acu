@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -24,9 +24,11 @@ const query = {
 };
 const Notifications = () => {
   const [activeButtonId, setActiveButtonId] = useState(-1);
-  const { data, isLoading: isFetchAllNotificationsLoading } = useFetchAllNotifications(
-    serialize(query),
-  );
+  const {
+    data,
+    isLoading: isFetchAllNotificationsLoading,
+    isSuccess,
+  } = useFetchAllNotifications(serialize(query));
   const { mutate: readAll, isLoading: isReadAllNotificationsLoading } = useMarkAllNotifications();
   const { mutate: readById, isLoading: isReadNotificationByIdLoading } = useMarkNotificationById();
   const { mutate: deleteAll, isLoading: isDeleteAllNotificationsLoading } =
@@ -42,6 +44,11 @@ const Notifications = () => {
   const handleClearAll = () => deleteAll();
   const handleClear = messageId => deleteById(messageId);
 
+  const hasMarkedAllRead = useMemo(() => {
+    const result = data?.docs?.every(item => item.isRead);
+    return result;
+  }, [data?.docs]);
+
   return (
     <div className="absolute top-0 w-screen ">
       <Header title="Notification" />
@@ -55,9 +62,9 @@ const Notifications = () => {
                 className="primary-button mr-2"
                 variant="filled"
                 loading={isReadAllNotificationsLoading}
-                disabled={isReadAllNotificationsLoading}
+                disabled={hasMarkedAllRead || isReadAllNotificationsLoading}
               >
-                Mark all as read
+                {hasMarkedAllRead ? 'Marked all as read' : 'Mark all as read'}
               </Button>
               <Button
                 onClick={handleClearAll}
@@ -81,7 +88,7 @@ const Notifications = () => {
                 No new notifications found
               </p>
             ) : null}
-            {data?.docs
+            {isSuccess && data?.docs
               ? data.docs.map(messages => (
                   <Box
                     key={messages?._id}

@@ -183,7 +183,10 @@ const Location = () => {
           />
         </div>
       </div>
-      <MapView latitude={+values.location.latitude} longitude={+values.location.longitude} />
+      <MapView
+        latitude={values?.location?.latitude ? +values.location.latitude : 0}
+        longitude={values?.location?.longitude ? +values.location.longitude : 0}
+      />
     </div>
   );
 };

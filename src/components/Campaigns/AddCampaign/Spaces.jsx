@@ -133,7 +133,7 @@ const SelectSpace = () => {
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'landlord',
+        accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
           row: {
             original: { landlord_name },
@@ -211,7 +211,7 @@ const SelectSpace = () => {
       },
       {
         Header: 'MEDIA TYPE',
-        accessor: 'mediaType',
+        accessor: 'basicInformation.mediaType.name',
         Cell: ({
           row: {
             original: { mediaType },

@@ -83,8 +83,8 @@ const BasicInfo = () => {
     isSuccess: subCategoryLoaded,
     isLoading: isSubCategoryLoading,
   } = useFetchMasters(
-    serialize({ ...query, parentId: values?.basicInformation.category?.value }),
-    !!values?.basicInformation.category,
+    serialize({ ...query, parentId: values?.basicInformation?.category?.value }),
+    !!values?.basicInformation?.category,
   );
   const {
     data: mediaType,

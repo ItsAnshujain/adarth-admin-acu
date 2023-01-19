@@ -50,6 +50,9 @@ const multiSelectStyles = {
     color: 'white',
   },
 };
+
+const marks = [{ value: 1600000 }, { value: 3200000 }];
+
 const BasicInformation = () => {
   const { values, errors, setFieldValue } = useFormContext();
 
@@ -57,8 +60,6 @@ const BasicInformation = () => {
   const { data: brandData } = useFetchMasters(
     serialize({ type: 'brand', parentId: null, limit: 100 }),
   );
-
-  const marks = [{ value: 1600000 }, { value: 3200000 }];
 
   return (
     <div className="mt-4 pl-5 pr-7 flex flex-col gap-4 pb-20">
@@ -73,15 +74,6 @@ const BasicInformation = () => {
             errors={errors}
             placeholder="Write..."
           />
-
-          <NumberInput
-            label="Price"
-            name="price"
-            styles={styles}
-            errors={errors}
-            placeholder="Write..."
-          />
-
           <NumberInput
             label="Health Status"
             name="healthStatus"

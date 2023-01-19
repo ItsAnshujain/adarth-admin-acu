@@ -192,6 +192,7 @@ const Overview = ({ bookingData = {} }) => {
           {bookingData?.campaign?.spaces?.length ? (
             bookingData?.campaign?.spaces?.map(item => (
               <Places
+                key={uuidv4()}
                 data={item}
                 campaignId={bookingData?.campaign?._id}
                 bookingId={bookingData?._id}
