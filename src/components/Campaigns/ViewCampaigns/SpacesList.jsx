@@ -138,7 +138,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'landlord',
+        accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
           row: {
             original: { basicInformation },
@@ -157,7 +157,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
       },
       {
         Header: 'MEDIA TYPE',
-        accessor: 'mediaType',
+        accessor: 'basicInformation.mediaType.name',
         Cell: ({
           row: {
             original: { mediaType },

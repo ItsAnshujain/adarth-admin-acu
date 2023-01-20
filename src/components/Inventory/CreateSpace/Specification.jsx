@@ -188,7 +188,10 @@ const Specification = () => {
             className="pt-4 flex-auto"
             min={0}
             max={5000000}
-            value={[values.specifications.impressions.min, values.specifications.impressions.max]}
+            value={[
+              values?.specifications?.impressions?.min,
+              values?.specifications?.impressions?.max,
+            ]}
             marks={marks}
           />
           <div>

@@ -130,13 +130,13 @@ const Home = () => {
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'landlord',
+        accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
           row: {
             original: { basicInformation },
           },
         }) =>
-          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || 'NA'}</p>, []),
+          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || '-'}</p>, []),
       },
       {
         Header: 'PEER',
@@ -228,7 +228,7 @@ const Home = () => {
       },
       {
         Header: 'MEDIA TYPE',
-        accessor: 'mediaType',
+        accessor: 'basicInformation.mediaType.name',
         Cell: ({
           row: {
             original: { basicInformation },

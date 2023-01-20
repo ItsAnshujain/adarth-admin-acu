@@ -127,7 +127,7 @@ const ProposalDetails = () => {
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'mediaOwner',
+        accessor: 'basicInformation.landlord',
         Cell: ({
           row: {
             original: { basicInformation },
@@ -182,7 +182,7 @@ const ProposalDetails = () => {
       },
       {
         Header: 'DIMENSION',
-        accessor: 'dimension',
+        accessor: 'size.height',
         Cell: ({
           row: {
             original: { size },
@@ -191,7 +191,7 @@ const ProposalDetails = () => {
       },
       {
         Header: 'IMPRESSION',
-        accessor: 'impressions',
+        accessor: 'impressions.max',
         Cell: ({
           row: {
             original: { impressions },
@@ -240,7 +240,7 @@ const ProposalDetails = () => {
       },
       {
         Header: 'PRICING',
-        accessor: 'price',
+        accessor: 'basicInformation.price',
         Cell: ({
           row: {
             original: { price },

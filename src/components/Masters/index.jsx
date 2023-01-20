@@ -31,7 +31,7 @@ const Home = () => {
   const limit = searchParams.get('limit');
 
   const handleSearch = () => {
-    searchParams.set('name', searchInput);
+    searchParams.set('search', searchInput);
     searchParams.set('page', 1);
     setSearchParams(searchParams);
   };
@@ -125,7 +125,7 @@ const Home = () => {
   useEffect(() => {
     handleSearch();
     if (searchInput === '') {
-      searchParams.delete('name');
+      searchParams.delete('search');
       setSearchParams(searchParams);
     }
   }, [searchInput]);
