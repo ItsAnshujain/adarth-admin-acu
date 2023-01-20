@@ -193,10 +193,10 @@ const CreateCampaign = () => {
   };
 
   useEffect(() => {
-    if (data?.inventory && !form.isTouched()) {
+    if (data?.campaign && !form.isTouched()) {
       form.setValues({
         ...data.campaign,
-        place: data.inventory?.docs?.map(item => item),
+        place: data.campaign.place.map(({ id: _id, ...item }) => ({ ...item, _id })),
       });
     }
   }, [data, form.isTouched]);
