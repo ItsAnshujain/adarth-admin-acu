@@ -15,36 +15,36 @@ import { useCreateBookings } from '../../hooks/booking.hooks';
 import { gstRegexMatch, panRegexMatch, isValidURL } from '../../utils';
 
 // TODO: kept it for test purpose, remove later
-// const initialValues = {
-//   client: {
-//     companyName: 'Arup Dey CP 1',
-//     name: 'Arup Dey CL 1',
-//     email: 'arupdey@codebuddy.co',
-//     contactNumber: '9879879870',
-//     panNumber: 'LLLLL1232L',
-//     gstNumber: '19AABCU9603R1ZK',
-//   },
-//   paymentReference: '1234567890',
-//   paymentType: 'neft',
-//   campaignName: 'Arup Dey CG 1',
-//   description: '',
-//   place: [],
-// };
 const initialValues = {
   client: {
-    companyName: '',
-    name: '',
-    email: '',
-    contactNumber: '',
-    panNumber: '',
-    gstNumber: '',
+    companyName: 'Arup Dey CP 1',
+    name: 'Arup Dey CL 1',
+    email: 'arupdey@codebuddy.co',
+    contactNumber: '9879879870',
+    panNumber: 'LLLLL1232L',
+    gstNumber: '19AABCU9603R1ZK',
   },
-  paymentReference: '',
+  paymentReference: '1234567890',
   paymentType: 'neft',
-  campaignName: '',
+  campaignName: 'Arup Dey CG 1',
   description: '',
   place: [],
 };
+// const initialValues = {
+//   client: {
+//     companyName: '',
+//     name: '',
+//     email: '',
+//     contactNumber: '',
+//     panNumber: '',
+//     gstNumber: '',
+//   },
+//   paymentReference: '',
+//   paymentType: 'neft',
+//   campaignName: '',
+//   description: '',
+//   place: [],
+// };
 
 const basicInformationSchema = yup.object({
   client: yup.object({
