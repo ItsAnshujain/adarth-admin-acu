@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import StatusNode from './StatusNode';
 
 const ProcessPipeline = () => {
@@ -86,7 +87,7 @@ const ProcessPipeline = () => {
   return (
     <div className="p-5">
       {pipelineList.map(item => (
-        <>
+        <React.Fragment key={uuidv4()}>
           {item?.status ? (
             <StatusNode
               status={item.status}
@@ -109,7 +110,7 @@ const ProcessPipeline = () => {
               />
             ))}
           </div>
-        </>
+        </React.Fragment>
       ))}
     </div>
   );

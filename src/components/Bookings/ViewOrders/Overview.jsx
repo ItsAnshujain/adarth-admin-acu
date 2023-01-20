@@ -1,5 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Image, Pagination } from '@mantine/core';
+import {
+  BackgroundImage,
+  Badge,
+  Button,
+  Center,
+  Image,
+  Pagination,
+  Skeleton,
+  Text,
+} from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import GoogleMapReact from 'google-map-react';
 import { useSearchParams } from 'react-router-dom';
@@ -18,13 +27,23 @@ const defaultProps = {
   zoom: 10,
 };
 
+const SkeletonTopWrapper = () => (
+  <div className="flex flex-col gap-2">
+    <Skeleton height={300} width="100%" mb="md" />
+    <div className="flex flex-row">
+      <Skeleton height={96} width={112} mr="md" />
+      <Skeleton height={96} width={112} mr="md" />
+      <Skeleton height={96} width={122} mr="md" />
+    </div>
+  </div>
+);
+
 const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
-const Overview = ({ bookingData = {} }) => {
+const Overview = ({ bookingData = {}, isLoading }) => {
   const [readMore, toggle] = useToggle();
-  const [posterImage, setPosterImage] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
-
+  const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
     limit: 6,
@@ -71,39 +90,46 @@ const Overview = ({ bookingData = {} }) => {
     }
   }, [bookingData?.campaign?.spaces?.length, mapInstance]);
 
-  useEffect(() => {
-    if (bookingData?.campaign?.media) setPosterImage(bookingData?.campaign?.medias?.[0]);
-  }, [bookingData]);
+  useEffect(() => setPreviewSpacesPhotos(bookingData?.campaign?.medias), [bookingData]);
 
   return (
     <>
       <div className="flex gap-8 pt-4">
         <div className="flex-1 pl-5 max-w-1/2">
           <div className="flex flex-col">
-            <div>
-              <Image
-                withPlaceholder
-                className="w-full h-96 max-w-1/2"
-                src={posterImage}
-                alt="poster"
-                height="24rem"
-              />
-            </div>
-            <div className="flex overflow-scroll pt-4 gap-4 items-center">
-              {bookingData?.campaign?.medias.map(src => (
-                <Image
-                  key={uuidv4()}
-                  aria-hidden
-                  withPlaceholder
-                  onClick={() => setPosterImage(src)}
-                  className="cursor-pointer"
-                  height="6rem"
-                  width="7rem"
-                  src={src}
-                  alt="poster"
-                />
-              ))}
-            </div>
+            {isLoading ? (
+              <SkeletonTopWrapper />
+            ) : (
+              <div className="flex flex-1 flex-col w-full">
+                <div className="flex flex-row flex-wrap justify-start">
+                  {previewSpacesPhotos?.map(
+                    (src, index) =>
+                      index < 4 && (
+                        <Image
+                          key={uuidv4()}
+                          height={index === 0 ? 300 : 96}
+                          width={index === 0 ? '100%' : 112}
+                          src={src}
+                          fit="cover"
+                          alt="poster"
+                          className="mr-2 mb-4 border-[1px] border-gray bg-slate-100"
+                        />
+                      ),
+                  )}
+                  {previewSpacesPhotos?.length > 4 && (
+                    <div className="border-[1px] border-gray mr-2 mb-4">
+                      <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
+                        <Center className="h-full">
+                          <Text weight="bold" color="white" className="mix-blend-difference">
+                            +{previewSpacesPhotos.length - 4} more
+                          </Text>
+                        </Center>
+                      </BackgroundImage>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <div className="flex-1 pr-7 max-w-1/2 gap-2">

@@ -125,6 +125,7 @@ const ProposalDetails = () => {
             [],
           ),
       },
+      // TODO: change key after api update
       {
         Header: 'MEDIA OWNER NAME',
         accessor: 'basicInformation.landlord',
@@ -238,6 +239,7 @@ const ProposalDetails = () => {
           },
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
+      // TODO: change key after api update
       {
         Header: 'PRICING',
         accessor: 'basicInformation.price',
@@ -287,13 +289,9 @@ const ProposalDetails = () => {
     setSearchParams(searchParams);
   };
 
-  const handleRowCount = currentLimit => {
-    searchParams.set('limit', currentLimit);
-    setSearchParams(searchParams);
-  };
-
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
     setSearchParams(searchParams);
   };
 
@@ -338,7 +336,10 @@ const ProposalDetails = () => {
       </div>
 
       <div className="flex justify-between h-20 items-center pr-7">
-        <RowsPerPage setCount={handleRowCount} count={limit} />
+        <RowsPerPage
+          setCount={currentLimit => handlePagination('limit', currentLimit)}
+          count={limit}
+        />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       {isProposalDataLoading ? (
@@ -358,7 +359,7 @@ const ProposalDetails = () => {
             data={proposalData?.inventories?.docs || []}
             activePage={proposalData?.inventories?.page || 1}
             totalPages={proposalData?.inventories?.totalPages || 1}
-            setActivePage={handlePagination}
+            setActivePage={currentPage => handlePagination('page', currentPage)}
             handleSorting={handleSortByColumn}
           />
         ) : null}

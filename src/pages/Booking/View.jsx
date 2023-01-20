@@ -85,7 +85,7 @@ const OrderDetails = () => {
           mountStatus={currentMountingStatus}
         />
       ) : (
-        <Overview bookingData={bookingData} />
+        <Overview bookingData={bookingData} isLoading={isLoading} />
       )}
     </div>
   );

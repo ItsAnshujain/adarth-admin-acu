@@ -29,7 +29,7 @@ const defaultProps = {
 
 const SkeletonTopWrapper = () => (
   <div className="flex flex-col gap-2">
-    <Skeleton height={300} width={400} mb="md" />
+    <Skeleton height={300} width="100%" mb="md" />
     <div className="flex flex-row">
       <Skeleton height={96} width={112} mr="md" />
       <Skeleton height={96} width={112} mr="md" />
@@ -46,6 +46,22 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
   const [mapInstance, setMapInstance] = useState(null);
   const [updatedPlace, setUpdatedPlace] = useState();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
+
+  const getTotalPrice = useMemo(() => {
+    const totalPrice = spacesData?.docs?.reduce(
+      (acc, item) => acc + +(item?.basicInformation?.price || 0),
+      0,
+    );
+    return totalPrice;
+  }, [spacesData]);
+
+  const getTotalImpressions = useMemo(() => {
+    const totalImpressions = spacesData?.docs?.reduce(
+      (acc, item) => acc + +(item?.specifications?.impressions?.max || 0),
+      0,
+    );
+    return totalImpressions;
+  }, [spacesData]);
 
   const getAllSpacePhotos = useCallback(() => {
     const tempPics = [];
@@ -107,21 +123,20 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
         {isCampaignDataLoading ? (
           <SkeletonTopWrapper />
         ) : (
-          <div className="flex flex-1 flex-col max-w-[500px]">
+          <div className="flex flex-1 flex-col w-full">
             <div className="flex flex-row flex-wrap justify-start">
               {previewSpacesPhotos?.map(
                 (src, index) =>
                   index < 4 && (
-                    <div key={uuidv4()} className="mr-2 mb-4 border-[1px] border-gray">
-                      <Image
-                        className="bg-slate-100"
-                        height={index === 0 ? 300 : 96}
-                        width={index === 0 ? 400 : 112}
-                        src={src}
-                        fit="contain"
-                        alt="poster"
-                      />
-                    </div>
+                    <Image
+                      key={uuidv4()}
+                      height={index === 0 ? 300 : 96}
+                      width={index === 0 ? '100%' : 112}
+                      src={src}
+                      fit="cover"
+                      alt="poster"
+                      className="mr-2 mb-4 border-[1px] border-gray bg-slate-100"
+                    />
                   ),
               )}
               {previewSpacesPhotos?.length > 4 && (
@@ -156,7 +171,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
               ) : null}
             </p>
             <div className="flex gap-3 items-center">
-              <p className="font-bold my-2">{toIndianCurrency(+(campaignData?.price || 0))}</p>
+              <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
 
               <Badge
                 className="text-purple-450 bg-purple-100 capitalize"
@@ -164,7 +179,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
                 variant="filled"
                 radius="md"
               >
-                {`${campaignData?.maxImpression || 0} + Total Impressions`}
+                {`${getTotalImpressions || 0} + Total Impressions`}
               </Badge>
             </div>
           </div>

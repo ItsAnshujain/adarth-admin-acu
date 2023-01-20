@@ -41,12 +41,9 @@ const Home = () => {
     searchParams.set('filter', currentVal);
     setSearchParams(searchParams);
   };
-  const handleRowCount = currentLimit => {
-    searchParams.set('limit', currentLimit);
-    setSearchParams(searchParams);
-  };
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
     setSearchParams(searchParams);
   };
 
@@ -62,7 +59,10 @@ const Home = () => {
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <AreaHeader text="Team" setFilter={handleFilter} filter={filter} />
       <div className="flex justify-between h-20 items-center pr-7">
-        <RowsPerPage setCount={handleRowCount} count={limit} />
+        <RowsPerPage
+          setCount={currentLimit => handlePagination('limit', currentLimit)}
+          count={limit}
+        />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       <div className="relative pb-10">
@@ -83,7 +83,7 @@ const Home = () => {
           styles={paginationStyles}
           className="absolute bottom-0 right-10 text-sm mb-10"
           page={userData?.page || 1}
-          onChange={handlePagination}
+          onChange={currentPage => handlePagination('page', currentPage)}
           total={userData?.totalPages || 1}
         />
       </div>

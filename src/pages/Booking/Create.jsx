@@ -3,6 +3,7 @@ import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
 import dayjs from 'dayjs';
 import { showNotification } from '@mantine/notifications';
+import validator from 'validator';
 import { useNavigate } from 'react-router-dom';
 import BasicInfo from '../../components/Bookings/Create/BasicInformation';
 import SelectSpaces from '../../components/Bookings/Create/SelectSpaces';
@@ -13,69 +14,22 @@ import { FormProvider, useForm } from '../../context/formContext';
 import { useCreateBookings } from '../../hooks/booking.hooks';
 import { gstRegexMatch, panRegexMatch, isValidURL } from '../../utils';
 
-const requiredSchema = text => yup.string().trim().required(text);
-
-const schema = step =>
-  yup.object().shape({
-    client: yup.object().shape({
-      companyName: yup
-        .string()
-        .trim()
-        .concat(step === 1 ? requiredSchema('Company name is required') : null),
-      name: yup
-        .string()
-        .trim()
-        .concat(step === 1 ? requiredSchema('Client name is required') : null),
-      email: yup
-        .string()
-        .trim()
-        .concat(step === 1 ? yup.string().email('Email must be valid') : null)
-        .concat(step === 1 ? requiredSchema('Email is required') : null),
-      contactNumber: yup
-        .string()
-        .trim()
-        .concat(
-          step === 1
-            ? yup
-                .string()
-                .matches(
-                  /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
-                  'Contact number must be valid',
-                )
-            : null,
-        )
-        .concat(step === 1 ? requiredSchema('Contact Number is required') : null),
-      panNumber: yup
-        .string()
-        .trim()
-        .concat(
-          step === 1
-            ? yup.string().matches(panRegexMatch, 'Pan number must be valid and in uppercase')
-            : null,
-        )
-        .concat(step === 1 ? requiredSchema('Pan number is required') : null),
-      gstNumber: yup
-        .string()
-        .trim()
-        .concat(
-          step === 1
-            ? yup.string().matches(gstRegexMatch, 'GST number must be valid and in uppercase')
-            : null,
-        )
-        .concat(step === 1 ? requiredSchema('GST number is required') : null),
-    }),
-    paymentReference: yup
-      .string()
-      .trim()
-      .concat(step === 1 ? requiredSchema('Payment reference number is required') : null),
-    paymentType: yup.string().trim(),
-    campaignName: yup
-      .string()
-      .trim()
-      .concat(step === 2 ? requiredSchema('Campaign name is required') : null),
-    description: yup.string().trim(),
-  });
-
+// TODO: kept it for test purpose, remove later
+// const initialValues = {
+//   client: {
+//     companyName: 'Arup Dey CP 1',
+//     name: 'Arup Dey CL 1',
+//     email: 'arupdey@codebuddy.co',
+//     contactNumber: '9879879870',
+//     panNumber: 'LLLLL1232L',
+//     gstNumber: '19AABCU9603R1ZK',
+//   },
+//   paymentReference: '1234567890',
+//   paymentType: 'neft',
+//   campaignName: 'Arup Dey CG 1',
+//   description: '',
+//   place: [],
+// };
 const initialValues = {
   client: {
     companyName: '',
@@ -92,12 +46,43 @@ const initialValues = {
   place: [],
 };
 
+const basicInformationSchema = yup.object({
+  client: yup.object({
+    companyName: yup.string().trim().required('Company name is required'),
+    name: yup.string().trim().required('Client name is required'),
+    email: yup.string().trim().email('Email must be valid').required('Email is required'),
+    contactNumber: yup
+      .string()
+      .trim()
+      .test('valid', 'Contact Number must be valid', val => validator.isMobilePhone(val, 'en-IN'))
+      .required('Contact Number is required'),
+    panNumber: yup
+      .string()
+      .trim()
+      .matches(panRegexMatch, 'Pan number must be valid and in uppercase')
+      .required('Pan number is required'),
+    gstNumber: yup
+      .string()
+      .trim()
+      .matches(gstRegexMatch, 'GST number must be valid and in uppercase')
+      .required('GST number is required'),
+  }),
+  paymentReference: yup.string().trim().required('Payment reference number is required'),
+  paymentType: yup.string().trim(),
+});
+
+const campaignInformationSchema = yup.object({
+  campaignName: yup.string().trim().required('Campaign name is required'),
+  description: yup.string().trim(),
+});
+
+const schemas = [basicInformationSchema, campaignInformationSchema, yup.object()];
+
 const CreateBooking = () => {
   const navigate = useNavigate();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
-  const form = useForm({ validate: yupResolver(schema(formStep)), initialValues });
-
+  const form = useForm({ validate: yupResolver(schemas[formStep - 1]), initialValues });
   const { mutateAsync: createBooking, isLoading } = useCreateBookings();
 
   const handleSubmit = async formData => {

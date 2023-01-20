@@ -290,13 +290,9 @@ const Home = () => {
     setSearchParams(searchParams);
   };
 
-  const handleRowCount = currentLimit => {
-    searchParams.set('limit', currentLimit);
-    setSearchParams(searchParams);
-  };
-
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
     setSearchParams(searchParams);
   };
 
@@ -343,7 +339,10 @@ const Home = () => {
           {viewType.inventory !== 'map' && (
             <div className="flex justify-between h-20 items-center pr-7">
               <div className="flex items-center">
-                <RowsPerPage setCount={handleRowCount} count={limit} />
+                <RowsPerPage
+                  setCount={currentLimit => handlePagination('limit', currentLimit)}
+                  count={limit}
+                />
                 <RoleBased
                   acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
                 >
@@ -371,11 +370,10 @@ const Home = () => {
           ) : null}
           {viewType.inventory === 'grid' && inventoryData?.docs?.length ? (
             <GridView
-              count={limit}
               list={inventoryData?.docs || []}
               activePage={inventoryData?.page}
               totalPages={inventoryData?.totalPages}
-              setActivePage={handlePagination}
+              setActivePage={currentPage => handlePagination('page', currentPage)}
               isLoadingList={isInventoryDataLoading || isDeletedInventoryDataLoading}
               selectedCards={selectedCards}
               setSelectedCards={setSelectedCards}
@@ -390,7 +388,7 @@ const Home = () => {
               handleSorting={handleSortByColumn}
               activePage={inventoryData?.page || 1}
               totalPages={inventoryData?.totalPages || 1}
-              setActivePage={handlePagination}
+              setActivePage={currentPage => handlePagination('page', currentPage)}
             />
           ) : viewType.inventory === 'map' ? (
             <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto mt-5">

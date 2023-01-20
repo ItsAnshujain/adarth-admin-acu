@@ -489,13 +489,9 @@ const Bookings = () => {
     setSearchParams(searchParams);
   };
 
-  const handleRowCount = currentLimit => {
-    searchParams.set('limit', currentLimit);
-    setSearchParams(searchParams);
-  };
-
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
     setSearchParams(searchParams);
   };
 
@@ -513,7 +509,10 @@ const Bookings = () => {
       <div className="pr-7">
         <BookingStatisticsView bookingStats={bookingStats} />
         <div className="flex justify-between h-20 items-center">
-          <RowsPerPage setCount={handleRowCount} count={limit} />
+          <RowsPerPage
+            setCount={currentLimit => handlePagination('limit', currentLimit)}
+            count={limit}
+          />
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
@@ -533,7 +532,7 @@ const Bookings = () => {
           COLUMNS={column}
           activePage={bookingData?.page || 1}
           totalPages={bookingData?.totalPages || 1}
-          setActivePage={handlePagination}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={limit}
           handleSorting={handleSortByColumn}
         />

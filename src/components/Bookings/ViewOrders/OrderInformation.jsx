@@ -55,6 +55,7 @@ const OrderInformation = ({
       limit: 100,
       sortOrder: 'asc',
       sortBy: 'createdAt',
+      filter: 'all',
     }),
   );
 

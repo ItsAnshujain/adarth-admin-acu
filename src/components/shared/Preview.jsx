@@ -53,22 +53,21 @@ const Preview = () => {
   }, [values]);
 
   return (
-    <div className="grid grid-cols-2 pl-5 pt-4">
-      <div className="flex flex-1 flex-col max-w-[500px]">
+    <div className="grid grid-cols-2 gap-8 pl-5 pt-4">
+      <div className="flex flex-1 flex-col w-full">
         <div className="flex flex-row flex-wrap justify-start">
           {previewSpacesPhotos?.map(
             (src, index) =>
               index < 4 && (
-                <div key={uuidv4()} className="mr-2 mb-4 border-[1px] border-gray">
-                  <Image
-                    className="bg-slate-100"
-                    height={index === 0 ? 300 : 96}
-                    width={index === 0 ? 500 : 112}
-                    src={src}
-                    fit="contain"
-                    alt="poster"
-                  />
-                </div>
+                <Image
+                  key={uuidv4()}
+                  className="mr-2 mb-4 border-[1px] bg-slate-100"
+                  height={index === 0 ? 300 : 96}
+                  width={index === 0 ? '100%' : 112}
+                  src={src}
+                  fit="cover"
+                  alt="poster"
+                />
               ),
           )}
           {previewSpacesPhotos?.length > 4 && (

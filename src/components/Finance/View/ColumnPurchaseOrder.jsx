@@ -119,11 +119,6 @@ const COLUMNS = [
                     <span className="ml-1">Download</span>
                   </button>
                 </Menu.Item>
-                <Menu.Item>
-                  <button type="button" className="cursor-pointer flex items-center gap-1 w-full">
-                    <span className="ml-1">Delete</span>
-                  </button>
-                </Menu.Item>
               </Menu.Dropdown>
             </Menu>
           </div>

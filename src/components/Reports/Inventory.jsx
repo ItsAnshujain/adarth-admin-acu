@@ -14,11 +14,9 @@ import {
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
 import { Button, Image } from '@mantine/core';
-import { ChevronDown } from 'react-feather';
 import Header from './Header';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
-import Filter from '../Filter';
 import AreaHeader from '../Inventory/AreaHeader';
 import Table from '../Table/Table';
 import RowsPerPage from '../RowsPerPage';
@@ -77,7 +75,6 @@ const config = {
 
 const Inventory = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showFilter, setShowFilter] = useState(false);
   const [search, setSearch] = useState('');
   const [count, setCount] = useState('20');
   const [view, setView] = useState('list');
@@ -86,7 +83,6 @@ const Inventory = () => {
   const chartRef = useRef(null);
   const form = useForm();
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
-  const toggleFilter = () => setShowFilter(!showFilter);
 
   useEffect(() => {
     const chart = chartRef.current;
@@ -160,12 +156,6 @@ const Inventory = () => {
                       <DateRange handleClose={toggleDatePicker} />
                     </div>
                   )}
-                </div>
-                <div className="mr-2">
-                  <Button onClick={toggleFilter} variant="default" className="font-medium">
-                    <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
-                  </Button>
-                  {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
                 </div>
               </div>
             </div>

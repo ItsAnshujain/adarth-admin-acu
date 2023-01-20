@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import DateRange from '../../DateRange';
-import Filter from '../../Filter';
+import Filter from '../../Bookings/Filter';
 import calendar from '../../../assets/data-table.svg';
 import Table from '../../Table/Table';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -217,13 +217,9 @@ const Booking = ({ inventoryId }) => {
     setSearchParams(searchParams);
   };
 
-  const handleRowCount = currentLimit => {
-    searchParams.set('limit', currentLimit);
-    setSearchParams(searchParams);
-  };
-
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
     setSearchParams(searchParams);
   };
 
@@ -277,7 +273,10 @@ const Booking = ({ inventoryId }) => {
         </div>
       </div>
       <div className="flex justify-between h-20 items-center pr-7">
-        <RowsPerPage setCount={handleRowCount} count={limit} />
+        <RowsPerPage
+          setCount={currentLimit => handlePagination('limit', currentLimit)}
+          count={limit}
+        />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       {isLoadingBookingData ? (
@@ -296,7 +295,7 @@ const Booking = ({ inventoryId }) => {
           COLUMNS={COLUMNS}
           activePage={bookingData?.page || 1}
           totalPages={bookingData?.totalPages || 1}
-          setActivePage={handlePagination}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={limit}
           handleSorting={handleSortByColumn}
         />

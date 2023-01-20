@@ -75,21 +75,20 @@ const Preview = ({ data = {}, place = {} }) => {
     <div className="grid grid-cols-2 gap-x-8 pl-5 pr-7 pt-4">
       <div className="flex flex-col">
         <div className="flex flex-col">
-          <div className="flex flex-1 flex-col max-w-[500px]">
+          <div className="flex flex-1 flex-col w-full">
             <div className="flex flex-row flex-wrap justify-start">
               {previewSpacesPhotos?.map(
                 (src, index) =>
                   index < 4 && (
-                    <div key={uuidv4()} className="mr-2 mb-4 border-[1px] border-gray">
-                      <Image
-                        className="bg-slate-100"
-                        height={index === 0 ? 300 : 96}
-                        width={index === 0 ? 400 : 112}
-                        src={index === 0 ? data?.thumbnail : src}
-                        fit="contain"
-                        alt="poster"
-                      />
-                    </div>
+                    <Image
+                      key={uuidv4()}
+                      className="mr-2 mb-4 border-[1px] border-gray bg-slate-100"
+                      height={index === 0 ? 300 : 96}
+                      width={index === 0 ? '100%' : 112}
+                      src={index === 0 ? data?.thumbnail : src}
+                      fit="cover"
+                      alt="poster"
+                    />
                   ),
               )}
 
@@ -175,13 +174,12 @@ const Preview = ({ data = {}, place = {} }) => {
               <Places
                 data={{
                   img: item.photo,
-                  status: item.spaceStatus || 'Available',
-                  name: item.space_name,
+                  name: item.spaceName,
                   address: item.location?.address,
                   cost: item.price,
                   dimensions: `${item.dimension?.height || 0}ft x ${item.dimension?.width || 0}ft`, //
                   format: item.supportedMedia,
-                  lighting: item.media_type,
+                  lighting: item.mediaType,
                   from_date: item.startDate,
                   to_date: item.endDate,
                   resolution: item.resolutions,

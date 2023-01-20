@@ -23,18 +23,6 @@ const schema = formStep =>
   yup.object().shape({
     name: yup.string().concat(formStep === 1 ? requiredSchema('Campaign name is required') : null),
     description: yup.string().trim(),
-    healthStatus: yup
-      .number()
-      .nullable()
-      .concat(
-        formStep === 1
-          ? yup
-              .number()
-              .min(0, 'Health Status must be greater than or equal to 0')
-              .max(100, 'Health Status must be less than or equal to 100')
-              .nullable(true)
-          : null,
-      ),
     previousBrands: yup.array().of(yup.string().trim()),
     minImpression: yup
       .number()
@@ -66,7 +54,7 @@ const initialValues = {
   minImpression: 1600000,
   maxImpression: 3200000,
   tags: [],
-  healthTag: 'Good',
+  healthTag: '',
   place: [],
   thumbnail: '',
   thumbnailId: '',
@@ -122,6 +110,14 @@ const CreateCampaign = () => {
       }
     }
 
+    if (formStep === 3 && form.values.thumbnail === '') {
+      showNotification({
+        title: 'Please select one cover image to continue',
+        color: 'blue',
+      });
+      return;
+    }
+
     if (formStep <= 3) setFormStep(formStep + 1);
 
     if (formStep === 4) {
@@ -167,8 +163,9 @@ const CreateCampaign = () => {
         }
       }
 
-      delete newData.thumbnailId;
-
+      // delete newData.thumbnailId;
+      // console.log(newData);
+      // return;
       if (id) {
         update(
           {
@@ -196,10 +193,10 @@ const CreateCampaign = () => {
   };
 
   useEffect(() => {
-    if (data?.campaign && !form.isTouched()) {
+    if (data?.inventory && !form.isTouched()) {
       form.setValues({
         ...data.campaign,
-        place: data.campaign.place.map(({ id: _id, ...item }) => ({ ...item, _id })),
+        place: data.inventory?.docs?.map(item => item),
       });
     }
   }, [data, form.isTouched]);
@@ -213,6 +210,7 @@ const CreateCampaign = () => {
           handlePublish={handlePublish}
           submitRef={submitRef}
           disabled={isSaving || isUpdating}
+          loading={isSaving || isUpdating}
         />
         <div>
           <FormProvider form={form}>
