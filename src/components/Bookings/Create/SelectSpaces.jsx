@@ -327,8 +327,6 @@ const SelectSpace = () => {
             original: { startDate, endDate, _id },
           },
         }) =>
-          // const [dateValue, setDateValue] = useState([null, null]);
-
           useMemo(() => {
             const bookingRage = [
               {
@@ -344,18 +342,13 @@ const SelectSpace = () => {
             return (
               <div className="min-w-[300px]">
                 <DateRangeSelector
-                  dateValue={[startDate, endDate]}
-                  // setDateValue={setDateValue}
-                  onChange={val => {
-                    console.log(val);
-                    updateData('dateRange', val, _id);
-                    // updateData('endDate', val[1], _id);
-                  }}
+                  dateValue={[startDate || null, endDate || null]}
+                  onChange={val => updateData('dateRange', val, _id)}
                   dateRange={bookingRage}
                 />
               </div>
             );
-          }),
+          }, []),
       },
       // {
       //   Header: 'START DATE',

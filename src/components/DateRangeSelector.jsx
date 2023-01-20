@@ -10,6 +10,7 @@ dayjs.extend(isSameOrAfter);
 
 const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
   const { classes, cx } = useStyles();
+  const [value, setValue] = useState([null, null]);
   // TODO: wip
 
   /**
@@ -19,16 +20,16 @@ const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
   const excludeBookedDates = date =>
     dateRange.some(item => {
       if (
-        dateValue[0] &&
-        dayjs(dateValue[0]).isBefore(dayjs(item?.startDate).format('YYYY-MM-DD')) &&
+        value[0] &&
+        dayjs(value[0]).isBefore(dayjs(item?.startDate).format('YYYY-MM-DD')) &&
         dayjs(date).isAfter(dayjs(item?.startDate).format('YYYY-MM-DD'))
       ) {
         return true;
       }
 
       if (
-        dateValue[0] &&
-        dayjs(dateValue[0]).isAfter(dayjs(item?.endDate).format('YYYY-MM-DD')) &&
+        value[0] &&
+        dayjs(value[0]).isAfter(dayjs(item?.endDate).format('YYYY-MM-DD')) &&
         dayjs(date).isBefore(dayjs(item?.endDate).format('YYYY-MM-DD'))
       ) {
         return true;
@@ -48,15 +49,15 @@ const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
     });
 
   const handleChange = val => {
-    // setDateValue(val);
-    onChange?.(val);
+    setValue(val);
+    if (onChange && val[0] && val[1]) onChange(val);
   };
 
   return (
     <DateRangePicker
       placeholder="Pick dates range"
       onChange={handleChange}
-      excludeDate={date => excludeBookedDates(date)}
+      excludeDate={excludeBookedDates}
       disableOutsideEvents
       defaultValue={dateValue}
       dayClassName={(_, modifiers) =>
