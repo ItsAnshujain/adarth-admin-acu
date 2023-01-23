@@ -15,34 +15,6 @@ import { useCampaign, useCreateCampaign, useUpdateCampaign } from '../../hooks/c
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import { serialize } from '../../utils';
 
-const requiredSchema = requiredText => yup.string().trim().required(requiredText);
-const numberRequiredSchema = (typeErrorText, requiredText) =>
-  yup.number().min(0).typeError(typeErrorText).required(requiredText);
-
-const schema = formStep =>
-  yup.object({
-    name: yup.string().concat(formStep === 1 ? requiredSchema('Campaign name is required') : null),
-    description: yup.string().trim(),
-    previousBrands: yup.array().of(yup.string().trim()),
-    minImpression: yup
-      .number()
-      .concat(
-        formStep === 1
-          ? numberRequiredSchema('Minimum Impression must be a number', 'Impression is required')
-          : null,
-      ),
-    maxImpression: yup
-      .number()
-      .concat(
-        formStep === 1
-          ? numberRequiredSchema('Maximum Impression must be a number', 'Impression is required')
-          : null,
-      ),
-    tags: yup.array().of(yup.string().trim()),
-    isFeatured: yup.boolean(),
-    thumbnail: yup.string(),
-  });
-
 const initialValues = {
   name: '',
   description: '',
@@ -61,13 +33,32 @@ const initialValues = {
   type: 'predefined',
 };
 
+const schema = yup.object({
+  name: yup.string().trim().required('Campaign Name is required'),
+  description: yup.string().trim(),
+  previousBrands: yup.array().of(yup.string().trim()),
+  minImpression: yup
+    .number()
+    .min(0)
+    .typeError('Minimum Impression must be a number')
+    .required('Impression is required'),
+  maxImpression: yup
+    .number()
+    .min(0)
+    .typeError('Maximum Impression must be a number')
+    .required('Impression is required'),
+  tags: yup.array().of(yup.string().trim()),
+  isFeatured: yup.boolean(),
+  thumbnail: yup.string(),
+});
+
 const CreateCampaign = () => {
   const navigate = useNavigate();
   const submitRef = useRef();
   const [publish, setPublish] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
-  const form = useForm({ initialValues, validate: yupResolver(schema(formStep)) });
+  const form = useForm({ initialValues, validate: yupResolver(schema) });
   const [searchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
