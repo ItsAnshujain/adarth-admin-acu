@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { DatePicker } from '@mantine/dates';
-import Filter from '../../Filter';
+import Filter from '../../Inventory/Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
@@ -16,13 +16,16 @@ import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 import { useStyles } from '../../DateRange';
 import DateRangeSelector from '../../DateRangeSelector';
 
-const getHealthTag = score => {
-  if (score <= 30) return 'Bad';
-
-  if (score <= 50) return 'Good';
-
-  return 'Best';
-};
+const getHealthTag = score =>
+  score >= 80
+    ? 'Best'
+    : score < 80 && score >= 50
+    ? 'Good'
+    : score < 50 && score >= 30
+    ? 'Average'
+    : score < 30
+    ? 'Bad'
+    : 'Not yet selected';
 
 const getDate = (selectionItem, item, key, addDefault = true) => {
   if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
@@ -39,6 +42,7 @@ const SelectSpace = () => {
   const [showFilter, setShowFilter] = useState(false);
   const navigate = useNavigate();
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
+  const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
@@ -55,8 +59,6 @@ const SelectSpace = () => {
     const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
     return totalPrice;
   };
-
-  const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
   const updateData = (key, val, id) => {
     setUpdatedInventoryData(prev =>
@@ -331,8 +333,11 @@ const SelectSpace = () => {
     setSearchParams(searchParams);
   };
   const handleSelection = selectedRows => {
-    const avgHealth =
-      selectedRows.reduce((acc, item) => acc + item.health, 0) / selectedRows.length;
+    const avgHealth = selectedRows.reduce(
+      (acc, item) => acc + (item?.health ? +item.health : 0),
+      0,
+    );
+    const healthPercent = Math.floor((avgHealth / (selectedRows.length * 100)) * 100);
 
     const formData = selectedRows.map(
       ({
@@ -346,6 +351,7 @@ const SelectSpace = () => {
         dimension,
         illuminations,
         impression,
+        health,
         unit,
         resolutions,
         supportedMedia,
@@ -362,6 +368,7 @@ const SelectSpace = () => {
         dimension,
         illuminations,
         impression,
+        health,
         unit,
         resolutions,
         supportedMedia,
@@ -370,7 +377,8 @@ const SelectSpace = () => {
       }),
     );
 
-    setFieldValue('healthTag', getHealthTag(avgHealth));
+    setFieldValue('healthStatus', healthPercent);
+    setFieldValue('healthTag', getHealthTag(healthPercent));
     setFieldValue('place', formData);
   };
 
@@ -390,23 +398,23 @@ const SelectSpace = () => {
         const selectionItem = values?.place?.find(pl => pl._id === item._id);
 
         const obj = {};
-        obj.photo = item.basicInformation.spacePhoto;
+        obj.photo = item?.basicInformation?.spacePhoto;
         obj.otherPhotos = item?.basicInformation?.otherPhotos;
-        obj._id = item._id;
-        obj.spaceName = item.basicInformation.spaceName;
+        obj._id = item?._id;
+        obj.spaceName = item?.basicInformation?.spaceName;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
-        obj.spaceType = item.basicInformation?.spaceType?.name;
-        obj.dimension = item.specifications.size;
-        obj.impression = item.specifications.impressions?.max || 0;
-        obj.health = item.specifications.health;
-        obj.location = item.location;
-        obj.mediaType = item.basicInformation.mediaType?.name;
-        obj.supportedMedia = item.basicInformation.supportedMedia;
-        obj.price = item.basicInformation.price;
+        obj.spaceType = item?.basicInformation?.spaceType?.name;
+        obj.dimension = item?.specifications?.size;
+        obj.impression = item?.specifications?.impressions?.max || 0;
+        obj.health = item?.specifications?.health;
+        obj.location = item?.location;
+        obj.mediaType = item?.basicInformation?.mediaType?.name;
+        obj.supportedMedia = item?.basicInformation?.supportedMedia;
+        obj.price = item?.basicInformation?.price;
         obj.landlord_name = item?.basicInformation?.mediaOwner?.name;
-        obj.illuminations = item.specifications.illuminations?.name;
-        obj.unit = item.specifications.unit;
-        obj.resolutions = item.specifications.resolutions;
+        obj.illuminations = item?.specifications?.illuminations?.name;
+        obj.unit = item?.specifications?.unit;
+        obj.resolutions = item?.specifications?.resolutions;
         obj.startDate = getDate(selectionItem, item, 'startDate');
         obj.endDate =
           getDate(selectionItem, item, 'endDate', false) || dayjs().add(1, 'day').toDate();
@@ -442,6 +450,10 @@ const SelectSpace = () => {
           <div>
             <p className="text-slate-400">Total Price</p>
             <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
+          </div>
+          <div>
+            <p className="text-slate-400">Health Status</p>
+            <p className="font-bold">{values?.healthTag || 'NA'}</p>
           </div>
         </div>
         <div className="flex justify-between mb-4 items-center">

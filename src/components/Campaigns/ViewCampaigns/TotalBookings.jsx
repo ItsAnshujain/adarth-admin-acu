@@ -419,13 +419,10 @@ const TotalBookings = ({ campaignId }) => {
     setSearchParams(searchParams);
   };
 
-  const handleRowCount = currentLimit => {
-    searchParams.set('limit', currentLimit);
-    setSearchParams(searchParams);
-  };
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
 
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
     setSearchParams(searchParams);
   };
 
@@ -461,7 +458,10 @@ const TotalBookings = ({ campaignId }) => {
       </div>
       <div>
         <div className="flex justify-between h-20 items-center">
-          <RowsPerPage setCount={handleRowCount} count={limit} />
+          <RowsPerPage
+            setCount={currentLimit => handlePagination('limit', currentLimit)}
+            count={limit}
+          />
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
         {isLoadingBookingData ? (
@@ -481,7 +481,7 @@ const TotalBookings = ({ campaignId }) => {
             COLUMNS={column}
             activePage={bookingData?.page || 1}
             totalPages={bookingData?.totalPages || 1}
-            setActivePage={handlePagination}
+            setActivePage={currentPage => handlePagination('page', currentPage)}
             rowCountLimit={limit}
             handleSorting={handleSortByColumn}
           />

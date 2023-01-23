@@ -474,7 +474,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         <div className="flex justify-between h-20 items-center">
           <RowsPerPage
             setCount={limit => handlePagination('limit', limit)}
-            count={bookingData.limit}
+            count={bookingData.limit?.toString()}
           />
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>

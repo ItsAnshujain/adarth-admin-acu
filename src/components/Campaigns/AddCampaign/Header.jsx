@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Basic Information', 'Select Spaces', 'Cover Image'];
 
-const Header = ({ setFormStep, formStep, handlePublish, submitRef }) => {
+const Header = ({ setFormStep, formStep, handlePublish, submitRef, disabled, loading }) => {
   const navigate = useNavigate();
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -69,7 +69,12 @@ const Header = ({ setFormStep, formStep, handlePublish, submitRef }) => {
           {formStep < 3 && <ChevronRight className="ml-1 h-4" />}
         </Button>
         {formStep === 4 && (
-          <Button onClick={handlePublish} className="bg-purple-450">
+          <Button
+            onClick={handlePublish}
+            className="bg-purple-450"
+            disabled={disabled}
+            loading={loading}
+          >
             Save &amp; Publish
           </Button>
         )}

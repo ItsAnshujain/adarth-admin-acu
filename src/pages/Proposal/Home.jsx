@@ -49,13 +49,9 @@ const Proposals = () => {
     setSearchParams(searchParams);
   };
 
-  const handleRowCount = currentLimit => {
-    searchParams.set('limit', currentLimit);
-    setSearchParams(searchParams);
-  };
-
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
     setSearchParams(searchParams);
   };
 
@@ -249,7 +245,10 @@ const Proposals = () => {
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <AreaHeader text="Proposals List" />
       <div className="flex justify-between h-20 items-center pr-7">
-        <RowsPerPage setCount={handleRowCount} count={limit} />
+        <RowsPerPage
+          setCount={currentLimit => handlePagination('limit', currentLimit)}
+          count={limit}
+        />
         <Search search={searchInput} setSearch={setSearchinput} />
       </div>
       {isLoadingProposalsData && viewType.proposal === 'list' ? (
@@ -268,7 +267,7 @@ const Proposals = () => {
           COLUMNS={COLUMNS}
           activePage={proposalsData?.page || 1}
           totalPages={proposalsData?.totalPages || 1}
-          setActivePage={handlePagination}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={limit}
           handleSorting={handleSortByColumn}
         />
@@ -278,7 +277,7 @@ const Proposals = () => {
           list={proposalsData?.docs || []}
           activePage={proposalsData?.page}
           totalPages={proposalsData?.totalPages}
-          setActivePage={handlePagination}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
           isLoadingList={isLoadingProposalsData}
         />
       ) : null}

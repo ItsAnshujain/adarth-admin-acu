@@ -62,8 +62,10 @@ const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
               radius="lg"
               size="xs"
             />
-            Uploaded
+            {isLoading ? 'Uploading' : 'Uploaded'}
           </>
+        ) : isLoading ? (
+          'Uploading'
         ) : (
           'Upload'
         )}
@@ -310,11 +312,11 @@ const SelectSpace = () => {
             original: { startDate, endDate, _id },
           },
         }) =>
-          useMemo(() => (
+          useMemo(() => {
             <div className="min-w-[300px]">
               <DateRangeSelector disabled startDate={startDate} endDate={endDate} />
-            </div>
-          )),
+            </div>;
+          }, []),
       },
       {
         Header: 'START DATE',
@@ -438,6 +440,7 @@ const SelectSpace = () => {
         obj.mediaType = item.basicInformation?.mediaType?.name;
         obj.price = item.basicInformation?.price || 0;
         obj.landlord = item.basicInformation?.mediaOwner?.name;
+        obj.campaigns = item?.campaigns;
         obj.startDate = item.startDate ? new Date(item.startDate) : new Date();
         obj.endDate = item.endDate ? new Date(item.endDate) : dayjs().add(1, 'day').toDate();
         finalData.push(obj);

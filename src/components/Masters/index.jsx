@@ -36,13 +36,9 @@ const Home = () => {
     setSearchParams(searchParams);
   };
 
-  const handleRowCount = currentLimit => {
-    searchParams.set('limit', currentLimit);
-    setSearchParams(searchParams);
-  };
-
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
     setSearchParams(searchParams);
   };
 
@@ -134,7 +130,10 @@ const Home = () => {
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
       <Header text={masterTypes[type]} />
       <div className="flex justify-between h-20 items-center pr-7">
-        <RowsPerPage setCount={handleRowCount} count={limit} />
+        <RowsPerPage
+          setCount={currentLimit => handlePagination('limit', currentLimit)}
+          count={limit}
+        />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       {isMasterDataLoading ? (
@@ -153,7 +152,7 @@ const Home = () => {
           COLUMNS={COLUMNS}
           activePage={masterData?.page || 1}
           totalPages={masterData?.totalPages || 1}
-          setActivePage={handlePagination}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={limit}
           handleSorting={handleSortByColumn}
         />

@@ -114,7 +114,6 @@ const Home = () => {
       {
         Header: 'TYPE',
         accessor: 'type',
-        disableSortBy: true,
         Cell: ({
           row: {
             original: { type },
@@ -124,14 +123,18 @@ const Home = () => {
       {
         Header: 'HEALTH',
         accessor: 'healthStatus',
-        Cell: ({ cell: { value } }) =>
+        Cell: ({
+          row: {
+            original: { healthStatus },
+          },
+        }) =>
           useMemo(
             () => (
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value, color: 'green' },
-                    { value: 100 - value, color: 'red' },
+                    { value: healthStatus, color: 'green' },
+                    { value: 100 - (healthStatus || 0), color: 'red' },
                   ]}
                 />
               </div>
@@ -169,9 +172,7 @@ const Home = () => {
       },
       {
         Header: 'TOTAL PLACES',
-        accessor: 'place',
-        disableSortBy: true,
-        Cell: ({ cell: { value } }) => value?.length || 0,
+        accessor: 'totalPlaces',
       },
       {
         Header: 'PRICING',

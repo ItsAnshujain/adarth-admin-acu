@@ -197,13 +197,14 @@ const locationValues = yup.object({
   }),
 });
 
+const schemas = [basicInformationSchema, specificationsValues, locationValues, yup.object()];
+
 const CreateSpace = () => {
   const navigate = useNavigate();
   const { id: inventoryId } = useParams();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
 
-  const schemas = [basicInformationSchema, specificationsValues, locationValues, yup.object()];
   const form = useForm({
     validate: yupResolver(schemas[formStep - 1]),
     initialValues,

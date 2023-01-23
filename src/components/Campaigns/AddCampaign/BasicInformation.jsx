@@ -2,7 +2,6 @@ import { Checkbox, RangeSlider } from '@mantine/core';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils/index';
 import TextInput from '../../shared/TextInput';
-import NumberInput from '../../shared/NumberInput';
 import TextareaInput from '../../shared/TextareaInput';
 import MultiSelect from '../../shared/MultiSelect';
 import { useFormContext } from '../../../context/formContext';
@@ -65,23 +64,14 @@ const BasicInformation = () => {
     <div className="mt-4 pl-5 pr-7 flex flex-col gap-4 pb-20">
       <p className="text-md font-bold">Basic Information</p>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-        <div className="flex flex-col gap-y-4">
-          <TextInput
-            label="Campaign Name"
-            name="name"
-            withAsterisk
-            styles={styles}
-            errors={errors}
-            placeholder="Write..."
-          />
-          <NumberInput
-            label="Health Status"
-            name="healthStatus"
-            styles={styles}
-            errors={errors}
-            placeholder="Write..."
-          />
-        </div>
+        <TextInput
+          label="Campaign Name"
+          name="name"
+          withAsterisk
+          styles={styles}
+          errors={errors}
+          placeholder="Write..."
+        />
         <TextareaInput
           styles={textAreaStyles}
           label="Description"

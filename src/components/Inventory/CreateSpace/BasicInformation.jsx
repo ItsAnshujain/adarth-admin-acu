@@ -338,7 +338,7 @@ const BasicInfo = () => {
             />
           ) : null}
         </div>
-        <div className="">
+        <div>
           <p className="text-xl font-bold">Other Images</p>
           <p className="text-gray-400 mb-2">
             Lorem ipsum atque quibusdam quos eius corrupti modi maiores.

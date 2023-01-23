@@ -1,4 +1,5 @@
 import { Box, Image, Text } from '@mantine/core';
+import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import { useFormContext } from '../../../context/formContext';
 
@@ -22,14 +23,14 @@ const CoverImage = () => {
       <div className="grid grid-cols-4 gap-4">
         {values?.place?.map(placeItem => (
           <Box
-            key={placeItem?._id}
+            key={uuidv4()}
             onClick={() => handleClick(placeItem.photo, placeItem._id)}
             className={classNames(
               'p-4 flex flex-col gap-y-4 border',
               values?.thumbnailId === placeItem._id ? 'border-purple-450' : '',
             )}
           >
-            <div className="">
+            <div>
               {placeItem?.photo ? (
                 <Image
                   height={200}

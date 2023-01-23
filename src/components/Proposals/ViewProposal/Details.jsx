@@ -41,29 +41,28 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
       {isProposalDataLoading ? (
         <SkeletonTopWrapper />
       ) : (
-        <div className="border p-5 pr-8 mt-2 flex flex-col gap-4">
-          <div className="flex flex-row justify-between">
+        <div className="border p-5 mt-2 flex flex-col gap-4">
+          <div className="grid grid-cols-2">
             <div>
               <Text weight="bold" className="capitalize">
                 {proposalData?.name}
               </Text>
               <Text size="sm">{proposalData?.description}</Text>
             </div>
-            <div className="flex flex-1 flex-col max-w-[500px]">
+            <div className="flex flex-1 flex-col w-full">
               <div className="flex flex-row flex-wrap justify-start">
                 {previewSpacesPhotos?.map(
                   (src, index) =>
                     index < 4 && (
-                      <div key={uuidv4()} className="mr-2 mb-4 border-[1px] border-gray">
-                        <Image
-                          className="bg-slate-100"
-                          height={index === 0 ? 300 : 96}
-                          width={index === 0 ? 400 : 112}
-                          src={src}
-                          fit="contain"
-                          alt="poster"
-                        />
-                      </div>
+                      <Image
+                        key={uuidv4()}
+                        className="mr-2 mb-4 border-[1px] border-gray bg-slate-100"
+                        height={index === 0 ? 300 : 96}
+                        width={index === 0 ? '100%' : 112}
+                        src={src}
+                        fit="cover"
+                        alt="poster"
+                      />
                     ),
                 )}
                 {previewSpacesPhotos?.length > 4 && (
