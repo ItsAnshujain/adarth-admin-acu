@@ -14,7 +14,7 @@ import { aadhaarRegexMatch, panRegexMatch } from '../../utils';
 const requiredSchema = requiredText => yup.string().trim().required(requiredText);
 
 const schema = step =>
-  yup.object().shape({
+  yup.object({
     name: yup
       .string()
       .trim()

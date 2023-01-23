@@ -11,7 +11,7 @@ import { useForm, FormProvider } from '../../context/formContext';
 import PasswordInput from '../shared/PasswordInput';
 import TextInput from '../shared/TextInput';
 
-const schema = yup.object().shape({
+const schema = yup.object({
   randomText: yup.string().trim().required('Field is required'),
   password: yup
     .string()

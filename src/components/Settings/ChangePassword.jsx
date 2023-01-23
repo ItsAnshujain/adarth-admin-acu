@@ -20,7 +20,7 @@ const initialValues = {
   oldPassword: '',
 };
 
-const schema = yup.object().shape({
+const schema = yup.object({
   oldPassword: yup.string().trim().required('Current Password is required'),
   password: yup
     .string()

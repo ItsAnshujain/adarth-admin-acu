@@ -20,7 +20,7 @@ const numberRequiredSchema = (typeErrorText, requiredText) =>
   yup.number().min(0).typeError(typeErrorText).required(requiredText);
 
 const schema = formStep =>
-  yup.object().shape({
+  yup.object({
     name: yup.string().concat(formStep === 1 ? requiredSchema('Campaign name is required') : null),
     description: yup.string().trim(),
     previousBrands: yup.array().of(yup.string().trim()),
@@ -163,9 +163,6 @@ const CreateCampaign = () => {
         }
       }
 
-      // delete newData.thumbnailId;
-      // console.log(newData);
-      // return;
       if (id) {
         update(
           {

@@ -342,6 +342,7 @@ const SelectSpace = () => {
             return (
               <div className="min-w-[300px]">
                 <DateRangeSelector
+                  disabled
                   dateValue={[startDate || null, endDate || null]}
                   onChange={val => updateData('dateRange', val, _id)}
                   dateRange={bookingRage}
@@ -350,60 +351,60 @@ const SelectSpace = () => {
             );
           }, []),
       },
-      // {
-      //   Header: 'START DATE',
-      //   accessor: 'startDate',
-      //   disableSortBy: true,
-      //   Cell: ({
-      //     row: {
-      //       original: { startDate, _id },
-      //     },
-      //   }) =>
-      //     useMemo(
-      //       () => (
-      //         <DatePicker
-      //           defaultValue={startDate}
-      //           placeholder="DD/MM/YYYY"
-      //           minDate={new Date()}
-      //           onChange={val => updateData('startDate', val, _id)}
-      //           dayClassName={(_, modifiers) =>
-      //             cx({
-      //               [classes.weekend]: modifiers.weekend,
-      //               [classes.disabled]: modifiers.disabled,
-      //             })
-      //           }
-      //         />
-      //       ),
-      //       [],
-      //     ),
-      // },
-      // {
-      //   Header: 'END DATE',
-      //   accessor: 'endDate',
-      //   disableSortBy: true,
-      //   Cell: ({
-      //     row: {
-      //       original: { endDate, _id },
-      //     },
-      //   }) =>
-      //     useMemo(
-      //       () => (
-      //         <DatePicker
-      //           defaultValue={endDate}
-      //           placeholder="DD/MM/YYYY"
-      //           minDate={new Date()}
-      //           onChange={val => updateData('endDate', val, _id)}
-      //           dayClassName={(_, modifiers) =>
-      //             cx({
-      //               [classes.weekend]: modifiers.weekend,
-      //               [classes.disabled]: modifiers.disabled,
-      //             })
-      //           }
-      //         />
-      //       ),
-      //       [],
-      //     ),
-      // },
+      {
+        Header: 'START DATE',
+        accessor: 'startDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { startDate, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <DatePicker
+                defaultValue={startDate}
+                placeholder="DD/MM/YYYY"
+                minDate={new Date()}
+                onChange={val => updateData('startDate', val, _id)}
+                dayClassName={(_, modifiers) =>
+                  cx({
+                    [classes.weekend]: modifiers.weekend,
+                    [classes.disabled]: modifiers.disabled,
+                  })
+                }
+              />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'END DATE',
+        accessor: 'endDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { endDate, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <DatePicker
+                defaultValue={endDate}
+                placeholder="DD/MM/YYYY"
+                minDate={new Date()}
+                onChange={val => updateData('endDate', val, _id)}
+                dayClassName={(_, modifiers) =>
+                  cx({
+                    [classes.weekend]: modifiers.weekend,
+                    [classes.disabled]: modifiers.disabled,
+                  })
+                }
+              />
+            ),
+            [],
+          ),
+      },
       {
         Header: 'ACTION',
         accessor: 'action',
