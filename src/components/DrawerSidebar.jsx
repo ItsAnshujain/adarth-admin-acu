@@ -22,12 +22,10 @@ const DrawerSidebar = ({ opened, setOpened }) => (
     padding="xl"
     size="md"
   >
-    <div className="">
-      <div className="flex flex-col items-start gap-2">
-        {sidebarText.map((text, index) => (
-          <SidebarButton key={uuidv4()} index={index} text={text} setOpened={setOpened} />
-        ))}
-      </div>
+    <div className="flex flex-col items-start gap-2">
+      {sidebarText.map((text, index) => (
+        <SidebarButton key={uuidv4()} index={index} text={text} setOpened={setOpened} />
+      ))}
     </div>
   </Drawer>
 );

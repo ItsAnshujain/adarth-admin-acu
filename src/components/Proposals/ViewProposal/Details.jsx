@@ -43,7 +43,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
       ) : (
         <div className="border p-5 mt-2 flex flex-col gap-4">
           <div className="grid grid-cols-2">
-            <div className>
+            <div>
               <Text weight="bold" className="capitalize">
                 {proposalData?.name}
               </Text>

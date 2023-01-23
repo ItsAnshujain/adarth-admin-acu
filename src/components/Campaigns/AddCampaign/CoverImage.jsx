@@ -30,7 +30,7 @@ const CoverImage = () => {
               values?.thumbnailId === placeItem._id ? 'border-purple-450' : '',
             )}
           >
-            <div className="">
+            <div>
               {placeItem?.photo ? (
                 <Image
                   height={200}
