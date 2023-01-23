@@ -189,3 +189,20 @@ export const downloadAll = urls => {
 
   link.remove();
 };
+
+export const months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+export const supportedType = ['JPG', 'JPEG', 'PNG'];

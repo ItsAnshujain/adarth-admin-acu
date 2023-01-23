@@ -1,19 +1,29 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Button } from '@mantine/core';
+import { Button, Select } from '@mantine/core';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import PurchaseOrder from './PurchaseOrder';
 import ReleaseOrder from './ReleaseOrder';
 import Invoice from './Invoice';
 import { FormProvider, useForm } from '../../../context/formContext';
 import {
   useBookingById,
+  useBookings,
   useGenerateInvoice,
   useGeneratePurchaseOrder,
   useGenerateReleaseOrder,
 } from '../../../hooks/booking.hooks';
-import { downloadPdf, gstRegexMatch, mobileRegexMatch } from '../../../utils';
+import { downloadPdf, gstRegexMatch, mobileRegexMatch, serialize } from '../../../utils';
+
+const bookingStyles = {
+  label: {
+    fontWeight: 'bold',
+    marginBottom: 8,
+    fontSize: 16,
+    letterSpacing: '0.5px',
+  },
+};
 
 const orderView = {
   purchase: PurchaseOrder,
@@ -247,6 +257,12 @@ const initialValues = {
   invoice: initialInvoiceValues,
 };
 
+const bookingQueries = {
+  page: 1,
+  limit: 100,
+  sortBy: 'createdAt',
+  sortOrder: 'desc',
+};
 const Create = () => {
   const navigate = useNavigate();
   const [searchParam] = useSearchParams();
@@ -254,6 +270,13 @@ const Create = () => {
   const form = useForm({ validate: yupResolver(schema[type]), initialValues: initialValues[type] });
   const ManualEntryView = orderView[type] ?? <div />;
   const bookingId = searchParam.get('id');
+  const [bookingIdFromFinance, setBookingIdFromFinance] = useState();
+
+  const {
+    data: bookingDatas,
+    isLoading: isBookingDatasLoading,
+    isSuccess: isBookingDatasLoaded,
+  } = useBookings(serialize(bookingQueries));
   const { data: bookingData } = useBookingById(bookingId, !!bookingId);
   const { mutateAsync: generatePurchaseOrder, isLoading: isGeneratePurchaseOrderLoading } =
     useGeneratePurchaseOrder();
@@ -302,7 +325,7 @@ const Create = () => {
       }));
 
       const purchaseOrderPdf = await generatePurchaseOrder(
-        { id: bookingId, data },
+        { id: bookingId || bookingIdFromFinance, data },
         { onSuccess: () => redirectToHome() },
       );
       if (purchaseOrderPdf?.generatedPdf?.Location)
@@ -315,7 +338,7 @@ const Create = () => {
         data.mobile = `+91${data?.mobile}`;
       }
       const releaseOrderPdf = await generateReleaseOrder(
-        { id: bookingId, data },
+        { id: bookingId || bookingIdFromFinance, data },
         { onSuccess: () => redirectToHome() },
       );
       if (releaseOrderPdf?.generatedPdf?.Location)
@@ -334,7 +357,7 @@ const Create = () => {
         data.buyerGst = data.buyerGst?.toUpperCase();
       }
       const invoicePdf = await generateInvoiceOrder(
-        { id: bookingId, data },
+        { id: bookingId || bookingIdFromFinance, data },
         { onSuccess: () => redirectToHome() },
       );
       if (invoicePdf?.generatedPdf?.Location) downloadPdf(invoicePdf.generatedPdf.Location);
@@ -354,7 +377,6 @@ const Create = () => {
               <Button
                 onClick={handleBack}
                 variant="outline"
-                className="border rounded-md p-2 text-black"
                 disabled={
                   isGeneratePurchaseOrderLoading ||
                   isGenerateReleaseOrderLoading ||
@@ -365,7 +387,8 @@ const Create = () => {
               </Button>
               <Button
                 type="submit"
-                className="border rounded-md p-2 bg-purple-450 text-white"
+                className="primary-button mr-2"
+                variant="filled"
                 loading={
                   isGeneratePurchaseOrderLoading ||
                   isGenerateReleaseOrderLoading ||
@@ -381,6 +404,26 @@ const Create = () => {
               </Button>
             </div>
           </header>
+          <div className="flex justify-between pl-5 pr-7 py-4 items-center border-b">
+            <Select
+              label="Booking List"
+              withAsterisk
+              className="w-[400px]"
+              styles={bookingStyles}
+              value={bookingId || bookingIdFromFinance}
+              disabled={bookingId || isBookingDatasLoading}
+              placeholder="Select..."
+              onChange={setBookingIdFromFinance}
+              data={
+                isBookingDatasLoaded
+                  ? bookingDatas.docs.map(bookingItem => ({
+                      label: bookingItem?.campaign?.name,
+                      value: bookingItem?._id,
+                    }))
+                  : []
+              }
+            />
+          </div>
           <ManualEntryView
             spacesList={bookingData?.campaign?.spaces}
             totalPrice={calcutateTotalPrice || 0}

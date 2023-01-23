@@ -5,8 +5,7 @@ import PreviewCard from './UI/PreviewCard';
 import DragDropCard from './UI/DragDropCard';
 import { useFormContext } from '../../../context/formContext';
 import { useDeleteUploadedFile, useUploadFile } from '../../../hooks/upload.hooks';
-
-const supportedType = ['JPG', 'JPEG', 'PNG', 'PDF'];
+import { supportedType } from '../../../utils';
 
 const docTypes = [
   {

@@ -14,8 +14,7 @@ import NumberInput from '../../shared/NumberInput';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import modalConfig from '../../../utils/modalConfig';
 import NoData from '../../shared/NoData';
-
-const supportedType = ['JPG', 'JPEG', 'PNG'];
+import { supportedType } from '../../../utils';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 

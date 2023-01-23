@@ -444,7 +444,7 @@ const App = () => {
             }
           />
           <Route
-            path="/finance/:year/details"
+            path="/finance/:year/:month"
             element={
               <Suspense fallback={<CustomLoader />}>
                 <FinanceMonthlyDetails />
