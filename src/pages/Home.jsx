@@ -13,6 +13,7 @@ import {
 } from 'chart.js';
 import { Image } from '@mantine/core';
 import { useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import AreaHeader from '../components/Home/Header';
 import Header from '../components/Header';
@@ -66,8 +67,8 @@ const config = {
 };
 
 const query = {
-  startDate: new Date('01-01-2023').toISOString(),
-  endDate: new Date('12-31-2023').toISOString(),
+  startDate: dayjs().startOf('year').toISOString(),
+  endDate: dayjs().endOf('year').toISOString(),
   type: 'month',
 };
 

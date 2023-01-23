@@ -203,7 +203,7 @@ const CreateSpace = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
 
-  const schemas = [basicInformationSchema, specificationsValues, locationValues];
+  const schemas = [basicInformationSchema, specificationsValues, locationValues, yup.object()];
   const form = useForm({
     validate: yupResolver(schemas[formStep - 1]),
     initialValues,
