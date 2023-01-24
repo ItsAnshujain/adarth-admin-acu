@@ -2,7 +2,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button, Select } from '@mantine/core';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PurchaseOrder from './PurchaseOrder';
 import ReleaseOrder from './ReleaseOrder';
 import Invoice from './Invoice';
@@ -367,6 +367,10 @@ const Create = () => {
 
   const handleBack = () => navigate(-1);
 
+  useEffect(() => {
+    if (bookingId) setBookingIdFromFinance(bookingId);
+  }, []);
+
   return (
     <div className="pb-12">
       <FormProvider form={form}>
@@ -397,32 +401,37 @@ const Create = () => {
                 disabled={
                   isGeneratePurchaseOrderLoading ||
                   isGenerateReleaseOrderLoading ||
-                  isGenerateInvoiceOrderLoading
+                  isGenerateInvoiceOrderLoading ||
+                  !bookingIdFromFinance
                 }
               >
                 Create
               </Button>
             </div>
           </header>
-          <div className="flex justify-between pl-5 pr-7 py-4 items-center border-b">
-            <Select
-              label="Booking List"
-              withAsterisk
-              className="w-[400px]"
-              styles={bookingStyles}
-              value={bookingId || bookingIdFromFinance}
-              disabled={bookingId || isBookingDatasLoading}
-              placeholder="Select..."
-              onChange={setBookingIdFromFinance}
-              data={
-                isBookingDatasLoaded
-                  ? bookingDatas.docs.map(bookingItem => ({
-                      label: bookingItem?.campaign?.name,
-                      value: bookingItem?._id,
-                    }))
-                  : []
-              }
-            />
+          <div className="pl-5 pr-7 pt-4 pb-8 border-b">
+            <div className="grid grid-cols-2 gap-4">
+              <Select
+                label={`Booking List ${
+                  !bookingIdFromFinance ? '(Please select a Booking before creating an order)' : ''
+                }`}
+                withAsterisk={!bookingIdFromFinance}
+                className="w-full"
+                styles={bookingStyles}
+                value={bookingId || bookingIdFromFinance}
+                disabled={bookingId || isBookingDatasLoading}
+                placeholder="Select..."
+                onChange={setBookingIdFromFinance}
+                data={
+                  isBookingDatasLoaded
+                    ? bookingDatas.docs.map(bookingItem => ({
+                        label: bookingItem?.campaign?.name,
+                        value: bookingItem?._id,
+                      }))
+                    : []
+                }
+              />
+            </div>
           </div>
           <ManualEntryView
             spacesList={bookingData?.campaign?.spaces}

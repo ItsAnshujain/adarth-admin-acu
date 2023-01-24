@@ -1,5 +1,5 @@
 import { Button, Select } from '@mantine/core';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FilePlus } from 'react-feather';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -79,6 +79,10 @@ const FileUpload = () => {
     }
   };
 
+  useEffect(() => {
+    if (bookingId) setBookingIdFromFinance(bookingId);
+  }, []);
+
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <header className="h-[60px] border-b border-gray-450 flex justify-between items-center pl-5 pr-7">
@@ -91,25 +95,29 @@ const FileUpload = () => {
           <span>Close</span>
         </Button>
       </header>
-      <div className="flex justify-between pl-5 pr-7 py-4 items-center border-b">
-        <Select
-          label="Booking List"
-          withAsterisk
-          className="w-[400px]"
-          value={bookingId || bookingIdFromFinance}
-          disabled={bookingId || isBookingDatasLoading}
-          onChange={setBookingIdFromFinance}
-          placeholder="Select..."
-          styles={bookingStyles}
-          data={
-            isBookingDatasLoaded
-              ? bookingDatas.docs.map(bookingItem => ({
-                  label: bookingItem?.campaign?.name,
-                  value: bookingItem?._id,
-                }))
-              : []
-          }
-        />
+      <div className="pl-5 pr-7 pt-4 pb-8 border-b">
+        <div className="grid grid-cols-2 gap-4">
+          <Select
+            label={`Booking List ${
+              !bookingIdFromFinance ? '(Please select a Booking before uploading)' : ''
+            }`}
+            withAsterisk={!bookingIdFromFinance}
+            className="w-full"
+            styles={bookingStyles}
+            value={bookingId || bookingIdFromFinance}
+            disabled={bookingId || isBookingDatasLoading}
+            placeholder="Select..."
+            onChange={setBookingIdFromFinance}
+            data={
+              isBookingDatasLoaded
+                ? bookingDatas.docs.map(bookingItem => ({
+                    label: bookingItem?.campaign?.name,
+                    value: bookingItem?._id,
+                  }))
+                : []
+            }
+          />
+        </div>
       </div>
       <div
         {...getRootProps()}
@@ -132,10 +140,11 @@ const FileUpload = () => {
         )}
       </div>
       <Button
-        disabled={isLoading || isUpdateBookingLoading}
+        disabled={isLoading || isUpdateBookingLoading || !bookingIdFromFinance}
         loading={isLoading || isUpdateBookingLoading}
         onClick={file ? handleUpload : open}
-        className="bg-purple-450 text-white p-2 rounded mx-auto block mt-3"
+        variant="filled"
+        className="p-2 rounded mx-auto block mt-3 primary-button"
       >
         Upload File
       </Button>

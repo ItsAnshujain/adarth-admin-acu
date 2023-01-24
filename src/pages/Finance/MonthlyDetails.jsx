@@ -75,7 +75,7 @@ const Home = () => {
       },
       {
         Header: 'ORDER ID',
-        accessor: 'order_id',
+        accessor: 'bookingId',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -85,7 +85,7 @@ const Home = () => {
       },
       {
         Header: 'VOUCHER NO',
-        accessor: 'voucher_no',
+        accessor: 'invoiceNo',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -96,7 +96,7 @@ const Home = () => {
       {
         Header: 'INVOICE TO',
         disableSortBy: true,
-        accessor: 'invoice_to',
+        accessor: 'buyerName',
         Cell: ({
           row: {
             original: { buyerName },
@@ -106,7 +106,7 @@ const Home = () => {
       {
         Header: 'SUPPLIER',
         disableSortBy: true,
-        accessor: 'supplier',
+        accessor: 'supplierName',
         Cell: ({
           row: {
             original: { supplierName },
@@ -122,7 +122,7 @@ const Home = () => {
       {
         Header: 'DATE',
         disableSortBy: true,
-        accessor: 'date',
+        accessor: 'createdAt',
         Cell: ({
           row: {
             original: { createdAt },
@@ -132,7 +132,7 @@ const Home = () => {
       {
         Header: 'TOTAL AMOUNT',
         disableSortBy: true,
-        accessor: 'total_amount',
+        accessor: 'total',
         Cell: ({
           row: {
             original: { total },
@@ -179,7 +179,7 @@ const Home = () => {
       },
       {
         Header: 'ORDER ID',
-        accessor: 'order_id',
+        accessor: 'bookingId',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -189,7 +189,7 @@ const Home = () => {
       },
       {
         Header: 'RO ID',
-        accessor: 'ro_id',
+        accessor: 'releaseOrderNo',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -205,7 +205,7 @@ const Home = () => {
       },
       {
         Header: 'TO',
-        accessor: 'to',
+        accessor: 'companyName',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -215,7 +215,7 @@ const Home = () => {
       },
       {
         Header: 'CONTACT PERSON',
-        accessor: 'contact_person',
+        accessor: 'contactPerson',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -225,7 +225,7 @@ const Home = () => {
       },
       {
         Header: 'SUPPLIER',
-        accessor: 'supplier',
+        accessor: 'supplierName',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -241,7 +241,7 @@ const Home = () => {
       },
       {
         Header: 'DATE',
-        accessor: 'date',
+        accessor: 'createdAt',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -251,7 +251,7 @@ const Home = () => {
       },
       {
         Header: 'TOTAL AMOUNT',
-        accessor: 'total_amount',
+        accessor: 'total',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -299,7 +299,7 @@ const Home = () => {
       },
       {
         Header: 'ORDER ID',
-        accessor: 'order_id',
+        accessor: 'bookingId',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -309,7 +309,7 @@ const Home = () => {
       },
       {
         Header: 'INVOICE ID',
-        accessor: 'invoice_id',
+        accessor: 'invoiceNo',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -319,7 +319,7 @@ const Home = () => {
       },
       {
         Header: 'BUYER ORDER NO',
-        accessor: 'buyer_order_no',
+        accessor: 'buyerOrderNumber',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -329,7 +329,7 @@ const Home = () => {
       },
       {
         Header: 'TO',
-        accessor: 'to',
+        accessor: 'supplierName',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -339,7 +339,7 @@ const Home = () => {
       },
       {
         Header: 'BUYER',
-        accessor: 'buyer',
+        accessor: 'buyerName',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -355,7 +355,7 @@ const Home = () => {
       },
       {
         Header: 'SUPPLIER REF',
-        accessor: 'supplier_ref',
+        accessor: 'supplierRefNo',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -371,7 +371,7 @@ const Home = () => {
       },
       {
         Header: 'DATE',
-        accessor: 'date',
+        accessor: 'createdAt',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -381,7 +381,7 @@ const Home = () => {
       },
       {
         Header: 'TOTAL AMOUNT',
-        accessor: 'total_amount',
+        accessor: 'total',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -391,7 +391,7 @@ const Home = () => {
       },
       {
         Header: 'PAYMENT METHOD',
-        accessor: 'payment_method',
+        accessor: 'modeOfPayment',
         disableSortBy: true,
         Cell: ({
           row: {
