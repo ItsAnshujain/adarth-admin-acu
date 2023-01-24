@@ -205,4 +205,4 @@ export const months = [
   'December',
 ];
 
-export const supportedType = ['JPG', 'JPEG', 'PNG'];
+export const supportedTypes = ['JPG', 'JPEG', 'PNG'];

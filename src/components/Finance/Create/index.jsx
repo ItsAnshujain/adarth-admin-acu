@@ -369,7 +369,7 @@ const Create = () => {
 
   useEffect(() => {
     if (bookingId) setBookingIdFromFinance(bookingId);
-  }, []);
+  }, [bookingId]);
 
   return (
     <div className="pb-12">
