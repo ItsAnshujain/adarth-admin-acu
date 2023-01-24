@@ -2,7 +2,7 @@ import { useDebouncedState } from '@mantine/hooks';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import { NativeSelect, Progress, Loader, Button } from '@mantine/core';
+import { Progress, Loader, Button, Select } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import Table from '../../components/Table/Table';
@@ -61,11 +61,11 @@ const Bookings = () => {
   };
 
   const paymentList = useMemo(
-    () => paymentStatus?.docs?.map(item => item.name) || [],
+    () => paymentStatus?.docs?.map(item => ({ label: item.name, value: item.name })) || [],
     [paymentStatus],
   );
   const campaignList = useMemo(
-    () => campaignStatus?.docs?.map(item => item.name) || [],
+    () => campaignStatus?.docs?.map(item => ({ label: item.name, value: item.name })) || [],
     [campaignStatus],
   );
 
@@ -147,7 +147,7 @@ const Bookings = () => {
         accessor: 'currentStatus.campaignStatus',
         Cell: ({
           row: {
-            original: { _id, currentStatus },
+            original: { _id, currentStatus, campaignStatus: c = {} },
           },
         }) =>
           useMemo(() => {
@@ -155,14 +155,24 @@ const Bookings = () => {
             if (!currentStatus?.campaignStatus) {
               updatedCampaignList.unshift({ label: 'Select', value: '' });
             }
+
+            const filteredList = updatedCampaignList.map(item => ({
+              ...item,
+              disabled: Object.keys(c).includes(item.value),
+            }));
+
             return (
-              <NativeSelect
+              <Select
                 className="mr-2"
-                data={updatedCampaignList}
+                data={filteredList}
+                disabled={
+                  currentStatus?.mountingStatus?.toLowerCase() !== 'completed' ||
+                  currentStatus?.campaignStatus?.toLowerCase() === 'completed'
+                }
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-                onChange={e => handleCampaignUpdate(_id, e.target.value)}
+                onChange={e => handleCampaignUpdate(_id, e)}
                 defaultValue={currentStatus?.campaignStatus || ''}
               />
             );
@@ -173,7 +183,7 @@ const Bookings = () => {
         accessor: 'currentStatus.paymentStatus',
         Cell: ({
           row: {
-            original: { _id, currentStatus },
+            original: { _id, currentStatus, paymentStatus: p = {} },
           },
         }) =>
           useMemo(() => {
@@ -181,14 +191,21 @@ const Bookings = () => {
             if (!currentStatus?.paymentStatus) {
               updatedPaymentList.unshift({ label: 'Select', value: '' });
             }
+
+            const filteredList = updatedPaymentList.map(item => ({
+              ...item,
+              disabled: Object.keys(p).includes(item.value),
+            }));
+
             return (
-              <NativeSelect
+              <Select
                 className="mr-2"
-                data={updatedPaymentList}
+                data={filteredList}
                 styles={statusSelectStyle}
+                disabled={currentStatus?.paymentStatus?.toLowerCase() === 'paid'}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-                onChange={e => handlePaymentUpdate(_id, e.target.value)}
+                onChange={e => handlePaymentUpdate(_id, e)}
                 defaultValue={currentStatus?.paymentStatus || ''}
               />
             );

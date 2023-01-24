@@ -23,8 +23,10 @@ const ProcessPipeline = ({ bookingData }) => {
             status: 'Media Received',
             date: bookingData?.printingStatus?.Upcoming || bookingData?.paymentStatus?.Paid,
             isSuccess:
-              bookingData?.currentStatus?.paymentStatus?.toLowerCase() === 'paid' ||
-              bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'upcoming',
+              (bookingData?.currentStatus?.paymentStatus?.toLowerCase() === 'paid' &&
+                bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'upcoming') ||
+              bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'print' ||
+              bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed',
           },
           {
             status: 'Sent For Printing',
@@ -51,8 +53,10 @@ const ProcessPipeline = ({ bookingData }) => {
             status: 'Mounting Upcoming',
             date: bookingData?.mountingStatus?.Upcoming || bookingData?.printingStatus?.Completed,
             isSuccess:
-              bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed' ||
-              bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'upcoming',
+              (bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed' &&
+                bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'upcoming') ||
+              bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'mount' ||
+              bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'completed',
           },
           {
             status: 'Mounting in Progress',
@@ -79,7 +83,8 @@ const ProcessPipeline = ({ bookingData }) => {
             status: 'Campaign Upcoming',
             date: bookingData?.campaignStatus?.Upcoming,
             isSuccess:
-              bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'upcoming' ||
+              (bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'completed' &&
+                bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'upcoming') ||
               bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'ongoing' ||
               bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'completed',
             hasBottomEdge: false,
@@ -106,7 +111,7 @@ const ProcessPipeline = ({ bookingData }) => {
     ],
     [bookingData],
   );
-  console.log(bookingData);
+
   return (
     <div className="p-5">
       {pipelineList.map(item => (
