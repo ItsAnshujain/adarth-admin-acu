@@ -9,7 +9,7 @@ import { FormProvider, useForm } from '../../context/formContext';
 import { useCreateUsers, useInvitePeers } from '../../hooks/users.hooks';
 import { serialize } from '../../utils';
 
-const schema = yup.object().shape({
+const schema = yup.object({
   email: yup.string().trim().required('Email is required').email('Invalid Email'),
   role: yup
     .object({

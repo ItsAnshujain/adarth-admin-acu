@@ -101,14 +101,29 @@ const SelectSpace = () => {
   };
 
   const updateData = (key, val, id) => {
-    setUpdatedInventoryData(prev =>
-      prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
-    );
+    if (key === 'dateRange') {
+      setUpdatedInventoryData(prev =>
+        prev.map(item =>
+          item._id === id ? { ...item, startDate: val[0], endDate: val[1] } : item,
+        ),
+      );
 
-    setFieldValue(
-      'place',
-      values.place.map(item => (item._id === id ? { ...item, [key]: val } : item)),
-    );
+      setFieldValue(
+        'place',
+        values.place.map(item =>
+          item._id === id ? { ...item, startDate: val[0], endDate: val[1] } : item,
+        ),
+      );
+    } else {
+      setUpdatedInventoryData(prev =>
+        prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+      );
+
+      setFieldValue(
+        'place',
+        values.place.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+      );
+    }
   };
 
   const handleSelection = selectedRows => setFieldValue('place', selectedRows);
@@ -313,9 +328,27 @@ const SelectSpace = () => {
           },
         }) =>
           useMemo(() => {
-            <div className="min-w-[300px]">
-              <DateRangeSelector disabled startDate={startDate} endDate={endDate} />
-            </div>;
+            const bookingRage = [
+              {
+                'startDate': '2023-01-21T00:00:00.000Z',
+                'endDate': '2023-01-30T00:00:00.000Z',
+              },
+              {
+                'startDate': '2023-01-10T00:00:00.000Z',
+                'endDate': '2023-01-16T00:00:00.000Z',
+              },
+            ];
+
+            return (
+              <div className="min-w-[300px]">
+                <DateRangeSelector
+                  disabled
+                  dateValue={[startDate || null, endDate || null]}
+                  onChange={val => updateData('dateRange', val, _id)}
+                  dateRange={bookingRage}
+                />
+              </div>
+            );
           }, []),
       },
       {

@@ -35,7 +35,7 @@ const inputStyles = {
   },
 };
 
-const schema = yup.object().shape({
+const schema = yup.object({
   messageNotify: yup.boolean().required('Message notification is required'),
   number: yup
     .string()

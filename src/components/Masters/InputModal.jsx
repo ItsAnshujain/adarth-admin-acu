@@ -53,7 +53,7 @@ const InputModal = ({ opened, setOpened, isEdit = false, itemId, name }) => {
   const { mutate: create, isLoading } = useCreateMaster();
   const { mutate: edit, isLoading: isUpdateMasterLoading } = useUpdateMaster();
 
-  const schema = yup.object().shape({
+  const schema = yup.object({
     name: yup
       .string()
       .trim()

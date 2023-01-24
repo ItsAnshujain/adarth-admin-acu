@@ -14,7 +14,7 @@ const initialValues = {
   password: '',
 };
 
-const schema = yup.object().shape({
+const schema = yup.object({
   password: yup
     .string()
     .trim()

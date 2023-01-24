@@ -172,6 +172,7 @@ const Preview = ({ data = {}, place = {} }) => {
           <div>
             {place?.docs?.map(item => (
               <Places
+                key={item.id}
                 data={{
                   img: item.photo,
                   name: item.spaceName,

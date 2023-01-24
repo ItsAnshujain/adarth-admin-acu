@@ -128,13 +128,12 @@ const ProposalDetails = () => {
       // TODO: change key after api update
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'basicInformation.landlord',
+        accessor: 'mediaOwner',
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { mediaOwner },
           },
-        }) =>
-          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || 'NA'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{mediaOwner || 'NA'}</p>, []),
       },
       {
         Header: 'PEER',
@@ -242,7 +241,7 @@ const ProposalDetails = () => {
       // TODO: change key after api update
       {
         Header: 'PRICING',
-        accessor: 'basicInformation.price',
+        accessor: 'price',
         Cell: ({
           row: {
             original: { price },

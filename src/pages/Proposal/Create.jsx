@@ -16,7 +16,7 @@ import { FormProvider, useForm } from '../../context/formContext';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import { serialize } from '../../utils';
 
-const schema = yup.object().shape({
+const schema = yup.object({
   image: yup.string().trim(),
   name: yup.string().trim().required('Name is required'),
   description: yup.string().trim(),

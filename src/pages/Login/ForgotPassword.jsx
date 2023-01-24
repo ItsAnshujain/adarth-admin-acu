@@ -10,7 +10,7 @@ const initialValues = {
   email: '',
 };
 
-const schema = yup.object().shape({
+const schema = yup.object({
   email: yup.string().trim().required('Email is required').email('Invalid Email'),
 });
 

@@ -188,7 +188,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           </div>
         </div>
       </div>
-      <div className="pl-5 pr-7 flex flex-col mt-16 mb-8 pb-10 relative">
+      <div className="pl-5 pr-7 flex flex-col mt-4 mb-8 pb-10 relative">
         <p className="text-lg font-bold">Location Details</p>
         <p className="text-sm font-light text-slate-400">
           All the places been covered by this campaign

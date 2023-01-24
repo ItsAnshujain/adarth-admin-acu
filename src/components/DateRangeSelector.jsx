@@ -8,45 +8,58 @@ import { useStyles } from './DateRange';
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-const DateRangeSelector = ({ startDate, endDate, ...props }) => {
+const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
   const { classes, cx } = useStyles();
-  const [dateValue, setDateValue] = useState([null, null]);
+  const [value, setValue] = useState([null, null]);
   // TODO: wip
 
   /**
    *
    * @param {Date} date
    */
-  const excludeBookedDates = date => {
-    if (dayjs(date).isSameOrAfter(startDate) && dayjs(date).isSameOrBefore(endDate)) {
-      return true;
-    }
+  const excludeBookedDates = date =>
+    dateRange.some(item => {
+      if (
+        value[0] &&
+        dayjs(value[0]).isBefore(dayjs(item?.startDate).format('YYYY-MM-DD')) &&
+        dayjs(date).isAfter(dayjs(item?.startDate).format('YYYY-MM-DD'))
+      ) {
+        return true;
+      }
 
-    if (
-      dateValue[0] &&
-      dayjs(dateValue[0]).isBefore(dayjs(startDate)) &&
-      dayjs(date).isAfter(startDate)
-    ) {
-      return true;
-    }
+      if (
+        value[0] &&
+        dayjs(value[0]).isAfter(dayjs(item?.endDate).format('YYYY-MM-DD')) &&
+        dayjs(date).isBefore(dayjs(item?.endDate).format('YYYY-MM-DD'))
+      ) {
+        return true;
+      }
 
-    if (
-      dateValue[0] &&
-      dayjs(dateValue[0]).isAfter(dayjs(endDate)) &&
-      dayjs(date).isBefore(endDate)
-    ) {
-      return true;
-    }
+      if (
+        dayjs(dayjs(date).format('YYYY-MM-DD')).isSameOrAfter(
+          dayjs(item?.startDate).format('YYYY-MM-DD'),
+        ) &&
+        dayjs(dayjs(date).format('YYYY-MM-DD')).isSameOrBefore(
+          dayjs(item?.endDate).format('YYYY-MM-DD'),
+        )
+      ) {
+        return true;
+      }
+      return false;
+    });
 
-    return false;
+  const handleChange = val => {
+    setValue(val);
+    if (onChange && val[0] && val[1]) onChange(val);
   };
 
   return (
     <DateRangePicker
       placeholder="Pick dates range"
-      onChange={val => setDateValue(val)}
-      excludeDate={date => excludeBookedDates(date, startDate, endDate)}
+      onChange={handleChange}
+      excludeDate={excludeBookedDates}
       disableOutsideEvents
+      defaultValue={dateValue}
       dayClassName={(_, modifiers) =>
         cx({
           [classes.weekend]: modifiers.weekend,
