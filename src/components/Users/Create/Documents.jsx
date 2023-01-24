@@ -5,8 +5,7 @@ import PreviewCard from './UI/PreviewCard';
 import DragDropCard from './UI/DragDropCard';
 import { useFormContext } from '../../../context/formContext';
 import { useDeleteUploadedFile, useUploadFile } from '../../../hooks/upload.hooks';
-
-const supportedType = ['JPG', 'JPEG', 'PNG', 'PDF'];
+import { supportedTypes } from '../../../utils';
 
 const docTypes = [
   {
@@ -86,7 +85,7 @@ const Documents = ({ documents }) => {
       <p className="text-xl font-bold">Documents of the associates</p>
       <p className="text-sm mb-8">
         <span className="font-bold text-gray-500 mr-2">Supported types</span>
-        {supportedType.map(item => (
+        {supportedTypes.map(item => (
           <Badge key={uuidv4()} className="mr-2">
             {item}
           </Badge>

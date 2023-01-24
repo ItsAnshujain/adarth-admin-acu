@@ -14,8 +14,7 @@ import NumberInput from '../../shared/NumberInput';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import modalConfig from '../../../utils/modalConfig';
 import NoData from '../../shared/NoData';
-
-const supportedType = ['JPG', 'JPEG', 'PNG'];
+import { supportedTypes } from '../../../utils';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
@@ -267,7 +266,7 @@ const ReleaseOrder = ({ spacesList, totalPrice }) => {
       <div className="border-b">
         <p className="font-semibold text-lg pt-4 pl-5 mb-2">Signature and Stamp</p>
         <div className="pl-5 mb-3">
-          {supportedType.map(item => (
+          {supportedTypes.map(item => (
             <Badge key={item} className="mr-2">
               {item}
             </Badge>

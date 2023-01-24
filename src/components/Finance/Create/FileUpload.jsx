@@ -1,10 +1,20 @@
-import { Button } from '@mantine/core';
-import { useCallback, useState } from 'react';
+import { Button, Select } from '@mantine/core';
+import { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FilePlus } from 'react-feather';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { useUpdateBooking } from '../../../hooks/booking.hooks';
+import { useBookings, useUpdateBooking } from '../../../hooks/booking.hooks';
 import { useUploadFile } from '../../../hooks/upload.hooks';
+import { serialize } from '../../../utils';
+
+const bookingStyles = {
+  label: {
+    fontWeight: 'bold',
+    marginBottom: 8,
+    fontSize: 16,
+    letterSpacing: '0.5px',
+  },
+};
 
 const orderTypeKey = {
   purchase: 'purchaseOrder',
@@ -12,13 +22,26 @@ const orderTypeKey = {
   invoice: 'invoice',
 };
 
+const bookingQueries = {
+  page: 1,
+  limit: 100,
+  sortBy: 'createdAt',
+  sortOrder: 'desc',
+};
 const FileUpload = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [searchParam] = useSearchParams();
   const { type } = useParams();
-
   const bookingId = searchParam.get('id');
+  const [bookingIdFromFinance, setBookingIdFromFinance] = useState();
+
+  const {
+    data: bookingDatas,
+    isLoading: isBookingDatasLoading,
+    isSuccess: isBookingDatasLoaded,
+  } = useBookings(serialize(bookingQueries));
+
   const { mutateAsync: uploadPdf, isLoading } = useUploadFile();
   const { mutate: update, isLoading: isUpdateBookingLoading } = useUpdateBooking();
   const { getRootProps, getInputProps, open } = useDropzone({
@@ -38,7 +61,7 @@ const FileUpload = () => {
       [currentOrderType]: pdfLink,
     };
 
-    update({ id: bookingId, data });
+    update({ id: bookingId || bookingIdFromFinance, data });
   };
 
   const handleUpload = async () => {
@@ -47,6 +70,7 @@ const FileUpload = () => {
     const res = await uploadPdf(fd, {
       onSuccess: () => {
         setFile(null);
+        setTimeout(() => navigate('/bookings'), 2000);
       },
     });
 
@@ -54,6 +78,10 @@ const FileUpload = () => {
       handleSubmit(res[0].Location);
     }
   };
+
+  useEffect(() => {
+    if (bookingId) setBookingIdFromFinance(bookingId);
+  }, [bookingId]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
@@ -67,6 +95,30 @@ const FileUpload = () => {
           <span>Close</span>
         </Button>
       </header>
+      <div className="pl-5 pr-7 pt-4 pb-8 border-b">
+        <div className="grid grid-cols-2 gap-4">
+          <Select
+            label={`Booking List ${
+              !bookingIdFromFinance ? '(Please select a Booking before uploading)' : ''
+            }`}
+            withAsterisk={!bookingIdFromFinance}
+            className="w-full"
+            styles={bookingStyles}
+            value={bookingId || bookingIdFromFinance}
+            disabled={bookingId || isBookingDatasLoading}
+            placeholder="Select..."
+            onChange={setBookingIdFromFinance}
+            data={
+              isBookingDatasLoaded
+                ? bookingDatas.docs.map(bookingItem => ({
+                    label: bookingItem?.campaign?.name,
+                    value: bookingItem?._id,
+                  }))
+                : []
+            }
+          />
+        </div>
+      </div>
       <div
         {...getRootProps()}
         disabled
@@ -88,9 +140,11 @@ const FileUpload = () => {
         )}
       </div>
       <Button
-        disabled={isLoading || isUpdateBookingLoading}
+        disabled={isLoading || isUpdateBookingLoading || !bookingIdFromFinance}
+        loading={isLoading || isUpdateBookingLoading}
         onClick={file ? handleUpload : open}
-        className="bg-purple-450 text-white p-2 rounded mx-auto block mt-3"
+        variant="filled"
+        className="p-2 rounded mx-auto block mt-3 primary-button"
       >
         Upload File
       </Button>
