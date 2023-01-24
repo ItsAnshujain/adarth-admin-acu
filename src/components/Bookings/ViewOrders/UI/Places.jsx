@@ -141,7 +141,12 @@ const Places = ({ data, campaignId, bookingId }) => {
               <p className="mb-2 text-sm text-slate-400">Printing Status</p>
               <Select
                 className="mr-2 w-[200px]"
-                defaultValue={data?.currentStatus?.printingStatus}
+                defaultValue={
+                  data?.currentStatus?.printingStatus
+                    ? data.currentStatus.printingStatus.charAt(0).toUpperCase() +
+                      data.currentStatus.printingStatus.slice(1)
+                    : ''
+                }
                 onChange={val => handleCampaignStatusUpdate(val, 'printingStatus')}
                 data={printList}
                 styles={statusSelectStyle}
@@ -160,7 +165,12 @@ const Places = ({ data, campaignId, bookingId }) => {
               <p className="mb-2 text-sm text-slate-400">Mounting Status</p>
               <Select
                 className="mr-2 w-[200px]"
-                defaultValue={data?.currentStatus?.mountingStatus}
+                defaultValue={
+                  data?.currentStatus?.mountingStatus
+                    ? data.currentStatus.mountingStatus.charAt(0).toUpperCase() +
+                      data.currentStatus.mountingStatus.slice(1)
+                    : ''
+                }
                 onChange={val => handleCampaignStatusUpdate(val, 'mountingStatus')}
                 data={mountList}
                 styles={statusSelectStyle}

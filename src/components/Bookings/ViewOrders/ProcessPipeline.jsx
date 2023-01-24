@@ -2,35 +2,43 @@ import { Fragment, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import StatusNode from './StatusNode';
 
-const ProcessPipeline = () => {
+const ProcessPipeline = ({ bookingData }) => {
   const pipelineList = useMemo(
     () => [
       {
         status: 'Order Processed',
-        date: new Date(),
+        date: bookingData?.paymentStatus?.Unpaid || bookingData?.paymentStatus?.Paid,
+        isSuccess: bookingData?.currentStatus?.paymentStatus?.toLowerCase() === 'unpaid' || 'paid',
         hasRightEdge: false,
-        isSuccess: true,
       },
       {
         status: 'Order Confirmed',
-        date: new Date(),
+        date: bookingData?.paymentStatus?.Paid,
+        isSuccess: bookingData?.currentStatus?.paymentStatus?.toLowerCase() === 'paid',
         hasRightEdge: false,
       },
       {
         statusArr: [
           {
             status: 'Media Received',
-            date: new Date(),
+            date: bookingData?.printingStatus?.Upcoming || bookingData?.paymentStatus?.Paid,
+            isSuccess:
+              bookingData?.currentStatus?.paymentStatus?.toLowerCase() === 'paid' ||
+              bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'upcoming',
           },
           {
             status: 'Sent For Printing',
-            date: new Date(),
+            date: bookingData?.printingStatus?.Print,
+            isSuccess:
+              bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'print' ||
+              bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed',
             hasBottomEdge: false,
             className: 'ml-[55px]',
           },
           {
             status: 'Printing Completed',
-            date: new Date(),
+            date: bookingData?.printingStatus?.Completed,
+            isSuccess: bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed',
             hasRightEdge: false,
             hasBottomEdge: false,
             className: 'ml-[55px]',
@@ -41,17 +49,24 @@ const ProcessPipeline = () => {
         statusArr: [
           {
             status: 'Mounting Upcoming',
-            date: new Date(),
+            date: bookingData?.mountingStatus?.Upcoming || bookingData?.printingStatus?.Completed,
+            isSuccess:
+              bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed' ||
+              bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'upcoming',
           },
           {
             status: 'Mounting in Progress',
-            date: new Date(),
+            date: bookingData?.mountingStatus?.Mount,
+            isSuccess:
+              bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'mount' ||
+              bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'completed',
             hasBottomEdge: false,
             className: 'ml-[55px]',
           },
           {
             status: 'Mounting Completed',
-            date: new Date(),
+            date: bookingData?.mountingStatus?.Completed,
+            isSuccess: bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'completed',
             hasRightEdge: false,
             hasBottomEdge: false,
             className: 'ml-[55px]',
@@ -62,18 +77,26 @@ const ProcessPipeline = () => {
         statusArr: [
           {
             status: 'Campaign Upcoming',
-            date: new Date(),
+            date: bookingData?.campaignStatus?.Upcoming,
+            isSuccess:
+              bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'upcoming' ||
+              bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'ongoing' ||
+              bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'completed',
             hasBottomEdge: false,
           },
           {
             status: 'Campaign Started',
-            date: new Date(),
+            date: bookingData?.campaignStatus?.Ongoing,
+            isSuccess:
+              bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'ongoing' ||
+              bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'completed',
             hasBottomEdge: false,
             className: 'ml-[55px]',
           },
           {
             status: 'Campaign Completed',
-            date: new Date(),
+            date: bookingData?.campaignStatus?.Completed,
+            isSuccess: bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'completed',
             hasRightEdge: false,
             hasBottomEdge: false,
             className: 'ml-[55px]',
@@ -81,9 +104,9 @@ const ProcessPipeline = () => {
         ],
       },
     ],
-    [],
+    [bookingData],
   );
-
+  console.log(bookingData);
   return (
     <div className="p-5">
       {pipelineList.map(item => (
@@ -101,6 +124,7 @@ const ProcessPipeline = () => {
           <div className="flex flex-row">
             {item?.statusArr?.map(subItem => (
               <StatusNode
+                key={uuidv4()}
                 status={subItem.status}
                 isSuccess={subItem?.isSuccess}
                 dateAndTime={subItem?.date}
