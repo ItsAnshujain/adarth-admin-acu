@@ -277,7 +277,10 @@ const Create = () => {
     isLoading: isBookingDatasLoading,
     isSuccess: isBookingDatasLoaded,
   } = useBookings(serialize(bookingQueries));
-  const { data: bookingData } = useBookingById(bookingId, !!bookingId);
+  const { data: bookingData } = useBookingById(
+    bookingId || bookingIdFromFinance,
+    !!bookingId || !!bookingIdFromFinance,
+  );
   const { mutateAsync: generatePurchaseOrder, isLoading: isGeneratePurchaseOrderLoading } =
     useGeneratePurchaseOrder();
   const { mutateAsync: generateReleaseOrder, isLoading: isGenerateReleaseOrderLoading } =
