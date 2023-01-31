@@ -76,7 +76,7 @@ const CreateCampaign = () => {
 
   const getForm = () =>
     formStep === 1 ? (
-      <BasicInfo formData={form.values} setFormData={form.setFieldValue} />
+      <BasicInfo />
     ) : formStep === 2 ? (
       <Spaces />
     ) : formStep === 3 ? (

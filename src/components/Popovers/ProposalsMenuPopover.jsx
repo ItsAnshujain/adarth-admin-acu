@@ -44,7 +44,7 @@ const ProposalsMenuPopover = ({
     });
 
   return (
-    <Menu shadow="md" width={150}>
+    <Menu shadow="md" width={150} withinPortal>
       <Menu.Target>
         <Button className="py-0" onClick={e => e.stopPropagation()}>
           <MenuIcon />

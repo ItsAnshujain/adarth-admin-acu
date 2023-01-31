@@ -46,7 +46,7 @@ const SpacesMenuPopover = ({
   const handleInventoryDetails = () => window.open(`/inventory/view-details/${itemId}`, '_blank');
 
   return (
-    <Menu shadow="md" width={180}>
+    <Menu shadow="md" width={180} withinPortal>
       <Menu.Target>
         <Button className="py-0" onClick={e => e.stopPropagation()}>
           <MenuIcon />

@@ -80,16 +80,13 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
     setSearchParams(searchParams);
   };
 
-  const updatePriceAndDates = useMemo(
-    () => () => {
-      const tempArr = spacesData?.docs?.map(item => {
-        const matchedPlace = campaignData?.place?.find(item1 => item._id === item1.id);
-        return { ...item, ...matchedPlace };
-      });
-      setUpdatedPlace(tempArr);
-    },
-    [campaignData, spacesData],
-  );
+  const updatePriceAndDates = useCallback(() => {
+    const tempArr = spacesData?.docs?.map(item => {
+      const matchedPlace = campaignData?.place?.find(item1 => item._id === item1.id);
+      return { ...item, ...matchedPlace };
+    });
+    setUpdatedPlace(tempArr);
+  }, [campaignData, spacesData]);
 
   useEffect(() => {
     if (mapInstance && spacesData?.docs?.length) {

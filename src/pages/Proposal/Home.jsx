@@ -271,7 +271,7 @@ const Proposals = () => {
           rowCountLimit={limit}
           handleSorting={handleSortByColumn}
         />
-      ) : viewType.proposal === 'grid' ? (
+      ) : viewType.proposal === 'grid' && proposalsData?.docs?.length ? (
         <GridView
           count={limit}
           list={proposalsData?.docs || []}

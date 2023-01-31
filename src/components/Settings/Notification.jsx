@@ -107,12 +107,14 @@ const Notification = () => {
 
   useEffect(() => {
     if (data) {
-      form.setFieldValue('messageNotify', data.messageNotify);
-      form.setFieldValue('emailNotify', data.emailNotify);
-      form.setFieldValue('whatsappNotify', data.whatsappNotify || false);
-      form.setFieldValue('whatsappNumber', data.whatsappNumber);
-      form.setFieldValue('notificationEmail', data.notificationEmail);
-      form.setFieldValue('number', data.number || '');
+      form.setValues({
+        messageNotify: data.messageNotify || false,
+        emailNotify: data.emailNotify || false,
+        whatsappNotify: data.whatsappNotify || false,
+        whatsappNumber: data.whatsappNumber || '',
+        notificationEmail: data.notificationEmail || '',
+        number: data.number || '',
+      });
     }
   }, [data]);
 
