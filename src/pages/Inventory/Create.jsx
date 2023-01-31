@@ -286,133 +286,93 @@ const CreateSpace = () => {
   useEffect(() => {
     if (inventoryDetails) {
       const { basicInformation, specifications, location } = inventoryDetails;
-      form.setFieldValue('basicInformation.spaceName', basicInformation?.spaceName || '');
-      form.setFieldValue('basicInformation.landlord', basicInformation?.landlord || '');
-      form.setFieldValue('basicInformation.mediaOwner', basicInformation?.mediaOwner?._id || '');
-      form.setFieldValue('basicInformation.description', basicInformation?.description || '');
-      form.setFieldValue(
-        'basicInformation.footFall',
-        basicInformation?.footFall ? parseInt(basicInformation.footFall, 10) : null,
-      );
-      form.setFieldValue(
-        'basicInformation.price',
-        basicInformation?.price ? parseInt(basicInformation?.price, 10) : null,
-      );
-      form.setFieldValue('basicInformation.category.label', basicInformation?.category?.name || '');
-      form.setFieldValue('basicInformation.category.value', basicInformation?.category?._id || '');
-      if (basicInformation?.category) {
-        form.setFieldValue(
-          'basicInformation.subCategory.label',
-          basicInformation?.subCategory?.name || '',
-        );
-        form.setFieldValue(
-          'basicInformation.subCategory.value',
-          basicInformation?.subCategory?._id || '',
-        );
-      }
-      form.setFieldValue(
-        'basicInformation.spaceType.label',
-        basicInformation?.spaceType?.name || '',
-      );
-      form.setFieldValue(
-        'basicInformation.spaceType.value',
-        basicInformation?.spaceType?._id || '',
-      );
-      form.setFieldValue(
-        'basicInformation.mediaType.label',
-        basicInformation?.mediaType?.name || '',
-      );
-      form.setFieldValue(
-        'basicInformation.mediaType.value',
-        basicInformation?.mediaType?._id || '',
-      );
-      form.setFieldValue('basicInformation.supportedMedia', basicInformation?.supportedMedia || '');
-      form.setFieldValue(
-        'basicInformation.demographic.label',
-        basicInformation?.demographic?.name || '',
-      );
-      form.setFieldValue(
-        'basicInformation.demographic.value',
-        basicInformation?.demographic?._id || '',
-      );
+
       const arrOfAudience = basicInformation?.audience?.map(item => ({
         label: item?.name,
         value: item?._id,
       }));
-      form.setFieldValue('basicInformation.audience', arrOfAudience || []);
-      form.setFieldValue('basicInformation.audience.value', basicInformation?.audience?._id || '');
-      form.setFieldValue('basicInformation.spacePhoto', basicInformation?.spacePhoto || '');
-      form.setFieldValue('basicInformation.otherPhotos', basicInformation?.otherPhotos || ['']);
-      form.setFieldValue(
-        'specifications.illuminations.label',
-        specifications?.illuminations?.name || '',
-      );
-      form.setFieldValue(
-        'specifications.illuminations.value',
-        specifications?.illuminations?._id || '',
-      );
-      form.setFieldValue(
-        'specifications.unit',
-        specifications?.unit ? parseInt(specifications.unit, 10) : null,
-      );
-      form.setFieldValue(
-        'specifications.health',
-        specifications?.health ? parseInt(specifications.health, 10) : null,
-      );
-      form.setFieldValue(
-        'specifications.impressions.max',
-        specifications?.impressions?.max ? parseInt(specifications.impressions.max, 10) : null,
-      );
-      form.setFieldValue(
-        'specifications.impressions.min',
-        specifications?.impressions?.min ? parseInt(specifications.impressions.min, 10) : null,
-      );
-      form.setFieldValue('specifications.resolutions', specifications?.resolutions || '');
-      form.setFieldValue(
-        'specifications.size.height',
-        specifications?.size?.height ? parseInt(specifications.size.height, 10) : null,
-      );
-      form.setFieldValue(
-        'specifications.size.width',
-        specifications?.size?.width ? parseInt(specifications.size.width, 10) : null,
-      );
-      form.setFieldValue(
-        'specifications.spaceStatus.label',
-        specifications?.spaceStatus?.name || '',
-      );
-      form.setFieldValue(
-        'specifications.spaceStatus.value',
-        specifications?.spaceStatus?._id || '',
-      );
       const arrOfPreviousBrands = specifications?.previousBrands?.map(item => ({
         label: item?.name,
         value: item?._id,
       }));
-      form.setFieldValue(
-        'specifications.previousBrands',
-        arrOfPreviousBrands?.length ? arrOfPreviousBrands : [],
-      );
       const arrOfTags = specifications?.tags?.map(item => ({
         label: item?.name,
         value: item?._id,
       }));
-      form.setFieldValue('specifications.tags', arrOfTags?.length ? arrOfTags : []);
-      form.setFieldValue(
-        'location.latitude',
-        location?.latitude ? parseFloat(location.latitude, 10) : null,
-      );
-      form.setFieldValue(
-        'location.longitude',
-        location?.longitude ? parseFloat(location.longitude) : null,
-      );
-      form.setFieldValue('location.address', location?.address || '');
-      form.setFieldValue('location.city', location?.city || '');
-      form.setFieldValue('location.state', location?.state || '');
-      form.setFieldValue('location.zip', location?.zip ? parseInt(location.zip, 10) : null);
-      form.setFieldValue('location.zone', location?.zone || '');
-      form.setFieldValue('location.landmark', location?.landmark || '');
-      form.setFieldValue('location.facing', location?.facing || '');
-      form.setFieldValue('location.tier', location?.tier || '');
+
+      form.setValues({
+        basicInformation: {
+          spaceName: basicInformation?.spaceName || '',
+          landlord: basicInformation?.landlord || '',
+          mediaOwner: basicInformation?.mediaOwner?._id || '',
+          description: basicInformation?.description || '',
+          footFall: basicInformation?.footFall ? parseInt(basicInformation.footFall, 10) : null,
+          price: basicInformation?.price ? parseInt(basicInformation?.price, 10) : null,
+          category: {
+            label: basicInformation?.category?.name || '',
+            value: basicInformation?.category?._id || '',
+          },
+          subCategory: {
+            label: basicInformation?.category ? basicInformation?.subCategory?.name : '',
+            value: basicInformation?.category ? basicInformation?.subCategory?._id : '',
+          },
+          spaceType: {
+            label: basicInformation?.spaceType?.name || '',
+            value: basicInformation?.spaceType?._id || '',
+          },
+          mediaType: {
+            label: basicInformation?.mediaType?.name || '',
+            value: basicInformation?.mediaType?._id || '',
+          },
+          supportedMedia: basicInformation?.supportedMedia || '',
+          demographic: {
+            label: basicInformation?.demographic?.name || '',
+            value: basicInformation?.demographic?._id || '',
+          },
+          audience: arrOfAudience || [],
+          spacePhoto: basicInformation?.spacePhoto || '',
+          otherPhotos: basicInformation?.otherPhotos || [],
+        },
+        specifications: {
+          illuminations: {
+            label: specifications?.illuminations?.name || '',
+            value: specifications?.illuminations?._id || '',
+          },
+          unit: specifications?.unit ? parseInt(specifications.unit, 10) : null,
+          health: specifications?.health ? parseInt(specifications.health, 10) : null,
+          impressions: {
+            max: specifications?.impressions?.max
+              ? parseInt(specifications.impressions.max, 10)
+              : null,
+            min: specifications?.impressions?.min
+              ? parseInt(specifications.impressions.min, 10)
+              : null,
+          },
+          resolutions: specifications?.resolutions || '',
+          size: {
+            height: specifications?.size?.height ? parseInt(specifications.size.height, 10) : null,
+            width: specifications?.size?.width ? parseInt(specifications.size.width, 10) : null,
+          },
+          spaceStatus: {
+            label: specifications?.spaceStatus?.name || '',
+            value: specifications?.spaceStatus?._id || '',
+          },
+          previousBrands: arrOfPreviousBrands?.length ? arrOfPreviousBrands : [],
+          tags: arrOfTags?.length ? arrOfTags : [],
+        },
+        location: {
+          latitude: location?.latitude ? parseFloat(location.latitude, 10) : null,
+          longitude: location?.longitude ? parseFloat(location.longitude) : null,
+          address: location?.address || '',
+          city: location?.city || '',
+          state: location?.state || '',
+          zip: location?.zip ? parseInt(location.zip, 10) : null,
+          zone: location?.zone || '',
+          landmark: location?.landmark || '',
+          facing: location?.facing || '',
+          tier: location?.tier || '',
+        },
+      });
     }
   }, [inventoryDetails]);
 

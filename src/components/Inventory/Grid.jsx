@@ -32,7 +32,7 @@ const GridView = ({
   };
 
   return (
-    <>
+    <div>
       <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[100%] overflow-y-auto">
         {list.map(item => (
           <Card
@@ -58,7 +58,7 @@ const GridView = ({
           total={totalPages}
         />
       </div>
-    </>
+    </div>
   );
 };
 

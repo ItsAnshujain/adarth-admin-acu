@@ -94,8 +94,6 @@ const Places = ({ data, campaignId, bookingId }) => {
     }
   };
 
-  console.log(data);
-
   return (
     <div className="flex gap-4 p-4 shadow-md bg-white mb-2">
       <div className="flex items-center">

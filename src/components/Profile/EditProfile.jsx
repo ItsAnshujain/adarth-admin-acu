@@ -11,79 +11,6 @@ import { FormProvider, useForm } from '../../context/formContext';
 import { useUpdateUsers } from '../../hooks/users.hooks';
 import { aadhaarRegexMatch, panRegexMatch } from '../../utils';
 
-const requiredSchema = requiredText => yup.string().trim().required(requiredText);
-
-const schema = step =>
-  yup.object({
-    name: yup
-      .string()
-      .trim()
-      .concat(step === 'first' ? requiredSchema('Name is required') : null),
-    email: yup
-      .string()
-      .trim()
-      .concat(step === 'first' ? requiredSchema('Email is required') : null)
-      .concat(step === 'first' ? yup.string().trim().email('Email must be valid') : null),
-    company: yup
-      .string()
-      .trim()
-      .concat(step === 'first' ? requiredSchema('Company is required') : null),
-    about: yup
-      .string()
-      .trim()
-      .concat(step === 'first' ? requiredSchema('About is required') : null),
-    city: yup
-      .string()
-      .trim()
-      .concat(step === 'first' ? requiredSchema('City is required') : null),
-    address: yup
-      .string()
-      .trim()
-      .concat(step === 'first' ? requiredSchema('Address is required') : null),
-    number: yup
-      .string()
-      .trim()
-      .concat(step === 'first' ? requiredSchema('Number is required') : null),
-    state: yup
-      .string()
-      .trim()
-      .concat(step === 'first' ? requiredSchema('State is required') : null),
-    pincode: yup
-      .string()
-      .trim()
-      .concat(step === 'first' ? requiredSchema('Pin code is required') : null)
-      .concat(
-        step === 'first' ? yup.string().matches(/^(\d{4}|\d{6})$/, 'Pin code must be valid') : null,
-      ),
-    pan: yup
-      .string()
-      .trim()
-      .concat(step === 'first' ? requiredSchema('Pan is required') : null)
-      .concat(
-        step === 'first'
-          ? yup
-              .string()
-              .matches(panRegexMatch, 'Pan number must be valid and must be of 10 characters')
-          : null,
-      ),
-    aadhaar: yup
-      .string()
-      .trim()
-      .concat(step === 'first' ? requiredSchema('Aadhaar number is required') : null)
-      .concat(
-        step === 'first'
-          ? yup
-              .string()
-              .matches(aadhaarRegexMatch, 'Aadhaar number must be valid and must be of 12 digits')
-          : null,
-      ),
-    image: yup
-      .string()
-      .trim()
-      .concat(step === 'first' ? requiredSchema('Profile Image is required') : null),
-    docs: yup.array(),
-  });
-
 const initialValues = {
   name: '',
   email: '',
@@ -99,6 +26,42 @@ const initialValues = {
   docs: [],
 };
 
+const basicInformationSchema = yup.object({
+  name: yup.string().trim().required('Name is required'),
+  email: yup.string().trim().required('Email is required').email('Email must be valid'),
+  company: yup.string().trim().required('Company is required'),
+  about: yup.string().trim().required('About is required'),
+  city: yup.string().trim().required('City is required'),
+  address: yup.string().trim().required('Address is required'),
+  number: yup.string().trim().required('Number is required'),
+  state: yup.string().trim().required('State is required'),
+  pincode: yup
+    .string()
+    .trim()
+    .matches(/^(\d{4}|\d{6})$/, 'Pin code must be valid')
+    .required('Pin code is required'),
+  pan: yup
+    .string()
+    .trim()
+    .matches(panRegexMatch, 'Pan number must be valid and must be of 10 characters')
+    .required('Pan is required'),
+  aadhaar: yup
+    .string()
+    .trim()
+    .matches(aadhaarRegexMatch, 'Aadhaar number must be valid and must be of 12 digits')
+    .required('Aadhaar number is required'),
+  image: yup.string().trim().required('Profile Image is required'),
+});
+
+const docSchema = yup.object({
+  docs: yup.array(),
+});
+
+const schemas = {
+  first: basicInformationSchema,
+  second: docSchema,
+};
+
 const EditProfile = () => {
   const [activeTab, setActiveTab] = useState('first');
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -110,23 +73,25 @@ const EditProfile = () => {
 
   const { mutateAsync, isLoading } = useUpdateUsers();
 
-  const form = useForm({ validate: yupResolver(schema(activeTab)), initialValues });
+  const form = useForm({ validate: yupResolver(schemas[activeTab]), initialValues });
 
   useEffect(() => {
     if (data) {
-      form.setFieldValue('name', data?.name || '');
-      form.setFieldValue('email', data?.email || '');
-      form.setFieldValue('about', data?.about || '');
-      form.setFieldValue('address', data?.address || '');
-      form.setFieldValue('city', data?.city || '');
-      form.setFieldValue('pan', data?.pan || '');
-      form.setFieldValue('aadhaar', data?.aadhaar || '');
-      form.setFieldValue('pincode', data?.pincode || '');
-      form.setFieldValue('number', data?.number || '');
-      form.setFieldValue('state', data?.state || '');
-      form.setFieldValue('company', data?.company || '');
-      form.setFieldValue('image', data?.image || '');
-      form.setFieldValue('docs', data?.docs || []);
+      form.setValues({
+        name: data?.name || '',
+        email: data?.email || '',
+        about: data?.about || '',
+        address: data?.address || '',
+        city: data?.city || '',
+        pan: data?.pan || '',
+        aadhaar: data?.aadhaar || '',
+        pincode: data?.pincode || '',
+        number: data?.number || '',
+        state: data?.state || '',
+        company: data?.company || '',
+        image: data?.image || '',
+        docs: data?.docs || [],
+      });
     }
     return () => {
       form.reset();

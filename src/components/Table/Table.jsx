@@ -73,9 +73,9 @@ const Table = ({
   };
 
   return (
-    <>
-      <div className={classNames('mr-7 max-w-screen overflow-x-auto min-h-[450px]', className)}>
-        <table className="w-full overflow-y-visible relative z-10" {...getTableProps()}>
+    <div className="min-h-[450px] flex flex-col justify-between">
+      <div className={classNames('overflow-x-auto', className)}>
+        <table className="w-full" {...getTableProps()}>
           <thead className="bg-gray-100">
             {headerGroups.map(headerGroup => (
               <tr {...headerGroup.getHeaderGroupProps()}>
@@ -163,7 +163,7 @@ const Table = ({
           />
         </div>
       ) : null}
-    </>
+    </div>
   );
 };
 

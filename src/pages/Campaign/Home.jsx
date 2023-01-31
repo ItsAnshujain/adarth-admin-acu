@@ -268,28 +268,24 @@ const Home = () => {
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-      {campaignData?.docs?.length ? (
-        <>
-          {viewType.campaign === 'grid' ? (
-            <GridView
-              count={limit}
-              activePage={page}
-              totalPages={campaignData?.totalPages || 1}
-              list={campaignData?.docs || []}
-              setActivePage={data => setQuery('page', data)}
-              isLoadingList={isLoading}
-            />
-          ) : viewType.campaign === 'list' ? (
-            <Table
-              COLUMNS={COLUMNS}
-              data={campaignData?.docs || []}
-              activePage={page}
-              totalPages={campaignData?.totalPages || 1}
-              setActivePage={data => setQuery('page', data)}
-              handleSorting={handleSortByColumn}
-            />
-          ) : null}{' '}
-        </>
+      {viewType.campaign === 'grid' && campaignData?.docs?.length ? (
+        <GridView
+          count={limit}
+          activePage={page}
+          totalPages={campaignData?.totalPages || 1}
+          list={campaignData?.docs || []}
+          setActivePage={data => setQuery('page', data)}
+          isLoadingList={isLoading}
+        />
+      ) : viewType.campaign === 'list' && campaignData?.docs?.length ? (
+        <Table
+          COLUMNS={COLUMNS}
+          data={campaignData?.docs || []}
+          activePage={page}
+          totalPages={campaignData?.totalPages || 1}
+          setActivePage={data => setQuery('page', data)}
+          handleSorting={handleSortByColumn}
+        />
       ) : null}
     </div>
   );

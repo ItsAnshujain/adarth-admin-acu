@@ -14,7 +14,7 @@ const GridView = ({
   setActivePage = () => {},
   isLoadingList,
 }) => (
-  <>
+  <div>
     <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[70%] overflow-y-auto">
       {list.map(item => (
         <Card key={item._id} proposalData={item} />
@@ -35,7 +35,7 @@ const GridView = ({
         total={totalPages}
       />
     </div>
-  </>
+  </div>
 );
 
 export default GridView;
