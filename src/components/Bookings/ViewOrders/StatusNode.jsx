@@ -10,7 +10,7 @@ const DATE_FORMAT = 'DD-MM-YYYY h:mm a';
 const StatusNode = ({
   status = '',
   isSuccess = false,
-  dateAndTime = new Date(),
+  dateAndTime,
   hasBottomEdge = true,
   hasRightEdge = true,
   className = '',
@@ -40,7 +40,7 @@ const StatusNode = ({
         </p>
         <p className="font-sans text-gray-550 font-medium text-md">Date &amp; Time</p>
         <p className="font-sans text-black font-medium text-md">
-          {dayjs(dateAndTime).format(DATE_FORMAT)}
+          {dateAndTime ? dayjs(dateAndTime).format(DATE_FORMAT) : 'NA'}
         </p>
       </div>
     </div>

@@ -39,7 +39,10 @@ const Places = ({ data, campaignId, bookingId }) => {
 
   const openRef = useRef(null);
   const handleSubmit = link => {
-    update({ id: campaignId, placeId: data?._id, data: { media: link } });
+    update(
+      { id: campaignId, placeId: data?._id, data: { media: link } },
+      { onSuccess: () => queryClient.invalidateQueries(['booking-by-id', bookingId]) },
+    );
   };
 
   const handleUpload = async params => {
@@ -54,7 +57,11 @@ const Places = ({ data, campaignId, bookingId }) => {
 
   const printList = useMemo(() => {
     if (printingStatusData?.data?.docs?.length) {
-      return printingStatusData.data.docs.map(item => item.name);
+      return printingStatusData.data.docs.map(item => ({
+        label: item?.name,
+        value: item?.name,
+        disabled: Object.keys(data?.printingStatus || {}).includes(item?.name),
+      }));
     }
 
     return [];
@@ -62,7 +69,11 @@ const Places = ({ data, campaignId, bookingId }) => {
 
   const mountList = useMemo(() => {
     if (mountStatusData?.data?.docs?.length) {
-      return mountStatusData.data.docs.map(item => item.name);
+      return mountStatusData.data.docs.map(item => ({
+        label: item?.name,
+        value: item?.name,
+        disabled: Object.keys(data?.mountingStatus || {}).includes(item?.name),
+      }));
     }
 
     return [];
@@ -82,6 +93,8 @@ const Places = ({ data, campaignId, bookingId }) => {
       );
     }
   };
+
+  console.log(data);
 
   return (
     <div className="flex gap-4 p-4 shadow-md bg-white mb-2">
@@ -103,9 +116,9 @@ const Places = ({ data, campaignId, bookingId }) => {
               disabled={isUpdating || isLoading}
               loading={isUpdating || isLoading}
               className="py-1 px-2 ml-1 h-[20%] flex items-center gap-2 border border-black rounded-md text-black font-medium text-base"
+              rightIcon={<img src={uploadIcon} alt="Upload" className="mr-1" />}
             >
-              <span className="mr-1">Upload File</span>
-              <img src={uploadIcon} alt="Upload" className="mr-1" />
+              {isUpdating || isLoading ? 'Uploading File' : 'Upload File'}
             </Button>
             <div className="flex gap-2 p-2 rounded-md">
               <Calendar />
@@ -141,13 +154,21 @@ const Places = ({ data, campaignId, bookingId }) => {
               <p className="mb-2 text-sm text-slate-400">Printing Status</p>
               <Select
                 className="mr-2 w-[200px]"
-                defaultValue={data?.currentStatus?.printingStatus}
+                defaultValue={
+                  data?.currentStatus?.printingStatus
+                    ? data.currentStatus.printingStatus.charAt(0).toUpperCase() +
+                      data.currentStatus.printingStatus.slice(1)
+                    : ''
+                }
                 onChange={val => handleCampaignStatusUpdate(val, 'printingStatus')}
                 data={printList}
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-                disabled={isUpdateCampaignStatusLoading}
+                disabled={
+                  isUpdateCampaignStatusLoading ||
+                  data?.currentStatus?.printingStatus?.toLowerCase() === 'completed'
+                }
               />
             </div>
             <div className="mb-4">
@@ -160,13 +181,21 @@ const Places = ({ data, campaignId, bookingId }) => {
               <p className="mb-2 text-sm text-slate-400">Mounting Status</p>
               <Select
                 className="mr-2 w-[200px]"
-                defaultValue={data?.currentStatus?.mountingStatus}
+                defaultValue={
+                  data?.currentStatus?.mountingStatus
+                    ? data.currentStatus.mountingStatus.charAt(0).toUpperCase() +
+                      data.currentStatus.mountingStatus.slice(1)
+                    : ''
+                }
                 onChange={val => handleCampaignStatusUpdate(val, 'mountingStatus')}
                 data={mountList}
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-                disabled={isUpdateCampaignStatusLoading}
+                disabled={
+                  isUpdateCampaignStatusLoading ||
+                  data?.currentStatus?.mountingStatus?.toLowerCase() === 'completed'
+                }
               />
             </div>
             <div>
