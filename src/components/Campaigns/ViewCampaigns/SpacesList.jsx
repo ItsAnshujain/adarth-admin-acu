@@ -144,7 +144,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
             original: { basicInformation },
           },
         }) =>
-          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || 'NA'}</p>, []),
+          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || '-'}</p>, []),
       },
       {
         Header: 'IMPRESSION',

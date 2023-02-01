@@ -222,6 +222,10 @@ const Overview = ({ bookingData = {}, isLoading }) => {
                 data={item}
                 campaignId={bookingData?.campaign?._id}
                 bookingId={bookingData?._id}
+                hasPaymentType={
+                  (!!bookingData?.paymentStatus && !bookingData?.paymentStatus?.Unpaid) ||
+                  (!!bookingData?.paymentStatus && bookingData?.paymentStatus?.Paid)
+                }
               />
             ))
           ) : (

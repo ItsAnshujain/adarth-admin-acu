@@ -140,7 +140,7 @@ const SelectSpace = () => {
           row: {
             original: { landlord_name },
           },
-        }) => useMemo(() => <div className="w-fit">{landlord_name || 'NA'}</div>, []),
+        }) => useMemo(() => <div className="w-fit">{landlord_name || '-'}</div>, []),
       },
       {
         Header: 'SPACE TYPE',

@@ -102,7 +102,7 @@ const Home = () => {
                     src={thumbnail}
                     className="rounded-md overflow-hidden"
                   />
-                  <span className="truncate w-[100px]" title={name}>
+                  <span className="truncate" title={name}>
                     {name}
                   </span>
                 </div>

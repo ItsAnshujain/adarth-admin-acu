@@ -4,6 +4,7 @@ import { ChevronDown } from 'react-feather';
 import { useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import dayjs from 'dayjs';
+import classNames from 'classnames';
 import DateRange from '../../DateRange';
 import Filter from '../../Bookings/Filter';
 import calendar from '../../../assets/data-table.svg';
@@ -67,19 +68,6 @@ const Booking = ({ inventoryId }) => {
         }) => useMemo(() => <p>{client?.name}</p>, []),
       },
       {
-        Header: 'ORDER DATE',
-        accessor: 'createdAt',
-        Cell: ({ row: { original } }) =>
-          useMemo(
-            () => (
-              <p className="font-medium bg-gray-450 px-2 rounded-sm">
-                {dayjs(original.createdAt).format(DATE_FORMAT)}
-              </p>
-            ),
-            [],
-          ),
-      },
-      {
         Header: 'CAMPAIGN NAME',
         accessor: 'campaign.name',
         Cell: ({
@@ -89,31 +77,10 @@ const Booking = ({ inventoryId }) => {
         }) => useMemo(() => <p>{campaignName || <NoData type="na" />}</p>, []),
       },
       {
-        Header: 'BOOKING TYPE',
-        accessor: 'type',
-        Cell: ({
-          row: {
-            original: { type },
-          },
-        }) => useMemo(() => <p className="capitalize">{type}</p>, []),
-      },
-      {
-        Header: 'CAMPAIGN STATUS',
-        accessor: 'currentStatus.campaignStatus',
-        Cell: ({
-          row: {
-            original: { currentStatus },
-          },
-        }) => useMemo(() => <p className="w-36">{currentStatus?.campaignStatus || '-'}</p>, []),
-      },
-      {
-        Header: 'PAYMENT STATUS',
-        accessor: 'currentStatus.paymentStatus',
-        Cell: ({
-          row: {
-            original: { currentStatus },
-          },
-        }) => useMemo(() => <p className="w-36">{currentStatus?.paymentStatus || '-'}</p>, []),
+        Header: 'BOOKING MANAGER',
+        accessor: 'bookingManger',
+        disableSortBy: true,
+        Cell: () => useMemo(() => <p>-</p>, []),
       },
       {
         Header: 'PRINTING STATUS',
@@ -122,7 +89,32 @@ const Booking = ({ inventoryId }) => {
           row: {
             original: { currentStatus },
           },
-        }) => useMemo(() => <p className="w-36">{currentStatus?.printingStatus || '-'}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p
+                className={classNames(
+                  currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
+                    ? 'text-blue-600'
+                    : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
+                    ? 'text-purple-450'
+                    : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
+                    ? 'text-green-400'
+                    : '-',
+                  'w-[200px]',
+                )}
+              >
+                {currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
+                  ? 'Printing upcoming'
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
+                  ? 'Printing in progress'
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
+                  ? 'Printing completed'
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'MOUNTING STATUS',
@@ -131,16 +123,58 @@ const Booking = ({ inventoryId }) => {
           row: {
             original: { currentStatus },
           },
-        }) => useMemo(() => <p className="w-36">{currentStatus?.mountingStatus || '-'}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p
+                className={classNames(
+                  currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
+                    ? 'text-blue-600'
+                    : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                    ? 'text-purple-450'
+                    : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
+                    ? 'text-green-400'
+                    : '-',
+                  'w-[200px]',
+                )}
+              >
+                {currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
+                  ? 'Mounting upcoming'
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                  ? 'Mounting in progress'
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
+                  ? 'Mounting completed'
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
-        Header: 'CAMPAIGN INCHARGE',
-        accessor: 'campaign.incharge.name',
+        Header: 'PAYMENT STATUS',
+        accessor: 'currentStatus.paymentStatus',
         Cell: ({
           row: {
-            original: { incharge },
+            original: { currentStatus },
           },
-        }) => useMemo(() => <p>{incharge?.name || <NoData type="na" />}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p
+                className={classNames(
+                  currentStatus?.paymentStatus?.toLowerCase() === 'paid'
+                    ? 'text-green-400'
+                    : currentStatus?.paymentStatus?.toLowerCase() === 'unpaid'
+                    ? 'text-yellow-500'
+                    : '',
+                  'font-medium',
+                )}
+              >
+                {currentStatus?.paymentStatus || '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT TYPE',
@@ -174,15 +208,6 @@ const Booking = ({ inventoryId }) => {
             ),
             [],
           ),
-      },
-      {
-        Header: 'TOTAL SPACES',
-        accessor: 'totalSpaces',
-        Cell: ({
-          row: {
-            original: { price },
-          },
-        }) => useMemo(() => <p className="pl-2">{price ? price.length : 0}</p>, []),
       },
       {
         Header: 'PRICING',

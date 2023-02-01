@@ -133,7 +133,7 @@ const ProposalDetails = () => {
           row: {
             original: { mediaOwner },
           },
-        }) => useMemo(() => <p className="w-fit">{mediaOwner || 'NA'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{mediaOwner || '-'}</p>, []),
       },
       {
         Header: 'PEER',
