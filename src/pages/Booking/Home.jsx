@@ -462,7 +462,7 @@ const Bookings = () => {
           row: {
             original: { _id },
           },
-        }) => useMemo(() => <BookingsMenuPopover itemId={_id} enableDelete={false} />, []),
+        }) => useMemo(() => <BookingsMenuPopover itemId={_id} />, []),
       },
     ],
     [bookingData?.docs, campaignStatus, paymentStatus],
