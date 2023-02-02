@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Image, NumberInput, Progress, Badge, Loader, Chip, Box } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { Dropzone } from '@mantine/dropzone';
@@ -17,7 +16,6 @@ import { colors } from '../../../utils';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import Filter from '../../Inventory/Filter';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
-import { useStyles } from '../../DateRange';
 import DateRangeSelector from '../../DateRangeSelector';
 
 const styles = {
@@ -77,7 +75,6 @@ const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
 
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
-  const { classes, cx } = useStyles();
   const navigate = useNavigate();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
@@ -317,90 +314,24 @@ const SelectSpace = () => {
             [],
           ),
       },
-      // TODO: disabled for now
       {
         Header: 'OCCUPANCY DATE',
         accessor: 'scheduledDate',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { startDate, endDate, _id },
+            original: { bookingRange, startDate, endDate, _id },
           },
         }) =>
-          useMemo(() => {
-            const bookingRage = [
-              {
-                'startDate': '2023-01-21T00:00:00.000Z',
-                'endDate': '2023-01-30T00:00:00.000Z',
-              },
-              {
-                'startDate': '2023-01-10T00:00:00.000Z',
-                'endDate': '2023-01-16T00:00:00.000Z',
-              },
-            ];
-
-            return (
+          useMemo(
+            () => (
               <div className="min-w-[300px]">
                 <DateRangeSelector
-                  disabled
                   dateValue={[startDate || null, endDate || null]}
                   onChange={val => updateData('dateRange', val, _id)}
-                  dateRange={bookingRage}
+                  dateRange={bookingRange}
                 />
               </div>
-            );
-          }, []),
-      },
-      {
-        Header: 'START DATE',
-        accessor: 'startDate',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { startDate, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <DatePicker
-                defaultValue={startDate}
-                placeholder="DD/MM/YYYY"
-                minDate={new Date()}
-                onChange={val => updateData('startDate', val, _id)}
-                dayClassName={(_, modifiers) =>
-                  cx({
-                    [classes.weekend]: modifiers.weekend,
-                    [classes.disabled]: modifiers.disabled,
-                  })
-                }
-              />
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'END DATE',
-        accessor: 'endDate',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { endDate, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <DatePicker
-                defaultValue={endDate}
-                placeholder="DD/MM/YYYY"
-                minDate={new Date()}
-                onChange={val => updateData('endDate', val, _id)}
-                dayClassName={(_, modifiers) =>
-                  cx({
-                    [classes.weekend]: modifiers.weekend,
-                    [classes.disabled]: modifiers.disabled,
-                  })
-                }
-              />
             ),
             [],
           ),
@@ -476,6 +407,7 @@ const SelectSpace = () => {
         obj.campaigns = item?.campaigns;
         obj.startDate = item.startDate ? new Date(item.startDate) : new Date();
         obj.endDate = item.endDate ? new Date(item.endDate) : dayjs().add(1, 'day').toDate();
+        obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
         finalData.push(obj);
       }
       setUpdatedInventoryData(finalData);

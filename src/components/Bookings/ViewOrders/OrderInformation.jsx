@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Loader, NativeSelect } from '@mantine/core';
@@ -64,6 +65,20 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
     }
   };
 
+  const healthStatusData = useMemo(
+    () => ({
+      datasets: [
+        {
+          data: [bookingStats?.offline ?? 0, bookingStats?.online ?? 0],
+          backgroundColor: ['#914EFB', '#FF900E'],
+          borderColor: ['#914EFB', '#FF900E'],
+          borderWidth: 1,
+        },
+      ],
+    }),
+    [bookingStats],
+  );
+
   return isLoading ? (
     <div className="flex justify-center items-center h-[400px]">
       <Loader />
@@ -75,19 +90,11 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
         <div className="flex flex-wrap">
           <div className="flex gap-x-4 p-4 border rounded-md items-center mr-20">
             <div className="w-32">
-              <Doughnut
-                options={config.options}
-                data={{
-                  datasets: [
-                    {
-                      data: [bookingStats?.online || 0, bookingStats?.offline || 0],
-                      backgroundColor: ['#FF900E', '#914EFB'],
-                      borderColor: ['#FF900E', '#914EFB'],
-                      borderWidth: 1,
-                    },
-                  ],
-                }}
-              />
+              {isLoading ? (
+                <Loader className="mx-auto" />
+              ) : (
+                <Doughnut options={config.options} data={healthStatusData} />
+              )}
             </div>
             <div>
               <p className="font-medium">Health Status</p>
@@ -96,14 +103,14 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
                   <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                   <div>
                     <p className="text-xs font-lighter mb-1">Online Sale</p>
-                    <p className="font-bold text-md">{bookingStats?.online || 0}</p>
+                    <p className="font-bold text-md">{bookingStats?.online ?? 0}</p>
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                   <div>
                     <p className="font-lighter text-xs mb-1">Offline Sale</p>
-                    <p className="font-bold text-md">{bookingStats?.offline || 0}</p>
+                    <p className="font-bold text-md">{bookingStats?.offline ?? 0}</p>
                   </div>
                 </div>
               </div>
@@ -112,7 +119,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
           <div className="border rounded p-8  pr-20">
             <img src={completed} alt="ongoing" />
             <p className="my-2 text-xs font-lighter mt-3 text-muted">Total Places</p>
-            <p className="font-bold">{bookingData?.campaign?.spaces.length || 0}</p>
+            <p className="font-bold">{bookingData?.campaign?.spaces.length ?? 0}</p>
           </div>
         </div>
         <div>

@@ -171,9 +171,10 @@ const SelectSpace = () => {
         accessor: 'specifications.size.min',
         Cell: ({
           row: {
-            original: { value },
+            original: { dimension },
           },
-        }) => useMemo(() => <p>{`${value?.height || 0}ft x ${value?.width || 0}ft`}</p>, []),
+        }) =>
+          useMemo(() => <p>{`${dimension?.height || 0}ft x ${dimension?.width || 0}ft`}</p>, []),
       },
       {
         Header: 'IMPRESSION',

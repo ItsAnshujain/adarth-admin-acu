@@ -23,7 +23,6 @@ import RowsPerPage from '../RowsPerPage';
 import Search from '../Search';
 import GridView from '../GridView';
 import COLUMNS from './ColumnInventory';
-import dummy from '../../Dummydata/Inventory.json';
 import Card from '../Inventory/Card';
 import InventoryIcon from '../../assets/inventory-active.svg';
 import OperationalCostIcon from '../../assets/operational-cost.svg';
@@ -73,6 +72,7 @@ const config = {
   options: { responsive: true },
 };
 
+// TODO: integration left
 const Inventory = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [search, setSearch] = useState('');
@@ -116,27 +116,27 @@ const Inventory = () => {
           <div className="border rounded p-8  flex-1">
             <Image src={InventoryIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Inventory</p>
-            <p className="font-bold">386387</p>
+            <p className="font-bold">0</p>
           </div>
           <div className="border rounded p-8 flex-1">
             <Image src={VacantIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Vacant</p>
-            <p className="font-bold">386387</p>
+            <p className="font-bold">0</p>
           </div>
           <div className="border rounded p-8  flex-1">
             <Image src={OccupiedIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Occupied</p>
-            <p className="font-bold">386387</p>
+            <p className="font-bold">0</p>
           </div>
           <div className="border rounded p-8 flex-1">
             <Image src={UnderMaintenaceIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Under Maintenance</p>
-            <p className="font-bold">386387</p>
+            <p className="font-bold">0</p>
           </div>
           <div className="border rounded p-8 flex-1">
             <Image src={OperationalCostIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Opertaional Cost</p>
-            <p className="font-bold">386387</p>
+            <p className="font-bold">0</p>
           </div>
           <div aria-hidden className="flex-1 invisible">
             Invisible
@@ -173,14 +173,14 @@ const Inventory = () => {
                   <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                   <div>
                     <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
-                    <p className="font-bold text-lg">1233</p>
+                    <p className="font-bold text-lg">0</p>
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                   <div>
                     <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
-                    <p className="font-bold text-lg">1233</p>
+                    <p className="font-bold text-lg">0</p>
                   </div>
                 </div>
               </div>
@@ -191,12 +191,12 @@ const Inventory = () => {
           <div className="border rounded p-8  flex-1">
             <Image src={BestIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Best Performing Inventory</p>
-            <p className="font-bold">Blogpad</p>
+            <p className="font-bold">??</p>
           </div>
           <div className="border rounded p-8 flex-1">
             <Image src={WorstIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Worst Performing Inventory</p>
-            <p className="font-bold">Oopa</p>
+            <p className="font-bold">??</p>
           </div>
         </div>
         <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mt-10">
@@ -217,7 +217,7 @@ const Inventory = () => {
               {view === 'grid' ? (
                 <GridView selectAll={selectAll} count={count} Card={Card} />
               ) : view === 'list' ? (
-                <Table COLUMNS={COLUMNS} data={dummy} count={count} allowRowsSelect />
+                <Table COLUMNS={COLUMNS} data={[]} count={count} allowRowsSelect />
               ) : null}
             </form>
           </FormProvider>

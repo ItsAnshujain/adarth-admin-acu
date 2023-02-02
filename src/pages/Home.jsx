@@ -11,7 +11,7 @@ import {
   BarElement,
   Tooltip,
 } from 'chart.js';
-import { Image } from '@mantine/core';
+import { Image, Loader } from '@mantine/core';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
@@ -77,15 +77,17 @@ const HomePage = () => {
   const userId = useUserStore(state => state.id);
   const user = queryClient.getQueryData(['users-by-id', userId]);
   const { data: bookingStats } = useBookingStats('');
-  const { data: inventoryStats } = useInventoryStats('');
-  const { data: bookingRevenue } = useFetchBookingRevenue(serialize(query));
+  const { data: inventoryStats, isLoading: isInventoryStatsLoading } = useInventoryStats('');
+  const { data: bookingRevenue, isLoading: isBookingRevenueLoading } = useFetchBookingRevenue(
+    serialize(query),
+  );
   const inventoryHealthStatus = useMemo(
     () => ({
       datasets: [
         {
-          data: [inventoryStats?.healthy, inventoryStats?.unHealthy],
-          backgroundColor: ['#FF900E', '#914EFB'],
-          borderColor: ['#FF900E', '#914EFB'],
+          data: [inventoryStats?.unHealthy ?? 0, inventoryStats?.healthy ?? 0],
+          backgroundColor: ['#914EFB', '#FF900E'],
+          borderColor: ['#914EFB', '#FF900E'],
           borderWidth: 1,
         },
       ],
@@ -185,17 +187,25 @@ const HomePage = () => {
             <div className="flex items-center gap-4">
               <div className="w-[68%]">
                 <p className="font-bold mb-5">Revenue Graph</p>
-                <div className="flex flex-col pl-7 relative">
-                  <p className="font-sans transform rotate-[-90deg] absolute left-[-28px] top-[40%]">
-                    In Lakhs {'-->'}{' '}
-                  </p>
-                  <Line height="80" data={lineData} options={options} />
-                  <p className="font-sans text-center">Months {'-->'} </p>
-                </div>
+                {isBookingRevenueLoading ? (
+                  <Loader className="mx-auto" mt={80} />
+                ) : (
+                  <div className="flex flex-col pl-7 relative">
+                    <p className="font-sans transform rotate-[-90deg] absolute left-[-28px] top-[40%]">
+                      In Lakhs {'-->'}{' '}
+                    </p>
+                    <Line height="80" data={lineData} options={options} />
+                    <p className="font-sans text-center">Months {'-->'} </p>
+                  </div>
+                )}
               </div>
               <div className="flex gap-4 p-4 border rounded-md items-center justify-center flex-1 flex-wrap-reverse">
                 <div className="w-32">
-                  <Doughnut options={config.options} data={inventoryHealthStatus} />
+                  {isInventoryStatsLoading ? (
+                    <Loader className="mx-auto" />
+                  ) : (
+                    <Doughnut options={config.options} data={inventoryHealthStatus} />
+                  )}
                 </div>
                 <div>
                   <p className="font-medium text-center">Health Status of Inventory</p>
