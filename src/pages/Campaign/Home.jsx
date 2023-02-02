@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from 'react';
-import { NativeSelect, Progress, Image, Loader } from '@mantine/core';
+import { NativeSelect, Progress, Image, Loader, Box, Text } from '@mantine/core';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronDown } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
@@ -87,12 +87,11 @@ const Home = () => {
         }) =>
           useMemo(
             () => (
-              <div
-                aria-hidden="true"
+              <Box
                 onClick={() => navigate(`/campaigns/view-details/${_id}`)}
-                className="flex gap-2 items-center cursor-pointer"
+                className="flex items-center cursor-pointer"
               >
-                <div className="flex flex-1 gap-2 items-center ">
+                <div className="flex flex-1 gap-2 items-center">
                   <Image
                     height={30}
                     width={32}
@@ -102,11 +101,11 @@ const Home = () => {
                     src={thumbnail}
                     className="rounded-md overflow-hidden"
                   />
-                  <span className="truncate" title={name}>
+                  <Text className="w-[200px]" title={name} lineClamp={1}>
                     {name}
-                  </span>
+                  </Text>
                 </div>
-              </div>
+              </Box>
             ),
             [_id, thumbnail, name],
           ),

@@ -38,7 +38,7 @@ const Bookings = () => {
   const { data: bookingData, isLoading: isLoadingBookingData } = useBookings(
     searchParams.toString(),
   );
-  const { data: bookingStats } = useBookingStats('');
+  const { data: bookingStats, isLoading: isBookingStatsLoading } = useBookingStats('');
   const { data: campaignStatus } = useFetchMasters(
     serialize({ type: 'campaign_status', parentId: null, page: 1, limit: 100 }),
   );
@@ -508,7 +508,7 @@ const Bookings = () => {
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
       <AreaHeader text="Order" />
       <div className="pr-7">
-        <BookingStatisticsView bookingStats={bookingStats} />
+        <BookingStatisticsView bookingStats={bookingStats} isLoading={isBookingStatsLoading} />
         <div className="flex justify-between h-20 items-center">
           <RowsPerPage
             setCount={currentLimit => handlePagination('limit', currentLimit)}

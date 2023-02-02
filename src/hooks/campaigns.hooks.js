@@ -2,7 +2,9 @@ import { showNotification } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   campaign,
+  campaignReport,
   campaigns,
+  campaignStats,
   createCampaign,
   deleteCampaign,
   updateCampaign,
@@ -146,4 +148,24 @@ export const useUpdateCampaignStatus = () =>
         });
       },
     },
+  );
+
+export const useCampaignStats = (enabled = true) =>
+  useQuery(
+    ['campaign-stats'],
+    async () => {
+      const res = await campaignStats();
+      return res?.data;
+    },
+    { enabled },
+  );
+
+export const useCampaignReport = (enabled = true) =>
+  useQuery(
+    ['campaign-report'],
+    async () => {
+      const res = await campaignReport();
+      return res?.data;
+    },
+    { enabled },
   );

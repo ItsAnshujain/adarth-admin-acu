@@ -9,3 +9,6 @@ export const updateCampaignMedia = (id, placeId, data) =>
   http.patch(`/campaigns/${id}/updateMedia/${placeId}`, data);
 export const updateCampaignStatus = (id, placeId, data) =>
   http.patch(`/campaigns/${id}/updateStatus/${placeId}`, data);
+
+export const campaignStats = () => http.get('/campaigns/stats');
+export const campaignReport = () => http.get('/campaigns/report');

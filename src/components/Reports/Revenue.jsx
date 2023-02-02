@@ -81,11 +81,14 @@ const lineData = {
   ],
 };
 
+// TODO: integration left
 const Revenue = () => {
   const [showDatePickerRevenue, setShowDatePickerRevenue] = useState(false);
   const [showDateCity, setShowDateCity] = useState(false);
+  const [showDateIndustry, setShowDateIndustry] = useState(false);
   const revenueRef = useClickOutside(() => setShowDatePickerRevenue(false));
   const dateCityRef = useClickOutside(() => setShowDateCity(false));
+  const dateIndustryRef = useClickOutside(() => setShowDateCity(false));
   const [showFilter, setShowFilter] = useState(false);
   const toggleFilter = () => setShowFilter(!showFilter);
 
@@ -97,27 +100,27 @@ const Revenue = () => {
           <div className="border rounded p-8 flex-1">
             <Image src={TotalRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Revenue</p>
-            <p className="font-bold">{toIndianCurrency(386387)}</p>
+            <p className="font-bold">{toIndianCurrency(0)}</p>
           </div>
           <div className="border rounded p-8  flex-1">
             <Image src={OfflineRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Offline Revenue</p>
-            <p className="font-bold">{toIndianCurrency(386)}</p>
+            <p className="font-bold">{toIndianCurrency(0)}</p>
           </div>
           <div className="border rounded p-8 flex-1">
             <Image src={OnlineRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Online Revenue</p>
-            <p className="font-bold">{toIndianCurrency(386)}</p>
+            <p className="font-bold">{toIndianCurrency(0)}</p>
           </div>
           <div className="border rounded p-8 flex-1">
             <Image src={ProposalSentIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Proposals Sent</p>
-            <p className="font-bold">386387</p>
+            <p className="font-bold">0</p>
           </div>
           <div className="border rounded p-8 flex-1">
             <Image src={OperationalCostIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Operational Cost</p>
-            <p className="font-bold">386387</p>
+            <p className="font-bold">0</p>
           </div>
           <div aria-hidden className="flex-1 invisible">
             Visibility Hidden
@@ -144,14 +147,11 @@ const Revenue = () => {
           </div>
           <Line height="80" data={lineData} options={options} />
           <div className="my-10">
-            {/* <div className="flex justify-between">
+            <div className="flex justify-between">
               <p className="font-bold">Industry wise revenue graph</p>
               <div className="flex justify-around">
                 <div ref={dateIndustryRef} className="mr-2 relative">
-                  <Button
-                    onClick={() => setShowDateIndustry(!showDateIndustry)}
-                    variant="default"
-                  >
+                  <Button onClick={() => setShowDateIndustry(!showDateIndustry)} variant="default">
                     <img src={calendar} className="h-5" alt="calendar" />
                   </Button>
                   {showDateIndustry && (
@@ -163,16 +163,18 @@ const Revenue = () => {
                 <div className="mr-2">
                   <Button
                     onClick={() => setShowFilter(!showFilter)}
-                    variant="default"                    
+                    variant="default"
                     className="font-medium"
                   >
                     <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
                   </Button>
-                  {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
+                  {showFilter && (
+                    <FilterRevenue isOpened={showFilter} setShowFilter={setShowFilter} />
+                  )}
                 </div>
               </div>
-            </div> */}
-            {/* <Bar height="80" data={barDataIndustry} options={options} /> */}
+            </div>
+            <Bar height="80" data={barDataState} options={options} />
           </div>
           <div className="my-10">
             <div className="flex justify-between">
