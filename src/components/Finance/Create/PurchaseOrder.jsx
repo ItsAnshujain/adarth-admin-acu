@@ -136,9 +136,8 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
                 onChange={val => updateData('dueOn', val, _id)}
                 dayClassName={(_, modifiers) =>
                   cx({
-                    [classes.outside]: modifiers.outside,
                     [classes.weekend]: modifiers.weekend,
-                    [classes.selected]: modifiers.selected,
+                    [classes.disabled]: modifiers.disabled,
                   })
                 }
               />

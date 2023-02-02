@@ -104,7 +104,7 @@ const releaseSchema = yup.object({
     .nullable()
     .required('Release Order No is required'),
   companyName: yup.string().trim().required('Company Name is required'),
-  quotationNo: yup.string().trim().required('Company Name is required'),
+  quotationNo: yup.string().trim().required('Quotation No is required'),
   contactPerson: yup.string().trim().required('Contact Person is required'),
   phone: yup
     .string()
@@ -277,7 +277,10 @@ const Create = () => {
     isLoading: isBookingDatasLoading,
     isSuccess: isBookingDatasLoaded,
   } = useBookings(serialize(bookingQueries));
-  const { data: bookingData } = useBookingById(bookingId, !!bookingId);
+  const { data: bookingData } = useBookingById(
+    bookingId || bookingIdFromFinance,
+    !!bookingId || !!bookingIdFromFinance,
+  );
   const { mutateAsync: generatePurchaseOrder, isLoading: isGeneratePurchaseOrderLoading } =
     useGeneratePurchaseOrder();
   const { mutateAsync: generateReleaseOrder, isLoading: isGenerateReleaseOrderLoading } =

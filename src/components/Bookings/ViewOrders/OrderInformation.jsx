@@ -38,13 +38,7 @@ const config = {
   options: { responsive: true },
 };
 
-const OrderInformation = ({
-  bookingData = {},
-  isLoading = true,
-  bookingStats,
-  mountStatus,
-  printStatus,
-}) => {
+const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) => {
   const {
     data: userData,
     isSuccess: isUserDataLoaded,
@@ -160,7 +154,15 @@ const OrderInformation = ({
             </div>
             <div>
               <p className="text-slate-400">Printing Status</p>
-              <p className="font-bold capitalize">{printStatus}</p>
+              <p className="font-bold capitalize">
+                {bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
+                  ? 'Printing upcoming'
+                  : bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('print')
+                  ? 'Printing in progress'
+                  : bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
+                  ? 'Printing completed'
+                  : '-'}
+              </p>
             </div>
             <div>
               <p className="text-slate-400">Booking Type</p>
@@ -168,7 +170,15 @@ const OrderInformation = ({
             </div>
             <div>
               <p className="text-slate-400">Mounting Status</p>
-              <p className="font-bold capitalize">{mountStatus}</p>
+              <p className="font-bold capitalize">
+                {bookingData?.currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
+                  ? 'Mounting upcoming'
+                  : bookingData?.currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                  ? 'Mounting in progress'
+                  : bookingData?.currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
+                  ? 'Mounting completed'
+                  : '-'}
+              </p>
             </div>
           </div>
         </div>

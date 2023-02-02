@@ -197,7 +197,7 @@ const SelectSpace = () => {
           row: {
             original: { landlord },
           },
-        }) => useMemo(() => <p className="w-fit">{landlord || 'NA'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{landlord || '-'}</p>, []),
       },
       {
         Header: 'UPLOAD MEDIA',

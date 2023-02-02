@@ -28,6 +28,7 @@ const MapView = ({ lists = [] }) => {
     isLoading: isSpaceTypeDataLoading,
   } = useFetchMasters(serialize({ type: 'space_type', parentId: null, limit: 100 }));
   const [value, setValue] = useState('');
+  const [mapInstance, setMapInstance] = useState(null);
 
   const getAllLocations = useMemo(
     () =>
@@ -46,6 +47,23 @@ const MapView = ({ lists = [] }) => {
     setValue(spaceTypeData?.docs?.[0]._id || '');
   }, [spaceTypeData]);
 
+  useEffect(() => {
+    if (mapInstance && lists?.length) {
+      const bounds = new mapInstance.maps.LatLngBounds();
+
+      lists?.forEach(item => {
+        bounds.extend({
+          lat: +(item.location?.latitude || 0),
+          lng: +(item.location?.longitude || 0),
+        });
+      });
+
+      mapInstance.map.fitBounds(bounds);
+      mapInstance.map.setCenter(bounds.getCenter());
+      mapInstance.map.setZoom(Math.min(10, mapInstance.map.getZoom()));
+    }
+  }, [lists?.length, mapInstance]);
+
   return (
     <div className="relative px-5">
       <div className="h-[70vh] w-full">
@@ -61,6 +79,7 @@ const MapView = ({ lists = [] }) => {
               ? +lists[0].location.longitude
               : defaultProps.center.lng,
           }}
+          onGoogleApiLoaded={({ map, maps }) => setMapInstance({ map, maps })}
         >
           {lists.length ? getAllLocations : null}
         </GoogleMapReact>

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Text, Button, NativeSelect, Progress, Loader } from '@mantine/core';
-import { ChevronDown } from 'react-feather';
+import { Text, Button, Loader } from '@mantine/core';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -10,15 +9,14 @@ import Search from '../../Search';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
 import Table from '../../Table/Table';
-import { useBookings, useUpdateBookingStatus } from '../../../hooks/booking.hooks';
+import { useBookings } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import BookingsMenuPopover from '../../Popovers/BookingsMenuPopover';
+import NoData from '../../shared/NoData';
 
-const statusSelectStyle = {
-  rightSection: { pointerEvents: 'none' },
-};
+const DATE_FORMAT = 'DD MMM YYYY';
 
 const TotalBookings = ({ campaignId }) => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
@@ -48,25 +46,6 @@ const TotalBookings = ({ campaignId }) => {
     serialize({ type: 'payment_status', parentId: null, page: 1, limit: 100 }),
   );
 
-  const { mutateAsync: updateBooking } = useUpdateBookingStatus();
-
-  const handlePaymentUpdate = (bookingId, status) => {
-    updateBooking({ id: bookingId, query: serialize({ paymentStatus: status }) });
-  };
-
-  const handleCampaignUpdate = (bookingId, status) => {
-    updateBooking({ id: bookingId, query: serialize({ campaignStatus: status }) });
-  };
-
-  const paymentList = useMemo(
-    () => paymentStatus?.docs?.map(item => item.name) || [],
-    [paymentStatus],
-  );
-  const campaignList = useMemo(
-    () => campaignStatus?.docs?.map(item => item.name) || [],
-    [campaignStatus],
-  );
-
   const column = useMemo(
     () => [
       {
@@ -86,7 +65,7 @@ const TotalBookings = ({ campaignId }) => {
       },
       {
         Header: 'CLIENT',
-        accessor: 'client',
+        accessor: 'client.name',
         Cell: ({
           row: {
             original: { client },
@@ -94,161 +73,95 @@ const TotalBookings = ({ campaignId }) => {
         }) => useMemo(() => <p>{client?.name}</p>, []),
       },
       {
-        Header: 'ORDER DATE',
-        accessor: 'createdAt',
-        Cell: ({ row: { original } }) => dayjs(original.client.createdAt).format('DD-MMMM-YYYY'),
-      },
-      {
-        Header: 'CAMPAIGN NAME',
-        accessor: 'campaign.name',
-        Cell: ({ row: { original } }) => useMemo(() => original.campaign?.name, []),
-      },
-      {
-        Header: 'BOOKING TYPE',
-        accessor: 'type',
-        Cell: ({
-          row: {
-            original: { type },
-          },
-        }) => useMemo(() => <p className="capitalize">{type}</p>, []),
-      },
-      {
-        Header: 'CAMPAIGN STATUS',
-        accessor: 'currentStatus.campaignStatus',
-        Cell: ({
-          row: {
-            original: { _id, currentStatus },
-          },
-        }) =>
-          useMemo(() => {
-            const updatedCampaignList = [...campaignList];
-            if (!currentStatus?.campaignStatus) {
-              updatedCampaignList.unshift({ label: 'Select', value: '' });
-            }
-            return (
-              <NativeSelect
-                className="mr-2"
-                data={updatedCampaignList}
-                styles={statusSelectStyle}
-                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-                rightSectionWidth={40}
-                onChange={e => handleCampaignUpdate(_id, e.target.value)}
-                defaultValue={currentStatus?.campaignStatus || ''}
-              />
-            );
-          }, []),
-      },
-      {
-        Header: 'PAYMENT STATUS',
-        accessor: 'currentStatus.paymentStatus',
-        Cell: ({
-          row: {
-            original: { _id, currentStatus },
-          },
-        }) =>
-          useMemo(() => {
-            const updatedPaymentList = [...paymentList];
-            if (!currentStatus?.paymentStatus) {
-              updatedPaymentList.unshift({ label: 'Select', value: '' });
-            }
-            return (
-              <NativeSelect
-                className="mr-2"
-                data={updatedPaymentList}
-                styles={statusSelectStyle}
-                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-                rightSectionWidth={40}
-                onChange={e => handlePaymentUpdate(_id, e.target.value)}
-                defaultValue={currentStatus?.paymentStatus || ''}
-              />
-            );
-          }, []),
-      },
-      {
         Header: 'PRINTING STATUS',
         accessor: 'currentStatus.printingStatus',
         Cell: ({
           row: {
-            original: { campaign },
+            original: { currentStatus },
           },
         }) =>
-          useMemo(() => {
-            let printCount = 0;
-            const totalSpaces = campaign?.spaces?.length;
-            campaign?.spaces?.map(item => {
-              if (item?.currentStatus?.printingStatus?.toLowerCase()?.includes('print')) {
-                printCount += 1;
-              }
-              return printCount;
-            });
-
-            return (
-              <p className="w-[200px]">
-                {printCount === 0
+          useMemo(
+            () => (
+              <p
+                className={classNames(
+                  currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
+                    ? 'text-blue-600'
+                    : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
+                    ? 'text-purple-450'
+                    : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
+                    ? 'text-green-400'
+                    : '-',
+                  'w-[200px]',
+                )}
+              >
+                {currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Printing upcoming'
-                  : printCount > 0 && printCount < totalSpaces
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
                   ? 'Printing in progress'
-                  : printCount === totalSpaces
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Printing completed'
                   : '-'}
               </p>
-            );
-          }, []),
+            ),
+            [],
+          ),
       },
       {
         Header: 'MOUNTING STATUS',
         accessor: 'currentStatus.mountingStatus',
         Cell: ({
           row: {
-            original: { campaign },
-          },
-        }) =>
-          useMemo(() => {
-            let mountCount = 0;
-            const totalSpaces = campaign?.spaces?.length;
-            campaign?.spaces?.map(item => {
-              if (item?.currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')) {
-                mountCount += 1;
-              }
-              return mountCount;
-            });
-
-            return (
-              <p className="w-[200px]">
-                {mountCount === 0
-                  ? 'Mounting upcoming'
-                  : mountCount > 0 && mountCount < totalSpaces
-                  ? 'Mounting in progress'
-                  : mountCount === totalSpaces
-                  ? 'Mounting completed'
-                  : '-'}
-              </p>
-            );
-          }, []),
-      },
-      {
-        Header: 'CAMPAIGN INCHARGE',
-        accessor: 'campaign.incharge.name',
-        Cell: () => '',
-      },
-      {
-        Header: 'HEALTH STATUS',
-        accessor: 'campaign.avgHealth',
-        Cell: ({
-          row: {
-            original: { healthStatus, totalHealthStatus },
+            original: { currentStatus },
           },
         }) =>
           useMemo(
             () => (
-              <div className="w-24">
-                <Progress
-                  sections={[
-                    { value: healthStatus, color: 'green' },
-                    { value: totalHealthStatus - healthStatus, color: 'red' },
-                  ]}
-                />
-              </div>
+              <p
+                className={classNames(
+                  currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
+                    ? 'text-blue-600'
+                    : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                    ? 'text-purple-450'
+                    : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
+                    ? 'text-green-400'
+                    : '-',
+                  'w-[200px]',
+                )}
+              >
+                {currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
+                  ? 'Mounting upcoming'
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                  ? 'Mounting in progress'
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
+                  ? 'Mounting completed'
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'PAYMENT STATUS',
+        accessor: 'currentStatus.paymentStatus',
+        Cell: ({
+          row: {
+            original: { currentStatus },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p
+                className={classNames(
+                  currentStatus?.paymentStatus?.toLowerCase() === 'paid'
+                    ? 'text-green-400'
+                    : currentStatus?.paymentStatus?.toLowerCase() === 'unpaid'
+                    ? 'text-yellow-500'
+                    : '',
+                  'font-medium',
+                )}
+              >
+                {currentStatus?.paymentStatus || '-'}
+              </p>
             ),
             [],
           ),
@@ -256,7 +169,11 @@ const TotalBookings = ({ campaignId }) => {
       {
         Header: 'PAYMENT TYPE',
         accessor: 'paymentType',
-        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { paymentType },
+          },
+        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
       },
       {
         Header: 'SCHEDULE',
@@ -264,124 +181,40 @@ const TotalBookings = ({ campaignId }) => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { from_date, to_date },
+            original: { campaign },
           },
         }) =>
           useMemo(
             () => (
-              <div className="flex items-center text-xs w-max">
-                <span className="py-1 px-1 bg-slate-200 mr-2 rounded-md">{from_date}</span>
-                &gt;
-                <span className="py-1 px-1 bg-slate-200 mx-2 rounded-md">{to_date}</span>
+              <div className="flex items-center w-max">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                  {campaign?.startDate ? (
+                    dayjs(campaign?.startDate).format(DATE_FORMAT)
+                  ) : (
+                    <NoData type="na" />
+                  )}
+                </p>
+                <span className="px-2">&gt;</span>
+                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                  {campaign?.endDate ? (
+                    dayjs(campaign?.endDate).format(DATE_FORMAT)
+                  ) : (
+                    <NoData type="na" />
+                  )}
+                </p>
               </div>
             ),
             [],
           ),
       },
       {
-        Header: 'DOWNLOAD UPLOADED MEDIA',
-        accessor: '',
-        disableSortBy: true,
-        Cell: () =>
-          useMemo(() => <div className="text-purple-450 cursor-pointer">Download</div>, []),
-      },
-      {
-        Header: 'TOTAL SPACES',
-        accessor: 'totalSpaces',
-      },
-      {
         Header: 'PRICING',
         accessor: 'price',
         Cell: ({
           row: {
-            original: { price },
+            original: { campaign },
           },
-        }) => useMemo(() => toIndianCurrency(price), []),
-      },
-      {
-        Header: 'PURCHASE ORDER',
-        accessor: 'purchaseOrder',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { purchaseOrder },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <a
-                href={purchaseOrder}
-                className={classNames(
-                  purchaseOrder
-                    ? 'text-purple-450 cursor-pointer'
-                    : 'pointer-events-none text-gray-450',
-                  'font-medium',
-                )}
-                target="_blank"
-                download
-                rel="noopener noreferrer"
-              >
-                Download
-              </a>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'RELEASE ORDER',
-        accessor: 'releaseOrder',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { releaseOrder },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <a
-                href={releaseOrder}
-                className={classNames(
-                  releaseOrder
-                    ? 'text-purple-450 cursor-pointer'
-                    : 'pointer-events-none text-gray-450',
-                  'font-medium',
-                )}
-                target="_blank"
-                download
-                rel="noopener noreferrer"
-              >
-                Download
-              </a>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'INVOICE',
-        accessor: 'invoice',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { invoice },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <a
-                href={invoice}
-                className={classNames(
-                  invoice ? 'text-purple-450 cursor-pointer' : 'pointer-events-none text-gray-450',
-                  'font-medium',
-                )}
-                target="_blank"
-                download
-                rel="noopener noreferrer"
-              >
-                Download
-              </a>
-            ),
-            [],
-          ),
+        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
       },
       {
         Header: 'ACTION',

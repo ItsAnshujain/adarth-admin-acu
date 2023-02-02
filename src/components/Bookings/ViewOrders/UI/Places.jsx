@@ -22,7 +22,7 @@ const styles = {
 
 const DATE_FORMAT = 'DD-MM-YYYY';
 
-const Places = ({ data, campaignId, bookingId }) => {
+const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
   const queryClient = useQueryClient();
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const { mutate: update, isLoading: isUpdating } = useUpdateCampaignMedia();
@@ -60,7 +60,7 @@ const Places = ({ data, campaignId, bookingId }) => {
       return printingStatusData.data.docs.map(item => ({
         label: item?.name,
         value: item?.name,
-        disabled: Object.keys(data?.printingStatus || {}).includes(item?.name),
+        disabled: Object.keys(data?.printingStatus || {}).includes(item?.name?.toLowerCase()),
       }));
     }
 
@@ -72,7 +72,7 @@ const Places = ({ data, campaignId, bookingId }) => {
       return mountStatusData.data.docs.map(item => ({
         label: item?.name,
         value: item?.name,
-        disabled: Object.keys(data?.mountingStatus || {}).includes(item?.name),
+        disabled: Object.keys(data?.mountingStatus || {}).includes(item?.name?.toLowerCase()),
       }));
     }
 
@@ -165,6 +165,7 @@ const Places = ({ data, campaignId, bookingId }) => {
                 rightSectionWidth={40}
                 disabled={
                   isUpdateCampaignStatusLoading ||
+                  !hasPaymentType ||
                   data?.currentStatus?.printingStatus?.toLowerCase() === 'completed'
                 }
               />
@@ -192,6 +193,8 @@ const Places = ({ data, campaignId, bookingId }) => {
                 rightSectionWidth={40}
                 disabled={
                   isUpdateCampaignStatusLoading ||
+                  data?.currentStatus?.printingStatus?.toLowerCase() === 'upcoming' ||
+                  data?.currentStatus?.printingStatus?.toLowerCase() === 'print' ||
                   data?.currentStatus?.mountingStatus?.toLowerCase() === 'completed'
                 }
               />

@@ -216,62 +216,46 @@ const Bookings = () => {
         accessor: 'currentStatus.printingStatus',
         Cell: ({
           row: {
-            original: { campaign },
+            original: { currentStatus },
           },
         }) =>
-          useMemo(() => {
-            let printCount = 0;
-            const totalSpaces = campaign?.spaces?.length;
-            campaign?.spaces?.map(item => {
-              if (item?.currentStatus?.printingStatus?.toLowerCase()?.includes('print')) {
-                printCount += 1;
-              }
-              return printCount;
-            });
-
-            return (
+          useMemo(
+            () => (
               <p className="w-[200px]">
-                {printCount === 0
+                {currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Printing upcoming'
-                  : printCount > 0 && printCount < totalSpaces
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
                   ? 'Printing in progress'
-                  : printCount === totalSpaces
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Printing completed'
                   : '-'}
               </p>
-            );
-          }, []),
+            ),
+            [],
+          ),
       },
       {
         Header: 'MOUNTING STATUS',
         accessor: 'currentStatus.mountingStatus',
         Cell: ({
           row: {
-            original: { campaign },
+            original: { currentStatus },
           },
         }) =>
-          useMemo(() => {
-            let mountCount = 0;
-            const totalSpaces = campaign?.spaces?.length;
-            campaign?.spaces?.map(item => {
-              if (item?.currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')) {
-                mountCount += 1;
-              }
-              return mountCount;
-            });
-
-            return (
+          useMemo(
+            () => (
               <p className="w-[200px]">
-                {mountCount === 0
+                {currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Mounting upcoming'
-                  : mountCount > 0 && mountCount < totalSpaces
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
                   ? 'Mounting in progress'
-                  : mountCount === totalSpaces
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                   ? 'Mounting completed'
                   : '-'}
               </p>
-            );
-          }, []),
+            ),
+            [],
+          ),
       },
       {
         Header: 'CAMPAIGN INCHARGE',
@@ -280,7 +264,7 @@ const Bookings = () => {
           row: {
             original: { campaign },
           },
-        }) => useMemo(() => <p>{campaign?.incharge?.name || <NoData type="na" />}</p>, []),
+        }) => useMemo(() => <p>{campaign?.incharge?.name || '-'}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',
@@ -478,7 +462,7 @@ const Bookings = () => {
           row: {
             original: { _id },
           },
-        }) => useMemo(() => <BookingsMenuPopover itemId={_id} />, []),
+        }) => useMemo(() => <BookingsMenuPopover itemId={_id} enableDelete={false} />, []),
       },
     ],
     [bookingData?.docs, campaignStatus, paymentStatus],
