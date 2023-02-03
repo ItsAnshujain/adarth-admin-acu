@@ -26,6 +26,10 @@
   @apply font-sans bg-purple-450 text-white disabled:bg-purple-300 #{!important};
 }
 
+.secondary-button {
+  @apply font-sans bg-gray-450 text-black disabled:bg-gray-400 #{!important};
+}
+
 .danger-buton {
   @apply font-sans bg-orange-450 text-white disabled:bg-orange-400 #{!important};
 }

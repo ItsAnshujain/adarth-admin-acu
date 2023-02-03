@@ -5,6 +5,7 @@ import { useToggle } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import Booking from '../../components/Inventory/ViewSpace/Booking';
 import BasicInfo from '../../components/Inventory/ViewSpace/BasicInformation';
+import OperationalCost from '../../components/Inventory/ViewSpace/OperationalCost';
 import { useFetchInventoryById, useUpdateInventory } from '../../hooks/inventory.hooks';
 
 const SpaceDetails = () => {
@@ -47,6 +48,9 @@ const SpaceDetails = () => {
             <Tabs.Tab value="booking" className="px-3 text-lg h-[60px]">
               Booking
             </Tabs.Tab>
+            <Tabs.Tab value="operational-cost" className="px-3 text-lg h-[60px]">
+              Operational Cost
+            </Tabs.Tab>
           </div>
           {activeTab === 'basic-info' ? (
             <div className="flex pr-7">
@@ -71,6 +75,9 @@ const SpaceDetails = () => {
         </Tabs.Panel>
         <Tabs.Panel value="booking" pt="xs">
           <Booking inventoryId={inventoryId} />
+        </Tabs.Panel>
+        <Tabs.Panel value="operational-cost" pt="xs">
+          <OperationalCost inventoryDetails={inventoryDetails} />
         </Tabs.Panel>
       </Tabs>
     </div>

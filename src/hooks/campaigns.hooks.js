@@ -160,11 +160,11 @@ export const useCampaignStats = (enabled = true) =>
     { enabled },
   );
 
-export const useCampaignReport = (enabled = true) =>
+export const useCampaignReport = (query, enabled = true) =>
   useQuery(
-    ['campaign-report'],
+    ['campaign-report', query],
     async () => {
-      const res = await campaignReport();
+      const res = await campaignReport(query);
       return res?.data;
     },
     { enabled },

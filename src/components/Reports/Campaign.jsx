@@ -1,4 +1,4 @@
-import { Button, Image, Loader } from '@mantine/core';
+import { Button, Image, Loader, Menu } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import {
@@ -11,15 +11,20 @@ import {
   Title,
 } from 'chart.js';
 import { v4 as uuidv4 } from 'uuid';
+import { useSearchParams } from 'react-router-dom';
+import dayjs from 'dayjs';
+import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import Header from './Header';
-import calendar from '../../assets/data-table.svg';
-import DateRange from '../DateRange';
 import TotalCampaignIcon from '../../assets/total-campaign.svg';
 import OngoingCampaignIcon from '../../assets/ongoing-campaign.svg';
 import UpcomingCampaignIcon from '../../assets/upcoming-campaign.svg';
 import CompletedCampaignIcon from '../../assets/completed-campaign.svg';
 import ImpressionsIcon from '../../assets/impressions.svg';
 import { useCampaignReport, useCampaignStats } from '../../hooks/campaigns.hooks';
+
+dayjs.extend(quarterOfYear);
+
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 ChartJS.register(ArcElement, Tooltip, CategoryScale, LinearScale, BarElement, Title);
 const options = {
@@ -48,8 +53,7 @@ const config = {
 };
 
 const Campaign = () => {
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [updatedBarData, setUpdatedBarData] = useState({
     id: uuidv4(),
     labels,
@@ -57,23 +61,54 @@ const Campaign = () => {
       {
         label: 'Upcoming',
         data: Array.from({ length: 12 }, () => 0),
-        backgroundColor: '#28B446',
+        backgroundColor: '#FF900E',
       },
       {
         label: 'Ongoing',
         data: Array.from({ length: 12 }, () => 0),
-        backgroundColor: '#FF900E',
+        backgroundColor: '#914EFB',
       },
       {
         label: 'Completed',
         data: Array.from({ length: 12 }, () => 0),
-        backgroundColor: '#914EFB',
+        backgroundColor: '#28B446',
       },
     ],
   });
 
   const { data: stats, isLoading: isStatsLoading } = useCampaignStats();
-  const { data: report, isLoading: isReportLoading, isSuccess } = useCampaignReport();
+  const {
+    data: report,
+    isLoading: isReportLoading,
+    isSuccess,
+  } = useCampaignReport(searchParams.toString());
+
+  const handleViewBy = viewType => {
+    if (viewType === 'reset') {
+      searchParams.delete('startDate');
+      searchParams.delete('endDate');
+    }
+    if (viewType === 'week') {
+      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
+      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
+    }
+    if (viewType === 'month') {
+      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
+      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
+    }
+    if (viewType === 'quarter') {
+      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
+      searchParams.set(
+        'endDate',
+        dayjs(dayjs().format(DATE_FORMAT)).quarter(2).format(DATE_FORMAT),
+      );
+    }
+    if (viewType === 'year') {
+      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
+      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
+    }
+    setSearchParams(searchParams);
+  };
 
   const healthStatusData = useMemo(
     () => ({
@@ -214,18 +249,31 @@ const Campaign = () => {
           <div className="w-2/3">
             <div className="flex justify-between">
               <p className="font-bold tracking-wide">Campaign Report</p>
-              <div className="flex justify-around">
-                <div className="mr-2 relative">
-                  <Button onClick={toggleDatePicker} variant="default">
-                    <img src={calendar} className="h-5" alt="calendar" />
-                  </Button>
-                  {showDatePicker && (
-                    <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
-                      <DateRange handleClose={toggleDatePicker} />
-                    </div>
-                  )}
-                </div>
-              </div>
+              <Menu shadow="md" width={130}>
+                <Menu.Target>
+                  <Button className="secondary-button">View By</Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    className="font-sans text-red-450"
+                    onClick={() => handleViewBy('reset')}
+                  >
+                    Reset
+                  </Menu.Item>
+                  <Menu.Item className="font-sans" onClick={() => handleViewBy('week')}>
+                    Weekly
+                  </Menu.Item>
+                  <Menu.Item className="font-sans" onClick={() => handleViewBy('month')}>
+                    Monthly
+                  </Menu.Item>
+                  <Menu.Item className="font-sans" onClick={() => handleViewBy('quarter')}>
+                    Quartly
+                  </Menu.Item>
+                  <Menu.Item className="font-sans" onClick={() => handleViewBy('year')}>
+                    Yearly
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
             </div>
             <div>
               {isReportLoading ? (

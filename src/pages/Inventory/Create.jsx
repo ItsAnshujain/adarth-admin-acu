@@ -154,14 +154,8 @@ const specificationsValues = yup.object({
       .max(100, 'Health Status must be less than or equal to 100')
       .nullable(true),
     impressions: yup.object({
-      min: yup
-        .number()
-        .positive('Width must be a positive number')
-        .typeError('Min must be a number'),
-      max: yup
-        .number()
-        .positive('Width must be a positive number')
-        .typeError('Max must be a number'),
+      min: yup.number().positive('Min must be a positive number').typeError('Min must be a number'),
+      max: yup.number().positive('Max must be a positive number').typeError('Max must be a number'),
     }),
     previousBrands: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
     tags: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),

@@ -11,4 +11,4 @@ export const updateCampaignStatus = (id, placeId, data) =>
   http.patch(`/campaigns/${id}/updateStatus/${placeId}`, data);
 
 export const campaignStats = () => http.get('/campaigns/stats');
-export const campaignReport = () => http.get('/campaigns/report');
+export const campaignReport = query => http.get(`/campaigns/report?${query}`);

@@ -39,14 +39,12 @@ const schema = yup.object({
   previousBrands: yup.array().of(yup.string().trim()),
   minImpression: yup
     .number()
-    .min(0)
-    .typeError('Minimum Impression must be a number')
-    .required('Impression is required'),
+    .positive('Min must be a positive number')
+    .typeError('Minimum Impression must be a number'),
   maxImpression: yup
     .number()
-    .min(0)
-    .typeError('Maximum Impression must be a number')
-    .required('Impression is required'),
+    .positive('Max must be a positive number')
+    .typeError('Maximum Impression must be a number'),
   tags: yup.array().of(yup.string().trim()),
   isFeatured: yup.boolean(),
   thumbnail: yup.string(),
