@@ -1,8 +1,8 @@
 import React from 'react';
-import { Menu } from '@mantine/core';
+import { Button, Menu } from '@mantine/core';
 import { Share2, Mail, Link as LinkIcon } from 'react-feather';
-import MenuIcon from '../../Menu';
-import whatsapp from '../../../assets/whatsapp.svg';
+import MenuIcon from '../Menu';
+import whatsapp from '../../assets/whatsapp.svg';
 
 const MenuPopover = () => (
   <div className="flex gap-2 items-center">
@@ -21,15 +21,13 @@ const MenuPopover = () => (
 
     <Menu shadow="md" width={150}>
       <Menu.Target>
-        <button type="button">
+        <Button>
           <MenuIcon />
-        </button>
+        </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <Menu.Item>
-          <button type="button" className="cursor-pointer flex items-center gap-1 w-full">
-            <span className="ml-1">Download</span>
-          </button>
+        <Menu.Item className="cursor-pointer flex items-center gap-1 w-full">
+          <span className="ml-1">Download</span>
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>

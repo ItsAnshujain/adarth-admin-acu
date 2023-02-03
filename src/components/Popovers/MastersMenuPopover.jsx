@@ -2,38 +2,21 @@ import { Button, Menu } from '@mantine/core';
 import React, { useState } from 'react';
 import { Edit2, Trash } from 'react-feather';
 import { useModals } from '@mantine/modals';
-import InputModal from './InputModal';
+import InputModal from '../Masters/InputModal';
 import MenuIcon from '../Menu';
 import modalConfig from '../../utils/modalConfig';
-import DeleteConfirmContent from '../DeleteConfirmContent';
-import { useDeleteMaster } from '../../hooks/masters.hooks';
+import DeleteMasterContent from '../DeleteMasterContent';
 
-const MenuPopover = ({ itemId, name }) => {
+const MastersMenuPopover = ({ itemId, name }) => {
   const [opened, setOpened] = useState(false);
   const modals = useModals();
-
-  const { mutate: deleteItem, isLoading } = useDeleteMaster();
-
-  const onSubmit = () => {
-    deleteItem({ masterId: itemId });
-    setTimeout(() => modals.closeAll(), 2000);
-  };
-
-  const checkConfirmation = isConfirmed => {
-    if (isConfirmed) {
-      onSubmit();
-    }
-  };
 
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
       title: '',
       innerProps: {
         modalBody: (
-          <DeleteConfirmContent
-            onClickCancel={id => modals.closeModal(id)}
-            setIsConfirmed={checkConfirmation}
-          />
+          <DeleteMasterContent onClickCancel={id => modals.closeModal(id)} masterId={itemId} />
         ),
       },
       ...modalConfig,
@@ -48,18 +31,10 @@ const MenuPopover = ({ itemId, name }) => {
           </Button>
         </Menu.Target>
         <Menu.Dropdown>
-          <Menu.Item
-            onClick={() => setOpened(true)}
-            icon={<Edit2 className="h-4" />}
-            disabled={isLoading}
-          >
+          <Menu.Item onClick={() => setOpened(true)} icon={<Edit2 className="h-4" />}>
             <span className="text-base">Edit</span>
           </Menu.Item>
-          <Menu.Item
-            icon={<Trash className="h-4" />}
-            onClick={() => toggleDeleteModal()}
-            disabled={isLoading}
-          >
+          <Menu.Item icon={<Trash className="h-4" />} onClick={() => toggleDeleteModal()}>
             <span className="text-base">Delete</span>
           </Menu.Item>
         </Menu.Dropdown>
@@ -69,4 +44,4 @@ const MenuPopover = ({ itemId, name }) => {
   );
 };
 
-export default MenuPopover;
+export default MastersMenuPopover;

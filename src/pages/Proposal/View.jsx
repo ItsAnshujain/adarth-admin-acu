@@ -18,7 +18,7 @@ import { colors } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
 import Filter from '../../components/Inventory/Filter';
 import useUserStore from '../../store/user.store';
-import MenuPopover from '../../components/Proposals/ViewProposal/MenuPopover';
+import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesMenuPopover';
 
 const ProposalDetails = () => {
   const modals = useModals();
@@ -258,7 +258,12 @@ const ProposalDetails = () => {
           },
         }) =>
           useMemo(
-            () => <MenuPopover itemId={_id} spacesData={proposalData?.inventories?.docs} />,
+            () => (
+              <ProposalSpacesMenuPopover
+                inventoryId={_id}
+                spacesData={proposalData?.inventories?.docs}
+              />
+            ),
             [],
           ),
       },

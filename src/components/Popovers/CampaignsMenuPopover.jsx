@@ -1,17 +1,32 @@
 import { Button, Menu } from '@mantine/core';
+import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import React from 'react';
 import { Bookmark, Edit2, Eye, Trash } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import { ROLES } from '../../utils';
+import modalConfig from '../../utils/modalConfig';
+import DeleteCampaignContent from '../DeleteCampaignContent';
 import MenuIcon from '../Menu';
 import RoleBased from '../RoleBased';
 
-const CampaignsMenuPopover = ({ isFeatured, itemId, onClickSetAsFeature, onClickDelete }) => {
+const CampaignsMenuPopover = ({ isFeatured, itemId, onClickSetAsFeature }) => {
+  const modals = useModals();
   const navigate = useNavigate();
 
+  const toggleDeleteModal = () =>
+    modals.openContextModal('basic', {
+      title: '',
+      innerProps: {
+        modalBody: (
+          <DeleteCampaignContent onClickCancel={id => modals.closeModal(id)} campaignId={itemId} />
+        ),
+      },
+      ...modalConfig,
+    });
+
   return (
-    <Menu shadow="md">
+    <Menu shadow="md" width={180}>
       <Menu.Target>
         <Button>
           <MenuIcon />
@@ -19,45 +34,37 @@ const CampaignsMenuPopover = ({ isFeatured, itemId, onClickSetAsFeature, onClick
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Item>
-          <div
-            aria-hidden
-            onClick={() => navigate(`/campaigns/view-details/${itemId}`)}
-            className="cursor-pointer flex items-center gap-1"
-          >
-            <Eye className="h-4" />
-            <span className="ml-1">View Details</span>
-          </div>
+        <Menu.Item
+          className="cursor-pointer flex items-center gap-1"
+          icon={<Eye className="h-4" />}
+          onClick={() => navigate(`/campaigns/view-details/${itemId}`)}
+        >
+          <span className="ml-1">View Details</span>
         </Menu.Item>
         <RoleBased acceptedRoles={[ROLES.ADMIN]}>
-          <Menu.Item>
-            <div
-              aria-hidden
-              onClick={() => navigate(`edit-details/${itemId}`)}
-              className="cursor-pointer flex items-center gap-1"
-            >
-              <Edit2 className="h-4" />
-              <span className="ml-1">Edit</span>
-            </div>
+          <Menu.Item
+            onClick={() => navigate(`edit-details/${itemId}`)}
+            icon={<Edit2 className="h-4" />}
+            className="cursor-pointer flex items-center gap-1"
+          >
+            <span className="ml-1">Edit</span>
           </Menu.Item>
-          <Menu.Item aria-hidden onClick={onClickDelete}>
-            <div className="cursor-pointer flex items-center gap-1">
-              <Trash className="h-4" />
-              <span className="ml-1">Delete</span>
-            </div>
+          <Menu.Item
+            className={classNames(
+              'bg-white cursor-pointer flex items-center text',
+              isFeatured ? 'text-purple-450' : '',
+            )}
+            icon={<Bookmark className="h-4 mr-2" />}
+            onClick={onClickSetAsFeature}
+          >
+            <span>Set as Featured</span>
           </Menu.Item>
-          <Menu.Item>
-            <div
-              className={classNames(
-                'bg-white cursor-pointer flex items-center text',
-                isFeatured ? 'text-purple-450' : '',
-              )}
-              aria-hidden
-              onClick={onClickSetAsFeature}
-            >
-              <Bookmark className="h-4 mr-2" />
-              <span>Set as Featured</span>
-            </div>
+          <Menu.Item
+            className="cursor-pointer flex items-center gap-1"
+            icon={<Trash className="h-4" />}
+            onClick={toggleDeleteModal}
+          >
+            <span className="ml-1">Delete</span>
           </Menu.Item>
         </RoleBased>
       </Menu.Dropdown>

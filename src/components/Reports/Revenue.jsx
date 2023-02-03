@@ -122,9 +122,6 @@ const Revenue = () => {
             <p className="my-2 text-sm font-light text-slate-400">Total Operational Cost</p>
             <p className="font-bold">0</p>
           </div>
-          <div aria-hidden className="flex-1 invisible">
-            Visibility Hidden
-          </div>
         </div>
         <div>
           <div className="flex justify-between">

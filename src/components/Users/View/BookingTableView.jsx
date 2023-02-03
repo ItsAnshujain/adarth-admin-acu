@@ -1,10 +1,10 @@
 import { useDebouncedState } from '@mantine/hooks';
 import { useEffect, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Button, Loader, NativeSelect, Progress } from '@mantine/core';
+import { Button, Loader, Progress, Select } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { downloadAll, serialize } from '../../../utils';
 import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
@@ -34,6 +34,7 @@ const sortOrders = order => {
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const BookingTableView = ({ data: bookingData, isLoading }) => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
 
@@ -59,13 +60,18 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
   };
 
   const paymentList = useMemo(
-    () => paymentStatus?.docs?.map(item => item.name) || [],
+    () => paymentStatus?.docs?.map(item => ({ label: item.name, value: item.name })) || [],
     [paymentStatus],
   );
   const campaignList = useMemo(
-    () => campaignStatus?.docs?.map(item => item.name) || [],
+    () => campaignStatus?.docs?.map(item => ({ label: item.name, value: item.name })) || [],
     [campaignStatus],
   );
+
+  const handleBookingDetails = itemId =>
+    navigate(`/bookings/view-details/${itemId}`, {
+      replace: true,
+    });
 
   const column = useMemo(
     () => [
@@ -78,7 +84,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
             const currentPage = bookingData?.page < 1 ? 1 : bookingData.page;
             const rowCount = (currentPage - 1) * bookingData.limit;
 
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+            return <p className="pl-2">{rowCount + row.index + 1}</p>;
           }, []),
       },
       {
@@ -108,9 +114,20 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         accessor: 'campaign.name',
         Cell: ({
           row: {
-            original: { campaign },
+            original: { campaign, _id },
           },
-        }) => useMemo(() => <p>{campaign?.name || <NoData type="na" />}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <Button
+                className="text-black font-medium px-2 max-w-[180px]"
+                onClick={() => handleBookingDetails(_id)}
+              >
+                <span className="overflow-hidden text-ellipsis">{campaign?.name || '-'}</span>
+              </Button>
+            ),
+            [],
+          ),
       },
       {
         Header: 'BOOKING TYPE',
@@ -126,7 +143,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         accessor: 'currentStatus.campaignStatus',
         Cell: ({
           row: {
-            original: { _id, currentStatus },
+            original: { _id, currentStatus, campaignStatus: c = {} },
           },
         }) =>
           useMemo(() => {
@@ -134,14 +151,24 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
             if (!currentStatus?.campaignStatus) {
               updatedCampaignList.unshift({ label: 'Select', value: '' });
             }
+
+            const filteredList = updatedCampaignList.map(item => ({
+              ...item,
+              disabled: Object.keys(c).includes(item.value),
+            }));
+
             return (
-              <NativeSelect
+              <Select
                 className="mr-2"
-                data={updatedCampaignList}
+                data={filteredList}
+                disabled={
+                  currentStatus?.mountingStatus?.toLowerCase() !== 'completed' ||
+                  currentStatus?.campaignStatus?.toLowerCase() === 'completed'
+                }
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-                onChange={e => handleCampaignUpdate(_id, e.target.value)}
+                onChange={e => handleCampaignUpdate(_id, e)}
                 defaultValue={currentStatus?.campaignStatus || ''}
               />
             );
@@ -152,7 +179,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         accessor: 'currentStatus.paymentStatus',
         Cell: ({
           row: {
-            original: { _id, currentStatus },
+            original: { _id, currentStatus, paymentStatus: p = {} },
           },
         }) =>
           useMemo(() => {
@@ -160,14 +187,21 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
             if (!currentStatus?.paymentStatus) {
               updatedPaymentList.unshift({ label: 'Select', value: '' });
             }
+
+            const filteredList = updatedPaymentList.map(item => ({
+              ...item,
+              disabled: Object.keys(p).includes(item.value),
+            }));
+
             return (
-              <NativeSelect
+              <Select
                 className="mr-2"
-                data={updatedPaymentList}
+                data={filteredList}
                 styles={statusSelectStyle}
+                disabled={currentStatus?.paymentStatus?.toLowerCase() === 'paid'}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-                onChange={e => handlePaymentUpdate(_id, e.target.value)}
+                onChange={e => handlePaymentUpdate(_id, e)}
                 defaultValue={currentStatus?.paymentStatus || ''}
               />
             );
@@ -178,62 +212,46 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         accessor: 'currentStatus.printingStatus',
         Cell: ({
           row: {
-            original: { campaign },
+            original: { currentStatus },
           },
         }) =>
-          useMemo(() => {
-            let printCount = 0;
-            const totalSpaces = campaign?.spaces?.length;
-            campaign?.spaces?.map(item => {
-              if (item?.currentStatus?.printingStatus?.toLowerCase()?.includes('print')) {
-                printCount += 1;
-              }
-              return printCount;
-            });
-
-            return (
+          useMemo(
+            () => (
               <p className="w-[200px]">
-                {printCount === 0
+                {currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Printing upcoming'
-                  : printCount > 0 && printCount < totalSpaces
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
                   ? 'Printing in progress'
-                  : printCount === totalSpaces
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Printing completed'
                   : '-'}
               </p>
-            );
-          }, []),
+            ),
+            [],
+          ),
       },
       {
         Header: 'MOUNTING STATUS',
         accessor: 'currentStatus.mountingStatus',
         Cell: ({
           row: {
-            original: { campaign },
+            original: { currentStatus },
           },
         }) =>
-          useMemo(() => {
-            let mountCount = 0;
-            const totalSpaces = campaign?.spaces?.length;
-            campaign?.spaces?.map(item => {
-              if (item?.currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')) {
-                mountCount += 1;
-              }
-              return mountCount;
-            });
-
-            return (
+          useMemo(
+            () => (
               <p className="w-[200px]">
-                {mountCount === 0
+                {currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Mounting upcoming'
-                  : mountCount > 0 && mountCount < totalSpaces
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
                   ? 'Mounting in progress'
-                  : mountCount === totalSpaces
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                   ? 'Mounting completed'
                   : '-'}
               </p>
-            );
-          }, []),
+            ),
+            [],
+          ),
       },
       {
         Header: 'CAMPAIGN INCHARGE',
@@ -242,7 +260,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           row: {
             original: { campaign },
           },
-        }) => useMemo(() => <p>{campaign?.incharge?.name || <NoData type="na" />}</p>, []),
+        }) => useMemo(() => <p>{campaign?.incharge?.name || '-'}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',

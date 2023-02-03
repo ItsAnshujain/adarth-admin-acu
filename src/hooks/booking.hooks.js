@@ -144,10 +144,11 @@ export const useBookingStatByIncharge = (filter, enabled = true) =>
 
 export const useDeleteBooking = () => {
   const queryClient = useQueryClient();
+
   return useMutation(
     async id => {
       const res = await deleteBookings(id);
-      return res;
+      return res?.data;
     },
     {
       onSuccess: () => {

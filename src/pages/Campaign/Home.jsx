@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronDown } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDebouncedState } from '@mantine/hooks';
-import { useCampaigns, useDeleteCampaign, useUpdateCampaign } from '../../hooks/campaigns.hooks';
+import { useCampaigns, useUpdateCampaign } from '../../hooks/campaigns.hooks';
 import AreaHeader from '../../components/Campaigns/Header';
 import GridView from '../../components/Campaigns/GridView';
 import Table from '../../components/Table/Table';
@@ -36,7 +36,6 @@ const Home = () => {
 
   const { data: campaignData, isLoading } = useCampaigns(searchParams.toString());
   const { mutate } = useUpdateCampaign();
-  const { mutate: delCampaign } = useDeleteCampaign();
 
   const { data: campaignStatus } = useFetchMasters(
     serialize({ type: 'campaign_status', parentId: null, limit: 100, page: 1 }),
@@ -51,12 +50,6 @@ const Home = () => {
         onSuccess: invalidate,
       },
     );
-  };
-
-  const deleteCampaign = ids => {
-    delCampaign(serialize({ ids }), {
-      onSuccess: invalidate,
-    });
   };
 
   const campaignList = useMemo(
@@ -201,7 +194,6 @@ const Home = () => {
                     isFeatured: !isFeatured,
                   })
                 }
-                onClickDelete={() => deleteCampaign(_id)}
               />
             ),
             [isFeatured, _id],

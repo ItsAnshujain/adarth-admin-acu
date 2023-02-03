@@ -6,7 +6,7 @@ import Header from './Header';
 import RowsPerPage from '../RowsPerPage';
 import Search from '../Search';
 import Table from '../Table/Table';
-import MenuPopover from './MenuPopover';
+import MastersMenuPopover from '../Popovers/MastersMenuPopover';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import { masterTypes } from '../../utils';
 
@@ -96,7 +96,7 @@ const Home = () => {
           row: {
             original: { _id, name },
           },
-        }) => useMemo(() => <MenuPopover itemId={_id} name={name} />, []),
+        }) => useMemo(() => <MastersMenuPopover itemId={_id} name={name} />, []),
       },
     ],
     [masterData],

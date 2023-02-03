@@ -26,7 +26,6 @@ export const useCreateInventory = () => {
 
         showNotification({
           title: 'Inventory Successfully Added',
-          message: 'Thank you for adding the inventory',
           color: 'green',
         });
       },

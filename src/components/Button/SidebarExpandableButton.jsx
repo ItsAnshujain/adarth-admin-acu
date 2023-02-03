@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { Accordion, Button } from '@mantine/core';
+import { Accordion, Box, Button } from '@mantine/core';
 import classNames from 'classnames';
 import { Mail } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
@@ -16,10 +16,10 @@ const AccordionLabel = props => {
     }
   };
   return (
-    <div aria-hidden onClick={handleClick} className="flex">
+    <Box onClick={handleClick} className="flex">
       <Mail className="h-5" />
       <span className="text-gray-400 font-medium text-sm ml-2">{label}</span>{' '}
-    </div>
+    </Box>
   );
 };
 

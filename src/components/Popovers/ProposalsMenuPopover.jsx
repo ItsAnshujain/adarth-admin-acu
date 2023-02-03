@@ -3,9 +3,8 @@ import { useModals } from '@mantine/modals';
 import { useNavigate } from 'react-router-dom';
 import { Eye, Edit2, Trash } from 'react-feather';
 import modalConfig from '../../utils/modalConfig';
-import DeleteConfirmContent from '../DeleteConfirmContent';
+import DeleteProposalContent from '../DeleteProposalContent';
 import MenuIcon from '../Menu';
-import { useDeleteProposal } from '../../hooks/proposal.hooks';
 import { handleStopPropagation } from '../../utils';
 
 const ProposalsMenuPopover = ({
@@ -16,28 +15,13 @@ const ProposalsMenuPopover = ({
 }) => {
   const modals = useModals();
   const navigate = useNavigate();
-  const { mutate: deleteItem, isLoading } = useDeleteProposal();
-
-  const onSubmit = () => {
-    deleteItem({ proposalId: itemId });
-    setTimeout(() => modals.closeModal(), 2000);
-  };
-
-  const checkConfirmation = isConfirmed => {
-    if (isConfirmed) {
-      onSubmit();
-    }
-  };
 
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
       title: '',
       innerProps: {
         modalBody: (
-          <DeleteConfirmContent
-            onClickCancel={id => modals.closeModal(id)}
-            setIsConfirmed={checkConfirmation}
-          />
+          <DeleteProposalContent onClickCancel={id => modals.closeModal(id)} proposalId={itemId} />
         ),
       },
       ...modalConfig,
@@ -72,8 +56,7 @@ const ProposalsMenuPopover = ({
         {enableDelete ? (
           <Menu.Item
             icon={<Trash className="h-4" />}
-            onClick={e => handleStopPropagation(e, toggleDeleteModal())}
-            disabled={isLoading}
+            onClick={e => handleStopPropagation(e, toggleDeleteModal)}
             className="cursor-pointer flex items-center gap-1"
           >
             <span className="ml-1">Delete</span>
