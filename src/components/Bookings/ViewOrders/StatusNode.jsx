@@ -29,17 +29,14 @@ const StatusNode = ({
         <Image src={isSuccess ? checkgreen : checkbw} />
       </div>
       <div>
-        <p className="font-sans text-black font-bold text-xl">{status}</p>
+        <p className="text-black font-bold text-xl">{status}</p>
         <p
-          className={classNames(
-            isSuccess ? 'text-green-500' : 'text-orange-350',
-            'font-sans font-bold mb-3',
-          )}
+          className={classNames(isSuccess ? 'text-green-500' : 'text-orange-350', 'font-bold mb-3')}
         >
           {isSuccess ? 'Successful' : 'Ongoing'}
         </p>
-        <p className="font-sans text-gray-550 font-medium text-md">Date &amp; Time</p>
-        <p className="font-sans text-black font-medium text-md">
+        <p className="text-gray-550 font-medium text-md">Date &amp; Time</p>
+        <p className="text-black font-medium text-md">
           {dateAndTime ? dayjs(dateAndTime).format(DATE_FORMAT) : 'NA'}
         </p>
       </div>

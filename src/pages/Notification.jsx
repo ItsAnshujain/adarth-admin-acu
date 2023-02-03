@@ -84,9 +84,7 @@ const Notifications = () => {
               </div>
             ) : null}
             {!data?.docs?.length && !isFetchAllNotificationsLoading ? (
-              <p className=" text-lg font-sans font-medium text-center mt-20">
-                No new notifications found
-              </p>
+              <p className=" text-lg font-medium text-center mt-20">No new notifications found</p>
             ) : null}
             {isSuccess && data?.docs
               ? data.docs.map(messages => (
@@ -104,13 +102,13 @@ const Notifications = () => {
                         ) : (
                           <Avatar alt="placeholder" radius="xl" />
                         )}
-                        <p className="font-bold font-sans">{messages?.userId?.name || 'NA'}</p>
+                        <p className="font-bold">{messages?.userId?.name || 'NA'}</p>
                       </div>
-                      <p className="text-slate-400 text-sm font-sans">
+                      <p className="text-slate-400 text-sm">
                         {dayjs(messages?.updatedAt).fromNow()}
                       </p>
                     </div>
-                    <p className="mt-2 text-sm font-sans">{messages?.description || 'NA'}</p>
+                    <p className="mt-2 text-sm">{messages?.description || 'NA'}</p>
                     <div className="flex justify-end">
                       <Button
                         onClick={() => handleRead(messages?._id)}

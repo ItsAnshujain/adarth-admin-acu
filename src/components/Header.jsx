@@ -50,7 +50,7 @@ const Header = ({ title }) => {
         </div>
         <div className="flex justify-between items-center col-span-10 border-l border-gray-450">
           <div className="pl-5">
-            <p className="text-2xl font-bold tracking-wide font-sans">{title}</p>
+            <p className="text-2xl font-bold tracking-wide">{title}</p>
           </div>
           <div className="flex items-center mr-7">
             <Link to="/notification">
@@ -58,7 +58,7 @@ const Header = ({ title }) => {
                 variant="subtle"
                 color="gray"
                 className={classNames(
-                  'font-medium font-sans',
+                  'font-medium',
                   ['/notification'].includes(pathname) ? 'text-purple-450' : '',
                 )}
                 leftIcon={<Image src={NotificationsIcon} height={24} width={24} />}
@@ -71,7 +71,7 @@ const Header = ({ title }) => {
                 variant="subtle"
                 color="gray"
                 className={classNames(
-                  'font-medium font-sans',
+                  'font-medium',
                   ['/settings'].includes(pathname) ? 'text-purple-450' : '',
                 )}
                 leftIcon={<Image src={SettingsIcon} height={24} width={24} />}
@@ -88,7 +88,7 @@ const Header = ({ title }) => {
                     className="rounded-full mr-2"
                     alt="user-logo"
                   />
-                  <p className="font-medium text-sm font-sans max-w-[120px] min-w-[100px] overflow-hidden text-ellipsis">
+                  <p className="font-medium text-sm max-w-[120px] min-w-[100px] overflow-hidden text-ellipsis">
                     {user?.name || 'Profile'}
                   </p>
                 </Button>
@@ -96,12 +96,12 @@ const Header = ({ title }) => {
 
               <MenuProfile.Dropdown>
                 <Link to="/profile">
-                  <MenuProfile.Item className="font-sans">My Profile</MenuProfile.Item>
+                  <MenuProfile.Item>My Profile</MenuProfile.Item>
                 </Link>
                 <Link to="/edit-profile">
-                  <MenuProfile.Item className="font-sans">Edit Profile</MenuProfile.Item>
+                  <MenuProfile.Item>Edit Profile</MenuProfile.Item>
                 </Link>
-                <MenuProfile.Item className="text-red-500 font-sans" onClick={handleLogout}>
+                <MenuProfile.Item className="text-red-500" onClick={handleLogout}>
                   Logout
                 </MenuProfile.Item>
               </MenuProfile.Dropdown>

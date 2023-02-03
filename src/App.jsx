@@ -6,7 +6,6 @@ import LoginMain from './pages/Login/Home';
 import ChangePassword from './pages/Login/ChangePassword';
 import ForgotPassword from './pages/Login/ForgotPassword';
 import Header from './Loader/Header';
-import Loader from './Loader';
 import CustomLoader from './Loader/Loader';
 import Sidebar from './Loader/Sidebar';
 import NoMatch from './pages/NoMatch';
@@ -161,7 +160,7 @@ const App = () => {
           <Route
             path=""
             element={
-              <Suspense fallback={<Loader />}>
+              <Suspense fallback={<CustomLoader />}>
                 <CampaignHome />
               </Suspense>
             }
@@ -236,7 +235,7 @@ const App = () => {
           <Route
             path=""
             element={
-              <Suspense fallback={<Loader />}>
+              <Suspense fallback={<CustomLoader />}>
                 <BookingHome />
               </Suspense>
             }
@@ -297,7 +296,7 @@ const App = () => {
           <Route
             path=""
             element={
-              <Suspense fallback={<Loader />}>
+              <Suspense fallback={<CustomLoader />}>
                 <UserHome />
               </Suspense>
             }
@@ -342,7 +341,7 @@ const App = () => {
           <Route
             path="inventories"
             element={
-              <Suspense fallback={<Loader />}>
+              <Suspense fallback={<CustomLoader />}>
                 <ReportInventory />
               </Suspense>
             }
