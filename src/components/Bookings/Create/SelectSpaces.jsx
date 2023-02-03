@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Image, NumberInput, Progress, Badge, Loader, Chip, Box } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { Dropzone } from '@mantine/dropzone';
 import { useDebouncedState } from '@mantine/hooks';
@@ -284,7 +283,7 @@ const SelectSpace = () => {
           row: {
             original: { location },
           },
-        }) => useMemo(() => <p>{location?.city || '-'}</p>, []),
+        }) => useMemo(() => <p>{location || '-'}</p>, []),
       },
       {
         Header: 'MEDIA TYPE',
@@ -327,6 +326,9 @@ const SelectSpace = () => {
             () => (
               <div className="min-w-[300px]">
                 <DateRangeSelector
+                  error={
+                    !!values?.place?.find(item => item._id === _id) && (!startDate || !endDate)
+                  }
                   dateValue={[startDate || null, endDate || null]}
                   onChange={val => updateData('dateRange', val, _id)}
                   dateRange={bookingRange}
@@ -405,11 +407,12 @@ const SelectSpace = () => {
         obj.price = item.basicInformation?.price || 0;
         obj.landlord = item.basicInformation?.mediaOwner?.name;
         obj.campaigns = item?.campaigns;
-        obj.startDate = item.startDate ? new Date(item.startDate) : new Date();
-        obj.endDate = item.endDate ? new Date(item.endDate) : dayjs().add(1, 'day').toDate();
+        obj.startDate = item.startDate ? new Date(item.startDate) : null;
+        obj.endDate = item.endDate ? new Date(item.endDate) : null;
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
         finalData.push(obj);
       }
+
       setUpdatedInventoryData(finalData);
       setPagination(page);
     }

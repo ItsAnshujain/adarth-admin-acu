@@ -3,12 +3,16 @@ import dayjs from 'dayjs';
 import { DateRangePicker } from '@mantine/dates';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-import { useStyles } from './DateRange';
+import { createStyles } from '@mantine/core';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
 const DATE_FORMAT = 'YYYY-MM-DD';
+
+const useStyles = createStyles({
+  outside: { opacity: 0 },
+});
 
 const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
   const { classes, cx } = useStyles();
@@ -51,6 +55,7 @@ const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
 
   const handleChange = val => {
     setValue(val);
+    if (val[0] === null && val[1] === null) onChange(val);
     if (onChange && val[0] && val[1]) onChange(val);
   };
 
@@ -59,13 +64,12 @@ const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
       placeholder="Pick dates range"
       onChange={handleChange}
       excludeDate={excludeBookedDates}
+      minDate={new Date()}
       disableOutsideEvents
       defaultValue={dateValue}
       dayClassName={(_, modifiers) =>
         cx({
-          [classes.weekend]: modifiers.weekend,
-          [classes.disabled]: modifiers.disabled,
-          [classes.selectedInRange]: modifiers.selectedInRange,
+          [classes.outside]: modifiers.outside,
         })
       }
       {...props}
