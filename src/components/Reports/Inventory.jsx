@@ -1,5 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from 'react';
-import dayjs from 'dayjs';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,11 +12,11 @@ import {
   ArcElement,
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
-import { Badge, Box, Button, Image } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { Badge, Box, Image, Loader } from '@mantine/core';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
+import dayjs from 'dayjs';
 import Header from './Header';
-import calendar from '../../assets/data-table.svg';
-import DateRange from '../DateRange';
 import AreaHeader from '../Inventory/AreaHeader';
 import Table from '../Table/Table';
 import RowsPerPage from '../RowsPerPage';
@@ -28,12 +27,14 @@ import InventoryIcon from '../../assets/inventory-active.svg';
 import OperationalCostIcon from '../../assets/operational-cost.svg';
 import VacantIcon from '../../assets/vacant.svg';
 import OccupiedIcon from '../../assets/occupied.svg';
-import UnderMaintenaceIcon from '../../assets/under-maintenance.svg';
+import UnderMaintenanceIcon from '../../assets/under-maintenance.svg';
 import BestIcon from '../../assets/best-performing-inventory.svg';
 import WorstIcon from '../../assets/worst-performing-inventory.svg';
 import { FormProvider, useForm } from '../../context/formContext';
 import toIndianCurrency from '../../utils/currencyFormat';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
+import { useInventoryReport, useInventoryStats } from '../../hooks/inventory.hooks';
+import ViewByFilter from './ViewByFilter';
 
 ChartJS.register(
   ArcElement,
@@ -47,45 +48,103 @@ ChartJS.register(
   Legend,
 );
 
+const DATE_FORMAT = 'YYYY-MM-DD';
+
 const options = {
   responsive: true,
 };
 
-const labels = [];
-for (let i = 0; i < 6; i += 1) {
-  labels.push(dayjs().subtract(i, 'months').format('MMMM'));
-}
-labels.reverse();
+const labels = [
+  'Jan',
+  'Febr',
+  'Mar',
+  'Apr',
+  'May',
+  'June',
+  'July',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
-// Doughnut
-const data = {
-  datasets: [
-    {
-      data: [3425, 3425],
-      backgroundColor: ['#914EFB', '#FF900E'],
-      borderColor: ['#914EFB', '#FF900E'],
-      borderWidth: 1,
-    },
-  ],
-};
 const config = {
   type: 'line',
-  data,
   options: { responsive: true },
 };
 
-// TODO: integration left
+// TODO: integration left for table
 const Inventory = () => {
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const form = useForm();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const chartRef = useRef(null);
   const [search, setSearch] = useState('');
   const [count, setCount] = useState('20');
   const [view, setView] = useState('list');
   const [selectAll, setSelectAll] = useState(false);
-  const [areaData, setAreaData] = useState({ datasets: [] });
-  const chartRef = useRef(null);
-  const form = useForm();
-  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
-  const navigate = useNavigate();
+  const [areaData, setAreaData] = useState({
+    id: uuidv4(),
+    labels,
+    datasets: [
+      {
+        label: 'Revenue',
+        data: Array.from({ length: 12 }, () => 0),
+        borderColor: '#914EFB',
+        cubicInterpolationMode: 'monotone',
+      },
+    ],
+  });
+
+  const { data: inventoryStats, isLoading: isInventoryStatsLoading } = useInventoryStats('');
+  const {
+    data: inventoryReports,
+    isLoading: isInventoryReportLoading,
+    isSuccess,
+  } = useInventoryReport('');
+
+  const handleViewBy = viewType => {
+    if (viewType === 'reset') {
+      searchParams.delete('startDate');
+      searchParams.delete('endDate');
+    }
+    if (viewType === 'week') {
+      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
+      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
+    }
+    if (viewType === 'month') {
+      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
+      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
+    }
+    if (viewType === 'quarter') {
+      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
+      searchParams.set(
+        'endDate',
+        dayjs(dayjs().format(DATE_FORMAT)).quarter(2).format(DATE_FORMAT),
+      );
+    }
+    if (viewType === 'year') {
+      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
+      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
+    }
+    setSearchParams(searchParams);
+  };
+
+  const inventoryHealthStatus = useMemo(
+    () => ({
+      datasets: [
+        {
+          data: [inventoryStats?.unHealthy ?? 0, inventoryStats?.healthy ?? 0],
+          backgroundColor: ['#914EFB', '#FF900E'],
+          borderColor: ['#914EFB', '#FF900E'],
+          borderWidth: 1,
+        },
+      ],
+    }),
+    [inventoryStats],
+  );
 
   const COLUMNS = [
     {
@@ -188,6 +247,22 @@ const Inventory = () => {
     },
   ];
 
+  const calculateLineData = useCallback(() => {
+    setAreaData(prevState => {
+      const tempAreaData = { ...prevState, id: uuidv4() };
+
+      if (inventoryReports) {
+        inventoryReports?.revenue?.forEach(item => {
+          if (item._id.month) {
+            tempAreaData.datasets[0].data[item._id.month - 1] = item.price;
+          }
+        });
+      }
+
+      return tempAreaData;
+    });
+  }, [inventoryReports]);
+
   useEffect(() => {
     const chart = chartRef.current;
 
@@ -195,22 +270,8 @@ const Inventory = () => {
       return;
     }
 
-    const newLineData = {
-      labels,
-      datasets: [
-        {
-          label: 'Revenue',
-          data: [10, 0, 23, 23, 31, 23, 5, 21, 22, 12, 3, 4],
-          borderColor: '#914EFB',
-          // backgroundColor: createGradient(chart.ctx, chart.chartArea),
-          cubicInterpolationMode: 'monotone',
-          // fill: true,
-        },
-      ],
-    };
-
-    setAreaData(newLineData);
-  }, []);
+    calculateLineData();
+  }, [inventoryReports, isSuccess]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
@@ -220,52 +281,55 @@ const Inventory = () => {
           <div className="border rounded p-8  flex-1">
             <Image src={InventoryIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Inventory</p>
-            <p className="font-bold">0</p>
+            <p className="font-bold">{inventoryReports?.totalInventories ?? 0}</p>
           </div>
           <div className="border rounded p-8 flex-1">
             <Image src={VacantIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Vacant</p>
-            <p className="font-bold">0</p>
+            <p className="font-bold">{inventoryStats?.vacant ?? 0}</p>
           </div>
           <div className="border rounded p-8  flex-1">
             <Image src={OccupiedIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Occupied</p>
-            <p className="font-bold">0</p>
+            <p className="font-bold">{inventoryStats?.occupied ?? 0}</p>
           </div>
           <div className="border rounded p-8 flex-1">
-            <Image src={UnderMaintenaceIcon} alt="folder" fit="contain" height={24} width={24} />
+            <Image src={UnderMaintenanceIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Under Maintenance</p>
-            <p className="font-bold">0</p>
+            <p className="font-bold">{inventoryReports?.underMaintenance ?? 0}</p>
           </div>
           <div className="border rounded p-8 flex-1">
             <Image src={OperationalCostIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Opertaional Cost</p>
-            <p className="font-bold">0</p>
+            <p className="font-bold">{inventoryReports?.totalOperationalCost ?? 0}</p>
           </div>
         </div>
         <div className="flex w-full gap-4">
           <div className="w-[70%]">
             <div className="flex justify-between">
               <p className="font-bold">Revenue Graph</p>
-              <div className="flex justify-around">
-                <div className="mr-2 relative">
-                  <Button onClick={toggleDatePicker} variant="default">
-                    <img src={calendar} className="h-5" alt="calendar" />
-                  </Button>
-                  {showDatePicker && (
-                    <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3">
-                      <DateRange handleClose={toggleDatePicker} />
-                    </div>
-                  )}
-                </div>
-              </div>
+              <ViewByFilter handleViewBy={handleViewBy} />
             </div>
-            <Line height="120" data={areaData} options={options} ref={chartRef} />
+            {isInventoryReportLoading ? (
+              <Loader className="mx-auto mt-10" />
+            ) : (
+              <Line
+                height="120"
+                data={areaData}
+                options={options}
+                ref={chartRef}
+                key={areaData.id}
+              />
+            )}
           </div>
 
           <div className="w-[30%] flex gap-8 h-[50%] p-4 border rounded-md">
-            <div className="w-[40%]">
-              <Doughnut options={config.options} data={config.data} />
+            <div className="w-[40%] my-auto">
+              {isInventoryStatsLoading ? (
+                <Loader className="mx-auto" />
+              ) : (
+                <Doughnut options={config.options} data={inventoryHealthStatus} />
+              )}
             </div>
             <div className="flex flex-col">
               <p className="font-medium">Health Status</p>
@@ -274,14 +338,14 @@ const Inventory = () => {
                   <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                   <div>
                     <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
-                    <p className="font-bold text-lg">0</p>
+                    <p className="font-bold text-lg">{inventoryStats?.healthy ?? 0}</p>
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                   <div>
                     <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
-                    <p className="font-bold text-lg">0</p>
+                    <p className="font-bold text-lg">{inventoryStats?.unHealthy ?? 0}</p>
                   </div>
                 </div>
               </div>
@@ -318,7 +382,7 @@ const Inventory = () => {
               {view === 'grid' ? (
                 <GridView selectAll={selectAll} count={count} Card={Card} />
               ) : view === 'list' ? (
-                <Table COLUMNS={COLUMNS} data={[2]} count={count} />
+                <Table COLUMNS={COLUMNS} data={[]} count={count} />
               ) : null}
             </form>
           </FormProvider>

@@ -1,4 +1,4 @@
-import { Button, Image, Loader, Menu } from '@mantine/core';
+import { Image, Loader } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import {
@@ -21,6 +21,7 @@ import UpcomingCampaignIcon from '../../assets/upcoming-campaign.svg';
 import CompletedCampaignIcon from '../../assets/completed-campaign.svg';
 import ImpressionsIcon from '../../assets/impressions.svg';
 import { useCampaignReport, useCampaignStats } from '../../hooks/campaigns.hooks';
+import ViewByFilter from './ViewByFilter';
 
 dayjs.extend(quarterOfYear);
 
@@ -249,20 +250,7 @@ const Campaign = () => {
           <div className="w-2/3">
             <div className="flex justify-between">
               <p className="font-bold tracking-wide">Campaign Report</p>
-              <Menu shadow="md" width={130}>
-                <Menu.Target>
-                  <Button className="secondary-button">View By</Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item className="text-red-450" onClick={() => handleViewBy('reset')}>
-                    Reset
-                  </Menu.Item>
-                  <Menu.Item onClick={() => handleViewBy('week')}>Weekly</Menu.Item>
-                  <Menu.Item onClick={() => handleViewBy('month')}>Monthly</Menu.Item>
-                  <Menu.Item onClick={() => handleViewBy('quarter')}>Quartly</Menu.Item>
-                  <Menu.Item onClick={() => handleViewBy('year')}>Yearly</Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
+              <ViewByFilter handleViewBy={handleViewBy} />
             </div>
             <div>
               {isReportLoading ? (

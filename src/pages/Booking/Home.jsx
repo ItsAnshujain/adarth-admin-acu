@@ -362,7 +362,7 @@ const Bookings = () => {
       },
       {
         Header: 'PRICING',
-        accessor: 'price',
+        accessor: 'campaign.totalPrice',
         Cell: ({
           row: {
             original: { campaign },

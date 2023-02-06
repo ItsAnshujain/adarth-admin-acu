@@ -156,7 +156,7 @@ const Home = () => {
         }) => useMemo(() => <MenuPopover itemId={_id} />, []),
       },
     ],
-    [financialDataByMonth?.docs],
+    [financialDataByMonth?.finances?.docs],
   );
 
   // TODO: disable SortBy in all col for now
@@ -276,7 +276,7 @@ const Home = () => {
         }) => useMemo(() => <MenuPopover itemId={_id} />, []),
       },
     ],
-    [financialDataByMonth?.docs],
+    [financialDataByMonth?.finances?.docs],
   );
 
   // TODO: disable SortBy in all col for now
@@ -410,7 +410,7 @@ const Home = () => {
         }) => useMemo(() => <MenuPopover itemId={_id} />, []),
       },
     ],
-    [financialDataByMonth?.docs],
+    [financialDataByMonth?.finances?.docs],
   );
 
   useEffect(() => {
@@ -423,7 +423,13 @@ const Home = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <Header year={year} month={month} pageNumber={pageNumber} />
+      <Header
+        year={year}
+        month={month}
+        pageNumber={pageNumber}
+        totalSales={financialDataByMonth?.cost?.totalSales}
+        totalOperationlCost={financialDataByMonth?.cost?.totalOperationlCost}
+      />
       <div className="flex pl-5 gap-3 items-center font-medium h-20 border-b">
         <Button
           onClick={() => handleTabs(0, 'purchase')}
@@ -472,34 +478,34 @@ const Home = () => {
 
       {isLoading ? <Loader className="w-full mt-20" /> : null}
 
-      {!financialDataByMonth?.docs?.length && !isLoading ? (
+      {!financialDataByMonth?.finances?.docs?.length && !isLoading ? (
         <div className="w-full mt-10 flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
 
-      {!isLoading && financialDataByMonth?.docs?.length && pageNumber === 0 ? (
+      {!isLoading && financialDataByMonth?.finances?.docs?.length && pageNumber === 0 ? (
         <Table
           COLUMNS={purchaseOrderColumn}
-          data={financialDataByMonth?.docs}
-          activePage={financialDataByMonth?.page || 1}
-          totalPages={financialDataByMonth?.totalPages || 1}
+          data={financialDataByMonth?.finances?.docs}
+          activePage={financialDataByMonth?.finances?.page || 1}
+          totalPages={financialDataByMonth?.finances?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
-      ) : !isLoading && financialDataByMonth?.docs?.length && pageNumber === 1 ? (
+      ) : !isLoading && financialDataByMonth?.finances?.docs?.length && pageNumber === 1 ? (
         <Table
           COLUMNS={releaseOrderColumn}
-          data={financialDataByMonth?.docs}
-          activePage={financialDataByMonth?.page || 1}
-          totalPages={financialDataByMonth?.totalPages || 1}
+          data={financialDataByMonth?.finances?.docs}
+          activePage={financialDataByMonth?.finances?.page || 1}
+          totalPages={financialDataByMonth?.finances?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
-      ) : !isLoading && financialDataByMonth?.docs?.length ? (
+      ) : !isLoading && financialDataByMonth?.finances?.docs?.length ? (
         <Table
           COLUMNS={invoiceColumn}
-          data={financialDataByMonth?.docs}
-          activePage={financialDataByMonth?.page || 1}
-          totalPages={financialDataByMonth?.totalPages || 1}
+          data={financialDataByMonth?.finances?.docs}
+          activePage={financialDataByMonth?.finances?.page || 1}
+          totalPages={financialDataByMonth?.finances?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
       ) : null}
