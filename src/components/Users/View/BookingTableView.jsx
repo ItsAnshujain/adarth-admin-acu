@@ -358,7 +358,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
       },
       {
         Header: 'PRICING',
-        accessor: 'price',
+        accessor: 'campaign.totalPrice',
         Cell: ({
           row: {
             original: { campaign },

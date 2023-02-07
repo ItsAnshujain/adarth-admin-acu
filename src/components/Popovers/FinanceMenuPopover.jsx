@@ -4,7 +4,7 @@ import { Share2, Mail, Link as LinkIcon } from 'react-feather';
 import MenuIcon from '../Menu';
 import whatsapp from '../../assets/whatsapp.svg';
 
-const MenuPopover = () => (
+const MenuPopover = ({ onClickDownloadPdf = () => {} }) => (
   <div className="flex gap-2 items-center">
     <Menu shadow="md" width={150}>
       <Menu.Target>
@@ -26,7 +26,10 @@ const MenuPopover = () => (
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <Menu.Item className="cursor-pointer flex items-center gap-1 w-full">
+        <Menu.Item
+          className="cursor-pointer flex items-center gap-1 w-full"
+          onClick={onClickDownloadPdf}
+        >
           <span className="ml-1">Download</span>
         </Menu.Item>
       </Menu.Dropdown>

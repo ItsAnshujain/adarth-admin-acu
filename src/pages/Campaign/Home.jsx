@@ -146,8 +146,6 @@ const Home = () => {
             const updatedCampaignList = [...campaignList];
             if (!status) {
               updatedCampaignList.unshift({ label: 'Select', value: '' });
-            } else if (status?.toLowerCase() === 'created') {
-              updatedCampaignList.unshift({ label: status, value: status });
             }
 
             return (

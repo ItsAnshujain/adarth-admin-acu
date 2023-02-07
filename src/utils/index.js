@@ -26,10 +26,12 @@ export const masterTypes = {
   space_type: 'Space Type',
   printing_status: 'Printing Status',
   mounting_status: 'Mounting Status',
-  campaign_status: 'Campaign Status',
+  booking_campaign_status: 'Booking Campaign Status',
   payment_status: 'Payment Status',
   proposal_status: 'Proposal Status',
   space_status: 'Space Status',
+  campaign_status: 'Campaign Status',
+  industry: 'Industry',
 };
 
 /**
@@ -206,3 +208,14 @@ export const months = [
 ];
 
 export const supportedTypes = ['JPG', 'JPEG', 'PNG'];
+
+export const indianCurrencyInDecimals = amount => {
+  if (Number.isNaN(amount)) {
+    return 0;
+  }
+
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+  }).format(amount);
+};

@@ -288,7 +288,7 @@ const Create = () => {
   const { mutateAsync: generateInvoiceOrder, isLoading: isGenerateInvoiceOrderLoading } =
     useGenerateInvoice();
 
-  const redirectToHome = () => setTimeout(() => navigate('/bookings'), 2000);
+  const redirectToHome = () => setTimeout(() => navigate(-1), 2000);
 
   const calcutateTotalPrice = useMemo(() => {
     const initialPrice = 0;

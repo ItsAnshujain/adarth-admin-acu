@@ -31,6 +31,7 @@ const initialValues = {
   thumbnail: '',
   thumbnailId: '',
   type: 'predefined',
+  industry: '',
 };
 
 const schema = yup.object({
@@ -48,6 +49,7 @@ const schema = yup.object({
   tags: yup.array().of(yup.string().trim()),
   isFeatured: yup.boolean(),
   thumbnail: yup.string(),
+  industry: yup.string().trim(),
 });
 
 const CreateCampaign = () => {
@@ -152,6 +154,8 @@ const CreateCampaign = () => {
         }
       }
 
+      // console.log(newData);
+      // return;
       if (id) {
         update(
           {
@@ -182,7 +186,24 @@ const CreateCampaign = () => {
     if (data?.campaign && !form.isTouched()) {
       form.setValues({
         ...data.campaign,
-        place: data.campaign.place.map(({ id: _id, ...item }) => ({ ...item, _id })),
+        place: data.campaign.place.map(({ id: inventoryObj, ...item }) => ({
+          ...item,
+          img: inventoryObj.photo,
+          name: inventoryObj.spaceName,
+          address: inventoryObj.location?.address,
+          cost: inventoryObj.price,
+          dimensions: `${inventoryObj.dimension?.height || 0}ft x ${
+            inventoryObj.dimension?.width || 0
+          }ft`,
+          format: inventoryObj.supportedMedia,
+          lighting: inventoryObj.mediaType,
+          from_date: inventoryObj.startDate,
+          to_date: inventoryObj.endDate,
+          resolution: inventoryObj.resolutions,
+          illumination: inventoryObj.illuminations,
+          unit: inventoryObj.unit,
+          _id: inventoryObj._id,
+        })),
       });
     }
   }, [data, form.isTouched]);

@@ -5,6 +5,7 @@ import TextInput from '../../shared/TextInput';
 import TextareaInput from '../../shared/TextareaInput';
 import MultiSelect from '../../shared/MultiSelect';
 import { useFormContext } from '../../../context/formContext';
+import NativeSelect from '../../shared/NativeSelect';
 
 const styles = {
   label: {
@@ -52,8 +53,22 @@ const multiSelectStyles = {
 
 const marks = [{ value: 1600000 }, { value: 3200000 }];
 
+const query = {
+  parentId: null,
+  limit: 100,
+  page: 1,
+  sortBy: 'name',
+  sortOrder: 'asc',
+};
+
 const BasicInformation = () => {
   const { values, errors, setFieldValue } = useFormContext();
+
+  const {
+    data: industryData,
+    isSuccess: isIndustryDataLoaded,
+    isLoading: isIndustryDataLoading,
+  } = useFetchMasters(serialize({ type: 'industry', ...query }));
 
   const { data: tagData } = useFetchMasters(serialize({ type: 'tag', parentId: null, limit: 100 }));
   const { data: brandData } = useFetchMasters(
@@ -64,14 +79,33 @@ const BasicInformation = () => {
     <div className="mt-4 pl-5 pr-7 flex flex-col gap-4 pb-20">
       <p className="text-md font-bold">Basic Information</p>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-        <TextInput
-          label="Campaign Name"
-          name="name"
-          withAsterisk
-          styles={styles}
-          errors={errors}
-          placeholder="Write..."
-        />
+        <div className="flex flex-col gap-y-4">
+          <TextInput
+            label="Campaign Name"
+            name="name"
+            withAsterisk
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+          />
+          <NativeSelect
+            label="Industry"
+            name="industry"
+            styles={styles}
+            errors={errors}
+            disabled={isIndustryDataLoading}
+            placeholder="Select..."
+            options={
+              isIndustryDataLoaded
+                ? industryData.docs.map(type => ({
+                    label: type.name,
+                    value: type._id,
+                  }))
+                : []
+            }
+            className="mb-7"
+          />
+        </div>
         <TextareaInput
           styles={textAreaStyles}
           label="Description"

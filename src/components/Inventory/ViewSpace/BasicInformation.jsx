@@ -218,15 +218,15 @@ const BasicInfo = () => {
                 <div className="flex w-full flex-wrap">
                   {inventoryDetails?.specifications?.previousBrands?.length
                     ? renderBadges(inventoryDetails?.specifications?.previousBrands)
-                    : null}
+                    : 'None'}
                 </div>
               </div>
               <div className="mb-2">
                 <p className="text-slate-400">Previously advertised tags</p>
                 <div className="flex w-full flex-wrap">
-                  {inventoryDetails?.specifications?.tags
+                  {inventoryDetails?.specifications?.tags.length
                     ? renderBadges(inventoryDetails?.specifications?.tags)
-                    : null}
+                    : 'None'}
                 </div>
               </div>
               <div className="mb-2">
