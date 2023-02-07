@@ -30,7 +30,7 @@ const ProcessPipeline = ({ bookingData }) => {
           },
           {
             status: 'Sent For Printing',
-            date: bookingData?.printingStatus?.Print,
+            date: bookingData?.printingStatus?.Print || bookingData?.printingStatus?.Completed,
             isSuccess:
               bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'print' ||
               bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed',
@@ -60,7 +60,7 @@ const ProcessPipeline = ({ bookingData }) => {
           },
           {
             status: 'Mounting in Progress',
-            date: bookingData?.mountingStatus?.Mount,
+            date: bookingData?.mountingStatus?.Mount || bookingData?.mountingStatus?.Completed,
             isSuccess:
               bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'mount' ||
               bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'completed',
@@ -91,7 +91,7 @@ const ProcessPipeline = ({ bookingData }) => {
           },
           {
             status: 'Campaign Started',
-            date: bookingData?.campaignStatus?.Ongoing,
+            date: bookingData?.campaignStatus?.Ongoing || bookingData?.campaignStatus?.Completed,
             isSuccess:
               bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'ongoing' ||
               bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'completed',

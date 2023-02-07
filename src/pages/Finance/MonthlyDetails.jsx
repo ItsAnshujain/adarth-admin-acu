@@ -12,6 +12,7 @@ import Table from '../../components/Table/Table';
 import { useFetchFinanceByYearAndMonth } from '../../hooks/finance.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import MenuPopover from '../../components/Popovers/FinanceMenuPopover';
+import { downloadPdf } from '../../utils';
 
 const DATE_FORMAT = 'DD MMM, YYYY';
 
@@ -143,7 +144,11 @@ const Home = () => {
         Header: 'PAYMENT METHOD',
         disableSortBy: true,
         accessor: 'payment_method',
-        Cell: () => useMemo(() => <p>??</p>, []),
+        Cell: ({
+          row: {
+            original: { paymentType },
+          },
+        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
       },
       {
         Header: 'ACTION',
@@ -151,9 +156,13 @@ const Home = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, file },
           },
-        }) => useMemo(() => <MenuPopover itemId={_id} />, []),
+        }) =>
+          useMemo(
+            () => <MenuPopover itemId={_id} onClickDownloadPdf={() => downloadPdf(file)} />,
+            [],
+          ),
       },
     ],
     [financialDataByMonth?.finances?.docs],
@@ -263,7 +272,11 @@ const Home = () => {
         Header: 'PAYMENT METHOD',
         accessor: 'payment_method',
         disableSortBy: true,
-        Cell: () => useMemo(() => <p>??</p>, []),
+        Cell: ({
+          row: {
+            original: { paymentType },
+          },
+        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
       },
       {
         Header: 'ACTION',
@@ -271,9 +284,13 @@ const Home = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, file },
           },
-        }) => useMemo(() => <MenuPopover itemId={_id} />, []),
+        }) =>
+          useMemo(
+            () => <MenuPopover itemId={_id} onClickDownloadPdf={() => downloadPdf(file)} />,
+            [],
+          ),
       },
     ],
     [financialDataByMonth?.finances?.docs],
@@ -405,9 +422,13 @@ const Home = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, file },
           },
-        }) => useMemo(() => <MenuPopover itemId={_id} />, []),
+        }) =>
+          useMemo(
+            () => <MenuPopover itemId={_id} onClickDownloadPdf={() => downloadPdf(file)} />,
+            [],
+          ),
       },
     ],
     [financialDataByMonth?.finances?.docs],
