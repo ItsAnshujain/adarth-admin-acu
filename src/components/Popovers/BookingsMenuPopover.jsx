@@ -3,37 +3,21 @@ import { useModals } from '@mantine/modals';
 import { useNavigate } from 'react-router-dom';
 import { Eye, Trash } from 'react-feather';
 import modalConfig from '../../utils/modalConfig';
-import DeleteConfirmContent from '../DeleteConfirmContent';
 import MenuIcon from '../Menu';
-import { useDeleteBooking } from '../../hooks/booking.hooks';
 import RoleBased from '../RoleBased';
 import { ROLES } from '../../utils';
+import DeleteBookingContent from '../DeleteBookingContent';
 
 const BookingsMenuPopover = ({ itemId, enableView = true, enableDelete = true }) => {
   const modals = useModals();
   const navigate = useNavigate();
-  const { mutateAsync: deleteBooking, isLoading } = useDeleteBooking();
-
-  const onSubmit = () => {
-    deleteBooking(itemId);
-    setTimeout(() => modals.closeModal(), 2000);
-  };
-
-  const checkConfirmation = isConfirmed => {
-    if (isConfirmed) {
-      onSubmit();
-    }
-  };
 
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
       title: '',
       innerProps: {
         modalBody: (
-          <DeleteConfirmContent
-            onClickCancel={id => modals.closeModal(id)}
-            setIsConfirmed={checkConfirmation}
-          />
+          <DeleteBookingContent onClickCancel={id => modals.closeModal(id)} bookingId={itemId} />
         ),
       },
       ...modalConfig,
@@ -62,8 +46,7 @@ const BookingsMenuPopover = ({ itemId, enableView = true, enableDelete = true })
           >
             <Menu.Item
               icon={<Trash className="h-4" />}
-              onClick={() => toggleDeleteModal()}
-              disabled={isLoading}
+              onClick={toggleDeleteModal}
               className="cursor-pointer flex items-center gap-1"
             >
               <span className="ml-1">Delete</span>

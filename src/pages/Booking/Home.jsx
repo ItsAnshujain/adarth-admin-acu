@@ -127,7 +127,7 @@ const Bookings = () => {
                 className="text-black font-medium px-2 max-w-[180px]"
                 onClick={() => handleBookingDetails(_id)}
               >
-                <span className="overflow-hidden text-ellipsis">{campaign?.name}</span>
+                <span className="overflow-hidden text-ellipsis">{campaign?.name || '-'}</span>
               </Button>
             ),
             [],

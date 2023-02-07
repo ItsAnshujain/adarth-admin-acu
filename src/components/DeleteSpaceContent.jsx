@@ -1,15 +1,25 @@
 import { Button, Divider, Image } from '@mantine/core';
+import { useModals } from '@mantine/modals';
 import React, { useState } from 'react';
-
 import CheckIcon from '../assets/check.svg';
 import TrashIcon from '../assets/trash.svg';
+import { useDeleteInventoryById } from '../hooks/inventory.hooks';
 
-const DeleteConfirmContent = ({ onClickCancel = () => {}, setIsConfirmed = () => {} }) => {
+const DeleteSpaceContent = ({ onClickCancel = () => {}, inventoryId }) => {
+  const modals = useModals();
   const [accept, setAccept] = useState(false);
+  const { mutate: deleteInventory, isLoading } = useDeleteInventoryById();
 
   const handleConfirm = () => {
-    setAccept(true);
-    setIsConfirmed(true);
+    deleteInventory(
+      { inventoryId },
+      {
+        onSuccess: () => {
+          setAccept(true);
+          setTimeout(() => modals.closeModal(), 2000);
+        },
+      },
+    );
   };
 
   return (
@@ -25,12 +35,15 @@ const DeleteConfirmContent = ({ onClickCancel = () => {}, setIsConfirmed = () =>
             <Button
               onClick={onClickCancel}
               className="bg-black text-white rounded-md text-sm px-8 py-3"
+              disabled={isLoading}
             >
               No
             </Button>
             <Button
-              className="bg-purple-450 text-white rounded-md text-sm px-8 py-3"
+              className="primary-button"
               onClick={handleConfirm}
+              loading={isLoading}
+              disabled={isLoading}
             >
               Yes
             </Button>
@@ -41,4 +54,4 @@ const DeleteConfirmContent = ({ onClickCancel = () => {}, setIsConfirmed = () =>
   );
 };
 
-export default DeleteConfirmContent;
+export default DeleteSpaceContent;

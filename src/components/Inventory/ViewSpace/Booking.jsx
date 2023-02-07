@@ -74,7 +74,7 @@ const Booking = ({ inventoryId }) => {
           row: {
             original: { campaignName },
           },
-        }) => useMemo(() => <p>{campaignName || <NoData type="na" />}</p>, []),
+        }) => useMemo(() => <p>{campaignName || '-'}</p>, []),
       },
       {
         Header: 'BOOKING MANAGER',

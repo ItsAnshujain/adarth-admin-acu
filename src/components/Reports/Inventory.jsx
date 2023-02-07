@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import dayjs from 'dayjs';
 import {
   Chart as ChartJS,
@@ -13,7 +13,8 @@ import {
   ArcElement,
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
-import { Button, Image } from '@mantine/core';
+import { Badge, Box, Button, Image } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
@@ -22,7 +23,6 @@ import Table from '../Table/Table';
 import RowsPerPage from '../RowsPerPage';
 import Search from '../Search';
 import GridView from '../GridView';
-import COLUMNS from './ColumnInventory';
 import Card from '../Inventory/Card';
 import InventoryIcon from '../../assets/inventory-active.svg';
 import OperationalCostIcon from '../../assets/operational-cost.svg';
@@ -32,6 +32,8 @@ import UnderMaintenaceIcon from '../../assets/under-maintenance.svg';
 import BestIcon from '../../assets/best-performing-inventory.svg';
 import WorstIcon from '../../assets/worst-performing-inventory.svg';
 import { FormProvider, useForm } from '../../context/formContext';
+import toIndianCurrency from '../../utils/currencyFormat';
+import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
 
 ChartJS.register(
   ArcElement,
@@ -83,6 +85,108 @@ const Inventory = () => {
   const chartRef = useRef(null);
   const form = useForm();
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
+  const navigate = useNavigate();
+
+  const COLUMNS = [
+    {
+      Header: '#',
+      accessor: 'id',
+    },
+    {
+      Header: 'SPACE NAME & PHOTO',
+      accessor: 'space_name_and_photo',
+      Cell: ({
+        row: {
+          original: { status, photo, space_name, isUnderMaintenance, id },
+        },
+      }) =>
+        useMemo(
+          () => (
+            <Box
+              onClick={() => navigate(`view-details/${id}`)}
+              className="grid grid-cols-2 gap-2 items-center cursor-pointer"
+            >
+              <div className="flex flex-1 gap-2 items-center w-44">
+                <div className="bg-white h-8 w-8 border rounded-md">
+                  <img className="h-8 w-8 mx-auto" src={photo} alt="banner" />
+                </div>
+                <p>{space_name}</p>
+              </div>
+              <div className="w-fit">
+                <Badge
+                  radius="xl"
+                  text={status}
+                  color={isUnderMaintenance ? 'yellow' : 'green'}
+                  variant="filled"
+                  size="sm"
+                >
+                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                </Badge>
+              </div>
+            </Box>
+          ),
+          [],
+        ),
+    },
+    {
+      Header: 'MEDIA OWNER NAME',
+      accessor: 'landlord_name',
+      Cell: ({
+        row: {
+          original: { landlord_name },
+        },
+      }) => useMemo(() => <p className="w-fit">{landlord_name}</p>, []),
+    },
+    {
+      Header: 'SPACE TYPE',
+      accessor: 'space_type',
+    },
+    {
+      Header: 'TOTAL REVENUE',
+      accessor: 'total_revenue',
+      Cell: () => useMemo(() => <p className="w-fit mr-2">{toIndianCurrency(0)}</p>, []),
+    },
+    {
+      Header: 'TOTAL BOOKING',
+      accessor: 'total_booking',
+      Cell: () => useMemo(() => <p className="w-fit">{0}</p>, []),
+    },
+    {
+      Header: 'TOTAL OPERATIONAL COST',
+      accessor: 'total_operational_cost',
+      Cell: () => useMemo(() => <p className="w-fit mr-2">{toIndianCurrency(0)}</p>, []),
+    },
+    {
+      Header: 'DIMENSION',
+      accessor: 'dimension',
+    },
+    {
+      Header: 'IMPRESSION',
+      accessor: 'impression',
+    },
+    {
+      Header: 'HEALTH',
+      accessor: 'health',
+    },
+    {
+      Header: 'LOCATION',
+      accessor: 'location',
+    },
+    {
+      Header: 'PRICING',
+      accessor: 'pricing',
+    },
+    {
+      Header: '',
+      accessor: 'details',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { _id },
+        },
+      }) => useMemo(() => <SpacesMenuPopover itemId={_id} />, []),
+    },
+  ];
 
   useEffect(() => {
     const chart = chartRef.current;
@@ -137,9 +241,6 @@ const Inventory = () => {
             <Image src={OperationalCostIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Opertaional Cost</p>
             <p className="font-bold">0</p>
-          </div>
-          <div aria-hidden className="flex-1 invisible">
-            Invisible
           </div>
         </div>
         <div className="flex w-full gap-4">
@@ -217,7 +318,7 @@ const Inventory = () => {
               {view === 'grid' ? (
                 <GridView selectAll={selectAll} count={count} Card={Card} />
               ) : view === 'list' ? (
-                <Table COLUMNS={COLUMNS} data={[]} count={count} allowRowsSelect />
+                <Table COLUMNS={COLUMNS} data={[2]} count={count} />
               ) : null}
             </form>
           </FormProvider>

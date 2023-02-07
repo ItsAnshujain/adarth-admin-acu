@@ -11,7 +11,7 @@ import calendar from '../../assets/data-table.svg';
 import Table from '../../components/Table/Table';
 import { useFetchFinanceByYearAndMonth } from '../../hooks/finance.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
-import MenuPopover from '../../components/Finance/View/MenuPopover';
+import MenuPopover from '../../components/Popovers/FinanceMenuPopover';
 
 const DATE_FORMAT = 'DD MMM, YYYY';
 
