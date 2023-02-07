@@ -487,21 +487,6 @@ const SelectSpace = () => {
             <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
           </div>
         </div>
-        {/* <div className="flex flex-col justify-end items-end">
-          <div className="text-sm flex flex-row justify-center items-end">
-            <span className="font-bold text-gray-500 mr-2">Supported types</span>
-            <div className="">
-              {updatedSupportedTypes.map(item => (
-                <Badge key={uuidv4()} className="mr-2">
-                  {item}
-                </Badge>
-              ))}
-            </div>
-          </div>
-          <p className="mt-1 font-bold text-gray-500 text-sm mr-2">
-            Video size cannot be more than 5MB
-          </p>
-        </div> */}
         <div className="flex justify-between mb-4 items-center">
           <p className="text-purple-450 text-sm">
             Total Places{' '}
