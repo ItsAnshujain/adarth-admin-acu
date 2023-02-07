@@ -221,7 +221,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
                   img: item?.basicInformation?.spacePhoto,
                   name: item?.basicInformation?.spaceName,
                   address: item.location?.address,
-                  price: item?.price,
+                  price: item?.basicInformation?.price,
                   dimensions: `${item?.specifications?.size?.height || 0}ft x ${
                     item?.specifications?.size?.width || 0
                   }ft`,

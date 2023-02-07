@@ -53,7 +53,7 @@ const Home = () => {
   };
 
   const campaignList = useMemo(
-    () => campaignStatus?.docs?.map(item => item.name) || [],
+    () => campaignStatus?.docs?.map(item => ({ label: item.name, value: item._id })) || [],
     [campaignStatus],
   );
 
