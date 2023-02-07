@@ -1,4 +1,4 @@
-import { Button, Image, Select } from '@mantine/core';
+import { Button, Chip, Image, Select } from '@mantine/core';
 import { useMemo, useRef } from 'react';
 import { Calendar, ChevronDown } from 'react-feather';
 import { Dropzone } from '@mantine/dropzone';
@@ -113,10 +113,26 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
               onClick={() => openRef.current()}
               disabled={isUpdating || isLoading}
               loading={isUpdating || isLoading}
-              className="py-1 px-2 ml-1 h-[20%] flex items-center gap-2 border border-black rounded-md text-black font-medium text-base"
+              className="secondary-button"
               rightIcon={<img src={uploadIcon} alt="Upload" className="mr-1" />}
             >
-              {isUpdating || isLoading ? 'Uploading File' : 'Upload File'}
+              {data?.media ? (
+                <>
+                  <Chip
+                    classNames={{ checkIcon: 'text-black', label: 'bg-transparent' }}
+                    checked
+                    variant="filled"
+                    color="green"
+                    radius="lg"
+                    size="xs"
+                  />
+                  {isLoading ? 'Uploading' : 'Uploaded'}
+                </>
+              ) : isLoading ? (
+                'Uploading'
+              ) : (
+                'Upload'
+              )}
             </Button>
             <div className="flex gap-2 p-2 rounded-md">
               <Calendar />

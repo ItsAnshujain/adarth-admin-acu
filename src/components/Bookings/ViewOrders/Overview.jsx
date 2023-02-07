@@ -14,6 +14,7 @@ import GoogleMapReact from 'google-map-react';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import ReactPlayer from 'react-player';
+import classNames from 'classnames';
 import Places from './UI/Places';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
@@ -115,12 +116,13 @@ const Overview = ({ bookingData = {}, isLoading }) => {
                         className="mr-2 mb-4 border-[1px] border-gray bg-slate-100"
                       />
                     ) : (
-                      <div className="h-[300px] w-full bg-slate-100">
-                        <ReactPlayer
-                          url={`${previewSpacesPhotos[0]}#t=0.1`}
-                          width="100%"
-                          height="100%"
-                        />
+                      <div
+                        className={classNames(
+                          index === 0 ? 'h-[300px] w-full' : 'h-[96px] w-[112px]',
+                          'border-[1px] border-gray bg-slate-100 mr-2 mb-4',
+                        )}
+                      >
+                        <ReactPlayer url={`${src}#t=0.1`} width="100%" height="100%" />
                       </div>
                     ),
                   )}
