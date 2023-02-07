@@ -101,7 +101,7 @@ const BasicInformation = () => {
             className="border w-24 py-1 px-1"
             type="text"
             readOnly
-            value={values.minImpression}
+            value={values.minImpression || 1600000}
           />
           <p className="text-sm font-thin">Min</p>
         </div>
@@ -114,7 +114,7 @@ const BasicInformation = () => {
           className="mb-5 flex-auto"
           min={0}
           max={5000000}
-          value={[values.minImpression, values.maxImpression]}
+          value={[values?.minImpression || 1600000, values?.maxImpression || 3200000]}
           marks={marks}
         />
         <div className="text-right">
@@ -122,7 +122,7 @@ const BasicInformation = () => {
             className="border w-24 py-1 px-1"
             type="text"
             readOnly
-            value={values.maxImpression}
+            value={values.maxImpression || 3200000}
           />
           <p className="text-sm font-thin" size="sm">
             Max

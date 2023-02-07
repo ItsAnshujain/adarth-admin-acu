@@ -108,6 +108,13 @@ const CreateBooking = () => {
         startDate: item.startDate,
         endDate: item.endDate,
       }));
+      if (data.place.some(item => !(item.startDate || item.endDate))) {
+        showNotification({
+          title: 'Please select the occupancy date to continue',
+          color: 'blue',
+        });
+        return;
+      }
 
       data.place.forEach(item => {
         const start = item.startDate.setHours(0, 0, 0, 0);
