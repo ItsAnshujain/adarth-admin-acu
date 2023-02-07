@@ -1,4 +1,4 @@
-import { months } from '../../utils';
+import { indianCurrencyInDecimals, months } from '../../utils';
 import Menu from './Menu';
 
 const purchaseOrderList = [
@@ -43,13 +43,13 @@ const Header = ({ totalOperationlCost, totalSales, year, month }) => (
           <div>
             <p className="text-xs font-medium text-slate-400">Total Sales</p>
             <p className="text-orange-400 text-sm">
-              ₹ {totalSales ? Number(totalSales).toFixed(2) : 0}
+              {totalSales ? indianCurrencyInDecimals(totalSales) : 0}
             </p>
           </div>
           <div>
             <p className="text-xs font-medium text-slate-400">Total Operational Cost</p>
             <p className="text-green-400 text-sm">
-              ₹ {totalOperationlCost ? Number(totalOperationlCost).toFixed(2) : 0}
+              {totalOperationlCost ? indianCurrencyInDecimals(totalOperationlCost) : 0}
             </p>
           </div>
         </>
