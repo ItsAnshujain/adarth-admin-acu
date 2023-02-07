@@ -191,11 +191,11 @@ const HomePage = () => {
                   <Loader className="mx-auto" mt={80} />
                 ) : (
                   <div className="flex flex-col pl-7 relative">
-                    <p className="font-sans transform rotate-[-90deg] absolute left-[-28px] top-[40%]">
+                    <p className="transform rotate-[-90deg] absolute left-[-28px] top-[40%]">
                       In Lakhs {'-->'}{' '}
                     </p>
                     <Line height="80" data={lineData} options={options} />
-                    <p className="font-sans text-center">Months {'-->'} </p>
+                    <p className="text-center">Months {'-->'} </p>
                   </div>
                 )}
               </div>

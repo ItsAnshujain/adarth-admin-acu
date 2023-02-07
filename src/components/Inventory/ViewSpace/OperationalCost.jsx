@@ -20,14 +20,12 @@ const OperationalCost = ({ inventoryDetails }) => {
 
   return (
     <div className="px-5 py-2 bg-red-20 ">
-      <p className="font-sans font-medium text-lg">View Operational Cost</p>
+      <p className="font-medium text-lg">View Operational Cost</p>
 
       <div className="border border-gray-300 mt-4 rounded-md">
         <Group className="p-3 mb-3 border-b border-black  bg-slate-200 ">
-          <p className="font-sans font-medium">
-            Space Name: {inventoryDetails?.basicInformation?.spaceName}
-          </p>
-          <p className="font-sans">Operational Cost</p>
+          <p className="font-medium">Space Name: {inventoryDetails?.basicInformation?.spaceName}</p>
+          <p>Operational Cost</p>
         </Group>
         <div className="p-5">
           <div className="min-h-[400px] max-h-[400px] overflow-y-auto ">
@@ -43,7 +41,7 @@ const OperationalCost = ({ inventoryDetails }) => {
               </Box>
             ))}
           </div>
-          <p className="py-3 font-sans font-medium">Total: {toIndianCurrency(0)}</p>
+          <p className="py-3 font-medium">Total: {toIndianCurrency(0)}</p>
           <Group position="right">
             <Button className="primary-button" onClick={handleOperationalCost}>
               Add Operational Cost

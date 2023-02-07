@@ -28,7 +28,7 @@ const Home = () => {
       <div className="flex flex-wrap gap-4 pl-5 pr-7">
         {!financialDataByYear?.length && !isLoading ? (
           <div className="w-full mt-20">
-            <Text size="lg" className="font-sans text-center">
+            <Text size="lg" className="text-center">
               No financial record found
             </Text>
           </div>

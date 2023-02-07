@@ -254,24 +254,13 @@ const Campaign = () => {
                   <Button className="secondary-button">View By</Button>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Menu.Item
-                    className="font-sans text-red-450"
-                    onClick={() => handleViewBy('reset')}
-                  >
+                  <Menu.Item className="text-red-450" onClick={() => handleViewBy('reset')}>
                     Reset
                   </Menu.Item>
-                  <Menu.Item className="font-sans" onClick={() => handleViewBy('week')}>
-                    Weekly
-                  </Menu.Item>
-                  <Menu.Item className="font-sans" onClick={() => handleViewBy('month')}>
-                    Monthly
-                  </Menu.Item>
-                  <Menu.Item className="font-sans" onClick={() => handleViewBy('quarter')}>
-                    Quartly
-                  </Menu.Item>
-                  <Menu.Item className="font-sans" onClick={() => handleViewBy('year')}>
-                    Yearly
-                  </Menu.Item>
+                  <Menu.Item onClick={() => handleViewBy('week')}>Weekly</Menu.Item>
+                  <Menu.Item onClick={() => handleViewBy('month')}>Monthly</Menu.Item>
+                  <Menu.Item onClick={() => handleViewBy('quarter')}>Quartly</Menu.Item>
+                  <Menu.Item onClick={() => handleViewBy('year')}>Yearly</Menu.Item>
                 </Menu.Dropdown>
               </Menu>
             </div>

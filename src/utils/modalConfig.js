@@ -6,7 +6,7 @@ const modalConfig = {
   radius: 0,
   padding: 0,
   classNames: {
-    title: 'font-sans text-xl px-4',
+    title: 'font-dmSans text-xl px-4',
     header: 'px-4 pt-4',
     body: 'pb-4',
     close: 'mr-4',

@@ -79,18 +79,15 @@ const TwoStepDeleteAccountContent = ({ onClickCancel = () => {}, navigate }) => 
       <Divider />
       {currentStep === 1 ? (
         <div className="px-4 py-5">
-          <Text size="md" mb={16} className="font-sans">
+          <Text size="md" mb={16}>
             Are you sure? Your profile and related information will be deleted from our site.
           </Text>
           <div className="flex gap-2  justify-end">
-            <Button
-              onClick={onClickCancel}
-              className="bg-black text-white rounded-md text-sm font-sans"
-            >
+            <Button onClick={onClickCancel} className="bg-black text-white rounded-md text-sm">
               No, I have changed my mind
             </Button>
             <Button
-              className="bg-purple-450 text-white rounded-md text-sm font-sans"
+              className="bg-purple-450 text-white rounded-md text-sm"
               onClick={() => setCurrentStep(2)}
             >
               Yes, contine
@@ -101,7 +98,7 @@ const TwoStepDeleteAccountContent = ({ onClickCancel = () => {}, navigate }) => 
         <div className="px-4 py-5">
           <FormProvider form={form}>
             <form onSubmit={form.onSubmit(handleAccountDelete)}>
-              <Text size="md" mb={16} className="font-sans">
+              <Text size="md" mb={16}>
                 Please enter <span className="capitalize font-medium">{`"${typeWord}"`}</span> and
                 your password to confirm that you wish to close your account.
               </Text>
@@ -114,7 +111,6 @@ const TwoStepDeleteAccountContent = ({ onClickCancel = () => {}, navigate }) => 
                   errors={form.errors}
                   mb={10}
                   autoComplete="off"
-                  className="font-sans"
                 />
                 <PasswordInput
                   name="password"
@@ -123,13 +119,12 @@ const TwoStepDeleteAccountContent = ({ onClickCancel = () => {}, navigate }) => 
                   placeholder="Your Password"
                   errors={form.errors}
                   autoComplete="new-password"
-                  className="font-sans"
                 />
               </div>
               <div className="flex gap-2  justify-end">
                 <Button
                   onClick={() => setCurrentStep(1)}
-                  className="bg-black text-white rounded-md text-sm font-sans"
+                  className="bg-black text-white rounded-md text-sm"
                 >
                   Back
                 </Button>
@@ -137,7 +132,7 @@ const TwoStepDeleteAccountContent = ({ onClickCancel = () => {}, navigate }) => 
                   type="submit"
                   disabled={isLoading}
                   loading={isLoading}
-                  className="bg-red-450 text-white rounded-md text-sm font-sans"
+                  className="bg-red-450 text-white rounded-md text-sm"
                 >
                   Delete Account
                 </Button>
