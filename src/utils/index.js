@@ -208,3 +208,14 @@ export const months = [
 ];
 
 export const supportedTypes = ['JPG', 'JPEG', 'PNG'];
+
+export const indianCurrencyInDecimals = amount => {
+  if (Number.isNaN(amount)) {
+    return 0;
+  }
+
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+  }).format(amount);
+};
