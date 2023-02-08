@@ -1,21 +1,34 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Button, Image, NumberInput, Progress, Badge, Loader, Chip, Box } from '@mantine/core';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Button,
+  Image,
+  NumberInput,
+  Progress,
+  Badge,
+  Loader,
+  Chip,
+  Box,
+  HoverCard,
+} from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 import { Dropzone } from '@mantine/dropzone';
 import { useDebouncedState } from '@mantine/hooks';
+import { v4 as uuidv4 } from 'uuid';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 import { useFetchInventory } from '../../../hooks/inventory.hooks';
 import upload from '../../../assets/upload.svg';
 import { useFormContext } from '../../../context/formContext';
-import { colors } from '../../../utils';
+import { colors, supportedTypes } from '../../../utils';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import Filter from '../../Inventory/Filter';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../../DateRangeSelector';
+
+const updatedSupportedTypes = [...supportedTypes, 'MP4'];
 
 const styles = {
   padding: 0,
@@ -23,6 +36,7 @@ const styles = {
 };
 
 const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
+  const openRef = useRef(null);
   const { mutateAsync: uploadMedia, isLoading } = useUploadFile();
   const handleUpload = async params => {
     const formData = new FormData();
@@ -35,40 +49,63 @@ const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
   };
 
   return (
-    <Dropzone
-      style={styles}
-      onDrop={handleUpload}
-      multiple={false}
-      disabled={!isActive || isLoading}
-    >
-      <Button
-        disabled={isLoading}
-        loading={isLoading}
-        className={classNames(
-          isActive ? 'bg-purple-350 cursor-pointer' : 'bg-purple-200 cursor-not-allowed',
-          'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md',
-        )}
+    <>
+      <Dropzone
+        style={styles}
+        onDrop={handleUpload}
+        multiple={false}
+        disabled={!isActive || isLoading}
+        openRef={openRef}
+        maxSize={5000000}
       >
-        {hasMedia ? (
-          <>
-            <Chip
-              classNames={{ checkIcon: 'text-white', label: 'bg-transparent' }}
-              checked
-              variant="filled"
-              color="green"
-              radius="lg"
-              size="xs"
-            />
-            {isLoading ? 'Uploading' : 'Uploaded'}
-          </>
-        ) : isLoading ? (
-          'Uploading'
-        ) : (
-          'Upload'
-        )}
-        <img src={upload} alt="Upload" className="ml-2" />
-      </Button>
-    </Dropzone>
+        {/* children */}
+      </Dropzone>
+      <HoverCard openDelay={1000}>
+        <HoverCard.Target>
+          <Button
+            disabled={isLoading}
+            onClick={() => openRef.current()}
+            loading={isLoading}
+            className={classNames(
+              isActive ? 'bg-purple-350 cursor-pointer' : 'bg-purple-200 cursor-not-allowed',
+              'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md',
+            )}
+          >
+            {hasMedia ? (
+              <>
+                <Chip
+                  classNames={{ checkIcon: 'text-white', label: 'bg-transparent' }}
+                  checked
+                  variant="filled"
+                  color="green"
+                  radius="lg"
+                  size="xs"
+                />
+                {isLoading ? 'Uploading' : 'Uploaded'}
+              </>
+            ) : isLoading ? (
+              'Uploading'
+            ) : (
+              'Upload'
+            )}
+            <img src={upload} alt="Upload" className="ml-2" />
+          </Button>
+        </HoverCard.Target>
+        <HoverCard.Dropdown>
+          <div className="text-sm flex flex-col">
+            <span className="font-bold text-gray-500">Supported types</span>
+            <div className="mt-1">
+              {updatedSupportedTypes.map(item => (
+                <Badge key={uuidv4()} className="mr-2">
+                  {item}
+                </Badge>
+              ))}
+            </div>
+            <p className="mt-1 font-bold text-gray-500">Video size cannot be more than 5MB</p>
+          </div>
+        </HoverCard.Dropdown>
+      </HoverCard>
+    </>
   );
 };
 
@@ -430,7 +467,9 @@ const SelectSpace = () => {
     <>
       <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
         <div className="flex justify-between items-center">
-          <p className="text-lg font-bold">Select Place for Order</p>
+          <div>
+            <p className="text-lg font-bold">Select Place for Order</p>
+          </div>
           <div>
             <Button onClick={toggleFilter} variant="default">
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter

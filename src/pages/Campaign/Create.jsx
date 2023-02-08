@@ -148,14 +148,13 @@ const CreateCampaign = () => {
       if (publish) {
         const publishedId = campaignStatus?.docs?.find(
           item => item?.name?.toLowerCase() === 'published',
-        )?.value;
+        )?._id;
+
         if (publishedId) {
           newData.status = publishedId;
         }
       }
 
-      // console.log(newData);
-      // return;
       if (id) {
         update(
           {
@@ -188,20 +187,28 @@ const CreateCampaign = () => {
         ...data.campaign,
         place: data.campaign.place.map(({ id: inventoryObj, ...item }) => ({
           ...item,
-          img: inventoryObj.photo,
-          name: inventoryObj.spaceName,
-          address: inventoryObj.location?.address,
+          photo: inventoryObj?.basicInformation?.spacePhoto,
+          spaceName: inventoryObj?.basicInformation?.spaceName,
+          lighting: inventoryObj?.basicInformation?.mediaType,
+          supportedMedia: inventoryObj?.basicInformation?.supportedMedia,
+          mediaType: inventoryObj?.basicInformation?.mediaType,
+          location: {
+            address: inventoryObj?.location?.address,
+            zip: inventoryObj?.location?.zip,
+            latitude: inventoryObj?.location?.latitude,
+            longitude: inventoryObj?.location?.longitude,
+          },
           cost: inventoryObj.price,
-          dimensions: `${inventoryObj.dimension?.height || 0}ft x ${
-            inventoryObj.dimension?.width || 0
-          }ft`,
-          format: inventoryObj.supportedMedia,
-          lighting: inventoryObj.mediaType,
-          from_date: inventoryObj.startDate,
-          to_date: inventoryObj.endDate,
-          resolution: inventoryObj.resolutions,
-          illumination: inventoryObj.illuminations,
-          unit: inventoryObj.unit,
+          dimension: {
+            height: inventoryObj?.specifications?.size?.height || 0,
+            width: inventoryObj?.specifications?.size?.width || 0,
+          },
+          illuminations: inventoryObj?.specifications?.illuminations,
+          resolutions: inventoryObj?.specifications?.resolutions,
+          unit: inventoryObj?.specifications?.unit,
+          from_date: inventoryObj?.startDate,
+          to_date: inventoryObj?.endDate,
+          impression: inventoryObj?.specifications?.impressions?.max,
           _id: inventoryObj._id,
         })),
       });

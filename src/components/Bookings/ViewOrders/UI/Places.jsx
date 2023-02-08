@@ -1,16 +1,19 @@
-import { Button, Image, Select } from '@mantine/core';
+import { Badge, Button, Chip, HoverCard, Image, Select } from '@mantine/core';
 import { useMemo, useRef } from 'react';
 import { Calendar, ChevronDown } from 'react-feather';
 import { Dropzone } from '@mantine/dropzone';
 import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
+import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import uploadIcon from '../../../../assets/upload.svg';
 import NoData from '../../../shared/NoData';
 import { useUpdateCampaignMedia, useUpdateCampaignStatus } from '../../../../hooks/campaigns.hooks';
 import { useUploadFile } from '../../../../hooks/upload.hooks';
 import { useFetchMasters } from '../../../../hooks/masters.hooks';
-import { serialize } from '../../../../utils';
+import { serialize, supportedTypes } from '../../../../utils';
+
+const updatedSupportedTypes = [...supportedTypes, 'MP4'];
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -106,18 +109,57 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
       <div className="flex flex-col w-full">
         <div className="flex justify-end items-center w-full mb-2">
           <div className="flex gap-2 items-center">
-            <Dropzone openRef={openRef} style={styles} onDrop={handleUpload} multiple={false}>
+            <Dropzone
+              openRef={openRef}
+              style={styles}
+              onDrop={handleUpload}
+              multiple={false}
+              maxSize={5000000}
+            >
               {/* children */}
             </Dropzone>
-            <Button
-              onClick={() => openRef.current()}
-              disabled={isUpdating || isLoading}
-              loading={isUpdating || isLoading}
-              className="py-1 px-2 ml-1 h-[20%] flex items-center gap-2 border border-black rounded-md text-black font-medium text-base"
-              rightIcon={<img src={uploadIcon} alt="Upload" className="mr-1" />}
-            >
-              {isUpdating || isLoading ? 'Uploading File' : 'Upload File'}
-            </Button>
+            <HoverCard>
+              <HoverCard.Target>
+                <Button
+                  onClick={() => openRef.current()}
+                  disabled={isUpdating || isLoading}
+                  loading={isUpdating || isLoading}
+                  className="secondary-button"
+                  rightIcon={<img src={uploadIcon} alt="Upload" className="mr-1" />}
+                >
+                  {data?.media ? (
+                    <>
+                      <Chip
+                        classNames={{ checkIcon: 'text-black', label: 'bg-transparent' }}
+                        checked
+                        variant="filled"
+                        color="green"
+                        radius="lg"
+                        size="xs"
+                      />
+                      {isLoading ? 'Uploading' : 'Uploaded'}
+                    </>
+                  ) : isLoading ? (
+                    'Uploading'
+                  ) : (
+                    'Upload'
+                  )}
+                </Button>
+              </HoverCard.Target>
+              <HoverCard.Dropdown>
+                <div className="text-sm flex flex-col">
+                  <span className="font-bold text-gray-500">Supported types</span>
+                  <div className="mt-1">
+                    {updatedSupportedTypes.map(item => (
+                      <Badge key={uuidv4()} className="mr-2">
+                        {item}
+                      </Badge>
+                    ))}
+                  </div>
+                  <p className="mt-1 font-bold text-gray-500">Video size cannot be more than 5MB</p>
+                </div>
+              </HoverCard.Dropdown>
+            </HoverCard>
             <div className="flex gap-2 p-2 rounded-md">
               <Calendar />
               <span>

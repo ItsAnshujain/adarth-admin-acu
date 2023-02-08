@@ -44,7 +44,7 @@ const CoverImage = () => {
                 <Image height={200} src={null} alt="poster" fit="contain" withPlaceholder />
               )}
             </div>
-            <Text weight="bold">{placeItem?.space_name}</Text>
+            <Text weight="bold">{placeItem?.spaceName}</Text>
             <Text className="mb-2" weight="200">
               {placeItem?.location?.address}, {placeItem?.location?.zip}
             </Text>

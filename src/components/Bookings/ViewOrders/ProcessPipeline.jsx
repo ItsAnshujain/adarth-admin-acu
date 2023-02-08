@@ -24,7 +24,7 @@ const ProcessPipeline = ({ bookingData }) => {
             date: bookingData?.printingStatus?.Upcoming || bookingData?.paymentStatus?.Paid,
             isSuccess:
               (bookingData?.currentStatus?.paymentStatus?.toLowerCase() === 'paid' &&
-                bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'upcoming') ||
+                bookingData?.campaign?.medias?.length) ||
               bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'print' ||
               bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed',
           },

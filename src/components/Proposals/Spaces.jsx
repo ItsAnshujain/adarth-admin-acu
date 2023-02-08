@@ -16,7 +16,6 @@ import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
 import { useStyles } from '../DateRange';
-import DateRangeSelector from '../DateRangeSelector';
 
 const getDate = (selectionItem, item, key, addDefault = true) => {
   if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
@@ -254,22 +253,6 @@ const Spaces = () => {
             ),
             [],
           ),
-      },
-      // TODO: disabled for now
-      {
-        Header: 'OCCUPANCY DATE',
-        accessor: 'scheduledDate',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { startDate, endDate, _id },
-          },
-        }) =>
-          useMemo(() => (
-            <div className="min-w-[300px]">
-              <DateRangeSelector disabled startDate={startDate} endDate={endDate} />
-            </div>
-          )),
       },
       {
         Header: 'START DATE',

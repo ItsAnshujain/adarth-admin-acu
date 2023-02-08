@@ -4,7 +4,7 @@ import React from 'react';
 const ViewByFilter = ({ handleViewBy = () => {} }) => (
   <Menu shadow="md" width={130}>
     <Menu.Target>
-      <Button className="secondary-button">View By: </Button>
+      <Button className="secondary-button">View By</Button>
     </Menu.Target>
     <Menu.Dropdown>
       <Menu.Item className="text-red-450" onClick={() => handleViewBy('reset')}>
