@@ -27,7 +27,12 @@ const sliderStyle = {
 };
 const styles = { title: { fontWeight: 'bold' } };
 
-const Filter = ({ isOpened, setShowFilter }) => {
+const Filter = ({
+  isOpened,
+  setShowFilter,
+  showBookingTypeOption = true,
+  showCampaignStatusOption = true,
+}) => {
   const [filterOptions, setFilterOptions] = useState({
     paymentType: '',
     campaignStatus: '',
@@ -240,22 +245,26 @@ const Filter = ({ isOpened, setShowFilter }) => {
             </Accordion.Panel>
           </Accordion.Item>
 
-          <Accordion.Item className="border-solid border-2 rounded-xl mb-2 p-1" value="type">
-            <Accordion.Control className="hover:bg-white">Booking Type</Accordion.Control>
-            <Accordion.Panel>
-              {renderStaticOptions(inititalFilterData.type, 'type')}
-            </Accordion.Panel>
-          </Accordion.Item>
+          {showBookingTypeOption ? (
+            <Accordion.Item className="border-solid border-2 rounded-xl mb-2 p-1" value="type">
+              <Accordion.Control className="hover:bg-white">Booking Type</Accordion.Control>
+              <Accordion.Panel>
+                {renderStaticOptions(inititalFilterData.type, 'type')}
+              </Accordion.Panel>
+            </Accordion.Item>
+          ) : null}
 
-          <Accordion.Item
-            className="border-solid border-2 rounded-xl mb-2 p-1"
-            value="campaignStatus"
-          >
-            <Accordion.Control className="hover:bg-white">Campaign Status</Accordion.Control>
-            <Accordion.Panel>
-              {renderDynamicOptions(campaignStatusData?.docs, 'campaignStatus')}
-            </Accordion.Panel>
-          </Accordion.Item>
+          {showCampaignStatusOption ? (
+            <Accordion.Item
+              className="border-solid border-2 rounded-xl mb-2 p-1"
+              value="campaignStatus"
+            >
+              <Accordion.Control className="hover:bg-white">Campaign Status</Accordion.Control>
+              <Accordion.Panel>
+                {renderDynamicOptions(campaignStatusData?.docs, 'campaignStatus')}
+              </Accordion.Panel>
+            </Accordion.Item>
+          ) : null}
 
           <Accordion.Item
             className="border-solid border-2 rounded-xl mb-2 p-1"

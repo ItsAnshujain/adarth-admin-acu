@@ -134,7 +134,7 @@ const HomePage = () => {
                     width={24}
                     fit="contain"
                   />
-                  <p className="my-2 text-sm font-light text-slate-400">Total Campaign(Overall)</p>
+                  <p className="my-2 font-light text-slate-400">Total Bookings(Overall)</p>
                   <p className="font-bold">{bookingStats?.totalCampaigns || 0}</p>
                 </div>
                 <div className="border rounded p-8  flex-1">
@@ -145,7 +145,7 @@ const HomePage = () => {
                     width={24}
                     fit="contain"
                   />
-                  <p className="my-2 text-sm font-light text-slate-400">Total Ongoing Campaign</p>
+                  <p className="my-2 font-light text-slate-400">Total Ongoing Bookings</p>
                   <p className="font-bold">{bookingStats?.Ongoing || 0}</p>
                 </div>
                 <div className="border rounded p-8  flex-1">
@@ -156,7 +156,7 @@ const HomePage = () => {
                     width={24}
                     fit="contain"
                   />
-                  <p className="my-2 text-sm font-light text-slate-400">Upcoming Campaign</p>
+                  <p className="my-2 font-light text-slate-400">Upcoming Bookings</p>
                   <p className="font-bold">{bookingStats?.Upcoming || 0}</p>
                 </div>
               </div>
@@ -169,17 +169,17 @@ const HomePage = () => {
                     width={24}
                     fit="contain"
                   />
-                  <p className="my-2 text-sm font-light text-slate-400">Completed Campaign</p>
+                  <p className="my-2 font-light text-slate-400">Completed Bookings</p>
                   <p className="font-bold">{bookingStats?.Completed || 0}</p>
                 </div>
                 <div className="border rounded p-8 flex-1">
                   <Image src={VacantIcon} alt="folder" height={24} width={24} fit="contain" />
-                  <p className="my-2 text-sm font-light text-slate-400">Vacant Inventory</p>
+                  <p className="my-2 font-light text-slate-400">Vacant Inventory</p>
                   <p className="font-bold">{inventoryStats?.vacant || 0}</p>
                 </div>
                 <div className="border rounded p-8  flex-1">
                   <Image src={OccupiedIcon} alt="folder" height={24} width={24} fit="contain" />
-                  <p className="my-2 text-xs font-light text-slate-400">Occupied Inventory</p>
+                  <p className="my-2 font-light text-slate-400">Occupied Inventory</p>
                   <p className="font-bold">{inventoryStats?.occupied || 0}</p>
                 </div>
               </div>

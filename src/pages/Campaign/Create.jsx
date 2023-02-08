@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import dayjs from 'dayjs';
 import { showNotification } from '@mantine/notifications';
 import BasicInfo from '../../components/Campaigns/AddCampaign/BasicInformation';
 import SuccessModal from '../../components/shared/Modal';
@@ -114,26 +113,10 @@ const CreateCampaign = () => {
     if (formStep === 4) {
       const newData = { ...form.values };
 
-      let minDate = null;
-      let maxDate = null;
-
-      newData.place = newData.place.map(item => {
-        const start = new Date(item.startDate).setHours(0, 0, 0, 0);
-        const end = new Date(item.endDate).setHours(0, 0, 0, 0);
-
-        if (!minDate) minDate = start;
-        if (!maxDate) maxDate = end;
-
-        if (start < minDate) minDate = start;
-        if (end > maxDate) maxDate = end;
-
-        return {
-          id: item._id,
-          price: item.price,
-          startDate: item.startDate,
-          endDate: item.endDate,
-        };
-      });
+      newData.place = newData.place.map(item => ({
+        id: item._id,
+        price: item.price,
+      }));
 
       const totalPrice = newData.place.reduce((acc, item) => acc + +(item.price || 0), 0);
 
@@ -154,16 +137,17 @@ const CreateCampaign = () => {
           newData.status = publishedId;
         }
       }
+      Object.keys(newData).forEach(key => {
+        if (newData[key] === '' || newData[key] === undefined || newData[key]?.length === 0) {
+          delete newData[key];
+        }
+      });
 
       if (id) {
         update(
           {
             id,
-            data: {
-              ...newData,
-              startDate: dayjs(minDate).format('YYYY-MM-DD'),
-              endDate: dayjs(maxDate).format('YYYY-MM-DD'),
-            },
+            data: newData,
           },
           {
             onSuccess: () => {
@@ -206,8 +190,6 @@ const CreateCampaign = () => {
           illuminations: inventoryObj?.specifications?.illuminations,
           resolutions: inventoryObj?.specifications?.resolutions,
           unit: inventoryObj?.specifications?.unit,
-          from_date: inventoryObj?.startDate,
-          to_date: inventoryObj?.endDate,
           impression: inventoryObj?.specifications?.impressions?.max,
           _id: inventoryObj._id,
         })),

@@ -11,7 +11,7 @@ import calendar from '../../assets/data-table.svg';
 import Table from '../../components/Table/Table';
 import { useFetchFinanceByYearAndMonth } from '../../hooks/finance.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
-import MenuPopover from '../../components/Popovers/FinanceMenuPopover';
+import FinanceMenuPopover from '../../components/Popovers/FinanceMenuPopover';
 import { downloadPdf } from '../../utils';
 
 const DATE_FORMAT = 'DD MMM, YYYY';
@@ -160,7 +160,14 @@ const Home = () => {
           },
         }) =>
           useMemo(
-            () => <MenuPopover itemId={_id} onClickDownloadPdf={() => downloadPdf(file)} />,
+            () => (
+              <FinanceMenuPopover
+                itemId={_id}
+                onClickSendEmail={() => {}}
+                onClickCopyLink={() => navigator.clipboard.writeText(file)}
+                onClickDownloadPdf={() => downloadPdf(file)}
+              />
+            ),
             [],
           ),
       },
@@ -288,7 +295,13 @@ const Home = () => {
           },
         }) =>
           useMemo(
-            () => <MenuPopover itemId={_id} onClickDownloadPdf={() => downloadPdf(file)} />,
+            () => (
+              <FinanceMenuPopover
+                itemId={_id}
+                onClickCopyLink={() => navigator.clipboard.writeText(file)}
+                onClickDownloadPdf={() => downloadPdf(file)}
+              />
+            ),
             [],
           ),
       },
@@ -426,7 +439,13 @@ const Home = () => {
           },
         }) =>
           useMemo(
-            () => <MenuPopover itemId={_id} onClickDownloadPdf={() => downloadPdf(file)} />,
+            () => (
+              <FinanceMenuPopover
+                itemId={_id}
+                onClickCopyLink={() => navigator.clipboard.writeText(file)}
+                onClickDownloadPdf={() => downloadPdf(file)}
+              />
+            ),
             [],
           ),
       },

@@ -181,8 +181,6 @@ const Preview = ({ data = {}, place = {} }) => {
                   dimensions: `${item.dimension?.height || 0}ft x ${item.dimension?.width || 0}ft`, //
                   format: item.supportedMedia,
                   lighting: item.mediaType,
-                  from_date: item.startDate,
-                  to_date: item.endDate,
                   resolution: item.resolutions,
                   illumination: item.illuminations,
                   unit: item.unit,

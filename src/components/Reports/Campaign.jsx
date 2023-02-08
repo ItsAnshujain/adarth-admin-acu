@@ -180,9 +180,9 @@ const Campaign = () => {
   }, [report, isSuccess]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto pb-28">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <Header text="Campaign Report" />
-      <div className="pr-7 pl-5 mt-5 mb-10">
+      <div className="pr-7 pl-5 mt-5">
         <div className="flex justify-between gap-4 flex-wrap mb-8">
           <div className="flex gap-2 w-2/3 flex-wrap">
             <div className="border rounded p-8 flex-1">
@@ -248,10 +248,19 @@ const Campaign = () => {
         </div>
         <div className="flex gap-4">
           <div className="w-2/3">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <p className="font-bold tracking-wide">Campaign Report</p>
+              <div className="border rounded px-4 py-2 flex my-4">
+                <p className="my-2 text-sm font-light text-slate-400 mr-5">
+                  Total Proposals Sent: <span className="font-bold">??</span>
+                </p>
+                <p className="my-2 text-sm font-light text-slate-400">
+                  Total Proposals Created: <span className="font-bold">??</span>
+                </p>
+              </div>
               <ViewByFilter handleViewBy={handleViewBy} />
             </div>
+
             <div>
               {isReportLoading ? (
                 <Loader className="mx-auto" mt={80} />
