@@ -2,7 +2,6 @@ import { Button, Text } from '@mantine/core';
 import { useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import TextareaInput from '../../shared/TextareaInput';
-import DatePicker from '../../shared/DatePicker';
 import { useFormContext } from '../../../context/formContext';
 import TextInput from '../../shared/TextInput';
 import { serialize } from '../../../utils';
@@ -54,26 +53,6 @@ const BasicInfo = ({ proposalId }) => {
             className="mb-7"
             placeholder="Write..."
           />
-          <div className="grid grid-cols-2 gap-4 mb-7">
-            <DatePicker
-              label="Start Date"
-              name="startDate"
-              withAsterisk
-              placeholder="DD/MM/YYYY"
-              minDate={new Date()}
-              styles={styles}
-              errors={errors}
-            />
-            <DatePicker
-              label="End Date"
-              name="endDate"
-              withAsterisk
-              placeholder="DD/MM/YYYY"
-              minDate={new Date()}
-              styles={styles}
-              errors={errors}
-            />
-          </div>
           {proposalId ? (
             <NativeSelect
               label="Status"

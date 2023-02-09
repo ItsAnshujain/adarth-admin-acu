@@ -192,10 +192,10 @@ const HomePage = () => {
                 ) : (
                   <div className="flex flex-col pl-7 relative">
                     <p className="transform rotate-[-90deg] absolute left-[-28px] top-[40%]">
-                      In Lakhs {'-->'}{' '}
+                      In Lakhs &gt;
                     </p>
                     <Line height="80" data={lineData} options={options} />
-                    <p className="text-center">Months {'-->'} </p>
+                    <p className="text-center">Months &gt;</p>
                   </div>
                 )}
               </div>

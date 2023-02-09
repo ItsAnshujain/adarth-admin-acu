@@ -4,8 +4,6 @@ import { ChevronDown } from 'react-feather';
 import { useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import { DatePicker } from '@mantine/dates';
-import dayjs from 'dayjs';
 import Search from '../Search';
 import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
@@ -15,20 +13,19 @@ import modalConfig from '../../utils/modalConfig';
 import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
-import { useStyles } from '../DateRange';
+import DateRangeSelector from '../DateRangeSelector';
 
-const getDate = (selectionItem, item, key, addDefault = true) => {
+const getDate = (selectionItem, item, key) => {
   if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
 
-  if (item && item[key]) return new Date(item.startDate);
+  if (item && item[key]) return new Date(item[key]);
 
-  return addDefault ? new Date() : undefined;
+  return null;
 };
 
 const Spaces = () => {
   const modals = useModals();
   const { values, setFieldValue } = useFormContext();
-  const { classes, cx } = useStyles();
   const [searchParams, setSearchParams] = useSearchParams({
     'limit': 10,
     'page': 1,
@@ -42,8 +39,6 @@ const Spaces = () => {
   const [showFilter, setShowFilter] = useState(false);
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
-  // const fromDate = searchParams.get('from');
-  // const toDate = searchParams.get('to');
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -69,14 +64,29 @@ const Spaces = () => {
     window.open(`/inventory/view-details/${itemId}`, '_blank');
 
   const updateData = (key, val, id) => {
-    setUpdatedInventoryData(prev =>
-      prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
-    );
+    if (key === 'dateRange') {
+      setUpdatedInventoryData(prev =>
+        prev.map(item =>
+          item._id === id ? { ...item, startDate: val[0], endDate: val[1] } : item,
+        ),
+      );
 
-    setFieldValue(
-      'spaces',
-      values.spaces.map(item => (item._id === id ? { ...item, [key]: val } : item)),
-    );
+      setFieldValue(
+        'spaces',
+        values.spaces.map(item =>
+          item._id === id ? { ...item, startDate: val[0], endDate: val[1] } : item,
+        ),
+      );
+    } else {
+      setUpdatedInventoryData(prev =>
+        prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+      );
+
+      setFieldValue(
+        'spaces',
+        values.spaces.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+      );
+    }
   };
 
   const COLUMNS = useMemo(
@@ -255,55 +265,26 @@ const Spaces = () => {
           ),
       },
       {
-        Header: 'START DATE',
-        accessor: 'startDate',
+        Header: 'PROPOSAL DATE',
+        accessor: 'scheduledDate',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { startDate, _id },
+            original: { bookingRange, startDate, endDate, _id },
           },
         }) =>
           useMemo(
             () => (
-              <DatePicker
-                defaultValue={startDate}
-                placeholder="DD/MM/YYYY"
-                minDate={new Date()}
-                onChange={val => updateData('startDate', val, _id)}
-                dayClassName={(_, modifiers) =>
-                  cx({
-                    [classes.weekend]: modifiers.weekend,
-                    [classes.disabled]: modifiers.disabled,
-                  })
-                }
-              />
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'END DATE',
-        accessor: 'endDate',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { endDate, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <DatePicker
-                defaultValue={endDate}
-                placeholder="DD/MM/YYYY"
-                minDate={new Date()}
-                onChange={val => updateData('endDate', val, _id)}
-                dayClassName={(_, modifiers) =>
-                  cx({
-                    [classes.weekend]: modifiers.weekend,
-                    [classes.disabled]: modifiers.disabled,
-                  })
-                }
-              />
+              <div className="min-w-[300px]">
+                <DateRangeSelector
+                  error={
+                    !!values?.spaces?.find(item => item._id === _id) && (!startDate || !endDate)
+                  }
+                  dateValue={[startDate || null, endDate || null]}
+                  onChange={val => updateData('dateRange', val, _id)}
+                  dateRange={bookingRange}
+                />
+              </div>
             ),
             [],
           ),
@@ -386,9 +367,9 @@ const Spaces = () => {
         obj.location = item?.location?.city;
         obj.mediaType = item?.basicInformation?.mediaType?.name;
         obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
+        obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
         obj.startDate = getDate(selectionItem, item, 'startDate');
-        obj.endDate =
-          getDate(selectionItem, item, 'endDate', false) || dayjs().add(1, 'day').toDate();
+        obj.endDate = getDate(selectionItem, item, 'endDate');
         finalData.push(obj);
       }
       setUpdatedInventoryData(finalData);
@@ -403,14 +384,6 @@ const Spaces = () => {
       setSearchParams(searchParams);
     }
   }, [searchInput]);
-
-  // useEffect(() => {
-  //   if (values.startDate && values.endDate) {
-  //     searchParams.set('from', dayjs(values.startDate).format('YYYY-MM-DD'));
-  //     searchParams.set('to', dayjs(values.endDate).format('YYYY-MM-DD'));
-  //     setSearchParams(searchParams);
-  //   }
-  // }, []);
 
   return (
     <>

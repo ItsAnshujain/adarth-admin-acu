@@ -76,12 +76,14 @@ const Booking = ({ inventoryId }) => {
           },
         }) => useMemo(() => <p>{campaignName || '-'}</p>, []),
       },
-      // TODO: need api update for sortBy
       {
         Header: 'CAMPAIGN INCHARGE',
-        accessor: 'bookingManger',
-        disableSortBy: true,
-        Cell: () => useMemo(() => <p>-</p>, []),
+        accessor: 'incharge.name',
+        Cell: ({
+          row: {
+            original: { incharge },
+          },
+        }) => useMemo(() => <p>{incharge?.name || '-'}</p>, []),
       },
       {
         Header: 'PRINTING STATUS',
