@@ -32,16 +32,6 @@ const inititalFilterData = {
       _id: 'tier_3',
     },
   ],
-  'footFall': [
-    {
-      name: '5000+',
-      _id: '5000',
-    },
-    {
-      name: '10000+',
-      _id: '10000',
-    },
-  ],
 };
 const styles = { title: { fontWeight: 'bold' } };
 const sliderStyle = {
@@ -60,7 +50,6 @@ const defaultValue = {
   mediaType: [],
   tier: [],
   zone: [],
-  footFall: [],
   facing: [],
   tags: [],
   demographic: [],
@@ -77,13 +66,15 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const minPrice = searchParams.get('minPrice');
   const maxPrice = searchParams.get('maxPrice');
 
+  const minFootFall = searchParams.get('minFootFall');
+  const maxFootFall = searchParams.get('maxFootFall');
+
   const owner = searchParams.get('owner');
   const category = searchParams.get('category');
   const subCategory = searchParams.get('subCategory');
   const mediaType = searchParams.get('mediaType');
   const tier = searchParams.get('tier');
   const zone = searchParams.get('zone');
-  const footFall = searchParams.get('footFall');
   const facing = searchParams.get('facing');
   const tags = searchParams.get('tags');
   const demographic = searchParams.get('demographic');
@@ -165,7 +156,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
       filterOptions.mediaType,
       filterOptions.tier,
       filterOptions.zone,
-      filterOptions.footFall,
       filterOptions.facing,
       filterOptions.tags,
       filterOptions.demographic,
@@ -195,6 +185,8 @@ const Filter = ({ isOpened, setShowFilter }) => {
     });
     searchParams.delete('maxPrice');
     searchParams.delete('minPrice');
+    searchParams.delete('minFootFall');
+    searchParams.delete('maxFootFall');
     setSearchParams(searchParams);
     setFilterOptions(defaultValue);
   };
@@ -216,6 +208,23 @@ const Filter = ({ isOpened, setShowFilter }) => {
     searchParams.set('maxPrice', val[1]);
   };
 
+  const handleMinFootFall = e => {
+    setDynamicNumInput(prevState => ({ ...prevState, minFootFall: e }));
+    searchParams.set('minFootFall', e);
+    searchParams.set('maxFootFall', searchParams.get('maxFootFall') || 10000);
+  };
+  const handleMaxFootFall = e => {
+    setDynamicNumInput(prevState => ({ ...prevState, maxFootFall: e }));
+    searchParams.set('maxFootFall', e);
+    searchParams.set('minFootFall', searchParams.get('minFootFall') || 0);
+  };
+  const handleFootFallSliderChange = val => {
+    setDynamicNumInput(prevState => ({ ...prevState, minFootFall: val[0] }));
+    setDynamicNumInput(prevState => ({ ...prevState, maxFootFall: val[1] }));
+    searchParams.set('minFootFall', val[0]);
+    searchParams.set('maxFootFall', val[1]);
+  };
+
   useEffect(() => {
     setFilterOptions(prevState => ({
       ...prevState,
@@ -225,7 +234,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
       mediaType: mediaType?.split(',') || [],
       tier: tier?.split(',') || [],
       zone: zone?.split(',') || [],
-      footFall: footFall?.split(',') || [],
       facing: facing?.split(',') || [],
       tags: tags?.split(',') || [],
       demographic: demographic?.split(',') || [],
@@ -378,8 +386,52 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Footfall</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">
+              {/* <div className="mt-2">
                 {renderDynamicOptionsArr(inititalFilterData.footFall, 'footFall')}
+              </div> */}
+              <div className="mt-2">
+                <div className="flex flex-col gap-2 mb-2">
+                  <div className="flex justify-between gap-8">
+                    <div>
+                      <NumberInput
+                        value={
+                          minFootFall && !Number.isNaN(parseInt(minFootFall, 10))
+                            ? parseInt(minFootFall, 10)
+                            : 0
+                        }
+                        onChange={handleMinFootFall}
+                        label="Min"
+                      />
+                    </div>
+                    <div>
+                      <NumberInput
+                        value={
+                          maxFootFall && !Number.isNaN(parseInt(maxFootFall, 10))
+                            ? parseInt(maxFootFall, 10)
+                            : 10000
+                        }
+                        onChange={handleMaxFootFall}
+                        label="Max"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <RangeSlider
+                      onChange={handleFootFallSliderChange}
+                      min={0}
+                      max={10000}
+                      styles={sliderStyle}
+                      value={[
+                        minFootFall && !Number.isNaN(parseInt(minFootFall, 10))
+                          ? parseInt(minFootFall, 10)
+                          : 0,
+                        maxFootFall && !Number.isNaN(parseInt(maxFootFall, 10))
+                          ? parseInt(maxFootFall, 10)
+                          : 10000,
+                      ]}
+                    />
+                  </div>
+                </div>
               </div>
             </Accordion.Panel>
           </Accordion.Item>

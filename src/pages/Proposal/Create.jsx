@@ -56,7 +56,7 @@ const CreateProposals = () => {
   );
 
   const { data: proposalStatusData } = useFetchMasters(
-    serialize({ type: 'proposal_status', parentId: null, limit: 10 }),
+    serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
   );
 
   const getForm = () => (formStep === 1 ? <BasicInfo proposalId={proposalId} /> : <Spaces />);

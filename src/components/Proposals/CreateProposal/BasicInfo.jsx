@@ -34,7 +34,7 @@ const BasicInfo = ({ proposalId }) => {
   const [showNotesTwo, setShowNotesTwo] = useState(false);
   const { errors } = useFormContext();
   const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
-    serialize({ type: 'proposal_status', parentId: null, limit: 100 }),
+    serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
   );
 
   return (

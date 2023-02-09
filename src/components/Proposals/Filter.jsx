@@ -31,7 +31,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const totalPlacesMax = searchParams.get('totalPlacesMax');
 
   const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
-    serialize({ type: 'proposal_status', parentId: null, limit: 10 }),
+    serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
   );
 
   const handleStatusArr = stat => {

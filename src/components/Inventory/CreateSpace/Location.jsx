@@ -23,12 +23,12 @@ const Location = () => {
     data: zoneData,
     isLoading: isZoneLoading,
     isSuccess: isZoneLoaded,
-  } = useFetchMasters(serialize({ type: 'zone', limit: 100 }));
+  } = useFetchMasters(serialize({ type: 'zone', limit: 100, page: 1 }));
   const {
     data: facingData,
     isLoading: isFacingLoading,
     isSuccess: isFacingLoaded,
-  } = useFetchMasters(serialize({ type: 'facing', limit: 100 }));
+  } = useFetchMasters(serialize({ type: 'facing', limit: 100, page: 1 }));
 
   const verifyCoordinates = useCallback(
     debounce(async (latitude, longitude) => {

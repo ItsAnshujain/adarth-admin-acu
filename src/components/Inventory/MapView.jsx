@@ -26,7 +26,7 @@ const MapView = ({ lists = [] }) => {
     data: spaceTypeData,
     isSuccess: isSpaceTypeDataLoaded,
     isLoading: isSpaceTypeDataLoading,
-  } = useFetchMasters(serialize({ type: 'space_type', parentId: null, limit: 100 }));
+  } = useFetchMasters(serialize({ type: 'space_type', parentId: null, limit: 100, page: 1 }));
   const [value, setValue] = useState('');
   const [mapInstance, setMapInstance] = useState(null);
 

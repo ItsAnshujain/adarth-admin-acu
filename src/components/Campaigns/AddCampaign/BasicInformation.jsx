@@ -70,9 +70,11 @@ const BasicInformation = () => {
     isLoading: isIndustryDataLoading,
   } = useFetchMasters(serialize({ type: 'industry', ...query }));
 
-  const { data: tagData } = useFetchMasters(serialize({ type: 'tag', parentId: null, limit: 100 }));
+  const { data: tagData } = useFetchMasters(
+    serialize({ type: 'tag', parentId: null, limit: 100, page: 1 }),
+  );
   const { data: brandData } = useFetchMasters(
-    serialize({ type: 'brand', parentId: null, limit: 100 }),
+    serialize({ type: 'brand', parentId: null, limit: 100, page: 1 }),
   );
 
   return (
