@@ -76,8 +76,9 @@ const Booking = ({ inventoryId }) => {
           },
         }) => useMemo(() => <p>{campaignName || '-'}</p>, []),
       },
+      // TODO: need api update for sortBy
       {
-        Header: 'BOOKING MANAGER',
+        Header: 'CAMPAIGN INCHARGE',
         accessor: 'bookingManger',
         disableSortBy: true,
         Cell: () => useMemo(() => <p>-</p>, []),
@@ -293,7 +294,14 @@ const Booking = ({ inventoryId }) => {
             <Button onClick={toggleFilter} variant="default">
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
-            {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
+            {showFilter && (
+              <Filter
+                isOpened={showFilter}
+                setShowFilter={setShowFilter}
+                showBookingTypeOption={false}
+                showCampaignStatusOption={false}
+              />
+            )}
           </div>
         </div>
       </div>

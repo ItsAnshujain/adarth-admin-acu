@@ -3,8 +3,6 @@ import { Badge, Box, Button, Image, Loader, Progress } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
-import dayjs from 'dayjs';
-import { DatePicker } from '@mantine/dates';
 import Filter from '../../Inventory/Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -13,7 +11,6 @@ import { useFetchInventory } from '../../../hooks/inventory.hooks';
 import { useFormContext } from '../../../context/formContext';
 import { colors } from '../../../utils';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
-import { useStyles } from '../../DateRange';
 
 const getHealthTag = score =>
   score >= 80
@@ -26,17 +23,8 @@ const getHealthTag = score =>
     ? 'Bad'
     : 'Not yet selected';
 
-const getDate = (selectionItem, item, key, addDefault = true) => {
-  if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
-
-  if (item && item[key]) return new Date(item.startDate);
-
-  return addDefault ? new Date() : undefined;
-};
-
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
-  const { classes, cx } = useStyles();
   const [search, setSearch] = useDebouncedState('', 500);
   const [showFilter, setShowFilter] = useState(false);
   const navigate = useNavigate();
@@ -57,17 +45,6 @@ const SelectSpace = () => {
   const getTotalPrice = (places = []) => {
     const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
     return totalPrice;
-  };
-
-  const updateData = (key, val, id) => {
-    setUpdatedInventoryData(prev =>
-      prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
-    );
-
-    setFieldValue(
-      'place',
-      values.place.map(item => (item._id === id ? { ...item, [key]: val } : item)),
-    );
   };
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -230,60 +207,6 @@ const SelectSpace = () => {
         }) => toIndianCurrency(Number.parseInt(price, 10) || 0),
       },
       {
-        Header: 'START DATE',
-        accessor: 'startDate',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { startDate, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <DatePicker
-                defaultValue={startDate}
-                placeholder="DD/MM/YYYY"
-                minDate={new Date()}
-                onChange={val => updateData('startDate', val, _id)}
-                dayClassName={(_, modifiers) =>
-                  cx({
-                    [classes.weekend]: modifiers.weekend,
-                    [classes.disabled]: modifiers.disabled,
-                  })
-                }
-              />
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'END DATE',
-        accessor: 'endDate',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { endDate, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <DatePicker
-                defaultValue={endDate}
-                placeholder="DD/MM/YYYY"
-                minDate={new Date()}
-                onChange={val => updateData('endDate', val, _id)}
-                dayClassName={(_, modifiers) =>
-                  cx({
-                    [classes.weekend]: modifiers.weekend,
-                    [classes.disabled]: modifiers.disabled,
-                  })
-                }
-              />
-            ),
-            [],
-          ),
-      },
-      {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
@@ -339,8 +262,6 @@ const SelectSpace = () => {
         unit,
         resolutions,
         supportedMedia,
-        startDate,
-        endDate,
       }) => ({
         _id,
         spaceName,
@@ -356,8 +277,6 @@ const SelectSpace = () => {
         unit,
         resolutions,
         supportedMedia,
-        startDate,
-        endDate,
       }),
     );
 
@@ -379,8 +298,6 @@ const SelectSpace = () => {
       const finalData = [];
 
       for (const item of docs) {
-        const selectionItem = values?.place?.find(pl => pl._id === item._id);
-
         const obj = {};
         obj.photo = item?.basicInformation?.spacePhoto;
         obj.otherPhotos = item?.basicInformation?.otherPhotos;
@@ -399,9 +316,6 @@ const SelectSpace = () => {
         obj.illuminations = item?.specifications?.illuminations?.name;
         obj.unit = item?.specifications?.unit;
         obj.resolutions = item?.specifications?.resolutions;
-        obj.startDate = getDate(selectionItem, item, 'startDate');
-        obj.endDate =
-          getDate(selectionItem, item, 'endDate', false) || dayjs().add(1, 'day').toDate();
         finalData.push(obj);
       }
       setUpdatedInventoryData(finalData);
