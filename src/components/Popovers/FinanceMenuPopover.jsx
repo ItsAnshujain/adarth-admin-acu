@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Menu } from '@mantine/core';
+import { ActionIcon, Menu } from '@mantine/core';
 import { Share2, Mail, Link as LinkIcon } from 'react-feather';
 import MenuIcon from '../Menu';
 import whatsapp from '../../assets/whatsapp.svg';
@@ -8,11 +8,21 @@ const MenuPopover = ({ onClickCopyLink = () => {}, onClickDownloadPdf = () => {}
   <div className="flex gap-2 items-center">
     <Menu shadow="md" width={150}>
       <Menu.Target>
-        <Share2 size="20" />
+        <ActionIcon>
+          <Share2 size="20" color="black" />
+        </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Item icon={<img src={whatsapp} alt="whatsapp-icon" className="h-4 mx-1" />}>
-          Whatsapp
+          {/* TODO: need actual mail address */}
+          <a
+            href="https://web.whatsapp.com/send?text=example"
+            data-action="share/whatsapp/share"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Whatsapp
+          </a>
         </Menu.Item>
         <Menu.Item icon={<Mail className="h-4" />}>
           {/* TODO: need actual mail address */}
@@ -28,9 +38,9 @@ const MenuPopover = ({ onClickCopyLink = () => {}, onClickDownloadPdf = () => {}
 
     <Menu shadow="md" width={150}>
       <Menu.Target>
-        <Button>
+        <ActionIcon>
           <MenuIcon />
-        </Button>
+        </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Item
