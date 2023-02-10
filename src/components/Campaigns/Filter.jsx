@@ -80,7 +80,7 @@ const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
   const [state, setState] = useState(defaultValue);
 
   const { data: campaignStatus } = useFetchMasters(
-    serialize({ type: 'campaign_status', limit: 10 }),
+    serialize({ type: 'campaign_status', limit: 100, page: 1 }),
   );
 
   const handleApply = () => {

@@ -1,9 +1,13 @@
 import { Box, Button, Group } from '@mantine/core';
 import { yupResolver } from '@mantine/form';
-import React from 'react';
+import React, { useEffect } from 'react';
 import * as yup from 'yup';
 import { FormProvider, useForm } from '../../../context/formContext';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
+import {
+  useAddOperationalCost,
+  useUpdateOperationalCost,
+} from '../../../hooks/operationalCost.hooks';
 import { serialize } from '../../../utils';
 import NumberInput from '../../shared/NumberInput';
 import Select from '../../shared/Select';
@@ -22,7 +26,7 @@ const styles = {
 
 const initialValues = {
   type: { label: '', value: '' },
-  cost: 0,
+  amount: 0,
 };
 
 const schema = yup.object({
@@ -32,30 +36,55 @@ const schema = yup.object({
       value: yup.string().trim(),
     })
     .test('spaceStatus', 'Type is required', obj => obj.value !== ''),
-  cost: yup
+  amount: yup
     .number()
     .positive('Must be a positive number')
     .typeError('Must be a number')
     .nullable()
-    .required('Cost is required'),
+    .required('Amount is required'),
 });
 
-// TOOD: integration left
-const AddOperationalCostModal = () => {
+const AddOperationalCostModal = ({ inventoryId, onClose, costId, type, amount }) => {
+  const form = useForm({ validate: yupResolver(schema), initialValues });
   const {
     data: spaceStatusData,
     isLoading: isSpaceStatusLoading,
     isSuccess: isSpaceStatusLoaded,
   } = useFetchMasters(
-    serialize({ type: 'space_status', limit: 100, page: 1, sortBy: 'name', sortOrder: 'asc' }),
+    serialize({
+      type: 'operational_cost_type',
+      limit: 100,
+      page: 1,
+      sortBy: 'name',
+      sortOrder: 'asc',
+    }),
   );
-
-  const form = useForm({ validate: yupResolver(schema), initialValues });
+  const { mutate: addCost, isLoading: isAddLoading } = useAddOperationalCost();
+  const { mutate: editCost, isLoading: isEditLoading } = useUpdateOperationalCost();
 
   const onSubmit = async formData => {
-    // eslint-disable-next-line no-console
-    console.log(formData);
+    const data = { ...formData };
+    data.type = data.type.value;
+    data.inventoryId = inventoryId;
+
+    if (costId) {
+      editCost({ id: costId, data }, { onSuccess: () => onClose() });
+    } else {
+      addCost(data, { onSuccess: () => onClose() });
+    }
   };
+
+  useEffect(() => {
+    if (costId) {
+      form.setValues({
+        amount,
+        type: {
+          label: type?.name,
+          value: type?._id,
+        },
+      });
+    }
+  }, [costId]);
 
   return (
     <Box className="border-t">
@@ -66,7 +95,7 @@ const AddOperationalCostModal = () => {
             name="type"
             withAsterisk
             errors={form.errors}
-            disabled={isSpaceStatusLoading}
+            disabled={isSpaceStatusLoading || isAddLoading || isEditLoading}
             placeholder="Select..."
             size="md"
             options={
@@ -81,10 +110,10 @@ const AddOperationalCostModal = () => {
           />
           <NumberInput
             label="Amount ₹"
-            name="cost"
+            name="amount"
             withAsterisk
             errors={form.errors}
-            disabled={isSpaceStatusLoading}
+            disabled={isSpaceStatusLoading || isAddLoading || isEditLoading}
             placeholder="Write..."
             size="md"
             className="mb-4"
@@ -92,8 +121,13 @@ const AddOperationalCostModal = () => {
             hideControls
           />
           <Group position="right">
-            <Button type="submit" className="primary-button">
-              Add
+            <Button
+              type="submit"
+              className="primary-button"
+              disabled={isAddLoading || isEditLoading}
+              loading={isAddLoading || isEditLoading}
+            >
+              {costId ? 'Edit' : 'Add'}
             </Button>
           </Group>
         </form>

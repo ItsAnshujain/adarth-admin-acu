@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronDown } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDebouncedState } from '@mantine/hooks';
+import classNames from 'classnames';
 import { useCampaigns, useUpdateCampaign } from '../../hooks/campaigns.hooks';
 import AreaHeader from '../../components/Campaigns/Header';
 import GridView from '../../components/Campaigns/GridView';
@@ -108,9 +109,22 @@ const Home = () => {
         accessor: 'type',
         Cell: ({
           row: {
-            original: { type },
+            original: { type, isFeatured },
           },
-        }) => useMemo(() => <p className="w-24 capitalize">{type}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p
+                className={classNames(
+                  isFeatured ? 'text-purple-450 font-medium' : 'text-black',
+                  'w-24 capitalize',
+                )}
+              >
+                {isFeatured ? 'Featured' : type}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'HEALTH',
