@@ -85,7 +85,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   );
   const { data: subCategoryData, isLoading: isSubCategoryLoading } = useFetchMasters(
     serialize({ parentId: filterOptions.category?.join(','), limit: 100, page: 1 }),
-    !!filterOptions.category,
+    !!filterOptions.category.length > 0,
   );
   const { data: mediaTypeData, isLoading: isMediaTypeLoading } = useFetchMasters(
     serialize({ type: 'media_type', parentId: null, limit: 100, page: 1 }),

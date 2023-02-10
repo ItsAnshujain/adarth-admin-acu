@@ -16,6 +16,7 @@ import { ChevronDown } from 'react-feather';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import dayjs from 'dayjs';
 import { useSearchParams } from 'react-router-dom';
+import DomToPdf from 'dom-to-pdf';
 import Header from './Header';
 import toIndianCurrency from '../../utils/currencyFormat';
 import RevenueFilter from './RevenueFilter';
@@ -148,10 +149,18 @@ const Revenue = () => {
     setSearchParams(searchParams);
   };
 
+  const downloadPdf = () => {
+    const element = document.getElementById('revenue-pdf');
+    const option = {
+      filename: 'revenue.pdf',
+    };
+    DomToPdf(element, option);
+  };
+
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <Header text="Revenue Report" />
-      <div className="mr-7 pl-5 mt-5 mb-10">
+      <Header text="Revenue Report" onClickDownloadPdf={downloadPdf} />
+      <div className="mr-7 pl-5 mt-5 mb-10" id="revenue-pdf">
         <div className="flex flex-1 justify-between gap-4 flex-wrap mb-8">
           <div className="border rounded p-8 flex-1">
             <Image src={TotalRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
