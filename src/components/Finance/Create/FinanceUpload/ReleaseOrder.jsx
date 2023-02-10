@@ -68,7 +68,7 @@ const ReleaseOrder = ({ totalPrice }) => {
           />
           <TextInput
             styles={styles}
-            label="Amount Chargeable (in words)"
+            label="Amount Chargeable"
             name="amountChargeable"
             placeholder="Write..."
             readOnly

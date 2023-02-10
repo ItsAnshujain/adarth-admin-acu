@@ -262,7 +262,7 @@ const Campaign = () => {
             </div>
           </div>
           <div className="flex flex-col w-1/3 gap-4 ">
-            <div className="flex gap-4 p-4 border rounded-md items-center flex-1 flex-wrap-reverse">
+            <div className="flex gap-4 p-4 border rounded-md items-center min-h-[200px]">
               <div className="w-32">
                 {isStatsLoading ? (
                   <Loader className="mx-auto" />
@@ -290,7 +290,7 @@ const Campaign = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-4 p-4 border rounded-md items-center flex-1 flex-wrap-reverse">
+            <div className="flex gap-4 p-4 border rounded-md items-center min-h-[200px]">
               <div className="w-32">
                 {isStatsLoading ? (
                   <Loader className="mx-auto" />

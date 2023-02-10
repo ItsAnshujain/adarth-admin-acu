@@ -319,7 +319,7 @@ const Inventory = () => {
           </div>
 
           <div className="w-[30%] flex gap-8 h-[50%] p-4 border rounded-md">
-            <div className="w-[40%] my-auto">
+            <div className="w-[40%]">
               {isInventoryStatsLoading ? (
                 <Loader className="mx-auto" />
               ) : (
@@ -328,7 +328,7 @@ const Inventory = () => {
             </div>
             <div className="flex flex-col">
               <p className="font-medium">Health Status</p>
-              <div className="flex flex-col gap-8 mt-6">
+              <div className="flex flex-col gap-8 mt-4">
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                   <div>
