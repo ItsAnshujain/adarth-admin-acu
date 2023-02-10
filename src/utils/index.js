@@ -32,6 +32,7 @@ export const masterTypes = {
   space_status: 'Space Status',
   campaign_status: 'Campaign Status',
   industry: 'Industry',
+  operational_cost_type: 'Operational Cost Type',
 };
 
 /**

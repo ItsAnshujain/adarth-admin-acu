@@ -16,6 +16,7 @@ import { Badge, Box, Image, Loader } from '@mantine/core';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
+import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import Header from './Header';
 import AreaHeader from '../Inventory/AreaHeader';
 import Table from '../Table/Table';
@@ -35,6 +36,8 @@ import toIndianCurrency from '../../utils/currencyFormat';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
 import { useInventoryReport, useInventoryStats } from '../../hooks/inventory.hooks';
 import ViewByFilter from './ViewByFilter';
+
+dayjs.extend(quarterOfYear);
 
 ChartJS.register(
   ArcElement,
@@ -110,11 +113,7 @@ const Inventory = () => {
       searchParams.delete('startDate');
       searchParams.delete('endDate');
     }
-    if (viewType === 'week') {
-      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
-      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
-    }
-    if (viewType === 'month') {
+    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
       searchParams.set('startDate', dayjs().format(DATE_FORMAT));
       searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
     }
@@ -124,10 +123,6 @@ const Inventory = () => {
         'endDate',
         dayjs(dayjs().format(DATE_FORMAT)).quarter(2).format(DATE_FORMAT),
       );
-    }
-    if (viewType === 'year') {
-      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
-      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
     }
     setSearchParams(searchParams);
   };

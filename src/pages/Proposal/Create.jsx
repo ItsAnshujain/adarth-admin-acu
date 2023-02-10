@@ -3,6 +3,7 @@ import * as yup from 'yup';
 import { useNavigate, useParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { yupResolver } from '@mantine/form';
+import dayjs from 'dayjs';
 import BasicInfo from '../../components/Proposals/CreateProposal/BasicInfo';
 import Spaces from '../../components/Proposals/Spaces';
 import SuccessModal from '../../components/shared/Modal';
@@ -20,16 +21,6 @@ const schema = yup.object({
   image: yup.string().trim(),
   name: yup.string().trim().required('Name is required'),
   description: yup.string().trim(),
-  startDate: yup
-    .string()
-    .test('startDate', 'Start Date must be less that End Date', function (val) {
-      if (new Date(val) < new Date(this.parent.endDate)) {
-        return true;
-      }
-      return false;
-    })
-    .required('Start Date is required'),
-  endDate: yup.string().required('End Date is required'),
   status: yup.string().trim(),
 });
 
@@ -96,6 +87,28 @@ const CreateProposals = () => {
         }
       });
 
+      if (data.spaces.some(item => !(item.startDate || item.endDate))) {
+        showNotification({
+          title: 'Please select the proposal date to continue',
+          color: 'blue',
+        });
+        return;
+      }
+
+      let minDate = null;
+      let maxDate = null;
+
+      data.spaces.forEach(item => {
+        const start = item.startDate.setHours(0, 0, 0, 0);
+        const end = item.endDate.setHours(0, 0, 0, 0);
+
+        if (!minDate) minDate = start;
+        if (!maxDate) maxDate = end;
+
+        if (start < minDate) minDate = start;
+        if (end > maxDate) maxDate = end;
+      });
+
       if (proposalId) {
         update(
           { proposalId, data },
@@ -116,6 +129,8 @@ const CreateProposals = () => {
         data = {
           ...data,
           status,
+          startDate: dayjs(minDate).format('YYYY-MM-DD'),
+          endDate: dayjs(maxDate).format('YYYY-MM-DD'),
         };
         create(data, {
           onSuccess: () => {
@@ -142,7 +157,13 @@ const CreateProposals = () => {
         endDate: proposalData?.proposal?.endDate
           ? new Date(proposalData.proposal.endDate)
           : new Date(),
-        spaces: proposalData?.inventories.docs.map(({ ...item }) => ({ ...item })) || [],
+        spaces:
+          proposalData?.inventories.docs.map(item => ({
+            _id: item._id,
+            price: item.price,
+            startDate: new Date(item.startDate),
+            endDate: new Date(item.endDate),
+          })) || [],
       });
     }
   }, [proposalData]);

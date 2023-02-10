@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Line, Bar } from 'react-chartjs-2';
+import { Line, Bar, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
+  ArcElement,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -12,19 +13,33 @@ import {
 } from 'chart.js';
 import { Button, Image } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { useClickOutside } from '@mantine/hooks';
+import quarterOfYear from 'dayjs/plugin/quarterOfYear';
+import dayjs from 'dayjs';
+import { useSearchParams } from 'react-router-dom';
 import Header from './Header';
 import toIndianCurrency from '../../utils/currencyFormat';
-import calendar from '../../assets/data-table.svg';
-import DateRange from '../DateRange';
-import FilterRevenue from './FilterRevenue';
+import RevenueFilter from './RevenueFilter';
 import TotalRevenueIcon from '../../assets/total-revenue.svg';
 import OfflineRevenueIcon from '../../assets/offline-revenue.svg';
 import OnlineRevenueIcon from '../../assets/online-revenue.svg';
 import ProposalSentIcon from '../../assets/proposal-sent.svg';
 import OperationalCostIcon from '../../assets/operational-cost.svg';
+import ViewByFilter from './ViewByFilter';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Title);
+dayjs.extend(quarterOfYear);
+
+const DATE_FORMAT = 'YYYY-MM-DD';
+
+ChartJS.register(
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Tooltip,
+  Title,
+);
 
 const barDataState = {
   labels: [
@@ -81,22 +96,63 @@ const lineData = {
   ],
 };
 
+export const pieData = {
+  labels: [],
+  datasets: [
+    {
+      label: '',
+      data: [12, 19, 3, 5, 2, 3],
+      backgroundColor: [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+      ],
+      borderColor: [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+      ],
+      borderWidth: 1,
+    },
+  ],
+};
+
 // TODO: integration left
 const Revenue = () => {
-  const [showDatePickerRevenue, setShowDatePickerRevenue] = useState(false);
-  const [showDateCity, setShowDateCity] = useState(false);
-  const [showDateIndustry, setShowDateIndustry] = useState(false);
-  const revenueRef = useClickOutside(() => setShowDatePickerRevenue(false));
-  const dateCityRef = useClickOutside(() => setShowDateCity(false));
-  const dateIndustryRef = useClickOutside(() => setShowDateCity(false));
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showFilter, setShowFilter] = useState(false);
   const toggleFilter = () => setShowFilter(!showFilter);
+
+  const handleViewBy = viewType => {
+    if (viewType === 'reset') {
+      searchParams.delete('startDate');
+      searchParams.delete('endDate');
+    }
+    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
+      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
+      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
+    }
+    if (viewType === 'quarter') {
+      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
+      searchParams.set(
+        'endDate',
+        dayjs(dayjs().format(DATE_FORMAT)).quarter(2).format(DATE_FORMAT),
+      );
+    }
+    setSearchParams(searchParams);
+  };
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <Header text="Revenue Report" />
       <div className="mr-7 pl-5 mt-5 mb-10">
-        <div className="flex flex-1 justify-between gap-4 flex-wrap mb-8 ">
+        <div className="flex flex-1 justify-between gap-4 flex-wrap mb-8">
           <div className="border rounded p-8 flex-1">
             <Image src={TotalRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Total Revenue</p>
@@ -123,82 +179,50 @@ const Revenue = () => {
             <p className="font-bold">0</p>
           </div>
         </div>
-        <div>
-          <div className="flex justify-between">
-            <p className="font-bold">Revenue Graph</p>
+        <div className="flex gap-8">
+          <div className="w-[70%] flex flex-col justify-between">
+            <div className="flex justify-between items-center">
+              <p className="font-bold">Revenue Graph</p>
+              <ViewByFilter handleViewBy={handleViewBy} />
+            </div>
+            <div className="flex flex-col pl-7 relative">
+              <p className="transform rotate-[-90deg] absolute left-[-25px] top-[40%]">
+                In Lakhs &gt;
+              </p>
+              <Line height="100" data={lineData} options={options} />
+              <p className="text-center">Months &gt;</p>
+            </div>
+          </div>
+          <div className="w-[30%] flex flex-col">
+            <div className="flex justify-between items-center">
+              <p className="font-bold">Industry wise revenue graph</p>
+              <ViewByFilter handleViewBy={handleViewBy} />
+            </div>
+            <div className="w-80 m-auto">
+              <Pie data={pieData} options={options} />
+            </div>
+          </div>
+        </div>
+
+        <div className="my-10">
+          <div className="flex justify-between items-center">
+            <p className="font-bold">City Or State</p>
             <div className="flex justify-around">
-              <div ref={revenueRef} className="mr-2 relative">
-                <Button
-                  onClick={() => setShowDatePickerRevenue(!showDatePickerRevenue)}
-                  variant="default"
-                >
-                  <img src={calendar} className="h-5" alt="calendar" />
+              <div className="mx-2">
+                <Button onClick={toggleFilter} variant="default" className="font-medium">
+                  <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
                 </Button>
-                {showDatePickerRevenue && (
-                  <div className="absolute z-20 -translate-x-[90%] bg-white -top-0.3">
-                    <DateRange handleClose={() => setShowDatePickerRevenue(false)} />
-                  </div>
+                {showFilter && (
+                  <RevenueFilter isOpened={showFilter} setShowFilter={setShowFilter} />
                 )}
               </div>
+              <ViewByFilter handleViewBy={handleViewBy} />
             </div>
           </div>
-          <Line height="80" data={lineData} options={options} />
-          <div className="my-10">
-            <div className="flex justify-between">
-              <p className="font-bold">Industry wise revenue graph</p>
-              <div className="flex justify-around">
-                <div ref={dateIndustryRef} className="mr-2 relative">
-                  <Button onClick={() => setShowDateIndustry(!showDateIndustry)} variant="default">
-                    <img src={calendar} className="h-5" alt="calendar" />
-                  </Button>
-                  {showDateIndustry && (
-                    <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
-                      <DateRange handleClose={() => setShowDateIndustry(false)} />
-                    </div>
-                  )}
-                </div>
-                <div className="mr-2">
-                  <Button
-                    onClick={() => setShowFilter(!showFilter)}
-                    variant="default"
-                    className="font-medium"
-                  >
-                    <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
-                  </Button>
-                  {showFilter && (
-                    <FilterRevenue isOpened={showFilter} setShowFilter={setShowFilter} />
-                  )}
-                </div>
-              </div>
-            </div>
+          <div className="flex flex-col pl-7 relative">
+            <p className="transform rotate-[-90deg] absolute left-[-15px] top-[40%]">Total &gt;</p>
             <Bar height="80" data={barDataState} options={options} />
-          </div>
-          <div className="my-10">
-            <div className="flex justify-between">
-              <p className="font-bold">City Or State</p>
-              <div className="flex justify-around">
-                <div ref={dateCityRef} className="mr-2 relative">
-                  <Button onClick={() => setShowDateCity(!showDateCity)} variant="default">
-                    <img src={calendar} className="h-5" alt="calendar" />
-                  </Button>
-                  {showDateCity && (
-                    <div className="absolute z-20 -translate-x-3/4 bg-white -top-0.3">
-                      <DateRange handleClose={() => setShowDateCity(false)} />
-                    </div>
-                  )}
-                </div>
-
-                <div className="mx-2">
-                  <Button onClick={toggleFilter} variant="default" className="font-medium">
-                    <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
-                  </Button>
-                  {showFilter && (
-                    <FilterRevenue isOpened={showFilter} setShowFilter={setShowFilter} />
-                  )}
-                </div>
-              </div>
-            </div>
-            <Bar height="80" data={barDataState} options={options} />
+            <p className="text-center">City or State &gt;</p>
           </div>
         </div>
       </div>
