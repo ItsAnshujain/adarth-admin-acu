@@ -134,11 +134,7 @@ const Revenue = () => {
       searchParams.delete('startDate');
       searchParams.delete('endDate');
     }
-    if (viewType === 'week') {
-      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
-      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
-    }
-    if (viewType === 'month') {
+    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
       searchParams.set('startDate', dayjs().format(DATE_FORMAT));
       searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
     }
@@ -148,10 +144,6 @@ const Revenue = () => {
         'endDate',
         dayjs(dayjs().format(DATE_FORMAT)).quarter(2).format(DATE_FORMAT),
       );
-    }
-    if (viewType === 'year') {
-      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
-      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
     }
     setSearchParams(searchParams);
   };
