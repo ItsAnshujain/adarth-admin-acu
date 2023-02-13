@@ -104,11 +104,11 @@ const bookingStyles = {
   },
 };
 
-const orderTypeKey = {
-  purchase: 'purchaseOrder',
-  release: 'releaseOrder',
-  invoice: 'invoice',
-};
+// const orderTypeKey = {
+//   purchase: 'purchaseOrder',
+//   release: 'releaseOrder',
+//   invoice: 'invoice',
+// };
 
 const bookingQueries = {
   page: 1,
@@ -166,6 +166,7 @@ const FileUpload = () => {
     return null;
   };
 
+  // TODO: Wip, awaiting on API
   const handleSubmit = async formData => {
     const data = { ...formData };
     if (!file) {
@@ -176,21 +177,21 @@ const FileUpload = () => {
       return;
     }
     const pdfLink = await handleUpload();
-    console.log({ ...data, file: pdfLink?.[0].Location });
+    // console.log({ ...data, file: pdfLink?.[0].Location });
     // return;
 
+    // eslint-disable-next-line no-unused-vars
     const purchaseOrderPdf = await generatePurchaseOrder({
       id: bookingId || bookingIdFromFinance,
       data: { ...data, file: pdfLink?.[0].Location },
     });
 
-    console.log({ purchaseOrderPdf });
     // const currentOrderType = orderTypeKey[type];
     // const data = {
     //   [currentOrderType]: formData,
     // };
 
-    // update({ id: bookingId || bookingIdFromFinance, data });
+    update({ id: bookingId || bookingIdFromFinance, data });
   };
 
   const calcutateTotalPrice = useMemo(() => {
@@ -273,8 +274,13 @@ const FileUpload = () => {
             )}
           </div>
           <Button
-            disabled={isLoading || isUpdateBookingLoading || !bookingIdFromFinance}
-            loading={isLoading || isUpdateBookingLoading}
+            disabled={
+              isLoading ||
+              isUpdateBookingLoading ||
+              !bookingIdFromFinance ||
+              isGeneratePurchaseOrderLoading
+            }
+            loading={isLoading || isUpdateBookingLoading || isGeneratePurchaseOrderLoading}
             // onClick={file ? handleUpload : open}
             variant="filled"
             type="submit"

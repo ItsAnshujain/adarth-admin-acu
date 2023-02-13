@@ -14,7 +14,10 @@ const SpaceDetails = () => {
   const [isUnderMaintenance, toggle] = useToggle();
   const [activeTab, setActiveTab] = useState('basic-info');
 
-  const { data: inventoryDetails } = useFetchInventoryById(inventoryId, !!inventoryId);
+  const { data: inventoryDetails, isLoading: isInventoryDetailsLoading } = useFetchInventoryById(
+    inventoryId,
+    !!inventoryId,
+  );
   const { mutate: update, isLoading: isUpdateInventoryLoading } = useUpdateInventory();
 
   const handleBack = () => navigate('/inventory');
@@ -29,10 +32,10 @@ const SpaceDetails = () => {
 
   useEffect(() => {
     // current maintenance state
-    if (inventoryDetails?.isUnderMaintenance) {
-      toggle(inventoryDetails.isUnderMaintenance);
+    if (inventoryDetails?.inventory?.isUnderMaintenance) {
+      toggle(inventoryDetails?.inventory.isUnderMaintenance);
     }
-  }, [inventoryDetails]);
+  }, [inventoryDetails?.inventory]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
@@ -71,13 +74,20 @@ const SpaceDetails = () => {
         </Tabs.List>
 
         <Tabs.Panel value="basic-info" pt="xs">
-          <BasicInfo />
+          <BasicInfo
+            inventoryDetails={inventoryDetails?.inventory}
+            isInventoryDetailsLoading={isInventoryDetailsLoading}
+            operationalCost={inventoryDetails?.operationalCost}
+            totalCompletedBooking={inventoryDetails?.totalCompletedBooking}
+            totalOccupancy={inventoryDetails?.totalOccupancy}
+            totalRevenue={inventoryDetails?.totalRevenue}
+          />
         </Tabs.Panel>
         <Tabs.Panel value="booking" pt="xs">
           <Booking inventoryId={inventoryId} />
         </Tabs.Panel>
         <Tabs.Panel value="operational-cost" pt="xs">
-          <OperationalCost inventoryDetails={inventoryDetails} />
+          <OperationalCost inventoryDetails={inventoryDetails?.inventory} />
         </Tabs.Panel>
       </Tabs>
     </div>
