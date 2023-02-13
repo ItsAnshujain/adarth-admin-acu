@@ -1,7 +1,7 @@
-import { Anchor, Collapse } from '@mantine/core';
+import { Collapse } from '@mantine/core';
 import classNames from 'classnames';
 import React from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { masterTypes } from '../utils';
 
@@ -28,18 +28,17 @@ const NestedSidebarContent = ({ list, path }) => {
     <Collapse in={isActive}>
       <div className="flex flex-col items-start pl-5 bg-gray-100 overflow-y-auto max-h-[300px]">
         {list.map(item => (
-          <Anchor
+          <Link
             key={uuidv4()}
-            href={item.subPath ? `${path}${item.subPath}` : path}
+            to={item.subPath ? `${path}${item.subPath}` : path}
             className={classNames(
               checkActive(item?.label, item?.subPath) ? 'text-black' : 'text-gray-400',
               pathname.includes('masters') ? 'mb-2' : pathname.includes('reports') ? 'mb-2' : '',
               'font-normal text-base pl-[28px]',
             )}
-            underline={false}
           >
             {item?.label}
-          </Anchor>
+          </Link>
         ))}
       </div>
     </Collapse>

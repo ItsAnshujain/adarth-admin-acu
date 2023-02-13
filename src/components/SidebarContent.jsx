@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import { ChevronDown } from 'react-feather';
-import { Anchor, Image } from '@mantine/core';
-import { useLocation } from 'react-router-dom';
+import { Image } from '@mantine/core';
+import { Link, useLocation } from 'react-router-dom';
 import NestedSidebarContent from './NestedSidebarContent';
 import HomeIcon from '../assets/home-default.svg';
 import HomeActiveIcon from '../assets/home-active.svg';
@@ -181,10 +181,9 @@ const SidebarContent = ({ className }) => {
                   fit="contain"
                 />
               </div>
-              <Anchor
-                href={item.nested ? `${item.path}${item.nested[0]?.subPath}` : item.path}
+              <Link
+                to={item.nested ? `${item.path}${item.nested[0]?.subPath}` : item.path}
                 className={classNames('p-2 flex w-full h-[40px]')}
-                underline={false}
               >
                 <span
                   className={classNames(
@@ -194,7 +193,7 @@ const SidebarContent = ({ className }) => {
                 >
                   {item.label}
                 </span>
-              </Anchor>
+              </Link>
               {item?.nested ? <ChevronDown className="h-4 mr-5" /> : null}
             </div>
             <NestedSidebarContent list={item.nested || []} path={item.path} />
