@@ -1,4 +1,5 @@
 import { Pagination, Skeleton } from '@mantine/core';
+import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useFormContext } from '../../context/formContext';
 import Card from './Card';
@@ -35,12 +36,14 @@ const GridView = ({
     <div>
       <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[100%] overflow-y-auto">
         {list.map(item => (
-          <Card
-            key={item?._id}
-            data={item}
-            isSelected={values?.spaces?.includes(item)}
-            onSelect={cardId => handleCardSelection(cardId, item)}
-          />
+          <Link to={`/inventory/view-details/${item?._id}`}>
+            <Card
+              key={item?._id}
+              data={item}
+              isSelected={values?.spaces?.includes(item)}
+              onSelect={cardId => handleCardSelection(cardId, item)}
+            />
+          </Link>
         ))}
         {isLoadingList ? skeletonList() : null}
       </div>

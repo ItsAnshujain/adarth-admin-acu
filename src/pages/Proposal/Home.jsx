@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
-import { Button, Loader, Select } from '@mantine/core';
+import { Loader, Select } from '@mantine/core';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
 import AreaHeader from '../../components/Proposals/Header';
@@ -22,7 +22,6 @@ const nativeSelectStyles = {
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const Proposals = () => {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
@@ -60,8 +59,6 @@ const Proposals = () => {
     update({ proposalId, data });
   };
 
-  const handleProposalDetails = itemId => navigate(`view-details/${itemId}`, { replace: true });
-
   const COLUMNS = useMemo(
     () => [
       {
@@ -89,12 +86,12 @@ const Proposals = () => {
         }) =>
           useMemo(
             () => (
-              <Button
+              <Link
+                to={`view-details/${_id}`}
                 className="text-black font-medium max-w-[250px] capitalize"
-                onClick={() => handleProposalDetails(_id)}
               >
                 {name}
-              </Button>
+              </Link>
             ),
             [],
           ),

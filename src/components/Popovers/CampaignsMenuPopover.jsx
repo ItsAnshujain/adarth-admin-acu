@@ -3,7 +3,7 @@ import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import React from 'react';
 import { Bookmark, Edit2, Eye, Trash } from 'react-feather';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ROLES } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
 import DeleteCampaignContent from '../DeleteCampaignContent';
@@ -12,7 +12,6 @@ import RoleBased from '../RoleBased';
 
 const CampaignsMenuPopover = ({ isFeatured, itemId, onClickSetAsFeature }) => {
   const modals = useModals();
-  const navigate = useNavigate();
 
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
@@ -34,21 +33,23 @@ const CampaignsMenuPopover = ({ isFeatured, itemId, onClickSetAsFeature }) => {
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Item
-          className="cursor-pointer flex items-center gap-1"
-          icon={<Eye className="h-4" />}
-          onClick={() => navigate(`/campaigns/view-details/${itemId}`)}
-        >
-          <span className="ml-1">View Details</span>
-        </Menu.Item>
-        <RoleBased acceptedRoles={[ROLES.ADMIN]}>
+        <Link to={`/campaigns/view-details/${itemId}`}>
           <Menu.Item
-            onClick={() => navigate(`edit-details/${itemId}`)}
-            icon={<Edit2 className="h-4" />}
             className="cursor-pointer flex items-center gap-1"
+            icon={<Eye className="h-4" />}
           >
-            <span className="ml-1">Edit</span>
+            <span className="ml-1">View Details</span>
           </Menu.Item>
+        </Link>
+        <RoleBased acceptedRoles={[ROLES.ADMIN]}>
+          <Link to={`edit-details/${itemId}`}>
+            <Menu.Item
+              icon={<Edit2 className="h-4" />}
+              className="cursor-pointer flex items-center gap-1"
+            >
+              <span className="ml-1">Edit</span>
+            </Menu.Item>
+          </Link>
           <Menu.Item
             className={classNames(
               'bg-white cursor-pointer flex items-center text',
