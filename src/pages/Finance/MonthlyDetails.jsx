@@ -163,9 +163,9 @@ const Home = () => {
             () => (
               <FinanceMenuPopover
                 itemId={_id}
-                onClickSendEmail={() => {}}
                 onClickCopyLink={() => navigator.clipboard.writeText(file)}
                 onClickDownloadPdf={() => downloadPdf(file)}
+                pdfLink={file}
               />
             ),
             [],
@@ -300,6 +300,7 @@ const Home = () => {
                 itemId={_id}
                 onClickCopyLink={() => navigator.clipboard.writeText(file)}
                 onClickDownloadPdf={() => downloadPdf(file)}
+                pdfLink={file}
               />
             ),
             [],
@@ -444,6 +445,7 @@ const Home = () => {
                 itemId={_id}
                 onClickCopyLink={() => navigator.clipboard.writeText(file)}
                 onClickDownloadPdf={() => downloadPdf(file)}
+                pdfLink={file}
               />
             ),
             [],

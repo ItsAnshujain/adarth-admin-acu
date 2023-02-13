@@ -1,26 +1,49 @@
 import React from 'react';
-import { Button, Menu } from '@mantine/core';
+import { ActionIcon, Anchor, Menu } from '@mantine/core';
 import { Share2, Mail, Link as LinkIcon } from 'react-feather';
 import MenuIcon from '../Menu';
 import whatsapp from '../../assets/whatsapp.svg';
 
-const MenuPopover = ({ onClickCopyLink = () => {}, onClickDownloadPdf = () => {} }) => (
+const MenuPopover = ({ onClickCopyLink = () => {}, onClickDownloadPdf = () => {}, pdfLink }) => (
   <div className="flex gap-2 items-center">
     <Menu shadow="md" width={150}>
       <Menu.Target>
-        <Share2 size="20" />
+        <ActionIcon>
+          <Share2 size="20" color="black" />
+        </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>
-        <Menu.Item icon={<img src={whatsapp} alt="whatsapp-icon" className="h-4 mx-1" />}>
-          Whatsapp
+        <Menu.Item
+          icon={<img src={whatsapp} alt="whatsapp-icon" className="h-4 mx-1" />}
+          disabled={!pdfLink}
+        >
+          <Anchor
+            href={`https://web.whatsapp.com/send?text=${pdfLink}`}
+            data-action="share/whatsapp/share"
+            target="_blank"
+            rel="noreferrer"
+            className="py-2"
+            underline={false}
+          >
+            Whatsapp
+          </Anchor>
         </Menu.Item>
-        <Menu.Item icon={<Mail className="h-4" />}>
-          {/* TODO: need actual mail address */}
-          <a href="mailto:example@email.com" target="_blank" rel="noreferrer">
+        <Menu.Item icon={<Mail className="h-4" />} disabled={!pdfLink}>
+          <Anchor
+            href={`mailto:?body=${pdfLink}`}
+            target="_blank"
+            rel="noreferrer"
+            className="py-2"
+            underline={false}
+          >
             Send Email
-          </a>
+          </Anchor>
         </Menu.Item>
-        <Menu.Item icon={<LinkIcon className="h-4" />} onClick={onClickCopyLink}>
+        <Menu.Item
+          icon={<LinkIcon className="h-4" />}
+          onClick={onClickCopyLink}
+          disabled={!pdfLink}
+        >
           Copy Link
         </Menu.Item>
       </Menu.Dropdown>
@@ -28,9 +51,9 @@ const MenuPopover = ({ onClickCopyLink = () => {}, onClickDownloadPdf = () => {}
 
     <Menu shadow="md" width={150}>
       <Menu.Target>
-        <Button>
+        <ActionIcon>
           <MenuIcon />
-        </Button>
+        </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Item

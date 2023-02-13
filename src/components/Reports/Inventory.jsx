@@ -17,6 +17,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
+import DomToPdf from 'dom-to-pdf';
 import Header from './Header';
 import AreaHeader from '../Inventory/AreaHeader';
 import Table from '../Table/Table';
@@ -258,6 +259,14 @@ const Inventory = () => {
     });
   }, [inventoryReports]);
 
+  const downloadPdf = () => {
+    const element = document.getElementById('inventory-pdf');
+    const option = {
+      filename: 'inventory.pdf',
+    };
+    DomToPdf(element, option);
+  };
+
   useEffect(() => {
     const chart = chartRef.current;
 
@@ -270,8 +279,8 @@ const Inventory = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <Header text="Inventory Report" />
-      <div className="pr-7 pl-5 mt-5 mb-10">
+      <Header text="Inventory Report" onClickDownloadPdf={downloadPdf} />
+      <div className="pr-7 pl-5 mt-5 mb-10" id="inventory-pdf">
         <div className="flex justify-between gap-4 flex-wrap mb-8">
           <div className="border rounded p-8  flex-1">
             <Image src={InventoryIcon} alt="folder" fit="contain" height={24} width={24} />
@@ -319,7 +328,7 @@ const Inventory = () => {
           </div>
 
           <div className="w-[30%] flex gap-8 h-[50%] p-4 border rounded-md">
-            <div className="w-[40%] my-auto">
+            <div className="w-[40%]">
               {isInventoryStatsLoading ? (
                 <Loader className="mx-auto" />
               ) : (
@@ -328,7 +337,7 @@ const Inventory = () => {
             </div>
             <div className="flex flex-col">
               <p className="font-medium">Health Status</p>
-              <div className="flex flex-col gap-8 mt-6">
+              <div className="flex flex-col gap-8 mt-4">
                 <div className="flex gap-2 items-center">
                   <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                   <div>

@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
+import DomToPdf from 'dom-to-pdf';
 import Header from './Header';
 import TotalCampaignIcon from '../../assets/total-campaign.svg';
 import OngoingCampaignIcon from '../../assets/ongoing-campaign.svg';
@@ -145,27 +146,36 @@ const Campaign = () => {
     [stats],
   );
 
+  // TODO: Wip, crashing so commented for now. awaiting on API update
   const calculateBarData = useCallback(() => {
     setUpdatedBarData(prevState => {
       const tempBarData = { ...prevState, id: uuidv4() };
-      if (report) {
-        report?.forEach(item => {
-          if (item._id.month) {
-            if (item.upcoming) {
-              tempBarData.datasets[0].data[item._id.month - 1] = item.upcoming;
-            }
-            if (item.ongoing) {
-              tempBarData.datasets[1].data[item._id.month - 1] = item.ongoing;
-            }
-            if (item.completed) {
-              tempBarData.datasets[2].data[item._id.month - 1] = item.completed;
-            }
-          }
-        });
-      }
+      // if (report) {
+      //   report?.forEach(item => {
+      //     if (item._id.month) {
+      //       if (item.upcoming) {
+      //         tempBarData.datasets[0].data[item._id.month - 1] = item.upcoming;
+      //       }
+      //       if (item.ongoing) {
+      //         tempBarData.datasets[1].data[item._id.month - 1] = item.ongoing;
+      //       }
+      //       if (item.completed) {
+      //         tempBarData.datasets[2].data[item._id.month - 1] = item.completed;
+      //       }
+      //     }
+      //   });
+      // }
       return tempBarData;
     });
   }, [report]);
+
+  const downloadPdf = () => {
+    const element = document.getElementById('campaign-pdf');
+    const option = {
+      filename: 'campaign.pdf',
+    };
+    DomToPdf(element, option);
+  };
 
   useEffect(() => {
     calculateBarData();
@@ -173,8 +183,8 @@ const Campaign = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <Header text="Campaign Report" />
-      <div className="pr-7 pl-5 mt-5">
+      <Header text="Campaign Report" onClickDownloadPdf={downloadPdf} />
+      <div className="pr-7 pl-5 mt-5" id="campaign-pdf">
         <div className="flex justify-between gap-4 flex-wrap mb-8">
           <div className="flex gap-2 w-2/3 flex-wrap">
             <div className="border rounded p-8 flex-1">
@@ -244,10 +254,12 @@ const Campaign = () => {
               <p className="font-bold tracking-wide">Campaign Report</p>
               <div className="border rounded px-4 py-2 flex my-4">
                 <p className="my-2 text-sm font-light text-slate-400 mr-5">
-                  Total Proposals Sent: <span className="font-bold">??</span>
+                  Total Proposals Sent:{' '}
+                  <span className="font-bold">{report?.proposal?.sent ?? 0}</span>
                 </p>
                 <p className="my-2 text-sm font-light text-slate-400">
-                  Total Proposals Created: <span className="font-bold">??</span>
+                  Total Proposals Created:{' '}
+                  <span className="font-bold">{report?.proposal?.created ?? 0}</span>
                 </p>
               </div>
               <ViewByFilter handleViewBy={handleViewBy} />
@@ -262,7 +274,7 @@ const Campaign = () => {
             </div>
           </div>
           <div className="flex flex-col w-1/3 gap-4 ">
-            <div className="flex gap-4 p-4 border rounded-md items-center flex-1 flex-wrap-reverse">
+            <div className="flex gap-4 p-4 border rounded-md items-center min-h-[200px]">
               <div className="w-32">
                 {isStatsLoading ? (
                   <Loader className="mx-auto" />
@@ -290,7 +302,7 @@ const Campaign = () => {
                 </div>
               </div>
             </div>
-            <div className="flex gap-4 p-4 border rounded-md items-center flex-1 flex-wrap-reverse">
+            <div className="flex gap-4 p-4 border rounded-md items-center min-h-[200px]">
               <div className="w-32">
                 {isStatsLoading ? (
                   <Loader className="mx-auto" />

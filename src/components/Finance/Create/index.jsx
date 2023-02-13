@@ -303,24 +303,18 @@ const Create = () => {
   }, [bookingData?.campaign?.spaces]);
 
   const handleSubmit = async formData => {
-    const data = {
-      ...formData,
-    };
+    const data = { ...formData };
     Object.keys(data).forEach(key => {
-      if (data[key] === '' || data[key] === null) {
-        delete data[key];
-      }
+      if (data[key] === '' || data[key] === null) delete data[key];
     });
 
     if (Object.keys(data).length === 0) return;
 
     if (type === 'purchase') {
-      if (data?.supplierGst) {
-        data.supplierGst = data.supplierGst?.toUpperCase();
-      }
-      if (data?.buyerGst) {
-        data.buyerGst = data.buyerGst?.toUpperCase();
-      }
+      if (data?.supplierGst) data.supplierGst = data.supplierGst?.toUpperCase();
+
+      if (data?.buyerGst) data.buyerGst = data.buyerGst?.toUpperCase();
+
       data.spaces = form.values?.spaces?.map(item => ({
         id: item._id,
         per: +item.per || 1,
@@ -334,12 +328,10 @@ const Create = () => {
       if (purchaseOrderPdf?.generatedPdf?.Location)
         downloadPdf(purchaseOrderPdf.generatedPdf.Location);
     } else if (type === 'release') {
-      if (!data?.phone?.includes('+91')) {
-        data.phone = `+91${data?.phone}`;
-      }
-      if (!data?.mobile?.includes('+91')) {
-        data.mobile = `+91${data?.mobile}`;
-      }
+      if (!data?.phone?.includes('+91')) data.phone = `+91${data?.phone}`;
+
+      if (!data?.mobile?.includes('+91')) data.mobile = `+91${data?.mobile}`;
+
       const releaseOrderPdf = await generateReleaseOrder(
         { id: bookingId || bookingIdFromFinance, data },
         { onSuccess: () => redirectToHome() },
@@ -347,18 +339,14 @@ const Create = () => {
       if (releaseOrderPdf?.generatedPdf?.Location)
         downloadPdf(releaseOrderPdf.generatedPdf.Location);
     } else if (type === 'invoice') {
-      if (!data?.supplierPhone?.includes('+91')) {
-        data.supplierPhone = `+91${data?.supplierPhone}`;
-      }
-      if (!data?.buyerPhone?.includes('+91')) {
-        data.buyerPhone = `+91${data?.buyerPhone}`;
-      }
-      if (data?.supplierGst) {
-        data.supplierGst = data.supplierGst?.toUpperCase();
-      }
-      if (data?.buyerGst) {
-        data.buyerGst = data.buyerGst?.toUpperCase();
-      }
+      if (!data?.supplierPhone?.includes('+91')) data.supplierPhone = `+91${data?.supplierPhone}`;
+
+      if (!data?.buyerPhone?.includes('+91')) data.buyerPhone = `+91${data?.buyerPhone}`;
+
+      if (data?.supplierGst) data.supplierGst = data.supplierGst?.toUpperCase();
+
+      if (data?.buyerGst) data.buyerGst = data.buyerGst?.toUpperCase();
+
       const invoicePdf = await generateInvoiceOrder(
         { id: bookingId || bookingIdFromFinance, data },
         { onSuccess: () => redirectToHome() },
