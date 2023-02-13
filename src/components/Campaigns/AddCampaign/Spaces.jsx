@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Badge, Box, Button, Image, Loader, Progress } from '@mantine/core';
+import { Badge, Button, Image, Loader, Progress } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
 import Filter from '../../Inventory/Filter';
 import Search from '../../Search';
@@ -27,7 +27,6 @@ const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
   const [search, setSearch] = useDebouncedState('', 500);
   const [showFilter, setShowFilter] = useState(false);
-  const navigate = useNavigate();
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
@@ -76,10 +75,7 @@ const SelectSpace = () => {
         }) =>
           useMemo(
             () => (
-              <Box
-                onClick={() => navigate(`/campaigns/view-details/${_id}`)}
-                className="grid grid-cols-2 gap-2 items-center cursor-pointer"
-              >
+              <div className="grid grid-cols-2 gap-2 items-center">
                 <div className="flex flex-1 gap-2 items-center w-44">
                   <Image
                     height={30}
@@ -88,12 +84,15 @@ const SelectSpace = () => {
                     className="rounded-md"
                     src={photo}
                   />
-                  <p
-                    title={spaceName}
-                    className="w-[150px] text-ellipsis overflow-hidden whitespace-nowrap"
+                  <Link
+                    to={`/inventory/view-details/${_id}`}
+                    className="text-black font-medium px-2 max-w-[180px]"
+                    target="_blank"
                   >
-                    {spaceName}
-                  </p>
+                    <span className="w-[150px] text-ellipsis overflow-hidden whitespace-nowrap">
+                      {spaceName}
+                    </span>
+                  </Link>
                 </div>
                 <div className="w-fit">
                   <Badge
@@ -104,7 +103,7 @@ const SelectSpace = () => {
                     {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
                   </Badge>
                 </div>
-              </Box>
+              </div>
             ),
             [],
           ),
