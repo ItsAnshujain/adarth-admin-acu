@@ -213,7 +213,7 @@ const CreateSpace = () => {
 
   const getForm = () =>
     formStep === 1 ? (
-      <BasicInfo basicInformation={inventoryDetails?.basicInformation} />
+      <BasicInfo basicInformation={inventoryDetails?.inventory?.basicInformation} />
     ) : formStep === 2 ? (
       <Specification />
     ) : formStep === 3 ? (
@@ -278,8 +278,8 @@ const CreateSpace = () => {
   };
 
   useEffect(() => {
-    if (inventoryDetails) {
-      const { basicInformation, specifications, location } = inventoryDetails;
+    if (inventoryDetails?.inventory) {
+      const { basicInformation, specifications, location } = inventoryDetails.inventory;
 
       const arrOfAudience = basicInformation?.audience?.map(item => ({
         label: item?.name,
@@ -368,7 +368,7 @@ const CreateSpace = () => {
         },
       });
     }
-  }, [inventoryDetails]);
+  }, [inventoryDetails?.inventory]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">

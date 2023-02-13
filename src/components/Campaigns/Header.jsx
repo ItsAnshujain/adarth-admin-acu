@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@mantine/core';
 import classNames from 'classnames';
 import { Plus, ChevronDown, Server, Grid } from 'react-feather';
@@ -13,7 +13,6 @@ import RoleBased from '../RoleBased';
 import { ROLES } from '../../utils';
 
 const AreaHeader = ({ text }) => {
-  const navigate = useNavigate();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
@@ -29,7 +28,6 @@ const AreaHeader = ({ text }) => {
   const handleGridClick = () => setActiveLayout({ ...activeLayout, campaign: 'grid' });
   const toggleFilter = () => setShowFilter(!showFilter);
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
-  const handleCreateCampaign = () => navigate('create-campaign');
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -86,13 +84,14 @@ const AreaHeader = ({ text }) => {
           {showFilter && <CampaignFilter isOpened={showFilter} onClose={toggleFilter} />}
         </div>
         <RoleBased acceptedRoles={[ROLES.ADMIN]}>
-          <div className="relative">
-            <Button
-              onClick={handleCreateCampaign}
-              className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
+          <div>
+            <Link
+              to="/campaigns/create-campaign"
+              className="bg-purple-450 flex items-center text-white rounded-md px-4 h-full font-medium"
             >
-              <Plus size={16} className="mt-[1px] mr-1" /> Add Campaign
-            </Button>
+              <Plus size={16} className="mr-1" />
+              <span className="text-sm">Add Campaign</span>
+            </Link>
           </div>
         </RoleBased>
       </div>

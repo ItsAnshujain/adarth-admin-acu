@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ActionIcon, Badge, Box, Button, Image, Loader, Progress } from '@mantine/core';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ActionIcon, Badge, Box, Image, Loader, Progress } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
@@ -26,7 +26,6 @@ const initialValues = {
 };
 
 const Home = () => {
-  const navigate = useNavigate();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
@@ -63,11 +62,6 @@ const Home = () => {
         ),
       },
       ...modalConfig,
-    });
-
-  const handleInventoryDetails = itemId =>
-    navigate(`/inventory/view-details/${itemId}`, {
-      replace: true,
     });
 
   const COLUMNS = useMemo(
@@ -108,14 +102,14 @@ const Home = () => {
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
                 </Box>
-                <Button
+                <Link
+                  to={`/inventory/view-details/${_id}`}
                   className="text-black font-medium px-2 max-w-[180px]"
-                  onClick={() => handleInventoryDetails(_id)}
                 >
                   <span className="overflow-hidden text-ellipsis">
                     {basicInformation?.spaceName}
                   </span>
-                </Button>
+                </Link>
                 <Badge
                   className="capitalize"
                   variant="filled"

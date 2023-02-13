@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import classNames from 'classnames';
 import { Text, Button, Image } from '@mantine/core';
@@ -11,7 +11,6 @@ import calendar from '../../assets/data-table.svg';
 import DateRange from '../DateRange';
 
 const Header = ({ text }) => {
-  const navigate = useNavigate();
   const [showFilter, setShowFilter] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -30,7 +29,6 @@ const Header = ({ text }) => {
   const handleGridClick = () => setActiveLayout({ ...activeLayout, proposal: 'grid' });
 
   const toggleFilter = () => setShowFilter(!showFilter);
-  const handleCreateProposal = () => navigate('create-proposals');
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center pl-5 pr-5">
@@ -86,13 +84,15 @@ const Header = ({ text }) => {
           <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
         </Button>
         {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
-
-        <Button
-          onClick={handleCreateProposal}
-          className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4"
-        >
-          <Plus size={16} className="mt-[1px] mr-1" /> Create Proposals
-        </Button>
+        <div>
+          <Link
+            to="/proposals/create-proposals"
+            className="bg-purple-450 flex items-center text-white rounded-md px-4 h-full font-medium"
+          >
+            <Plus size={16} className="mr-1" />
+            <span className="text-sm">Create Proposals</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

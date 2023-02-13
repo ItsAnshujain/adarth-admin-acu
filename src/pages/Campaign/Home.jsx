@@ -1,6 +1,6 @@
 import { useMemo, useEffect } from 'react';
-import { NativeSelect, Progress, Image, Loader, Box, Text } from '@mantine/core';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { NativeSelect, Progress, Image, Loader, Text } from '@mantine/core';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ChevronDown } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDebouncedState } from '@mantine/hooks';
@@ -32,7 +32,6 @@ const Home = () => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useDebouncedState('', 1000);
   const viewType = useLayoutView(state => state.activeLayout);
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams(initialState);
 
   const { data: campaignData, isLoading } = useCampaigns(searchParams.toString());
@@ -81,8 +80,8 @@ const Home = () => {
         }) =>
           useMemo(
             () => (
-              <Box
-                onClick={() => navigate(`/campaigns/view-details/${_id}`)}
+              <Link
+                to={`/campaigns/view-details/${_id}`}
                 className="flex items-center cursor-pointer"
               >
                 <div className="flex flex-1 gap-2 items-center">
@@ -99,7 +98,7 @@ const Home = () => {
                     {name}
                   </Text>
                 </div>
-              </Box>
+              </Link>
             ),
             [_id, thumbnail, name],
           ),

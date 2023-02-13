@@ -1,6 +1,6 @@
 import { Button, Menu } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Eye, Edit2, Trash } from 'react-feather';
 import modalConfig from '../../utils/modalConfig';
 import DeleteProposalContent from '../DeleteProposalContent';
@@ -14,7 +14,6 @@ const ProposalsMenuPopover = ({
   enableDelete = true,
 }) => {
   const modals = useModals();
-  const navigate = useNavigate();
 
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
@@ -30,28 +29,30 @@ const ProposalsMenuPopover = ({
   return (
     <Menu shadow="md" width={150} withinPortal>
       <Menu.Target>
-        <Button className="py-0" onClick={e => e.stopPropagation()}>
+        <Button className="py-0" onClick={e => e.preventDefault()}>
           <MenuIcon />
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
         {enableView ? (
-          <Menu.Item
-            onClick={e => handleStopPropagation(e, navigate(`/proposals/view-details/${itemId}`))}
-            className="cursor-pointer flex items-center gap-1"
-            icon={<Eye className="h-4" />}
-          >
-            <span className="ml-1">View</span>
-          </Menu.Item>
+          <Link to={`/proposals/view-details/${itemId}`}>
+            <Menu.Item
+              className="cursor-pointer flex items-center gap-1"
+              icon={<Eye className="h-4" />}
+            >
+              <span className="ml-1">View</span>
+            </Menu.Item>
+          </Link>
         ) : null}
         {enableEdit ? (
-          <Menu.Item
-            onClick={e => handleStopPropagation(e, navigate(`/proposals/edit-details/${itemId}`))}
-            icon={<Edit2 className="h-4" />}
-            className="cursor-pointer flex items-center gap-1"
-          >
-            <span className="ml-1">Edit</span>
-          </Menu.Item>
+          <Link to={`/proposals/edit-details/${itemId}`}>
+            <Menu.Item
+              icon={<Edit2 className="h-4" />}
+              className="cursor-pointer flex items-center gap-1"
+            >
+              <span className="ml-1">Edit</span>
+            </Menu.Item>
+          </Link>
         ) : null}
         {enableDelete ? (
           <Menu.Item

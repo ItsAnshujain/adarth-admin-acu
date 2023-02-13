@@ -1,6 +1,6 @@
 import { Button, Menu } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Eye, Trash } from 'react-feather';
 import modalConfig from '../../utils/modalConfig';
 import MenuIcon from '../Menu';
@@ -10,7 +10,6 @@ import DeleteBookingContent from '../DeleteBookingContent';
 
 const BookingsMenuPopover = ({ itemId, enableView = true, enableDelete = true }) => {
   const modals = useModals();
-  const navigate = useNavigate();
 
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
@@ -32,13 +31,14 @@ const BookingsMenuPopover = ({ itemId, enableView = true, enableDelete = true })
       </Menu.Target>
       <Menu.Dropdown>
         {enableView ? (
-          <Menu.Item
-            onClick={() => navigate(`/bookings/view-details/${itemId}`)}
-            className="cursor-pointer flex items-center gap-1"
-            icon={<Eye className="h-4" />}
-          >
-            <span className="ml-1">View</span>
-          </Menu.Item>
+          <Link to={`/bookings/view-details/${itemId}`}>
+            <Menu.Item
+              className="cursor-pointer flex items-center gap-1"
+              icon={<Eye className="h-4" />}
+            >
+              <span className="ml-1">View</span>
+            </Menu.Item>
+          </Link>
         ) : null}
         {enableDelete ? (
           <RoleBased
