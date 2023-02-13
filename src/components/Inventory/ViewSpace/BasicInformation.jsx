@@ -1,11 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Text, Image, Skeleton, Badge, BackgroundImage, Center } from '@mantine/core';
-import { useParams } from 'react-router-dom';
 import { useToggle } from '@mantine/hooks';
 import { v4 as uuidv4 } from 'uuid';
 import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
-import { useFetchInventoryById } from '../../../hooks/inventory.hooks';
 import MapView from '../CreateSpace/MapView';
 import { tierList } from '../../../utils';
 
@@ -20,15 +18,16 @@ const SkeletonTopWrapper = () => (
   </div>
 );
 
-const BasicInfo = () => {
-  const { id: inventoryId } = useParams();
+const BasicInfo = ({
+  inventoryDetails,
+  operationalCost,
+  totalCompletedBooking,
+  totalOccupancy,
+  totalRevenue,
+  isInventoryDetailsLoading,
+}) => {
   const [readMore, toggle] = useToggle();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
-
-  const { data: inventoryDetails, isLoading: isInventoryDetailsLoading } = useFetchInventoryById(
-    inventoryId,
-    !!inventoryId,
-  );
 
   const getAllSpacePhotos = useCallback(() => {
     const tempPics = [];
@@ -121,7 +120,7 @@ const BasicInfo = () => {
                   <Text size="sm" weight="300" color="gray">
                     Total Completed Bookings
                   </Text>
-                  <Text>0</Text>
+                  <Text weight="bold">{totalCompletedBooking ?? 0}</Text>
                 </div>
               </div>
               <div className="flex items-center border pl-4">
@@ -132,7 +131,7 @@ const BasicInfo = () => {
                   <Text size="sm" weight="300" color="gray">
                     Total Operational Cost
                   </Text>
-                  <Text>0</Text>
+                  <Text weight="bold">{toIndianCurrency(operationalCost ?? 0)}</Text>
                 </div>
               </div>
               <div className="flex items-center border pl-4">
@@ -143,7 +142,7 @@ const BasicInfo = () => {
                   <Text size="sm" weight="300" color="gray">
                     Total Revenue
                   </Text>
-                  <Text>{toIndianCurrency(0)}</Text>
+                  <Text weight="bold">{toIndianCurrency(totalRevenue ?? 0)}</Text>
                 </div>
               </div>
               <div className="flex items-center border pl-4">
@@ -152,12 +151,9 @@ const BasicInfo = () => {
                 </div>
                 <div>
                   <Text size="sm" weight="300" color="gray">
-                    Total Occupancy Days
+                    Total Occupancy Days This Year
                   </Text>
-                  <Text size="sm" weight="300" color="gray">
-                    This Year
-                  </Text>
-                  <Text>0</Text>
+                  <Text weight="bold">{totalOccupancy ?? 0}</Text>
                 </div>
               </div>
             </>

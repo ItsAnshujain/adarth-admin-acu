@@ -146,6 +146,7 @@ const Campaign = () => {
     [stats],
   );
 
+  // TODO: Wip, crashing so commented for now. awaiting on API update
   const calculateBarData = useCallback(() => {
     setUpdatedBarData(prevState => {
       const tempBarData = { ...prevState, id: uuidv4() };
@@ -168,7 +169,6 @@ const Campaign = () => {
     });
   }, [report]);
 
-  console.log(report);
   const downloadPdf = () => {
     const element = document.getElementById('campaign-pdf');
     const option = {
