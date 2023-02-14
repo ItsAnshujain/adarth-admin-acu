@@ -1,6 +1,6 @@
 import { Button, Switch, Tabs } from '@mantine/core';
 import { ArrowLeft } from 'react-feather';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useToggle } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import Booking from '../../components/Inventory/ViewSpace/Booking';
@@ -21,7 +21,6 @@ const SpaceDetails = () => {
   const { mutate: update, isLoading: isUpdateInventoryLoading } = useUpdateInventory();
 
   const handleBack = () => navigate('/inventory');
-  const handleEditDetails = () => navigate(`/inventory/edit-details/${inventoryId}`);
   const onUpdateMaintenance = toggleValue => {
     toggle(toggleValue);
     if (inventoryId) {
@@ -66,9 +65,14 @@ const SpaceDetails = () => {
                   disabled={isUpdateInventoryLoading}
                 />
               </div>
-              <Button onClick={handleEditDetails} className="bg-purple-450 rounded-md">
-                Edit Space
-              </Button>
+              <div>
+                <Link
+                  to={`/inventory/edit-details/${inventoryId}`}
+                  className="bg-purple-450 flex items-center text-white rounded-md px-4 h-full font-bold text-sm"
+                >
+                  Edit Space
+                </Link>
+              </div>
             </div>
           ) : null}
         </Tabs.List>

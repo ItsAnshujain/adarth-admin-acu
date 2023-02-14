@@ -1,15 +1,13 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Text, Button, Progress, Image, NumberInput, Badge, Box, Loader } from '@mantine/core';
+import { Text, Button, Progress, Image, NumberInput, Badge, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
-import { useModals } from '@mantine/modals';
 import Search from '../Search';
 import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
 import { useFetchInventory } from '../../hooks/inventory.hooks';
 import { colors } from '../../utils';
-import modalConfig from '../../utils/modalConfig';
 import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
@@ -24,7 +22,6 @@ const getDate = (selectionItem, item, key) => {
 };
 
 const Spaces = () => {
-  const modals = useModals();
   const { values, setFieldValue } = useFormContext();
   const [searchParams, setSearchParams] = useSearchParams({
     'limit': 10,
@@ -42,26 +39,6 @@ const Spaces = () => {
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
 
   const toggleFilter = () => setShowFilter(!showFilter);
-
-  const toggleImagePreviewModal = imgSrc =>
-    modals.openContextModal('basic', {
-      title: 'Preview',
-      innerProps: {
-        modalBody: (
-          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
-            {imgSrc ? (
-              <Image src={imgSrc} height={580} width={580} alt="preview" />
-            ) : (
-              <Image src={null} height={580} width={580} withPlaceholder />
-            )}
-          </Box>
-        ),
-      },
-      ...modalConfig,
-    });
-
-  const handleInventoryDetails = itemId =>
-    window.open(`/inventory/view-details/${itemId}`, '_blank');
 
   const updateData = (key, val, id) => {
     if (key === 'dateRange') {
@@ -117,22 +94,22 @@ const Spaces = () => {
           useMemo(
             () => (
               <div className="flex items-center gap-2">
-                <Box
-                  className="bg-white border rounded-md cursor-zoom-in"
-                  onClick={() => toggleImagePreviewModal(spacePhoto)}
-                >
+                <div className="bg-white border rounded-md">
                   {spacePhoto ? (
                     <Image src={spacePhoto} alt="banner" height={32} width={32} />
                   ) : (
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
-                </Box>
-                <Button
-                  className="text-black px-2 font-medium max-w-[180px]"
-                  onClick={() => handleInventoryDetails(_id)}
+                </div>
+                <Link
+                  to={`/inventory/view-details/${_id}`}
+                  className="text-black font-medium px-2 max-w-[180px]"
+                  target="_blank"
                 >
-                  <span className="overflow-hidden text-ellipsis">{spaceName}</span>
-                </Button>
+                  <span className="w-[150px] text-ellipsis overflow-hidden whitespace-nowrap">
+                    {spaceName}
+                  </span>
+                </Link>
                 <Badge
                   className="capitalize"
                   variant="filled"

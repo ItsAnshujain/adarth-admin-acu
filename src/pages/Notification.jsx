@@ -49,6 +49,16 @@ const Notifications = () => {
     return result;
   }, [data?.docs]);
 
+  const replaceUrl = details => {
+    const arr = details.split(' ').map(item => {
+      if (item.startsWith('https://')) {
+        return `<a href="${item.trim()}" target="_blank">${item.trim()}</a>`;
+      }
+      return item;
+    });
+    return arr.join(' ');
+  };
+
   return (
     <div className="absolute top-0 w-screen ">
       <Header title="Notification" />
@@ -108,7 +118,13 @@ const Notifications = () => {
                         {dayjs(messages?.updatedAt).fromNow()}
                       </p>
                     </div>
-                    <p className="mt-2 text-sm">{messages?.description || 'NA'}</p>
+                    <p
+                      // TODO: description needs to be fromatted from backend
+                      // eslint-disable-next-line react/no-danger
+                      dangerouslySetInnerHTML={{ __html: replaceUrl(messages?.description || '') }}
+                      className="mt-2 text-sm"
+                    />
+
                     <div className="flex justify-end">
                       <Button
                         onClick={() => handleRead(messages?._id)}

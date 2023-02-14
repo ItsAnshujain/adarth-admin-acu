@@ -1,6 +1,6 @@
 import { Button, Image, Menu } from '@mantine/core';
 import { ArrowLeft, Mail } from 'react-feather';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import link from '../../../assets/link.svg';
 import whatsapp from '../../../assets/whatsapp.svg';
 
@@ -40,12 +40,14 @@ const Header = () => {
             </Menu.Dropdown>
           </Menu>
         </div>
-        <Button
-          onClick={() => navigate(`/proposals/edit-details/${id}`)}
-          className="bg-purple-450 order-3"
-        >
-          Edit Proposal
-        </Button>
+        <div>
+          <Link
+            to={`/proposals/edit-details/${id}`}
+            className="bg-purple-450 flex items-center text-white rounded-md px-4 h-full font-bold text-sm"
+          >
+            Edit Proposal
+          </Link>
+        </div>
       </div>
     </div>
   );

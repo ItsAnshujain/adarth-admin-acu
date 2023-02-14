@@ -7,11 +7,10 @@ import {
   Badge,
   Loader,
   Chip,
-  Box,
   HoverCard,
 } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 import { Dropzone } from '@mantine/dropzone';
 import { useDebouncedState } from '@mantine/hooks';
@@ -111,7 +110,6 @@ const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
 
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
-  const navigate = useNavigate();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
@@ -188,10 +186,7 @@ const SelectSpace = () => {
         }) =>
           useMemo(
             () => (
-              <Box
-                onClick={() => navigate(`/bookings/view-details/${_id}`)}
-                className="grid grid-cols-2 gap-2 items-center cursor-pointer"
-              >
+              <div className="grid grid-cols-2 gap-2 items-center">
                 <div className="flex flex-1 gap-2 items-center w-44">
                   <Image
                     withPlaceholder
@@ -202,12 +197,15 @@ const SelectSpace = () => {
                     src={photo}
                     alt={spaceName}
                   />
-                  <span
-                    title={spaceName}
-                    className="w-[150px] text-ellipsis overflow-hidden whitespace-nowrap"
+                  <Link
+                    to={`/inventory/view-details/${_id}`}
+                    className="text-black font-medium px-2 max-w-[180px]"
+                    target="_blank"
                   >
-                    {spaceName}
-                  </span>
+                    <span className="w-[150px] text-ellipsis overflow-hidden whitespace-nowrap">
+                      {spaceName}
+                    </span>
+                  </Link>
                 </div>
                 <div className="w-fit">
                   <Badge
@@ -218,7 +216,7 @@ const SelectSpace = () => {
                     {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
                   </Badge>
                 </div>
-              </Box>
+              </div>
             ),
             [isUnderMaintenance],
           ),

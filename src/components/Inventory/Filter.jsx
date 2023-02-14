@@ -67,7 +67,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const maxPrice = searchParams.get('maxPrice');
 
   const minFootFall = searchParams.get('minFootFall');
-  const maxFootFall = searchParams.get('maxFootFall');
+  const maxFootfall = searchParams.get('maxFootfall');
 
   const owner = searchParams.get('owner');
   const category = searchParams.get('category');
@@ -186,7 +186,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
     searchParams.delete('maxPrice');
     searchParams.delete('minPrice');
     searchParams.delete('minFootFall');
-    searchParams.delete('maxFootFall');
+    searchParams.delete('maxFootfall');
     setSearchParams(searchParams);
     setFilterOptions(defaultValue);
   };
@@ -211,18 +211,18 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const handleMinFootFall = e => {
     setDynamicNumInput(prevState => ({ ...prevState, minFootFall: e }));
     searchParams.set('minFootFall', e);
-    searchParams.set('maxFootFall', searchParams.get('maxFootFall') || 10000);
+    searchParams.set('maxFootfall', searchParams.get('maxFootfall') || 10000);
   };
   const handleMaxFootFall = e => {
-    setDynamicNumInput(prevState => ({ ...prevState, maxFootFall: e }));
-    searchParams.set('maxFootFall', e);
+    setDynamicNumInput(prevState => ({ ...prevState, maxFootfall: e }));
+    searchParams.set('maxFootfall', e);
     searchParams.set('minFootFall', searchParams.get('minFootFall') || 0);
   };
   const handleFootFallSliderChange = val => {
     setDynamicNumInput(prevState => ({ ...prevState, minFootFall: val[0] }));
-    setDynamicNumInput(prevState => ({ ...prevState, maxFootFall: val[1] }));
+    setDynamicNumInput(prevState => ({ ...prevState, maxFootfall: val[1] }));
     searchParams.set('minFootFall', val[0]);
-    searchParams.set('maxFootFall', val[1]);
+    searchParams.set('maxFootfall', val[1]);
   };
 
   useEffect(() => {
@@ -406,8 +406,8 @@ const Filter = ({ isOpened, setShowFilter }) => {
                     <div>
                       <NumberInput
                         value={
-                          maxFootFall && !Number.isNaN(parseInt(maxFootFall, 10))
-                            ? parseInt(maxFootFall, 10)
+                          maxFootfall && !Number.isNaN(parseInt(maxFootfall, 10))
+                            ? parseInt(maxFootfall, 10)
                             : 10000
                         }
                         onChange={handleMaxFootFall}
@@ -425,8 +425,8 @@ const Filter = ({ isOpened, setShowFilter }) => {
                         minFootFall && !Number.isNaN(parseInt(minFootFall, 10))
                           ? parseInt(minFootFall, 10)
                           : 0,
-                        maxFootFall && !Number.isNaN(parseInt(maxFootFall, 10))
-                          ? parseInt(maxFootFall, 10)
+                        maxFootfall && !Number.isNaN(parseInt(maxFootfall, 10))
+                          ? parseInt(maxFootfall, 10)
                           : 10000,
                       ]}
                     />
