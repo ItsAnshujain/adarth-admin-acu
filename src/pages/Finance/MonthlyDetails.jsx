@@ -17,7 +17,6 @@ import { downloadPdf } from '../../utils';
 const DATE_FORMAT = 'DD MMM, YYYY';
 
 const Home = () => {
-  const [pageNumber, setPageNumber] = useState(0);
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -37,11 +36,13 @@ const Home = () => {
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
+  const recordType = searchParams.get('recordType');
+  const [pageType, setPageType] = useState(recordType || 'purchase');
 
-  const handleTabs = (pageNum, type) => {
+  const handleTabs = type => {
     searchParams.set('recordType', type);
     setSearchParams(searchParams);
-    setPageNumber(pageNum);
+    setPageType(type);
   };
 
   const handleSearch = () => {
@@ -468,15 +469,14 @@ const Home = () => {
       <Header
         year={year}
         month={month}
-        pageNumber={pageNumber}
         totalSales={financialDataByMonth?.cost?.totalSales}
         totalOperationlCost={financialDataByMonth?.cost?.totalOperationlCost}
       />
       <div className="flex pl-5 gap-3 items-center font-medium h-20 border-b">
         <Button
-          onClick={() => handleTabs(0, 'purchase')}
+          onClick={() => handleTabs('purchase')}
           className={classNames(
-            pageNumber === 0
+            pageType === 'purchase'
               ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
               : 'text-black',
           )}
@@ -484,9 +484,9 @@ const Home = () => {
           Purchase Orders
         </Button>
         <Button
-          onClick={() => handleTabs(1, 'release')}
+          onClick={() => handleTabs('release')}
           className={classNames(
-            pageNumber === 1
+            pageType === 'release'
               ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
               : 'text-black',
           )}
@@ -494,9 +494,9 @@ const Home = () => {
           Release Orders
         </Button>
         <Button
-          onClick={() => handleTabs(2, 'invoice')}
+          onClick={() => handleTabs('invoice')}
           className={classNames(
-            pageNumber === 2
+            pageType === 'invoice'
               ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
               : 'text-black',
           )}
@@ -526,7 +526,7 @@ const Home = () => {
         </div>
       ) : null}
 
-      {!isLoading && financialDataByMonth?.finances?.docs?.length && pageNumber === 0 ? (
+      {!isLoading && financialDataByMonth?.finances?.docs?.length && pageType === 'purchase' ? (
         <Table
           COLUMNS={purchaseOrderColumn}
           data={financialDataByMonth?.finances?.docs}
@@ -534,7 +534,7 @@ const Home = () => {
           totalPages={financialDataByMonth?.finances?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
-      ) : !isLoading && financialDataByMonth?.finances?.docs?.length && pageNumber === 1 ? (
+      ) : !isLoading && financialDataByMonth?.finances?.docs?.length && pageType === 'release' ? (
         <Table
           COLUMNS={releaseOrderColumn}
           data={financialDataByMonth?.finances?.docs}
@@ -542,7 +542,7 @@ const Home = () => {
           totalPages={financialDataByMonth?.finances?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
-      ) : !isLoading && financialDataByMonth?.finances?.docs?.length ? (
+      ) : !isLoading && financialDataByMonth?.finances?.docs?.length && pageType === 'invoice' ? (
         <Table
           COLUMNS={invoiceColumn}
           data={financialDataByMonth?.finances?.docs}

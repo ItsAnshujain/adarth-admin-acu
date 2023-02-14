@@ -122,19 +122,19 @@ const Preview = () => {
               : null}
             <div className="mb-2">
               <p className="text-slate-400">Previously advertised brands</p>
-              {values?.specifications?.previousBrands?.length ? (
-                <div className="flex w-full flex-wrap">
-                  {renderBadges(values?.specifications?.previousBrands)}
-                </div>
-              ) : null}
+              <div className="flex w-full flex-wrap">
+                {values?.specifications?.previousBrands?.length
+                  ? renderBadges(values?.specifications?.previousBrands)
+                  : 'None'}
+              </div>
             </div>
             <div className="mb-2">
               <p className="text-slate-400">Previously advertised tags</p>
-              {values?.specifications?.tags?.length ? (
-                <div className="flex w-full flex-wrap">
-                  {renderBadges(values?.specifications?.tags)}
-                </div>
-              ) : null}
+              <div className="flex w-full flex-wrap">
+                {values?.specifications?.tags?.length
+                  ? renderBadges(values?.specifications?.tags)
+                  : 'None'}
+              </div>
             </div>
             <div>
               <p className="text-slate-400">Demographics</p>

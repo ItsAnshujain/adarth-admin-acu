@@ -152,6 +152,8 @@ export const aadhaarRegexMatch = /^\d{12}$/;
 
 export const mobileRegexMatch = /^[6-9]\d{9}$/;
 
+export const onlyNumbersMatch = /^[0-9]*$/;
+
 export const isValidURL = urlString => {
   if (typeof urlString === typeof '') {
     try {

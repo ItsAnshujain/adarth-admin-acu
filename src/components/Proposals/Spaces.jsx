@@ -124,7 +124,7 @@ const Spaces = () => {
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'landlord',
+        accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
           row: {
             original: { mediaOwner },

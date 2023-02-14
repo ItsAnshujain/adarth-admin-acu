@@ -14,7 +14,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
-import DomToPdf from 'dom-to-pdf';
 import Header from './Header';
 import TotalCampaignIcon from '../../assets/total-campaign.svg';
 import OngoingCampaignIcon from '../../assets/ongoing-campaign.svg';
@@ -169,21 +168,13 @@ const Campaign = () => {
     });
   }, [report]);
 
-  const downloadPdf = () => {
-    const element = document.getElementById('campaign-pdf');
-    const option = {
-      filename: 'campaign.pdf',
-    };
-    DomToPdf(element, option);
-  };
-
   useEffect(() => {
     calculateBarData();
   }, [report, isSuccess]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <Header text="Campaign Report" onClickDownloadPdf={downloadPdf} />
+      <Header text="Campaign Report" />
       <div className="pr-7 pl-5 mt-5" id="campaign-pdf">
         <div className="flex justify-between gap-4 flex-wrap mb-8">
           <div className="flex gap-2 w-2/3 flex-wrap">

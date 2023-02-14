@@ -14,7 +14,13 @@ import {
   useGeneratePurchaseOrder,
   useGenerateReleaseOrder,
 } from '../../../hooks/booking.hooks';
-import { downloadPdf, gstRegexMatch, mobileRegexMatch, serialize } from '../../../utils';
+import {
+  downloadPdf,
+  gstRegexMatch,
+  mobileRegexMatch,
+  onlyNumbersMatch,
+  serialize,
+} from '../../../utils';
 
 const bookingStyles = {
   label: {
@@ -59,7 +65,11 @@ const purchaseSchema = yup.object({
     .required('Pin is required'),
   buyerName: yup.string().trim().required('Supplier Name is required'),
   buyerGst: yup.string().trim().matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
-  supplierRefNo: yup.string().trim().required('Supplier Ref is required'),
+  supplierRefNo: yup
+    .string()
+    .trim()
+    .matches(onlyNumbersMatch, 'Must be a number')
+    .required('Supplier Ref is required'),
   supplierOtherReference: yup.string().trim().required('Other Reference(s) is required'),
   dispatchThrough: yup.string().trim().required('Dispatch Through is required'),
   destination: yup.string().trim().required('Destination is required'),
@@ -104,7 +114,11 @@ const releaseSchema = yup.object({
     .nullable()
     .required('Release Order No is required'),
   companyName: yup.string().trim().required('Company Name is required'),
-  quotationNo: yup.string().trim().required('Quotation No is required'),
+  quotationNo: yup
+    .string()
+    .trim()
+    .matches(onlyNumbersMatch, 'Must be a number')
+    .required('Quotation No is required'),
   contactPerson: yup.string().trim().required('Contact Person is required'),
   phone: yup
     .string()
@@ -173,7 +187,11 @@ const invoiceSchema = yup.object({
     .matches(mobileRegexMatch, 'Must be a valid number')
     .required('Contact is required'),
   supplierEmail: yup.string().trim().required('Email is required').email('Invalid Email'),
-  supplierRefNo: yup.string().trim().required('Supplier Ref is required'),
+  supplierRefNo: yup
+    .string()
+    .trim()
+    .matches(onlyNumbersMatch, 'Must be a number')
+    .required('Supplier Ref is required'),
   supplierOtherReference: yup.string().trim().required('Other Reference(s) is required'),
   supplierWebsite: yup.string().trim().required('Website is required').url('Invalid URL'),
   buyerName: yup.string().trim().required('Buyer Name is required'),
@@ -196,8 +214,16 @@ const invoiceSchema = yup.object({
     .typeError('Must be a number')
     .nullable()
     .required('Pin is required'),
-  buyerOrderNumber: yup.string().trim().required('Buyers Order No. is required'),
-  dispatchDocumentNumber: yup.string().trim().required('Dispatched Document No. is required'),
+  buyerOrderNumber: yup
+    .string()
+    .trim()
+    .matches(onlyNumbersMatch, 'Must be a number')
+    .required('Buyers Order No. is required'),
+  dispatchDocumentNumber: yup
+    .string()
+    .trim()
+    .matches(onlyNumbersMatch, 'Must be a number')
+    .required('Dispatched Document No. is required'),
   dispatchThrough: yup.string().trim().required('Dispatched through is required'),
   destination: yup.string().trim().required('Destination is required'),
   deliveryNote: yup.string().trim().required('Delivery Note is required'),
@@ -206,7 +232,7 @@ const invoiceSchema = yup.object({
   accountNo: yup
     .string()
     .trim()
-    .matches(/^[0-9]*$/, 'Must be digits only')
+    .matches(onlyNumbersMatch, 'Must be digits only')
     .required('A/c No. is required'),
   ifscCode: yup.string().trim().required('Branch & IFSC Code is required'),
   modeOfPayment: yup.string().trim().required('Mode/Terms of Payment is required'),

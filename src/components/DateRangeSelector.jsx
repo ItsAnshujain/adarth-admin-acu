@@ -66,6 +66,7 @@ const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
       excludeDate={excludeBookedDates}
       minDate={new Date()}
       disableOutsideEvents
+      allowSingleDateInRange
       defaultValue={dateValue}
       dayClassName={(_, modifiers) =>
         cx({
