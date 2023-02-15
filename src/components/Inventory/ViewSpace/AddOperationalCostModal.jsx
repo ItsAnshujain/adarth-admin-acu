@@ -26,7 +26,7 @@ const styles = {
 
 const initialValues = {
   type: { label: '', value: '' },
-  amount: 0,
+  amount: null,
 };
 
 const schema = yup.object({

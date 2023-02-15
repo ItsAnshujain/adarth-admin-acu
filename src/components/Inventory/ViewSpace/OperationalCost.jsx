@@ -52,7 +52,10 @@ const OperationalCost = ({ inventoryDetails }) => {
             <div className="min-h-[400px] max-h-[400px] overflow-y-auto ">
               {operationaCostData?.length ? (
                 operationaCostData.map(item => (
-                  <Box className="py-3 border-b border-black flex justify-between pl-5 pr-10">
+                  <Box
+                    key={item?._id}
+                    className="py-3 border-b border-black flex justify-between pl-5 pr-10"
+                  >
                     <Group>
                       <ActionIcon
                         onClick={e => handleOperationalCost(e, item?._id, item?.type, item?.amount)}

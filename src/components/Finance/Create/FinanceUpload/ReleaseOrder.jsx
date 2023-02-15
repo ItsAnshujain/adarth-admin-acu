@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useFormContext } from '../../../../context/formContext';
-import NumberInput from '../../../shared/NumberInput';
 import TextInput from '../../../shared/TextInput';
 
 const styles = {
@@ -20,16 +19,18 @@ const ReleaseOrder = ({ totalPrice }) => {
   const { errors, setFieldValue } = useFormContext();
 
   useEffect(() => {
-    setFieldValue('amountChargeable', totalPrice);
+    setFieldValue('total', totalPrice);
   }, [totalPrice]);
+
   return (
     <>
       <div className="pl-5 pr-7 pt-4 pb-8 border-b">
         <div className="grid grid-cols-2 gap-4">
-          <NumberInput
+          <TextInput
             styles={styles}
             label="Release Order No"
             name="releaseOrderNo"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
@@ -50,6 +51,7 @@ const ReleaseOrder = ({ totalPrice }) => {
             styles={styles}
             label="Contact Person"
             name="contactPerson"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
@@ -69,7 +71,7 @@ const ReleaseOrder = ({ totalPrice }) => {
           <TextInput
             styles={styles}
             label="Amount Chargeable"
-            name="amountChargeable"
+            name="total"
             placeholder="Write..."
             readOnly
             disabled

@@ -20,8 +20,9 @@ const PurchaseOrder = ({ totalPrice }) => {
   const { errors, setFieldValue } = useFormContext();
 
   useEffect(() => {
-    setFieldValue('amountChargeable', totalPrice);
+    setFieldValue('total', totalPrice);
   }, [totalPrice]);
+
   return (
     <>
       <div className="px-5 pt-4 pb-5 border-b">
@@ -39,6 +40,7 @@ const PurchaseOrder = ({ totalPrice }) => {
             styles={styles}
             label="Voucher No"
             name="invoiceNo"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
@@ -59,7 +61,7 @@ const PurchaseOrder = ({ totalPrice }) => {
           <TextInput
             styles={styles}
             label="Amount Chargeable"
-            name="amountChargeable"
+            name="total"
             placeholder="Write..."
             readOnly
             disabled

@@ -6,15 +6,18 @@ import {
   updateOperationalCost,
 } from '../requests/operationalCost.requests';
 
-export const useFetchOperationalCost = (inventoryId, enabled = true) =>
-  useQuery(
+export const useFetchOperationalCost = (inventoryId, enabled = true) => {
+  const queryClient = useQueryClient();
+
+  return useQuery(
     ['operational-cost', inventoryId],
     async () => {
       const res = await fetchOperationalCost(inventoryId);
       return res?.data;
     },
-    { enabled },
+    { enabled, onSuccess: () => queryClient.invalidateQueries(['inventory-by-id', inventoryId]) },
   );
+};
 
 export const useAddOperationalCost = () => {
   const queryClient = useQueryClient();

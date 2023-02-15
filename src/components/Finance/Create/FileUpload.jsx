@@ -7,14 +7,9 @@ import { FilePlus } from 'react-feather';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { FormProvider, useForm } from '../../../context/formContext';
-import {
-  useBookingById,
-  useBookings,
-  useGeneratePurchaseOrder,
-  useUpdateBooking,
-} from '../../../hooks/booking.hooks';
+import { useBookingById, useBookings, useUpdateBooking } from '../../../hooks/booking.hooks';
 import { useUploadFile } from '../../../hooks/upload.hooks';
-import { serialize } from '../../../utils';
+import { onlyNumbersMatch, serialize } from '../../../utils';
 import PurchaseOrder from './FinanceUpload/PurchaseOrder';
 import ReleaseOrder from './FinanceUpload/ReleaseOrder';
 import Invoice from './FinanceUpload/Invoice';
@@ -29,8 +24,7 @@ const initialPurchaseValues = {
   supplierName: '',
   invoiceNo: null,
   buyerName: '',
-  amountChargeable: 0,
-  file: '',
+  total: 0,
 };
 
 const purchaseSchema = yup.object({
@@ -39,27 +33,28 @@ const purchaseSchema = yup.object({
     .number()
     .positive('Must be a positive number')
     .typeError('Must be a number')
-    .nullable(),
+    .nullable()
+    .required('Voucher No is required'),
   buyerName: yup.string().trim().required('Supplier Name is required'),
 });
 
 const initialReleaseValues = {
-  releaseOrderNo: null,
+  releaseOrderNo: '',
   companyName: '',
   contactPerson: '',
   supplierName: '',
-  file: '',
+  total: 0,
 };
 
 const releaseSchema = yup.object({
   companyName: yup.string().trim().required('Company Name is required'),
-  contactPerson: yup.string().trim(),
+  contactPerson: yup.string().trim().required('Contact Person is required'),
   supplierName: yup.string().trim().required('Supplier Name is required'),
   releaseOrderNo: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable(),
+    .string()
+    .trim()
+    .matches(onlyNumbersMatch, 'Must be a number')
+    .required('Release Order No is required'),
 });
 
 const initialInvoiceValues = {
@@ -68,7 +63,7 @@ const initialInvoiceValues = {
   supplierRefNo: '',
   buyerName: '',
   buyerOrderNumber: '',
-  file: '',
+  total: 0,
 };
 
 const invoiceSchema = yup.object({
@@ -76,11 +71,20 @@ const invoiceSchema = yup.object({
     .number()
     .positive('Must be a positive number')
     .typeError('Must be a number')
-    .nullable(),
+    .nullable()
+    .required('Invoice No is required'),
   supplierName: yup.string().trim().required('Supplier Name is required'),
-  supplierRefNo: yup.string().trim(),
+  supplierRefNo: yup
+    .string()
+    .trim()
+    .matches(onlyNumbersMatch, 'Must be a number')
+    .required('Supplier Ref is required'),
   buyerName: yup.string().trim().required('Buyer Name is required'),
-  buyerOrderNumber: yup.string().trim(),
+  buyerOrderNumber: yup
+    .string()
+    .trim()
+    .matches(onlyNumbersMatch, 'Must be a number')
+    .required('Buyers Order No. is required'),
 });
 
 const schema = {
@@ -104,11 +108,11 @@ const bookingStyles = {
   },
 };
 
-// const orderTypeKey = {
-//   purchase: 'purchaseOrder',
-//   release: 'releaseOrder',
-//   invoice: 'invoice',
-// };
+const orderTypeKey = {
+  purchase: 'purchaseOrder',
+  release: 'releaseOrder',
+  invoice: 'invoice',
+};
 
 const bookingQueries = {
   page: 1,
@@ -137,8 +141,6 @@ const FileUpload = () => {
     !!bookingId || !!bookingIdFromFinance,
   );
 
-  const { mutateAsync: generatePurchaseOrder, isLoading: isGeneratePurchaseOrderLoading } =
-    useGeneratePurchaseOrder();
   const { mutateAsync: uploadPdf, isLoading } = useUploadFile();
   const { mutate: update, isLoading: isUpdateBookingLoading } = useUpdateBooking();
   const { getRootProps, getInputProps, open } = useDropzone({
@@ -166,9 +168,9 @@ const FileUpload = () => {
     return null;
   };
 
-  // TODO: Wip, awaiting on API
   const handleSubmit = async formData => {
-    const data = { ...formData };
+    let data = { ...formData };
+
     if (!file) {
       showNotification({
         title: 'Kindly upload the PDF file',
@@ -177,21 +179,27 @@ const FileUpload = () => {
       return;
     }
     const pdfLink = await handleUpload();
-    // console.log({ ...data, file: pdfLink?.[0].Location });
-    // return;
 
-    // eslint-disable-next-line no-unused-vars
-    const purchaseOrderPdf = await generatePurchaseOrder({
-      id: bookingId || bookingIdFromFinance,
-      data: { ...data, file: pdfLink?.[0].Location },
+    const currentOrderType = orderTypeKey[type];
+
+    Object.keys(data).forEach(key => {
+      if (data[key] === '') {
+        delete data[key];
+      }
     });
 
-    // const currentOrderType = orderTypeKey[type];
-    // const data = {
-    //   [currentOrderType]: formData,
-    // };
+    data = { ...data, [currentOrderType]: pdfLink?.[0].Location };
 
-    update({ id: bookingId || bookingIdFromFinance, data });
+    update(
+      { id: bookingId || bookingIdFromFinance, data },
+      {
+        onSuccess: () => {
+          setTimeout(() => navigate(-1), 2000);
+          form.reset();
+          setFile(null);
+        },
+      },
+    );
   };
 
   const calcutateTotalPrice = useMemo(() => {
@@ -274,14 +282,8 @@ const FileUpload = () => {
             )}
           </div>
           <Button
-            disabled={
-              isLoading ||
-              isUpdateBookingLoading ||
-              !bookingIdFromFinance ||
-              isGeneratePurchaseOrderLoading
-            }
-            loading={isLoading || isUpdateBookingLoading || isGeneratePurchaseOrderLoading}
-            // onClick={file ? handleUpload : open}
+            disabled={isLoading || isUpdateBookingLoading || !bookingIdFromFinance}
+            loading={isLoading || isUpdateBookingLoading}
             variant="filled"
             type="submit"
             className="p-2 rounded mx-auto block mt-3 primary-button"

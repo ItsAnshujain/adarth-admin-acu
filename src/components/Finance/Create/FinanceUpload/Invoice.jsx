@@ -20,7 +20,7 @@ const Invoice = ({ totalPrice }) => {
   const { errors, setFieldValue } = useFormContext();
 
   useEffect(() => {
-    setFieldValue('amountChargeable', totalPrice);
+    setFieldValue('total', totalPrice);
   }, [totalPrice]);
 
   return (
@@ -31,6 +31,7 @@ const Invoice = ({ totalPrice }) => {
             styles={styles}
             label="Invoice No"
             name="invoiceNo"
+            withAsterisk
             placeholder="Write..."
             errors={errors}
           />
@@ -51,6 +52,7 @@ const Invoice = ({ totalPrice }) => {
             styles={styles}
             label="Supplier Ref"
             name="supplierRefNo"
+            withAsterisk
             placeholder="Write..."
             errors={errors}
           />
@@ -72,13 +74,14 @@ const Invoice = ({ totalPrice }) => {
             styles={styles}
             label="Buyer's Order No."
             name="buyerOrderNumber"
+            withAsterisk
             placeholder="Write..."
             errors={errors}
           />
           <TextInput
             styles={styles}
             label="Amount Chargeable"
-            name="amountChargeable"
+            name="total"
             placeholder="Write..."
             readOnly
             disabled
