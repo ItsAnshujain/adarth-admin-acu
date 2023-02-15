@@ -1,28 +1,25 @@
 import { useCallback, useState } from 'react';
 import { Accordion, Button, Drawer, Radio } from '@mantine/core';
-import { useSearchParams } from 'react-router-dom';
 
 const styles = { title: { fontWeight: 'bold' } };
 
 const inititalFilterData = {
-  'stateOrCity': {
+  'by': {
     'state': 'State',
     'city': 'City',
   },
 };
 
-const defaultValue = {
-  stateOrCity: '',
-};
+const RevenueFilter = ({
+  isOpened,
+  setShowFilter,
+  handleQueryByLocation = () => {},
+  queryByLocation,
+}) => {
+  const [filterOptions, setFilterOptions] = useState({ by: queryByLocation?.by || '' });
 
-const RevenueFilter = ({ isOpened, setShowFilter }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [filterOptions, setFilterOptions] = useState(defaultValue);
-
-  const handleCheckedValues = (filterValues, filterKey) => {
+  const handleCheckedValues = (filterValues, filterKey) =>
     setFilterOptions(prevState => ({ ...prevState, [filterKey]: filterValues }));
-    searchParams.set(filterKey, filterValues);
-  };
 
   const renderStaticOptions = useCallback(
     (filterDataObj, filterKey) =>
@@ -36,18 +33,17 @@ const RevenueFilter = ({ isOpened, setShowFilter }) => {
           />
         </div>
       )),
-    [filterOptions.stateOrCity],
+    [filterOptions.by],
   );
 
-  // TODO: api dependent
-  const handleApply = () => {};
+  const handleApply = () => {
+    handleQueryByLocation(prevState => ({ ...prevState, ...filterOptions }));
+    setShowFilter(false);
+  };
 
   const handleReset = () => {
-    Object.keys(defaultValue).forEach(item => {
-      searchParams.delete(item);
-    });
-    setSearchParams(searchParams);
-    setFilterOptions(defaultValue);
+    handleQueryByLocation();
+    setFilterOptions({ by: '' });
   };
 
   return (
@@ -78,14 +74,12 @@ const RevenueFilter = ({ isOpened, setShowFilter }) => {
       </div>
       <div className="flex text-gray-400 flex-col gap-4">
         <Accordion>
-          <Accordion.Item value="stateOrCity" className="mb-4 rounded-xl border">
+          <Accordion.Item value="by" className="mb-4 rounded-xl border">
             <Accordion.Control>
               <p className="text-lg">State Or City</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">
-                {renderStaticOptions(inititalFilterData.stateOrCity, 'stateOrCity')}
-              </div>
+              <div className="mt-2">{renderStaticOptions(inititalFilterData.by, 'by')}</div>
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>
