@@ -145,25 +145,24 @@ const CampaignReport = () => {
     [stats],
   );
 
-  // TODO: Wip, crashing so commented for now. awaiting on API update
   const calculateBarData = useCallback(() => {
     setUpdatedBarData(prevState => {
       const tempBarData = { ...prevState, id: uuidv4() };
-      // if (report) {
-      //   report?.forEach(item => {
-      //     if (item._id.month) {
-      //       if (item.upcoming) {
-      //         tempBarData.datasets[0].data[item._id.month - 1] = item.upcoming;
-      //       }
-      //       if (item.ongoing) {
-      //         tempBarData.datasets[1].data[item._id.month - 1] = item.ongoing;
-      //       }
-      //       if (item.completed) {
-      //         tempBarData.datasets[2].data[item._id.month - 1] = item.completed;
-      //       }
-      //     }
-      //   });
-      // }
+      if (report) {
+        report?.revenue?.forEach(item => {
+          if (item._id.month) {
+            if (item.upcoming) {
+              tempBarData.datasets[0].data[item._id.month - 1] = item.upcoming;
+            }
+            if (item.ongoing) {
+              tempBarData.datasets[1].data[item._id.month - 1] = item.ongoing;
+            }
+            if (item.completed) {
+              tempBarData.datasets[2].data[item._id.month - 1] = item.completed;
+            }
+          }
+        });
+      }
       return tempBarData;
     });
   }, [report]);

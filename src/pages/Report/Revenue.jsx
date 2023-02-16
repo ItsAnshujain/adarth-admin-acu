@@ -31,7 +31,7 @@ import {
   useFetchFinanceByLocation,
   useFetchFinanceByStats,
 } from '../../hooks/finance.hooks';
-import { serialize } from '../../utils';
+import { dateByQuarter, serialize } from '../../utils';
 
 dayjs.extend(quarterOfYear);
 
@@ -203,6 +203,12 @@ const RevenueReport = () => {
         'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
       }));
     }
+    if (viewType === 'quarter') {
+      setQueryByLocation(prevState => ({
+        ...prevState,
+        ...dateByQuarter[dayjs().quarter()],
+      }));
+    }
   };
 
   const handleIndustryViewBy = viewType => {
@@ -218,6 +224,12 @@ const RevenueReport = () => {
         ...prevState,
         'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
         'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
+      }));
+    }
+    if (viewType === 'quarter') {
+      setQueryByIndustry(prevState => ({
+        ...prevState,
+        ...dateByQuarter[dayjs().quarter()],
       }));
     }
   };
@@ -296,7 +308,7 @@ const RevenueReport = () => {
             <div className="w-[70%] flex flex-col justify-between">
               <div className="flex justify-between items-center">
                 <p className="font-bold">Revenue Graph</p>
-                <ViewByFilter handleViewBy={handleIndustryViewBy} />
+                <ViewByFilter handleViewBy={() => {}} />
               </div>
               <div className="flex flex-col pl-7 relative">
                 <p className="transform rotate-[-90deg] absolute left-[-25px] top-[40%]">

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { geocodeByAddress, getLatLng, geocodeByLatLng } from 'react-google-places-autocomplete';
 
 export const serialize = object => {
@@ -221,4 +222,23 @@ export const indianCurrencyInDecimals = amount => {
     style: 'currency',
     currency: 'INR',
   }).format(amount);
+};
+
+export const dateByQuarter = {
+  1: {
+    startDate: `${dayjs().year()}-01-01`,
+    endDate: `${dayjs().year()}-03-31`,
+  },
+  2: {
+    startDate: `${dayjs().year()}-04-01`,
+    endDate: `${dayjs().year()}-06-30`,
+  },
+  3: {
+    startDate: `${dayjs().year()}-07-01`,
+    endDate: `${dayjs().year()}-09-30`,
+  },
+  4: {
+    startDate: `${dayjs().year()}-10-01`,
+    endDate: `${dayjs().year()}-12-31`,
+  },
 };

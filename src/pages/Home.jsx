@@ -14,7 +14,8 @@ import {
 import { Image, Loader } from '@mantine/core';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import AreaHeader from '../components/Home/Header';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
@@ -27,7 +28,12 @@ import TotalCampaignIcon from '../assets/total-campaign.svg';
 import useUserStore from '../store/user.store';
 import { useBookingStats, useFetchBookingRevenue } from '../hooks/booking.hooks';
 import { useInventoryStats } from '../hooks/inventory.hooks';
-import { serialize } from '../utils';
+import { dateByQuarter, serialize } from '../utils';
+import ViewByFilter from '../components/Reports/ViewByFilter';
+
+dayjs.extend(quarterOfYear);
+
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 ChartJS.register(
   CategoryScale,
@@ -66,20 +72,21 @@ const config = {
   options: { responsive: true },
 };
 
-const query = {
-  startDate: dayjs().startOf('year').toISOString(),
-  endDate: dayjs().endOf('year').toISOString(),
-  type: 'month',
-};
-
 const HomePage = () => {
   const queryClient = useQueryClient();
   const userId = useUserStore(state => state.id);
   const user = queryClient.getQueryData(['users-by-id', userId]);
+
+  const [queryByLocation, setQueryByLocation] = useState({
+    'type': 'week',
+    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
+    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+  });
+
   const { data: bookingStats } = useBookingStats('');
   const { data: inventoryStats, isLoading: isInventoryStatsLoading } = useInventoryStats('');
   const { data: bookingRevenue, isLoading: isBookingRevenueLoading } = useFetchBookingRevenue(
-    serialize(query),
+    serialize(queryByLocation),
   );
   const inventoryHealthStatus = useMemo(
     () => ({
@@ -115,6 +122,29 @@ const HomePage = () => {
     }),
     [getRevenueValues],
   );
+
+  const handleViewBy = viewType => {
+    if (viewType === 'reset') {
+      setQueryByLocation(prevState => ({
+        ...prevState,
+        'startDate': dayjs().startOf('year').format(DATE_FORMAT),
+        'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+      }));
+    }
+    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
+      setQueryByLocation(prevState => ({
+        ...prevState,
+        'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
+        'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
+      }));
+    }
+    if (viewType === 'quarter') {
+      setQueryByLocation(prevState => ({
+        ...prevState,
+        ...dateByQuarter[dayjs().quarter()],
+      }));
+    }
+  };
 
   return (
     <div className="absolute top-0">
@@ -184,9 +214,12 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-start gap-4">
               <div className="w-[68%]">
-                <p className="font-bold mb-5">Revenue Graph</p>
+                <div className="flex justify-between items-center">
+                  <p className="font-bold">Revenue Graph</p>
+                  <ViewByFilter handleViewBy={handleViewBy} />
+                </div>
                 {isBookingRevenueLoading ? (
                   <Loader className="mx-auto" mt={80} />
                 ) : (
@@ -194,12 +227,12 @@ const HomePage = () => {
                     <p className="transform rotate-[-90deg] absolute left-[-28px] top-[40%]">
                       In Lakhs &gt;
                     </p>
-                    <Line height="80" data={lineData} options={options} />
+                    <Line height="100" data={lineData} options={options} />
                     <p className="text-center">Months &gt;</p>
                   </div>
                 )}
               </div>
-              <div className="flex gap-4 p-4 border rounded-md items-center justify-center flex-1 flex-wrap-reverse">
+              <div className="flex gap-4 p-4 border rounded-md items-center justify-center flex-1">
                 <div className="w-32">
                   {isInventoryStatsLoading ? (
                     <Loader className="mx-auto" />
@@ -209,7 +242,7 @@ const HomePage = () => {
                 </div>
                 <div>
                   <p className="font-medium text-center">Health Status of Inventory</p>
-                  <div className="flex gap-8 mt-6 flex-wrap">
+                  <div className="flex gap-8 mt-6 flex-row">
                     <div className="flex gap-2 items-center">
                       <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                       <div>
