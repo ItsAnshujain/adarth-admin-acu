@@ -1,7 +1,6 @@
 import { Button, Image, Menu } from '@mantine/core';
-import { ArrowLeft, Mail } from 'react-feather';
+import { ArrowLeft, Mail, Link as LinkIcon } from 'react-feather';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import link from '../../../assets/link.svg';
 import whatsapp from '../../../assets/whatsapp.svg';
 
 const Header = () => {
@@ -17,25 +16,19 @@ const Header = () => {
       <div className="flex gap-4">
         <Button className="border-black text-black radius-md">Download PDF</Button>
         <div className="relative">
-          <Menu shadow="md">
+          <Menu shadow="md" width={180}>
             <Menu.Target>
               <Button className="bg-black">Share</Button>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Item className="flex gap-2" icon={<Mail className="text-[#969EA1]" />}>
-                <span className="text-gray-400 text-lg">Send Email</span>
+              <Menu.Item icon={<Mail className="text-[#969EA1] h-5" />}>
+                <span className="text-gray-400 font-medium text-base">Send Email</span>
               </Menu.Item>
-              <Menu.Item
-                className="flex gap-2"
-                icon={<Image src={whatsapp} alt="whatsapp" height={24} width={24} />}
-              >
-                <span className="text-gray-400 text-lg">Whatsapp</span>
+              <Menu.Item icon={<Image src={whatsapp} alt="whatsapp" className="h-4 ml-1" />}>
+                <span className="text-gray-400 font-medium text-base">Whatsapp</span>
               </Menu.Item>
-              <Menu.Item
-                className="flex gap-2 border p-2 rounded-md w-44"
-                icon={<Image className="flex-none" src={link} alt="link" height={24} width={24} />}
-              >
-                <span className="text-gray-400 text-lg">Copy Link</span>
+              <Menu.Item icon={<LinkIcon className="h-4" color="#969EA1" />}>
+                <span className="text-gray-400 font-medium text-base">Copy Link</span>
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>

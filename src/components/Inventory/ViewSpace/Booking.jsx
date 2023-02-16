@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Text, Button, Image, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
@@ -72,9 +72,20 @@ const Booking = ({ inventoryId }) => {
         accessor: 'campaign.name',
         Cell: ({
           row: {
-            original: { campaignName },
+            original: { campaignName, _id },
           },
-        }) => useMemo(() => <p>{campaignName || '-'}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <Link
+                to={`/bookings/view-details/${_id}`}
+                className="text-black font-medium px-2 max-w-[180px]"
+              >
+                <span className="overflow-hidden text-ellipsis">{campaignName || '-'}</span>
+              </Link>
+            ),
+            [],
+          ),
       },
       {
         Header: 'CAMPAIGN INCHARGE',
