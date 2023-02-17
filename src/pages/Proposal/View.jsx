@@ -14,7 +14,7 @@ import calendar from '../../assets/data-table.svg';
 import Table from '../../components/Table/Table';
 import { useFetchProposalById } from '../../hooks/proposal.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
-import { colors } from '../../utils';
+import { categoryColors } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
 import Filter from '../../components/Inventory/Filter';
 import useUserStore from '../../store/user.store';
@@ -158,20 +158,22 @@ const ProposalDetails = () => {
           ),
       },
       {
-        Header: 'SPACE TYPE',
-        accessor: 'spaceType',
+        Header: 'CATEGORY',
+        accessor: 'category',
         Cell: ({
           row: {
-            original: { spaceType },
+            original: { category },
           },
         }) =>
           useMemo(() => {
-            const colorType = Object.keys(colors).find(key => colors[key] === spaceType);
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === category,
+            );
             return (
               <div>
-                {spaceType ? (
+                {category ? (
                   <Badge color={colorType} size="lg" className="capitalize">
-                    {spaceType}
+                    {category}
                   </Badge>
                 ) : (
                   <span>-</span>

@@ -15,7 +15,7 @@ import useLayoutView from '../../store/layout.store';
 import { useDeleteInventory, useFetchInventory } from '../../hooks/inventory.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
-import { colors, ROLES } from '../../utils';
+import { categoryColors, ROLES } from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
 import TrashIcon from '../../assets/delete.png';
 import RoleBased from '../../components/RoleBased';
@@ -138,26 +138,26 @@ const Home = () => {
         Cell: () => useMemo(() => <p>-</p>),
       },
       {
-        Header: 'SPACE TYPE',
-        accessor: 'basicInformation.spaceType.name',
+        Header: 'CATEGORY',
+        accessor: 'basicInformation.category.name',
         Cell: ({
           row: {
             original: { basicInformation },
           },
         }) =>
           useMemo(() => {
-            const colorType = Object.keys(colors).find(
-              key => colors[key] === basicInformation?.spaceType?.name,
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === basicInformation?.category?.name,
             );
 
             return (
               <div>
-                {basicInformation?.spaceType?.name ? (
+                {basicInformation?.category?.name ? (
                   <Badge color={colorType} size="lg" className="capitalize">
-                    {basicInformation.spaceType.name}
+                    {basicInformation.category.name}
                   </Badge>
                 ) : (
-                  <span>-</span>
+                  '-'
                 )}
               </div>
             );

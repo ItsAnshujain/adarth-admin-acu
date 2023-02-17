@@ -10,7 +10,7 @@ import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
 import Table from '../../Table/Table';
 import RoleBased from '../../RoleBased';
-import { colors, ROLES } from '../../../utils';
+import { categoryColors, ROLES } from '../../../utils';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import modalConfig from '../../../utils/modalConfig';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
@@ -113,21 +113,23 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
           ),
       },
       {
-        Header: 'SPACE TYPE',
-        accessor: 'basicInformation.spaceType.name',
+        Header: 'CATEGORY',
+        accessor: 'category',
         Cell: ({
           row: {
-            original: { spaceType },
+            original: { category },
           },
         }) =>
           useMemo(() => {
-            const colorType = Object.keys(colors).find(key => colors[key] === spaceType?.name);
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === category?.name,
+            );
 
             return (
               <div>
-                {spaceType?.name ? (
+                {category?.name ? (
                   <Badge color={colorType} size="lg" className="capitalize">
-                    {spaceType.name}
+                    {category.name}
                   </Badge>
                 ) : (
                   <span>-</span>

@@ -9,7 +9,7 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 import { useFetchInventory } from '../../../hooks/inventory.hooks';
 import { useFormContext } from '../../../context/formContext';
-import { colors } from '../../../utils';
+import { categoryColors } from '../../../utils';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 
 const getHealthTag = score =>
@@ -118,21 +118,23 @@ const SelectSpace = () => {
         }) => useMemo(() => <div className="w-fit">{landlord_name || '-'}</div>, []),
       },
       {
-        Header: 'SPACE TYPE',
-        accessor: 'basicInformation.spaceType.name',
+        Header: 'CATEGORY',
+        accessor: 'basicInformation.category.name',
         Cell: ({
           row: {
-            original: { spaceType },
+            original: { category },
           },
         }) =>
           useMemo(() => {
-            const colorType = Object.keys(colors).find(key => colors[key] === spaceType);
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === category,
+            );
 
             return (
               <div>
-                {spaceType ? (
+                {category ? (
                   <Badge color={colorType} size="lg" className="capitalize">
-                    {spaceType}
+                    {category}
                   </Badge>
                 ) : (
                   <span>-</span>
@@ -303,6 +305,7 @@ const SelectSpace = () => {
         obj._id = item?._id;
         obj.spaceName = item?.basicInformation?.spaceName;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
+        obj.category = item?.basicInformation?.category?.name;
         obj.spaceType = item?.basicInformation?.spaceType?.name;
         obj.dimension = item?.specifications?.size;
         obj.impression = item?.specifications?.impressions?.max || 0;

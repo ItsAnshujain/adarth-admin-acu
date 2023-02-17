@@ -41,6 +41,7 @@ const Home = () => {
 
   const handleTabs = type => {
     searchParams.set('recordType', type);
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
     setPageType(type);
   };
@@ -149,7 +150,7 @@ const Home = () => {
           row: {
             original: { paymentType },
           },
-        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
+        }) => useMemo(() => <p className="uppercase">{paymentType || '-'}</p>, []),
       },
       {
         Header: 'ACTION',
@@ -284,7 +285,7 @@ const Home = () => {
           row: {
             original: { paymentType },
           },
-        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
+        }) => useMemo(() => <p className="uppercase">{paymentType || '-'}</p>, []),
       },
       {
         Header: 'ACTION',
@@ -427,9 +428,9 @@ const Home = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { modeOfPayment },
+            original: { modeOfPayment, paymentType },
           },
-        }) => useMemo(() => <p>{modeOfPayment}</p>, []),
+        }) => useMemo(() => <p className="uppercase">{modeOfPayment || paymentType || '-'}</p>, []),
       },
       {
         Header: 'ACTION',

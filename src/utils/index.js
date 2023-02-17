@@ -59,11 +59,11 @@ export const spaceTypes = {
   street_furniture: 'Street Furniture',
 };
 
-export const colors = {
-  grape: 'Billboard',
-  green: 'Digital Screen',
+export const categoryColors = {
+  grape: 'Billboards',
+  green: 'Digital Screens',
   blue: 'Transit Media',
-  yellow: 'Street Furniture',
+  yellow: 'Street Furnitures',
 };
 
 export const tierList = [
