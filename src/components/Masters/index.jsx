@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Button, Loader } from '@mantine/core';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Loader, Text } from '@mantine/core';
 import Header from './Header';
 import RowsPerPage from '../RowsPerPage';
 import Search from '../Search';
@@ -20,7 +20,7 @@ const Home = () => {
     'sortOrder': 'desc',
     'sortBy': 'name',
   });
-  const navigate = useNavigate();
+
   const { data: masterData, isLoading: isMasterDataLoading } = useFetchMasters(
     searchParams.toString(),
   );
@@ -41,11 +41,6 @@ const Home = () => {
     else searchParams.delete(key);
     setSearchParams(searchParams);
   };
-
-  const handleNestedMasters = id =>
-    navigate(`/masters?type=${searchParams.get('type')}&parentId=${id}`, {
-      replace: true,
-    });
 
   const COLUMNS = useMemo(
     () => [
@@ -74,15 +69,18 @@ const Home = () => {
         }) =>
           useMemo(
             () => (
-              <Button
-                className={
-                  (parentId === 'null' ? 'cursor-pointer' : 'cursor-text',
-                  'text-black font-normal p-0')
-                }
-                onClick={parentId === 'null' ? () => handleNestedMasters(_id) : () => {}}
-              >
-                {name}
-              </Button>
+              <div>
+                {parentId === 'null' ? (
+                  <Link
+                    className="text-purple-450 underline"
+                    to={`/masters?type=${searchParams.get('type')}&parentId=${_id}`}
+                  >
+                    {name}
+                  </Link>
+                ) : (
+                  <Text>{name}</Text>
+                )}
+              </div>
             ),
             [],
           ),

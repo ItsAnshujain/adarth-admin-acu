@@ -242,3 +242,13 @@ export const dateByQuarter = {
     endDate: `${dayjs().year()}-12-31`,
   },
 };
+
+export const checkCampaignStats = (currentStatus, item) => {
+  const campaignStats = {
+    Upcoming: ['Upcoming'],
+    Ongoing: ['Upcoming', 'Ongoing'],
+    Completed: ['Upcoming', 'Ongoing', 'Completed'],
+  };
+
+  return campaignStats[currentStatus?.campaignStatus]?.includes(item);
+};

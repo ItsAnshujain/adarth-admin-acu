@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { showNotification } from '@mantine/notifications';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   fetchFinance,
   fetchFinanceByIndustry,
@@ -6,6 +7,7 @@ import {
   fetchFinanceByStats,
   fetchFinanceByYear,
   fetchFinanceByYearAndMonth,
+  updateFinanceById,
 } from '../requests/finance.requests';
 
 export const useFetchFinance = (enabled = true) =>
@@ -16,6 +18,29 @@ export const useFetchFinance = (enabled = true) =>
       return res?.data;
     },
     { enabled },
+  );
+
+export const useUpdateFinanceById = () =>
+  useMutation(
+    async ({ id, data }) => {
+      const res = await updateFinanceById(id, data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Approval status updated successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: 'Error',
+          message: err?.message,
+          color: 'red',
+        });
+      },
+    },
   );
 
 export const useFetchFinanceByYear = (year, enabled = true) =>

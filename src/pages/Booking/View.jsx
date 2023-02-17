@@ -27,7 +27,12 @@ const OrderDetails = () => {
         bookingData={bookingData}
       />
       {pageNumber === 0 ? (
-        <OrderInfo bookingData={bookingData} isLoading={isLoading} bookingStats={bookingStats} />
+        <OrderInfo
+          bookingData={bookingData}
+          isLoading={isLoading}
+          bookingStats={bookingStats}
+          bookingId={id}
+        />
       ) : pageNumber === 1 ? (
         <ProcessPipeline bookingData={updatedBookingData} />
       ) : (
