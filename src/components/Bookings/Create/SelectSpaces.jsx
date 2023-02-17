@@ -21,7 +21,7 @@ import Table from '../../Table/Table';
 import { useFetchInventory } from '../../../hooks/inventory.hooks';
 import upload from '../../../assets/upload.svg';
 import { useFormContext } from '../../../context/formContext';
-import { colors, supportedTypes } from '../../../utils';
+import { categoryColors, supportedTypes } from '../../../utils';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import Filter from '../../Inventory/Filter';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
@@ -252,21 +252,23 @@ const SelectSpace = () => {
           ),
       },
       {
-        Header: 'SPACE TYPE',
-        accessor: 'basicInformation.spaceType.name',
+        Header: 'CATEGORY',
+        accessor: 'basicInformation.category.name',
         Cell: ({
           row: {
-            original: { spaceType },
+            original: { category },
           },
         }) =>
           useMemo(() => {
-            const colorType = Object.keys(colors).find(key => colors[key] === spaceType);
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === category,
+            );
 
             return (
               <div>
-                {spaceType ? (
+                {category ? (
                   <Badge color={colorType} size="lg" className="capitalize">
-                    {spaceType}
+                    {category}
                   </Badge>
                 ) : (
                   <span>-</span>
@@ -431,6 +433,7 @@ const SelectSpace = () => {
         obj._id = item._id;
         obj.spaceName = item.basicInformation?.spaceName;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
+        obj.category = item.basicInformation?.category?.name;
         obj.spaceType = item.basicInformation?.spaceType?.name;
         obj.dimension = `${item.specifications?.size?.height || 0}ft x ${
           item.specifications?.size?.width || 0

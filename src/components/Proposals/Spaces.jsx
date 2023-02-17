@@ -7,7 +7,7 @@ import Search from '../Search';
 import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
 import { useFetchInventory } from '../../hooks/inventory.hooks';
-import { colors } from '../../utils';
+import { categoryColors } from '../../utils';
 import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
@@ -141,20 +141,22 @@ const Spaces = () => {
         }) => useMemo(() => <p className="w-fit">{peer || '-'}</p>, []),
       },
       {
-        Header: 'SPACE TYPE',
-        accessor: 'basicInformation.spaceType.name',
+        Header: 'CATEGORY',
+        accessor: 'basicInformation.category.name',
         Cell: ({
           row: {
-            original: { spaceType },
+            original: { category },
           },
         }) =>
           useMemo(() => {
-            const colorType = Object.keys(colors).find(key => colors[key] === spaceType);
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === category,
+            );
             return (
               <div>
-                {spaceType ? (
+                {category ? (
                   <Badge color={colorType} size="lg" className="capitalize">
-                    {spaceType}
+                    {category}
                   </Badge>
                 ) : (
                   <span>-</span>
@@ -336,6 +338,7 @@ const Spaces = () => {
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name;
         obj.peer = item?.basicInformation?.companyName;
+        obj.category = item?.basicInformation?.category?.name;
         obj.spaceType = item?.basicInformation?.spaceType?.name;
         obj.height = item?.specifications?.size?.height;
         obj.width = item?.specifications?.size?.width;
