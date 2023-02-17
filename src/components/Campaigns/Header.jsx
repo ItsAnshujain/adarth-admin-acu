@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '@mantine/core';
+import { Button, Text } from '@mantine/core';
 import classNames from 'classnames';
 import { Plus, ChevronDown, Server, Grid } from 'react-feather';
 import shallow from 'zustand/shallow';
@@ -32,7 +32,9 @@ const AreaHeader = ({ text }) => {
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <div className="pl-5">
-        <p className="text-lg text-bold">{text}</p>
+        <Text weight="bold" size="md">
+          {text}
+        </Text>
       </div>
       <div className="flex justify-around mr-7">
         <div className="mr-2 flex ">

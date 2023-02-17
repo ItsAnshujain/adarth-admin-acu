@@ -12,31 +12,24 @@ import {
   ArcElement,
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
-import { Badge, Box, Image, Loader } from '@mantine/core';
+import { Badge, Box, Image, Loader, Tabs, Text } from '@mantine/core';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import DomToPdf from 'dom-to-pdf';
 import Header from '../../components/Reports/Header';
-import AreaHeader from '../../components/Inventory/AreaHeader';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import GridView from '../../components/GridView';
-import Card from '../../components/Inventory/Card';
-import InventoryIcon from '../../assets/inventory-active.svg';
-import OperationalCostIcon from '../../assets/operational-cost.svg';
-import VacantIcon from '../../assets/vacant.svg';
-import OccupiedIcon from '../../assets/occupied.svg';
-import UnderMaintenanceIcon from '../../assets/under-maintenance.svg';
 import BestIcon from '../../assets/best-performing-inventory.svg';
 import WorstIcon from '../../assets/worst-performing-inventory.svg';
-import { FormProvider, useForm } from '../../context/formContext';
 import toIndianCurrency from '../../utils/currencyFormat';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
 import { useInventoryReport, useInventoryStats } from '../../hooks/inventory.hooks';
 import ViewByFilter from '../../components/Reports/ViewByFilter';
+import InventoryStatsContent from '../../components/Reports/Inventory/InventoryStatsContent';
+import SubHeader from '../../components/Reports/Inventory/SubHeader';
 
 dayjs.extend(quarterOfYear);
 
@@ -79,15 +72,12 @@ const config = {
 };
 
 const InventoryReport = () => {
-  const form = useForm();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const chartRef = useRef(null);
   const [search, setSearch] = useState('');
   const [count, setCount] = useState('20');
-  const [view, setView] = useState('list');
-  const [selectAll, setSelectAll] = useState(false);
   const [areaData, setAreaData] = useState({
     id: uuidv4(),
     labels,
@@ -281,33 +271,10 @@ const InventoryReport = () => {
       <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
         <Header text="Inventory Report" onClickDownloadPdf={downloadPdf} />
         <div className="pr-7 pl-5 mt-5 mb-10" id="inventory-pdf">
-          <div className="flex justify-between gap-4 flex-wrap mb-8">
-            <div className="border rounded p-8  flex-1">
-              <Image src={InventoryIcon} alt="folder" fit="contain" height={24} width={24} />
-              <p className="my-2 text-sm font-light text-slate-400">Total Inventory</p>
-              <p className="font-bold">{inventoryReports?.totalInventories ?? 0}</p>
-            </div>
-            <div className="border rounded p-8 flex-1">
-              <Image src={VacantIcon} alt="folder" fit="contain" height={24} width={24} />
-              <p className="my-2 text-sm font-light text-slate-400">Vacant</p>
-              <p className="font-bold">{inventoryStats?.vacant ?? 0}</p>
-            </div>
-            <div className="border rounded p-8  flex-1">
-              <Image src={OccupiedIcon} alt="folder" fit="contain" height={24} width={24} />
-              <p className="my-2 text-sm font-light text-slate-400">Occupied</p>
-              <p className="font-bold">{inventoryStats?.occupied ?? 0}</p>
-            </div>
-            <div className="border rounded p-8 flex-1">
-              <Image src={UnderMaintenanceIcon} alt="folder" fit="contain" height={24} width={24} />
-              <p className="my-2 text-sm font-light text-slate-400">Under Maintenance</p>
-              <p className="font-bold">{inventoryReports?.underMaintenance ?? 0}</p>
-            </div>
-            <div className="border rounded p-8 flex-1">
-              <Image src={OperationalCostIcon} alt="folder" fit="contain" height={24} width={24} />
-              <p className="my-2 text-sm font-light text-slate-400">Total Opertaional Cost</p>
-              <p className="font-bold">{inventoryReports?.totalOperationalCost ?? 0}</p>
-            </div>
-          </div>
+          <InventoryStatsContent
+            inventoryReports={inventoryReports}
+            inventoryStats={inventoryStats}
+          />
           <div className="flex w-full gap-4">
             <div className="w-[70%]">
               <div className="flex justify-between">
@@ -369,27 +336,40 @@ const InventoryReport = () => {
             </div>
           </div>
           <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mt-10">
-            <FormProvider form={form}>
-              <form>
-                <AreaHeader
-                  selectAll={selectAll}
-                  setSelectAll={setSelectAll}
-                  text="List of spaces"
-                  setView={setView}
-                />
-                {view !== 'map' && (
-                  <div className="flex justify-between h-20 items-center pr-7">
-                    <RowsPerPage setCount={setCount} count={count} />
-                    <Search search={search} setSearch={setSearch} />
-                  </div>
-                )}
-                {view === 'grid' ? (
-                  <GridView selectAll={selectAll} count={count} Card={Card} />
-                ) : view === 'list' ? (
-                  <Table COLUMNS={COLUMNS} data={[]} count={count} />
-                ) : null}
-              </form>
-            </FormProvider>
+            <Tabs defaultValue="gallery">
+              <Tabs.List>
+                <Tabs.Tab value="gallery">
+                  <Text size="md" weight="bold">
+                    Inventory Report
+                  </Text>
+                </Tabs.Tab>
+                <Tabs.Tab value="messages">
+                  <Text size="md" weight="bold">
+                    Best Performing Inventory
+                  </Text>
+                </Tabs.Tab>
+                <Tabs.Tab value="settings">
+                  <Text size="md" weight="bold">
+                    Worst Performing Inventory
+                  </Text>
+                </Tabs.Tab>
+              </Tabs.List>
+
+              <Tabs.Panel value="gallery">
+                <SubHeader />
+                <div className="flex justify-between h-20 items-center pr-7">
+                  <RowsPerPage setCount={setCount} count={count} />
+                  <Search search={search} setSearch={setSearch} />
+                </div>
+                <Table COLUMNS={COLUMNS} data={[]} count={count} />
+              </Tabs.Panel>
+              <Tabs.Panel value="messages" pt="lg">
+                <Table COLUMNS={COLUMNS} data={[]} count={count} />
+              </Tabs.Panel>
+              <Tabs.Panel value="settings" pt="lg">
+                <Table COLUMNS={COLUMNS} data={[]} count={count} />
+              </Tabs.Panel>
+            </Tabs>
           </div>
         </div>
       </div>

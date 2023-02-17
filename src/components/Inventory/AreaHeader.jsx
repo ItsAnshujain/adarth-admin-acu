@@ -66,66 +66,64 @@ const AreaHeader = ({ text, inventoryData }) => {
         </Text>
       </div>
       <div className="flex justify-around mr-7">
-        {!pathname.includes('reports') && (
-          <div className="mr-2 flex ">
-            {activeLayout.inventory === 'grid' ? (
-              <Checkbox
-                className="mr-5"
-                onChange={event => handleSelectedCards(event.target.checked)}
-                label="Select All Product"
-                classNames={{ root: 'flex flex-row-reverse', label: 'pr-2' }}
-                defaultChecked={selectedAll}
-              />
-            ) : null}
-            <Button
+        <div className="mr-2 flex ">
+          {activeLayout.inventory === 'grid' ? (
+            <Checkbox
+              className="mr-5"
+              onChange={event => handleSelectedCards(event.target.checked)}
+              label="Select All Product"
+              classNames={{ root: 'flex flex-row-reverse', label: 'pr-2' }}
+              defaultChecked={selectedAll}
+            />
+          ) : null}
+          <Button
+            className={classNames(
+              'px-4 border-gray-300 border rounded-md',
+              activeLayout.inventory === 'list' ? 'bg-purple-450' : 'bg-white',
+            )}
+            onClick={handleListClick}
+          >
+            <Server
+              strokeWidth="3px"
               className={classNames(
-                'px-4 border-gray-300 border rounded-md',
-                activeLayout.inventory === 'list' ? 'bg-purple-450' : 'bg-white',
+                activeLayout.inventory === 'list' ? 'text-white' : 'text-black',
+                'max-h-5',
               )}
-              onClick={handleListClick}
-            >
-              <Server
-                strokeWidth="3px"
-                className={classNames(
-                  activeLayout.inventory === 'list' ? 'text-white' : 'text-black',
-                  'max-h-5',
-                )}
-              />
-            </Button>
-            <Button
+            />
+          </Button>
+          <Button
+            className={classNames(
+              `text-white border-gray-300 border px-4 rounded-md ${
+                activeLayout.inventory === 'grid' ? 'bg-purple-450' : 'bg-white'
+              }`,
+            )}
+            onClick={handleGridClick}
+          >
+            <Grid
+              strokeWidth="3px"
               className={classNames(
-                `text-white border-gray-300 border px-4 rounded-md ${
-                  activeLayout.inventory === 'grid' ? 'bg-purple-450' : 'bg-white'
-                }`,
+                activeLayout.inventory === 'grid' ? 'text-white' : 'text-black',
+                'max-h-5',
               )}
-              onClick={handleGridClick}
-            >
-              <Grid
-                strokeWidth="3px"
-                className={classNames(
-                  activeLayout.inventory === 'grid' ? 'text-white' : 'text-black',
-                  'max-h-5',
-                )}
-              />
-            </Button>
-            <Button
+            />
+          </Button>
+          <Button
+            className={classNames(
+              `px-4 border-gray-300 border rounded-md ${
+                activeLayout.inventory === 'map' ? 'bg-purple-450' : 'bg-white'
+              }`,
+            )}
+            onClick={handleMapClick}
+          >
+            <MapPin
+              strokeWidth="3px"
               className={classNames(
-                `px-4 border-gray-300 border rounded-md ${
-                  activeLayout.inventory === 'map' ? 'bg-purple-450' : 'bg-white'
-                }`,
+                activeLayout.inventory === 'map' ? 'text-white' : 'text-black',
+                'max-h-5',
               )}
-              onClick={handleMapClick}
-            >
-              <MapPin
-                strokeWidth="3px"
-                className={classNames(
-                  activeLayout.inventory === 'map' ? 'text-white' : 'text-black',
-                  'max-h-5',
-                )}
-              />
-            </Button>
-          </div>
-        )}
+            />
+          </Button>
+        </div>
 
         <div ref={ref} className="relative mr-2">
           <Button onClick={toggleDatePicker} variant="default">
@@ -144,31 +142,29 @@ const AreaHeader = ({ text, inventoryData }) => {
           </Button>
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
         </div>
-        {!pathname.includes('reports') && (
-          <div className="relative">
-            <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]}>
-              <Button
-                onClick={toggleAddDetails}
-                className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"
-              >
-                <Plus size={16} className="mt-[1px] mr-1" /> Add Space
-              </Button>
-            </RoleBased>
-            {addDetailsClicked && (
-              <div
-                ref={addDetailsButtonRef}
-                className="absolute text-sm z-20 bg-white shadow-lg p-4 right-7 w-36"
-              >
-                <Link to="create-space/single">
-                  <div className="mb-2 cursor-pointer">Single Entry</div>
-                </Link>
-                <Link to="create-space/bulk">
-                  <div className="cursor-pointer">Bulk/CSV Upload</div>
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
+        <div className="relative">
+          <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]}>
+            <Button
+              onClick={toggleAddDetails}
+              className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"
+            >
+              <Plus size={16} className="mt-[1px] mr-1" /> Add Space
+            </Button>
+          </RoleBased>
+          {addDetailsClicked && (
+            <div
+              ref={addDetailsButtonRef}
+              className="absolute text-sm z-20 bg-white shadow-lg p-4 right-7 w-36"
+            >
+              <Link to="create-space/single">
+                <div className="mb-2 cursor-pointer">Single Entry</div>
+              </Link>
+              <Link to="create-space/bulk">
+                <div className="cursor-pointer">Bulk/CSV Upload</div>
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
