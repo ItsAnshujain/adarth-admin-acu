@@ -28,7 +28,7 @@ import TotalCampaignIcon from '../assets/total-campaign.svg';
 import useUserStore from '../store/user.store';
 import { useBookingStats, useFetchBookingRevenue } from '../hooks/booking.hooks';
 import { useInventoryStats } from '../hooks/inventory.hooks';
-import { dateByQuarter, serialize } from '../utils';
+import { dateByQuarter, monthsInShort, serialize } from '../utils';
 import ViewByFilter from '../components/Reports/ViewByFilter';
 
 dayjs.extend(quarterOfYear);
@@ -50,21 +50,6 @@ ChartJS.register(
 const options = {
   responsive: true,
 };
-
-const labels = [
-  'Jan',
-  'Febr',
-  'Mar',
-  'Apr',
-  'May',
-  'June',
-  'July',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
 
 // Doughnut
 const config = {
@@ -109,7 +94,7 @@ const HomePage = () => {
 
   const lineData = useMemo(
     () => ({
-      labels,
+      labels: monthsInShort,
       datasets: [
         {
           label: 'Revenue',

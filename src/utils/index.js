@@ -211,6 +211,21 @@ export const months = [
   'December',
 ];
 
+export const monthsInShort = [
+  'Jan',
+  'Febr',
+  'Mar',
+  'Apr',
+  'May',
+  'June',
+  'July',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
 export const supportedTypes = ['JPG', 'JPEG', 'PNG'];
 
 export const indianCurrencyInDecimals = amount => {
