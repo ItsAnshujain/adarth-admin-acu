@@ -10,7 +10,7 @@ import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import AreaHeader from '../../components/Bookings/Header';
 import { useBookings, useBookingStats, useUpdateBookingStatus } from '../../hooks/booking.hooks';
-import { downloadAll, serialize } from '../../utils';
+import { downloadAll, checkCampaignStats, serialize } from '../../utils';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from './BookingStatisticsView';
@@ -141,7 +141,7 @@ const Bookings = () => {
         accessor: 'currentStatus.campaignStatus',
         Cell: ({
           row: {
-            original: { _id, currentStatus, campaignStatus: c = {} },
+            original: { _id, currentStatus },
           },
         }) =>
           useMemo(() => {
@@ -149,10 +149,9 @@ const Bookings = () => {
             if (!currentStatus?.campaignStatus) {
               updatedCampaignList.unshift({ label: 'Select', value: '' });
             }
-
             const filteredList = updatedCampaignList.map(item => ({
               ...item,
-              disabled: Object.keys(c).includes(item.value),
+              disabled: checkCampaignStats(currentStatus, item.value),
             }));
 
             return (

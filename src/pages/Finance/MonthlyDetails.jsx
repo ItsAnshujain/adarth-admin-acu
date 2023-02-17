@@ -1,22 +1,31 @@
-import { Button, Loader } from '@mantine/core';
+import { Button, Loader, Select } from '@mantine/core';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { useParams, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { ChevronDown } from 'react-feather';
+import { useQueryClient } from '@tanstack/react-query';
 import Header from '../../components/Finance/Header';
 import Search from '../../components/Search';
 import DateRange from '../../components/DateRange';
 import calendar from '../../assets/data-table.svg';
 import Table from '../../components/Table/Table';
-import { useFetchFinanceByYearAndMonth } from '../../hooks/finance.hooks';
+import { useFetchFinanceByYearAndMonth, useUpdateFinanceById } from '../../hooks/finance.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import FinanceMenuPopover from '../../components/Popovers/FinanceMenuPopover';
-import { downloadPdf } from '../../utils';
+import { downloadPdf, ROLES } from '../../utils';
+import RoleBased from '../../components/RoleBased';
 
 const DATE_FORMAT = 'DD MMM, YYYY';
 
+const approvalStatList = [
+  { label: 'Approved', value: 'approved' },
+  { label: 'Sent for Approval', value: 'sent_for_approval' },
+];
+
 const Home = () => {
+  const queryClient = useQueryClient();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -30,7 +39,7 @@ const Home = () => {
   const { data: financialDataByMonth, isLoading } = useFetchFinanceByYearAndMonth(
     `${year}/${month}?${searchParams.toString()}`,
   );
-
+  const { mutate, isLoading: isUpdateFinaceLoading } = useUpdateFinanceById();
   const ref = useClickOutside(() => setShowDatePicker(false));
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
 
@@ -56,6 +65,17 @@ const Home = () => {
     if (val !== '') searchParams.set(key, val);
     else searchParams.delete(key);
     setSearchParams(searchParams);
+  };
+
+  const invalidate = () => queryClient.invalidateQueries(['finance-by-month']);
+
+  const handleApprovalStatus = (financeId, value) => {
+    mutate(
+      { id: financeId, data: { approvalStatus: value } },
+      {
+        onSuccess: invalidate,
+      },
+    );
   };
 
   // TODO: disable SortBy in all col for now
@@ -120,7 +140,54 @@ const Home = () => {
         Header: 'STATUS',
         disableSortBy: true,
         accessor: 'status',
-        Cell: () => useMemo(() => <p className="text-green-400">??</p>, []),
+        Cell: ({
+          row: {
+            original: { _id, approvalStatus },
+          },
+        }) =>
+          useMemo(() => {
+            const updatedList = [...approvalStatList];
+
+            if (!approvalStatus || approvalStatus === '') {
+              updatedList.unshift({ label: 'Select', value: '' });
+            }
+
+            const filteredList = updatedList.map(item => ({
+              ...item,
+              disabled: approvalStatus?.includes(item.value),
+            }));
+
+            return (
+              <div>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.MEDIA_OWNER]}>
+                  <Select
+                    className="mr-2"
+                    data={filteredList}
+                    disabled={isUpdateFinaceLoading}
+                    styles={{ rightSection: { pointerEvents: 'none' } }}
+                    rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                    rightSectionWidth={40}
+                    onChange={e => handleApprovalStatus(_id, e)}
+                    defaultValue={approvalStatus || ''}
+                  />
+                </RoleBased>
+                <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
+                  <p
+                    className={classNames(
+                      approvalStatus === 'approved' ? 'text-green-400' : 'text-purple-450',
+                      'font-medium',
+                    )}
+                  >
+                    {approvalStatus === 'sent_for_approval'
+                      ? 'Sent for Approval'
+                      : approvalStatus === 'approved'
+                      ? 'Approved'
+                      : '-'}
+                  </p>
+                </RoleBased>
+              </div>
+            );
+          }, []),
       },
       {
         Header: 'DATE',
@@ -255,7 +322,54 @@ const Home = () => {
         Header: 'STATUS',
         accessor: 'status',
         disableSortBy: true,
-        Cell: () => useMemo(() => <p className="text-green-400">??</p>, []),
+        Cell: ({
+          row: {
+            original: { _id, approvalStatus },
+          },
+        }) =>
+          useMemo(() => {
+            const updatedList = [...approvalStatList];
+
+            if (!approvalStatus || approvalStatus === '') {
+              updatedList.unshift({ label: 'Select', value: '' });
+            }
+
+            const filteredList = updatedList.map(item => ({
+              ...item,
+              disabled: approvalStatus?.includes(item.value),
+            }));
+
+            return (
+              <div>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.MEDIA_OWNER]}>
+                  <Select
+                    className="mr-2"
+                    data={filteredList}
+                    disabled={isUpdateFinaceLoading}
+                    styles={{ rightSection: { pointerEvents: 'none' } }}
+                    rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                    rightSectionWidth={40}
+                    onChange={e => handleApprovalStatus(_id, e)}
+                    defaultValue={approvalStatus || ''}
+                  />
+                </RoleBased>
+                <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
+                  <p
+                    className={classNames(
+                      approvalStatus === 'approved' ? 'text-green-400' : 'text-purple-450',
+                      'font-medium',
+                    )}
+                  >
+                    {approvalStatus === 'sent_for_approval'
+                      ? 'Sent for Approval'
+                      : approvalStatus === 'approved'
+                      ? 'Approved'
+                      : '-'}
+                  </p>
+                </RoleBased>
+              </div>
+            );
+          }, [approvalStatus]),
       },
       {
         Header: 'DATE',
@@ -400,7 +514,54 @@ const Home = () => {
         Header: 'STATUS',
         accessor: 'status',
         disableSortBy: true,
-        Cell: () => useMemo(() => <p className="text-green-400">??</p>, []),
+        Cell: ({
+          row: {
+            original: { _id, approvalStatus },
+          },
+        }) =>
+          useMemo(() => {
+            const updatedList = [...approvalStatList];
+
+            if (!approvalStatus || approvalStatus === '') {
+              updatedList.unshift({ label: 'Select', value: '' });
+            }
+
+            const filteredList = updatedList.map(item => ({
+              ...item,
+              disabled: approvalStatus?.includes(item.value),
+            }));
+
+            return (
+              <div>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.MEDIA_OWNER]}>
+                  <Select
+                    className="mr-2"
+                    data={filteredList}
+                    disabled={isUpdateFinaceLoading}
+                    styles={{ rightSection: { pointerEvents: 'none' } }}
+                    rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                    rightSectionWidth={40}
+                    onChange={e => handleApprovalStatus(_id, e)}
+                    defaultValue={approvalStatus || ''}
+                  />
+                </RoleBased>
+                <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
+                  <p
+                    className={classNames(
+                      approvalStatus === 'approved' ? 'text-green-400' : 'text-purple-450',
+                      'font-medium',
+                    )}
+                  >
+                    {approvalStatus === 'sent_for_approval'
+                      ? 'Sent for Approval'
+                      : approvalStatus === 'approved'
+                      ? 'Approved'
+                      : '-'}
+                  </p>
+                </RoleBased>
+              </div>
+            );
+          }, []),
       },
       {
         Header: 'DATE',

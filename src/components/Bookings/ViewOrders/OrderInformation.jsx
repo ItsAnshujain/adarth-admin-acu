@@ -3,6 +3,7 @@ import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Loader, NativeSelect } from '@mantine/core';
 import dayjs from 'dayjs';
+import { useQueryClient } from '@tanstack/react-query';
 import completed from '../../../assets/completed.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { serialize } from '../../../utils';
@@ -39,7 +40,9 @@ const config = {
   options: { responsive: true },
 };
 
-const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) => {
+const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bookingId }) => {
+  const queryClient = useQueryClient();
+
   const {
     data: userData,
     isSuccess: isUserDataLoaded,
@@ -58,10 +61,13 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
 
   const handleAddIncharge = inchargeId => {
     if (bookingData?.campaign) {
-      updateCampaign({
-        id: bookingData.campaign?._id,
-        data: { incharge: inchargeId },
-      });
+      updateCampaign(
+        {
+          id: bookingData.campaign?._id,
+          data: { incharge: inchargeId },
+        },
+        { onSuccess: () => queryClient.invalidateQueries(['booking-by-id', bookingId]) },
+      );
     }
   };
 
@@ -244,7 +250,9 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats }) 
             </div>
             <div>
               <p className="text-slate-400">Campaign Type</p>
-              <p className="font-bold">{bookingData?.campaign?.type || <NoData type="na" />}</p>
+              <p className="font-bold capitalize">
+                {bookingData?.campaign?.type || <NoData type="na" />}
+              </p>
             </div>
           </div>
         </div>

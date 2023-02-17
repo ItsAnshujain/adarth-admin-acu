@@ -5,7 +5,7 @@ import { Button, Loader, Progress, Select } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { downloadAll, serialize } from '../../../utils';
+import { downloadAll, checkCampaignStats, serialize } from '../../../utils';
 import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -39,7 +39,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
 
   const { data: campaignStatus } = useFetchMasters(
-    serialize({ type: 'campaign_status', parentId: null, page: 1, limit: 100 }),
+    serialize({ type: 'booking_campaign_status', parentId: null, page: 1, limit: 100 }),
   );
   const { data: paymentStatus } = useFetchMasters(
     serialize({ type: 'payment_status', parentId: null, page: 1, limit: 100 }),
@@ -143,7 +143,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         accessor: 'currentStatus.campaignStatus',
         Cell: ({
           row: {
-            original: { _id, currentStatus, campaignStatus: c = {} },
+            original: { _id, currentStatus },
           },
         }) =>
           useMemo(() => {
@@ -154,7 +154,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
 
             const filteredList = updatedCampaignList.map(item => ({
               ...item,
-              disabled: Object.keys(c).includes(item.value),
+              disabled: checkCampaignStats(currentStatus, item.value),
             }));
 
             return (
