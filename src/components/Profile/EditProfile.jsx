@@ -20,6 +20,7 @@ const initialValues = {
   address: '',
   number: '',
   state: '',
+  pincode: '',
   pan: '',
   aadhaar: '',
   image: '',

@@ -15,12 +15,23 @@ const campaignView = {
 const Create = () => {
   const [tabs, setTabs] = useState('overview');
   const { id } = useParams();
-  const [searchParams] = useSearchParams({
+
+  const campaignQuery = {
     page: 1,
     limit: 10,
     sortBy: 'basicInformation.spaceName',
     sortOrder: 'desc',
-  });
+  };
+
+  const bookingQuery = {
+    page: 1,
+    limit: 10,
+    sortBy: 'campaign.name',
+    sortOrder: 'desc',
+    campaignId: id,
+  };
+
+  const [searchParams] = useSearchParams(tabs === 'bookings' ? bookingQuery : campaignQuery);
 
   const { data, isLoading } = useCampaign(
     { id, query: searchParams.toString() },

@@ -51,7 +51,10 @@ const ProcessPipeline = ({ bookingData }) => {
         statusArr: [
           {
             status: 'Mounting Upcoming',
-            date: bookingData?.mountingStatus?.Upcoming || bookingData?.printingStatus?.Completed,
+            date:
+              bookingData?.mountingStatus?.Upcoming ||
+              bookingData?.mountingStatus?.Mount ||
+              bookingData?.printingStatus?.Completed,
             isSuccess:
               (bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed' &&
                 bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'upcoming') ||
@@ -81,7 +84,10 @@ const ProcessPipeline = ({ bookingData }) => {
         statusArr: [
           {
             status: 'Campaign Upcoming',
-            date: bookingData?.campaignStatus?.Upcoming,
+            date:
+              bookingData?.campaignStatus?.Upcoming ||
+              bookingData?.campaignStatus?.Ongoing ||
+              bookingData?.mountingStatus?.Completed,
             isSuccess:
               (bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'completed' &&
                 bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'upcoming') ||

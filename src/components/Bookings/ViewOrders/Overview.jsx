@@ -117,6 +117,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
                       />
                     ) : (
                       <div
+                        key={uuidv4()}
                         className={classNames(
                           index === 0 ? 'h-[300px] w-full' : 'h-[96px] w-[112px]',
                           'border-[1px] border-gray bg-slate-100 mr-2 mb-4',

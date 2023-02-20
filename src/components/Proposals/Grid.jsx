@@ -18,8 +18,8 @@ const GridView = ({
   <div>
     <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[70%] overflow-y-auto">
       {list.map(item => (
-        <Link to={`view-details/${item?._id}`}>
-          <Card key={item._id} proposalData={item} />
+        <Link to={`view-details/${item?._id}`} key={item._id}>
+          <Card proposalData={item} />
         </Link>
       ))}
       {isLoadingList ? skeletonList() : null}

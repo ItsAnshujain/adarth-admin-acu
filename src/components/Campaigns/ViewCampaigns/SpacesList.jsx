@@ -252,7 +252,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
         </div>
       </div>
       <div>
-        <div className="flex justify-between h-20 items-center">
+        <div className="flex justify-between h-20 items-center pr-7">
           <RowsPerPage
             setCount={pageLimit => {
               searchParams.set('limit', pageLimit);
