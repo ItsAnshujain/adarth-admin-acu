@@ -235,6 +235,7 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
           styles={styles}
           label="Company Name"
           name="supplierName"
+          withAsterisk
           errors={errors}
           placeholder="Write..."
         />
@@ -243,10 +244,17 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Voucher No"
             name="invoiceNo"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
-          <TextInput styles={styles} label="GST" name="supplierGst" placeholder="Write..." />
+          <TextInput
+            styles={styles}
+            label="GST"
+            name="supplierGst"
+            withAsterisk
+            placeholder="Write..."
+          />
         </div>
         <div className="grid grid-cols-4 gap-4">
           <TextInput
@@ -254,6 +262,7 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Street Address"
             name="supplierStreetAddress"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
@@ -262,6 +271,7 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="City"
             name="supplierCity"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
@@ -270,6 +280,7 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Pin"
             name="supplierZip"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
@@ -284,6 +295,7 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Supplier Name"
             name="buyerName"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
@@ -291,6 +303,7 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="GST"
             name="buyerGst"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
@@ -300,6 +313,7 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Supplier Ref"
             name="supplierRefNo"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
@@ -333,6 +347,7 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Street Address"
             name="buyerStreetAddress"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
@@ -341,6 +356,7 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="City"
             name="buyerCity"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
@@ -349,14 +365,16 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Pin"
             name="buyerZip"
+            withAsterisk
             errors={errors}
             placeholder="Write..."
           />
         </div>
         <div className="grid grid-cols-1 gap-4">
           <TextareaInput
-            label="Terms of delivery"
+            label="Terms of Delivery"
             name="termOfDelivery"
+            withAsterisk
             errors={errors}
             styles={styles}
             maxLength={200}
@@ -421,7 +439,7 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
                 <Image src={image} alt="placeholder" height={50} width={50} />
               </div>
               <p>
-                Drag and Drop your files here,or{' '}
+                Drag and Drop your file here, or{' '}
                 <span className="text-purple-450 border-none">browse</span>
               </p>
             </Dropzone>
