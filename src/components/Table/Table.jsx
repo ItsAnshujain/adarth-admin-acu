@@ -131,11 +131,13 @@ const Table = ({
                   {...row.getRowProps()}
                 >
                   {allowRowsSelect && (
-                    <IndeterminateCheckbox
-                      className="mx-2 mt-5"
-                      checked={selection.includes(row.original._id)}
-                      onClick={() => handleRowClick(row.original)}
-                    />
+                    <th>
+                      <IndeterminateCheckbox
+                        className="mx-2"
+                        checked={selection.includes(row.original._id)}
+                        onClick={() => handleRowClick(row.original)}
+                      />
+                    </th>
                   )}
                   {row.cells.map(cell => (
                     <td className="pl-2 py-2" {...cell.getCellProps()}>

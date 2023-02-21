@@ -63,7 +63,7 @@ const HomePage = () => {
   const user = queryClient.getQueryData(['users-by-id', userId]);
 
   const [queryByLocation, setQueryByLocation] = useState({
-    'type': 'week',
+    'type': 'month',
     'startDate': dayjs().startOf('year').format(DATE_FORMAT),
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
@@ -119,6 +119,7 @@ const HomePage = () => {
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
       setQueryByLocation(prevState => ({
         ...prevState,
+        'type': viewType,
         'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
         'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
       }));
