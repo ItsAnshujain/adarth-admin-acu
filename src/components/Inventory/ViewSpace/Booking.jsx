@@ -253,36 +253,36 @@ const Booking = ({ inventoryId }) => {
   const handleSearch = () => {
     searchParams.set('search', searchInput);
     searchParams.set('page', 1);
-    setSearchParams(searchParams);
+    setSearchParams(searchParams, { replace: true });
   };
 
   const handlePagination = (key, val) => {
     if (val !== '') searchParams.set(key, val);
     else searchParams.delete(key);
-    setSearchParams(searchParams);
+    setSearchParams(searchParams, { replace: true });
   };
 
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
       searchParams.set('sortOrder', 'asc');
-      setSearchParams(searchParams);
+      setSearchParams(searchParams, { replace: true });
       return;
     }
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
       searchParams.set('sortOrder', 'desc');
-      setSearchParams(searchParams);
+      setSearchParams(searchParams, { replace: true });
       return;
     }
 
     searchParams.set('sortBy', colId);
-    setSearchParams(searchParams);
+    setSearchParams(searchParams, { replace: true });
   };
 
   useEffect(() => {
     handleSearch();
     if (searchInput === '') {
       searchParams.delete('search');
-      setSearchParams(searchParams);
+      setSearchParams(searchParams, { replace: true });
     }
   }, [searchInput]);
 

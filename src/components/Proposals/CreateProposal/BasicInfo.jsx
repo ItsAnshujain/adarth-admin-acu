@@ -1,5 +1,4 @@
-import { Button, Text } from '@mantine/core';
-import { useState } from 'react';
+import { Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import TextareaInput from '../../shared/TextareaInput';
 import { useFormContext } from '../../../context/formContext';
@@ -30,8 +29,6 @@ const styles = {
 };
 
 const BasicInfo = ({ proposalId }) => {
-  const [showNotesOne, setShowNotesOne] = useState(false);
-  const [showNotesTwo, setShowNotesTwo] = useState(false);
   const { errors } = useFormContext();
   const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
     serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
@@ -83,39 +80,16 @@ const BasicInfo = ({ proposalId }) => {
           />
         </div>
       </div>
-      <div>
-        <Text size="sm" weight="bold">
-          Notes
-        </Text>
-        <Text size="sm">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto maxime distinctio,
-          dicta consequatur ea at veniam illum,
-          {showNotesOne ? (
-            'qui totam esse eligendi repellendus laboriosam harum praesentium quidem minus expedita ut similique!'
-          ) : (
-            <Button
-              className="text-purple-450 font-normal px-1"
-              onClick={() => setShowNotesOne(true)}
-            >
-              Read More
-            </Button>
-          )}
-        </Text>
-        <Text size="sm">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut, atque in? Odit, alias
-          dolores vero porro asperiores rerum
-          {showNotesTwo ? (
-            'qui totam esse eligendi repellendus laboriosam harum praesentium quidem minus expedita ut similique!'
-          ) : (
-            <Button
-              className="text-purple-450 font-normal px-1"
-              onClick={() => setShowNotesTwo(true)}
-            >
-              Read More
-            </Button>
-          )}
-        </Text>
-      </div>
+      <Text size="md" weight="bold">
+        Terms and Conditions:
+      </Text>
+      <ul className="list-disc px-5">
+        <li>Printing charges are additional</li>
+        <li>Mounting charges are additional</li>
+        <li>Booking amount to be paid at the time of adsite blocking</li>
+        <li>Payment conditions to be adhered at the time of booking</li>
+        <li>GST is applicable as per government rules</li>
+      </ul>
     </div>
   );
 };

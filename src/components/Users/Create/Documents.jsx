@@ -9,10 +9,6 @@ import { supportedTypes } from '../../../utils';
 
 const docTypes = [
   {
-    text: 'Upload Your Landlord License photocopy',
-    name: 'landlordLicense',
-  },
-  {
     text: 'Upload Your Pan photocopy',
     name: 'pan',
   },

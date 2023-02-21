@@ -3,7 +3,6 @@ import trash from '../../../../assets/trash.svg';
 import pdf from '../../../../assets/pdf.svg';
 
 const docs = {
-  landlordLicense: 'Landlord License',
   aadhaar: 'Aadhaar',
   pan: 'Pan',
 };
