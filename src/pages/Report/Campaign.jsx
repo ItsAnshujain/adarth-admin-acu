@@ -9,6 +9,7 @@ import {
   LinearScale,
   BarElement,
   Title,
+  Legend,
 } from 'chart.js';
 import { v4 as uuidv4 } from 'uuid';
 import { useSearchParams } from 'react-router-dom';
@@ -25,7 +26,7 @@ dayjs.extend(quarterOfYear);
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 
-ChartJS.register(ArcElement, Tooltip, CategoryScale, LinearScale, BarElement, Title);
+ChartJS.register(ArcElement, Tooltip, CategoryScale, LinearScale, BarElement, Title, Legend);
 const options = {
   responsive: true,
 };

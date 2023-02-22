@@ -62,6 +62,10 @@ const MenuPopover = ({ onClickCopyLink = () => {}, onClickDownloadPdf = () => {}
         >
           <span className="ml-1">Download</span>
         </Menu.Item>
+        {/* TODO: api and client dependent */}
+        {/* <Menu.Item className="cursor-pointer flex items-center gap-1 w-full">
+          <span className="ml-1">Delete</span>
+        </Menu.Item> */}
       </Menu.Dropdown>
     </Menu>
   </div>

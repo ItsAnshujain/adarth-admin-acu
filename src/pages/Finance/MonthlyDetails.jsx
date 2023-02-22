@@ -286,7 +286,11 @@ const Home = () => {
         Header: 'RO DATE',
         accessor: 'ro_date',
         disableSortBy: true,
-        Cell: () => useMemo(() => <p>??</p>, []),
+        Cell: ({
+          row: {
+            original: { createdAt },
+          },
+        }) => useMemo(() => <p>{dayjs(createdAt).format(DATE_FORMAT)}</p>, []),
       },
       {
         Header: 'TO',
@@ -370,16 +374,6 @@ const Home = () => {
               </div>
             );
           }, [approvalStatus]),
-      },
-      {
-        Header: 'DATE',
-        accessor: 'createdAt',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { createdAt },
-          },
-        }) => useMemo(() => <p>{dayjs(createdAt).format(DATE_FORMAT)}</p>, []),
       },
       {
         Header: 'TOTAL AMOUNT',
@@ -498,7 +492,11 @@ const Home = () => {
         Header: 'INVOICE DATE',
         accessor: 'invoice_date',
         disableSortBy: true,
-        Cell: () => useMemo(() => <p>??</p>, []),
+        Cell: ({
+          row: {
+            original: { createdAt },
+          },
+        }) => useMemo(() => <p>{dayjs(createdAt).format(DATE_FORMAT)}</p>, []),
       },
       {
         Header: 'SUPPLIER REF',
@@ -562,16 +560,6 @@ const Home = () => {
               </div>
             );
           }, []),
-      },
-      {
-        Header: 'DATE',
-        accessor: 'createdAt',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { createdAt },
-          },
-        }) => useMemo(() => <p>{dayjs(createdAt).format(DATE_FORMAT)}</p>, []),
       },
       {
         Header: 'TOTAL AMOUNT',

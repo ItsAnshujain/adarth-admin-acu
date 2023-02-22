@@ -1,5 +1,5 @@
 import { Dropzone } from '@mantine/dropzone';
-import { Button, FileButton, Image, Text } from '@mantine/core';
+import { ActionIcon, Button, FileButton, Image, Text } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import image from '../../../assets/image.png';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
@@ -8,11 +8,12 @@ import { useFormContext } from '../../../context/formContext';
 import TextInput from '../../shared/TextInput';
 import TextareaInput from '../../shared/TextareaInput';
 import NativeSelect from '../../shared/NativeSelect';
-import { useUploadFile } from '../../../hooks/upload.hooks';
+import { useDeleteUploadedFile, useUploadFile } from '../../../hooks/upload.hooks';
 import Select from '../../shared/Select';
 import NumberInput from '../../shared/NumberInput';
 import AsyncMultiSelect from '../../shared/AsyncMultiSelect';
 import { useFetchUsers } from '../../../hooks/users.hooks';
+import trash from '../../../assets/trash.svg';
 
 const styles = {
   label: {
@@ -103,6 +104,7 @@ const BasicInfo = () => {
   } = useFetchMasters(serialize({ type: 'demographic', ...query }));
 
   const { mutateAsync: upload, isLoading } = useUploadFile();
+  const { mutateAsync: deleteFile, isLoading: isDeleteLoading } = useDeleteUploadedFile();
 
   const onHandleDrop = async params => {
     const formData = new FormData();
@@ -117,7 +119,22 @@ const BasicInfo = () => {
     const res = await upload(formData);
     const arrayOfImages = res.map(item => item?.Location);
     const tempSpacePhotos = values?.basicInformation?.otherPhotos;
+    // TODO: delete from DB
     setFieldValue('basicInformation.otherPhotos', [...tempSpacePhotos, ...arrayOfImages]);
+  };
+
+  const handleDeleteImage = async () => {
+    if (values?.basicInformation?.spacePhoto) {
+      await deleteFile(values?.basicInformation?.spacePhoto.split('/').at(-1), {
+        onSuccess: () => setFieldValue('basicInformation.spacePhoto', ''),
+      });
+    }
+  };
+
+  const handleDeleteMultipleImages = async docIndex => {
+    const tempSpacePhotos = values?.basicInformation?.otherPhotos;
+    const res = tempSpacePhotos.filter(item => item !== tempSpacePhotos[docIndex]);
+    setFieldValue('basicInformation.otherPhotos', [...res]);
   };
 
   return (
@@ -327,15 +344,26 @@ const BasicInfo = () => {
             </Dropzone>
           </div>
           {values?.basicInformation?.spacePhoto ? (
-            <Image
-              src={values?.basicInformation?.spacePhoto}
-              alt="more-preview"
-              height={400}
-              className="bg-slate-300"
-              placeholder={
-                <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
-              }
-            />
+            <div className="relative">
+              <Image
+                src={values?.basicInformation?.spacePhoto}
+                alt="more-preview"
+                height={400}
+                className="bg-slate-300"
+                placeholder={
+                  <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
+                }
+              />
+
+              <ActionIcon
+                className="absolute right-2 top-1 bg-white"
+                onClick={handleDeleteImage}
+                loading={isDeleteLoading}
+                disabled={isDeleteLoading}
+              >
+                <Image src={trash} alt="trash-icon" />
+              </ActionIcon>
+            </div>
           ) : null}
         </div>
         <div>
@@ -345,9 +373,15 @@ const BasicInfo = () => {
           </p>
           <div className="grid grid-cols-2 gap-4">
             {values?.basicInformation?.otherPhotos?.[0] !== '' &&
-              values?.basicInformation?.otherPhotos?.map(item => (
-                <div className="w-full" key={uuidv4()}>
+              values?.basicInformation?.otherPhotos?.map((item, index) => (
+                <div className="w-full relative" key={uuidv4()}>
                   <Image src={item} alt="more-preview" height={200} className="bg-slate-300" />
+                  <ActionIcon
+                    className="absolute right-2 top-1 bg-white"
+                    onClick={() => handleDeleteMultipleImages(index)}
+                  >
+                    <Image src={trash} alt="trash-icon" />
+                  </ActionIcon>
                 </div>
               ))}
           </div>

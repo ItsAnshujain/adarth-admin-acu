@@ -10,6 +10,7 @@ import {
   Title,
   BarElement,
   Tooltip,
+  Legend,
 } from 'chart.js';
 import { Button, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
@@ -41,6 +42,7 @@ ChartJS.register(
   BarElement,
   Tooltip,
   Title,
+  Legend,
 );
 
 const barDataConfigByLocation = {
@@ -128,6 +130,7 @@ const RevenueReport = () => {
     labels: [],
     datasets: [
       {
+        label: 'City or State',
         data: [],
         ...barDataConfigByLocation.styles,
       },
@@ -274,7 +277,7 @@ const RevenueReport = () => {
               </div>
             </div>
             <div className="w-[30%] flex flex-col">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-start">
                 <p className="font-bold">Industry wise revenue graph</p>
                 <ViewByFilter handleViewBy={handleIndustryViewBy} />
               </div>
