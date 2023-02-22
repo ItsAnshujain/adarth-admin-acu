@@ -20,3 +20,5 @@ export const fetchBookingsByInventoryId = (inventoryId, query) =>
 export const inventoryStats = filter => http.get(`/inventory/stats?${filter}`);
 
 export const inventoryReport = query => http.get(`/inventory/report?${query}`);
+
+export const fetchInventoryReportList = query => http.get(`/inventory/report-list?${query}`);

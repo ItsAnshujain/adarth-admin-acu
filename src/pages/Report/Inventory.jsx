@@ -12,8 +12,8 @@ import {
   ArcElement,
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
-import { Badge, Box, Image, Loader, Tabs, Text } from '@mantine/core';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Badge, Image, Loader, Progress, Tabs, Text } from '@mantine/core';
+import { Link, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
@@ -26,11 +26,15 @@ import BestIcon from '../../assets/best-performing-inventory.svg';
 import WorstIcon from '../../assets/worst-performing-inventory.svg';
 import toIndianCurrency from '../../utils/currencyFormat';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
-import { useInventoryReport, useInventoryStats } from '../../hooks/inventory.hooks';
+import {
+  useFetchInventoryReportList,
+  useInventoryReport,
+  useInventoryStats,
+} from '../../hooks/inventory.hooks';
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import InventoryStatsContent from '../../components/Reports/Inventory/InventoryStatsContent';
 import SubHeader from '../../components/Reports/Inventory/SubHeader';
-import { monthsInShort } from '../../utils';
+import { categoryColors, monthsInShort, serialize } from '../../utils';
 
 dayjs.extend(quarterOfYear);
 
@@ -57,10 +61,14 @@ const config = {
   options: { responsive: true },
 };
 
+const query = {
+  'limit': 10,
+  'page': 1,
+  'sortOrder': 'desc',
+  'sortBy': 'basicInformation.spaceName',
+};
 const InventoryReport = () => {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-
   const chartRef = useRef(null);
   const [search, setSearch] = useState('');
   const [count, setCount] = useState('20');
@@ -83,6 +91,10 @@ const InventoryReport = () => {
     isLoading: isInventoryReportLoading,
     isSuccess,
   } = useInventoryReport('');
+  const { data: inventoryReportList, isLoading: inventoryReportListLoading } =
+    useFetchInventoryReportList(serialize(query));
+  const page = searchParams.get('page');
+  const limit = searchParams.get('limit');
 
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
@@ -117,104 +129,384 @@ const InventoryReport = () => {
     [inventoryStats],
   );
 
-  const COLUMNS = [
+  const inventoryColumn = [
     {
       Header: '#',
       accessor: 'id',
+      disableSortBy: true,
+      Cell: ({ row }) =>
+        useMemo(() => {
+          let currentPage = page;
+          let rowCount = 0;
+          if (page < 1) {
+            currentPage = 1;
+          }
+          rowCount = (currentPage - 1) * limit;
+          return <div className="pl-2">{rowCount + row.index + 1}</div>;
+        }, []),
     },
     {
       Header: 'SPACE NAME & PHOTO',
-      accessor: 'space_name_and_photo',
+      accessor: 'basicInformation.spaceName',
       Cell: ({
         row: {
-          original: { status, photo, space_name, isUnderMaintenance, id },
+          original: { _id, basicInformation, isUnderMaintenance },
         },
       }) =>
         useMemo(
           () => (
-            <Box
-              onClick={() => navigate(`view-details/${id}`)}
-              className="grid grid-cols-2 gap-2 items-center cursor-pointer"
-            >
-              <div className="flex flex-1 gap-2 items-center w-44">
-                <div className="bg-white h-8 w-8 border rounded-md">
-                  <img className="h-8 w-8 mx-auto" src={photo} alt="banner" />
-                </div>
-                <p>{space_name}</p>
+            <div className="flex items-center gap-2">
+              <div className="bg-white border rounded-md cursor-zoom-in">
+                {basicInformation?.spacePhoto ? (
+                  <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
+                ) : (
+                  <Image src={null} withPlaceholder height={32} width={32} />
+                )}
               </div>
-              <div className="w-fit">
-                <Badge
-                  radius="xl"
-                  text={status}
-                  color={isUnderMaintenance ? 'yellow' : 'green'}
-                  variant="filled"
-                  size="sm"
-                >
-                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
-                </Badge>
-              </div>
-            </Box>
+              <Link
+                to={`/inventory/view-details/${_id}`}
+                className="text-black font-medium px-2 max-w-[180px]"
+              >
+                <Text className="overflow-hidden text-ellipsis" lineClamp={1}>
+                  {basicInformation?.spaceName}
+                </Text>
+              </Link>
+              <Badge
+                className="capitalize"
+                variant="filled"
+                color={isUnderMaintenance ? 'yellow' : 'green'}
+              >
+                {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+              </Badge>
+            </div>
           ),
           [],
         ),
     },
     {
       Header: 'MEDIA OWNER NAME',
-      accessor: 'landlord_name',
+      accessor: 'basicInformation.mediaOwner.name',
       Cell: ({
         row: {
-          original: { landlord_name },
+          original: { basicInformation },
         },
-      }) => useMemo(() => <p className="w-fit">{landlord_name}</p>, []),
+      }) => useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || '-'}</p>, []),
     },
     {
-      Header: 'SPACE TYPE',
-      accessor: 'space_type',
+      Header: 'CATEGORY',
+      accessor: 'basicInformation.category.name',
+      Cell: ({
+        row: {
+          original: { basicInformation },
+        },
+      }) =>
+        useMemo(() => {
+          const colorType = Object.keys(categoryColors).find(
+            key => categoryColors[key] === basicInformation?.category?.name,
+          );
+
+          return (
+            <div>
+              {basicInformation?.category?.name ? (
+                <Badge color={colorType} size="lg" className="capitalize">
+                  {basicInformation.category.name}
+                </Badge>
+              ) : (
+                '-'
+              )}
+            </div>
+          );
+        }, []),
     },
     {
       Header: 'TOTAL REVENUE',
-      accessor: 'total_revenue',
-      Cell: () => useMemo(() => <p className="w-fit mr-2">{toIndianCurrency(0)}</p>, []),
+      accessor: 'revenue',
+      Cell: ({
+        row: {
+          original: { revenue },
+        },
+      }) => useMemo(() => <p className="w-fit mr-2">{toIndianCurrency(revenue ?? 0)}</p>, []),
     },
     {
       Header: 'TOTAL BOOKING',
-      accessor: 'total_booking',
-      Cell: () => useMemo(() => <p className="w-fit">{0}</p>, []),
+      accessor: 'totalBookings',
+      Cell: ({
+        row: {
+          original: { totalBookings },
+        },
+      }) => useMemo(() => <p className="w-fit">{totalBookings}</p>, []),
     },
     {
       Header: 'TOTAL OPERATIONAL COST',
-      accessor: 'total_operational_cost',
-      Cell: () => useMemo(() => <p className="w-fit mr-2">{toIndianCurrency(0)}</p>, []),
+      accessor: 'operationalCost',
+      Cell: ({
+        row: {
+          original: { operationalCost },
+        },
+      }) =>
+        useMemo(() => <p className="w-fit mr-2">{toIndianCurrency(operationalCost ?? 0)}</p>, []),
     },
     {
       Header: 'DIMENSION',
-      accessor: 'dimension',
+      accessor: 'specifications.size.min',
+      Cell: ({
+        row: {
+          original: { specifications },
+        },
+      }) =>
+        useMemo(
+          () => (
+            <p>{`${specifications?.size?.height || 0}ft x ${
+              specifications?.size?.width || 0
+            }ft`}</p>
+          ),
+          [],
+        ),
     },
     {
       Header: 'IMPRESSION',
-      accessor: 'impression',
+      accessor: 'specifications.impressions.max',
+      Cell: ({
+        row: {
+          original: { specifications },
+        },
+      }) => useMemo(() => <p>{`${specifications?.impressions?.max || 0}+`}</p>, []),
     },
     {
-      Header: 'HEALTH',
-      accessor: 'health',
+      Header: 'HEALTH STATUS',
+      accessor: 'specifications.health',
+      Cell: ({
+        row: {
+          original: { specifications },
+        },
+      }) =>
+        useMemo(
+          () => (
+            <div className="w-24">
+              <Progress
+                sections={[
+                  { value: specifications?.health, color: 'green' },
+                  { value: 100 - (specifications?.health || 0), color: 'red' },
+                ]}
+              />
+            </div>
+          ),
+          [],
+        ),
     },
     {
       Header: 'LOCATION',
-      accessor: 'location',
+      accessor: 'location.city',
+      Cell: ({
+        row: {
+          original: { location },
+        },
+      }) => useMemo(() => <p>{location?.city || '-'}</p>, []),
     },
     {
       Header: 'PRICING',
-      accessor: 'pricing',
+      accessor: 'basicInformation.price',
+      Cell: ({
+        row: {
+          original: { basicInformation },
+        },
+      }) =>
+        useMemo(
+          () => (
+            <p className="pl-2">
+              {basicInformation?.price
+                ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
+                : 0}
+            </p>
+          ),
+          [],
+        ),
     },
     {
-      Header: '',
-      accessor: 'details',
+      Header: 'ACTION',
+      accessor: 'action',
       disableSortBy: true,
       Cell: ({
         row: {
           original: { _id },
         },
-      }) => useMemo(() => <SpacesMenuPopover itemId={_id} />, []),
+      }) =>
+        useMemo(
+          () => <SpacesMenuPopover itemId={_id} enableEdit={false} enableDelete={false} />,
+          [],
+        ),
+    },
+  ];
+
+  const performingInventoryColumn = [
+    {
+      Header: '#',
+      accessor: 'id',
+      disableSortBy: true,
+      Cell: ({ row }) =>
+        useMemo(() => {
+          let currentPage = page;
+          let rowCount = 0;
+          if (page < 1) {
+            currentPage = 1;
+          }
+          rowCount = (currentPage - 1) * limit;
+          return <div className="pl-2">{rowCount + row.index + 1}</div>;
+        }, []),
+    },
+    {
+      Header: 'SPACE NAME & PHOTO',
+      accessor: 'basicInformation.spaceName',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { _id, basicInformation, isUnderMaintenance },
+        },
+      }) =>
+        useMemo(
+          () => (
+            <div className="flex items-center gap-2">
+              <div className="bg-white border rounded-md">
+                {basicInformation?.spacePhoto ? (
+                  <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
+                ) : (
+                  <Image src={null} withPlaceholder height={32} width={32} />
+                )}
+              </div>
+              <Link
+                to={`/inventory/view-details/${_id}`}
+                className="text-black font-medium px-2 max-w-[180px]"
+              >
+                <Text className="overflow-hidden text-ellipsis" lineClamp={1}>
+                  {basicInformation?.spaceName}
+                </Text>
+              </Link>
+              <Badge
+                className="capitalize"
+                variant="filled"
+                color={isUnderMaintenance ? 'yellow' : 'green'}
+              >
+                {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+              </Badge>
+            </div>
+          ),
+          [],
+        ),
+    },
+    {
+      Header: 'MEDIA OWNER NAME',
+      accessor: 'basicInformation.landlord',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { basicInformation },
+        },
+      }) => useMemo(() => <p className="w-fit">{basicInformation?.landlord}</p>, []),
+    },
+    {
+      Header: 'CATEGORY',
+      accessor: 'category',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { basicInformation },
+        },
+      }) => useMemo(() => <p className="w-fit">{basicInformation?.category}</p>, []),
+    },
+    {
+      Header: 'DIMENSION',
+      accessor: 'specifications.size.min',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { specifications },
+        },
+      }) =>
+        useMemo(
+          () => (
+            <p>{`${specifications?.size?.height || 0}ft x ${
+              specifications?.size?.width || 0
+            }ft`}</p>
+          ),
+          [],
+        ),
+    },
+    {
+      Header: 'IMPRESSION',
+      accessor: 'specifications.impressions.max',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { specifications },
+        },
+      }) => useMemo(() => <p>{`${specifications?.impressions?.max || 0}+`}</p>, []),
+    },
+    {
+      Header: 'HEALTH STATUS',
+      accessor: 'specifications.health',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { specifications },
+        },
+      }) =>
+        useMemo(
+          () => (
+            <div className="w-24">
+              <Progress
+                sections={[
+                  { value: specifications?.health, color: 'green' },
+                  { value: 100 - (specifications?.health || 0), color: 'red' },
+                ]}
+              />
+            </div>
+          ),
+          [],
+        ),
+    },
+    {
+      Header: 'LOCATION',
+      accessor: 'location.city',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { location },
+        },
+      }) => useMemo(() => <p>{location?.city || '-'}</p>, []),
+    },
+    {
+      Header: 'PRICING',
+      accessor: 'basicInformation.price',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { basicInformation },
+        },
+      }) =>
+        useMemo(
+          () => (
+            <p className="pl-2">
+              {basicInformation?.price
+                ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
+                : 0}
+            </p>
+          ),
+          [],
+        ),
+    },
+    {
+      Header: 'ACTION',
+      accessor: 'action',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { _id },
+        },
+      }) =>
+        useMemo(
+          () => <SpacesMenuPopover itemId={_id} enableEdit={false} enableDelete={false} />,
+          [],
+        ),
     },
   ];
 
@@ -313,12 +605,16 @@ const InventoryReport = () => {
             <div className="border rounded p-8  flex-1">
               <Image src={BestIcon} alt="folder" fit="contain" height={24} width={24} />
               <p className="my-2 text-sm font-light text-slate-400">Best Performing Inventory</p>
-              <p className="font-bold">??</p>
+              <p className="font-bold">
+                {inventoryStats?.best?.[0]?.basicInformation?.spaceName || '--'}
+              </p>
             </div>
             <div className="border rounded p-8 flex-1">
               <Image src={WorstIcon} alt="folder" fit="contain" height={24} width={24} />
               <p className="my-2 text-sm font-light text-slate-400">Worst Performing Inventory</p>
-              <p className="font-bold">??</p>
+              <p className="font-bold">
+                {inventoryStats?.worst?.at(-1)?.basicInformation?.spaceName || '--'}
+              </p>
             </div>
           </div>
           <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mt-10">
@@ -347,13 +643,42 @@ const InventoryReport = () => {
                   <RowsPerPage setCount={setCount} count={count} />
                   <Search search={search} setSearch={setSearch} />
                 </div>
-                <Table COLUMNS={COLUMNS} data={[]} count={count} />
+                {inventoryReportList?.docs?.length === 0 && !inventoryReportListLoading ? (
+                  <div className="w-full min-h-[400px] flex justify-center items-center">
+                    <p className="text-xl">No records found</p>
+                  </div>
+                ) : null}
+                {inventoryReportList?.docs?.length ? (
+                  <Table COLUMNS={inventoryColumn} data={inventoryReportList?.docs} count={count} />
+                ) : null}
               </Tabs.Panel>
               <Tabs.Panel value="messages" pt="lg">
-                <Table COLUMNS={COLUMNS} data={[]} count={count} />
+                {inventoryStats?.best?.length === 0 && !isInventoryStatsLoading ? (
+                  <div className="w-full min-h-[400px] flex justify-center items-center">
+                    <p className="text-xl">No records found</p>
+                  </div>
+                ) : null}
+                {inventoryStats?.best?.length ? (
+                  <Table
+                    COLUMNS={performingInventoryColumn}
+                    data={inventoryStats?.best || []}
+                    showPagination={false}
+                  />
+                ) : null}
               </Tabs.Panel>
               <Tabs.Panel value="settings" pt="lg">
-                <Table COLUMNS={COLUMNS} data={[]} count={count} />
+                {inventoryStats?.worst?.length === 0 && !isInventoryStatsLoading ? (
+                  <div className="w-full min-h-[400px] flex justify-center items-center">
+                    <p className="text-xl">No records found</p>
+                  </div>
+                ) : null}
+                {inventoryStats?.worst?.length ? (
+                  <Table
+                    COLUMNS={performingInventoryColumn}
+                    data={inventoryStats?.worst || []}
+                    showPagination={false}
+                  />
+                ) : null}
               </Tabs.Panel>
             </Tabs>
           </div>

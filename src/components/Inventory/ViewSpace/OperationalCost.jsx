@@ -1,5 +1,6 @@
 import { ActionIcon, Box, Button, Group, Loader } from '@mantine/core';
 import { useModals } from '@mantine/modals';
+import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { Edit } from 'react-feather';
 import { useParams } from 'react-router-dom';
@@ -7,6 +8,8 @@ import { useFetchOperationalCost } from '../../../hooks/operationalCost.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import modalConfig from '../../../utils/modalConfig';
 import AddOperationalCostModal from './AddOperationalCostModal';
+
+const DATE_FORMAT = 'DD-MM-YYYY';
 
 const OperationalCost = ({ inventoryDetails }) => {
   const modals = useModals();
@@ -58,7 +61,7 @@ const OperationalCost = ({ inventoryDetails }) => {
                     key={item?._id}
                     className="py-3 border-b border-black flex justify-between pl-5 pr-10"
                   >
-                    <Group>
+                    <Group align="flex-start">
                       <ActionIcon
                         onClick={e =>
                           handleOperationalCost(
@@ -73,7 +76,13 @@ const OperationalCost = ({ inventoryDetails }) => {
                       >
                         <Edit className="text-black" />
                       </ActionIcon>
-                      <p>{item?.type?.name}</p>
+                      <div>
+                        <p className="font-medium">{item?.type?.name}</p>
+                        <p className="text-xs">Created at:</p>
+                        <p className="text-xs text-gray-500 font-medium">
+                          {item?.date ? dayjs(item.date).format(DATE_FORMAT) : null}
+                        </p>
+                      </div>
                     </Group>
                     <p>{toIndianCurrency(item?.amount)}</p>
                   </Box>

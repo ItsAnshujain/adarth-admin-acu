@@ -30,7 +30,7 @@ const initialValues = {
   type: { label: '', value: '' },
   amount: null,
   description: '',
-  date: new Date(),
+  date: '',
 };
 
 const schema = yup.object({
@@ -100,7 +100,7 @@ const AddOperationalCostModal = ({
           label: type?.name,
           value: type?._id,
         },
-        date,
+        date: new Date(date) || new Date(),
         description,
       });
     }
