@@ -7,6 +7,8 @@ import { useFormContext } from '../../../context/formContext';
 import { useDeleteUploadedFile, useUploadFile } from '../../../hooks/upload.hooks';
 import { supportedTypes } from '../../../utils';
 
+const updatedSupportedTypes = [...supportedTypes, 'pdf'];
+
 const docTypes = [
   {
     text: 'Upload Your Pan photocopy',
@@ -81,7 +83,7 @@ const Documents = ({ documents }) => {
       <p className="text-xl font-bold">Documents of the associates</p>
       <div className="text-sm mb-8">
         <span className="font-bold text-gray-500 mr-2">Supported types</span>
-        {supportedTypes.map(item => (
+        {updatedSupportedTypes.map(item => (
           <Badge key={uuidv4()} className="mr-2">
             {item}
           </Badge>
