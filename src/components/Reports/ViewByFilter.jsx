@@ -1,6 +1,7 @@
 import { Button, Menu } from '@mantine/core';
 import classNames from 'classnames';
 import React, { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 const viewBy = {
   reset: 'Yearly',
@@ -32,6 +33,7 @@ const ViewByFilter = ({ handleViewBy = () => {} }) => {
       <Menu.Dropdown>
         {list.map(({ label, value }) => (
           <Menu.Item
+            key={uuidv4()}
             onClick={() => handleActiveView(value)}
             className={classNames(
               activeView === value && label !== 'Reset' && 'text-purple-450 font-medium',

@@ -3,6 +3,7 @@ import { Button, Select } from '@mantine/core';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { useEffect, useMemo, useState } from 'react';
+import validator from 'validator';
 import PurchaseOrder from './PurchaseOrder';
 import ReleaseOrder from './ReleaseOrder';
 import Invoice from './Invoice';
@@ -54,7 +55,8 @@ const purchaseSchema = yup.object({
   supplierGst: yup
     .string()
     .trim()
-    .matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
+    .matches(gstRegexMatch, 'GST number must be valid and in uppercase')
+    .required('GST is required'),
   supplierStreetAddress: yup.string().trim().required('Street Address is required'),
   supplierCity: yup.string().trim().required('City is required'),
   supplierZip: yup
@@ -64,15 +66,19 @@ const purchaseSchema = yup.object({
     .nullable()
     .required('Pin is required'),
   buyerName: yup.string().trim().required('Supplier Name is required'),
-  buyerGst: yup.string().trim().matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
+  buyerGst: yup
+    .string()
+    .trim()
+    .matches(gstRegexMatch, 'GST number must be valid and in uppercase')
+    .required('GST is required'),
   supplierRefNo: yup
     .string()
     .trim()
     .matches(onlyNumbersMatch, 'Must be a number')
     .required('Supplier Ref is required'),
-  supplierOtherReference: yup.string().trim().required('Other Reference(s) is required'),
-  dispatchThrough: yup.string().trim().required('Dispatch Through is required'),
-  destination: yup.string().trim().required('Destination is required'),
+  supplierOtherReference: yup.string().trim(),
+  dispatchThrough: yup.string().trim(),
+  destination: yup.string().trim(),
   buyerStreetAddress: yup.string().trim().required('Street Address is required'),
   buyerCity: yup.string().trim().required('City is required'),
   buyerZip: yup
@@ -123,12 +129,12 @@ const releaseSchema = yup.object({
   phone: yup
     .string()
     .trim()
-    .matches(mobileRegexMatch, 'Must be a valid number')
-    .required('Phone is required'),
+    .matches(mobileRegexMatch, { message: 'Must be a valid number', excludeEmptyString: true })
+    .notRequired(),
   mobile: yup
     .string()
     .trim()
-    .matches(mobileRegexMatch, 'Must be a valid number')
+    .test('valid', 'Must be a valid number', val => validator.isMobilePhone(val, 'en-IN'))
     .required('Mobile is required'),
   email: yup.string().trim().required('Email is required').email('Invalid Email'),
   streetAddress: yup.string().trim().required('Street Address is required'),
@@ -142,7 +148,7 @@ const releaseSchema = yup.object({
   supplierName: yup.string().trim().required('Supplier Name is required'),
   supplierDesignation: yup.string().trim().required('Designation is required'),
   signature: yup.string().trim().required('Signature is required'),
-  termsAndCondition: yup.string().trim().required('Terms and Condition is required'),
+  termsAndCondition: yup.string().trim(),
 });
 
 const initialReleaseValues = {
@@ -184,7 +190,7 @@ const invoiceSchema = yup.object({
   supplierPhone: yup
     .string()
     .trim()
-    .matches(mobileRegexMatch, 'Must be a valid number')
+    .test('valid', 'Must be a valid number', val => validator.isMobilePhone(val, 'en-IN'))
     .required('Contact is required'),
   supplierEmail: yup.string().trim().required('Email is required').email('Invalid Email'),
   supplierRefNo: yup
@@ -192,14 +198,14 @@ const invoiceSchema = yup.object({
     .trim()
     .matches(onlyNumbersMatch, 'Must be a number')
     .required('Supplier Ref is required'),
-  supplierOtherReference: yup.string().trim().required('Other Reference(s) is required'),
-  supplierWebsite: yup.string().trim().required('Website is required').url('Invalid URL'),
+  supplierOtherReference: yup.string().trim(),
+  supplierWebsite: yup.string().trim().url('Invalid URL'),
   buyerName: yup.string().trim().required('Buyer Name is required'),
   buyerContactPerson: yup.string().trim().required('Contact Person is required'),
   buyerPhone: yup
     .string()
     .trim()
-    .matches(mobileRegexMatch, 'Must be a valid number')
+    .test('valid', 'Must be a valid number', val => validator.isMobilePhone(val, 'en-IN'))
     .required('Contact is required'),
   buyerGst: yup
     .string()
@@ -219,14 +225,10 @@ const invoiceSchema = yup.object({
     .trim()
     .matches(onlyNumbersMatch, 'Must be a number')
     .required('Buyers Order No. is required'),
-  dispatchDocumentNumber: yup
-    .string()
-    .trim()
-    .matches(onlyNumbersMatch, 'Must be a number')
-    .required('Dispatched Document No. is required'),
-  dispatchThrough: yup.string().trim().required('Dispatched through is required'),
-  destination: yup.string().trim().required('Destination is required'),
-  deliveryNote: yup.string().trim().required('Delivery Note is required'),
+  dispatchDocumentNumber: yup.string().trim().matches(onlyNumbersMatch, 'Must be a number'),
+  dispatchThrough: yup.string().trim(),
+  destination: yup.string().trim(),
+  deliveryNote: yup.string().trim(),
   termOfDelivery: yup.string().trim().required('Terms of Delivery is required'),
   bankName: yup.string().trim().required('Bank Name is required'),
   accountNo: yup
@@ -428,8 +430,7 @@ const Create = () => {
                 disabled={
                   isGeneratePurchaseOrderLoading ||
                   isGenerateReleaseOrderLoading ||
-                  isGenerateInvoiceOrderLoading ||
-                  !bookingIdFromFinance
+                  isGenerateInvoiceOrderLoading
                 }
               >
                 Create
@@ -442,7 +443,6 @@ const Create = () => {
                 label={`Booking List ${
                   !bookingIdFromFinance ? '(Please select a Booking before creating an order)' : ''
                 }`}
-                withAsterisk={!bookingIdFromFinance}
                 className="w-full"
                 styles={bookingStyles}
                 value={bookingId || bookingIdFromFinance}

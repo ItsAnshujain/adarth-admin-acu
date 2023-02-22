@@ -319,7 +319,7 @@ const BasicInfo = () => {
       </div>
       <div className="flex flex-col flex-1 pr-7">
         <div className="mb-2">
-          <p className="text-xl font-bold">Photos</p>
+          <p className="text-xl font-bold">Photo</p>
           <p className="text-gray-500 my-2 text-sm">
             Lorem ipsum atque quibusdam quos eius corrupti modi maiores.
           </p>
@@ -337,7 +337,7 @@ const BasicInfo = () => {
                 <Image src={image} alt="placeholder" height={50} width={50} />
               </div>
               <p>
-                Drag and Drop your files here,or{' '}
+                Drag and Drop your file here,or{' '}
                 <span className="text-purple-450 border-none">browse</span>
               </p>
               <p className="text-gray-400 text-center">Supported png format only</p>

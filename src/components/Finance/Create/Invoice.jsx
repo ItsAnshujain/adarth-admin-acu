@@ -142,7 +142,13 @@ const Invoice = ({ spacesList, totalPrice }) => {
     <div>
       <div className="pl-5 pr-7 pt-4 pb-8 border-b">
         <div className="grid grid-cols-2 gap-4">
-          <NumberInput styles={styles} label="Invoice No" name="invoiceNo" placeholder="Write..." />
+          <NumberInput
+            styles={styles}
+            label="Invoice No"
+            name="invoiceNo"
+            withAsterisk
+            placeholder="Write..."
+          />
         </div>
       </div>
       <div className="flex justify-between pl-5 pr-7 items-center">
@@ -154,15 +160,23 @@ const Invoice = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Supplier Name"
             name="supplierName"
+            withAsterisk
             placeholder="Write..."
           />
-          <TextInput styles={styles} label="GSTIN/UIN" name="supplierGst" placeholder="Write..." />
+          <TextInput
+            styles={styles}
+            label="GSTIN/UIN"
+            name="supplierGst"
+            withAsterisk
+            placeholder="Write..."
+          />
         </div>
         <div className="grid grid-cols-4 gap-4 pb-4">
           <TextInput
             className="col-span-2"
             styles={styles}
             label="Street Address"
+            withAsterisk
             name="supplierStreetAddress"
             placeholder="Write..."
           />
@@ -171,6 +185,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="City"
             name="supplierCity"
+            withAsterisk
             placeholder="Write..."
           />
           <NumberInput
@@ -178,18 +193,32 @@ const Invoice = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Pin"
             name="supplierZip"
+            withAsterisk
             placeholder="Write..."
           />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
-          <TextInput styles={styles} label="Contact" name="supplierPhone" placeholder="Write..." />
-          <TextInput styles={styles} label="Email" name="supplierEmail" placeholder="Write..." />
+          <TextInput
+            styles={styles}
+            label="Contact"
+            name="supplierPhone"
+            withAsterisk
+            placeholder="Write..."
+          />
+          <TextInput
+            styles={styles}
+            label="Email"
+            name="supplierEmail"
+            withAsterisk
+            placeholder="Write..."
+          />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
           <TextInput
             styles={styles}
             label="Supplier Ref"
             name="supplierRefNo"
+            withAsterisk
             placeholder="Write..."
           />
           <TextInput
@@ -213,17 +242,36 @@ const Invoice = ({ spacesList, totalPrice }) => {
       </div>
       <div className="pl-5 pr-7 pt-4 pb-8 border-b">
         <div className="grid grid-cols-2 gap-4 pb-4">
-          <TextInput styles={styles} label="Buyer Name" name="buyerName" placeholder="Write..." />
+          <TextInput
+            styles={styles}
+            label="Buyer Name"
+            name="buyerName"
+            withAsterisk
+            placeholder="Write..."
+          />
           <TextInput
             styles={styles}
             label="Contact Person"
             name="buyerContactPerson"
+            withAsterisk
             placeholder="Write..."
           />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
-          <TextInput styles={styles} label="Contact" name="buyerPhone" placeholder="Write..." />
-          <TextInput styles={styles} label="GSTIN/UIN" name="buyerGst" placeholder="Write..." />
+          <TextInput
+            styles={styles}
+            label="Contact"
+            name="buyerPhone"
+            withAsterisk
+            placeholder="Write..."
+          />
+          <TextInput
+            styles={styles}
+            label="GSTIN/UIN"
+            name="buyerGst"
+            withAsterisk
+            placeholder="Write..."
+          />
         </div>
         <div className="grid grid-cols-4 gap-4 pb-4">
           <TextInput
@@ -231,6 +279,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Street Address"
             name="buyerStreetAddress"
+            withAsterisk
             placeholder="Write..."
           />
           <TextInput
@@ -238,6 +287,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="City"
             name="buyerCity"
+            withAsterisk
             placeholder="Write..."
           />
           <NumberInput
@@ -245,6 +295,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Pin"
             name="buyerZip"
+            withAsterisk
             placeholder="Write..."
           />
         </div>
@@ -253,6 +304,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Buyer's Order No."
             name="buyerOrderNumber"
+            withAsterisk
             placeholder="Write..."
           />
         </div>
@@ -289,6 +341,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
           <TextareaInput
             label="Terms of Delivery"
             name="termOfDelivery"
+            withAsterisk
             styles={styles}
             maxLength={200}
             placeholder="Maximum 200 characters"
@@ -329,20 +382,34 @@ const Invoice = ({ spacesList, totalPrice }) => {
       </div>
       <div className="pl-5 pr-7 pt-4 pb-4 border-b">
         <div className="grid grid-cols-2 gap-4 pb-4">
-          <TextInput styles={styles} label="Bank Name" name="bankName" placeholder="Write..." />
-          <TextInput styles={styles} label="A/c No." name="accountNo" placeholder="Write..." />
+          <TextInput
+            styles={styles}
+            label="Bank Name"
+            name="bankName"
+            withAsterisk
+            placeholder="Write..."
+          />
+          <TextInput
+            styles={styles}
+            label="A/c No."
+            name="accountNo"
+            withAsterisk
+            placeholder="Write..."
+          />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
           <TextInput
             styles={styles}
             label="Branch &amp; IFSC Code"
             name="ifscCode"
+            withAsterisk
             placeholder="Write..."
           />
           <TextInput
             styles={styles}
             label="Mode/Terms of Payment"
             name="modeOfPayment"
+            withAsterisk
             placeholder="Write..."
           />
         </div>
@@ -352,6 +419,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
           <TextareaInput
             label="Declaration"
             name="declaration"
+            withAsterisk
             styles={styles}
             maxLength={200}
             placeholder="Maximum 200 characters"

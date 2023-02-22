@@ -41,14 +41,8 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
       {isProposalDataLoading ? (
         <SkeletonTopWrapper />
       ) : (
-        <div className="border p-5 mt-2 flex flex-col gap-4">
-          <div className="grid grid-cols-2">
-            <div>
-              <Text weight="bold" className="capitalize">
-                {proposalData?.name}
-              </Text>
-              <Text size="sm">{proposalData?.description}</Text>
-            </div>
+        <div className="mt-2 flex flex-col gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-1 flex-col w-full">
               <div className="flex flex-row flex-wrap justify-start">
                 {previewSpacesPhotos?.map(
@@ -78,57 +72,69 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                 )}
               </div>
             </div>
-          </div>
-          <div className="grid grid-cols-4">
-            <div className="col-span-1">
-              <Text color="grey" weight="400">
-                Total Spaces
+            <div className="border p-5">
+              <Text weight="bold" className="capitalize">
+                {proposalData?.name}
               </Text>
-              <Text weight="bolder">{proposalData?.totalSpaces || 0}</Text>
-            </div>
-            <div>
-              <Text color="grey" weight="400">
-                Total Media
+              <Text size="sm" className="mb-3">
+                {proposalData?.description}
               </Text>
-              <Text weight="bolder">{proposalData?.totalSpaces || 0}</Text>
-            </div>
-            <div>
-              <Text color="grey" weight="400">
-                Expected Impressions
-              </Text>
-              <Text weight="bolder">{proposalData?.totalImpression || 0}</Text>
-            </div>
-            <div>
-              <Text color="grey" weight="400">
-                Total Cities
-              </Text>
-              <Text weight="bolder">{proposalData?.totalCities || 0}</Text>
-            </div>
-          </div>
-          <div className="grid grid-cols-4">
-            <div className="col-span-1">
-              <Text color="grey" weight="400">
-                Price
-              </Text>
-              <Text weight="bolder">
-                {proposalData?.price ? toIndianCurrency(proposalData.price) : 0}
-              </Text>
-            </div>
-            <div>
-              <Text color="grey" weight="400">
-                Overall Start Date
-              </Text>
-              <Text weight="bolder">
-                {proposalData?.startDate ? dayjs(proposalData.startDate).format(DATE_FORMAT) : 'NA'}
-              </Text>
-            </div>
-            <div>
-              <Text color="grey" weight="400">
-                Overall End Date
-              </Text>
-              <Text weight="bolder">
-                {proposalData?.endDate ? dayjs(proposalData.endDate).format(DATE_FORMAT) : 'NA'}
-              </Text>
+              <div className="grid grid-cols-3 mb-3">
+                <div className="col-span-1">
+                  <Text color="grey" weight="400">
+                    Total Spaces
+                  </Text>
+                  <Text weight="bolder">{proposalData?.totalSpaces || 0}</Text>
+                </div>
+                <div>
+                  <Text color="grey" weight="400">
+                    Total Media
+                  </Text>
+                  <Text weight="bolder">{proposalData?.totalSpaces || 0}</Text>
+                </div>
+                <div>
+                  <Text color="grey" weight="400">
+                    Expected Impressions
+                  </Text>
+                  <Text weight="bolder">{proposalData?.totalImpression || 0}</Text>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 mb-3">
+                <div className="col-span-1">
+                  <Text color="grey" weight="400">
+                    Price
+                  </Text>
+                  <Text weight="bolder">
+                    {proposalData?.price ? toIndianCurrency(proposalData.price) : 0}
+                  </Text>
+                </div>
+                <div>
+                  <Text color="grey" weight="400">
+                    Total Cities
+                  </Text>
+                  <Text weight="bolder">{proposalData?.totalCities || 0}</Text>
+                </div>
+              </div>
+              <div className="grid grid-cols-3">
+                <div>
+                  <Text color="grey" weight="400">
+                    Overall Start Date
+                  </Text>
+                  <Text weight="bolder">
+                    {proposalData?.startDate
+                      ? dayjs(proposalData.startDate).format(DATE_FORMAT)
+                      : 'NA'}
+                  </Text>
+                </div>
+                <div>
+                  <Text color="grey" weight="400">
+                    Overall End Date
+                  </Text>
+                  <Text weight="bolder">
+                    {proposalData?.endDate ? dayjs(proposalData.endDate).format(DATE_FORMAT) : 'NA'}
+                  </Text>
+                </div>
+              </div>
             </div>
           </div>
         </div>

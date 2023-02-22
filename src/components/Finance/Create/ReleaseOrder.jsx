@@ -185,6 +185,7 @@ const ReleaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Release Order No"
             name="releaseOrderNo"
+            withAsterisk
             placeholder="Write..."
           />
         </div>
@@ -198,12 +199,14 @@ const ReleaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Company Name"
             name="companyName"
+            withAsterisk
             placeholder="Write..."
           />
           <TextInput
             styles={styles}
             label="Quotation No"
             name="quotationNo"
+            withAsterisk
             placeholder="Write..."
           />
         </div>
@@ -212,13 +215,26 @@ const ReleaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Contact Person"
             name="contactPerson"
+            withAsterisk
             placeholder="Write..."
           />
           <TextInput styles={styles} label="Phone" name="phone" placeholder="Write..." />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
-          <TextInput styles={styles} label="Mobile" name="mobile" placeholder="Write..." />
-          <TextInput styles={styles} label="Email" name="email" placeholder="Write..." />
+          <TextInput
+            styles={styles}
+            label="Mobile"
+            name="mobile"
+            withAsterisk
+            placeholder="Write..."
+          />
+          <TextInput
+            styles={styles}
+            label="Email"
+            name="email"
+            withAsterisk
+            placeholder="Write..."
+          />
         </div>
         <div className="grid grid-cols-4 gap-4">
           <TextInput
@@ -226,6 +242,7 @@ const ReleaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Street Address"
             name="streetAddress"
+            withAsterisk
             placeholder="Write..."
           />
           <TextInput
@@ -233,6 +250,7 @@ const ReleaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="City"
             name="city"
+            withAsterisk
             placeholder="Write..."
           />
           <NumberInput
@@ -240,6 +258,7 @@ const ReleaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Pin"
             name="zip"
+            withAsterisk
             placeholder="Write..."
           />
         </div>
@@ -253,11 +272,13 @@ const ReleaseOrder = ({ spacesList, totalPrice }) => {
             styles={styles}
             label="Supplier Name"
             name="supplierName"
+            withAsterisk
             placeholder="Write..."
           />
           <TextInput
             styles={styles}
             label="Designation"
+            withAsterisk
             name="supplierDesignation"
             placeholder="Write..."
           />
@@ -287,7 +308,7 @@ const ReleaseOrder = ({ spacesList, totalPrice }) => {
                 <Image src={image} alt="placeholder" height={50} width={50} />
               </div>
               <p>
-                Drag and Drop your files here,or{' '}
+                Drag and Drop your file here, or{' '}
                 <span className="text-purple-450 border-none">browse</span>
               </p>
             </Dropzone>

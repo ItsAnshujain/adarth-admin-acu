@@ -13,14 +13,15 @@ const SpaceDetails = () => {
   const { id: inventoryId } = useParams();
   const [isUnderMaintenance, toggle] = useToggle();
   const [activeTab, setActiveTab] = useState('basic-info');
-
   const { data: inventoryDetails, isLoading: isInventoryDetailsLoading } = useFetchInventoryById(
     inventoryId,
     !!inventoryId,
   );
   const { mutate: update, isLoading: isUpdateInventoryLoading } = useUpdateInventory();
 
-  const handleBack = () => navigate('/inventory');
+  const handleBack = () => {
+    navigate(-1);
+  };
   const onUpdateMaintenance = toggleValue => {
     toggle(toggleValue);
     if (inventoryId) {

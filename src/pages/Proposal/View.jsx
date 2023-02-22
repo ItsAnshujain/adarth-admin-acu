@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Badge, Box, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
@@ -22,7 +22,6 @@ import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesM
 
 const ProposalDetails = () => {
   const modals = useModals();
-  const navigate = useNavigate();
   const userId = useUserStore(state => state.id);
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [showFilter, setShowFilter] = useState(false);
@@ -64,11 +63,6 @@ const ProposalDetails = () => {
       ...modalConfig,
     });
 
-  const handleInventoryDetails = itemId =>
-    navigate(`/inventory/view-details/${itemId}`, {
-      replace: true,
-    });
-
   const COLUMNS = useMemo(
     () => [
       {
@@ -107,12 +101,12 @@ const ProposalDetails = () => {
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
                 </Box>
-                <Button
-                  className="flex-1 max-w-[180px] px-2 text-black font-medium"
-                  onClick={() => handleInventoryDetails(_id)}
+                <Link
+                  to={`/inventory/view-details/${_id}`}
+                  className="text-black font-medium px-2 max-w-[180px]"
                 >
-                  {spaceName}
-                </Button>
+                  <span className="overflow-hidden text-ellipsis">{spaceName}</span>
+                </Link>
                 <Badge
                   className="capitalize"
                   variant="filled"
@@ -276,36 +270,36 @@ const ProposalDetails = () => {
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
       searchParams.set('sortOrder', 'asc');
-      setSearchParams(searchParams);
+      setSearchParams(searchParams, { replace: true });
       return;
     }
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
       searchParams.set('sortOrder', 'desc');
-      setSearchParams(searchParams);
+      setSearchParams(searchParams, { replace: true });
       return;
     }
 
     searchParams.set('sortBy', colId);
-    setSearchParams(searchParams);
+    setSearchParams(searchParams, { replace: true });
   };
 
   const handleSearch = () => {
     searchParams.set('search', searchInput);
     searchParams.set('page', 1);
-    setSearchParams(searchParams);
+    setSearchParams(searchParams, { replace: true });
   };
 
   const handlePagination = (key, val) => {
     if (val !== '') searchParams.set(key, val);
     else searchParams.delete(key);
-    setSearchParams(searchParams);
+    setSearchParams(searchParams, { replace: true });
   };
 
   useEffect(() => {
     handleSearch();
     if (searchInput === '') {
       searchParams.delete('search');
-      setSearchParams(searchParams);
+      setSearchParams(searchParams, { replace: true });
     }
   }, [searchInput]);
 

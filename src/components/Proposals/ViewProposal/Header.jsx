@@ -6,7 +6,7 @@ import whatsapp from '../../../assets/whatsapp.svg';
 const Header = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const handleBack = () => navigate('/proposals');
+  const handleBack = () => navigate(-1);
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center pl-5 pr-5">

@@ -17,11 +17,6 @@ const Profile = () => {
   useEffect(() => {
     if (data) {
       const finalObject = {};
-      if (data.docs.find(item => Object.keys(item)[0] === 'landlordLicense')) {
-        finalObject.landlordLicense = data.docs.find(
-          item => Object.keys(item)[0] === 'landlordLicense',
-        ).landlordLicense;
-      }
       if (data.docs.find(item => Object.keys(item)[0] === 'aadhaar')) {
         finalObject.aadhaar = data.docs.find(item => Object.keys(item)[0] === 'aadhaar').aadhaar;
       }
@@ -87,23 +82,6 @@ const Profile = () => {
             </div>
           </div>
           <div className="flex flex-col gap-8">
-            {docs.landlordLicense ? (
-              <div className="flex flex-col">
-                <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
-                  <div className="flex justify-center flex-col h-full w-full">
-                    <img
-                      src={docs.landlordLicense}
-                      alt="landlordLicense"
-                      className="h-full w-full object-contain"
-                    />
-                  </div>
-                </div>
-                <div className="text-sm mt-2">
-                  <p className="font-medium">Landlord License</p>
-                  <p className="text-slate-400">Your landlord license photocopy</p>
-                </div>
-              </div>
-            ) : null}
             {docs.aadhaar ? (
               <div className="flex flex-col">
                 <div className="border border-dashed border-slate-400 flex items-center justify-center relative w-92 h-36 bg-slate-100">
