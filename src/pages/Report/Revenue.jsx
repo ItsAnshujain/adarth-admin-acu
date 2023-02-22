@@ -11,27 +11,22 @@ import {
   BarElement,
   Tooltip,
 } from 'chart.js';
-import { Button, Image, Loader } from '@mantine/core';
+import { Button, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import dayjs from 'dayjs';
 import DomToPdf from 'dom-to-pdf';
 import { v4 as uuidv4 } from 'uuid';
 import Header from '../../components/Reports/Header';
-import toIndianCurrency from '../../utils/currencyFormat';
 import RevenueFilter from '../../components/Reports/RevenueFilter';
-import TotalRevenueIcon from '../../assets/total-revenue.svg';
-import OfflineRevenueIcon from '../../assets/offline-revenue.svg';
-import OnlineRevenueIcon from '../../assets/online-revenue.svg';
-import ProposalSentIcon from '../../assets/proposal-sent.svg';
-import OperationalCostIcon from '../../assets/operational-cost.svg';
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import {
   useFetchFinanceByIndustry,
   useFetchFinanceByLocation,
   useFetchFinanceByStats,
 } from '../../hooks/finance.hooks';
-import { dateByQuarter, serialize } from '../../utils';
+import { dateByQuarter, monthsInShort, serialize } from '../../utils';
+import RevenueStatsContent from '../../components/Reports/Revenue/RevenueStatsContent';
 
 dayjs.extend(quarterOfYear);
 
@@ -87,23 +82,8 @@ const options = {
   responsive: true,
 };
 
-const labels = [
-  'Jan',
-  'Febr',
-  'Mar',
-  'Apr',
-  'May',
-  'June',
-  'July',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-
 const lineData = {
-  labels,
+  labels: monthsInShort,
   datasets: [
     {
       label: 'Revenue',
@@ -277,37 +257,12 @@ const RevenueReport = () => {
       <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
         <Header text="Revenue Report" onClickDownloadPdf={downloadPdf} />
         <div className="mr-7 pl-5 mt-5 mb-10" id="revenue-pdf">
-          <div className="flex flex-1 justify-between gap-4 flex-wrap mb-8">
-            <div className="border rounded p-8 flex-1">
-              <Image src={TotalRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
-              <p className="my-2 text-sm font-light text-slate-400">Total Revenue</p>
-              <p className="font-bold">{toIndianCurrency(revenueData?.revenue ?? 0)}</p>
-            </div>
-            <div className="border rounded p-8  flex-1">
-              <Image src={OfflineRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
-              <p className="my-2 text-sm font-light text-slate-400">Offline Revenue</p>
-              <p className="font-bold">{toIndianCurrency(revenueData?.offline ?? 0)}</p>
-            </div>
-            <div className="border rounded p-8 flex-1">
-              <Image src={OnlineRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
-              <p className="my-2 text-sm font-light text-slate-400">Online Revenue</p>
-              <p className="font-bold">{toIndianCurrency(revenueData?.online ?? 0)}</p>
-            </div>
-            <div className="border rounded p-8 flex-1">
-              <Image src={ProposalSentIcon} alt="folder" fit="contain" height={24} width={24} />
-              <p className="my-2 text-sm font-light text-slate-400">Total Proposals Sent</p>
-              <p className="font-bold">{revenueData?.totalProposalSent}</p>
-            </div>
-            <div className="border rounded p-8 flex-1">
-              <Image src={OperationalCostIcon} alt="folder" fit="contain" height={24} width={24} />
-              <p className="my-2 text-sm font-light text-slate-400">Total Operational Cost</p>
-              <p className="font-bold">{toIndianCurrency(revenueData?.operationalCost ?? 0)}</p>
-            </div>
-          </div>
+          <RevenueStatsContent revenueData={revenueData} />
           <div className="flex gap-8">
             <div className="w-[70%] flex flex-col justify-between">
               <div className="flex justify-between items-center">
                 <p className="font-bold">Revenue Graph</p>
+                {/* TODO: wip */}
                 <ViewByFilter handleViewBy={() => {}} />
               </div>
               <div className="flex flex-col pl-7 relative">

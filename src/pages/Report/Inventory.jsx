@@ -30,6 +30,7 @@ import { useInventoryReport, useInventoryStats } from '../../hooks/inventory.hoo
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import InventoryStatsContent from '../../components/Reports/Inventory/InventoryStatsContent';
 import SubHeader from '../../components/Reports/Inventory/SubHeader';
+import { monthsInShort } from '../../utils';
 
 dayjs.extend(quarterOfYear);
 
@@ -51,21 +52,6 @@ const options = {
   responsive: true,
 };
 
-const labels = [
-  'Jan',
-  'Febr',
-  'Mar',
-  'Apr',
-  'May',
-  'June',
-  'July',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-
 const config = {
   type: 'line',
   options: { responsive: true },
@@ -80,7 +66,7 @@ const InventoryReport = () => {
   const [count, setCount] = useState('20');
   const [areaData, setAreaData] = useState({
     id: uuidv4(),
-    labels,
+    labels: monthsInShort,
     datasets: [
       {
         label: 'Revenue',

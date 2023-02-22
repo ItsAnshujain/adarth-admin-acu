@@ -11,6 +11,8 @@ import {
 import { serialize } from '../../../utils';
 import NumberInput from '../../shared/NumberInput';
 import Select from '../../shared/Select';
+import TextareaInput from '../../shared/TextareaInput';
+import DatePicker from '../../shared/DatePicker';
 
 const styles = {
   label: {
@@ -27,6 +29,8 @@ const styles = {
 const initialValues = {
   type: { label: '', value: '' },
   amount: null,
+  description: '',
+  date: new Date(),
 };
 
 const schema = yup.object({
@@ -44,7 +48,15 @@ const schema = yup.object({
     .required('Amount is required'),
 });
 
-const AddOperationalCostModal = ({ inventoryId, onClose, costId, type, amount }) => {
+const AddOperationalCostModal = ({
+  inventoryId,
+  onClose,
+  costId,
+  type,
+  amount,
+  description,
+  date,
+}) => {
   const form = useForm({ validate: yupResolver(schema), initialValues });
   const {
     data: spaceStatusData,
@@ -67,6 +79,12 @@ const AddOperationalCostModal = ({ inventoryId, onClose, costId, type, amount })
     data.type = data.type.value;
     data.inventoryId = inventoryId;
 
+    Object.keys(data).forEach(key => {
+      if (data[key] === '') {
+        delete data[key];
+      }
+    });
+
     if (costId) {
       editCost({ id: costId, data }, { onSuccess: () => onClose() });
     } else {
@@ -82,6 +100,8 @@ const AddOperationalCostModal = ({ inventoryId, onClose, costId, type, amount })
           label: type?.name,
           value: type?._id,
         },
+        date,
+        description,
       });
     }
   }, [costId]);
@@ -90,6 +110,16 @@ const AddOperationalCostModal = ({ inventoryId, onClose, costId, type, amount })
     <Box className="border-t">
       <FormProvider form={form}>
         <form className="px-5 pt-3" onSubmit={form.onSubmit(onSubmit)}>
+          <DatePicker
+            label="Date"
+            name="date"
+            withAsterisk
+            placeholder="DD/MM/YYYY"
+            minDate={new Date()}
+            size="md"
+            styles={styles}
+            className="mb-4"
+          />
           <Select
             label="Type"
             name="type"
@@ -119,6 +149,15 @@ const AddOperationalCostModal = ({ inventoryId, onClose, costId, type, amount })
             className="mb-4"
             styles={styles}
             hideControls
+          />
+          <TextareaInput
+            styles={styles}
+            label="Description"
+            name="description"
+            disabled={isSpaceStatusLoading || isAddLoading || isEditLoading}
+            placeholder="Maximun 200 characters"
+            maxLength={200}
+            className="mb-4"
           />
           <Group position="right">
             <Button

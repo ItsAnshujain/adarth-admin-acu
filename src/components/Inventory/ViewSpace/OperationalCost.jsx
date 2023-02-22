@@ -13,7 +13,7 @@ const OperationalCost = ({ inventoryDetails }) => {
   const { id: inventoryId } = useParams();
   const { data: operationaCostData, isLoading } = useFetchOperationalCost(inventoryId);
 
-  const handleOperationalCost = (_, costId, type, amount) =>
+  const handleOperationalCost = (_, costId, type, amount, description, date) =>
     modals.openContextModal('basic', {
       title: `${costId ? 'Edit' : 'Add'} Operational Cost`,
       innerProps: {
@@ -24,6 +24,8 @@ const OperationalCost = ({ inventoryDetails }) => {
             costId={costId}
             type={type}
             amount={amount}
+            description={description}
+            date={date}
           />
         ),
       },
@@ -58,7 +60,16 @@ const OperationalCost = ({ inventoryDetails }) => {
                   >
                     <Group>
                       <ActionIcon
-                        onClick={e => handleOperationalCost(e, item?._id, item?.type, item?.amount)}
+                        onClick={e =>
+                          handleOperationalCost(
+                            e,
+                            item?._id,
+                            item?.type,
+                            item?.amount,
+                            item?.description,
+                            item?.date,
+                          )
+                        }
                       >
                         <Edit className="text-black" />
                       </ActionIcon>
