@@ -225,7 +225,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
                 }
                 onChange={e => handleAddIncharge(e.target.value)}
                 className="mb-7"
-                defaultValue={bookingData?.campaign?.incharge?.map(item => item._id) || ''}
+                defaultValue={bookingData ? bookingData?.campaign?.incharge?.[0]?._id : ''}
               />
             </div>
             <div>

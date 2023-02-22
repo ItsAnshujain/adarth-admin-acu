@@ -36,9 +36,8 @@ const GridView = ({
     <div>
       <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[100%] overflow-y-auto">
         {list.map(item => (
-          <Link to={`/inventory/view-details/${item?._id}`}>
+          <Link to={`/inventory/view-details/${item?._id}`} key={item?._id}>
             <Card
-              key={item?._id}
               data={item}
               isSelected={values?.spaces?.includes(item)}
               onSelect={cardId => handleCardSelection(cardId, item)}

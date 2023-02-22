@@ -83,14 +83,14 @@ const Documents = ({ documents }) => {
   return (
     <div className="pl-5 pr-7 mt-4">
       <p className="text-xl font-bold">Documents of the associates</p>
-      <p className="text-sm mb-8">
+      <div className="text-sm mb-8">
         <span className="font-bold text-gray-500 mr-2">Supported types</span>
         {supportedTypes.map(item => (
           <Badge key={uuidv4()} className="mr-2">
             {item}
           </Badge>
         ))}
-      </p>
+      </div>
 
       <div className="grid grid-cols-4 gap-8">
         {uploadImageList?.map((doc, index) => (
