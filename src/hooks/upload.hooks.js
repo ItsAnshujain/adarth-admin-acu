@@ -11,8 +11,7 @@ export const useUploadFile = () =>
     {
       onSuccess: () => {
         showNotification({
-          title: 'Upload File',
-          message: 'File uploaded successfully',
+          title: 'File uploaded successfully',
           autoClose: 3000,
           color: 'green',
         });
@@ -37,8 +36,7 @@ export const useDeleteUploadedFile = () =>
     {
       onSuccess: () => {
         showNotification({
-          title: 'Delete File',
-          message: 'File deleted successfully',
+          title: 'File deleted successfully',
           autoClose: 3000,
           color: 'green',
         });

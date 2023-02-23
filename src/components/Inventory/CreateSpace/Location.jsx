@@ -34,7 +34,7 @@ const Location = () => {
     debounce(async (latitude, longitude) => {
       const res = await getAddressByLatLng(latitude, longitude);
       if (!res?.formatted_address.toLowerCase().includes('india')) {
-        showNotification({ message: 'Coordinates cannot be outside India' });
+        showNotification({ title: 'Coordinates cannot be outside India' });
       }
     }, 1000),
     [],

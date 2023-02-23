@@ -19,9 +19,8 @@ const SpaceDetails = () => {
   );
   const { mutate: update, isLoading: isUpdateInventoryLoading } = useUpdateInventory();
 
-  const handleBack = () => {
-    navigate(-1);
-  };
+  const handleBack = () => navigate(-1);
+
   const onUpdateMaintenance = toggleValue => {
     toggle(toggleValue);
     if (inventoryId) {

@@ -226,6 +226,16 @@ export const monthsInShort = [
   'Dec',
 ];
 
+export const daysInAWeek = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
+
 export const supportedTypes = ['JPG', 'JPEG', 'PNG'];
 
 export const indianCurrencyInDecimals = amount => {

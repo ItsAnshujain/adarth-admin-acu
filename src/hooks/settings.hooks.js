@@ -11,8 +11,7 @@ export const useChangePassword = () =>
     {
       onSuccess: () => {
         showNotification({
-          title: 'Password',
-          message: 'Password changed successfully',
+          title: 'Password changed successfully',
           autoClose: 3000,
           color: 'green',
         });
@@ -39,8 +38,7 @@ export const useUpdateNotification = () => {
       onSuccess: () => {
         queryClient.invalidateQueries(['users-by-id']);
         showNotification({
-          title: 'Notification',
-          message: 'Notification setting updated successfully',
+          title: 'Notification setting updated successfully',
           autoClose: 3000,
           color: 'green',
         });
@@ -66,8 +64,7 @@ export const useDeleteAccount = () =>
     {
       onSuccess: () => {
         showNotification({
-          title: 'Delete',
-          message: 'Account deleted successfully',
+          title: 'Account deleted successfully',
           autoClose: 3000,
           color: 'green',
         });
