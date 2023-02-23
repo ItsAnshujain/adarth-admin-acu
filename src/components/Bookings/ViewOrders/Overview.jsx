@@ -8,6 +8,7 @@ import {
   Pagination,
   Skeleton,
   Text,
+  Box,
 } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import GoogleMapReact from 'google-map-react';
@@ -15,11 +16,13 @@ import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import ReactPlayer from 'react-player';
 import classNames from 'classnames';
+import { useModals } from '@mantine/modals';
 import Places from './UI/Places';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
 import NoData from '../../shared/NoData';
+import modalConfig from '../../../utils/modalConfig';
 
 const defaultProps = {
   center: {
@@ -43,6 +46,7 @@ const SkeletonTopWrapper = () => (
 const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Overview = ({ bookingData = {}, isLoading }) => {
+  const modals = useModals();
   const [readMore, toggle] = useToggle();
   const [mapInstance, setMapInstance] = useState(null);
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
@@ -74,6 +78,23 @@ const Overview = ({ bookingData = {}, isLoading }) => {
     }
     return initialImpressions;
   }, [bookingData?.campaign?.spaces]);
+
+  const toggleImagePreviewModal = imgSrc =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
+            {imgSrc ? (
+              <Image src={imgSrc} height={580} width={580} alt="preview" />
+            ) : (
+              <Image src={null} height={580} width={580} withPlaceholder />
+            )}
+          </Box>
+        ),
+      },
+      ...modalConfig,
+    });
 
   useEffect(() => {
     if (mapInstance && bookingData?.campaign?.spaces?.length) {
@@ -113,7 +134,8 @@ const Overview = ({ bookingData = {}, isLoading }) => {
                         src={src}
                         fit="cover"
                         alt="poster"
-                        className="mr-2 mb-4 border-[1px] border-gray bg-slate-100"
+                        className="mr-2 mb-4 border-[1px] border-gray bg-slate-100 cursor-zoom-in"
+                        onClick={() => toggleImagePreviewModal(src)}
                       />
                     ) : (
                       <div

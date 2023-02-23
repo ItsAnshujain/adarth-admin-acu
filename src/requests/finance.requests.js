@@ -13,3 +13,5 @@ export const fetchFinanceByStats = () => http.get('/finance/stats');
 export const fetchFinanceByLocation = query => http.get(`/finance/byLocation?${query}`);
 
 export const fetchFinanceByIndustry = query => http.get(`/finance/byIndustry?${query}`);
+
+export const fetchFinanceByRevenueGraph = query => http.get(`/finance/revenue-graph?${query}`);

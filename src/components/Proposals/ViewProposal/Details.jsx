@@ -1,8 +1,11 @@
-import { BackgroundImage, Center, Image, Skeleton, Text } from '@mantine/core';
+import { BackgroundImage, Center, Image, Skeleton, Text, Box } from '@mantine/core';
+import { useModals } from '@mantine/modals';
+import classNames from 'classnames';
 import dayjs from 'dayjs';
 import { useEffect, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../utils/currencyFormat';
+import modalConfig from '../../../utils/modalConfig';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
@@ -14,6 +17,7 @@ const SkeletonTopWrapper = () => (
 );
 
 const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
+  const modals = useModals();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
   const getAllSpacePhotos = useCallback(() => {
@@ -27,6 +31,23 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
 
     return tempPics;
   }, [inventoryData]);
+
+  const toggleImagePreviewModal = imgSrc =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
+            {imgSrc ? (
+              <Image src={imgSrc} height={580} width={580} alt="preview" />
+            ) : (
+              <Image src={null} height={580} width={580} withPlaceholder />
+            )}
+          </Box>
+        ),
+      },
+      ...modalConfig,
+    });
 
   useEffect(() => {
     const result = getAllSpacePhotos();
@@ -42,20 +63,26 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
         <SkeletonTopWrapper />
       ) : (
         <div className="mt-2 flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-1 flex-col w-full">
+          <div
+            className={classNames(
+              'grid gap-3 auto-cols-min',
+              previewSpacesPhotos?.length ? 'grid-cols-2' : 'grid-cols-1',
+            )}
+          >
+            <div className="flex flex-1 flex-col">
               <div className="flex flex-row flex-wrap justify-start">
                 {previewSpacesPhotos?.map(
                   (src, index) =>
                     index < 4 && (
                       <Image
                         key={uuidv4()}
-                        className="mr-2 mb-4 border-[1px] border-gray bg-slate-100"
+                        className="mr-2 mb-4 border-[1px] border-gray bg-slate-100 cursor-zoom-in"
                         height={index === 0 ? 300 : 96}
                         width={index === 0 ? '100%' : 112}
                         src={src}
                         fit="cover"
                         alt="poster"
+                        onClick={() => toggleImagePreviewModal(src)}
                       />
                     ),
                 )}
@@ -72,7 +99,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                 )}
               </div>
             </div>
-            <div className="border p-5">
+            <div className="border p-5 h-fit">
               <Text weight="bold" className="capitalize">
                 {proposalData?.name}
               </Text>

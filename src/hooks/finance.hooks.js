@@ -4,6 +4,7 @@ import {
   fetchFinance,
   fetchFinanceByIndustry,
   fetchFinanceByLocation,
+  fetchFinanceByRevenueGraph,
   fetchFinanceByStats,
   fetchFinanceByYear,
   fetchFinanceByYearAndMonth,
@@ -88,6 +89,16 @@ export const useFetchFinanceByIndustry = (query, enabled = true) =>
     ['finance-by-industry', query],
     async () => {
       const res = await fetchFinanceByIndustry(query);
+      return res?.data;
+    },
+    { enabled },
+  );
+
+export const useFetchFinanceByRevenueGraph = (query, enabled = true) =>
+  useQuery(
+    ['finance-by-reveue-graph', query],
+    async () => {
+      const res = await fetchFinanceByRevenueGraph(query);
       return res?.data;
     },
     { enabled },
