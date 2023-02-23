@@ -235,9 +235,7 @@ const FileUpload = () => {
           <div className="px-5 pt-4 pb-5 border-b">
             <div className="grid grid-cols-2 gap-4">
               <Select
-                label={`Booking List ${
-                  !bookingIdFromFinance ? '(Please select a Booking before uploading)' : ''
-                }`}
+                label="Booking List (Please select a Booking before uploading)"
                 withAsterisk={!bookingIdFromFinance}
                 className="w-full"
                 styles={bookingStyles}

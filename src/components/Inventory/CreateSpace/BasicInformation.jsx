@@ -323,26 +323,7 @@ const BasicInfo = () => {
           <p className="text-gray-500 my-2 text-sm">
             Lorem ipsum atque quibusdam quos eius corrupti modi maiores.
           </p>
-          <div className="h-[400px] mb-4">
-            <Dropzone
-              onDrop={onHandleDrop}
-              accept={['image/png', 'image/jpeg']}
-              className="h-full w-full flex justify-center items-center bg-slate-100"
-              loading={isLoading}
-              name="spacePhoto"
-              multiple={false}
-              {...getInputProps('spacePhoto')}
-            >
-              <div className="flex items-center justify-center">
-                <Image src={image} alt="placeholder" height={50} width={50} />
-              </div>
-              <p>
-                Drag and Drop your file here,or{' '}
-                <span className="text-purple-450 border-none">browse</span>
-              </p>
-              <p className="text-gray-400 text-center">Supported png format only</p>
-            </Dropzone>
-          </div>
+
           {values?.basicInformation?.spacePhoto ? (
             <div className="relative">
               <Image
@@ -364,13 +345,45 @@ const BasicInfo = () => {
                 <Image src={trash} alt="trash-icon" />
               </ActionIcon>
             </div>
-          ) : null}
+          ) : (
+            <div className="h-[400px] mb-4">
+              <Dropzone
+                onDrop={onHandleDrop}
+                accept={['image/png', 'image/jpeg']}
+                className="h-full w-full flex justify-center items-center bg-slate-100"
+                loading={isLoading}
+                name="spacePhoto"
+                multiple={false}
+                {...getInputProps('spacePhoto')}
+              >
+                <div className="flex items-center justify-center">
+                  <Image src={image} alt="placeholder" height={50} width={50} />
+                </div>
+                <p>
+                  Drag and Drop your file here,or{' '}
+                  <span className="text-purple-450 border-none">browse</span>
+                </p>
+                <p className="text-gray-400 text-center">Supported png format only</p>
+              </Dropzone>
+            </div>
+          )}
         </div>
         <div>
           <p className="text-xl font-bold">Other Images</p>
           <p className="text-gray-400 mb-2">
             Lorem ipsum atque quibusdam quos eius corrupti modi maiores.
           </p>
+          <div className="text-right my-4">
+            <FileButton
+              className="border border-gray-550 p-2 rounded-md text-black"
+              onChange={onHandleMultipleImages}
+              accept="image/png,image/jpeg"
+              multiple
+              loading={isLoading}
+            >
+              {props => <Button {...props}> Add More Photo</Button>}
+            </FileButton>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             {values?.basicInformation?.otherPhotos?.[0] !== '' &&
               values?.basicInformation?.otherPhotos?.map((item, index) => (
@@ -384,17 +397,6 @@ const BasicInfo = () => {
                   </ActionIcon>
                 </div>
               ))}
-          </div>
-          <div className="text-right mt-4">
-            <FileButton
-              className="border border-gray-550 p-2 rounded-md text-black"
-              onChange={onHandleMultipleImages}
-              accept="image/png,image/jpeg"
-              multiple
-              loading={isLoading}
-            >
-              {props => <Button {...props}> Add More Photo</Button>}
-            </FileButton>
           </div>
         </div>
       </div>

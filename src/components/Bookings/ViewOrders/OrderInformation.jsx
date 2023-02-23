@@ -213,7 +213,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
               </p>
             </div>
             <div>
-              <p className="text-slate-400">Campaing Incharge</p>
+              <p className="text-slate-400">Campaign Incharge</p>
               <NativeSelect
                 styles={styles}
                 disabled={isLoadingUserData}
