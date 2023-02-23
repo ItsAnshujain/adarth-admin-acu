@@ -1,12 +1,25 @@
-import { Button, Image, Menu } from '@mantine/core';
-import { ArrowLeft, Mail, Link as LinkIcon } from 'react-feather';
+import { Button } from '@mantine/core';
+import { useModals } from '@mantine/modals';
+import { ArrowLeft } from 'react-feather';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import whatsapp from '../../../assets/whatsapp.svg';
+import modalConfig from '../../../utils/modalConfig';
+import ShareContent from './ShareContent';
 
 const Header = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const handleBack = () => navigate(-1);
+  const modals = useModals();
+
+  const toggleShareOptions = () => {
+    modals.openContextModal('basic', {
+      title: 'Share Option',
+      innerProps: {
+        modalBody: <ShareContent />,
+      },
+      ...modalConfig,
+    });
+  };
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center pl-5 pr-5">
@@ -16,22 +29,9 @@ const Header = () => {
       <div className="flex gap-4">
         <Button className="border-black text-black radius-md">Download PDF</Button>
         <div className="relative">
-          <Menu shadow="md" width={180}>
-            <Menu.Target>
-              <Button className="bg-black">Share</Button>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item icon={<Mail className="text-[#969EA1] h-5" />}>
-                <span className="text-gray-400 font-medium text-base">Send Email</span>
-              </Menu.Item>
-              <Menu.Item icon={<Image src={whatsapp} alt="whatsapp" className="h-4 ml-1" />}>
-                <span className="text-gray-400 font-medium text-base">Whatsapp</span>
-              </Menu.Item>
-              <Menu.Item icon={<LinkIcon className="h-4" color="#969EA1" />}>
-                <span className="text-gray-400 font-medium text-base">Copy Link</span>
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+          <Button className="bg-black" onClick={toggleShareOptions}>
+            Share
+          </Button>
         </div>
         <div>
           <Link

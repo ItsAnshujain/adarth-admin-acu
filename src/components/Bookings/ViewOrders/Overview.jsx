@@ -8,7 +8,6 @@ import {
   Pagination,
   Skeleton,
   Text,
-  Box,
 } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import GoogleMapReact from 'google-map-react';
@@ -17,12 +16,17 @@ import { v4 as uuidv4 } from 'uuid';
 import ReactPlayer from 'react-player';
 import classNames from 'classnames';
 import { useModals } from '@mantine/modals';
+import { ChevronLeft, ChevronRight } from 'react-feather';
+import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
 import Places from './UI/Places';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
 import NoData from '../../shared/NoData';
 import modalConfig from '../../../utils/modalConfig';
+
+const TRANSITION_DURATION = 200;
+const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
 const defaultProps = {
   center: {
@@ -55,6 +59,10 @@ const Overview = ({ bookingData = {}, isLoading }) => {
     limit: 6,
   });
 
+  const [embla, setEmbla] = useState(null);
+
+  useAnimationOffsetEffect(embla, TRANSITION_DURATION);
+
   const calculateTotalCities = useMemo(() => {
     const initialCity = 0;
     if (bookingData?.campaign?.spaces?.length > 0) {
@@ -79,21 +87,41 @@ const Overview = ({ bookingData = {}, isLoading }) => {
     return initialImpressions;
   }, [bookingData?.campaign?.spaces]);
 
-  const toggleImagePreviewModal = imgSrc =>
+  const toggleImagePreviewModal = imgIndex =>
     modals.openContextModal('basic', {
       title: 'Preview',
       innerProps: {
         modalBody: (
-          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
-            {imgSrc ? (
-              <Image src={imgSrc} height={580} width={580} alt="preview" />
-            ) : (
-              <Image src={null} height={580} width={580} withPlaceholder />
-            )}
-          </Box>
+          <Carousel
+            align="center"
+            height={400}
+            className="px-3"
+            loop
+            mx="auto"
+            slideGap="lg"
+            controlsOffset="lg"
+            initialSlide={imgIndex}
+            nextControlIcon={<ChevronRight size={40} className="bg-white rounded-full" />}
+            previousControlIcon={<ChevronLeft size={40} className="bg-white rounded-full" />}
+            classNames={{ indicator: 'bg-white-200' }}
+            getEmblaApi={setEmbla}
+          >
+            {previewSpacesPhotos.length &&
+              previewSpacesPhotos.map(item =>
+                item && !item?.includes(['mp4']) ? (
+                  <Carousel.Slide>
+                    <Image src={item} height={400} width="100%" alt="preview" fit="contain" />
+                  </Carousel.Slide>
+                ) : (
+                  <Carousel.Slide>
+                    <ReactPlayer url={`${item}#t=0.1`} width="100%" height="100%" />
+                  </Carousel.Slide>
+                ),
+              )}
+          </Carousel>
         ),
       },
-      ...modalConfig,
+      ...updatedModalConfig,
     });
 
   useEffect(() => {
@@ -135,7 +163,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
                         fit="cover"
                         alt="poster"
                         className="mr-2 mb-4 border-[1px] border-gray bg-slate-100 cursor-zoom-in"
-                        onClick={() => toggleImagePreviewModal(src)}
+                        onClick={() => toggleImagePreviewModal(index)}
                       />
                     ) : (
                       <div

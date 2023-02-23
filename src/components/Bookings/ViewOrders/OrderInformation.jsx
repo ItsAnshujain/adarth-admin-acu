@@ -43,11 +43,7 @@ const config = {
 const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bookingId }) => {
   const queryClient = useQueryClient();
 
-  const {
-    data: userData,
-    isSuccess: isUserDataLoaded,
-    isLoading: isLoadingUserData,
-  } = useFetchUsers(
+  const { data: userData, isLoading: isLoadingUserData } = useFetchUsers(
     serialize({
       page: 1,
       limit: 100,
@@ -84,6 +80,15 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
     }),
     [bookingStats],
   );
+
+  const inchargeList = useMemo(() => {
+    let arr = [{ label: 'Select', value: '' }];
+
+    if (userData?.docs) {
+      arr = [...arr, ...userData.docs.map(item => ({ label: item?.name, value: item?._id }))];
+    }
+    return arr;
+  }, [userData?.docs]);
 
   return isLoading ? (
     <div className="flex justify-center items-center h-[400px]">
@@ -200,7 +205,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
           <div className="flex p-4 gap-8 border  flex-wrap">
             <div>
               <p className="text-slate-400">Campaign Id</p>
-              <p className="font-bold">#{bookingData.campaign?._id}</p>
+              <p className="font-bold">{bookingData.campaign?.campaignId || '--'}</p>
             </div>
             <div>
               <p className="text-slate-400">Campaign Name</p>
@@ -218,11 +223,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
                 styles={styles}
                 disabled={isLoadingUserData}
                 placeholder="Select..."
-                data={
-                  isUserDataLoaded
-                    ? userData?.docs?.map(item => ({ label: item?.name, value: item?._id }))
-                    : []
-                }
+                data={inchargeList}
                 onChange={e => handleAddIncharge(e.target.value)}
                 className="mb-7"
                 defaultValue={bookingData ? bookingData?.campaign?.incharge?.[0]?._id : ''}
@@ -282,6 +283,10 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
               <p className="font-bold">
                 <NoData type="upcoming" />
               </p>
+            </div>
+            <div>
+              <p className="text-slate-400">Payment Reference Number</p>
+              <p className="font-bold">{bookingData?.paymentReference || '--'}</p>
             </div>
           </div>
         </div>

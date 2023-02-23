@@ -1,13 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Button, Text, Image, Skeleton, Badge, BackgroundImage, Center, Box } from '@mantine/core';
+import { Button, Text, Image, Skeleton, Badge, BackgroundImage, Center } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import { v4 as uuidv4 } from 'uuid';
 import { useModals } from '@mantine/modals';
+import { ChevronLeft, ChevronRight } from 'react-feather';
+import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
 import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MapView from '../CreateSpace/MapView';
 import { tierList } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
+
+const TRANSITION_DURATION = 200;
+const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
 const SkeletonTopWrapper = () => (
   <div className="flex flex-col gap-2">
@@ -31,6 +36,9 @@ const BasicInfo = ({
   const modals = useModals();
   const [readMore, toggle] = useToggle();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
+  const [embla, setEmbla] = useState(null);
+
+  useAnimationOffsetEffect(embla, TRANSITION_DURATION);
 
   const getAllSpacePhotos = useCallback(() => {
     const tempPics = [];
@@ -70,21 +78,35 @@ const BasicInfo = ({
     [inventoryDetails],
   );
 
-  const toggleImagePreviewModal = imgSrc =>
+  const toggleImagePreviewModal = imgIndex =>
     modals.openContextModal('basic', {
       title: 'Preview',
       innerProps: {
         modalBody: (
-          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
-            {imgSrc ? (
-              <Image src={imgSrc} height={580} width={580} alt="preview" />
-            ) : (
-              <Image src={null} height={580} width={580} withPlaceholder />
-            )}
-          </Box>
+          <Carousel
+            align="center"
+            height={400}
+            className="px-3"
+            loop
+            mx="auto"
+            slideGap="lg"
+            controlsOffset="lg"
+            initialSlide={imgIndex}
+            nextControlIcon={<ChevronRight size={40} className="bg-white rounded-full" />}
+            previousControlIcon={<ChevronLeft size={40} className="bg-white rounded-full" />}
+            classNames={{ indicator: 'bg-white-200' }}
+            getEmblaApi={setEmbla}
+          >
+            {previewSpacesPhotos.length &&
+              previewSpacesPhotos.map(item => (
+                <Carousel.Slide>
+                  <Image src={item} height={400} width="100%" alt="preview" fit="contain" />
+                </Carousel.Slide>
+              ))}
+          </Carousel>
         ),
       },
-      ...modalConfig,
+      ...updatedModalConfig,
     });
 
   useEffect(() => {
@@ -111,7 +133,7 @@ const BasicInfo = ({
                       src={src}
                       fit="cover"
                       alt="poster"
-                      onClick={() => toggleImagePreviewModal(src)}
+                      onClick={() => toggleImagePreviewModal(index)}
                     />
                   ),
               )}

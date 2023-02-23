@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^2.9.8",
+    "@mantine/carousel": "^5.10.4",
     "@mantine/core": "^5.4.0",
     "@mantine/dates": "^5.4.0",
     "@mantine/dropzone": "^5.4.0",
@@ -28,6 +29,7 @@
     "classnames": "^2.3.2",
     "dayjs": "^1.11.5",
     "dom-to-pdf": "^0.3.1",
+    "embla-carousel-react": "^7.0.9",
     "google-map-react": "^2.2.0",
     "prop-types": "^15.8.1",
     "random-words": "^1.2.0",
