@@ -625,8 +625,7 @@ const InventoryReport = () => {
                     Inventory Report
                   </Text>
                 </Tabs.Tab>
-                {/* TODO: client dependent */}
-                {/* <Tabs.Tab value="messages">
+                <Tabs.Tab value="messages">
                   <Text size="md" weight="bold">
                     Best Performing Inventory
                   </Text>
@@ -635,7 +634,7 @@ const InventoryReport = () => {
                   <Text size="md" weight="bold">
                     Worst Performing Inventory
                   </Text>
-                </Tabs.Tab> */}
+                </Tabs.Tab>
               </Tabs.List>
 
               <Tabs.Panel value="gallery">
@@ -662,9 +661,7 @@ const InventoryReport = () => {
                 {inventoryStats?.best?.length ? (
                   <Table
                     COLUMNS={performingInventoryColumn}
-                    // TODO: client dependent
-                    // data={inventoryStats?.best || []}
-                    data={[]}
+                    data={inventoryStats?.best || []}
                     showPagination={false}
                   />
                 ) : null}
@@ -678,9 +675,7 @@ const InventoryReport = () => {
                 {inventoryStats?.worst?.length ? (
                   <Table
                     COLUMNS={performingInventoryColumn}
-                    // TODO: client dependent
-                    // data={inventoryStats?.worst || []}
-                    data={[]}
+                    data={inventoryStats?.worst || []}
                     showPagination={false}
                   />
                 ) : null}
