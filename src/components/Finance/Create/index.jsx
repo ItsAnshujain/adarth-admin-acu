@@ -430,8 +430,10 @@ const Create = () => {
                 disabled={
                   isGeneratePurchaseOrderLoading ||
                   isGenerateReleaseOrderLoading ||
-                  isGenerateInvoiceOrderLoading
+                  isGenerateInvoiceOrderLoading ||
+                  !bookingIdFromFinance
                 }
+                // TODO: remove after manual entry api
               >
                 Create
               </Button>
@@ -440,9 +442,9 @@ const Create = () => {
           <div className="pl-5 pr-7 pt-4 pb-8 border-b">
             <div className="grid grid-cols-2 gap-4">
               <Select
-                label={`Booking List ${
-                  !bookingIdFromFinance ? '(Please select a Booking before creating an order)' : ''
-                }`}
+                label="Booking List (Please select a Booking before creating an order)"
+                // TODO: remove after manual entry api
+                withAsterisk={!bookingIdFromFinance}
                 className="w-full"
                 styles={bookingStyles}
                 value={bookingId || bookingIdFromFinance}

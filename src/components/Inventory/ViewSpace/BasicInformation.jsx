@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Button, Text, Image, Skeleton, Badge, BackgroundImage, Center } from '@mantine/core';
+import { Button, Text, Image, Skeleton, Badge, BackgroundImage, Center, Box } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import { v4 as uuidv4 } from 'uuid';
+import { useModals } from '@mantine/modals';
 import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MapView from '../CreateSpace/MapView';
 import { tierList } from '../../../utils';
+import modalConfig from '../../../utils/modalConfig';
 
 const SkeletonTopWrapper = () => (
   <div className="flex flex-col gap-2">
@@ -26,6 +28,7 @@ const BasicInfo = ({
   totalRevenue,
   isInventoryDetailsLoading,
 }) => {
+  const modals = useModals();
   const [readMore, toggle] = useToggle();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
@@ -67,6 +70,23 @@ const BasicInfo = ({
     [inventoryDetails],
   );
 
+  const toggleImagePreviewModal = imgSrc =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
+            {imgSrc ? (
+              <Image src={imgSrc} height={580} width={580} alt="preview" />
+            ) : (
+              <Image src={null} height={580} width={580} withPlaceholder />
+            )}
+          </Box>
+        ),
+      },
+      ...modalConfig,
+    });
+
   useEffect(() => {
     const result = getAllSpacePhotos();
     setPreviewSpacesPhotos(result);
@@ -85,12 +105,13 @@ const BasicInfo = ({
                   index < 4 && (
                     <Image
                       key={uuidv4()}
-                      className="mr-2 mb-4 border-[1px] bg-slate-100"
+                      className="mr-2 mb-4 border-[1px] bg-slate-100 cursor-zoom-in"
                       height={index === 0 ? 300 : 96}
                       width={index === 0 ? '100%' : 112}
                       src={src}
                       fit="cover"
                       alt="poster"
+                      onClick={() => toggleImagePreviewModal(src)}
                     />
                   ),
               )}
