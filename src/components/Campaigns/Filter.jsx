@@ -180,7 +180,7 @@ const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
                   { label: 'Predefined', value: 'predefined' },
                   { label: 'Customized', value: 'customized' },
                 ].map(item => (
-                  <div className="flex gap-2 mb-2" key={item._id}>
+                  <div className="flex gap-2 mb-2" key={item.value}>
                     <Radio
                       onChange={() => setQuery('type', item.value)}
                       label={item.label}

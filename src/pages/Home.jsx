@@ -14,8 +14,9 @@ import {
 import { Image, Loader } from '@mantine/core';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
+import { v4 as uuidv4 } from 'uuid';
 import AreaHeader from '../components/Home/Header';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
@@ -28,12 +29,18 @@ import TotalCampaignIcon from '../assets/total-campaign.svg';
 import useUserStore from '../store/user.store';
 import { useBookingStats, useFetchBookingRevenue } from '../hooks/booking.hooks';
 import { useInventoryStats } from '../hooks/inventory.hooks';
-import { dateByQuarter, monthsInShort, serialize } from '../utils';
+import { dateByQuarter, daysInAWeek, monthsInShort, serialize } from '../utils';
 import ViewByFilter from '../components/Reports/ViewByFilter';
 
 dayjs.extend(quarterOfYear);
 
 const DATE_FORMAT = 'YYYY-MM-DD';
+
+const timeLegend = {
+  dayOfWeek: 'Days',
+  dayOfMonth: 'Days',
+  month: 'Months',
+};
 
 ChartJS.register(
   CategoryScale,
@@ -62,16 +69,30 @@ const HomePage = () => {
   const userId = useUserStore(state => state.id);
   const user = queryClient.getQueryData(['users-by-id', userId]);
 
-  const [queryByLocation, setQueryByLocation] = useState({
+  const [queryByTime, setQueryByTime] = useState({
     'type': 'month',
     'startDate': dayjs().startOf('year').format(DATE_FORMAT),
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
 
+  const [updatedLineData, setUpdatedLineData] = useState({
+    id: uuidv4(),
+    labels: monthsInShort,
+    datasets: [
+      {
+        label: 'Revenue',
+        data: [],
+        borderColor: '#914EFB',
+        backgroundColor: '#914EFB',
+        cubicInterpolationMode: 'monotone',
+      },
+    ],
+  });
+
   const { data: bookingStats } = useBookingStats('');
   const { data: inventoryStats, isLoading: isInventoryStatsLoading } = useInventoryStats('');
   const { data: bookingRevenue, isLoading: isBookingRevenueLoading } = useFetchBookingRevenue(
-    serialize(queryByLocation),
+    serialize(queryByTime),
   );
   const inventoryHealthStatus = useMemo(
     () => ({
@@ -87,50 +108,69 @@ const HomePage = () => {
     [inventoryStats],
   );
 
-  const getRevenueValues = useMemo(
-    () => bookingRevenue?.map(item => (item?.price ? item.price / 100000 : 0)),
-    [bookingRevenue],
-  );
-
-  const lineData = useMemo(
-    () => ({
-      labels: monthsInShort,
-      datasets: [
-        {
-          label: 'Revenue',
-          data: getRevenueValues,
-          borderColor: '#914EFB',
-          backgroundColor: '#914EFB',
-          cubicInterpolationMode: 'monotone',
-        },
-      ],
-    }),
-    [getRevenueValues],
-  );
-
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
-      setQueryByLocation(prevState => ({
-        ...prevState,
+      setQueryByTime({
+        'type': 'month',
         'startDate': dayjs().startOf('year').format(DATE_FORMAT),
         'endDate': dayjs().endOf('year').format(DATE_FORMAT),
-      }));
+      });
     }
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
-      setQueryByLocation(prevState => ({
+      setQueryByTime(prevState => ({
         ...prevState,
-        'type': viewType,
+        'type':
+          viewType === 'year'
+            ? 'month'
+            : viewType === 'month'
+            ? 'dayOfMonth'
+            : viewType === 'week'
+            ? 'dayOfWeek'
+            : 'month',
         'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
         'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
       }));
     }
     if (viewType === 'quarter') {
-      setQueryByLocation(prevState => ({
-        ...prevState,
+      setQueryByTime({
+        'type': 'month',
         ...dateByQuarter[dayjs().quarter()],
-      }));
+      });
     }
   };
+
+  useEffect(() => {
+    if (bookingRevenue) {
+      const tempData = {
+        labels: monthsInShort,
+        datasets: [
+          {
+            label: 'Revenue',
+            data: [],
+            borderColor: '#914EFB',
+            backgroundColor: '#914EFB',
+            cubicInterpolationMode: 'monotone',
+          },
+        ],
+      };
+      tempData.labels =
+        queryByTime.type === 'dayOfWeek'
+          ? daysInAWeek
+          : queryByTime.type === 'dayOfMonth'
+          ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
+          : monthsInShort;
+
+      tempData.datasets[0].data = Array.from({ length: dayjs().daysInMonth() }, () => 0);
+
+      bookingRevenue?.forEach(item => {
+        if (item._id) {
+          tempData.datasets[0].data[item._id - 1] = item.price / 100000 || 0;
+        }
+      });
+
+      setUpdatedLineData(tempData);
+    }
+  }, [bookingRevenue]);
 
   return (
     <div className="absolute top-0">
@@ -213,8 +253,8 @@ const HomePage = () => {
                     <p className="transform rotate-[-90deg] absolute left-[-28px] top-[40%]">
                       In Lakhs &gt;
                     </p>
-                    <Line height="100" data={lineData} options={options} />
-                    <p className="text-center">Months &gt;</p>
+                    <Line height="100" data={updatedLineData} options={options} key={uuidv4()} />
+                    <p className="text-center">{timeLegend[queryByTime.type]} &gt;</p>
                   </div>
                 )}
               </div>

@@ -39,8 +39,7 @@ export const useForgotPassword = () =>
       },
       onSuccess: () => {
         showNotification({
-          title: 'Request Submitted',
-          message: 'Please check your email for further instructions',
+          title: 'Request Submitted. Please check your email for further instructions',
         });
       },
     },

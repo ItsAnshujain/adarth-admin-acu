@@ -12,7 +12,6 @@ import {
   Legend,
 } from 'chart.js';
 import { v4 as uuidv4 } from 'uuid';
-import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import Header from '../../components/Reports/Header';
@@ -20,7 +19,7 @@ import { useCampaignReport, useCampaignStats } from '../../hooks/campaigns.hooks
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import CampaignStatsContent from '../../components/Reports/Campaign/CampaignStatsContent';
 import CampaignPieContent from '../../components/Reports/Campaign/CampaignPieContent';
-import { monthsInShort } from '../../utils';
+import { dateByQuarter, monthsInShort, serialize } from '../../utils';
 
 dayjs.extend(quarterOfYear);
 
@@ -32,7 +31,12 @@ const options = {
 };
 
 const CampaignReport = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [queryByTime, setQueryByTime] = useState({
+    'type': 'month',
+    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
+    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+  });
+
   const [updatedBarData, setUpdatedBarData] = useState({
     id: uuidv4(),
     labels: monthsInShort,
@@ -60,25 +64,37 @@ const CampaignReport = () => {
     data: report,
     isLoading: isReportLoading,
     isSuccess,
-  } = useCampaignReport(searchParams.toString());
+  } = useCampaignReport(serialize(queryByTime));
 
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
-      searchParams.delete('startDate');
-      searchParams.delete('endDate');
+      setQueryByTime({
+        'type': 'month',
+        'startDate': dayjs().startOf('year').format(DATE_FORMAT),
+        'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+      });
     }
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
-      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
-      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
+      setQueryByTime(prevState => ({
+        ...prevState,
+        'type':
+          viewType === 'year'
+            ? 'month'
+            : viewType === 'month'
+            ? 'dayOfMonth'
+            : viewType === 'week'
+            ? 'dayOfWeek'
+            : 'month',
+        'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
+        'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
+      }));
     }
     if (viewType === 'quarter') {
-      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
-      searchParams.set(
-        'endDate',
-        dayjs(dayjs().format(DATE_FORMAT)).quarter(2).format(DATE_FORMAT),
-      );
+      setQueryByTime({
+        'type': 'month',
+        ...dateByQuarter[dayjs().quarter()],
+      });
     }
-    setSearchParams(searchParams);
   };
 
   const healthStatusData = useMemo(
