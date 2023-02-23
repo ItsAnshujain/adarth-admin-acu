@@ -8,6 +8,7 @@ import {
   fetchBookingsByInventoryId,
   fetchInventory,
   fetchInventoryById,
+  fetchInventoryReportList,
   inventoryReport,
   inventoryStats,
   updateInventory,
@@ -193,6 +194,16 @@ export const useInventoryReport = (query, enabled = true) =>
     ['inventory-report', query],
     async () => {
       const res = await inventoryReport(query);
+      return res?.data;
+    },
+    { enabled },
+  );
+
+export const useFetchInventoryReportList = (query, enabled = true) =>
+  useQuery(
+    ['inventory-report-list', query],
+    async () => {
+      const res = await fetchInventoryReportList(query);
       return res?.data;
     },
     { enabled },

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedState } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ActionIcon, Badge, Box, Image, Loader, Progress } from '@mantine/core';
+import { ActionIcon, Badge, Box, Image, Loader, Progress, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
@@ -91,7 +91,7 @@ const Home = () => {
         }) =>
           useMemo(
             () => (
-              <div className="flex items-center gap-2 ">
+              <div className="flex items-center gap-2">
                 <Box
                   className="bg-white border rounded-md cursor-zoom-in"
                   onClick={() => toggleImagePreviewModal(basicInformation?.spacePhoto)}
@@ -106,9 +106,9 @@ const Home = () => {
                   to={`/inventory/view-details/${_id}`}
                   className="text-black font-medium px-2 max-w-[180px]"
                 >
-                  <span className="overflow-hidden text-ellipsis">
+                  <Text className="overflow-hidden text-ellipsis" lineClamp={1}>
                     {basicInformation?.spaceName}
-                  </span>
+                  </Text>
                 </Link>
                 <Badge
                   className="capitalize"
