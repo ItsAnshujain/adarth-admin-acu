@@ -80,6 +80,7 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false }) => (
             cardSubtext={doc}
             showTrashBtn={false}
             preview
+            fileExtensionType={doc?.aadhaar || doc?.pan}
           />
         </div>
       ))}

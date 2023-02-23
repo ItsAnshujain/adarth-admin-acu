@@ -71,7 +71,7 @@ const Header = ({ title }) => {
                 variant="subtle"
                 color="gray"
                 className={classNames(
-                  'font-medium',
+                  'font-medium mr-4 ml-2',
                   ['/settings'].includes(pathname) ? 'text-purple-450' : '',
                 )}
                 leftIcon={<Image src={SettingsIcon} height={24} width={24} />}
