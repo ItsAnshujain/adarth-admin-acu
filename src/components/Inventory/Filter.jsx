@@ -194,7 +194,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const handleMinPrice = e => {
     setDynamicNumInput(prevState => ({ ...prevState, min: e }));
     searchParams.set('minPrice', e);
-    searchParams.set('maxPrice', searchParams.get('maxPrice') || 10000);
+    searchParams.set('maxPrice', searchParams.get('maxPrice') || 3000000);
   };
   const handleMaxPrice = e => {
     setDynamicNumInput(prevState => ({ ...prevState, max: e }));
@@ -344,7 +344,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                         value={
                           maxPrice && !Number.isNaN(parseInt(maxPrice, 10))
                             ? parseInt(maxPrice, 10)
-                            : 10000
+                            : 3000000
                         }
                         onChange={handleMaxPrice}
                         label="Max"
@@ -355,15 +355,16 @@ const Filter = ({ isOpened, setShowFilter }) => {
                     <RangeSlider
                       onChange={handleSliderChange}
                       min={0}
-                      max={10000}
+                      max={3000000}
                       styles={sliderStyle}
+                      step={1000}
                       value={[
                         minPrice && !Number.isNaN(parseInt(minPrice, 10))
                           ? parseInt(minPrice, 10)
                           : 0,
                         maxPrice && !Number.isNaN(parseInt(maxPrice, 10))
                           ? parseInt(maxPrice, 10)
-                          : 10000,
+                          : 3000000,
                       ]}
                     />
                   </div>
@@ -386,9 +387,6 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Footfall</p>
             </Accordion.Control>
             <Accordion.Panel>
-              {/* <div className="mt-2">
-                {renderDynamicOptionsArr(inititalFilterData.footFall, 'footFall')}
-              </div> */}
               <div className="mt-2">
                 <div className="flex flex-col gap-2 mb-2">
                   <div className="flex justify-between gap-8">

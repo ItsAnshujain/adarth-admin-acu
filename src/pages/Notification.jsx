@@ -36,13 +36,20 @@ const Notifications = () => {
   const { mutate: deleteById, isLoading: isDeleteNotificationByIdLoading } =
     useDeleteNotificationById();
 
-  const handleReadAll = () => readAll();
+  const handleReadAll = () => {
+    readAll();
+  };
   const handleRead = messageId => {
     setActiveButtonId(messageId);
     readById(messageId);
   };
-  const handleClearAll = () => deleteAll();
-  const handleClear = messageId => deleteById(messageId);
+  const handleClearAll = () => {
+    deleteAll();
+  };
+  const handleClear = messageId => {
+    setActiveButtonId(messageId);
+    deleteById(messageId);
+  };
 
   const hasMarkedAllRead = useMemo(() => {
     const result = data?.docs?.every(item => item.isRead);
