@@ -103,12 +103,12 @@ const Spaces = () => {
                 </div>
                 <Link
                   to={`/inventory/view-details/${_id}`}
-                  className="text-black font-medium px-2 max-w-[180px]"
+                  className="text-black font-medium px-2"
                   target="_blank"
                 >
-                  <span className="w-[150px] text-ellipsis overflow-hidden whitespace-nowrap">
+                  <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
                     {spaceName}
-                  </span>
+                  </Text>
                 </Link>
                 <Badge
                   className="capitalize"

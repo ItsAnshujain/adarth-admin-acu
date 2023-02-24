@@ -21,7 +21,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const [statusArr, setStatusArr] = useState([]);
   const [_, setDynamicNumInput] = useState({
     minPrice: 0,
-    maxPrice: 10000,
+    maxPrice: 3000000,
     minPlace: 0,
     maxPlace: 10000,
   });
@@ -81,7 +81,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const handleMinPrice = e => {
     setDynamicNumInput(prevState => ({ ...prevState, minPrice: e }));
     searchParams.set('priceMin', e);
-    searchParams.set('priceMax', searchParams.get('priceMax') || 10000);
+    searchParams.set('priceMax', searchParams.get('priceMax') || 3000000);
   };
   const handleMaxPrice = e => {
     setDynamicNumInput(prevState => ({ ...prevState, maxPrice: e }));
@@ -179,7 +179,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                         value={
                           priceMax && !Number.isNaN(parseInt(priceMax, 10))
                             ? parseInt(priceMax, 10)
-                            : 10000
+                            : 3000000
                         }
                         onChange={handleMaxPrice}
                         label="Max"
@@ -190,7 +190,8 @@ const Filter = ({ isOpened, setShowFilter }) => {
                     <RangeSlider
                       onChange={handleSliderChange}
                       min={0}
-                      max={10000}
+                      max={3000000}
+                      step={1000}
                       styles={sliderStyle}
                       value={[
                         priceMin && !Number.isNaN(parseInt(priceMin, 10))
@@ -198,7 +199,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
                           : 0,
                         priceMax && !Number.isNaN(parseInt(priceMax, 10))
                           ? parseInt(priceMax, 10)
-                          : 10000,
+                          : 3000000,
                       ]}
                     />
                   </div>

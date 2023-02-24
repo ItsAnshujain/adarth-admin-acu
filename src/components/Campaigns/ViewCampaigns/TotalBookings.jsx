@@ -70,7 +70,15 @@ const TotalBookings = ({ campaignId }) => {
           row: {
             original: { client },
           },
-        }) => useMemo(() => <p>{client?.name}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                {client?.name}
+              </Text>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PRINTING STATUS',

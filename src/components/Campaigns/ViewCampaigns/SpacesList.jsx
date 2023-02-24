@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Text, Button, Image, Box, Badge, Loader } from '@mantine/core';
 import { Plus } from 'react-feather';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import RowsPerPage from '../../RowsPerPage';
@@ -31,11 +31,6 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
-
-  const handleInventoryDetails = itemId =>
-    navigate(`/inventory/view-details/${itemId}`, {
-      replace: true,
-    });
 
   const toggleImagePreviewModal = imgSrc =>
     modals.openContextModal('basic', {
@@ -92,14 +87,11 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
                 </Box>
-                <Button
-                  className="text-black font-medium px-2 max-w-[180px]"
-                  onClick={() => handleInventoryDetails(_id)}
-                >
-                  <span className="overflow-hidden text-ellipsis">
+                <Link to={`/inventory/view-details/${_id}`} className="text-black font-medium px-2">
+                  <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
                     {basicInformation?.spaceName}
-                  </span>
-                </Button>
+                  </Text>
+                </Link>
                 <Badge
                   className="capitalize"
                   variant="filled"
