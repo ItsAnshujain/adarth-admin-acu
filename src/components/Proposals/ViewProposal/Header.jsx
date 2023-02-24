@@ -2,6 +2,8 @@ import { Button } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { ArrowLeft } from 'react-feather';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useGenerateProposalPdf } from '../../../hooks/proposal.hooks';
+import { downloadPdf } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
 import ShareContent from './ShareContent';
 
@@ -10,15 +12,21 @@ const Header = () => {
   const { id } = useParams();
   const handleBack = () => navigate(-1);
   const modals = useModals();
+  const { mutateAsync: generatePdf, isLoading } = useGenerateProposalPdf();
 
   const toggleShareOptions = () => {
     modals.openContextModal('basic', {
       title: 'Share Option',
       innerProps: {
-        modalBody: <ShareContent />,
+        modalBody: <ShareContent id={id} />,
       },
       ...modalConfig,
     });
+  };
+
+  const onClickDownloadPdf = async () => {
+    const res = await generatePdf(id);
+    downloadPdf(res?.link);
   };
 
   return (
@@ -27,7 +35,13 @@ const Header = () => {
         <ArrowLeft className="cursor-pointer" onClick={handleBack} />
       </div>
       <div className="flex gap-4">
-        <Button className="border-black text-black radius-md">Download PDF</Button>
+        <Button
+          className="border-black text-black radius-md"
+          onClick={onClickDownloadPdf}
+          loading={isLoading}
+        >
+          Download PDF
+        </Button>
         <div className="relative">
           <Button className="bg-black" onClick={toggleShareOptions}>
             Share
