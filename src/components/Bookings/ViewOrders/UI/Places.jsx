@@ -30,11 +30,25 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const { mutate: update, isLoading: isUpdating } = useUpdateCampaignMedia();
   const printingStatusData = useFetchMasters(
-    serialize({ type: 'printing_status', parentId: null, page: 1, limit: 100 }),
+    serialize({
+      type: 'printing_status',
+      parentId: null,
+      page: 1,
+      limit: 100,
+      sortBy: 'name',
+      sortOrder: 'desc',
+    }),
   );
 
   const mountStatusData = useFetchMasters(
-    serialize({ type: 'mounting_status', parentId: null, page: 1, limit: 100 }),
+    serialize({
+      type: 'mounting_status',
+      parentId: null,
+      page: 1,
+      limit: 100,
+      sortBy: 'name',
+      sortOrder: 'desc',
+    }),
   );
 
   const { mutate: updateCampaignStatus, isLoading: isUpdateCampaignStatusLoading } =

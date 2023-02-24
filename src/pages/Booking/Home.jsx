@@ -39,10 +39,24 @@ const Bookings = () => {
   );
   const { data: bookingStats, isLoading: isBookingStatsLoading } = useBookingStats('');
   const { data: campaignStatus } = useFetchMasters(
-    serialize({ type: 'booking_campaign_status', parentId: null, page: 1, limit: 100 }),
+    serialize({
+      type: 'booking_campaign_status',
+      parentId: null,
+      page: 1,
+      limit: 100,
+      sortBy: 'name',
+      sortOrder: 'desc',
+    }),
   );
   const { data: paymentStatus } = useFetchMasters(
-    serialize({ type: 'payment_status', parentId: null, page: 1, limit: 100 }),
+    serialize({
+      type: 'payment_status',
+      parentId: null,
+      page: 1,
+      limit: 100,
+      sortBy: 'name',
+      sortOrder: 'desc',
+    }),
   );
 
   const { mutateAsync: updateBooking } = useUpdateBookingStatus();

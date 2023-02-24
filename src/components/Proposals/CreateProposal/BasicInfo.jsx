@@ -84,11 +84,11 @@ const BasicInfo = ({ proposalId }) => {
         Terms and Conditions:
       </Text>
       <ul className="list-disc px-5">
-        <li>Printing charges are additional</li>
-        <li>Mounting charges are additional</li>
-        <li>Booking amount to be paid at the time of adsite blocking</li>
-        <li>Payment conditions to be adhered at the time of booking</li>
-        <li>GST is applicable as per government rules</li>
+        <li>Printing charges are additional.</li>
+        <li>Mounting charges are additional.</li>
+        <li>Booking amount to be paid at the time of adsite blocking.</li>
+        <li>Payment conditions to be adhered at the time of booking.</li>
+        <li>GST is applicable as per government rules.</li>
       </ul>
     </div>
   );

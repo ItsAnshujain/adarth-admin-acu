@@ -13,11 +13,19 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { useToggle } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'react-feather';
+import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
+import { useModals } from '@mantine/modals';
+import classNames from 'classnames';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
 import Places from './UI/Places';
 import NoData from '../../shared/NoData';
+import modalConfig from '../../../utils/modalConfig';
+
+const TRANSITION_DURATION = 200;
+const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
 const defaultProps = {
   center: {
@@ -41,11 +49,46 @@ const SkeletonTopWrapper = () => (
 const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading }) => {
+  const modals = useModals();
   const [readMore, toggle] = useToggle();
   const [searchParams, setSearchParams] = useSearchParams();
   const [mapInstance, setMapInstance] = useState(null);
   const [updatedPlace, setUpdatedPlace] = useState();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
+  const [embla, setEmbla] = useState(null);
+
+  useAnimationOffsetEffect(embla, TRANSITION_DURATION);
+
+  const toggleImagePreviewModal = imgIndex =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <Carousel
+            align="center"
+            height={400}
+            className="px-3"
+            loop
+            mx="auto"
+            slideGap="lg"
+            controlsOffset="lg"
+            initialSlide={imgIndex}
+            nextControlIcon={<ChevronRight size={40} className="bg-white rounded-full" />}
+            previousControlIcon={<ChevronLeft size={40} className="bg-white rounded-full" />}
+            classNames={{ indicator: 'bg-white-200' }}
+            getEmblaApi={setEmbla}
+          >
+            {previewSpacesPhotos.length &&
+              previewSpacesPhotos.map(item => (
+                <Carousel.Slide>
+                  <Image src={item} height={400} width="100%" alt="preview" fit="contain" />
+                </Carousel.Slide>
+              ))}
+          </Carousel>
+        ),
+      },
+      ...updatedModalConfig,
+    });
 
   const getTotalPrice = useMemo(() => {
     const totalPrice = spacesData?.docs?.reduce(
@@ -132,7 +175,8 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
                       src={src}
                       fit="cover"
                       alt="poster"
-                      className="mr-2 mb-4 border-[1px] border-gray bg-slate-100"
+                      className="mr-2 mb-4 border-[1px] border-gray bg-slate-100 cursor-zoom-in"
+                      onClick={() => toggleImagePreviewModal(index)}
                     />
                   ),
               )}
@@ -151,37 +195,38 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
           </div>
         )}
       </div>
-      <div>
-        <div className="flex-1 pr-7 max-w-1/2">
-          <p className="text-lg font-bold">{campaignData.name || 'NA'}</p>
-          <div>
-            <p className="text-slate-400 font-light text-[14px]">
-              {campaignData?.description?.split(' ')?.length > 4
-                ? readMore
-                  ? `${campaignData?.description?.split(' ')?.slice(0, 3).join(' ')}...`
-                  : campaignData?.description
-                : campaignData.description || <NoData type="na" />}
-              {campaignData?.description?.split(' ')?.length > 4 ? (
-                <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
-                  {readMore ? 'Read more' : 'Read less'}
-                </Button>
-              ) : null}
-            </p>
-            <div className="flex gap-3 items-center">
-              <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
-
-              <Badge
-                className="text-purple-450 bg-purple-100 capitalize"
-                size="lg"
-                variant="filled"
-                radius="md"
-              >
-                {`${getTotalImpressions || 0} + Total Impressions`}
-              </Badge>
+      {!isCampaignDataLoading ? (
+        <div className={classNames(previewSpacesPhotos?.length ? 'col-span-1' : 'col-span-2')}>
+          <div className="flex-1 pr-7 max-w-1/2">
+            <p className="text-lg font-bold">{campaignData.name || 'NA'}</p>
+            <div>
+              <p className="text-slate-400 font-light text-[14px]">
+                {campaignData?.description?.split(' ')?.length > 4
+                  ? readMore
+                    ? `${campaignData?.description?.split(' ')?.slice(0, 3).join(' ')}...`
+                    : campaignData?.description
+                  : campaignData.description || <NoData type="na" />}
+                {campaignData?.description?.split(' ')?.length > 4 ? (
+                  <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
+                    {readMore ? 'Read more' : 'Read less'}
+                  </Button>
+                ) : null}
+              </p>
+              <div className="flex gap-3 items-center">
+                <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
+                <Badge
+                  className="text-purple-450 bg-purple-100 capitalize"
+                  size="lg"
+                  variant="filled"
+                  radius="md"
+                >
+                  {`${getTotalImpressions || 0} + Total Impressions`}
+                </Badge>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : null}
 
       <div className="col-span-2 my-5">
         <div className="pr-7">
