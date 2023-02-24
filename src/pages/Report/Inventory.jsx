@@ -18,10 +18,11 @@ import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import DomToPdf from 'dom-to-pdf';
+import { useDebouncedState } from '@mantine/hooks';
 import Header from '../../components/Reports/Header';
 import Table from '../../components/Table/Table';
-import RowsPerPage from '../../components/RowsPerPage';
-import Search from '../../components/Search';
+// import RowsPerPage from '../../components/RowsPerPage';
+// import Search from '../../components/Search';
 import BestIcon from '../../assets/best-performing-inventory.svg';
 import WorstIcon from '../../assets/worst-performing-inventory.svg';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -33,7 +34,7 @@ import {
 } from '../../hooks/inventory.hooks';
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import InventoryStatsContent from '../../components/Reports/Inventory/InventoryStatsContent';
-import SubHeader from '../../components/Reports/Inventory/SubHeader';
+// import SubHeader from '../../components/Reports/Inventory/SubHeader';
 import { categoryColors, monthsInShort, serialize } from '../../utils';
 
 dayjs.extend(quarterOfYear);
@@ -61,16 +62,19 @@ const config = {
   options: { responsive: true },
 };
 
-const query = {
-  'limit': 10,
-  'page': 1,
-  'sortOrder': 'desc',
-  'sortBy': 'basicInformation.spaceName',
-};
 const InventoryReport = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const chartRef = useRef(null);
-  const [search, setSearch] = useState('');
+  // eslint-disable-next-line no-unused-vars
+  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [inventoryQuery, setInventoryQuery] = useState({
+    'limit': 10,
+    'page': 1,
+    'sortOrder': 'desc',
+    'sortBy': 'basicInformation.spaceName',
+  });
+
+  // eslint-disable-next-line no-unused-vars
   const [count, setCount] = useState('20');
   const [areaData, setAreaData] = useState({
     id: uuidv4(),
@@ -92,7 +96,7 @@ const InventoryReport = () => {
     isSuccess,
   } = useInventoryReport('');
   const { data: inventoryReportList, isLoading: inventoryReportListLoading } =
-    useFetchInventoryReportList(serialize(query));
+    useFetchInventoryReportList(serialize(inventoryQuery));
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
@@ -129,6 +133,8 @@ const InventoryReport = () => {
     [inventoryStats],
   );
 
+  // TODO: kept it for demo purpose will remove later
+  // disabled sortBy for now
   const inventoryColumn = [
     {
       Header: '#',
@@ -148,6 +154,7 @@ const InventoryReport = () => {
     {
       Header: 'SPACE NAME & PHOTO',
       accessor: 'basicInformation.spaceName',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { _id, basicInformation, isUnderMaintenance },
@@ -186,6 +193,7 @@ const InventoryReport = () => {
     {
       Header: 'MEDIA OWNER NAME',
       accessor: 'basicInformation.mediaOwner.name',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { basicInformation },
@@ -195,6 +203,7 @@ const InventoryReport = () => {
     {
       Header: 'CATEGORY',
       accessor: 'basicInformation.category.name',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { basicInformation },
@@ -221,6 +230,7 @@ const InventoryReport = () => {
     {
       Header: 'TOTAL REVENUE',
       accessor: 'revenue',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { revenue },
@@ -230,6 +240,7 @@ const InventoryReport = () => {
     {
       Header: 'TOTAL BOOKING',
       accessor: 'totalBookings',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { totalBookings },
@@ -239,6 +250,7 @@ const InventoryReport = () => {
     {
       Header: 'TOTAL OPERATIONAL COST',
       accessor: 'operationalCost',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { operationalCost },
@@ -249,6 +261,7 @@ const InventoryReport = () => {
     {
       Header: 'DIMENSION',
       accessor: 'specifications.size.min',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { specifications },
@@ -266,6 +279,7 @@ const InventoryReport = () => {
     {
       Header: 'IMPRESSION',
       accessor: 'specifications.impressions.max',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { specifications },
@@ -275,6 +289,7 @@ const InventoryReport = () => {
     {
       Header: 'HEALTH STATUS',
       accessor: 'specifications.health',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { specifications },
@@ -297,6 +312,7 @@ const InventoryReport = () => {
     {
       Header: 'LOCATION',
       accessor: 'location.city',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { location },
@@ -306,6 +322,7 @@ const InventoryReport = () => {
     {
       Header: 'PRICING',
       accessor: 'basicInformation.price',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { basicInformation },
@@ -534,6 +551,25 @@ const InventoryReport = () => {
     DomToPdf(element, option);
   };
 
+  const handleSearch = () => {
+    setInventoryQuery(prevState => ({ ...prevState, search: searchInput, page: 1 }));
+    // searchParams.set('search', searchInput);
+    // searchParams.set('page', 1);
+    // setSearchParams(searchParams);
+  };
+
+  useEffect(() => {
+    handleSearch();
+    if (searchInput === '') {
+      setInventoryQuery({
+        'limit': 10,
+        'page': 1,
+        'sortOrder': 'desc',
+        'sortBy': 'basicInformation.spaceName',
+      });
+    }
+  }, [searchInput]);
+
   useEffect(() => {
     const chart = chartRef.current;
 
@@ -637,12 +673,13 @@ const InventoryReport = () => {
                 </Tabs.Tab>
               </Tabs.List>
 
-              <Tabs.Panel value="gallery">
-                <SubHeader />
+              <Tabs.Panel value="gallery" pt="lg">
+                {/* TODO: kept it for demo purpose will remove later */}
+                {/* <SubHeader />
                 <div className="flex justify-between h-20 items-center pr-7">
                   <RowsPerPage setCount={setCount} count={count} />
-                  <Search search={search} setSearch={setSearch} />
-                </div>
+                  <Search search={searchInput} setSearch={setSearchInput} />
+                </div> */}
                 {inventoryReportList?.docs?.length === 0 && !inventoryReportListLoading ? (
                   <div className="w-full min-h-[400px] flex justify-center items-center">
                     <p className="text-xl">No records found</p>

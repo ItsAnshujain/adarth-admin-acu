@@ -59,6 +59,27 @@ const CampaignReport = () => {
     ],
   });
 
+  const barData = {
+    labels: monthsInShort,
+    datasets: [
+      {
+        label: 'Ongoing',
+        data: [10, 200, 300, 840, 90, 90, 10, 200, 300, 840, 90, 90],
+        backgroundColor: '#FF900E',
+      },
+      {
+        label: 'Completed',
+        data: [150, 200, 300, 400, 50, 60, 150, 200, 300, 400, 50, 60],
+        backgroundColor: '#914EFB',
+      },
+      {
+        label: 'Upcoming',
+        data: [220, 300, 30, 100, 550, 60, 220, 280, 30, 100, 550, 60],
+        backgroundColor: '#28B446',
+      },
+    ],
+  };
+
   const { data: stats, isLoading: isStatsLoading } = useCampaignStats();
   const {
     data: report,
@@ -115,7 +136,9 @@ const CampaignReport = () => {
     () => ({
       datasets: [
         {
-          data: [stats?.printCompleted ?? 0, stats?.printOngoing ?? 0],
+          // TODO: kept it for demo purpose will remove later
+          // data: [stats?.printCompleted ?? 0, stats?.printOngoing ?? 0],
+          data: [0 ?? 0, 1 ?? 0],
           backgroundColor: ['#914EFB', '#FF900E'],
           borderColor: ['#914EFB', '#FF900E'],
           borderWidth: 1,
@@ -129,7 +152,9 @@ const CampaignReport = () => {
     () => ({
       datasets: [
         {
-          data: [stats?.mountCompleted ?? 0, stats?.mountOngoing ?? 0],
+          // TODO: kept it for demo purpose will remove later
+          // data: [stats?.mountCompleted ?? 0, stats?.mountOngoing ?? 0],
+          data: [2 ?? 0, 3 ?? 0],
           backgroundColor: ['#914EFB', '#FF900E'],
           borderColor: ['#914EFB', '#FF900E'],
           borderWidth: 1,
@@ -196,7 +221,7 @@ const CampaignReport = () => {
                 {isReportLoading ? (
                   <Loader className="mx-auto" mt={80} />
                 ) : (
-                  <Bar options={options} data={updatedBarData} key={updatedBarData.id} />
+                  <Bar options={options} data={barData} key={updatedBarData.id} />
                 )}
               </div>
             </div>
