@@ -132,6 +132,7 @@ const releaseSchema = yup.object({
   phone: yup
     .string()
     .trim()
+    // .test('valid', 'Must be a valid number', val => validator.isMobilePhone(val, 'en-IN'))
     .matches(mobileRegexMatch, { message: 'Must be a valid number', excludeEmptyString: true })
     .notRequired(),
   mobile: yup
@@ -366,7 +367,7 @@ const Create = () => {
         downloadPdf(temporaryPurchaseOrderPdfLink);
       }
     } else if (type === 'release') {
-      if (!data?.phone?.includes('+91')) {
+      if (data?.phone !== undefined && !data?.phone?.includes('+91')) {
         data.phone = `+91${data?.phone}`;
       }
       if (!data?.mobile?.includes('+91')) {
