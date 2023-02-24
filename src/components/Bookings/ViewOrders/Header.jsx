@@ -4,6 +4,11 @@ import { ArrowLeft } from 'react-feather';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Menu from '../../Finance/Menu';
+import {
+  temporaryInvoicePdfLink,
+  temporaryPurchaseOrderPdfLink,
+  temporaryReleaseOrderPdfLink,
+} from '../../../utils';
 
 const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
   const navigate = useNavigate();
@@ -98,7 +103,8 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
           <>
             <div>
               <a
-                href={bookingData?.purchaseOrder}
+                href={temporaryPurchaseOrderPdfLink}
+                // TODO: kept it for demo purpose will remove later
                 className={classNames(
                   bookingData?.purchaseOrder
                     ? 'text-white cursor-pointer bg-black'
@@ -114,7 +120,8 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
             </div>
             <div>
               <a
-                href={bookingData?.releaseOrder}
+                href={temporaryReleaseOrderPdfLink}
+                // TODO: kept it for demo purpose will remove later
                 className={classNames(
                   bookingData?.releaseOrder
                     ? 'text-white cursor-pointer bg-black'
@@ -130,7 +137,8 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
             </div>
             <div>
               <a
-                href={bookingData?.invoice}
+                href={temporaryInvoicePdfLink}
+                // TODO: kept it for demo purpose will remove later
                 className={classNames(
                   bookingData?.invoice
                     ? 'text-white cursor-pointer bg-black'
