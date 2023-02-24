@@ -2,7 +2,7 @@ import { useDebouncedState } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Progress, Loader, Button, Select } from '@mantine/core';
+import { Progress, Loader, Button, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import Table from '../../components/Table/Table';
@@ -106,7 +106,15 @@ const Bookings = () => {
           row: {
             original: { client },
           },
-        }) => useMemo(() => <p>{client?.name}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                {client?.name}
+              </Text>
+            ),
+            [],
+          ),
       },
       {
         Header: 'ORDER DATE',
@@ -131,11 +139,10 @@ const Bookings = () => {
         }) =>
           useMemo(
             () => (
-              <Link
-                to={`/bookings/view-details/${_id}`}
-                className="text-black font-medium px-2 max-w-[180px]"
-              >
-                <span className="overflow-hidden text-ellipsis">{campaign?.name || '-'}</span>
+              <Link to={`/bookings/view-details/${_id}`} className="text-black font-medium">
+                <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                  {campaign?.name || '-'}
+                </Text>
               </Link>
             ),
             [],

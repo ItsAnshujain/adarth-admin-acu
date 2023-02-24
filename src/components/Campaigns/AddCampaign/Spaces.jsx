@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Image, Loader, Progress } from '@mantine/core';
+import { Badge, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
@@ -86,12 +86,12 @@ const SelectSpace = () => {
                   />
                   <Link
                     to={`/inventory/view-details/${_id}`}
-                    className="text-black font-medium px-2 max-w-[180px]"
+                    className="text-black font-medium"
                     target="_blank"
                   >
-                    <span className="w-[150px] text-ellipsis overflow-hidden whitespace-nowrap">
+                    <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
                       {spaceName}
-                    </span>
+                    </Text>
                   </Link>
                 </div>
                 <div className="w-fit">

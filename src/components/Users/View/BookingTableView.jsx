@@ -1,10 +1,10 @@
 import { useDebouncedState } from '@mantine/hooks';
 import { useEffect, useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Button, Loader, Progress, Select } from '@mantine/core';
+import { Button, Loader, Progress, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { downloadAll, checkCampaignStats, serialize } from '../../../utils';
 import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
@@ -34,7 +34,6 @@ const sortOrders = order => {
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const BookingTableView = ({ data: bookingData, isLoading }) => {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
 
@@ -82,11 +81,6 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
     [campaignStatus],
   );
 
-  const handleBookingDetails = itemId =>
-    navigate(`/bookings/view-details/${itemId}`, {
-      replace: true,
-    });
-
   const column = useMemo(
     () => [
       {
@@ -133,12 +127,11 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         }) =>
           useMemo(
             () => (
-              <Button
-                className="text-black font-medium px-2 max-w-[180px]"
-                onClick={() => handleBookingDetails(_id)}
-              >
-                <span className="overflow-hidden text-ellipsis">{campaign?.name || '-'}</span>
-              </Button>
+              <Link to={`/bookings/view-details/${_id}`} className="text-black font-medium">
+                <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                  {campaign?.name || '-'}
+                </Text>
+              </Link>
             ),
             [],
           ),

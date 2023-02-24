@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
-import { Loader, Select } from '@mantine/core';
+import { Loader, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
 import AreaHeader from '../../components/Proposals/Header';
@@ -86,11 +86,10 @@ const Proposals = () => {
         }) =>
           useMemo(
             () => (
-              <Link
-                to={`view-details/${_id}`}
-                className="text-black font-medium max-w-[250px] capitalize"
-              >
-                {name}
+              <Link to={`view-details/${_id}`} className="text-black font-medium">
+                <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                  {name || '-'}
+                </Text>
               </Link>
             ),
             [],

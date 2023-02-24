@@ -102,11 +102,8 @@ const Home = () => {
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
                 </Box>
-                <Link
-                  to={`/inventory/view-details/${_id}`}
-                  className="text-black font-medium px-2 max-w-[180px]"
-                >
-                  <Text className="overflow-hidden text-ellipsis" lineClamp={1}>
+                <Link to={`/inventory/view-details/${_id}`} className="text-black font-medium px-2">
+                  <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
                     {basicInformation?.spaceName}
                   </Text>
                 </Link>

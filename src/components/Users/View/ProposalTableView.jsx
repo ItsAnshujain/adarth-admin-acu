@@ -1,8 +1,8 @@
-import { Button, Loader, Select } from '@mantine/core';
+import { Loader, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { ChevronDown } from 'react-feather';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { useUpdateProposal } from '../../../hooks/proposal.hooks';
 import { serialize } from '../../../utils';
@@ -79,7 +79,11 @@ const ProposalTableView = ({ data, isLoading }) => {
         }) =>
           useMemo(
             () => (
-              <Button className="text-black font-medium max-w-[250px] capitalize">{name}</Button>
+              <Link to={`/bookings/view-details/${_id}`} className="text-black font-medium">
+                <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                  {name || '-'}
+                </Text>
+              </Link>
             ),
             [],
           ),

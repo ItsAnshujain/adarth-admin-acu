@@ -65,7 +65,15 @@ const Booking = ({ inventoryId }) => {
           row: {
             original: { client },
           },
-        }) => useMemo(() => <p>{client?.name}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                {client?.name}
+              </Text>
+            ),
+            [],
+          ),
       },
       {
         Header: 'CAMPAIGN NAME',
@@ -77,11 +85,10 @@ const Booking = ({ inventoryId }) => {
         }) =>
           useMemo(
             () => (
-              <Link
-                to={`/bookings/view-details/${_id}`}
-                className="text-black font-medium px-2 max-w-[180px]"
-              >
-                <span className="overflow-hidden text-ellipsis">{campaignName || '-'}</span>
+              <Link to={`/bookings/view-details/${_id}`} className="text-black font-medium">
+                <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                  {campaignName || '-'}
+                </Text>
               </Link>
             ),
             [],
