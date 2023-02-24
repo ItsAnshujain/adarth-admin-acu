@@ -21,6 +21,9 @@ import {
   mobileRegexMatch,
   onlyNumbersMatch,
   serialize,
+  temporaryInvoicePdfLink,
+  temporaryPurchaseOrderPdfLink,
+  temporaryReleaseOrderPdfLink,
 } from '../../../utils';
 
 const bookingStyles = {
@@ -357,8 +360,11 @@ const Create = () => {
         { id: bookingId || bookingIdFromFinance, data },
         { onSuccess: () => redirectToHome() },
       );
-      if (purchaseOrderPdf?.generatedPdf?.Location)
-        downloadPdf(purchaseOrderPdf.generatedPdf.Location);
+      if (purchaseOrderPdf?.generatedPdf?.Location) {
+        // TODO: kept it for demo purpose will remove later
+        // downloadPdf(purchaseOrderPdf.generatedPdf.Location);
+        downloadPdf(temporaryPurchaseOrderPdfLink);
+      }
     } else if (type === 'release') {
       if (!data?.phone?.includes('+91')) {
         data.phone = `+91${data?.phone}`;
@@ -370,8 +376,11 @@ const Create = () => {
         { id: bookingId || bookingIdFromFinance, data },
         { onSuccess: () => redirectToHome() },
       );
-      if (releaseOrderPdf?.generatedPdf?.Location)
-        downloadPdf(releaseOrderPdf.generatedPdf.Location);
+      if (releaseOrderPdf?.generatedPdf?.Location) {
+        // TODO: kept it for demo purpose will remove later
+        // downloadPdf(releaseOrderPdf.generatedPdf.Location);
+        downloadPdf(temporaryReleaseOrderPdfLink);
+      }
     } else if (type === 'invoice') {
       if (!data?.supplierPhone?.includes('+91')) {
         data.supplierPhone = `+91${data?.supplierPhone}`;
@@ -389,7 +398,11 @@ const Create = () => {
         { id: bookingId || bookingIdFromFinance, data },
         { onSuccess: () => redirectToHome() },
       );
-      if (invoicePdf?.generatedPdf?.Location) downloadPdf(invoicePdf.generatedPdf.Location);
+      if (invoicePdf?.generatedPdf?.Location) {
+        // TODO: kept it for demo purpose will remove later
+        // downloadPdf(invoicePdf.generatedPdf.Location);
+        downloadPdf(temporaryInvoicePdfLink);
+      }
     }
     form.reset();
   };

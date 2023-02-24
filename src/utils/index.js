@@ -277,3 +277,11 @@ export const checkCampaignStats = (currentStatus, item) => {
 
   return campaignStats[currentStatus?.campaignStatus]?.includes(item);
 };
+
+// TODO: kept it for demo purpose will remove later
+export const temporaryPurchaseOrderPdfLink =
+  'https://adarth-assets-dev.s3.ap-south-1.amazonaws.com/4e21f0ce-1cee-45fe-8bf4-c1a8ad49c20a-purchase_order.pdf';
+export const temporaryReleaseOrderPdfLink =
+  'https://adarth-assets-dev.s3.ap-south-1.amazonaws.com/3e0b897e-db99-41c3-9183-22ec68a9c5f9-release_order.pdf';
+export const temporaryInvoicePdfLink =
+  'https://adarth-assets-dev.s3.ap-south-1.amazonaws.com/24819b90-5868-4d85-8b53-aed4ec97a9db-invoice.pdf';
