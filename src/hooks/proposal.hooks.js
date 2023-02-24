@@ -5,6 +5,8 @@ import {
   deleteProposal,
   fetchProposalById,
   fetchProposals,
+  generateProposalPdf,
+  shareProposal,
   updateProposal,
 } from '../requests/proposal.requests';
 
@@ -110,3 +112,35 @@ export const useDeleteProposal = () => {
     },
   );
 };
+
+export const useShareProposal = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ({ id, data }) => {
+      const res = await shareProposal(id, data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['proposals-by-id']);
+        showNotification({
+          title: 'Proposal has been shared successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
+
+export const useGenerateProposalPdf = () =>
+  useMutation(async id => {
+    const res = await generateProposalPdf(id);
+    return res?.data;
+  });
