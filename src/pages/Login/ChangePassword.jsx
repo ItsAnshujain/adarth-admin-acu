@@ -90,7 +90,7 @@ const Home = () => {
 
   return (
     <>
-      <div className="my-auto w-[31%]">
+      <div className="flex h-screen w-full flex-col justify-center px-5 md:w-[31%] md:px-0">
         <p className="text-2xl font-bold">Change Password</p>
         <FormProvider form={form}>
           <form onSubmit={form.onSubmit(onSubmitHandler)}>

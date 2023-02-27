@@ -45,6 +45,7 @@ const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposal
                 backgroundColor: index + 1 <= formStep ? '#4B0DAF' : 'white',
                 color: index + 1 <= formStep ? 'white' : 'black',
               },
+              label: { cursor: 'default' },
             })}
             checked
             variant="filled"
