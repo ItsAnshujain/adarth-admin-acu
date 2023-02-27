@@ -33,7 +33,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="my-auto w-[31%]">
+    <div className="flex h-screen w-full flex-col justify-center px-5 md:w-[31%] md:px-0">
       <p className="mb-1 text-2xl font-bold">Forgot Password</p>
       <p className="mb-4">Please use registered email id</p>
       <FormProvider form={form}>

@@ -181,7 +181,7 @@ const HomePage = () => {
           <AreaHeader text={`Hello, ${user?.name || 'User'}`} />
           <div className="pr-7 pl-5 mt-5 mb-10">
             <div className="grid grid-rows-2 mb-8 gap-y-4">
-              <div className="grid grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                 <div className="border rounded p-8 flex-1">
                   <Image
                     src={TotalCampaignIcon}
@@ -216,7 +216,7 @@ const HomePage = () => {
                   <p className="font-bold">{bookingStats?.Upcoming || 0}</p>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                 <div className="border rounded p-8 flex-1">
                   <Image
                     src={CompletedCampaignIcon}
@@ -240,8 +240,8 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-            <div className="flex items-start gap-4">
-              <div className="w-[68%]">
+            <div className="flex flex-col items-start gap-4 md:flex-row">
+              <div className="w-full md:w-[68%]">
                 <div className="flex justify-between items-center">
                   <p className="font-bold">Revenue Graph</p>
                   <ViewByFilter handleViewBy={handleViewBy} />

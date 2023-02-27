@@ -33,6 +33,7 @@ const Header = ({ setFormStep, formStep, handlePublish, submitRef, disabled, loa
                 backgroundColor: index + 2 <= formStep ? '#4B0DAF' : 'white',
                 color: index + 2 <= formStep ? 'white' : 'black',
               },
+              label: { cursor: 'default' },
             })}
             checked
             variant="filled"

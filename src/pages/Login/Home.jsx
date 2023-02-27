@@ -64,7 +64,7 @@ const Home = () => {
   });
 
   return (
-    <div className="my-auto w-[31%]">
+    <div className="flex h-screen w-full flex-col justify-center px-5 md:w-[31%] md:px-0">
       <Title className="mb-1">Login to Adarth</Title>
       <Text>Please use registered email for login</Text>
       <FormProvider form={form}>

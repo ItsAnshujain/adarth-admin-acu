@@ -4,12 +4,14 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Loader, NativeSelect } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
+import shallow from 'zustand/shallow';
 import completed from '../../../assets/completed.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { serialize } from '../../../utils';
 import NoData from '../../shared/NoData';
 import { useFetchUsers } from '../../../hooks/users.hooks';
 import { useUpdateCampaign } from '../../../hooks/campaigns.hooks';
+import useTokenIdStore from '../../../store/user.store';
 
 const styles = {
   label: {
@@ -42,6 +44,8 @@ const config = {
 
 const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bookingId }) => {
   const queryClient = useQueryClient();
+  const userId = useTokenIdStore(state => state.id, shallow);
+  const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
 
   const { data: userData, isLoading: isLoadingUserData } = useFetchUsers(
     serialize({
@@ -49,7 +53,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
       limit: 100,
       sortOrder: 'asc',
       sortBy: 'createdAt',
-      filter: 'all',
+      filter: userCachedData?.role === 'admin' ? 'all' : 'team',
     }),
   );
 
