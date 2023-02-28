@@ -35,6 +35,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
   const handleNavigationByRoles = () => {
     searchParams.set('role', roles);
+    searchParams.set('page', 1);
     setSearchParams(searchParams);
   };
   const handleResetParams = () => {

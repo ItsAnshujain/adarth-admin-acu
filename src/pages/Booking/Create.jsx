@@ -28,6 +28,7 @@ const initialValues = {
   campaignName: '',
   description: '',
   place: [],
+  // TODO: send total price
 };
 
 const basicInformationSchema = yup.object({

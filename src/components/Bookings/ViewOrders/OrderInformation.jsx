@@ -86,7 +86,13 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
 
   const inchargeList = useMemo(() => {
     let arr = [{ label: 'Select', value: '' }];
-
+    if (bookingData?.campaign?.incharge?.[0]?._id === userCachedData?._id) {
+      arr = [
+        { label: userCachedData?.name, value: userCachedData?._id },
+        ...userData.docs.map(item => ({ label: item?.name, value: item?._id })),
+      ];
+      return arr;
+    }
     if (userData?.docs) {
       arr = [...arr, ...userData.docs.map(item => ({ label: item?.name, value: item?._id }))];
     }
@@ -224,12 +230,16 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
               <p className="text-slate-400">Campaign Incharge</p>
               <NativeSelect
                 styles={styles}
-                disabled={isLoadingUserData}
+                disabled={
+                  isLoadingUserData ||
+                  (userCachedData?.role === 'associate' &&
+                    bookingData?.campaign?.incharge?.[0]?._id !== userCachedData?._id)
+                }
                 placeholder="Select..."
                 data={inchargeList}
                 onChange={e => handleAddIncharge(e.target.value)}
                 className="mb-7"
-                defaultValue={bookingData ? bookingData?.campaign?.incharge?.[0]?._id : ''}
+                value={bookingData ? bookingData?.campaign?.incharge?.[0]?._id : ''}
               />
             </div>
             <div>
