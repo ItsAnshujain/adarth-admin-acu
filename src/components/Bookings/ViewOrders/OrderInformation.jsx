@@ -86,7 +86,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
 
   const inchargeList = useMemo(() => {
     let arr = [{ label: 'Select', value: '' }];
-    if (bookingData?.campaign?.incharge?.[0]?._id === userCachedData?._id) {
+    if (userData?.docs && bookingData?.campaign?.incharge?.[0]?._id === userCachedData?._id) {
       arr = [
         { label: userCachedData?.name, value: userCachedData?._id },
         ...userData.docs.map(item => ({ label: item?.name, value: item?._id })),
