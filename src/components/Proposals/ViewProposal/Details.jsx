@@ -164,7 +164,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                   <Text weight="bolder">{proposalData?.totalCities || 0}</Text>
                 </div>
               </div>
-              <div className="grid grid-cols-3">
+              <div className="grid grid-cols-3 mb-3">
                 <div>
                   <Text color="grey" weight="400">
                     Overall Start Date
@@ -181,6 +181,22 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                   </Text>
                   <Text weight="bolder">
                     {proposalData?.endDate ? dayjs(proposalData.endDate).format(DATE_FORMAT) : 'NA'}
+                  </Text>
+                </div>
+              </div>
+              <div className="grid grid-cols-1">
+                <div>
+                  <Text color="grey" weight="400">
+                    Description
+                  </Text>
+                  <Text weight="bolder">
+                    {proposalData?.description
+                      ? proposalData.description
+                      : `Our outdoor advertisementcampaign is the perfect way to get your brand in front of a large audience. 
+                        With eye-catching graphics and strategic placement, our billboards and digital displays will capture the attention of anyone passing by. 
+                        Our team will work with you to create a curated campaign that perfectly showcases your brand's message and identity.
+                         From busy city streets to suburban highways, our outdoor advertising options are the perfect way to increase your brand's visibility and reach.
+                       Don't miss out on the opportunity to make a lasting impression with your target audience.`}
                   </Text>
                 </div>
               </div>
