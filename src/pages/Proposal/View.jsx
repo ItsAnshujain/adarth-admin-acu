@@ -101,8 +101,11 @@ const ProposalDetails = () => {
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
                 </Box>
-                <Link to={`/inventory/view-details/${_id}`} className="text-black font-medium px-2">
-                  <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                <Link to={`/inventory/view-details/${_id}`} className="font-medium px-2 underline">
+                  <Text
+                    className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
+                    lineClamp={1}
+                  >
                     {spaceName}
                   </Text>
                 </Link>

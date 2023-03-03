@@ -107,6 +107,28 @@ const Bookings = () => {
           }, []),
       },
       {
+        Header: 'CAMPAIGN NAME',
+        accessor: 'campaign.name',
+        Cell: ({
+          row: {
+            original: { campaign, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <Link to={`/bookings/view-details/${_id}`} className="text-purple-450 font-medium">
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[180px] underline"
+                  lineClamp={1}
+                >
+                  {campaign?.name || '-'}
+                </Text>
+              </Link>
+            ),
+            [],
+          ),
+      },
+      {
         Header: 'CLIENT',
         accessor: 'client.name',
         Cell: ({
@@ -136,25 +158,7 @@ const Bookings = () => {
             [],
           ),
       },
-      {
-        Header: 'CAMPAIGN NAME',
-        accessor: 'campaign.name',
-        Cell: ({
-          row: {
-            original: { campaign, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <Link to={`/bookings/view-details/${_id}`} className="text-black font-medium">
-                <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
-                  {campaign?.name || '-'}
-                </Text>
-              </Link>
-            ),
-            [],
-          ),
-      },
+
       {
         Header: 'BOOKING TYPE',
         accessor: 'type',

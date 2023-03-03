@@ -79,8 +79,11 @@ const ProposalTableView = ({ data, isLoading }) => {
         }) =>
           useMemo(
             () => (
-              <Link to={`/bookings/view-details/${_id}`} className="text-black font-medium">
-                <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+              <Link to={`/bookings/view-details/${_id}`} className="font-medium underline">
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
+                  lineClamp={1}
+                >
                   {name || '-'}
                 </Text>
               </Link>
