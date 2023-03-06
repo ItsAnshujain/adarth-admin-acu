@@ -320,9 +320,7 @@ const BasicInfo = () => {
       <div className="flex flex-col flex-1 pr-7">
         <div className="mb-2">
           <p className="text-xl font-bold">Photo</p>
-          <p className="text-gray-500 my-2 text-sm">
-            Lorem ipsum atque quibusdam quos eius corrupti modi maiores.
-          </p>
+          <p className="text-gray-500 my-2">Please select and upload images for the inventory</p>
 
           {values?.basicInformation?.spacePhoto ? (
             <div className="relative">
@@ -360,7 +358,7 @@ const BasicInfo = () => {
                   <Image src={image} alt="placeholder" height={50} width={50} />
                 </div>
                 <p>
-                  Drag and Drop your file here,or{' '}
+                  Drag and drop the files directly into the upload area or{' '}
                   <span className="text-purple-450 border-none">browse</span>
                 </p>
                 <p className="text-gray-400 text-center">Supported png format only</p>
@@ -370,8 +368,9 @@ const BasicInfo = () => {
         </div>
         <div>
           <p className="text-xl font-bold">Other Images</p>
-          <p className="text-gray-400 mb-2">
-            Lorem ipsum atque quibusdam quos eius corrupti modi maiores.
+          <p className="text-gray-500 mb-2">
+            To add more photos, please click on the “Add More Photos“ button and select the files
+            you wish to upload from your device
           </p>
           <div className="text-right my-4">
             <FileButton
@@ -381,7 +380,7 @@ const BasicInfo = () => {
               multiple
               loading={isLoading}
             >
-              {props => <Button {...props}> Add More Photo</Button>}
+              {props => <Button {...props}> Add More Photos</Button>}
             </FileButton>
           </div>
           <div className="grid grid-cols-2 gap-4">
