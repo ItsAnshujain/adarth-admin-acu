@@ -50,9 +50,9 @@ const OrderInfo = () => {
             styles={textAreaStyles}
             label="Description"
             name="description"
-            placeholder="Maximun 200 characters"
+            placeholder="Maximun 400 characters"
             errors={errors}
-            maxLength={200}
+            maxLength={400}
           />
         </div>
       </div>

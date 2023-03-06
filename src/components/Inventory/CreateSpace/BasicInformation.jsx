@@ -312,8 +312,8 @@ const BasicInfo = () => {
           name="basicInformation.description"
           styles={styles}
           errors={errors}
-          maxLength={200}
-          placeholder="Maximum 200 characters"
+          maxLength={400}
+          placeholder="Maximum 400 characters"
           className="mb-7"
         />
       </div>
@@ -381,7 +381,11 @@ const BasicInfo = () => {
               multiple
               loading={isLoading}
             >
-              {props => <Button {...props}> Add More Photo</Button>}
+              {props => (
+                <Button loaderProps={{ color: 'black' }} {...props}>
+                  Add More Photo
+                </Button>
+              )}
             </FileButton>
           </div>
           <div className="grid grid-cols-2 gap-4">

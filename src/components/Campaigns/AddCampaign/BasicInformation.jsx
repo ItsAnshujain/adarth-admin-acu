@@ -111,9 +111,9 @@ const BasicInformation = () => {
         <TextareaInput
           styles={textAreaStyles}
           label="Description"
-          placeholder="Maximum 200 characters"
+          placeholder="Maximum 400 characters"
           name="description"
-          maxLength={200}
+          maxLength={400}
         />
         <Checkbox
           name="isFeatured"
