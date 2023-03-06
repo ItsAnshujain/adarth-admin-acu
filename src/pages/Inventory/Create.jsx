@@ -36,7 +36,6 @@ const initialValues = {
   },
   specifications: {
     illuminations: { label: '', value: '' },
-    spaceStatus: { label: '', value: '' },
     unit: 0,
     resolutions: '',
     size: {
@@ -124,12 +123,6 @@ const specificationsValues = yup.object({
         value: yup.string().trim(),
       })
       .test('illuminations', 'Illumination is required', obj => obj.value !== ''),
-    spaceStatus: yup
-      .object({
-        label: yup.string().trim(),
-        value: yup.string().trim(),
-      })
-      .test('spaceStatus', 'Space Status is required', obj => obj.value !== ''),
     unit: yup
       .number()
       .positive('Unit must be a positive number')
@@ -241,7 +234,6 @@ const CreateSpace = () => {
       specifications: {
         ...formData.specifications,
         illuminations: formData?.specifications?.illuminations?.value,
-        spaceStatus: formData?.specifications?.spaceStatus?.value,
         previousBrands: formData?.specifications?.previousBrands?.map(item => item?.value),
         tags: formData?.specifications?.tags?.map(item => item?.value),
       },
@@ -346,10 +338,6 @@ const CreateSpace = () => {
           size: {
             height: specifications?.size?.height ? parseInt(specifications.size.height, 10) : null,
             width: specifications?.size?.width ? parseInt(specifications.size.width, 10) : null,
-          },
-          spaceStatus: {
-            label: specifications?.spaceStatus?.name || '',
-            value: specifications?.spaceStatus?._id || '',
           },
           previousBrands: arrOfPreviousBrands?.length ? arrOfPreviousBrands : [],
           tags: arrOfTags?.length ? arrOfTags : [],
