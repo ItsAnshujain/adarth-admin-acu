@@ -174,7 +174,11 @@ const InventoryReport = () => {
                 to={`/inventory/view-details/${_id}`}
                 className="font-medium px-2 max-w-[180px] underline"
               >
-                <Text className="overflow-hidden text-ellipsis text-purple-450" lineClamp={1}>
+                <Text
+                  className="overflow-hidden text-ellipsis text-purple-450"
+                  lineClamp={1}
+                  title={basicInformation?.spaceName}
+                >
                   {basicInformation?.spaceName}
                 </Text>
               </Link>
@@ -394,7 +398,11 @@ const InventoryReport = () => {
                 to={`/inventory/view-details/${_id}`}
                 className="font-medium px-2 max-w-[180px] underline"
               >
-                <Text className="overflow-hidden text-ellipsis text-purple-450" lineClamp={1}>
+                <Text
+                  className="overflow-hidden text-ellipsis text-purple-450"
+                  lineClamp={1}
+                  title={basicInformation?.spaceName}
+                >
                   {basicInformation?.spaceName}
                 </Text>
               </Link>

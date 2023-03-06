@@ -120,6 +120,7 @@ const Bookings = () => {
                 <Text
                   className="overflow-hidden text-ellipsis max-w-[180px] underline"
                   lineClamp={1}
+                  title={campaign?.name}
                 >
                   {campaign?.name || '-'}
                 </Text>

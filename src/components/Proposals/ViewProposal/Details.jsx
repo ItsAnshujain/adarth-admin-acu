@@ -125,19 +125,10 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
               <Text weight="bold" className="capitalize">
                 {proposalData?.name}
               </Text>
-              <Text size="sm" className="mb-3">
-                {proposalData?.description}
-              </Text>
               <div className="grid grid-cols-3 mb-3">
                 <div className="col-span-1">
                   <Text color="grey" weight="400">
                     Total Spaces
-                  </Text>
-                  <Text weight="bolder">{proposalData?.totalSpaces || 0}</Text>
-                </div>
-                <div>
-                  <Text color="grey" weight="400">
-                    Total Media
                   </Text>
                   <Text weight="bolder">{proposalData?.totalSpaces || 0}</Text>
                 </div>

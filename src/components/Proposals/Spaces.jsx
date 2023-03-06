@@ -1,6 +1,8 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Text, Button, Progress, Image, NumberInput, Badge, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
+import isBetween from 'dayjs/plugin/isBetween';
+import dayjs from 'dayjs';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedState } from '@mantine/hooks';
 import Search from '../Search';
@@ -12,6 +14,8 @@ import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../DateRangeSelector';
+
+dayjs.extend(isBetween);
 
 const getDate = (selectionItem, item, key) => {
   if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
@@ -88,11 +92,15 @@ const Spaces = () => {
         accessor: 'basicInformation.spaceName',
         Cell: ({
           row: {
-            original: { _id, spaceName, spacePhoto, isUnderMaintenance },
+            original: { _id, spaceName, spacePhoto, isUnderMaintenance, bookingRange },
           },
         }) =>
-          useMemo(
-            () => (
+          useMemo(() => {
+            const isOccupied = bookingRange?.some(item =>
+              dayjs().isBetween(item?.startDate, item?.endDate),
+            );
+
+            return (
               <div className="flex items-center gap-2">
                 <div className="bg-white border rounded-md">
                   {spacePhoto ? (
@@ -109,6 +117,7 @@ const Spaces = () => {
                   <Text
                     className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
                     lineClamp={1}
+                    title={spaceName}
                   >
                     {spaceName}
                   </Text>
@@ -116,14 +125,13 @@ const Spaces = () => {
                 <Badge
                   className="capitalize"
                   variant="filled"
-                  color={isUnderMaintenance ? 'yellow' : 'green'}
+                  color={isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'}
                 >
-                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                  {isUnderMaintenance ? 'Under Maintenance' : isOccupied ? 'Occupied' : 'Available'}
                 </Badge>
               </div>
-            ),
-            [],
-          ),
+            );
+          }, []),
       },
       {
         Header: 'MEDIA OWNER NAME',

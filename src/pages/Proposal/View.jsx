@@ -105,6 +105,7 @@ const ProposalDetails = () => {
                   <Text
                     className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
                     lineClamp={1}
+                    title={spaceName}
                   >
                     {spaceName}
                   </Text>
@@ -121,7 +122,6 @@ const ProposalDetails = () => {
             [],
           ),
       },
-      // TODO: change key after api update
       {
         Header: 'MEDIA OWNER NAME',
         accessor: 'mediaOwner',
