@@ -4,7 +4,6 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Loader, NativeSelect } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
-import shallow from 'zustand/shallow';
 import completed from '../../../assets/completed.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { serialize } from '../../../utils';
@@ -44,7 +43,7 @@ const config = {
 
 const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bookingId }) => {
   const queryClient = useQueryClient();
-  const userId = useTokenIdStore(state => state.id, shallow);
+  const userId = useTokenIdStore(state => state.id);
   const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
 
   const { data: userData, isLoading: isLoadingUserData } = useFetchUsers(
@@ -87,7 +86,13 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
 
   const inchargeList = useMemo(() => {
     let arr = [{ label: 'Select', value: '' }];
-
+    if (userData?.docs && bookingData?.campaign?.incharge?.[0]?._id === userCachedData?._id) {
+      arr = [
+        { label: userCachedData?.name, value: userCachedData?._id },
+        ...userData.docs.map(item => ({ label: item?.name, value: item?._id })),
+      ];
+      return arr;
+    }
     if (userData?.docs) {
       arr = [...arr, ...userData.docs.map(item => ({ label: item?.name, value: item?._id }))];
     }
@@ -225,12 +230,16 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
               <p className="text-slate-400">Campaign Incharge</p>
               <NativeSelect
                 styles={styles}
-                disabled={isLoadingUserData}
+                disabled={
+                  isLoadingUserData ||
+                  (userCachedData?.role === 'associate' &&
+                    bookingData?.campaign?.incharge?.[0]?._id !== userCachedData?._id)
+                }
                 placeholder="Select..."
                 data={inchargeList}
                 onChange={e => handleAddIncharge(e.target.value)}
                 className="mb-7"
-                defaultValue={bookingData ? bookingData?.campaign?.incharge?.[0]?._id : ''}
+                value={bookingData ? bookingData?.campaign?.incharge?.[0]?._id : ''}
               />
             </div>
             <div>

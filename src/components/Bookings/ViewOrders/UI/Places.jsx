@@ -208,7 +208,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
               <p className="mb-2 text-sm text-slate-400">Printing Status</p>
               <Select
                 className="mr-2 w-[200px]"
-                defaultValue={
+                value={
                   data?.currentStatus?.printingStatus
                     ? data.currentStatus.printingStatus.charAt(0).toUpperCase() +
                       data.currentStatus.printingStatus.slice(1)
@@ -236,7 +236,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
               <p className="mb-2 text-sm text-slate-400">Mounting Status</p>
               <Select
                 className="mr-2 w-[200px]"
-                defaultValue={
+                value={
                   data?.currentStatus?.mountingStatus
                     ? data.currentStatus.mountingStatus.charAt(0).toUpperCase() +
                       data.currentStatus.mountingStatus.slice(1)

@@ -72,10 +72,17 @@ export const useUpdateCampaign = () =>
         });
       },
       onError: err => {
-        showNotification({
-          title: err?.message,
-          color: 'red',
-        });
+        if (err?.statusCode === 403 || err?.statusCode === 406) {
+          showNotification({
+            title: 'You are not authorized to perform this action',
+            color: 'red',
+          });
+        } else {
+          showNotification({
+            title: err?.message,
+            color: 'red',
+          });
+        }
       },
     },
   );
@@ -142,10 +149,17 @@ export const useUpdateCampaignStatus = () =>
         });
       },
       onError: err => {
-        showNotification({
-          title: err?.message,
-          color: 'red',
-        });
+        if (err?.statusCode === 403 || err?.statusCode === 406) {
+          showNotification({
+            title: 'You are not authorized to perform this action',
+            color: 'red',
+          });
+        } else {
+          showNotification({
+            title: err?.message,
+            color: 'red',
+          });
+        }
       },
     },
   );

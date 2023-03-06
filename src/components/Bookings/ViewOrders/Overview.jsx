@@ -170,10 +170,15 @@ const Overview = ({ bookingData = {}, isLoading }) => {
                         key={uuidv4()}
                         className={classNames(
                           index === 0 ? 'h-[300px] w-full' : 'h-[96px] w-[112px]',
-                          'border-[1px] border-gray bg-slate-100 mr-2 mb-4',
+                          'border-[1px] border-gray bg-slate-100 mr-2 mb-4 cursor-zoom-in',
                         )}
                       >
-                        <ReactPlayer url={`${src}#t=0.1`} width="100%" height="100%" />
+                        <ReactPlayer
+                          url={`${src}#t=0.1`}
+                          width="100%"
+                          height="100%"
+                          onClick={() => toggleImagePreviewModal(index)}
+                        />
                       </div>
                     ),
                   )}
