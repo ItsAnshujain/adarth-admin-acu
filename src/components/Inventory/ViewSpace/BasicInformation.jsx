@@ -228,7 +228,7 @@ const BasicInfo = ({
                   {inventoryDetails?.basicInformation?.category?.name}
                 </Text>
                 <Text weight="bolder" size="xs">
-                  {inventoryDetails?.specifications?.spaceStatus?.name}
+                  {inventoryDetails?.basicInformation?.spaceType?.name}
                 </Text>
               </div>
               <p className="text-slate-400 font-light text-[14px]">

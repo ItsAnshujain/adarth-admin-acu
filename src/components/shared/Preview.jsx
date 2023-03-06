@@ -95,7 +95,7 @@ const Preview = () => {
                 {values?.basicInformation?.category?.label}
               </p>
               <Text weight="bolder" size="xs">
-                {values?.specifications?.spaceStatus?.label}
+                {values?.basicInformation?.spaceType?.label}
               </Text>
             </div>
             <p className="text-slate-400 font-light text-[14px]">
