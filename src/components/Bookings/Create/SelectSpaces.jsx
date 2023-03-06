@@ -438,7 +438,6 @@ const SelectSpace = () => {
         obj.spaceName = item.basicInformation?.spaceName;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.category = item.basicInformation?.category?.name;
-        obj.spaceType = item.basicInformation?.spaceType?.name;
         obj.dimension = `${item.specifications?.size?.height || 0}ft x ${
           item.specifications?.size?.width || 0
         }ft`;

@@ -121,7 +121,7 @@ const Preview = () => {
               ? renderColoredBadges(values?.basicInformation?.audience)
               : null}
             <div className="mb-2">
-              <p className="text-slate-400">Previously advertised brands</p>
+              <p className="text-slate-400">Advertising brands</p>
               <div className="flex w-full flex-wrap">
                 {values?.specifications?.previousBrands?.length
                   ? renderBadges(values?.specifications?.previousBrands)
@@ -129,7 +129,7 @@ const Preview = () => {
               </div>
             </div>
             <div className="mb-2">
-              <p className="text-slate-400">Previously advertised tags</p>
+              <p className="text-slate-400">Advertising tags</p>
               <div className="flex w-full flex-wrap">
                 {values?.specifications?.tags?.length
                   ? renderBadges(values?.specifications?.tags)

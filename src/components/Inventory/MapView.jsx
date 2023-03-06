@@ -23,17 +23,17 @@ const Marker = () => <Image src={MarkerIcon} width={40} height={40} />;
 
 const MapView = ({ lists = [] }) => {
   const {
-    data: spaceTypeData,
-    isSuccess: isSpaceTypeDataLoaded,
-    isLoading: isSpaceTypeDataLoading,
-  } = useFetchMasters(serialize({ type: 'space_type', parentId: null, limit: 100, page: 1 }));
+    data: categoryData,
+    isSuccess: isCategoryDataLoaded,
+    isLoading: isCategoryDataLoading,
+  } = useFetchMasters(serialize({ type: 'category', parentId: null, limit: 100, page: 1 }));
   const [value, setValue] = useState('');
   const [mapInstance, setMapInstance] = useState(null);
 
   const getAllLocations = useMemo(
     () =>
       lists.map(item => {
-        if (item?.basicInformation?.spaceType?._id === value) {
+        if (item?.basicInformation?.category?._id === value) {
           return (
             <Marker lat={item?.location?.latitude} lng={item?.location?.longitude} key={item._id} />
           );
@@ -44,8 +44,8 @@ const MapView = ({ lists = [] }) => {
   );
 
   useEffect(() => {
-    setValue(spaceTypeData?.docs?.[0]._id || '');
-  }, [spaceTypeData]);
+    setValue(categoryData?.docs?.[0]._id || '');
+  }, [categoryData]);
 
   useEffect(() => {
     if (mapInstance && lists?.length) {
@@ -90,12 +90,12 @@ const MapView = ({ lists = [] }) => {
           value={value}
           onChange={e => setValue(e.target.value)}
           data={
-            isSpaceTypeDataLoaded
-              ? spaceTypeData?.docs?.map(item => ({ label: item?.name, value: item?._id }))
+            isCategoryDataLoaded
+              ? categoryData?.docs?.map(item => ({ label: item?.name, value: item?._id }))
               : []
           }
           styles={styles}
-          disabled={isSpaceTypeDataLoading}
+          disabled={isCategoryDataLoading}
           rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
           rightSectionWidth={40}
         />

@@ -39,7 +39,7 @@ const schema = yup.object({
       label: yup.string().trim(),
       value: yup.string().trim(),
     })
-    .test('spaceStatus', 'Type is required', obj => obj.value !== ''),
+    .test('operationalCostType', 'Type is required', obj => obj.value !== ''),
   amount: yup
     .number()
     .positive('Must be a positive number')

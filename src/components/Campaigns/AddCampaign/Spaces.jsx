@@ -309,7 +309,6 @@ const SelectSpace = () => {
         obj.spaceName = item?.basicInformation?.spaceName;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.category = item?.basicInformation?.category?.name;
-        obj.spaceType = item?.basicInformation?.spaceType?.name;
         obj.dimension = item?.specifications?.size;
         obj.impression = item?.specifications?.impressions?.max || 0;
         obj.health = item?.specifications?.health;
