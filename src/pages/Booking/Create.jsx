@@ -28,7 +28,7 @@ const initialValues = {
   campaignName: '',
   description: '',
   place: [],
-  // TODO: send total price
+  price: 0,
 };
 
 const basicInformationSchema = yup.object({
@@ -118,6 +118,9 @@ const CreateBooking = () => {
       if (data?.client?.gstNumber) {
         data.client.gstNumber = data.client.gstNumber?.toUpperCase();
       }
+
+      const totalPrice = form.values?.place?.reduce((acc, item) => acc + +(item.price || 0), 0);
+      data.price = totalPrice;
 
       await createBooking(
         {
