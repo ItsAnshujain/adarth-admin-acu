@@ -172,9 +172,9 @@ const InventoryReport = () => {
               </div>
               <Link
                 to={`/inventory/view-details/${_id}`}
-                className="text-black font-medium px-2 max-w-[180px]"
+                className="font-medium px-2 max-w-[180px] underline"
               >
-                <Text className="overflow-hidden text-ellipsis" lineClamp={1}>
+                <Text className="overflow-hidden text-ellipsis text-purple-450" lineClamp={1}>
                   {basicInformation?.spaceName}
                 </Text>
               </Link>
@@ -392,9 +392,9 @@ const InventoryReport = () => {
               </div>
               <Link
                 to={`/inventory/view-details/${_id}`}
-                className="text-black font-medium px-2 max-w-[180px]"
+                className="font-medium px-2 max-w-[180px] underline"
               >
-                <Text className="overflow-hidden text-ellipsis" lineClamp={1}>
+                <Text className="overflow-hidden text-ellipsis text-purple-450" lineClamp={1}>
                   {basicInformation?.spaceName}
                 </Text>
               </Link>

@@ -82,7 +82,7 @@ const Home = () => {
             () => (
               <Link
                 to={`/campaigns/view-details/${_id}`}
-                className="flex items-center cursor-pointer"
+                className="flex items-center cursor-pointer underline"
               >
                 <div className="flex flex-1 gap-2 items-center">
                   <Image
@@ -94,7 +94,11 @@ const Home = () => {
                     src={thumbnail}
                     className="rounded-md overflow-hidden"
                   />
-                  <Text className="w-[200px]" title={name} lineClamp={1}>
+                  <Text
+                    className="w-[200px] text-purple-450 font-medium"
+                    title={name}
+                    lineClamp={1}
+                  >
                     {name}
                   </Text>
                 </div>

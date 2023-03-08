@@ -103,6 +103,28 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           }, []),
       },
       {
+        Header: 'CAMPAIGN NAME',
+        accessor: 'campaign.name',
+        Cell: ({
+          row: {
+            original: { campaign, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <Link to={`/bookings/view-details/${_id}`} className="font-medium underline">
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
+                  lineClamp={1}
+                >
+                  {campaign?.name || '-'}
+                </Text>
+              </Link>
+            ),
+            [],
+          ),
+      },
+      {
         Header: 'CLIENT',
         accessor: 'client.name',
         Cell: ({
@@ -120,25 +142,6 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
               <p className="font-medium bg-gray-450 px-2 rounded-sm">
                 {dayjs(original.createdAt).format(DATE_FORMAT)}
               </p>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'CAMPAIGN NAME',
-        accessor: 'campaign.name',
-        Cell: ({
-          row: {
-            original: { campaign, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <Link to={`/bookings/view-details/${_id}`} className="text-black font-medium">
-                <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
-                  {campaign?.name || '-'}
-                </Text>
-              </Link>
             ),
             [],
           ),

@@ -39,6 +39,7 @@ const Header = () => {
           className="border-black text-black radius-md"
           onClick={onClickDownloadPdf}
           loading={isLoading}
+          loaderProps={{ color: 'black' }}
         >
           Download PDF
         </Button>

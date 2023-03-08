@@ -86,10 +86,13 @@ const SelectSpace = () => {
                   />
                   <Link
                     to={`/inventory/view-details/${_id}`}
-                    className="text-black font-medium"
+                    className="font-medium underline"
                     target="_blank"
                   >
-                    <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                    <Text
+                      className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
+                      lineClamp={1}
+                    >
                       {spaceName}
                     </Text>
                   </Link>
