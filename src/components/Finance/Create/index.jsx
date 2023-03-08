@@ -4,6 +4,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { useEffect, useMemo, useState } from 'react';
 import validator from 'validator';
+import { useModals } from '@mantine/modals';
 import PurchaseOrder from './PurchaseOrder';
 import ReleaseOrder from './ReleaseOrder';
 import Invoice from './Invoice';
@@ -25,6 +26,12 @@ import {
   temporaryPurchaseOrderPdfLink,
   temporaryReleaseOrderPdfLink,
 } from '../../../utils';
+import modalConfig from '../../../utils/modalConfig';
+import PurchaseOrderPreview from './PurchaseOrderPreview';
+import ReleaseOrderPreview from './ReleaseOrderPreview';
+import InvoicePreview from './InvoicePreview';
+
+const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
 const bookingStyles = {
   label: {
@@ -39,6 +46,12 @@ const orderView = {
   purchase: PurchaseOrder,
   release: ReleaseOrder,
   invoice: Invoice,
+};
+
+const preview = {
+  purchase: PurchaseOrderPreview,
+  release: ReleaseOrderPreview,
+  invoice: InvoicePreview,
 };
 
 const title = {
@@ -91,7 +104,6 @@ const purchaseSchema = yup.object({
     .nullable()
     .required('Pin is required'),
   termOfDelivery: yup.string().trim().required('Terms of Delivery is required'),
-  signature: yup.string().trim().required('Signature is required'),
 });
 
 const initialPurchaseValues = {
@@ -111,7 +123,6 @@ const initialPurchaseValues = {
   buyerCity: '',
   buyerZip: null,
   termOfDelivery: '',
-  signature: '',
   spaces: [],
 };
 
@@ -151,7 +162,6 @@ const releaseSchema = yup.object({
     .required('Pin is required'),
   supplierName: yup.string().trim().required('Supplier Name is required'),
   supplierDesignation: yup.string().trim().required('Designation is required'),
-  signature: yup.string().trim().required('Signature is required'),
   termsAndCondition: yup.string().trim(),
 });
 
@@ -166,7 +176,6 @@ const initialReleaseValues = {
   zip: null,
   supplierName: '',
   supplierDesignation: '',
-  signature: '',
   termsAndCondition: '',
 };
 
@@ -296,11 +305,13 @@ const bookingQueries = {
   sortOrder: 'desc',
 };
 const Create = () => {
+  const modals = useModals();
   const navigate = useNavigate();
   const [searchParam] = useSearchParams();
   const { type } = useParams();
   const form = useForm({ validate: yupResolver(schema[type]), initialValues: initialValues[type] });
   const ManualEntryView = orderView[type] ?? <div />;
+  const PreviewView = preview[type] ?? <div />;
   const bookingId = searchParam.get('id');
   const [bookingIdFromFinance, setBookingIdFromFinance] = useState();
 
@@ -334,8 +345,28 @@ const Create = () => {
     return initialPrice;
   }, [bookingData?.campaign?.spaces]);
 
+  // TODO: preview integration left
+  // eslint-disable-next-line no-unused-vars
+  const toggleImagePreviewModal = (formData, spaces) =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <PreviewView
+            previeData={formData}
+            previewSpaces={spaces}
+            totalPrice={calcutateTotalPrice || 0}
+            type={type}
+          />
+        ),
+      },
+      ...updatedModalConfig,
+    });
+
   const handleSubmit = async formData => {
     const data = { ...formData };
+    // toggleImagePreviewModal(data, data?.spaces);
+
     Object.keys(data).forEach(key => {
       if (data[key] === '' || data[key] === null) {
         delete data[key];
