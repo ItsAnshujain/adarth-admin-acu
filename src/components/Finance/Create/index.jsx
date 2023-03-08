@@ -22,9 +22,6 @@ import {
   mobileRegexMatch,
   onlyNumbersMatch,
   serialize,
-  temporaryInvoicePdfLink,
-  temporaryPurchaseOrderPdfLink,
-  temporaryReleaseOrderPdfLink,
 } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
 import PurchaseOrderPreview from './PurchaseOrderPreview';
@@ -393,9 +390,7 @@ const Create = () => {
         { onSuccess: () => redirectToHome() },
       );
       if (purchaseOrderPdf?.generatedPdf?.Location) {
-        // TODO: kept it for demo purpose will remove later
-        // downloadPdf(purchaseOrderPdf.generatedPdf.Location);
-        downloadPdf(temporaryPurchaseOrderPdfLink);
+        downloadPdf(purchaseOrderPdf.generatedPdf.Location);
       }
     } else if (type === 'release') {
       if (data?.phone !== undefined && !data?.phone?.includes('+91')) {
@@ -409,9 +404,7 @@ const Create = () => {
         { onSuccess: () => redirectToHome() },
       );
       if (releaseOrderPdf?.generatedPdf?.Location) {
-        // TODO: kept it for demo purpose will remove later
-        // downloadPdf(releaseOrderPdf.generatedPdf.Location);
-        downloadPdf(temporaryReleaseOrderPdfLink);
+        downloadPdf(releaseOrderPdf.generatedPdf.Location);
       }
     } else if (type === 'invoice') {
       if (!data?.supplierPhone?.includes('+91')) {
@@ -431,9 +424,7 @@ const Create = () => {
         { onSuccess: () => redirectToHome() },
       );
       if (invoicePdf?.generatedPdf?.Location) {
-        // TODO: kept it for demo purpose will remove later
-        // downloadPdf(invoicePdf.generatedPdf.Location);
-        downloadPdf(temporaryInvoicePdfLink);
+        downloadPdf(invoicePdf.generatedPdf.Location);
       }
     }
     form.reset();

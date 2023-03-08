@@ -236,7 +236,6 @@ const ProposalDetails = () => {
           },
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
-      // TODO: change key after api update
       {
         Header: 'PRICING',
         accessor: 'price',
