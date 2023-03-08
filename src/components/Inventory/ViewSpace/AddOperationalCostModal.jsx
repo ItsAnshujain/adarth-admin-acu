@@ -39,7 +39,7 @@ const schema = yup.object({
       label: yup.string().trim(),
       value: yup.string().trim(),
     })
-    .test('spaceStatus', 'Type is required', obj => obj.value !== ''),
+    .test('operationalCostType', 'Type is required', obj => obj.value !== ''),
   amount: yup
     .number()
     .positive('Must be a positive number')
@@ -59,9 +59,9 @@ const AddOperationalCostModal = ({
 }) => {
   const form = useForm({ validate: yupResolver(schema), initialValues });
   const {
-    data: spaceStatusData,
-    isLoading: isSpaceStatusLoading,
-    isSuccess: isSpaceStatusLoaded,
+    data: operationalCostData,
+    isLoading: isOperationalCostLoading,
+    isSuccess: isOperationalCostLoaded,
   } = useFetchMasters(
     serialize({
       type: 'operational_cost_type',
@@ -125,12 +125,12 @@ const AddOperationalCostModal = ({
             name="type"
             withAsterisk
             errors={form.errors}
-            disabled={isSpaceStatusLoading || isAddLoading || isEditLoading}
+            disabled={isOperationalCostLoading || isAddLoading || isEditLoading}
             placeholder="Select..."
             size="md"
             options={
-              isSpaceStatusLoaded
-                ? spaceStatusData?.docs?.map(category => ({
+              isOperationalCostLoaded
+                ? operationalCostData?.docs?.map(category => ({
                     label: category.name,
                     value: category._id,
                   }))
@@ -143,7 +143,7 @@ const AddOperationalCostModal = ({
             name="amount"
             withAsterisk
             errors={form.errors}
-            disabled={isSpaceStatusLoading || isAddLoading || isEditLoading}
+            disabled={isOperationalCostLoading || isAddLoading || isEditLoading}
             placeholder="Write..."
             size="md"
             className="mb-4"
@@ -154,7 +154,7 @@ const AddOperationalCostModal = ({
             styles={styles}
             label="Description"
             name="description"
-            disabled={isSpaceStatusLoading || isAddLoading || isEditLoading}
+            disabled={isOperationalCostLoading || isAddLoading || isEditLoading}
             placeholder="Maximun 200 characters"
             maxLength={200}
             className="mb-4"

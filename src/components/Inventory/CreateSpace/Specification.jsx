@@ -57,11 +57,6 @@ const Specification = () => {
     isSuccess: isIlluminationLoaded,
   } = useFetchMasters(serialize({ type: 'illumination', limit: 100, page: 1 }));
   const {
-    data: spaceStatusData,
-    isLoading: isSpaceStatusLoading,
-    isSuccess: isSpaceStatusLoaded,
-  } = useFetchMasters(serialize({ type: 'space_status', limit: 100, page: 1 }));
-  const {
     data: brandData,
     isLoading: isBrandLoading,
     isSuccess: isBrandLoaded,
@@ -147,24 +142,6 @@ const Specification = () => {
             styles={styles}
             errors={errors}
             placeholder="Write..."
-            className="mb-7"
-          />
-          <Select
-            label="Space Status"
-            name="specifications.spaceStatus"
-            withAsterisk
-            styles={styles}
-            errors={errors}
-            disabled={isSpaceStatusLoading}
-            placeholder="Select..."
-            options={
-              isSpaceStatusLoaded
-                ? spaceStatusData.docs.map(category => ({
-                    label: category.name,
-                    value: category._id,
-                  }))
-                : []
-            }
             className="mb-7"
           />
         </div>

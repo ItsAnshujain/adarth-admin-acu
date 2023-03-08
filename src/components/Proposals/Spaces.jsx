@@ -342,7 +342,6 @@ const Spaces = () => {
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name;
         obj.peer = item?.basicInformation?.companyName;
         obj.category = item?.basicInformation?.category?.name;
-        obj.spaceType = item?.basicInformation?.spaceType?.name;
         obj.height = item?.specifications?.size?.height;
         obj.width = item?.specifications?.size?.width;
         obj.impressions = item?.specifications?.impressions?.max;

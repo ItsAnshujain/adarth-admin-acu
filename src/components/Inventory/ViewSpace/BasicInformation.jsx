@@ -226,7 +226,7 @@ const BasicInfo = ({
                   {inventoryDetails?.basicInformation?.category?.name}
                 </Text>
                 <Text weight="bolder" size="xs">
-                  {inventoryDetails?.specifications?.spaceStatus?.name}
+                  {inventoryDetails?.basicInformation?.spaceType?.name}
                 </Text>
               </div>
               <Text weight="300" color="gray">
@@ -253,7 +253,7 @@ const BasicInfo = ({
                   : null}
               </div>
               <div className="mb-2">
-                <p className="text-slate-400">Previously advertised brands</p>
+                <p className="text-slate-400">Advertising brands</p>
                 <div className="flex w-full flex-wrap">
                   {inventoryDetails?.specifications?.previousBrands?.length
                     ? renderBadges(inventoryDetails?.specifications?.previousBrands)
@@ -261,7 +261,7 @@ const BasicInfo = ({
                 </div>
               </div>
               <div className="mb-2">
-                <p className="text-slate-400">Previously advertised tags</p>
+                <p className="text-slate-400">Advertising tags</p>
                 <div className="flex w-full flex-wrap">
                   {inventoryDetails?.specifications?.tags.length
                     ? renderBadges(inventoryDetails?.specifications?.tags)

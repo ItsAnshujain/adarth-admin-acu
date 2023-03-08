@@ -1,19 +1,25 @@
-import { Badge, Button, Chip, HoverCard, Image, Select } from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Chip, HoverCard, Image, Select } from '@mantine/core';
 import { useMemo, useRef } from 'react';
-import { Calendar, ChevronDown } from 'react-feather';
+import { Calendar, ChevronDown, Eye } from 'react-feather';
 import { Dropzone } from '@mantine/dropzone';
 import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
 import { v4 as uuidv4 } from 'uuid';
+import classNames from 'classnames';
+import ReactPlayer from 'react-player';
+import { useModals } from '@mantine/modals';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import uploadIcon from '../../../../assets/upload.svg';
+import uploadWhiteIcon from '../../../../assets/upload-white.svg';
 import NoData from '../../../shared/NoData';
 import { useUpdateCampaignMedia, useUpdateCampaignStatus } from '../../../../hooks/campaigns.hooks';
 import { useUploadFile } from '../../../../hooks/upload.hooks';
 import { useFetchMasters } from '../../../../hooks/masters.hooks';
 import { serialize, supportedTypes } from '../../../../utils';
+import modalConfig from '../../../../utils/modalConfig';
 
 const updatedSupportedTypes = [...supportedTypes, 'MP4'];
+const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -26,6 +32,7 @@ const styles = {
 const DATE_FORMAT = 'DD-MM-YYYY';
 
 const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
+  const modals = useModals();
   const queryClient = useQueryClient();
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const { mutate: update, isLoading: isUpdating } = useUpdateCampaignMedia();
@@ -111,6 +118,23 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
     }
   };
 
+  const toggleMediaPreviewModal = path =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <Box>
+            {path && !path?.includes(['mp4']) ? (
+              <Image src={path} height={400} width="100%" alt="preview" fit="contain" />
+            ) : (
+              <ReactPlayer url={`${path}#t=0.1`} width="100%" height="100%" />
+            )}
+          </Box>
+        ),
+      },
+      ...updatedModalConfig,
+    });
+
   return (
     <div className="flex gap-4 p-4 shadow-md bg-white mb-2">
       <div className="flex items-center">
@@ -138,13 +162,26 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
                   onClick={() => openRef.current()}
                   disabled={isUpdating || isLoading}
                   loading={isUpdating || isLoading}
-                  className="secondary-button"
-                  rightIcon={<img src={uploadIcon} alt="Upload" className="mr-1" />}
+                  className={classNames(
+                    data?.media
+                      ? 'bg-gradient-to-r from-green-300 bg-green-500'
+                      : 'secondary-button',
+                  )}
+                  rightIcon={
+                    <img
+                      src={data?.media ? uploadWhiteIcon : uploadIcon}
+                      alt="Upload"
+                      className="mr-1"
+                    />
+                  }
                 >
                   {data?.media ? (
                     <>
                       <Chip
-                        classNames={{ checkIcon: 'text-black', label: 'bg-transparent' }}
+                        classNames={{
+                          checkIcon: data?.media ? 'text-white' : 'text-black',
+                          label: 'bg-transparent',
+                        }}
                         checked
                         variant="filled"
                         color="green"
@@ -174,6 +211,9 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
                 </div>
               </HoverCard.Dropdown>
             </HoverCard>
+            <ActionIcon title="Preview Media" onClick={() => toggleMediaPreviewModal(data?.media)}>
+              <Eye />
+            </ActionIcon>
             <div className="flex gap-2 p-2 rounded-md">
               <Calendar />
               <span>
