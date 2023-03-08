@@ -184,7 +184,9 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
               <p className="font-bold capitalize">
                 {bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Printing upcoming'
-                  : bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('print')
+                  : bookingData?.currentStatus?.printingStatus
+                      ?.toLowerCase()
+                      ?.includes('in progress')
                   ? 'Printing in progress'
                   : bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Printing completed'
@@ -200,7 +202,9 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
               <p className="font-bold capitalize">
                 {bookingData?.currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Mounting upcoming'
-                  : bookingData?.currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                  : bookingData?.currentStatus?.mountingStatus
+                      ?.toLowerCase()
+                      ?.includes('in progress')
                   ? 'Mounting in progress'
                   : bookingData?.currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                   ? 'Mounting completed'

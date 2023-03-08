@@ -250,7 +250,7 @@ const Bookings = () => {
               <p className="w-[200px]">
                 {currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Printing upcoming'
-                  : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Printing in progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Printing completed'
@@ -273,7 +273,7 @@ const Bookings = () => {
               <p className="w-[200px]">
                 {currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Mounting upcoming'
-                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Mounting in progress'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                   ? 'Mounting completed'

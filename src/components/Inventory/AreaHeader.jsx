@@ -78,7 +78,7 @@ const AreaHeader = ({ text, inventoryData }) => {
           ) : null}
           <Button
             className={classNames(
-              'px-4 border-gray-300 border rounded-md',
+              'px-4 border-gray-300 border rounded-l-md rounded-r-none',
               activeLayout.inventory === 'list' ? 'bg-purple-450' : 'bg-white',
             )}
             onClick={handleListClick}
@@ -93,7 +93,7 @@ const AreaHeader = ({ text, inventoryData }) => {
           </Button>
           <Button
             className={classNames(
-              `text-white border-gray-300 border px-4 rounded-md ${
+              `text-white border-gray-300 border px-4 rounded-none ${
                 activeLayout.inventory === 'grid' ? 'bg-purple-450' : 'bg-white'
               }`,
             )}
@@ -109,7 +109,7 @@ const AreaHeader = ({ text, inventoryData }) => {
           </Button>
           <Button
             className={classNames(
-              `px-4 border-gray-300 border rounded-md ${
+              `px-4 border-gray-300 border rounded-r-md rounded-l-none ${
                 activeLayout.inventory === 'map' ? 'bg-purple-450' : 'bg-white'
               }`,
             )}

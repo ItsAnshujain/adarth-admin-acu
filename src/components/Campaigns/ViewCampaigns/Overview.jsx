@@ -244,7 +244,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
             All the places been covered by this campaign
           </Text>
         </div>
-        <div className="mt-1 mb-8 h-[30vh]">
+        <div className="mt-1 mb-8 h-[40vh]">
           <GoogleMapReact
             bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY, libraries: 'places' }}
             defaultCenter={defaultProps.center}
