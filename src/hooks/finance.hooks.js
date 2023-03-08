@@ -1,6 +1,7 @@
 import { showNotification } from '@mantine/notifications';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  deleteFinanceById,
   fetchFinance,
   fetchFinanceByIndustry,
   fetchFinanceByLocation,
@@ -8,6 +9,7 @@ import {
   fetchFinanceByStats,
   fetchFinanceByYear,
   fetchFinanceByYearAndMonth,
+  shareRecord,
   updateFinanceById,
 } from '../requests/finance.requests';
 
@@ -103,3 +105,55 @@ export const useFetchFinanceByRevenueGraph = (query, enabled = true) =>
     },
     { enabled },
   );
+
+export const useDeleteFinanceById = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ({ financeId, type }) => {
+      const res = await deleteFinanceById(financeId, type);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['finance-by-month']);
+        showNotification({
+          title: 'Finance deleted successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
+
+export const useShareRecord = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ({ id, data }) => {
+      const res = await shareRecord(id, data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['finance-by-month']);
+        showNotification({
+          title: 'Record has been shared successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};

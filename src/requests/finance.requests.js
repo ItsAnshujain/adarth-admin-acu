@@ -15,3 +15,7 @@ export const fetchFinanceByLocation = query => http.get(`/finance/byLocation?${q
 export const fetchFinanceByIndustry = query => http.get(`/finance/byIndustry?${query}`);
 
 export const fetchFinanceByRevenueGraph = query => http.get(`/finance/revenue-graph?${query}`);
+
+export const deleteFinanceById = (id, type) => http.delete(`/finance/${id}/${type}`);
+
+export const shareRecord = (id, data) => http.post(`/finance/${id}/share`, data);

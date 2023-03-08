@@ -163,7 +163,7 @@ const InventoryReport = () => {
         useMemo(
           () => (
             <div className="flex items-center gap-2">
-              <div className="bg-white border rounded-md cursor-zoom-in">
+              <div className="bg-white border rounded-md">
                 {basicInformation?.spacePhoto ? (
                   <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
                 ) : (
