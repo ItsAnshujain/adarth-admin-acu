@@ -3,7 +3,7 @@ import GoogleMapReact from 'google-map-react';
 import {
   BackgroundImage,
   Badge,
-  Button,
+  Box,
   Center,
   Image,
   Pagination,
@@ -11,7 +11,6 @@ import {
   Text,
 } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
-import { useToggle } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
@@ -50,7 +49,7 @@ const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading }) => {
   const modals = useModals();
-  const [readMore, toggle] = useToggle();
+  const [readMore, setReadMore] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const [mapInstance, setMapInstance] = useState(null);
   const [updatedPlace, setUpdatedPlace] = useState();
@@ -89,6 +88,8 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
       },
       ...updatedModalConfig,
     });
+
+  const toggleReadMore = () => setReadMore(!readMore);
 
   const getTotalPrice = useMemo(() => {
     const totalPrice = spacesData?.docs?.reduce(
@@ -201,15 +202,21 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
             <p className="text-lg font-bold">{campaignData.name || 'NA'}</p>
             <div>
               <p className="text-slate-400 font-light text-[14px]">
-                {campaignData?.description?.split(' ')?.length > 4
+                {campaignData?.description?.split(' ')?.length > 30
                   ? readMore
-                    ? `${campaignData?.description?.split(' ')?.slice(0, 3).join(' ')}...`
+                    ? `${campaignData?.description
+                        ?.split(' ')
+                        ?.slice(0, campaignData.description.split(' ').length / 2)
+                        .join(' ')}...`
                     : campaignData?.description
-                  : campaignData.description || <NoData type="na" />}
-                {campaignData?.description?.split(' ')?.length > 4 ? (
-                  <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
+                  : campaignData?.description || <NoData type="na" />}
+                {campaignData?.description?.split(' ')?.length > 30 ? (
+                  <Box
+                    onClick={() => toggleReadMore()}
+                    className="text-purple-450 font-medium py-0 cursor-pointer"
+                  >
                     {readMore ? 'Read more' : 'Read less'}
-                  </Button>
+                  </Box>
                 ) : null}
               </p>
               <div className="flex gap-3 items-center">

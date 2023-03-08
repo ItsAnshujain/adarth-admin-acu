@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import GoogleMapReact from 'google-map-react';
-import { BackgroundImage, Badge, Button, Center, Image, Pagination, Text } from '@mantine/core';
-import { useToggle } from '@mantine/hooks';
+import { BackgroundImage, Badge, Box, Center, Image, Pagination, Text } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -21,10 +20,12 @@ const defaultProps = {
 const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Preview = ({ data = {}, place = {} }) => {
-  const [readMore, toggle] = useToggle();
+  const [readMore, setReadMore] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const [mapInstance, setMapInstance] = useState(null);
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
+
+  const toggleReadMore = () => setReadMore(!readMore);
 
   const getAllSpacePhotos = useCallback(() => {
     const tempPics = [];
@@ -112,15 +113,21 @@ const Preview = ({ data = {}, place = {} }) => {
           <p className="text-lg font-bold">{data.name || 'NA'}</p>
           <div>
             <p className="text-slate-400 font-light text-[14px]">
-              {data?.description?.split(' ')?.length > 4
+              {data?.description?.split(' ')?.length > 30
                 ? readMore
-                  ? `${data?.description?.split(' ')?.slice(0, 3).join(' ')}...`
+                  ? `${data?.description
+                      ?.split(' ')
+                      ?.slice(0, data.description.split(' ').length / 2)
+                      .join(' ')}...`
                   : data?.description
-                : data.description || <NoData type="na" />}
-              {data?.description?.split(' ')?.length > 4 ? (
-                <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
+                : data?.description || <NoData type="na" />}
+              {data?.description?.split(' ')?.length > 30 ? (
+                <Box
+                  onClick={() => toggleReadMore()}
+                  className="text-purple-450 font-medium py-0 cursor-pointer"
+                >
                   {readMore ? 'Read more' : 'Read less'}
-                </Button>
+                </Box>
               ) : null}
             </p>
             <div className="flex gap-3 items-center">

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Button, Text, Image, Skeleton, Badge, BackgroundImage, Center } from '@mantine/core';
-import { useToggle } from '@mantine/hooks';
+import { Text, Image, Skeleton, Badge, BackgroundImage, Center, Box } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import { useModals } from '@mantine/modals';
 import { ChevronLeft, ChevronRight } from 'react-feather';
@@ -10,6 +9,7 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import MapView from '../CreateSpace/MapView';
 import { tierList } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
+import NoData from '../../shared/NoData';
 
 const TRANSITION_DURATION = 200;
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
@@ -34,11 +34,13 @@ const BasicInfo = ({
   isInventoryDetailsLoading,
 }) => {
   const modals = useModals();
-  const [readMore, toggle] = useToggle();
+  const [readMore, setReadMore] = useState(true);
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
   const [embla, setEmbla] = useState(null);
 
   useAnimationOffsetEffect(embla, TRANSITION_DURATION);
+
+  const toggleReadMore = () => setReadMore(!readMore);
 
   const getAllSpacePhotos = useCallback(() => {
     const tempPics = [];
@@ -229,12 +231,27 @@ const BasicInfo = ({
                   {inventoryDetails?.basicInformation?.spaceType?.name}
                 </Text>
               </div>
-              <Text weight="300" color="gray">
-                {inventoryDetails?.basicInformation?.description}
-                <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
-                  {readMore ? 'Read less' : 'Read more'}
-                </Button>
-              </Text>
+              <p className="text-slate-400 font-light text-[14px]">
+                {inventoryDetails?.basicInformation?.description?.split(' ')?.length > 30
+                  ? readMore
+                    ? `${inventoryDetails?.basicInformation?.description
+                        ?.split(' ')
+                        ?.slice(
+                          0,
+                          inventoryDetails.basicInformation.description.split(' ').length / 2,
+                        )
+                        .join(' ')}...`
+                    : inventoryDetails?.basicInformation?.description
+                  : inventoryDetails?.basicInformation?.description || <NoData type="na" />}
+                {inventoryDetails?.basicInformation?.description?.split(' ')?.length > 30 ? (
+                  <Box
+                    onClick={() => toggleReadMore()}
+                    className="text-purple-450 font-medium py-0 cursor-pointer"
+                  >
+                    {readMore ? 'Read more' : 'Read less'}
+                  </Box>
+                ) : null}
+              </p>
               <Badge
                 className="capitalize"
                 variant="filled"

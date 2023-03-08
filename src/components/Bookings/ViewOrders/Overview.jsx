@@ -2,14 +2,13 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   BackgroundImage,
   Badge,
-  Button,
+  Box,
   Center,
   Image,
   Pagination,
   Skeleton,
   Text,
 } from '@mantine/core';
-import { useToggle } from '@mantine/hooks';
 import GoogleMapReact from 'google-map-react';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -50,7 +49,7 @@ const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Overview = ({ bookingData = {}, isLoading }) => {
   const modals = useModals();
-  const [readMore, toggle] = useToggle();
+  const [readMore, setReadMore] = useState(true);
   const [mapInstance, setMapInstance] = useState(null);
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -61,6 +60,8 @@ const Overview = ({ bookingData = {}, isLoading }) => {
   const [embla, setEmbla] = useState(null);
 
   useAnimationOffsetEffect(embla, TRANSITION_DURATION);
+
+  const toggleReadMore = () => setReadMore(!readMore);
 
   const getAllSpacePhotos = useCallback(() => {
     const tempPics = [];
@@ -202,20 +203,24 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           <p className="font-bold text-2xl mb-2">
             {bookingData?.campaign?.name || <NoData type="na" />}
           </p>
-          <div>
-            <p className="text-slate-400 font-light text-[14px]">
-              {bookingData?.description?.split(' ')?.length > 4
-                ? readMore
-                  ? `${bookingData?.description?.split(' ')?.slice(0, 3).join(' ')}...`
-                  : bookingData?.description
-                : bookingData.description || <NoData type="na" />}
-              {bookingData?.description?.split(' ')?.length > 4 ? (
-                <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
-                  {readMore ? 'Read more' : 'Read less'}
-                </Button>
-              ) : null}
-            </p>
-          </div>
+          <p className="text-slate-400 font-light text-[14px]">
+            {bookingData?.description?.split(' ')?.length > 30
+              ? readMore
+                ? `${bookingData?.description
+                    ?.split(' ')
+                    ?.slice(0, bookingData.description.split(' ').length / 2)
+                    .join(' ')}...`
+                : bookingData?.description
+              : bookingData?.description || <NoData type="na" />}
+            {bookingData?.description?.split(' ')?.length > 30 ? (
+              <Box
+                onClick={() => toggleReadMore()}
+                className="text-purple-450 font-medium py-0 cursor-pointer"
+              >
+                {readMore ? 'Read more' : 'Read less'}
+              </Box>
+            ) : null}
+          </p>
           <div className="flex mt-4 items-center gap-2 ">
             <span>{toIndianCurrency(bookingData?.campaign?.totalPrice || 0)}</span>
             <Badge

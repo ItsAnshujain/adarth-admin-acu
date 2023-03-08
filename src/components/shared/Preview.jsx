@@ -1,14 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Badge, Button, Image, Text, BackgroundImage, Center } from '@mantine/core';
-import { useToggle } from '@mantine/hooks';
+import { Badge, Image, Text, BackgroundImage, Center, Box } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { useFormContext } from '../../context/formContext';
+import NoData from './NoData';
 
 const Preview = () => {
-  const [readMore, toggle] = useToggle();
+  const [readMore, setReadMore] = useState(true);
   const { values } = useFormContext();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
+
+  const toggleReadMore = () => setReadMore(!readMore);
 
   const getAllSpacePhotos = useCallback(() => {
     const tempPics = [];
@@ -96,11 +98,23 @@ const Preview = () => {
                 {values?.basicInformation?.spaceType?.label}
               </Text>
             </div>
-            <p className="font-light text-slate-400">
-              {values?.basicInformation?.description}
-              <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
-                {readMore ? 'Read less' : 'Read more'}
-              </Button>
+            <p className="text-slate-400 font-light text-[14px]">
+              {values?.basicInformation?.description?.split(' ')?.length > 30
+                ? readMore
+                  ? `${values?.basicInformation?.description
+                      ?.split(' ')
+                      ?.slice(0, values.basicInformation.description.split(' ').length / 2)
+                      .join(' ')}...`
+                  : values?.basicInformation?.description
+                : values?.basicInformation?.description || <NoData type="na" />}
+              {values?.basicInformation?.description?.split(' ')?.length > 30 ? (
+                <Box
+                  onClick={() => toggleReadMore()}
+                  className="text-purple-450 font-medium py-0 cursor-pointer"
+                >
+                  {readMore ? 'Read more' : 'Read less'}
+                </Box>
+              ) : null}
             </p>
             <div className="flex gap-3 items-center">
               <p className="font-bold my-2">
