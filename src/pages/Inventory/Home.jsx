@@ -5,6 +5,8 @@ import { ActionIcon, Badge, Box, Image, Loader, Progress, Text } from '@mantine/
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
+import isBetween from 'dayjs/plugin/isBetween';
+import dayjs from 'dayjs';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/Inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -20,6 +22,8 @@ import { FormProvider, useForm } from '../../context/formContext';
 import TrashIcon from '../../assets/delete.png';
 import RoleBased from '../../components/RoleBased';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
+
+dayjs.extend(isBetween);
 
 const initialValues = {
   spaces: [],
@@ -86,11 +90,15 @@ const Home = () => {
         accessor: 'basicInformation.spaceName',
         Cell: ({
           row: {
-            original: { _id, basicInformation, isUnderMaintenance },
+            original: { _id, basicInformation, isUnderMaintenance, bookingRange },
           },
         }) =>
-          useMemo(
-            () => (
+          useMemo(() => {
+            const isOccupied = bookingRange?.some(item =>
+              dayjs().isBetween(item?.startDate, item?.endDate),
+            );
+
+            return (
               <div className="flex items-center gap-2">
                 <Box
                   className="bg-white border rounded-md cursor-zoom-in"
@@ -109,6 +117,7 @@ const Home = () => {
                   <Text
                     className="overflow-hidden text-ellipsis max-w-[180px] underline"
                     lineClamp={1}
+                    title={basicInformation?.spaceName}
                   >
                     {basicInformation?.spaceName}
                   </Text>
@@ -116,14 +125,13 @@ const Home = () => {
                 <Badge
                   className="capitalize"
                   variant="filled"
-                  color={isUnderMaintenance ? 'yellow' : 'green'}
+                  color={isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'}
                 >
-                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                  {isUnderMaintenance ? 'Under Maintenance' : isOccupied ? 'Occupied' : 'Available'}
                 </Badge>
               </div>
-            ),
-            [],
-          ),
+            );
+          }, []),
       },
       {
         Header: 'MEDIA OWNER NAME',
@@ -138,7 +146,11 @@ const Home = () => {
       {
         Header: 'PEER',
         accessor: 'peer',
-        Cell: () => useMemo(() => <p>-</p>),
+        Cell: ({
+          row: {
+            original: { peer },
+          },
+        }) => useMemo(() => <p className="w-fit">{peer || '-'}</p>, []),
       },
       {
         Header: 'CATEGORY',

@@ -45,19 +45,6 @@ ChartJS.register(
   Legend,
 );
 
-const lineData = {
-  labels: monthsInShort,
-  datasets: [
-    {
-      label: 'Revenue',
-      data: [10, 0, 23, 23, 31, 23, 5, 21, 22, 12, 3, 4],
-      borderColor: '#914EFB',
-      backgroundColor: '#914EFB',
-      cubicInterpolationMode: 'monotone',
-    },
-  ],
-};
-
 const barDataConfigByLocation = {
   options: {
     responsive: true,
@@ -97,18 +84,18 @@ const options = {
   responsive: true,
 };
 
-// const lineData = {
-//   labels: monthsInShort,
-//   datasets: [
-//     {
-//       label: 'Revenue',
-//       data: [],
-//       borderColor: '#914EFB',
-//       backgroundColor: '#914EFB',
-//       cubicInterpolationMode: 'monotone',
-//     },
-//   ],
-// };
+const lineData = {
+  labels: monthsInShort,
+  datasets: [
+    {
+      label: 'Revenue',
+      data: [],
+      borderColor: '#914EFB',
+      backgroundColor: '#914EFB',
+      cubicInterpolationMode: 'monotone',
+    },
+  ],
+};
 
 export const pieData = {
   labels: [],
@@ -138,14 +125,13 @@ export const pieData = {
 };
 
 const RevenueReport = () => {
-  // eslint-disable-next-line no-unused-vars
   const [updatedLocation, setUpdatedLocation] = useState({
     id: uuidv4(),
-    labels: ['Kolkata', 'Delhi', 'Nasik', 'Bangalore', 'Kerala'],
+    labels: [],
     datasets: [
       {
         label: 'City or State',
-        data: [2, 4, 1, 8, 3],
+        data: [],
         ...barDataConfigByLocation.styles,
       },
     ],
@@ -157,14 +143,13 @@ const RevenueReport = () => {
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
 
-  // eslint-disable-next-line no-unused-vars
   const [updatedIndustry, setUpdatedIndustry] = useState({
     id: uuidv4(),
-    labels: ['Movie', 'Finance', 'Garments', 'IT industry'],
+    labels: [],
     datasets: [
       {
         label: '',
-        data: [79, 39, 22, 44],
+        data: [],
         ...barDataConfigByIndustry.styles,
       },
     ],
@@ -241,25 +226,25 @@ const RevenueReport = () => {
   };
 
   const handleUpdatedReveueByLocation = useCallback(() => {
-    // const tempBarData = { ...updatedLocation, id: uuidv4() };
-    // if (revenueDataByLocation) {
-    //   revenueDataByLocation?.forEach((item, index) => {
-    //     tempBarData.labels[index] = item?._id;
-    //     tempBarData.datasets[0].data[index] = item?.total;
-    //   });
-    //   setUpdatedLocation(tempBarData);
-    // }
+    const tempBarData = { ...updatedLocation, id: uuidv4() };
+    if (revenueDataByLocation) {
+      revenueDataByLocation?.forEach((item, index) => {
+        tempBarData.labels[index] = item?._id;
+        tempBarData.datasets[0].data[index] = item?.total;
+      });
+      setUpdatedLocation(tempBarData);
+    }
   }, [revenueDataByLocation]);
 
   const handleUpdatedReveueByIndustry = useCallback(() => {
-    // const tempBarData = { ...updatedIndustry, id: uuidv4() };
-    // if (revenueDataByIndustry) {
-    //   revenueDataByIndustry?.forEach((item, index) => {
-    //     tempBarData.labels[index] = item?._id;
-    //     tempBarData.datasets[0].data[index] = item?.total;
-    //   });
-    //   setUpdatedIndustry(tempBarData);
-    // }
+    const tempBarData = { ...updatedIndustry, id: uuidv4() };
+    if (revenueDataByIndustry) {
+      revenueDataByIndustry?.forEach((item, index) => {
+        tempBarData.labels[index] = item?._id;
+        tempBarData.datasets[0].data[index] = item?.total;
+      });
+      setUpdatedIndustry(tempBarData);
+    }
   }, [revenueDataByIndustry]);
 
   useEffect(() => {
