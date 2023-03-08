@@ -17,9 +17,9 @@ const View = () => {
     ) : tabs === 1 ? (
       <ChangePassword />
     ) : tabs === 2 ? (
-      <DeleteAccount />
-    ) : (
       <SignatureAndLetterhead />
+    ) : (
+      <DeleteAccount />
     );
 
   useEffect(() => {

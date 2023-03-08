@@ -620,6 +620,8 @@ const InventoryReport = () => {
               <div className="w-[40%]">
                 {isInventoryStatsLoading ? (
                   <Loader className="mx-auto" />
+                ) : inventoryStats?.healthy === 0 && inventoryStats?.unHealthy ? (
+                  <p className="text-center">NA</p>
                 ) : (
                   <Doughnut options={config.options} data={inventoryHealthStatus} />
                 )}

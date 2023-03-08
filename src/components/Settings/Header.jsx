@@ -35,7 +35,7 @@ const Header = ({ tabs, setTabs }) => (
           'font-medium tracking-wide px-0',
         )}
       >
-        Delete Account
+        Upload Signature & Stamp
       </Button>
       <Button
         onClick={() => setTabs(3)}
@@ -46,7 +46,7 @@ const Header = ({ tabs, setTabs }) => (
           'font-medium tracking-wide px-0',
         )}
       >
-        Upload Signature & Stamp
+        Delete Account
       </Button>
     </div>
   </div>

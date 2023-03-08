@@ -30,6 +30,8 @@ const BookingStatisticsView = ({ bookingStats, isLoading }) => {
           <div className="w-32">
             {isLoading ? (
               <Loader className="mx-auto" />
+            ) : bookingStats?.online === 0 && bookingStats?.offline === 0 ? (
+              <p className="text-center">NA</p>
             ) : (
               <Doughnut options={{ responsive: true }} data={revenueBreakupData} />
             )}

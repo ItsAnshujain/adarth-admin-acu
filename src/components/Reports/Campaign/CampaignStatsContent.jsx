@@ -45,6 +45,8 @@ const CampaignStatsContent = ({ isStatsLoading, healthStatusData, stats }) => (
       <div className="w-32">
         {isStatsLoading ? (
           <Loader className="mx-auto" />
+        ) : stats?.healthy === 0 && stats?.unhealthy === 0 ? (
+          <p className="text-center">NA</p>
         ) : (
           <Doughnut options={config.options} data={healthStatusData} />
         )}

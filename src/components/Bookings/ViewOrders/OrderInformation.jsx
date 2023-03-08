@@ -112,6 +112,8 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
             <div className="w-32">
               {isLoading ? (
                 <Loader className="mx-auto" />
+              ) : bookingStats?.online === 0 && bookingStats?.offline === 0 ? (
+                <p className="text-center">NA</p>
               ) : (
                 <Doughnut options={config.options} data={healthStatusData} />
               )}

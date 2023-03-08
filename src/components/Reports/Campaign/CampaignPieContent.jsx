@@ -13,6 +13,8 @@ const CampaignPieContent = ({ isStatsLoading, mountStatusData, printStatusData, 
       <div className="w-32">
         {isStatsLoading ? (
           <Loader className="mx-auto" />
+        ) : stats?.printOngoing === 0 && stats?.printCompleted === 0 ? (
+          <p className="text-center">NA</p>
         ) : (
           <Doughnut options={config.options} data={printStatusData} />
         )}
@@ -41,6 +43,8 @@ const CampaignPieContent = ({ isStatsLoading, mountStatusData, printStatusData, 
       <div className="w-32">
         {isStatsLoading ? (
           <Loader className="mx-auto" />
+        ) : stats?.mountOngoing === 0 && stats?.mountCompleted === 0 ? (
+          <p className="text-center">NA</p>
         ) : (
           <Doughnut options={config.options} data={mountStatusData} />
         )}

@@ -34,6 +34,7 @@ export const masterTypes = {
   campaign_status: 'Campaign Status',
   industry: 'Industry',
   operational_cost_type: 'Operational Cost Type',
+  organization: 'Organization',
 };
 
 /**
