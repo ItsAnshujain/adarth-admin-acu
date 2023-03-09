@@ -2,6 +2,7 @@ import { Image, NativeSelect } from '@mantine/core';
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import GoogleMapReact from 'google-map-react';
+import { useSearchParams } from 'react-router-dom';
 import MarkerIcon from '../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
 import { useFetchMasters } from '../../hooks/masters.hooks';
@@ -19,32 +20,60 @@ const defaultProps = {
   zoom: 11,
 };
 
-const Marker = () => <Image src={MarkerIcon} width={40} height={40} />;
+const Marker = ({ title }) => <Image src={MarkerIcon} width={40} height={40} title={title} />;
 
 const MapView = ({ lists = [] }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const {
     data: categoryData,
     isSuccess: isCategoryDataLoaded,
     isLoading: isCategoryDataLoading,
-  } = useFetchMasters(serialize({ type: 'category', parentId: null, limit: 100, page: 1 }));
-  const [value, setValue] = useState('');
+  } = useFetchMasters(
+    serialize({
+      type: 'category',
+      parentId: null,
+      limit: 100,
+      page: 1,
+      sortBy: 'name',
+      sortOrder: 'asc',
+    }),
+  );
   const [mapInstance, setMapInstance] = useState(null);
+  const category = searchParams.get('category');
+
+  const handleCategory = e => {
+    if (e.target.value === 'reset') {
+      searchParams.delete('category');
+      setSearchParams(searchParams);
+      return;
+    }
+    searchParams.set('category', e.target.value);
+    setSearchParams(searchParams);
+  };
 
   const getAllLocations = useMemo(
     () =>
-      lists.map(item => {
-        if (item?.basicInformation?.category?._id === value) {
-          return (
-            <Marker lat={item?.location?.latitude} lng={item?.location?.longitude} key={item._id} />
-          );
-        }
-        return null;
-      }),
-    [lists, value],
+      lists.map(item => (
+        <Marker
+          lat={item?.location?.latitude}
+          lng={item?.location?.longitude}
+          key={item._id}
+          title={item?.basicInformation?.spaceName}
+        />
+      )),
+    [lists],
   );
 
-  useEffect(() => {
-    setValue(categoryData?.docs?.[0]._id || '');
+  const updatedCategoryList = useMemo(() => {
+    if (categoryData?.docs) {
+      const tempArr = [...categoryData.docs];
+      tempArr.unshift({ name: 'Reset', _id: 'reset' });
+
+      return tempArr;
+    }
+
+    return [];
   }, [categoryData]);
 
   useEffect(() => {
@@ -84,14 +113,14 @@ const MapView = ({ lists = [] }) => {
           {lists.length ? getAllLocations : null}
         </GoogleMapReact>
       </div>
-      <div className="absolute top-5 right-10 w-64">
+      <div className="absolute top-5 right-20 w-64">
         <NativeSelect
           className="mr-2"
-          value={value}
-          onChange={e => setValue(e.target.value)}
+          value={category}
+          onChange={e => handleCategory(e)}
           data={
             isCategoryDataLoaded
-              ? categoryData?.docs?.map(item => ({ label: item?.name, value: item?._id }))
+              ? updatedCategoryList.map(item => ({ label: item?.name, value: item?._id }))
               : []
           }
           styles={styles}

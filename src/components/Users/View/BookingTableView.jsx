@@ -5,7 +5,8 @@ import { Button, Loader, Progress, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { Link, useSearchParams } from 'react-router-dom';
-import { downloadAll, checkCampaignStats, serialize } from '../../../utils';
+import multiDownload from 'multi-download';
+import { checkCampaignStats, serialize } from '../../../utils';
 import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -354,7 +355,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
                   'font-medium  text-base',
                 )}
                 disabled={!campaign?.medias?.length}
-                onClick={() => downloadAll(campaign?.medias)}
+                onClick={() => multiDownload(campaign?.medias)}
               >
                 Download
               </Button>
