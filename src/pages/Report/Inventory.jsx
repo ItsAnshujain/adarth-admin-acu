@@ -21,8 +21,8 @@ import DomToPdf from 'dom-to-pdf';
 import { useDebouncedState } from '@mantine/hooks';
 import Header from '../../components/Reports/Header';
 import Table from '../../components/Table/Table';
-// import RowsPerPage from '../../components/RowsPerPage';
-// import Search from '../../components/Search';
+import RowsPerPage from '../../components/RowsPerPage';
+import Search from '../../components/Search';
 import BestIcon from '../../assets/best-performing-inventory.svg';
 import WorstIcon from '../../assets/worst-performing-inventory.svg';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -34,7 +34,7 @@ import {
 } from '../../hooks/inventory.hooks';
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import InventoryStatsContent from '../../components/Reports/Inventory/InventoryStatsContent';
-// import SubHeader from '../../components/Reports/Inventory/SubHeader';
+import SubHeader from '../../components/Reports/Inventory/SubHeader';
 import { categoryColors, monthsInShort, serialize } from '../../utils';
 
 dayjs.extend(quarterOfYear);
@@ -684,12 +684,12 @@ const InventoryReport = () => {
               </Tabs.List>
 
               <Tabs.Panel value="gallery" pt="lg">
-                {/* TODO: kept it for demo purpose will remove later */}
-                {/* <SubHeader />
+                {/* TODO: api dependent */}
+                <SubHeader />
                 <div className="flex justify-between h-20 items-center pr-7">
                   <RowsPerPage setCount={setCount} count={count} />
                   <Search search={searchInput} setSearch={setSearchInput} />
-                </div> */}
+                </div>
                 {inventoryReportList?.docs?.length === 0 && !inventoryReportListLoading ? (
                   <div className="w-full min-h-[400px] flex justify-center items-center">
                     <p className="text-xl">No records found</p>

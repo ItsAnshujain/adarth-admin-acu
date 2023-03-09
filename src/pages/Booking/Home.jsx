@@ -10,14 +10,7 @@ import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import AreaHeader from '../../components/Bookings/Header';
 import { useBookings, useBookingStats, useUpdateBookingStatus } from '../../hooks/booking.hooks';
-import {
-  downloadAll,
-  checkCampaignStats,
-  serialize,
-  temporaryPurchaseOrderPdfLink,
-  temporaryReleaseOrderPdfLink,
-  temporaryInvoicePdfLink,
-} from '../../utils';
+import { downloadAll, checkCampaignStats, serialize } from '../../utils';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from './BookingStatisticsView';
@@ -407,8 +400,7 @@ const Bookings = () => {
           useMemo(
             () => (
               <a
-                href={temporaryPurchaseOrderPdfLink}
-                // TODO: kept it for demo purpose will remove later
+                href={purchaseOrder}
                 className={classNames(
                   purchaseOrder
                     ? 'text-purple-450 cursor-pointer'
@@ -437,8 +429,7 @@ const Bookings = () => {
           useMemo(
             () => (
               <a
-                href={temporaryReleaseOrderPdfLink}
-                // TODO: kept it for demo purpose will remove later
+                href={releaseOrder}
                 className={classNames(
                   releaseOrder
                     ? 'text-purple-450 cursor-pointer'
@@ -467,8 +458,7 @@ const Bookings = () => {
           useMemo(
             () => (
               <a
-                href={temporaryInvoicePdfLink}
-                // TODO: kept it for demo purpose will remove later
+                href={invoice}
                 className={classNames(
                   invoice ? 'text-purple-450 cursor-pointer' : 'pointer-events-none text-gray-450',
                   'font-medium',

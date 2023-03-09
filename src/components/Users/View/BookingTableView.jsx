@@ -5,14 +5,7 @@ import { Button, Loader, Progress, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { Link, useSearchParams } from 'react-router-dom';
-import {
-  downloadAll,
-  checkCampaignStats,
-  serialize,
-  temporaryPurchaseOrderPdfLink,
-  temporaryReleaseOrderPdfLink,
-  temporaryInvoicePdfLink,
-} from '../../../utils';
+import { downloadAll, checkCampaignStats, serialize } from '../../../utils';
 import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -394,8 +387,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           useMemo(
             () => (
               <a
-                href={temporaryPurchaseOrderPdfLink}
-                // TODO: kept it for demo purpose will remove later
+                href={purchaseOrder}
                 className={classNames(
                   purchaseOrder
                     ? 'text-purple-450 cursor-pointer'
@@ -424,8 +416,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           useMemo(
             () => (
               <a
-                href={temporaryReleaseOrderPdfLink}
-                // TODO: kept it for demo purpose will remove later
+                href={releaseOrder}
                 className={classNames(
                   releaseOrder
                     ? 'text-purple-450 cursor-pointer'
@@ -454,8 +445,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           useMemo(
             () => (
               <a
-                href={temporaryInvoicePdfLink}
-                // TODO: kept it for demo purpose will remove later
+                href={invoice}
                 className={classNames(
                   invoice ? 'text-purple-450 cursor-pointer' : 'pointer-events-none text-gray-450',
                   'font-medium',

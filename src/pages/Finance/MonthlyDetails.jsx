@@ -14,13 +14,7 @@ import Table from '../../components/Table/Table';
 import { useFetchFinanceByYearAndMonth, useUpdateFinanceById } from '../../hooks/finance.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import FinanceMenuPopover from '../../components/Popovers/FinanceMenuPopover';
-import {
-  downloadPdf,
-  ROLES,
-  temporaryInvoicePdfLink,
-  temporaryPurchaseOrderPdfLink,
-  temporaryReleaseOrderPdfLink,
-} from '../../utils';
+import { downloadPdf, ROLES } from '../../utils';
 import RoleBased from '../../components/RoleBased';
 
 const DATE_FORMAT = 'DD MMM, YYYY';
@@ -231,17 +225,16 @@ const Home = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, file },
           },
         }) =>
           useMemo(
             () => (
               <FinanceMenuPopover
                 itemId={_id}
-                // TODO: kept it for demo purpose will remove later
-                onClickCopyLink={() => navigator.clipboard.writeText(temporaryPurchaseOrderPdfLink)}
-                onClickDownloadPdf={() => downloadPdf(temporaryPurchaseOrderPdfLink)}
-                pdfLink={temporaryPurchaseOrderPdfLink}
+                onClickCopyLink={() => navigator.clipboard.writeText(file)}
+                onClickDownloadPdf={() => downloadPdf(file)}
+                pdfLink={file}
               />
             ),
             [],
@@ -408,17 +401,16 @@ const Home = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, file },
           },
         }) =>
           useMemo(
             () => (
               <FinanceMenuPopover
                 itemId={_id}
-                // TODO: kept it for demo purpose will remove later
-                onClickCopyLink={() => navigator.clipboard.writeText(temporaryReleaseOrderPdfLink)}
-                onClickDownloadPdf={() => downloadPdf(temporaryReleaseOrderPdfLink)}
-                pdfLink={temporaryReleaseOrderPdfLink}
+                onClickCopyLink={() => navigator.clipboard.writeText(file)}
+                onClickDownloadPdf={() => downloadPdf(file)}
+                pdfLink={file}
               />
             ),
             [],
@@ -595,17 +587,16 @@ const Home = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, file },
           },
         }) =>
           useMemo(
             () => (
               <FinanceMenuPopover
                 itemId={_id}
-                // TODO: kept it for demo purpose will remove later
-                onClickCopyLink={() => navigator.clipboard.writeText(temporaryInvoicePdfLink)}
-                onClickDownloadPdf={() => downloadPdf(temporaryInvoicePdfLink)}
-                pdfLink={temporaryInvoicePdfLink}
+                onClickCopyLink={() => navigator.clipboard.writeText(file)}
+                onClickDownloadPdf={() => downloadPdf(file)}
+                pdfLink={file}
               />
             ),
             [],
