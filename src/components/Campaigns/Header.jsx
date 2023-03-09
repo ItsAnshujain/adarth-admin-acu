@@ -40,7 +40,7 @@ const AreaHeader = ({ text }) => {
         <div className="mr-2 flex ">
           <Button
             className={classNames(
-              'px-4 border-gray-300 border rounded-md',
+              'px-4 border-gray-300 border rounded-l-md rounded-r-none',
               activeLayout.campaign === 'grid' ? 'bg-white' : 'bg-purple-450',
             )}
             onClick={handleListClick}
@@ -55,7 +55,7 @@ const AreaHeader = ({ text }) => {
           </Button>
           <Button
             className={classNames(
-              'text-white border-gray-300 border px-4 rounded-md',
+              'text-white border-gray-300 border px-4 rounded-r-md rounded-l-none',
               activeLayout.campaign === 'list' ? 'bg-white' : 'bg-purple-450',
             )}
             onClick={handleGridClick}

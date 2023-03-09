@@ -25,14 +25,14 @@ const ProcessPipeline = ({ bookingData }) => {
             isSuccess:
               (bookingData?.currentStatus?.paymentStatus?.toLowerCase() === 'paid' &&
                 bookingData?.campaign?.medias?.length) ||
-              bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'print' ||
+              bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'in progress' ||
               bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed',
           },
           {
             status: 'Sent For Printing',
             date: bookingData?.printingStatus?.Print || bookingData?.printingStatus?.Completed,
             isSuccess:
-              bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'print' ||
+              bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'in progress' ||
               bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed',
             hasBottomEdge: false,
             className: 'ml-[55px]',
@@ -58,14 +58,14 @@ const ProcessPipeline = ({ bookingData }) => {
             isSuccess:
               (bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed' &&
                 bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'upcoming') ||
-              bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'mount' ||
+              bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'in progress' ||
               bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'completed',
           },
           {
             status: 'Mounting in Progress',
             date: bookingData?.mountingStatus?.Mount || bookingData?.mountingStatus?.Completed,
             isSuccess:
-              bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'mount' ||
+              bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'in progress' ||
               bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'completed',
             hasBottomEdge: false,
             className: 'ml-[55px]',

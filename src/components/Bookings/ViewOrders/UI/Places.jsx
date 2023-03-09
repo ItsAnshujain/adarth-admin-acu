@@ -290,7 +290,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
                 disabled={
                   isUpdateCampaignStatusLoading ||
                   data?.currentStatus?.printingStatus?.toLowerCase() === 'upcoming' ||
-                  data?.currentStatus?.printingStatus?.toLowerCase() === 'print' ||
+                  data?.currentStatus?.printingStatus?.toLowerCase() === 'in progress' ||
                   data?.currentStatus?.mountingStatus?.toLowerCase() === 'completed'
                 }
               />

@@ -117,7 +117,7 @@ const Booking = ({ inventoryId }) => {
                 className={classNames(
                   currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
                     ? 'text-blue-600'
-                    : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
+                    : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
                     ? 'text-purple-450'
                     : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                     ? 'text-green-400'
@@ -127,7 +127,7 @@ const Booking = ({ inventoryId }) => {
               >
                 {currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Printing upcoming'
-                  : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Printing in progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Printing completed'
@@ -151,7 +151,7 @@ const Booking = ({ inventoryId }) => {
                 className={classNames(
                   currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
                     ? 'text-blue-600'
-                    : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                    : currentStatus?.mountingStatus?.toLowerCase()?.includes('in progress')
                     ? 'text-purple-450'
                     : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                     ? 'text-green-400'
@@ -161,7 +161,7 @@ const Booking = ({ inventoryId }) => {
               >
                 {currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Mounting upcoming'
-                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Mounting in progress'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                   ? 'Mounting completed'
