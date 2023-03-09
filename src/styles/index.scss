@@ -33,3 +33,7 @@
 .danger-buton {
   @apply font-dmSans bg-orange-450 text-white disabled:bg-orange-400 #{!important};
 }
+
+.transparent-black {
+  background: rgba(0, 0, 0, 0.5);
+}

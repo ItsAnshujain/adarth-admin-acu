@@ -186,8 +186,8 @@ const Overview = ({ bookingData = {}, isLoading }) => {
                   {previewSpacesPhotos?.length > 4 && (
                     <div className="border-[1px] border-gray mr-2 mb-4">
                       <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
-                        <Center className="h-full">
-                          <Text weight="bold" color="white" className="mix-blend-difference">
+                        <Center className="h-full transparent-black">
+                          <Text weight="bold" color="white">
                             +{previewSpacesPhotos.length - 4} more
                           </Text>
                         </Center>
