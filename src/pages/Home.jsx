@@ -262,6 +262,8 @@ const HomePage = () => {
                 <div className="w-32">
                   {isInventoryStatsLoading ? (
                     <Loader className="mx-auto" />
+                  ) : inventoryStats?.healthy === 0 && inventoryStats?.unHealthy === 0 ? (
+                    <p className="text-center">NA</p>
                   ) : (
                     <Doughnut options={config.options} data={inventoryHealthStatus} />
                   )}

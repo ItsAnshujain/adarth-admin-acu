@@ -1,15 +1,18 @@
 import { ActionIcon, Badge, Box, Button, Image, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dropzone } from '@mantine/dropzone';
 import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
+import { useQueryClient } from '@tanstack/react-query';
 import modalConfig from '../../utils/modalConfig';
 import { useDeleteUploadedFile, useUploadFile } from '../../hooks/upload.hooks';
 import image from '../../assets/image.png';
 import { supportedTypes } from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
 import trash from '../../assets/trash.svg';
+import { useUpdateUsers } from '../../hooks/users.hooks';
+import useUserStore from '../../store/user.store';
 
 const initialValues = {
   signature: '',
@@ -22,12 +25,18 @@ const schema = yup.object({
 });
 
 const SignatureAndLetterhead = () => {
+  const queryClient = useQueryClient();
   const modals = useModals();
   const form = useForm({ validate: yupResolver(schema), initialValues });
-  const { mutateAsync: upload, isLoading } = useUploadFile();
+  const { mutateAsync: upload, isLoading: isUploadLoading } = useUploadFile();
   const { mutateAsync: deleteFile, isLoading: isDeleteLoading } = useDeleteUploadedFile();
+  const { mutateAsync: updateUser, isLoading: isUserUpdateLoading } = useUpdateUsers();
+  const userId = useUserStore(state => state.id);
+  const userData = queryClient.getQueryData(['users-by-id', userId]);
+  const [activeImage, setActiveImage] = useState();
 
   const onHandleDrop = async (params, key) => {
+    setActiveImage(key);
     const formData = new FormData();
     formData.append('files', params?.[0]);
     const res = await upload(formData);
@@ -53,6 +62,8 @@ const SignatureAndLetterhead = () => {
 
   const handleDeleteImage = async (e, key) => {
     e.stopPropagation();
+    setActiveImage(key);
+
     if (form.values[key]) {
       await deleteFile(form.values[key].split('/').at(-1), {
         onSuccess: () => form.setFieldValue(key, ''),
@@ -61,10 +72,27 @@ const SignatureAndLetterhead = () => {
   };
 
   const handleSubmit = formData => {
-    // TODO:api integration left
-    // eslint-disable-next-line no-console
-    console.log(formData);
+    const data = { ...formData };
+    Object.keys(data).forEach(key => {
+      if (data[key] === '') {
+        delete data[key];
+      }
+    });
+
+    updateUser({ userId, data });
   };
+
+  useEffect(() => {
+    if (userData) {
+      form.setValues({
+        letterHead: userData?.letterHead || '',
+        signature: userData?.signature || '',
+      });
+    }
+    return () => {
+      form.reset();
+    };
+  }, [userData]);
 
   return (
     <article>
@@ -81,28 +109,30 @@ const SignatureAndLetterhead = () => {
               ))}
             </div>
             <div className="flex items-start">
-              <div className="h-[180px] w-[350px] mr-4 mb-6">
-                <Dropzone
-                  onDrop={data => onHandleDrop(data, 'signature')}
-                  accept={['image/png', 'image/jpeg']}
-                  className="h-full w-full flex justify-center items-center bg-slate-100"
-                  loading={isLoading}
-                  name="signature"
-                  multiple={false}
-                  {...form.getInputProps('signature')}
-                >
-                  <div className="flex items-center justify-center">
-                    <Image src={image} alt="placeholder" height={50} width={50} />
-                  </div>
-                  <p>
-                    Drag and Drop your file here, or{' '}
-                    <span className="text-purple-450 border-none">browse</span>
-                  </p>
-                </Dropzone>
-                {form.errors?.signature ? (
-                  <p className="mt-1 text-xs text-red-450">{form.errors?.signature}</p>
-                ) : null}
-              </div>
+              {!form.values?.signature ? (
+                <div className="h-[180px] w-[350px] mr-4 mb-2">
+                  <Dropzone
+                    onDrop={imagePath => onHandleDrop(imagePath, 'signature')}
+                    accept={['image/png', 'image/jpeg']}
+                    className="h-full w-full flex justify-center items-center bg-slate-100"
+                    loading={activeImage === 'signature' && isUploadLoading}
+                    name="signature"
+                    multiple={false}
+                    {...form.getInputProps('signature')}
+                  >
+                    <div className="flex items-center justify-center">
+                      <Image src={image} alt="placeholder" height={50} width={50} />
+                    </div>
+                    <p>
+                      Drag and Drop your file here, or{' '}
+                      <span className="text-purple-450 border-none">browse</span>
+                    </p>
+                  </Dropzone>
+                  {form.errors?.signature ? (
+                    <p className="mt-1 text-xs text-red-450">{form.errors?.signature}</p>
+                  ) : null}
+                </div>
+              ) : null}
               <Box
                 className="bg-white border rounded-md cursor-zoom-in"
                 onClick={() => toggleImagePreviewModal(form.values?.signature)}
@@ -123,7 +153,7 @@ const SignatureAndLetterhead = () => {
                     <ActionIcon
                       className="absolute right-2 top-1 bg-white"
                       onClick={e => handleDeleteImage(e, 'signature')}
-                      loading={isDeleteLoading}
+                      loading={activeImage === 'signature' && isDeleteLoading}
                       disabled={isDeleteLoading}
                     >
                       <Image src={trash} alt="trash-icon" />
@@ -132,14 +162,6 @@ const SignatureAndLetterhead = () => {
                 ) : null}
               </Box>
             </div>
-            <Button
-              className="primary-button"
-              type="submit"
-              loading={isLoading}
-              disabled={isLoading}
-            >
-              Upload
-            </Button>
           </section>
 
           <section className="border-b py-4 px-5">
@@ -153,28 +175,30 @@ const SignatureAndLetterhead = () => {
               ))}
             </div>
             <div className="flex items-start">
-              <div className="h-[180px] w-[350px] mr-4 mb-6">
-                <Dropzone
-                  onDrop={data => onHandleDrop(data, 'letterHead')}
-                  accept={['image/png', 'image/jpeg']}
-                  className="h-full w-full flex justify-center items-center bg-slate-100"
-                  loading={isLoading}
-                  name="letterHead"
-                  multiple={false}
-                  {...form.getInputProps('letterHead')}
-                >
-                  <div className="flex items-center justify-center">
-                    <Image src={image} alt="placeholder" height={50} width={50} />
-                  </div>
-                  <p>
-                    Drag and Drop your file here, or{' '}
-                    <span className="text-purple-450 border-none">browse</span>
-                  </p>
-                </Dropzone>
-                {form.errors?.letterHead ? (
-                  <p className="mt-1 text-xs text-red-450">{form.errors?.letterHead}</p>
-                ) : null}
-              </div>
+              {!form.values?.letterHead ? (
+                <div className="h-[180px] w-[350px] mr-4 mb-2">
+                  <Dropzone
+                    onDrop={imagePath => onHandleDrop(imagePath, 'letterHead')}
+                    accept={['image/png', 'image/jpeg']}
+                    className="h-full w-full flex justify-center items-center bg-slate-100"
+                    loading={activeImage === 'letterHead' && isUploadLoading}
+                    name="letterHead"
+                    multiple={false}
+                    {...form.getInputProps('letterHead')}
+                  >
+                    <div className="flex items-center justify-center">
+                      <Image src={image} alt="placeholder" height={50} width={50} />
+                    </div>
+                    <p>
+                      Drag and Drop your file here, or{' '}
+                      <span className="text-purple-450 border-none">browse</span>
+                    </p>
+                  </Dropzone>
+                  {form.errors?.letterHead ? (
+                    <p className="mt-1 text-xs text-red-450">{form.errors?.letterHead}</p>
+                  ) : null}
+                </div>
+              ) : null}
               <Box
                 className="bg-white border rounded-md cursor-zoom-in"
                 onClick={() => toggleImagePreviewModal(form.values?.letterHead)}
@@ -195,7 +219,7 @@ const SignatureAndLetterhead = () => {
                     <ActionIcon
                       className="absolute right-2 top-1 bg-white"
                       onClick={e => handleDeleteImage(e, 'letterHead')}
-                      loading={isDeleteLoading}
+                      loading={activeImage === 'letterHead' && isDeleteLoading}
                       disabled={isDeleteLoading}
                     >
                       <Image src={trash} alt="trash-icon" />
@@ -205,10 +229,10 @@ const SignatureAndLetterhead = () => {
               </Box>
             </div>
             <Button
-              className="primary-button"
+              className="primary-button mt-4"
               type="submit"
-              loading={isLoading}
-              disabled={isLoading}
+              loading={isUploadLoading || isUserUpdateLoading}
+              disabled={isUploadLoading || isUserUpdateLoading}
             >
               Upload
             </Button>

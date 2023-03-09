@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import Header from '../../components/Finance/Header';
 import { useFetchFinance } from '../../hooks/finance.hooks';
-import toIndianCurrency from '../../utils/currencyFormat';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -40,16 +39,18 @@ const Home = () => {
           >
             <Folder size={32} strokeWidth="1.2" />
             <p className="font-bold text-lg">Year {finance?._id || 'NA'}</p>
-            <div className="flex justify-between gap-4">
-              <div>
-                <p className="text-xs font-medium text-slate-400 mb-1">Total Sales</p>
-                <p className="text-orange-400">{toIndianCurrency(finance?.totalSales || 0)}</p>
+            <div className="flex flex-col">
+              <div className="flex">
+                <p className="text-sm font-medium text-slate-400 mr-2">Total Purchase Orders</p>
+                <p className="text-green-400">{finance?.totalOperationlCost || 0}</p>
               </div>
-              <div>
-                <p className="text-xs font-medium text-slate-400 mb-1">Total Operational Cost</p>
-                <p className="text-green-400">
-                  {toIndianCurrency(finance?.totalOperationlCost || 0)}
-                </p>
+              <div className="flex">
+                <p className="text-sm font-medium text-slate-400 mr-2">Total Release Orders</p>
+                <p className="text-purple-400">{finance?.totalOperationlCost || 0}</p>
+              </div>
+              <div className="flex">
+                <p className="text-sm font-medium text-slate-400 mr-2">Total Invoices</p>
+                <p className="text-orange-400">{finance?.totalSales || 0}</p>
               </div>
             </div>
           </Box>

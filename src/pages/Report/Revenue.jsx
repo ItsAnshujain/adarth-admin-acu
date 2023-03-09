@@ -284,6 +284,8 @@ const RevenueReport = () => {
               <div className="w-80 m-auto">
                 {isByIndustryLoading ? (
                   <Loader className="mx-auto" />
+                ) : !updatedIndustry.length ? (
+                  <p className="text-center">NA</p>
                 ) : (
                   <Pie
                     data={updatedIndustry}
