@@ -48,6 +48,14 @@ const sliderStyle = {
 
 const marks = [{ value: 1600000 }, { value: 3200000 }];
 
+const query = {
+  parentId: null,
+  limit: 100,
+  page: 1,
+  sortBy: 'name',
+  sortOrder: 'asc',
+};
+
 const Specification = () => {
   const { values, errors, setFieldValue } = useFormContext();
 
@@ -55,17 +63,17 @@ const Specification = () => {
     data: illuminationData,
     isLoading: isIlluminationLoading,
     isSuccess: isIlluminationLoaded,
-  } = useFetchMasters(serialize({ type: 'illumination', limit: 100, page: 1 }));
+  } = useFetchMasters(serialize({ type: 'illumination', ...query }));
   const {
     data: brandData,
     isLoading: isBrandLoading,
     isSuccess: isBrandLoaded,
-  } = useFetchMasters(serialize({ type: 'brand', limit: 100, page: 1 }));
+  } = useFetchMasters(serialize({ type: 'brand', ...query }));
   const {
     data: tagData,
     isLoading: isTagLoading,
     isSuccess: isTagLoaded,
-  } = useFetchMasters(serialize({ type: 'tag', limit: 100, page: 1 }));
+  } = useFetchMasters(serialize({ type: 'tag', ...query }));
 
   return (
     <div className="flex flex-col pl-5 pr-7 pt-4 mb-44">

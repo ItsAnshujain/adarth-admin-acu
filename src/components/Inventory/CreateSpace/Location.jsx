@@ -17,18 +17,27 @@ const styles = {
     letterSpacing: '0.5px',
   },
 };
+
+const query = {
+  parentId: null,
+  limit: 100,
+  page: 1,
+  sortBy: 'name',
+  sortOrder: 'asc',
+};
+
 const Location = () => {
   const { errors, values } = useFormContext();
   const {
     data: zoneData,
     isLoading: isZoneLoading,
     isSuccess: isZoneLoaded,
-  } = useFetchMasters(serialize({ type: 'zone', limit: 100, page: 1 }));
+  } = useFetchMasters(serialize({ type: 'zone', ...query }));
   const {
     data: facingData,
     isLoading: isFacingLoading,
     isSuccess: isFacingLoaded,
-  } = useFetchMasters(serialize({ type: 'facing', limit: 100, page: 1 }));
+  } = useFetchMasters(serialize({ type: 'facing', ...query }));
 
   const verifyCoordinates = useCallback(
     debounce(async (latitude, longitude) => {

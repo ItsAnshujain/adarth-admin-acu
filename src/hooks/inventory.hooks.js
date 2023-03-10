@@ -62,7 +62,7 @@ export const useUpdateInventory = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['inventory']);
-
+        queryClient.invalidateQueries(['inventory-by-id']);
         showNotification({
           title: 'Inventory updated successfully',
           color: 'green',
