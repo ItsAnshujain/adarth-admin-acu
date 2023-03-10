@@ -54,6 +54,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
       sortBy: 'createdAt',
       filter: userCachedData?.role === 'admin' ? 'all' : 'team',
     }),
+    userCachedData?.role !== 'associate',
   );
 
   const { mutate: updateCampaign } = useUpdateCampaign();
@@ -234,19 +235,23 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
             </div>
             <div>
               <p className="text-slate-400">Campaign Incharge</p>
-              <NativeSelect
-                styles={styles}
-                disabled={
-                  isLoadingUserData ||
-                  (userCachedData?.role === 'associate' &&
-                    bookingData?.campaign?.incharge?.[0]?._id !== userCachedData?._id)
-                }
-                placeholder="Select..."
-                data={inchargeList}
-                onChange={e => handleAddIncharge(e.target.value)}
-                className="mb-7"
-                value={bookingData ? bookingData?.campaign?.incharge?.[0]?._id : ''}
-              />
+              {userCachedData?.role === 'associate' ? (
+                <p>{userCachedData?.name}</p>
+              ) : (
+                <NativeSelect
+                  styles={styles}
+                  disabled={
+                    isLoadingUserData ||
+                    (userCachedData?.role === 'associate' &&
+                      bookingData?.campaign?.incharge?.[0]?._id !== userCachedData?._id)
+                  }
+                  placeholder="Select..."
+                  data={inchargeList}
+                  onChange={e => handleAddIncharge(e.target.value)}
+                  className="mb-7"
+                  value={bookingData ? bookingData?.campaign?.incharge?.[0]?._id : ''}
+                />
+              )}
             </div>
             <div>
               <p className="text-slate-400">Start Date</p>

@@ -94,8 +94,10 @@ const Home = () => {
           },
         }) =>
           useMemo(() => {
-            const isOccupied = bookingRange?.some(item =>
-              dayjs().isBetween(item?.startDate, item?.endDate),
+            const isOccupied = bookingRange?.some(
+              item =>
+                dayjs().isBetween(item?.startDate, item?.endDate) ||
+                dayjs(item?.startDate).isSame(dayjs(item?.endDate), 'day'),
             );
 
             return (
@@ -148,9 +150,13 @@ const Home = () => {
         accessor: 'peer',
         Cell: ({
           row: {
-            original: { peer },
+            original: { createdBy },
           },
-        }) => useMemo(() => <p className="w-fit">{peer || '-'}</p>, []),
+        }) =>
+          useMemo(
+            () => <p className="w-fit">{createdBy && createdBy?.isPeer ? createdBy.name : '-'}</p>,
+            [],
+          ),
       },
       {
         Header: 'CATEGORY',

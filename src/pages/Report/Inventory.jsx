@@ -65,8 +65,13 @@ const config = {
 const InventoryReport = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const chartRef = useRef(null);
-  // eslint-disable-next-line no-unused-vars
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  //  TODO: wip api dependent
+  // eslint-disable-next-line no-unused-vars
+  const [queryByTime, setQueryByTime] = useState({
+    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
+    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+  });
   const [inventoryQuery, setInventoryQuery] = useState({
     'limit': 10,
     'page': 1,
@@ -74,7 +79,6 @@ const InventoryReport = () => {
     'sortBy': 'basicInformation.spaceName',
   });
 
-  // eslint-disable-next-line no-unused-vars
   const [count, setCount] = useState('20');
   const [areaData, setAreaData] = useState({
     id: uuidv4(),
@@ -683,12 +687,14 @@ const InventoryReport = () => {
                 </Tabs.Tab>
               </Tabs.List>
 
-              <Tabs.Panel value="gallery" pt="lg">
+              <Tabs.Panel value="gallery">
                 {/* TODO: api dependent */}
-                <SubHeader />
-                <div className="flex justify-between h-20 items-center pr-7">
+                <div className="flex justify-between h-20 items-center">
                   <RowsPerPage setCount={setCount} count={count} />
-                  <Search search={searchInput} setSearch={setSearchInput} />
+                  <div className="flex flex-1 justify-end items-center">
+                    <Search search={searchInput} setSearch={setSearchInput} />
+                    <SubHeader />
+                  </div>
                 </div>
                 {inventoryReportList?.docs?.length === 0 && !inventoryReportListLoading ? (
                   <div className="w-full min-h-[400px] flex justify-center items-center">

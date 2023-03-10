@@ -24,6 +24,7 @@ import ViewByFilter from '../../components/Reports/ViewByFilter';
 import {
   useFetchFinanceByIndustry,
   useFetchFinanceByLocation,
+  useFetchFinanceByRevenueGraph,
   useFetchFinanceByStats,
 } from '../../hooks/finance.hooks';
 import { dateByQuarter, monthsInShort, serialize } from '../../utils';
@@ -125,6 +126,12 @@ export const pieData = {
 };
 
 const RevenueReport = () => {
+  const [queryByReveueGraph, setQueryByRevenueGraph] = useState({
+    'groupBy': 'month',
+    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
+    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+  });
+
   const [updatedLocation, setUpdatedLocation] = useState({
     id: uuidv4(),
     labels: [],
@@ -164,12 +171,47 @@ const RevenueReport = () => {
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const { data: revenueData } = useFetchFinanceByStats();
+  //  TODO: wip
+  // eslint-disable-next-line no-unused-vars
+  const { data: revenueGraphData, isLoading: isRevenueGraphLoading } =
+    useFetchFinanceByRevenueGraph(serialize(queryByReveueGraph));
   const { data: revenueDataByLocation, isLoading: isByLocationLoading } = useFetchFinanceByLocation(
     serialize(queryByLocation),
   );
   const { data: revenueDataByIndustry, isLoading: isByIndustryLoading } = useFetchFinanceByIndustry(
     serialize(queryByIndustry),
   );
+
+  const handleRevenueGraphViewBy = viewType => {
+    if (viewType === 'reset') {
+      setQueryByRevenueGraph({
+        'groupBy': 'month',
+        'startDate': dayjs().startOf('year').format(DATE_FORMAT),
+        'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+      });
+    }
+    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
+      setQueryByRevenueGraph(prevState => ({
+        ...prevState,
+        'groupBy':
+          viewType === 'year'
+            ? 'month'
+            : viewType === 'month'
+            ? 'dayOfMonth'
+            : viewType === 'week'
+            ? 'dayOfWeek'
+            : 'month',
+        'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
+        'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
+      }));
+    }
+    if (viewType === 'quarter') {
+      setQueryByRevenueGraph({
+        'groupBy': 'month',
+        ...dateByQuarter[dayjs().quarter()],
+      });
+    }
+  };
 
   const handleLocationViewBy = viewType => {
     if (viewType === 'reset') {
@@ -262,19 +304,23 @@ const RevenueReport = () => {
         <div className="mr-7 pl-5 mt-5 mb-10" id="revenue-pdf">
           <RevenueStatsContent revenueData={revenueData} />
           <div className="flex gap-8">
-            <div className="w-[70%] flex flex-col justify-between">
+            <div className="w-[70%] flex flex-col justify-between min-h-[300px]">
               <div className="flex justify-between items-center">
                 <p className="font-bold">Revenue Graph</p>
-                {/* TODO: wip */}
-                <ViewByFilter handleViewBy={() => {}} />
+                <ViewByFilter handleViewBy={handleRevenueGraphViewBy} />
               </div>
-              <div className="flex flex-col pl-7 relative">
-                <p className="transform rotate-[-90deg] absolute left-[-25px] top-[40%]">
-                  In Lakhs &gt;
-                </p>
-                <Line height="100" data={lineData} options={options} />
-                <p className="text-center">Months &gt;</p>
-              </div>
+              {isRevenueGraphLoading ? (
+                <Loader className="m-auto" />
+              ) : (
+                <div className="flex flex-col pl-7 relative">
+                  <p className="transform rotate-[-90deg] absolute left-[-25px] top-[40%]">
+                    In Lakhs &gt;
+                  </p>
+                  {/* TODO: wip */}
+                  <Line height="100" data={lineData} options={options} />
+                  <p className="text-center">Months &gt;</p>
+                </div>
+              )}
             </div>
             <div className="w-[30%] flex flex-col">
               <div className="flex justify-between items-start">

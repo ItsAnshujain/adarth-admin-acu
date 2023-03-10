@@ -50,6 +50,7 @@ const initialAdminValues = {
   email: '',
   role: { label: '', value: '' },
   company: { label: '', value: '' },
+  companyId: '',
 };
 
 const CreateUser = () => {
@@ -76,7 +77,14 @@ const CreateUser = () => {
       const data = { ...formData, role: formData.role.value };
       if (userCachedData?.role === 'admin') {
         data.company = formData.company.label;
+        data.companyId = formData.company.value;
       }
+
+      Object.keys(data).forEach(key => {
+        if (data[key] === '') {
+          delete data[key];
+        }
+      });
 
       create(data, {
         onSuccess: () => {

@@ -15,13 +15,13 @@ const SubHeader = ({ title = '' }) => {
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
 
   return (
-    <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
+    <div className="h-[60px] flex justify-between items-center">
       <div className="pl-5">
         <Text size="lg" weight="bold">
           {title}
         </Text>
       </div>
-      <div className="flex justify-around mr-7">
+      <div className="flex justify-around">
         <div ref={ref} className="relative mr-2">
           <Button onClick={toggleDatePicker} variant="default">
             <Image src={calendar} className="h-5" alt="calendar" />
