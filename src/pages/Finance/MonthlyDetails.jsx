@@ -235,6 +235,7 @@ const Home = () => {
                 onClickCopyLink={() => navigator.clipboard.writeText(file)}
                 onClickDownloadPdf={() => downloadPdf(file)}
                 pdfLink={file}
+                type={recordType}
               />
             ),
             [],
@@ -411,6 +412,7 @@ const Home = () => {
                 onClickCopyLink={() => navigator.clipboard.writeText(file)}
                 onClickDownloadPdf={() => downloadPdf(file)}
                 pdfLink={file}
+                type={recordType}
               />
             ),
             [],
@@ -597,6 +599,7 @@ const Home = () => {
                 onClickCopyLink={() => navigator.clipboard.writeText(file)}
                 onClickDownloadPdf={() => downloadPdf(file)}
                 pdfLink={file}
+                type={recordType}
               />
             ),
             [],

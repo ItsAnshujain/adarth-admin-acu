@@ -82,7 +82,7 @@ const CreateProposals = () => {
       }));
 
       Object.keys(data).forEach(key => {
-        if (data[key] === '' || data[key] === undefined) {
+        if (data[key] === undefined) {
           delete data[key];
         }
       });
