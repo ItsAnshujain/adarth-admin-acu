@@ -263,7 +263,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
             <Loader />
           </div>
         ) : null}
-        {spacesData?.docs?.length === 0 && !isCampaignDataLoading ? (
+        {!spacesData?.docs?.length && !isCampaignDataLoading ? (
           <div className="w-full min-h-[400px] flex justify-center items-center">
             <p className="text-xl">No records found</p>
           </div>

@@ -348,7 +348,7 @@ const ProposalDetails = () => {
           <Loader />
         </div>
       ) : null}
-      {proposalData?.inventories?.docs?.length === 0 && !isProposalDataLoading ? (
+      {!proposalData?.inventories?.docs?.length && !isProposalDataLoading ? (
         <div className="w-full min-h-[300px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

@@ -125,28 +125,39 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
               <Text weight="bold" className="capitalize">
                 {proposalData?.name}
               </Text>
-              <div className="grid grid-cols-1">
-                <div>
-                  <Text color="grey" weight="400">
-                    Description
-                  </Text>
-                  <Text weight="bolder">
-                    {proposalData?.description
-                      ? proposalData.description
-                      : `Our outdoor advertisementcampaign is the perfect way to get your brand in front of a large audience. 
+              <div className="grid grid-cols-1 mb-2">
+                <Text color="grey" weight="400">
+                  Description
+                </Text>
+                <Text>
+                  {proposalData?.description
+                    ? proposalData.description
+                    : `Our outdoor advertisementcampaign is the perfect way to get your brand in front of a large audience. 
                         With eye-catching graphics and strategic placement, our billboards and digital displays will capture the attention of anyone passing by. 
                         Our team will work with you to create a curated campaign that perfectly showcases your brand's message and identity.
                          From busy city streets to suburban highways, our outdoor advertising options are the perfect way to increase your brand's visibility and reach.
                        Don't miss out on the opportunity to make a lasting impression with your target audience.`}
-                  </Text>
-                </div>
+                </Text>
               </div>
-              <div className="grid grid-cols-3 mb-3">
+              <div className="grid grid-cols-2 mb-3">
                 <div className="col-span-1">
                   <Text color="grey" weight="400">
                     Total Spaces
                   </Text>
-                  <Text weight="bolder">{proposalData?.totalSpaces || 0}</Text>
+                  <div className="flex">
+                    {proposalData?.categoryName?.length
+                      ? proposalData.categoryName?.map(item => (
+                          <>
+                            <Text weight="bolder" className="mr-2">
+                              {item?.total}
+                            </Text>
+                            <Text weight="bolder" className="mr-2">
+                              {item?._id}
+                            </Text>
+                          </>
+                        ))
+                      : 0}
+                  </div>
                 </div>
                 <div>
                   <Text color="grey" weight="400">
@@ -155,7 +166,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                   <Text weight="bolder">{proposalData?.totalImpression || 0}</Text>
                 </div>
               </div>
-              <div className="grid grid-cols-3 mb-3">
+              <div className="grid grid-cols-2 mb-3">
                 <div className="col-span-1">
                   <Text color="grey" weight="400">
                     Price
@@ -171,7 +182,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                   <Text weight="bolder">{proposalData?.totalCities || 0}</Text>
                 </div>
               </div>
-              <div className="grid grid-cols-3 mb-3">
+              <div className="grid grid-cols-2 mb-3">
                 <div>
                   <Text color="grey" weight="400">
                     Overall Start Date

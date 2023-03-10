@@ -1,20 +1,13 @@
 import React from 'react';
-import { ActionIcon, Anchor, Menu } from '@mantine/core';
-import { Share2, Mail, Link as LinkIcon } from 'react-feather';
+import { ActionIcon, Menu } from '@mantine/core';
+import { Share2 } from 'react-feather';
 import { useModals } from '@mantine/modals';
 import MenuIcon from '../Menu';
-import whatsapp from '../../assets/whatsapp.svg';
 import modalConfig from '../../utils/modalConfig';
 import DeleteFinanceContent from '../DeleteFinanceContent';
 import ShareContent from '../Finance/ShareContent';
 
-const MenuPopover = ({
-  itemId,
-  onClickCopyLink = () => {},
-  onClickDownloadPdf = () => {},
-  pdfLink,
-  type,
-}) => {
+const MenuPopover = ({ itemId, onClickDownloadPdf = () => {}, type }) => {
   const modals = useModals();
 
   const toggleDeleteModal = () =>
@@ -44,44 +37,9 @@ const MenuPopover = ({
 
   return (
     <div className="flex gap-2 items-center">
-      <Menu shadow="md" width={150}>
-        <Menu.Target>
-          <ActionIcon>
-            <Share2 size="20" color="black" />
-          </ActionIcon>
-        </Menu.Target>
-        <Menu.Dropdown>
-          <Menu.Item
-            icon={<img src={whatsapp} alt="whatsapp-icon" className="h-4 mx-1" />}
-            disabled={!pdfLink}
-          >
-            <Anchor
-              href={`https://web.whatsapp.com/send?text=${pdfLink}`}
-              data-action="share/whatsapp/share"
-              target="_blank"
-              rel="noreferrer"
-              className="py-2"
-              underline={false}
-            >
-              Whatsapp
-            </Anchor>
-          </Menu.Item>
-          <Menu.Item
-            icon={<Mail className="h-4" />}
-            disabled={!pdfLink}
-            onClick={() => toggleShareOptions()}
-          >
-            <span>Send Email</span>
-          </Menu.Item>
-          <Menu.Item
-            icon={<LinkIcon className="h-4" />}
-            onClick={onClickCopyLink}
-            disabled={!pdfLink}
-          >
-            Copy Link
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+      <ActionIcon onClick={toggleShareOptions}>
+        <Share2 size="20" color="black" />
+      </ActionIcon>
 
       <Menu shadow="md" width={150}>
         <Menu.Target>
@@ -98,7 +56,7 @@ const MenuPopover = ({
           </Menu.Item>
           <Menu.Item
             className="cursor-pointer flex items-center gap-1 w-full"
-            onClick={() => toggleDeleteModal()}
+            onClick={toggleDeleteModal}
           >
             <span className="ml-1">Delete</span>
           </Menu.Item>

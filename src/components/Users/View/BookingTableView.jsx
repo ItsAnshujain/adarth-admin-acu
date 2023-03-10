@@ -513,7 +513,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           <Loader />
         </div>
       ) : null}
-      {bookingData?.docs?.length === 0 && !isLoading ? (
+      {!bookingData?.docs?.length && !isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

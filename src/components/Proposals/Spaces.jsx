@@ -421,7 +421,7 @@ const Spaces = () => {
           <Loader />
         </div>
       ) : null}
-      {inventoryData?.docs?.length === 0 && !isLoading ? (
+      {!inventoryData?.docs?.length && !isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

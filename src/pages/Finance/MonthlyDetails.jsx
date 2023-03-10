@@ -21,6 +21,7 @@ const DATE_FORMAT = 'DD MMM, YYYY';
 
 const approvalStatList = [
   { label: 'Approved', value: 'approved' },
+  { label: 'Rejected', value: 'rejected' },
   { label: 'Sent for Approval', value: 'sent_for_approval' },
 ];
 
@@ -154,7 +155,7 @@ const Home = () => {
 
             const filteredList = updatedList.map(item => ({
               ...item,
-              disabled: approvalStatus?.includes(item.value),
+              disabled: approvalStatus?.includes(item.value) || item.value === 'sent_for_approval',
             }));
 
             return (
@@ -232,9 +233,7 @@ const Home = () => {
             () => (
               <FinanceMenuPopover
                 itemId={_id}
-                onClickCopyLink={() => navigator.clipboard.writeText(file)}
                 onClickDownloadPdf={() => downloadPdf(file)}
-                pdfLink={file}
                 type={recordType}
               />
             ),
@@ -409,9 +408,7 @@ const Home = () => {
             () => (
               <FinanceMenuPopover
                 itemId={_id}
-                onClickCopyLink={() => navigator.clipboard.writeText(file)}
                 onClickDownloadPdf={() => downloadPdf(file)}
-                pdfLink={file}
                 type={recordType}
               />
             ),
@@ -596,9 +593,7 @@ const Home = () => {
             () => (
               <FinanceMenuPopover
                 itemId={_id}
-                onClickCopyLink={() => navigator.clipboard.writeText(file)}
                 onClickDownloadPdf={() => downloadPdf(file)}
-                pdfLink={file}
                 type={recordType}
               />
             ),

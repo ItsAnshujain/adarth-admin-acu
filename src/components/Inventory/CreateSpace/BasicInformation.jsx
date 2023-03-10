@@ -1,6 +1,7 @@
 import { Dropzone } from '@mantine/dropzone';
 import { ActionIcon, Button, FileButton, Image, Text } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
+import { useQueryClient } from '@tanstack/react-query';
 import image from '../../../assets/image.png';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
@@ -14,6 +15,7 @@ import NumberInput from '../../shared/NumberInput';
 import AsyncMultiSelect from '../../shared/AsyncMultiSelect';
 import { useFetchUsers } from '../../../hooks/users.hooks';
 import trash from '../../../assets/trash.svg';
+import useTokenIdStore from '../../../store/user.store';
 
 const styles = {
   label: {
@@ -53,6 +55,10 @@ const query = {
 };
 
 const BasicInfo = () => {
+  const queryClient = useQueryClient();
+  const userId = useTokenIdStore(state => state.id);
+  const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
+
   const { errors, getInputProps, values, setFieldValue } = useFormContext();
   const {
     data: userData,
@@ -64,7 +70,7 @@ const BasicInfo = () => {
       limit: 100,
       sortOrder: 'asc',
       sortBy: 'createdAt',
-      filter: 'team',
+      filter: userCachedData?.role === 'admin' ? 'all' : 'team',
       role: 'media_owner',
     }),
   );
@@ -164,8 +170,8 @@ const BasicInfo = () => {
           name="basicInformation.mediaOwner"
           styles={styles}
           errors={errors}
-          disabled={isLoadingUserData || userData?.docs?.length === 0}
-          placeholder={userData?.docs?.length === 0 ? 'No Inventory Owner available' : 'Select...'}
+          disabled={isLoadingUserData || !userData?.docs?.length}
+          placeholder={!userData?.docs?.length ? 'No Inventory Owner available' : 'Select...'}
           options={
             isUserDataLoaded
               ? userData?.docs?.map(item => ({ label: item?.name, value: item?._id }))
@@ -214,10 +220,8 @@ const BasicInfo = () => {
           name="basicInformation.subCategory"
           styles={styles}
           errors={errors}
-          disabled={isSubCategoryLoading || subCategories?.docs?.length === 0}
-          placeholder={
-            subCategories?.docs?.length === 0 ? 'No Sub Category available' : 'Select...'
-          }
+          disabled={isSubCategoryLoading || !subCategories?.docs?.length}
+          placeholder={!subCategories?.docs?.length ? 'No Sub Category available' : 'Select...'}
           options={
             subCategoryLoaded
               ? subCategories.docs.map(subCategory => ({

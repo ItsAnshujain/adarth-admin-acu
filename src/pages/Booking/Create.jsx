@@ -75,7 +75,7 @@ const CreateBooking = () => {
     if (formStep === 3) {
       const data = { ...formData };
       setFormStep(3);
-      if (form.values?.place?.length === 0) {
+      if (!form.values?.place?.length) {
         showNotification({
           title: 'Please select atleast one place to continue',
           color: 'blue',

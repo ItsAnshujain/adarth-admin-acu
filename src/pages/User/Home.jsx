@@ -66,7 +66,7 @@ const Home = () => {
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       <div className="relative pb-10">
-        {userData?.docs?.length === 0 && !isLoadingUserData ? (
+        {!userData?.docs?.length && !isLoadingUserData ? (
           <div className="w-full min-h-[400px] flex justify-center items-center">
             <p className="text-xl">No records found</p>
           </div>

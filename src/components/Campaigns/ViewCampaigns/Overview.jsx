@@ -285,7 +285,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
                 }}
               />
             ))}
-            {updatedPlace?.length === 0 ? (
+            {!updatedPlace?.length ? (
               <div className="w-full min-h-[100px] flex justify-center items-center">
                 <p className="text-xl">No records found</p>
               </div>

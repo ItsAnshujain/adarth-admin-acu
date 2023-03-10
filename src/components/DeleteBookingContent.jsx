@@ -1,11 +1,13 @@
 import { Button, Divider, Image } from '@mantine/core';
 import { useModals } from '@mantine/modals';
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import CheckIcon from '../assets/check.svg';
 import TrashIcon from '../assets/trash.svg';
 import { useDeleteBooking } from '../hooks/booking.hooks';
 
 const DeleteBookingContent = ({ onClickCancel = () => {}, bookingId }) => {
+  const queryClient = useQueryClient();
   const modals = useModals();
   const [accept, setAccept] = useState(false);
   const { mutateAsync: deleteBooking, isLoading } = useDeleteBooking();
@@ -15,6 +17,7 @@ const DeleteBookingContent = ({ onClickCancel = () => {}, bookingId }) => {
       onSuccess: () => {
         setAccept(true);
         setTimeout(() => modals.closeModal(), 2000);
+        queryClient.invalidateQueries(['booking-stats']);
       },
     });
   };

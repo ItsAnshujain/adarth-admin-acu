@@ -311,7 +311,7 @@ const TotalBookings = ({ campaignId }) => {
           </div>
         ) : null}
 
-        {bookingData?.docs?.length === 0 && !isLoadingBookingData ? (
+        {!bookingData?.docs?.length && !isLoadingBookingData ? (
           <div className="w-full min-h-[400px] flex justify-center items-center">
             <p className="text-xl">No records found</p>
           </div>
