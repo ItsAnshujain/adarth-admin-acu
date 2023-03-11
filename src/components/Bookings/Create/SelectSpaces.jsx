@@ -190,8 +190,10 @@ const SelectSpace = () => {
           },
         }) =>
           useMemo(() => {
-            const isOccupied = bookingRange?.some(item =>
-              dayjs().isBetween(item?.startDate, item?.endDate),
+            const isOccupied = bookingRange?.some(
+              item =>
+                dayjs().isBetween(item?.startDate, item?.endDate) ||
+                dayjs(item?.startDate).isSame(dayjs(item?.endDate), 'day'),
             );
 
             return (
@@ -266,6 +268,15 @@ const SelectSpace = () => {
             ),
             [],
           ),
+      },
+      {
+        Header: 'PEER',
+        accessor: 'peer',
+        Cell: ({
+          row: {
+            original: { peer },
+          },
+        }) => useMemo(() => <p className="w-fit">{peer || '-'}</p>, []),
       },
       {
         Header: 'CATEGORY',
@@ -450,6 +461,7 @@ const SelectSpace = () => {
         obj.spaceName = item.basicInformation?.spaceName;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.category = item.basicInformation?.category?.name;
+        obj.peer = item?.createdBy?.isPeer && item.createdBy?.name;
         obj.dimension = `${item.specifications?.size?.height || 0}ft x ${
           item.specifications?.size?.width || 0
         }ft`;

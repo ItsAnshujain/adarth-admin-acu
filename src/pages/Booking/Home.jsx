@@ -5,12 +5,13 @@ import { ChevronDown } from 'react-feather';
 import { Progress, Loader, Button, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
+import multiDownload from 'multi-download';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import AreaHeader from '../../components/Bookings/Header';
 import { useBookings, useBookingStats, useUpdateBookingStatus } from '../../hooks/booking.hooks';
-import { downloadAll, checkCampaignStats, serialize } from '../../utils';
+import { checkCampaignStats, serialize } from '../../utils';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from './BookingStatisticsView';
@@ -152,7 +153,6 @@ const Bookings = () => {
             [],
           ),
       },
-
       {
         Header: 'BOOKING TYPE',
         accessor: 'type',
@@ -367,7 +367,7 @@ const Bookings = () => {
                   'font-medium  text-base',
                 )}
                 disabled={!campaign?.medias?.length}
-                onClick={() => downloadAll(campaign?.medias)}
+                onClick={() => multiDownload(campaign?.medias)}
               >
                 Download
               </Button>

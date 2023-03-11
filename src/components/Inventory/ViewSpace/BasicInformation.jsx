@@ -1,15 +1,19 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Text, Image, Skeleton, Badge, BackgroundImage, Center, Box } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import { useModals } from '@mantine/modals';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
 import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MapView from '../CreateSpace/MapView';
 import { tierList } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
 import NoData from '../../shared/NoData';
+
+dayjs.extend(isBetween);
 
 const TRANSITION_DURATION = 200;
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
@@ -32,6 +36,7 @@ const BasicInfo = ({
   totalOccupancy,
   totalRevenue,
   isInventoryDetailsLoading,
+  bookingRange,
 }) => {
   const modals = useModals();
   const [readMore, setReadMore] = useState(true);
@@ -110,6 +115,16 @@ const BasicInfo = ({
       },
       ...updatedModalConfig,
     });
+
+  const isOccupied = useMemo(
+    () =>
+      bookingRange?.some(
+        item =>
+          dayjs().isBetween(item?.startDate, item?.endDate) ||
+          dayjs(item?.startDate).isSame(dayjs(item?.endDate), 'day'),
+      ),
+    [bookingRange],
+  );
 
   useEffect(() => {
     const result = getAllSpacePhotos();
@@ -255,11 +270,17 @@ const BasicInfo = ({
               <Badge
                 className="capitalize"
                 variant="filled"
-                color={inventoryDetails?.isUnderMaintenance ? 'yellow' : 'green'}
+                color={
+                  inventoryDetails?.isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'
+                }
                 size="lg"
                 mt="xs"
               >
-                {inventoryDetails?.isUnderMaintenance ? 'Under maintenance' : 'Available'}
+                {inventoryDetails?.isUnderMaintenance
+                  ? 'Under Maintenance'
+                  : isOccupied
+                  ? 'Occupied'
+                  : 'Available'}
               </Badge>
               <Text weight="bold" className="my-2">
                 {toIndianCurrency(inventoryDetails?.basicInformation?.price || 0)}
@@ -389,8 +410,18 @@ const BasicInfo = ({
                     </div>
                   </div>
                   <MapView
-                    latitude={Number(inventoryDetails?.location.latitude)}
-                    longitude={Number(inventoryDetails?.location.longitude)}
+                    latitude={
+                      inventoryDetails?.location.latitude &&
+                      !Number.isNaN(inventoryDetails.location.latitude)
+                        ? Number(inventoryDetails.location.latitude)
+                        : 0
+                    }
+                    longitude={
+                      inventoryDetails?.location.longitude &&
+                      !Number.isNaN(inventoryDetails.location.longitude)
+                        ? Number(inventoryDetails?.location.longitude)
+                        : 0
+                    }
                   />
                 </div>
               ) : (

@@ -41,11 +41,6 @@ const RevenueFilter = ({
     setShowFilter(false);
   };
 
-  const handleReset = () => {
-    handleQueryByLocation();
-    setFilterOptions({ by: '' });
-  };
-
   return (
     <Drawer
       className="overflow-auto"
@@ -64,9 +59,6 @@ const RevenueFilter = ({
     >
       <div className="w-full flex justify-end">
         <div className="w-full flex justify-end">
-          <Button onClick={handleReset} className="border-black text-black radius-md mr-3">
-            Reset
-          </Button>
           <Button variant="default" className="mb-3 bg-purple-450 text-white" onClick={handleApply}>
             Apply Filters
           </Button>

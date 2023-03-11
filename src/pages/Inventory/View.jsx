@@ -85,6 +85,7 @@ const SpaceDetails = () => {
             totalCompletedBooking={inventoryDetails?.totalCompletedBooking}
             totalOccupancy={inventoryDetails?.totalOccupancy}
             totalRevenue={inventoryDetails?.totalRevenue}
+            bookingRange={inventoryDetails?.bookingRange}
           />
         </Tabs.Panel>
         <Tabs.Panel value="booking" pt="xs">

@@ -96,8 +96,10 @@ const Spaces = () => {
           },
         }) =>
           useMemo(() => {
-            const isOccupied = bookingRange?.some(item =>
-              dayjs().isBetween(item?.startDate, item?.endDate),
+            const isOccupied = bookingRange?.some(
+              item =>
+                dayjs().isBetween(item?.startDate, item?.endDate) ||
+                dayjs(item?.startDate).isSame(dayjs(item?.endDate), 'day'),
             );
 
             return (
@@ -348,7 +350,7 @@ const Spaces = () => {
         obj.spacePhoto = item?.basicInformation?.spacePhoto;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name;
-        obj.peer = item?.basicInformation?.companyName;
+        obj.peer = item?.createdBy?.isPeer && item.createdBy?.name;
         obj.category = item?.basicInformation?.category?.name;
         obj.height = item?.specifications?.size?.height;
         obj.width = item?.specifications?.size?.width;

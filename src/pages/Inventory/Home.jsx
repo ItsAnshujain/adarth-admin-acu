@@ -94,8 +94,10 @@ const Home = () => {
           },
         }) =>
           useMemo(() => {
-            const isOccupied = bookingRange?.some(item =>
-              dayjs().isBetween(item?.startDate, item?.endDate),
+            const isOccupied = bookingRange?.some(
+              item =>
+                dayjs().isBetween(item?.startDate, item?.endDate) ||
+                dayjs(item?.startDate).isSame(dayjs(item?.endDate), 'day'),
             );
 
             return (
@@ -148,9 +150,13 @@ const Home = () => {
         accessor: 'peer',
         Cell: ({
           row: {
-            original: { peer },
+            original: { createdBy },
           },
-        }) => useMemo(() => <p className="w-fit">{peer || '-'}</p>, []),
+        }) =>
+          useMemo(
+            () => <p className="w-fit">{createdBy && createdBy?.isPeer ? createdBy.name : '-'}</p>,
+            [],
+          ),
       },
       {
         Header: 'CATEGORY',
@@ -345,13 +351,13 @@ const Home = () => {
             isLoading={isDeletedInventoryDataLoading}
             inventoryData={inventoryData}
           />
-          {viewType.inventory !== 'map' && (
-            <div className="flex justify-between h-20 items-center pr-7">
-              <div className="flex items-center">
-                <RowsPerPage
-                  setCount={currentLimit => handlePagination('limit', currentLimit)}
-                  count={limit}
-                />
+          <div className="flex justify-between h-20 items-center pr-7">
+            <div className="flex items-center">
+              <RowsPerPage
+                setCount={currentLimit => handlePagination('limit', currentLimit)}
+                count={limit}
+              />
+              {viewType.inventory !== 'map' && (
                 <RoleBased
                   acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
                 >
@@ -363,16 +369,20 @@ const Home = () => {
                     </ActionIcon>
                   )}
                 </RoleBased>
-              </div>
-              <Search search={searchInput} setSearch={setSearchInput} form="nosubmit" />
+              )}
             </div>
-          )}
+            {viewType.inventory !== 'map' && (
+              <Search search={searchInput} setSearch={setSearchInput} form="nosubmit" />
+            )}
+          </div>
           {isInventoryDataLoading && viewType.inventory === 'list' ? (
             <div className="flex justify-center items-center h-[400px]">
               <Loader />
             </div>
           ) : null}
-          {inventoryData?.docs?.length === 0 && !isInventoryDataLoading ? (
+          {inventoryData?.docs?.length === 0 &&
+          !isInventoryDataLoading &&
+          viewType.inventory !== 'map' ? (
             <div className="w-full min-h-[400px] flex justify-center items-center">
               <p className="text-xl">No records found</p>
             </div>
@@ -400,7 +410,7 @@ const Home = () => {
               setActivePage={currentPage => handlePagination('page', currentPage)}
             />
           ) : viewType.inventory === 'map' ? (
-            <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto mt-5">
+            <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
               <MapView lists={inventoryData?.docs} />
             </div>
           ) : null}
