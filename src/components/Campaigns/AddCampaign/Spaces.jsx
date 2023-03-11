@@ -347,7 +347,7 @@ const SelectSpace = () => {
         <div className="flex gap-4">
           <div>
             <p className="text-slate-400">Selected Places</p>
-            <p className="font-bold">{values?.place?.length}</p>
+            <p className="font-bold">{values?.place?.filter(item => !!item?.id)?.length}</p>
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
@@ -376,7 +376,7 @@ const SelectSpace = () => {
           <Loader />
         </div>
       ) : null}
-      {inventoryData?.docs?.length === 0 && !isLoading ? (
+      {!inventoryData?.docs?.length && !isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

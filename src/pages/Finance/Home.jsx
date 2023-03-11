@@ -37,10 +37,6 @@ const Home = () => {
 
         return tempArr;
       });
-      // [
-      //   { _id: 2022, totalPurchaseOrder: 4, totalReleaseOrder: 3, totalInvoices: 1 },
-      //   { _id: 2023, totalPurchaseOrder: 2, totalReleaseOrder: 4, totalInvoices: 10 },
-      // ]
     }
   }, [financialData]);
 
@@ -48,7 +44,7 @@ const Home = () => {
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <Header />
       <div className="flex flex-wrap gap-4 pl-5 pr-7">
-        {!financialData?.length && !isLoading ? (
+        {!updatedFinanceData?.length && !isLoading ? (
           <div className="w-full mt-20">
             <Text size="lg" className="text-center">
               No financial record found

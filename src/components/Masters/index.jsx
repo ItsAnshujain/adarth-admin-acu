@@ -139,7 +139,7 @@ const Home = () => {
           <Loader />
         </div>
       ) : null}
-      {masterData?.docs?.length === 0 && !isMasterDataLoading ? (
+      {!masterData?.docs?.length && !isMasterDataLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

@@ -570,6 +570,12 @@ const InventoryReport = () => {
     // setSearchParams(searchParams);
   };
 
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
+    setSearchParams(searchParams);
+  };
+
   useEffect(() => {
     handleSearch();
     if (searchInput === '') {
@@ -620,11 +626,11 @@ const InventoryReport = () => {
               )}
             </div>
 
-            <div className="w-[30%] flex gap-8 h-[50%] p-4 border rounded-md">
+            <div className="w-[30%] flex gap-8 h-[50%] p-4 border items-center rounded-md">
               <div className="w-[40%]">
                 {isInventoryStatsLoading ? (
                   <Loader className="mx-auto" />
-                ) : inventoryStats?.healthy === 0 && inventoryStats?.unHealthy ? (
+                ) : inventoryStats?.healthy === 0 && inventoryStats?.unHealthy === 0 ? (
                   <p className="text-center">NA</p>
                 ) : (
                   <Doughnut options={config.options} data={inventoryHealthStatus} />
@@ -696,17 +702,24 @@ const InventoryReport = () => {
                     <SubHeader />
                   </div>
                 </div>
-                {inventoryReportList?.docs?.length === 0 && !inventoryReportListLoading ? (
+                {!inventoryReportList?.docs?.length && !inventoryReportListLoading ? (
                   <div className="w-full min-h-[400px] flex justify-center items-center">
                     <p className="text-xl">No records found</p>
                   </div>
                 ) : null}
                 {inventoryReportList?.docs?.length ? (
-                  <Table COLUMNS={inventoryColumn} data={inventoryReportList?.docs} count={count} />
+                  <Table
+                    COLUMNS={inventoryColumn}
+                    data={inventoryReportList?.docs || []}
+                    count={count}
+                    activePage={inventoryReportList?.page || 1}
+                    totalPages={inventoryReportList?.totalPages || 1}
+                    setActivePage={currentPage => handlePagination('page', currentPage)}
+                  />
                 ) : null}
               </Tabs.Panel>
               <Tabs.Panel value="messages" pt="lg">
-                {inventoryStats?.best?.length === 0 && !isInventoryStatsLoading ? (
+                {!inventoryStats?.best?.length && !isInventoryStatsLoading ? (
                   <div className="w-full min-h-[400px] flex justify-center items-center">
                     <p className="text-xl">No records found</p>
                   </div>
@@ -720,7 +733,7 @@ const InventoryReport = () => {
                 ) : null}
               </Tabs.Panel>
               <Tabs.Panel value="settings" pt="lg">
-                {inventoryStats?.worst?.length === 0 && !isInventoryStatsLoading ? (
+                {!inventoryStats?.worst?.length && !isInventoryStatsLoading ? (
                   <div className="w-full min-h-[400px] flex justify-center items-center">
                     <p className="text-xl">No records found</p>
                   </div>

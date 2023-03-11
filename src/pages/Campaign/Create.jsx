@@ -91,7 +91,7 @@ const CreateCampaign = () => {
 
   const handleSubmit = async () => {
     if (formStep === 2) {
-      if (form.values?.place?.length === 0) {
+      if (!form.values?.place?.length) {
         showNotification({
           title: 'Please select atleast one place to continue',
           color: 'blue',
@@ -138,7 +138,7 @@ const CreateCampaign = () => {
         }
       }
       Object.keys(newData).forEach(key => {
-        if (newData[key] === '' || newData[key] === undefined || newData[key]?.length === 0) {
+        if (newData[key] === '' || newData[key] === undefined || !newData[key]?.length) {
           delete newData[key];
         }
       });
@@ -182,7 +182,8 @@ const CreateCampaign = () => {
             latitude: inventoryObj?.location?.latitude,
             longitude: inventoryObj?.location?.longitude,
           },
-          cost: inventoryObj.price,
+          price: inventoryObj === null ? 0 : inventoryObj?.price,
+          cost: inventoryObj === null ? 0 : inventoryObj?.price,
           dimension: {
             height: inventoryObj?.specifications?.size?.height || 0,
             width: inventoryObj?.specifications?.size?.width || 0,
@@ -191,7 +192,7 @@ const CreateCampaign = () => {
           resolutions: inventoryObj?.specifications?.resolutions,
           unit: inventoryObj?.specifications?.unit,
           impression: inventoryObj?.specifications?.impressions?.max,
-          _id: inventoryObj._id,
+          _id: inventoryObj?._id,
         })),
       });
     }

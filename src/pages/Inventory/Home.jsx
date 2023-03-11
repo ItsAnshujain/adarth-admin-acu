@@ -316,7 +316,7 @@ const Home = () => {
   const handleSubmit = formData => {
     let data = {};
     data = formData.spaces.map(item => item._id);
-    if (data.length === 0) {
+    if (!data.length) {
       showNotification({
         title: 'Please select atleast one place to delete',
         color: 'blue',
@@ -380,7 +380,7 @@ const Home = () => {
               <Loader />
             </div>
           ) : null}
-          {inventoryData?.docs?.length === 0 &&
+          {!inventoryData?.docs?.length &&
           !isInventoryDataLoading &&
           viewType.inventory !== 'map' ? (
             <div className="w-full min-h-[400px] flex justify-center items-center">

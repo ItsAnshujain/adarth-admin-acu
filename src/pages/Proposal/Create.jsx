@@ -66,7 +66,7 @@ const CreateProposals = () => {
     data = { ...formData };
     setFormStep(2);
     if (formStep === 2) {
-      if (form.values?.spaces?.length === 0) {
+      if (!form.values?.spaces?.length) {
         showNotification({
           title: 'Please select atleast one space to continue',
           color: 'blue',

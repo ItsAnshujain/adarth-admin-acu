@@ -269,7 +269,7 @@ const Home = () => {
           <Loader />
         </div>
       ) : null}
-      {campaignData?.docs?.length === 0 && !isLoading ? (
+      {!campaignData?.docs?.length && !isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

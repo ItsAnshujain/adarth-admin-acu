@@ -1,10 +1,13 @@
-import { Box, Button, Group, Radio } from '@mantine/core';
+import { Box, Button, Group, Image, Radio } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Mail } from 'react-feather';
+import { Mail, Link as LinkIcon } from 'react-feather';
 import classNames from 'classnames';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
+import validator from 'validator';
+import { showNotification } from '@mantine/notifications';
+import whatsapp from '../../assets/whatsapp.svg';
 import { FormProvider, useForm } from '../../context/formContext';
 import TextInput from '../shared/TextInput';
 import { useShareRecord } from '../../hooks/finance.hooks';
@@ -12,7 +15,6 @@ import { useShareRecord } from '../../hooks/finance.hooks';
 const placeHolders = {
   email: 'Email Address',
   whatsapp: 'WhatsApp Number',
-  message: 'Phone Number',
 };
 
 const sendVia = [
@@ -22,13 +24,34 @@ const sendVia = [
     placeholder: 'Email Address',
     icon: <Mail className="text-black h-5" />,
   },
+  {
+    name: 'WhatsApp',
+    _id: 'whatsapp',
+    placeholder: 'WhatsApp Number',
+    icon: <Image src={whatsapp} alt="whatsapp" />,
+  },
+  {
+    name: 'Copy Link',
+    _id: 'copy_link',
+    icon: <LinkIcon className="h-4" color="#000" />,
+  },
 ];
 
 const initialEmailValues = {
-  format: '',
   shareVia: 'email',
   name: '',
   to: '',
+};
+
+const initialWhatsAppValues = {
+  shareVia: 'whatsapp',
+  name: '',
+  to: '',
+};
+
+const initialCopyLinkValues = {
+  shareVia: 'copy_link',
+  name: '',
 };
 
 const emailSchema = yup.object({
@@ -36,12 +59,29 @@ const emailSchema = yup.object({
   to: yup.string().trim().required('Email is required').email('Email must be valid'),
 });
 
+const whatsAppSchema = yup.object({
+  name: yup.string().trim().required('Name is required'),
+  to: yup
+    .string()
+    .trim()
+    .test('valid', 'Must be a valid number', val => validator.isMobilePhone(val, 'en-IN'))
+    .required('WhatsApp number is required'),
+});
+
+const copyLinkSchema = yup.object({
+  name: yup.string().trim().required('Name is required'),
+});
+
 const initialValues = {
   email: initialEmailValues,
+  whatsapp: initialWhatsAppValues,
+  copy_link: initialCopyLinkValues,
 };
 
 const schemas = {
   email: emailSchema,
+  whatsapp: whatsAppSchema,
+  copy_link: copyLinkSchema,
 };
 
 const ShareContent = ({ id }) => {
@@ -61,9 +101,8 @@ const ShareContent = ({ id }) => {
     const data = { ...formData };
 
     data.shareVia = activeShare;
-    data.format = 'pdf';
 
-    await share(
+    const res = await share(
       { id, data },
       {
         onSuccess: () => {
@@ -72,6 +111,13 @@ const ShareContent = ({ id }) => {
         },
       },
     );
+    if (activeShare === 'copy_link' && res?.messageText) {
+      navigator.clipboard.writeText(res?.messageText);
+      showNotification({
+        title: 'Copied',
+        color: 'blue',
+      });
+    }
   };
 
   useEffect(() => {
