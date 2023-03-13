@@ -38,8 +38,9 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 
 const timeLegend = {
   dayOfWeek: 'Days',
-  dayOfMonth: 'Days',
-  month: 'Months',
+  month: 'Days',
+  quarter: 'Months',
+  year: 'Months',
 };
 
 ChartJS.register(
@@ -70,7 +71,7 @@ const HomePage = () => {
   const user = queryClient.getQueryData(['users-by-id', userId]);
 
   const [queryByTime, setQueryByTime] = useState({
-    'type': 'month',
+    'groupBy': 'year',
     'startDate': dayjs().startOf('year').format(DATE_FORMAT),
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
@@ -111,7 +112,7 @@ const HomePage = () => {
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
       setQueryByTime({
-        'type': 'month',
+        'groupBy': 'year',
         'startDate': dayjs().startOf('year').format(DATE_FORMAT),
         'endDate': dayjs().endOf('year').format(DATE_FORMAT),
       });
@@ -119,21 +120,21 @@ const HomePage = () => {
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
       setQueryByTime(prevState => ({
         ...prevState,
-        'type':
+        'groupBy':
           viewType === 'year'
-            ? 'month'
+            ? 'year'
             : viewType === 'month'
-            ? 'dayOfMonth'
+            ? 'month'
             : viewType === 'week'
             ? 'dayOfWeek'
-            : 'month',
+            : 'year',
         'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
         'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
       }));
     }
     if (viewType === 'quarter') {
       setQueryByTime({
-        'type': 'month',
+        'groupBy': 'quarter',
         ...dateByQuarter[dayjs().quarter()],
       });
     }
@@ -154,9 +155,9 @@ const HomePage = () => {
         ],
       };
       tempData.labels =
-        queryByTime.type === 'dayOfWeek'
+        queryByTime.groupBy === 'dayOfWeek'
           ? daysInAWeek
-          : queryByTime.type === 'dayOfMonth'
+          : queryByTime.groupBy === 'month'
           ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
           : monthsInShort;
 
@@ -254,7 +255,7 @@ const HomePage = () => {
                       In Lakhs &gt;
                     </p>
                     <Line height="100" data={updatedLineData} options={options} key={uuidv4()} />
-                    <p className="text-center">{timeLegend[queryByTime.type]} &gt;</p>
+                    <p className="text-center">{timeLegend[queryByTime.groupBy]} &gt;</p>
                   </div>
                 )}
               </div>

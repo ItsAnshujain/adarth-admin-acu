@@ -121,7 +121,7 @@ const Credentials = ({ setType, setPeerId }) => {
           {filter?.toLowerCase() === 'team' && userCachedData?.role === 'admin' ? (
             <Select
               label="Organization"
-              name="company"
+              name="companyName"
               withAsterisk
               styles={styles}
               errors={errors}

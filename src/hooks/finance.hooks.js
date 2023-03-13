@@ -3,10 +3,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   deleteFinanceById,
   fetchFinance,
-  fetchFinanceByIndustry,
-  fetchFinanceByLocation,
-  fetchFinanceByRevenueGraph,
-  fetchFinanceByStats,
   fetchFinanceByYear,
   fetchFinanceByYearAndMonth,
   shareRecord,
@@ -61,46 +57,6 @@ export const useFetchFinanceByYearAndMonth = (query, enabled = true) =>
     ['finance-by-month', query],
     async () => {
       const res = await fetchFinanceByYearAndMonth(query);
-      return res?.data;
-    },
-    { enabled },
-  );
-
-export const useFetchFinanceByStats = (enabled = true) =>
-  useQuery(
-    ['finance-by-stats'],
-    async () => {
-      const res = await fetchFinanceByStats();
-      return res?.data;
-    },
-    { enabled },
-  );
-
-export const useFetchFinanceByLocation = (query, enabled = true) =>
-  useQuery(
-    ['finance-by-location', query],
-    async () => {
-      const res = await fetchFinanceByLocation(query);
-      return res?.data;
-    },
-    { enabled },
-  );
-
-export const useFetchFinanceByIndustry = (query, enabled = true) =>
-  useQuery(
-    ['finance-by-industry', query],
-    async () => {
-      const res = await fetchFinanceByIndustry(query);
-      return res?.data;
-    },
-    { enabled },
-  );
-
-export const useFetchFinanceByRevenueGraph = (query, enabled = true) =>
-  useQuery(
-    ['finance-by-reveue-graph', query],
-    async () => {
-      const res = await fetchFinanceByRevenueGraph(query);
       return res?.data;
     },
     { enabled },

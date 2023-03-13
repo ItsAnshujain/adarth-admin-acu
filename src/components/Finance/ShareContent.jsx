@@ -131,8 +131,6 @@ const ShareContent = ({ id }) => {
       <FormProvider form={form}>
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <div className="my-2 ">
-            <p className="font-medium text-xl mb-2">Share via:</p>
-
             <Group className="grid grid-cols-2 ">
               <div>
                 {sendVia.map(item => (

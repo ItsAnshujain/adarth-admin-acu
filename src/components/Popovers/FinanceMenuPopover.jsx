@@ -27,7 +27,7 @@ const MenuPopover = ({ itemId, onClickDownloadPdf = () => {}, type }) => {
 
   const toggleShareOptions = () => {
     modals.openContextModal('basic', {
-      title: 'Share Option',
+      title: 'Share via:',
       innerProps: {
         modalBody: <ShareContent id={itemId} />,
       },

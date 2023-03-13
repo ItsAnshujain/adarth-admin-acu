@@ -35,7 +35,7 @@ import {
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import InventoryStatsContent from '../../components/Reports/Inventory/InventoryStatsContent';
 import SubHeader from '../../components/Reports/Inventory/SubHeader';
-import { categoryColors, dateByQuarter, monthsInShort, serialize } from '../../utils';
+import { categoryColors, dateByQuarter, daysInAWeek, monthsInShort, serialize } from '../../utils';
 
 dayjs.extend(quarterOfYear);
 
@@ -68,9 +68,9 @@ const InventoryReport = () => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
 
   const [queryByTime, setQueryByTime] = useState({
-    //  TODO: wip api dependent
-    // 'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-    // 'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+    'groupBy': 'year',
+    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
+    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
 
   const [inventoryQuery, setInventoryQuery] = useState({
@@ -108,7 +108,7 @@ const InventoryReport = () => {
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
       setQueryByTime({
-        'type': 'month',
+        'groupBy': 'month',
         'startDate': dayjs().startOf('year').format(DATE_FORMAT),
         'endDate': dayjs().endOf('year').format(DATE_FORMAT),
       });
@@ -116,21 +116,21 @@ const InventoryReport = () => {
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
       setQueryByTime(prevState => ({
         ...prevState,
-        'type':
+        'groupBy':
           viewType === 'year'
-            ? 'month'
+            ? 'year'
             : viewType === 'month'
-            ? 'dayOfMonth'
+            ? 'month'
             : viewType === 'week'
             ? 'dayOfWeek'
-            : 'month',
+            : 'year',
         'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
         'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
       }));
     }
     if (viewType === 'quarter') {
       setQueryByTime({
-        'type': 'month',
+        'groupBy': 'quarter',
         ...dateByQuarter[dayjs().quarter()],
       });
     }
@@ -220,9 +220,6 @@ const InventoryReport = () => {
     {
       Header: 'CATEGORY',
       accessor: 'basicInformation.category.name',
-      // TODO: need api change
-      // disabled sortBy for now
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { basicInformation },
@@ -547,6 +544,13 @@ const InventoryReport = () => {
       const tempAreaData = { ...prevState, id: uuidv4() };
 
       if (inventoryReports) {
+        tempAreaData.labels =
+          queryByTime.groupBy === 'dayOfWeek'
+            ? daysInAWeek
+            : queryByTime.groupBy === 'month'
+            ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
+            : monthsInShort;
+
         inventoryReports?.revenue?.forEach(item => {
           if (item._id.month) {
             tempAreaData.datasets[0].data[item._id.month - 1] = item.price;
@@ -710,6 +714,7 @@ const InventoryReport = () => {
                     <p className="text-xl">No records found</p>
                   </div>
                 ) : null}
+                {/* TODO: handle sortBy wip */}
                 {inventoryReportList?.docs?.length ? (
                   <Table
                     COLUMNS={inventoryColumn}

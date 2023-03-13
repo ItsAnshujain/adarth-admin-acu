@@ -1,21 +1,8 @@
-import { Image, Text } from '@mantine/core';
+import { Text } from '@mantine/core';
 import ProposalsMenuPopover from '../Popovers/ProposalsMenuPopover';
 
 const Card = ({ proposalData }) => (
   <div className="flex flex-col drop-shadow-md bg-white w-[270px] max-h-[380px] mb-6">
-    <div className="flex-1 w-full">
-      {proposalData.image ? (
-        <Image
-          height={170}
-          src={proposalData.image}
-          alt="card"
-          withPlaceholder
-          placeholder={<Text align="center">Unexpected error occured. Image cannot be loaded</Text>}
-        />
-      ) : (
-        <Image height={170} src={null} alt="card" fit="contain" withPlaceholder />
-      )}
-    </div>
     <div className="flex-1 p-4 pt-4 pb-7 flex flex-col gap-y-1">
       <Text size="md" weight="bold" lineClamp={1} className="w-full">
         {proposalData?.name || 'NA'}
