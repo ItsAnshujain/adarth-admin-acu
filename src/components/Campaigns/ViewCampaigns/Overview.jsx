@@ -3,11 +3,11 @@ import GoogleMapReact from 'google-map-react';
 import {
   BackgroundImage,
   Badge,
-  Box,
   Center,
   Image,
   Pagination,
   Skeleton,
+  Spoiler,
   Text,
 } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
@@ -20,7 +20,6 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
 import Places from './UI/Places';
-import NoData from '../../shared/NoData';
 import modalConfig from '../../../utils/modalConfig';
 
 const TRANSITION_DURATION = 200;
@@ -49,7 +48,6 @@ const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading }) => {
   const modals = useModals();
-  const [readMore, setReadMore] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const [mapInstance, setMapInstance] = useState(null);
   const [updatedPlace, setUpdatedPlace] = useState();
@@ -88,8 +86,6 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
       },
       ...updatedModalConfig,
     });
-
-  const toggleReadMore = () => setReadMore(!readMore);
 
   const getTotalPrice = useMemo(() => {
     const totalPrice = spacesData?.docs?.reduce(
@@ -201,24 +197,15 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
           <div className="flex-1 pr-7 max-w-1/2">
             <p className="text-lg font-bold">{campaignData.name || 'NA'}</p>
             <div>
-              <p className="text-slate-400 font-light text-[14px]">
-                {campaignData?.description?.split(' ')?.length > 30
-                  ? readMore
-                    ? `${campaignData?.description
-                        ?.split(' ')
-                        ?.slice(0, campaignData.description.split(' ').length / 2)
-                        .join(' ')}...`
-                    : campaignData?.description
-                  : campaignData?.description || <NoData type="na" />}
-                {campaignData?.description?.split(' ')?.length > 30 ? (
-                  <Box
-                    onClick={() => toggleReadMore()}
-                    className="text-purple-450 font-medium py-0 cursor-pointer"
-                  >
-                    {readMore ? 'Read more' : 'Read less'}
-                  </Box>
-                ) : null}
-              </p>
+              <Spoiler
+                maxHeight={45}
+                showLabel="Read more"
+                hideLabel="Read less"
+                className="text-purple-450 font-medium text-[14px]"
+                classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+              >
+                {campaignData?.description}
+              </Spoiler>
               <div className="flex gap-3 items-center">
                 <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
                 <Badge

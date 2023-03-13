@@ -35,7 +35,7 @@ import {
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import InventoryStatsContent from '../../components/Reports/Inventory/InventoryStatsContent';
 import SubHeader from '../../components/Reports/Inventory/SubHeader';
-import { categoryColors, monthsInShort, serialize } from '../../utils';
+import { categoryColors, dateByQuarter, monthsInShort, serialize } from '../../utils';
 
 dayjs.extend(quarterOfYear);
 
@@ -66,12 +66,13 @@ const InventoryReport = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const chartRef = useRef(null);
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
-  //  TODO: wip api dependent
-  // eslint-disable-next-line no-unused-vars
+
   const [queryByTime, setQueryByTime] = useState({
-    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+    //  TODO: wip api dependent
+    // 'startDate': dayjs().startOf('year').format(DATE_FORMAT),
+    // 'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
+
   const [inventoryQuery, setInventoryQuery] = useState({
     'limit': 10,
     'page': 1,
@@ -79,7 +80,7 @@ const InventoryReport = () => {
     'sortBy': 'basicInformation.spaceName',
   });
 
-  const [count, setCount] = useState('20');
+  const [count, setCount] = useState('10');
   const [areaData, setAreaData] = useState({
     id: uuidv4(),
     labels: monthsInShort,
@@ -98,7 +99,7 @@ const InventoryReport = () => {
     data: inventoryReports,
     isLoading: isInventoryReportLoading,
     isSuccess,
-  } = useInventoryReport('');
+  } = useInventoryReport(serialize(queryByTime));
   const { data: inventoryReportList, isLoading: inventoryReportListLoading } =
     useFetchInventoryReportList(serialize(inventoryQuery));
   const page = searchParams.get('page');
@@ -106,21 +107,33 @@ const InventoryReport = () => {
 
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
-      searchParams.delete('startDate');
-      searchParams.delete('endDate');
+      setQueryByTime({
+        'type': 'month',
+        'startDate': dayjs().startOf('year').format(DATE_FORMAT),
+        'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+      });
     }
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
-      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
-      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
+      setQueryByTime(prevState => ({
+        ...prevState,
+        'type':
+          viewType === 'year'
+            ? 'month'
+            : viewType === 'month'
+            ? 'dayOfMonth'
+            : viewType === 'week'
+            ? 'dayOfWeek'
+            : 'month',
+        'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
+        'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
+      }));
     }
     if (viewType === 'quarter') {
-      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
-      searchParams.set(
-        'endDate',
-        dayjs(dayjs().format(DATE_FORMAT)).quarter(2).format(DATE_FORMAT),
-      );
+      setQueryByTime({
+        'type': 'month',
+        ...dateByQuarter[dayjs().quarter()],
+      });
     }
-    setSearchParams(searchParams);
   };
 
   const inventoryHealthStatus = useMemo(
@@ -137,8 +150,6 @@ const InventoryReport = () => {
     [inventoryStats],
   );
 
-  // TODO: kept it for demo purpose will remove later
-  // disabled sortBy for now
   const inventoryColumn = [
     {
       Header: '#',
@@ -158,7 +169,6 @@ const InventoryReport = () => {
     {
       Header: 'SPACE NAME & PHOTO',
       accessor: 'basicInformation.spaceName',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { _id, basicInformation, isUnderMaintenance },
@@ -201,7 +211,6 @@ const InventoryReport = () => {
     {
       Header: 'MEDIA OWNER NAME',
       accessor: 'basicInformation.mediaOwner.name',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { basicInformation },
@@ -211,6 +220,8 @@ const InventoryReport = () => {
     {
       Header: 'CATEGORY',
       accessor: 'basicInformation.category.name',
+      // TODO: need api change
+      // disabled sortBy for now
       disableSortBy: true,
       Cell: ({
         row: {
@@ -238,7 +249,6 @@ const InventoryReport = () => {
     {
       Header: 'TOTAL REVENUE',
       accessor: 'revenue',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { revenue },
@@ -247,8 +257,7 @@ const InventoryReport = () => {
     },
     {
       Header: 'TOTAL BOOKING',
-      accessor: 'totalBookings',
-      disableSortBy: true,
+      accessor: 'totalBooking',
       Cell: ({
         row: {
           original: { totalBookings },
@@ -258,7 +267,6 @@ const InventoryReport = () => {
     {
       Header: 'TOTAL OPERATIONAL COST',
       accessor: 'operationalCost',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { operationalCost },
@@ -269,7 +277,6 @@ const InventoryReport = () => {
     {
       Header: 'DIMENSION',
       accessor: 'specifications.size.min',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { specifications },
@@ -287,7 +294,6 @@ const InventoryReport = () => {
     {
       Header: 'IMPRESSION',
       accessor: 'specifications.impressions.max',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { specifications },
@@ -297,7 +303,6 @@ const InventoryReport = () => {
     {
       Header: 'HEALTH STATUS',
       accessor: 'specifications.health',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { specifications },
@@ -320,7 +325,6 @@ const InventoryReport = () => {
     {
       Header: 'LOCATION',
       accessor: 'location.city',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { location },
@@ -330,7 +334,6 @@ const InventoryReport = () => {
     {
       Header: 'PRICING',
       accessor: 'basicInformation.price',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { basicInformation },

@@ -18,14 +18,12 @@ import { useFetchMasters } from '../../hooks/masters.hooks';
 import { serialize } from '../../utils';
 
 const schema = yup.object({
-  image: yup.string().trim(),
   name: yup.string().trim().required('Name is required'),
   description: yup.string().trim(),
   status: yup.string().trim(),
 });
 
 const initialValues = {
-  image: '',
   name: '',
   description: '',
   startDate: '',
@@ -147,7 +145,6 @@ const CreateProposals = () => {
   useEffect(() => {
     if (proposalData) {
       form.setValues({
-        image: proposalData?.proposal?.image,
         name: proposalData?.proposal?.name,
         description: proposalData?.proposal?.description || '',
         status: proposalData?.proposal?.status,

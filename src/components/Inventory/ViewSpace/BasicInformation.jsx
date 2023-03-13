@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Text, Image, Skeleton, Badge, BackgroundImage, Center, Box } from '@mantine/core';
+import { Text, Image, Skeleton, Badge, BackgroundImage, Center, Spoiler } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import { useModals } from '@mantine/modals';
 import { ChevronLeft, ChevronRight } from 'react-feather';
@@ -11,7 +11,6 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import MapView from '../CreateSpace/MapView';
 import { tierList } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
-import NoData from '../../shared/NoData';
 
 dayjs.extend(isBetween);
 
@@ -39,13 +38,10 @@ const BasicInfo = ({
   bookingRange,
 }) => {
   const modals = useModals();
-  const [readMore, setReadMore] = useState(true);
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
   const [embla, setEmbla] = useState(null);
 
   useAnimationOffsetEffect(embla, TRANSITION_DURATION);
-
-  const toggleReadMore = () => setReadMore(!readMore);
 
   const getAllSpacePhotos = useCallback(() => {
     const tempPics = [];
@@ -246,27 +242,15 @@ const BasicInfo = ({
                   {inventoryDetails?.basicInformation?.spaceType?.name}
                 </Text>
               </div>
-              <p className="text-slate-400 font-light text-[14px]">
-                {inventoryDetails?.basicInformation?.description?.split(' ')?.length > 30
-                  ? readMore
-                    ? `${inventoryDetails?.basicInformation?.description
-                        ?.split(' ')
-                        ?.slice(
-                          0,
-                          inventoryDetails.basicInformation.description.split(' ').length / 2,
-                        )
-                        .join(' ')}...`
-                    : inventoryDetails?.basicInformation?.description
-                  : inventoryDetails?.basicInformation?.description || <NoData type="na" />}
-                {inventoryDetails?.basicInformation?.description?.split(' ')?.length > 30 ? (
-                  <Box
-                    onClick={() => toggleReadMore()}
-                    className="text-purple-450 font-medium py-0 cursor-pointer"
-                  >
-                    {readMore ? 'Read more' : 'Read less'}
-                  </Box>
-                ) : null}
-              </p>
+              <Spoiler
+                maxHeight={45}
+                showLabel="Read more"
+                hideLabel="Read less"
+                className="text-purple-450 font-medium text-[14px]"
+                classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+              >
+                {inventoryDetails?.basicInformation?.description}
+              </Spoiler>
               <Badge
                 className="capitalize"
                 variant="filled"

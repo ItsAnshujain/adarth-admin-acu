@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   BackgroundImage,
   Badge,
-  Box,
   Center,
   Image,
   Pagination,
   Skeleton,
+  Spoiler,
   Text,
 } from '@mantine/core';
 import GoogleMapReact from 'google-map-react';
@@ -49,7 +49,6 @@ const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Overview = ({ bookingData = {}, isLoading }) => {
   const modals = useModals();
-  const [readMore, setReadMore] = useState(true);
   const [mapInstance, setMapInstance] = useState(null);
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -60,8 +59,6 @@ const Overview = ({ bookingData = {}, isLoading }) => {
   const [embla, setEmbla] = useState(null);
 
   useAnimationOffsetEffect(embla, TRANSITION_DURATION);
-
-  const toggleReadMore = () => setReadMore(!readMore);
 
   const getAllSpacePhotos = useCallback(() => {
     const tempPics = [];
@@ -203,24 +200,15 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           <p className="font-bold text-2xl mb-2">
             {bookingData?.campaign?.name || <NoData type="na" />}
           </p>
-          <p className="text-slate-400 font-light text-[14px]">
-            {bookingData?.description?.split(' ')?.length > 30
-              ? readMore
-                ? `${bookingData?.description
-                    ?.split(' ')
-                    ?.slice(0, bookingData.description.split(' ').length / 2)
-                    .join(' ')}...`
-                : bookingData?.description
-              : bookingData?.description || <NoData type="na" />}
-            {bookingData?.description?.split(' ')?.length > 30 ? (
-              <Box
-                onClick={() => toggleReadMore()}
-                className="text-purple-450 font-medium py-0 cursor-pointer"
-              >
-                {readMore ? 'Read more' : 'Read less'}
-              </Box>
-            ) : null}
-          </p>
+          <Spoiler
+            maxHeight={45}
+            showLabel="Read more"
+            hideLabel="Read less"
+            className="text-purple-450 font-medium text-[14px]"
+            classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+          >
+            {bookingData?.description}
+          </Spoiler>
           <div className="flex mt-4 items-center gap-2 ">
             <span>{toIndianCurrency(bookingData?.campaign?.totalPrice || 0)}</span>
             <Badge

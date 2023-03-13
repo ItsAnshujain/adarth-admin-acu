@@ -23,10 +23,6 @@ const BasicInfo = ({ setUploadingFile }) => {
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const [uploadImage, setUploadImage] = useState([]);
 
-  useEffect(() => {
-    setUploadingFile(isLoading);
-  }, [isLoading]);
-
   const onHandleDrop = async params => {
     const formData = new FormData();
     formData.append('files', params?.[0]);
@@ -34,6 +30,10 @@ const BasicInfo = ({ setUploadingFile }) => {
     setUploadImage(res?.[0].Location);
     setFieldValue('image', res?.[0].Location);
   };
+
+  useEffect(() => {
+    setUploadingFile(isLoading);
+  }, [isLoading]);
 
   return (
     <div className="pl-5 pr-7 mt-4">
