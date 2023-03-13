@@ -105,19 +105,6 @@ const Notification = () => {
   const queryClient = useQueryClient();
   const data = queryClient.getQueryData(['users-by-id', userId]);
 
-  useEffect(() => {
-    if (data) {
-      form.setValues({
-        messageNotify: data.messageNotify || false,
-        emailNotify: data.emailNotify || false,
-        whatsappNotify: data.whatsappNotify || false,
-        whatsappNumber: data.whatsappNumber || '',
-        notificationEmail: data.notificationEmail || '',
-        number: data.number || '',
-      });
-    }
-  }, [data]);
-
   const onSubmitHandler = formData => {
     const formDataCopy = { ...formData };
 
@@ -140,6 +127,20 @@ const Notification = () => {
 
     mutateAsync({ ...formDataCopy });
   };
+
+  useEffect(() => {
+    if (data) {
+      form.setValues({
+        messageNotify: data.messageNotify || false,
+        emailNotify: data.emailNotify || false,
+        whatsappNotify: data.whatsappNotify || false,
+        whatsappNumber: data.whatsappNumber || '',
+        notificationEmail: data.notificationEmail || '',
+        number: data.number || '',
+      });
+    }
+  }, [data]);
+
   return (
     <FormProvider form={form}>
       <form onSubmit={form.onSubmit(onSubmitHandler)}>

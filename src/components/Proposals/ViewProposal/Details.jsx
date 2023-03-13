@@ -3,7 +3,7 @@ import { BackgroundImage, Center, Image, Skeleton, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -70,6 +70,23 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
       },
       ...updatedModalConfig,
     });
+
+  const renderSpacesByCategories = useMemo(
+    () =>
+      proposalData?.categoryName?.length
+        ? proposalData.categoryName?.map(item => (
+            <>
+              <Text weight="bolder" className="mr-2">
+                {item?.total}
+              </Text>
+              <Text weight="bolder" className="mr-2">
+                {item?._id}
+              </Text>
+            </>
+          ))
+        : 0,
+    [proposalData],
+  );
 
   useEffect(() => {
     const result = getAllSpacePhotos();
@@ -144,20 +161,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                   <Text color="grey" weight="400">
                     Total Spaces
                   </Text>
-                  <div className="flex">
-                    {proposalData?.categoryName?.length
-                      ? proposalData.categoryName?.map(item => (
-                          <>
-                            <Text weight="bolder" className="mr-2">
-                              {item?.total}
-                            </Text>
-                            <Text weight="bolder" className="mr-2">
-                              {item?._id}
-                            </Text>
-                          </>
-                        ))
-                      : 0}
-                  </div>
+                  <div className="flex">{renderSpacesByCategories}</div>
                 </div>
                 <div>
                   <Text color="grey" weight="400">

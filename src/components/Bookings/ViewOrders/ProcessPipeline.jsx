@@ -30,7 +30,9 @@ const ProcessPipeline = ({ bookingData }) => {
           },
           {
             status: 'Sent For Printing',
-            date: bookingData?.printingStatus?.Print || bookingData?.printingStatus?.Completed,
+            date:
+              bookingData?.printingStatus?.['In Progress'] ||
+              bookingData?.printingStatus?.Completed,
             isSuccess:
               bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'in progress' ||
               bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed',
@@ -63,7 +65,9 @@ const ProcessPipeline = ({ bookingData }) => {
           },
           {
             status: 'Mounting in Progress',
-            date: bookingData?.mountingStatus?.Mount || bookingData?.mountingStatus?.Completed,
+            date:
+              bookingData?.mountingStatus?.['In Progress'] ||
+              bookingData?.mountingStatus?.Completed,
             isSuccess:
               bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'in progress' ||
               bookingData?.currentStatus?.mountingStatus?.toLowerCase() === 'completed',
