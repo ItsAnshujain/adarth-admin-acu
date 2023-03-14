@@ -31,7 +31,7 @@ const adminSchema = yup.object({
     })
     .test('role', 'Role is required', obj => obj.value !== ''),
   name: yup.string().trim().required('Name is required'),
-  company: yup
+  companyName: yup
     .object({
       label: yup.string().trim(),
       value: yup.string().trim(),
@@ -49,7 +49,7 @@ const initialAdminValues = {
   name: '',
   email: '',
   role: { label: '', value: '' },
-  company: { label: '', value: '' },
+  companyName: { label: '', value: '' },
   companyId: '',
 };
 
@@ -76,7 +76,7 @@ const CreateUser = () => {
     if (type === 'Team') {
       const data = { ...formData, role: formData.role.value };
       if (userCachedData?.role === 'admin') {
-        data.company = formData.company.label;
+        data.companyName = formData.company.label;
         data.companyId = formData.company.value;
       }
 

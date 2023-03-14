@@ -3,6 +3,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   bookingById,
   bookingRevenue,
+  bookingReportByRevenueGraph,
+  bookingReportByRevenueStats,
+  bookingRevenueByIndustry,
+  bookingRevenueByLocation,
   bookings,
   bookingStats,
   bookingStatsByIncharge,
@@ -252,6 +256,46 @@ export const useFetchBookingRevenue = (query, enabled = true) =>
     ['booking-revenue', query],
     async () => {
       const res = await bookingRevenue(query);
+      return res?.data;
+    },
+    { enabled },
+  );
+
+export const useBookingReportByRevenueStats = (enabled = true) =>
+  useQuery(
+    ['booking-by-revenue-stats'],
+    async () => {
+      const res = await bookingReportByRevenueStats();
+      return res?.data;
+    },
+    { enabled },
+  );
+
+export const useBookingReportByRevenueGraph = (query, enabled = true) =>
+  useQuery(
+    ['booking-by-reveue-graph', query],
+    async () => {
+      const res = await bookingReportByRevenueGraph(query);
+      return res?.data;
+    },
+    { enabled },
+  );
+
+export const useBookingRevenueByIndustry = (query, enabled = true) =>
+  useQuery(
+    ['booking-revenue-by-industry', query],
+    async () => {
+      const res = await bookingRevenueByIndustry(query);
+      return res?.data;
+    },
+    { enabled },
+  );
+
+export const useBookingRevenueByLocation = (query, enabled = true) =>
+  useQuery(
+    ['booking-revenue-by-location', query],
+    async () => {
+      const res = await bookingRevenueByLocation(query);
       return res?.data;
     },
     { enabled },

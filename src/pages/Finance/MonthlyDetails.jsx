@@ -6,6 +6,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
+import { useModals } from '@mantine/modals';
 import Header from '../../components/Finance/Header';
 import Search from '../../components/Search';
 import DateRange from '../../components/DateRange';
@@ -16,6 +17,9 @@ import toIndianCurrency from '../../utils/currencyFormat';
 import FinanceMenuPopover from '../../components/Popovers/FinanceMenuPopover';
 import { downloadPdf, ROLES } from '../../utils';
 import RoleBased from '../../components/RoleBased';
+import modalConfig from '../../utils/modalConfig';
+
+const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
 const DATE_FORMAT = 'DD MMM, YYYY';
 
@@ -26,6 +30,7 @@ const approvalStatList = [
 ];
 
 const Home = () => {
+  const modals = useModals();
   const queryClient = useQueryClient();
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -46,6 +51,7 @@ const Home = () => {
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
+  const financeRecordId = searchParams.get('id');
   const recordType = searchParams.get('recordType');
   const [pageType, setPageType] = useState(recordType || 'purchase');
 
@@ -604,6 +610,21 @@ const Home = () => {
     [financialDataByMonth?.finances?.docs],
   );
 
+  const toggleImagePreviewModal = () =>
+    modals.openContextModal('basic', {
+      title: 'Preview',
+      innerProps: {
+        modalBody: (
+          <div>
+            {/* TODO: wip */}
+            <Button className="primary-button">Approve</Button>
+            <Button className="danger-button">Reject</Button>
+          </div>
+        ),
+      },
+      ...updatedModalConfig,
+    });
+
   useEffect(() => {
     handleSearch();
     if (searchInput === '') {
@@ -611,6 +632,12 @@ const Home = () => {
       setSearchParams(searchParams);
     }
   }, [searchInput]);
+
+  useEffect(() => {
+    if (financeRecordId) {
+      toggleImagePreviewModal();
+    }
+  }, []);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">

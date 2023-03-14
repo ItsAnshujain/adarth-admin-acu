@@ -19,7 +19,7 @@ import { useCampaignReport, useCampaignStats } from '../../hooks/campaigns.hooks
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import CampaignStatsContent from '../../components/Reports/Campaign/CampaignStatsContent';
 import CampaignPieContent from '../../components/Reports/Campaign/CampaignPieContent';
-import { dateByQuarter, monthsInShort, serialize } from '../../utils';
+import { dateByQuarter, daysInAWeek, monthsInShort, serialize } from '../../utils';
 
 dayjs.extend(quarterOfYear);
 
@@ -32,7 +32,7 @@ const options = {
 
 const CampaignReport = () => {
   const [queryByTime, setQueryByTime] = useState({
-    'type': 'month',
+    'groupBy': 'year',
     'startDate': dayjs().startOf('year').format(DATE_FORMAT),
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
@@ -69,7 +69,7 @@ const CampaignReport = () => {
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
       setQueryByTime({
-        'type': 'month',
+        'groupBy': 'year',
         'startDate': dayjs().startOf('year').format(DATE_FORMAT),
         'endDate': dayjs().endOf('year').format(DATE_FORMAT),
       });
@@ -77,21 +77,21 @@ const CampaignReport = () => {
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
       setQueryByTime(prevState => ({
         ...prevState,
-        'type':
+        'groupBy':
           viewType === 'year'
-            ? 'month'
+            ? 'year'
             : viewType === 'month'
-            ? 'dayOfMonth'
+            ? 'month'
             : viewType === 'week'
             ? 'dayOfWeek'
-            : 'month',
+            : 'year',
         'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
         'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
       }));
     }
     if (viewType === 'quarter') {
       setQueryByTime({
-        'type': 'month',
+        'groupBy': 'quarter',
         ...dateByQuarter[dayjs().quarter()],
       });
     }
@@ -143,6 +143,13 @@ const CampaignReport = () => {
     setUpdatedBarData(prevState => {
       const tempBarData = { ...prevState, id: uuidv4() };
       if (report) {
+        tempBarData.labels =
+          queryByTime.groupBy === 'dayOfWeek'
+            ? daysInAWeek
+            : queryByTime.groupBy === 'month'
+            ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
+            : monthsInShort;
+
         report?.revenue?.forEach(item => {
           if (item._id.month) {
             if (item.upcoming) {

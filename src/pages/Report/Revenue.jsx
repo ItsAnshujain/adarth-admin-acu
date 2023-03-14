@@ -22,12 +22,12 @@ import Header from '../../components/Reports/Header';
 import RevenueFilter from '../../components/Reports/RevenueFilter';
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import {
-  useFetchFinanceByIndustry,
-  useFetchFinanceByLocation,
-  useFetchFinanceByRevenueGraph,
-  useFetchFinanceByStats,
-} from '../../hooks/finance.hooks';
-import { dateByQuarter, monthsInShort, serialize } from '../../utils';
+  useBookingReportByRevenueStats,
+  useBookingReportByRevenueGraph,
+  useBookingRevenueByIndustry,
+  useBookingRevenueByLocation,
+} from '../../hooks/booking.hooks';
+import { dateByQuarter, daysInAWeek, monthsInShort, serialize } from '../../utils';
 import RevenueStatsContent from '../../components/Reports/Revenue/RevenueStatsContent';
 
 dayjs.extend(quarterOfYear);
@@ -85,19 +85,6 @@ const options = {
   responsive: true,
 };
 
-const lineData = {
-  labels: monthsInShort,
-  datasets: [
-    {
-      label: 'Revenue',
-      data: [],
-      borderColor: '#914EFB',
-      backgroundColor: '#914EFB',
-      cubicInterpolationMode: 'monotone',
-    },
-  ],
-};
-
 export const pieData = {
   labels: [],
   datasets: [
@@ -126,8 +113,22 @@ export const pieData = {
 };
 
 const RevenueReport = () => {
+  const [updatedReveueGraph, setUpdatedRevenueGraph] = useState({
+    id: uuidv4(),
+    labels: monthsInShort,
+    datasets: [
+      {
+        label: 'Revenue',
+        data: [],
+        borderColor: '#914EFB',
+        backgroundColor: '#914EFB',
+        cubicInterpolationMode: 'monotone',
+      },
+    ],
+  });
+
   const [queryByReveueGraph, setQueryByRevenueGraph] = useState({
-    'groupBy': 'month',
+    'groupBy': 'year',
     'startDate': dayjs().startOf('year').format(DATE_FORMAT),
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
@@ -170,22 +171,18 @@ const RevenueReport = () => {
   const [showFilter, setShowFilter] = useState(false);
   const toggleFilter = () => setShowFilter(!showFilter);
 
-  const { data: revenueData } = useFetchFinanceByStats();
-  //  TODO: wip
-  // eslint-disable-next-line no-unused-vars
+  const { data: revenueData } = useBookingReportByRevenueStats();
   const { data: revenueGraphData, isLoading: isRevenueGraphLoading } =
-    useFetchFinanceByRevenueGraph(serialize(queryByReveueGraph));
-  const { data: revenueDataByLocation, isLoading: isByLocationLoading } = useFetchFinanceByLocation(
-    serialize(queryByLocation),
-  );
-  const { data: revenueDataByIndustry, isLoading: isByIndustryLoading } = useFetchFinanceByIndustry(
-    serialize(queryByIndustry),
-  );
+    useBookingReportByRevenueGraph(serialize(queryByReveueGraph));
+  const { data: revenueDataByLocation, isLoading: isByLocationLoading } =
+    useBookingRevenueByLocation(serialize(queryByLocation));
+  const { data: revenueDataByIndustry, isLoading: isByIndustryLoading } =
+    useBookingRevenueByIndustry(serialize(queryByIndustry));
 
   const handleRevenueGraphViewBy = viewType => {
     if (viewType === 'reset') {
       setQueryByRevenueGraph({
-        'groupBy': 'month',
+        'groupBy': 'year',
         'startDate': dayjs().startOf('year').format(DATE_FORMAT),
         'endDate': dayjs().endOf('year').format(DATE_FORMAT),
       });
@@ -195,9 +192,9 @@ const RevenueReport = () => {
         ...prevState,
         'groupBy':
           viewType === 'year'
-            ? 'month'
+            ? 'year'
             : viewType === 'month'
-            ? 'dayOfMonth'
+            ? 'month'
             : viewType === 'week'
             ? 'dayOfWeek'
             : 'month',
@@ -207,12 +204,14 @@ const RevenueReport = () => {
     }
     if (viewType === 'quarter') {
       setQueryByRevenueGraph({
-        'groupBy': 'month',
+        'groupBy': 'quarter',
         ...dateByQuarter[dayjs().quarter()],
       });
     }
   };
 
+  //  TODO: need to add calendar instead of dropdown. depending on client */
+  // eslint-disable-next-line no-unused-vars
   const handleLocationViewBy = viewType => {
     if (viewType === 'reset') {
       setQueryByLocation(prevState => ({
@@ -236,6 +235,8 @@ const RevenueReport = () => {
     }
   };
 
+  // TODO: need to add calendar instead of dropdown. depending on client */
+  // eslint-disable-next-line no-unused-vars
   const handleIndustryViewBy = viewType => {
     if (viewType === 'reset') {
       setQueryByIndustry(prevState => ({
@@ -267,6 +268,39 @@ const RevenueReport = () => {
     DomToPdf(element, option);
   };
 
+  const handleUpdateRevenueGraph = useCallback(() => {
+    if (revenueGraphData) {
+      const tempData = {
+        labels: monthsInShort,
+        datasets: [
+          {
+            label: 'Revenue',
+            data: [],
+            borderColor: '#914EFB',
+            backgroundColor: '#914EFB',
+            cubicInterpolationMode: 'monotone',
+          },
+        ],
+      };
+      tempData.labels =
+        queryByReveueGraph.groupBy === 'dayOfWeek'
+          ? daysInAWeek
+          : queryByReveueGraph.groupBy === 'month'
+          ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
+          : monthsInShort;
+
+      tempData.datasets[0].data = Array.from({ length: dayjs().daysInMonth() }, () => 0);
+
+      revenueGraphData?.forEach(item => {
+        if (item._id) {
+          tempData.datasets[0].data[item._id - 1] = item.price / 100000 || 0;
+        }
+      });
+
+      setUpdatedRevenueGraph(tempData);
+    }
+  }, [revenueGraphData]);
+
   const handleUpdatedReveueByLocation = useCallback(() => {
     const tempBarData = { ...updatedLocation, id: uuidv4() };
     if (revenueDataByLocation) {
@@ -288,6 +322,10 @@ const RevenueReport = () => {
       setUpdatedIndustry(tempBarData);
     }
   }, [revenueDataByIndustry]);
+
+  useEffect(() => {
+    handleUpdateRevenueGraph();
+  }, [revenueGraphData]);
 
   useEffect(() => {
     handleUpdatedReveueByLocation();
@@ -317,7 +355,7 @@ const RevenueReport = () => {
                     In Lakhs &gt;
                   </p>
                   {/* TODO: wip */}
-                  <Line height="100" data={lineData} options={options} />
+                  <Line height="100" data={updatedReveueGraph} options={options} />
                   <p className="text-center">Months &gt;</p>
                 </div>
               )}
@@ -325,7 +363,8 @@ const RevenueReport = () => {
             <div className="w-[30%] flex flex-col">
               <div className="flex justify-between items-start">
                 <p className="font-bold">Industry wise revenue graph</p>
-                <ViewByFilter handleViewBy={handleIndustryViewBy} />
+                {/* TODO: need to add calendar instead of dropdown. depending on client */}
+                {/* <ViewByFilter handleViewBy={handleIndustryViewBy} /> */}
               </div>
               <div className="w-80 m-auto">
                 {isByIndustryLoading ? (
@@ -360,7 +399,8 @@ const RevenueReport = () => {
                     />
                   )}
                 </div>
-                <ViewByFilter handleViewBy={handleLocationViewBy} />
+                {/* TODO: need to add calendar instead of dropdown. depending on client */}
+                {/* <ViewByFilter handleViewBy={handleLocationViewBy} /> */}
               </div>
             </div>
             <div className="flex flex-col pl-7 relative">
