@@ -619,9 +619,11 @@ const Home = () => {
         modalBody: (
           <PreviewContent
             financeRecordId={financeRecordId}
-            year={year}
-            month={month}
             recordType={recordType}
+            onClose={() => {
+              searchParams.delete('id');
+              setSearchParams(searchParams);
+            }}
           />
         ),
       },

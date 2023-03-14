@@ -11,3 +11,5 @@ export const fetchFinanceByYearAndMonth = query => http.get(`/finance/${query}`)
 export const deleteFinanceById = (id, type) => http.delete(`/finance/${id}/${type}`);
 
 export const shareRecord = (id, data) => http.post(`/finance/${id}/share`, data);
+
+export const fetchSingleRecordById = id => http.get(`/finance/one/${id}`);
