@@ -128,7 +128,7 @@ const RevenueReport = () => {
   });
 
   const [queryByReveueGraph, setQueryByRevenueGraph] = useState({
-    'groupBy': 'year',
+    'groupBy': 'month',
     'startDate': dayjs().startOf('year').format(DATE_FORMAT),
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
@@ -182,7 +182,7 @@ const RevenueReport = () => {
   const handleRevenueGraphViewBy = viewType => {
     if (viewType === 'reset') {
       setQueryByRevenueGraph({
-        'groupBy': 'year',
+        'groupBy': 'month',
         'startDate': dayjs().startOf('year').format(DATE_FORMAT),
         'endDate': dayjs().endOf('year').format(DATE_FORMAT),
       });
@@ -192,9 +192,9 @@ const RevenueReport = () => {
         ...prevState,
         'groupBy':
           viewType === 'year'
-            ? 'year'
-            : viewType === 'month'
             ? 'month'
+            : viewType === 'month'
+            ? 'dayOfMonth'
             : viewType === 'week'
             ? 'dayOfWeek'
             : 'month',

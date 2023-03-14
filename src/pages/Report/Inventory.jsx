@@ -68,7 +68,7 @@ const InventoryReport = () => {
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
 
   const [queryByTime, setQueryByTime] = useState({
-    'groupBy': 'year',
+    'groupBy': 'month',
     'startDate': dayjs().startOf('year').format(DATE_FORMAT),
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
@@ -118,12 +118,12 @@ const InventoryReport = () => {
         ...prevState,
         'groupBy':
           viewType === 'year'
-            ? 'year'
-            : viewType === 'month'
             ? 'month'
+            : viewType === 'month'
+            ? 'dayOfMonth'
             : viewType === 'week'
             ? 'dayOfWeek'
-            : 'year',
+            : 'month',
         'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
         'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
       }));
