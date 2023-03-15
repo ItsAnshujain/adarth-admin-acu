@@ -29,7 +29,7 @@ import TotalCampaignIcon from '../assets/total-campaign.svg';
 import useUserStore from '../store/user.store';
 import { useBookingStats, useFetchBookingRevenue } from '../hooks/booking.hooks';
 import { useInventoryStats } from '../hooks/inventory.hooks';
-import { dateByQuarter, daysInAWeek, monthsInShort, serialize } from '../utils';
+import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../utils';
 import ViewByFilter from '../components/Reports/ViewByFilter';
 
 dayjs.extend(quarterOfYear);
@@ -38,9 +38,9 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 
 const timeLegend = {
   dayOfWeek: 'Days',
-  month: 'Days',
+  dayOfMonth: 'Days',
   quarter: 'Months',
-  year: 'Months',
+  month: 'Months',
 };
 
 ChartJS.register(
@@ -157,15 +157,17 @@ const HomePage = () => {
       tempData.labels =
         queryByTime.groupBy === 'dayOfWeek'
           ? daysInAWeek
-          : queryByTime.groupBy === 'month'
+          : queryByTime.groupBy === 'dayOfMonth'
           ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
+          : queryByTime.groupBy === 'quarter'
+          ? quarters
           : monthsInShort;
 
       tempData.datasets[0].data = Array.from({ length: dayjs().daysInMonth() }, () => 0);
 
       bookingRevenue?.forEach(item => {
         if (item._id) {
-          tempData.datasets[0].data[item._id - 1] = item.price / 100000 || 0;
+          tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
         }
       });
 

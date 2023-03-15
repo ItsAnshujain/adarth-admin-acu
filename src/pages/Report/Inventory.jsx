@@ -35,7 +35,14 @@ import {
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import InventoryStatsContent from '../../components/Reports/Inventory/InventoryStatsContent';
 import SubHeader from '../../components/Reports/Inventory/SubHeader';
-import { categoryColors, dateByQuarter, daysInAWeek, monthsInShort, serialize } from '../../utils';
+import {
+  categoryColors,
+  dateByQuarter,
+  daysInAWeek,
+  monthsInShort,
+  quarters,
+  serialize,
+} from '../../utils';
 
 dayjs.extend(quarterOfYear);
 
@@ -63,7 +70,12 @@ const config = {
 };
 
 const InventoryReport = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams({
+    'limit': 10,
+    'page': 1,
+    'sortOrder': 'desc',
+    'sortBy': 'basicInformation.spaceName',
+  });
   const chartRef = useRef(null);
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
 
@@ -73,21 +85,13 @@ const InventoryReport = () => {
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
 
-  const [inventoryQuery, setInventoryQuery] = useState({
-    'limit': 10,
-    'page': 1,
-    'sortOrder': 'desc',
-    'sortBy': 'basicInformation.spaceName',
-  });
-
-  const [count, setCount] = useState('10');
   const [areaData, setAreaData] = useState({
     id: uuidv4(),
     labels: monthsInShort,
     datasets: [
       {
         label: 'Revenue',
-        data: Array.from({ length: 12 }, () => 0),
+        data: [],
         borderColor: '#914EFB',
         cubicInterpolationMode: 'monotone',
       },
@@ -101,7 +105,7 @@ const InventoryReport = () => {
     isSuccess,
   } = useInventoryReport(serialize(queryByTime));
   const { data: inventoryReportList, isLoading: inventoryReportListLoading } =
-    useFetchInventoryReportList(serialize(inventoryQuery));
+    useFetchInventoryReportList(searchParams.toString());
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
@@ -540,26 +544,38 @@ const InventoryReport = () => {
   ];
 
   const calculateLineData = useCallback(() => {
-    setAreaData(prevState => {
-      const tempAreaData = { ...prevState, id: uuidv4() };
+    if (inventoryReports && inventoryReports?.revenue) {
+      const tempAreaData = {
+        labels: monthsInShort,
+        datasets: [
+          {
+            label: 'Revenue',
+            data: [],
+            borderColor: '#914EFB',
+            backgroundColor: '#914EFB',
+            cubicInterpolationMode: 'monotone',
+          },
+        ],
+      };
 
-      if (inventoryReports) {
-        tempAreaData.labels =
-          queryByTime.groupBy === 'dayOfWeek'
-            ? daysInAWeek
-            : queryByTime.groupBy === 'month'
-            ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
-            : monthsInShort;
+      tempAreaData.labels =
+        queryByTime.groupBy === 'dayOfWeek'
+          ? daysInAWeek
+          : queryByTime.groupBy === 'dayOfMonth'
+          ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
+          : queryByTime.groupBy === 'quarter'
+          ? quarters
+          : monthsInShort;
 
-        inventoryReports?.revenue?.forEach(item => {
-          if (item._id.month) {
-            tempAreaData.datasets[0].data[item._id.month - 1] = item.price;
-          }
-        });
-      }
+      tempAreaData.datasets[0].data = Array.from({ length: dayjs().daysInMonth() }, () => 0);
 
-      return tempAreaData;
-    });
+      inventoryReports.revenue?.forEach(item => {
+        if (item._id) {
+          tempAreaData.datasets[0].data[item._id] = item?.total;
+        }
+      });
+      setAreaData(tempAreaData);
+    }
   }, [inventoryReports]);
 
   const downloadPdf = () => {
@@ -570,11 +586,26 @@ const InventoryReport = () => {
     DomToPdf(element, option);
   };
 
+  const handleSortByColumn = colId => {
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
+      searchParams.set('sortOrder', 'asc');
+      setSearchParams(searchParams);
+      return;
+    }
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
+      searchParams.set('sortOrder', 'desc');
+      setSearchParams(searchParams);
+      return;
+    }
+
+    searchParams.set('sortBy', colId);
+    setSearchParams(searchParams);
+  };
+
   const handleSearch = () => {
-    setInventoryQuery(prevState => ({ ...prevState, search: searchInput, page: 1 }));
-    // searchParams.set('search', searchInput);
-    // searchParams.set('page', 1);
-    // setSearchParams(searchParams);
+    searchParams.set('search', searchInput);
+    searchParams.set('page', 1);
+    setSearchParams(searchParams);
   };
 
   const handlePagination = (key, val) => {
@@ -586,12 +617,8 @@ const InventoryReport = () => {
   useEffect(() => {
     handleSearch();
     if (searchInput === '') {
-      setInventoryQuery({
-        'limit': 10,
-        'page': 1,
-        'sortOrder': 'desc',
-        'sortBy': 'basicInformation.spaceName',
-      });
+      searchParams.delete('search');
+      setSearchParams(searchParams);
     }
   }, [searchInput]);
 
@@ -701,9 +728,11 @@ const InventoryReport = () => {
               </Tabs.List>
 
               <Tabs.Panel value="gallery">
-                {/* TODO: api dependent */}
                 <div className="flex justify-between h-20 items-center">
-                  <RowsPerPage setCount={setCount} count={count} />
+                  <RowsPerPage
+                    setCount={currentLimit => handlePagination('limit', currentLimit)}
+                    count={limit}
+                  />
                   <div className="flex flex-1 justify-end items-center">
                     <Search search={searchInput} setSearch={setSearchInput} />
                     <SubHeader />
@@ -714,12 +743,11 @@ const InventoryReport = () => {
                     <p className="text-xl">No records found</p>
                   </div>
                 ) : null}
-                {/* TODO: handle sortBy wip */}
                 {inventoryReportList?.docs?.length ? (
                   <Table
                     COLUMNS={inventoryColumn}
                     data={inventoryReportList?.docs || []}
-                    count={count}
+                    handleSorting={handleSortByColumn}
                     activePage={inventoryReportList?.page || 1}
                     totalPages={inventoryReportList?.totalPages || 1}
                     setActivePage={currentPage => handlePagination('page', currentPage)}

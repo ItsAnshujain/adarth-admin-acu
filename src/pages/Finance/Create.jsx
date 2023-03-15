@@ -5,6 +5,7 @@ import { yupResolver } from '@mantine/form';
 import { useEffect, useMemo, useState } from 'react';
 import validator from 'validator';
 import { useModals } from '@mantine/modals';
+import { showNotification } from '@mantine/notifications';
 import PurchaseOrder from '../../components/Finance/Create/PurchaseOrder';
 import ReleaseOrder from '../../components/Finance/Create/ReleaseOrder';
 import Invoice from '../../components/Finance/Create/Invoice';
@@ -28,6 +29,7 @@ import modalConfig from '../../utils/modalConfig';
 import PurchaseOrderPreview from '../../components/Finance/Create/PurchaseOrderPreview';
 import ReleaseOrderPreview from '../../components/Finance/Create/ReleaseOrderPreview';
 import InvoicePreview from '../../components/Finance/Create/InvoicePreview';
+import ManualEntryContent from './ManualEntryContent';
 
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
@@ -307,7 +309,7 @@ const Home = () => {
   const Preview = preview[type] ?? <div />;
   const bookingId = searchParam.get('id');
   const [bookingIdFromFinance, setBookingIdFromFinance] = useState();
-
+  const [addSpaceItem, setAddSpaceItem] = useState([]);
   const {
     data: bookingDatas,
     isLoading: isBookingDatasLoading,
@@ -337,6 +339,22 @@ const Home = () => {
     }
     return initialPrice;
   }, [bookingData?.campaign?.spaces]);
+
+  const toggleAddItemModal = item =>
+    modals.openContextModal('basic', {
+      title: 'Manual Entry',
+      innerProps: {
+        modalBody: (
+          <ManualEntryContent
+            onClose={() => modals.closeModal()}
+            setAddSpaceItem={setAddSpaceItem}
+            addSpaceItem={addSpaceItem}
+            item={item}
+          />
+        ),
+      },
+      ...updatedModalConfig,
+    });
 
   // TODO: preview integration left
   // eslint-disable-next-line no-unused-vars
@@ -375,12 +393,24 @@ const Home = () => {
       if (data?.buyerGst) {
         data.buyerGst = data.buyerGst?.toUpperCase();
       }
-      data.spaces = form.values?.spaces?.map(item => ({
-        id: item._id,
-        per: +item.per || 1,
-        dueOn: item.dueOn || new Date(),
-      }));
+      if (bookingIdFromFinance) {
+        data.spaces = addSpaceItem?.map(item => ({
+          id: item._id,
+          per: +item.per || 1,
+          dueOn: item.dueOn || new Date(),
+        }));
+      } else {
+        data.spaces = addSpaceItem;
+        if (!data.spaces.length) {
+          showNotification({
+            title: 'Please create atleast one Order Item to continue',
+          });
+          return;
+        }
+      }
 
+      // console.log(data);
+      // return;
       const purchaseOrderPdf = await generatePurchaseOrder(
         { id: bookingId || bookingIdFromFinance, data },
         { onSuccess: () => redirectToHome() },
@@ -395,6 +425,19 @@ const Home = () => {
       if (!data?.mobile?.includes('+91')) {
         data.mobile = `+91${data?.mobile}`;
       }
+
+      if (!bookingIdFromFinance) {
+        data.spaces = addSpaceItem;
+        if (!data.spaces.length) {
+          showNotification({
+            title: 'Please create atleast one Order Item to continue',
+          });
+          return;
+        }
+      }
+
+      // console.log(data);
+      // return;
       const releaseOrderPdf = await generateReleaseOrder(
         { id: bookingId || bookingIdFromFinance, data },
         { onSuccess: () => redirectToHome() },
@@ -415,6 +458,19 @@ const Home = () => {
       if (data?.buyerGst) {
         data.buyerGst = data.buyerGst?.toUpperCase();
       }
+
+      if (!bookingIdFromFinance) {
+        data.spaces = addSpaceItem;
+        if (!data.spaces.length) {
+          showNotification({
+            title: 'Please create atleast one Order Item to continue',
+          });
+          return;
+        }
+      }
+
+      // console.log(data);
+      // return;
       const invoicePdf = await generateInvoiceOrder(
         { id: bookingId || bookingIdFromFinance, data },
         { onSuccess: () => redirectToHome() },
@@ -428,9 +484,39 @@ const Home = () => {
 
   const handleBack = () => navigate(-1);
 
+  const updatedBookingsList = useMemo(() => {
+    let arr = [{ label: 'Select', value: '' }];
+    if (isBookingDatasLoaded && bookingDatas) {
+      if (bookingDatas?.docs) {
+        arr = [
+          ...arr,
+          ...bookingDatas.docs.map(bookingItem => ({
+            label: bookingItem?.campaign?.name,
+            value: bookingItem?._id,
+          })),
+        ];
+      }
+
+      return arr;
+    }
+    return [];
+  }, [bookingDatas]);
+
   useEffect(() => {
     if (bookingId) setBookingIdFromFinance(bookingId);
   }, [bookingId]);
+
+  useEffect(() => {
+    if (bookingData?.campaign?.spaces) {
+      setAddSpaceItem(bookingData?.campaign?.spaces);
+    }
+  }, [bookingData]);
+
+  useEffect(() => {
+    if (bookingIdFromFinance === '') {
+      setAddSpaceItem([]);
+    }
+  }, [bookingIdFromFinance]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
@@ -463,10 +549,8 @@ const Home = () => {
                   disabled={
                     isGeneratePurchaseOrderLoading ||
                     isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceOrderLoading ||
-                    !bookingIdFromFinance
+                    isGenerateInvoiceOrderLoading
                   }
-                  // TODO: remove after manual entry api
                 >
                   Create
                 </Button>
@@ -476,28 +560,30 @@ const Home = () => {
               <div className="grid grid-cols-2 gap-4">
                 <Select
                   label="Booking List (Please select a Booking before creating an order)"
-                  // TODO: remove after manual entry api
-                  withAsterisk={!bookingIdFromFinance}
                   className="w-full"
                   styles={bookingStyles}
                   value={bookingId || bookingIdFromFinance}
                   disabled={bookingId || isBookingDatasLoading}
                   placeholder="Select..."
-                  onChange={setBookingIdFromFinance}
-                  data={
-                    isBookingDatasLoaded
-                      ? bookingDatas.docs.map(bookingItem => ({
-                          label: bookingItem?.campaign?.name,
-                          value: bookingItem?._id,
-                        }))
-                      : []
-                  }
+                  onChange={e => {
+                    // eslint-disable-next-line no-alert
+                    const willChange = window.confirm(
+                      'Order item details if added, will get cleared if you change a booking',
+                    );
+                    if (willChange) {
+                      setBookingIdFromFinance(e);
+                    }
+                  }}
+                  data={updatedBookingsList}
                 />
               </div>
             </div>
             <ManualEntryView
-              spacesList={bookingData?.campaign?.spaces}
               totalPrice={calcutateTotalPrice || 0}
+              onClickAddItems={data => toggleAddItemModal(data)}
+              bookingIdFromFinance={bookingIdFromFinance}
+              addSpaceItem={addSpaceItem}
+              setAddSpaceItem={setAddSpaceItem}
             />
           </form>
         </FormProvider>

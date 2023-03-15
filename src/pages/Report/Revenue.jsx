@@ -27,7 +27,7 @@ import {
   useBookingRevenueByIndustry,
   useBookingRevenueByLocation,
 } from '../../hooks/booking.hooks';
-import { dateByQuarter, daysInAWeek, monthsInShort, serialize } from '../../utils';
+import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../../utils';
 import RevenueStatsContent from '../../components/Reports/Revenue/RevenueStatsContent';
 
 dayjs.extend(quarterOfYear);
@@ -172,8 +172,11 @@ const RevenueReport = () => {
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const { data: revenueData } = useBookingReportByRevenueStats();
-  const { data: revenueGraphData, isLoading: isRevenueGraphLoading } =
-    useBookingReportByRevenueGraph(serialize(queryByReveueGraph));
+  const {
+    data: revenueGraphData,
+    isLoading: isRevenueGraphLoading,
+    isSuccess,
+  } = useBookingReportByRevenueGraph(serialize(queryByReveueGraph));
   const { data: revenueDataByLocation, isLoading: isByLocationLoading } =
     useBookingRevenueByLocation(serialize(queryByLocation));
   const { data: revenueDataByIndustry, isLoading: isByIndustryLoading } =
@@ -285,15 +288,17 @@ const RevenueReport = () => {
       tempData.labels =
         queryByReveueGraph.groupBy === 'dayOfWeek'
           ? daysInAWeek
-          : queryByReveueGraph.groupBy === 'month'
+          : queryByReveueGraph.groupBy === 'dayOfMonth'
           ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
+          : queryByReveueGraph.groupBy === 'quarter'
+          ? quarters
           : monthsInShort;
 
       tempData.datasets[0].data = Array.from({ length: dayjs().daysInMonth() }, () => 0);
 
       revenueGraphData?.forEach(item => {
         if (item._id) {
-          tempData.datasets[0].data[item._id - 1] = item.price / 100000 || 0;
+          tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
         }
       });
 
@@ -325,7 +330,7 @@ const RevenueReport = () => {
 
   useEffect(() => {
     handleUpdateRevenueGraph();
-  }, [revenueGraphData]);
+  }, [revenueGraphData, isSuccess]);
 
   useEffect(() => {
     handleUpdatedReveueByLocation();
@@ -354,8 +359,7 @@ const RevenueReport = () => {
                   <p className="transform rotate-[-90deg] absolute left-[-25px] top-[40%]">
                     In Lakhs &gt;
                   </p>
-                  {/* TODO: wip */}
-                  <Line height="100" data={updatedReveueGraph} options={options} />
+                  <Line height="100" data={updatedReveueGraph} options={options} key={uuidv4()} />
                   <p className="text-center">Months &gt;</p>
                 </div>
               )}
@@ -369,7 +373,7 @@ const RevenueReport = () => {
               <div className="w-80 m-auto">
                 {isByIndustryLoading ? (
                   <Loader className="mx-auto" />
-                ) : !updatedIndustry.length ? (
+                ) : !updatedIndustry.datasets[0].data.length ? (
                   <p className="text-center">NA</p>
                 ) : (
                   <Pie

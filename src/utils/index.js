@@ -227,6 +227,8 @@ export const monthsInShort = [
   'Dec',
 ];
 
+export const quarters = ['First quarter', 'Second quarter', 'Third quarter', 'Fourth quarter'];
+
 export const daysInAWeek = [
   'Sunday',
   'Monday',

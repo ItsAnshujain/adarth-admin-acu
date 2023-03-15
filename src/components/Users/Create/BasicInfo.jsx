@@ -86,6 +86,7 @@ const BasicInfo = ({ setUploadingFile }) => {
           withAsterisk
           errors={errors}
           placeholder="Organization"
+          disabled
         />
         <TextInput
           label="Phone Number"
