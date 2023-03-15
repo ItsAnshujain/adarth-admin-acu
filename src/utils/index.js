@@ -278,3 +278,9 @@ export const checkCampaignStats = (currentStatus, item) => {
 
   return campaignStats[currentStatus?.campaignStatus]?.includes(item);
 };
+
+export const orderTitle = {
+  purchase: 'Purchase Order',
+  release: 'Release Order',
+  invoice: 'Invoice',
+};

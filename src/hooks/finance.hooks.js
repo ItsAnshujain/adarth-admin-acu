@@ -5,6 +5,7 @@ import {
   fetchFinance,
   fetchFinanceByYear,
   fetchFinanceByYearAndMonth,
+  fetchSingleRecordById,
   shareRecord,
   updateFinanceById,
 } from '../requests/finance.requests';
@@ -113,3 +114,13 @@ export const useShareRecord = () => {
     },
   );
 };
+
+export const useFetchSingleRecordById = (id, enabled = true) =>
+  useQuery(
+    ['single-record-by-id', id],
+    async () => {
+      const res = await fetchSingleRecordById(id);
+      return res?.data;
+    },
+    { enabled },
+  );

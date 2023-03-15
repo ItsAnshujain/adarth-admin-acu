@@ -85,7 +85,7 @@ const Notifications = () => {
               </Button>
               <Button
                 onClick={handleClearAll}
-                className="danger-buton"
+                className="danger-button"
                 variant="filled"
                 loading={isDeleteAllNotificationsLoading}
                 disabled={isDeleteAllNotificationsLoading}
@@ -151,7 +151,7 @@ const Notifications = () => {
                       </Button>
                       <Button
                         onClick={() => handleClear(messages?._id)}
-                        className="danger-buton"
+                        className="danger-button"
                         loading={
                           (activeButtonId === messages?._id && isDeleteNotificationByIdLoading) ||
                           (activeButtonId === messages?._id && isDeleteAllNotificationsLoading)

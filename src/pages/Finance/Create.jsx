@@ -22,6 +22,7 @@ import {
   mobileRegexMatch,
   onlyNumbersMatch,
   serialize,
+  orderTitle,
 } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
 import PurchaseOrderPreview from '../../components/Finance/Create/PurchaseOrderPreview';
@@ -49,12 +50,6 @@ const preview = {
   purchase: PurchaseOrderPreview,
   release: ReleaseOrderPreview,
   invoice: InvoicePreview,
-};
-
-const title = {
-  purchase: 'Purchase Order',
-  release: 'Release Order',
-  invoice: 'Invoice',
 };
 
 const purchaseSchema = yup.object({
@@ -443,7 +438,7 @@ const Home = () => {
         <FormProvider form={form}>
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <header className="h-[60px] border-b flex items-center justify-between pl-5 pr-7 sticky top-0 z-50 bg-white">
-              <p className="font-bold text-lg">{`Create ${title[type]}`}</p>
+              <p className="font-bold text-lg">{`Create ${orderTitle[type]}`}</p>
               <div className="flex gap-3">
                 <Button
                   onClick={handleBack}

@@ -15,9 +15,10 @@ import Table from '../../components/Table/Table';
 import { useFetchFinanceByYearAndMonth, useUpdateFinanceById } from '../../hooks/finance.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import FinanceMenuPopover from '../../components/Popovers/FinanceMenuPopover';
-import { downloadPdf, ROLES } from '../../utils';
+import { downloadPdf, orderTitle, ROLES } from '../../utils';
 import RoleBased from '../../components/RoleBased';
 import modalConfig from '../../utils/modalConfig';
+import PreviewContent from '../../components/Finance/PreviewContent';
 
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
@@ -58,6 +59,7 @@ const Home = () => {
   const handleTabs = type => {
     searchParams.set('recordType', type);
     searchParams.set('page', 1);
+    searchParams.delete('id');
     setSearchParams(searchParams);
     setPageType(type);
   };
@@ -346,7 +348,7 @@ const Home = () => {
 
             const filteredList = updatedList.map(item => ({
               ...item,
-              disabled: approvalStatus?.includes(item.value),
+              disabled: approvalStatus?.includes(item.value) || item.value === 'sent_for_approval',
             }));
 
             return (
@@ -531,7 +533,7 @@ const Home = () => {
 
             const filteredList = updatedList.map(item => ({
               ...item,
-              disabled: approvalStatus?.includes(item.value),
+              disabled: approvalStatus?.includes(item.value) || item.value === 'sent_for_approval',
             }));
 
             return (
@@ -610,18 +612,22 @@ const Home = () => {
     [financialDataByMonth?.finances?.docs],
   );
 
-  const toggleImagePreviewModal = () =>
+  const togglePreviewModal = () =>
     modals.openContextModal('basic', {
-      title: 'Preview',
+      title: `${orderTitle[recordType]} Current Status`,
       innerProps: {
         modalBody: (
-          <div>
-            {/* TODO: wip */}
-            <Button className="primary-button">Approve</Button>
-            <Button className="danger-button">Reject</Button>
-          </div>
+          <PreviewContent
+            financeRecordId={financeRecordId}
+            recordType={recordType}
+            onClose={() => {
+              searchParams.delete('id');
+              setSearchParams(searchParams);
+            }}
+          />
         ),
       },
+      closeOnClickOutside: false,
       ...updatedModalConfig,
     });
 
@@ -635,9 +641,9 @@ const Home = () => {
 
   useEffect(() => {
     if (financeRecordId) {
-      toggleImagePreviewModal();
+      togglePreviewModal();
     }
-  }, []);
+  }, [financeRecordId]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">

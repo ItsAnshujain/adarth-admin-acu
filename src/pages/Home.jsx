@@ -71,7 +71,7 @@ const HomePage = () => {
   const user = queryClient.getQueryData(['users-by-id', userId]);
 
   const [queryByTime, setQueryByTime] = useState({
-    'groupBy': 'year',
+    'groupBy': 'month',
     'startDate': dayjs().startOf('year').format(DATE_FORMAT),
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
@@ -112,7 +112,7 @@ const HomePage = () => {
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
       setQueryByTime({
-        'groupBy': 'year',
+        'groupBy': 'month',
         'startDate': dayjs().startOf('year').format(DATE_FORMAT),
         'endDate': dayjs().endOf('year').format(DATE_FORMAT),
       });
@@ -122,12 +122,12 @@ const HomePage = () => {
         ...prevState,
         'groupBy':
           viewType === 'year'
-            ? 'year'
-            : viewType === 'month'
             ? 'month'
+            : viewType === 'month'
+            ? 'dayOfMonth'
             : viewType === 'week'
             ? 'dayOfWeek'
-            : 'year',
+            : 'month',
         'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
         'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
       }));
