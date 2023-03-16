@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { ToWords } from 'to-words';
-import { Button, Group, Menu } from '@mantine/core';
+import { ActionIcon, Button, Group, Menu } from '@mantine/core';
 import { Edit2, Trash2 } from 'react-feather';
 import Table from '../../Table/Table';
 import TextareaInput from '../../shared/TextareaInput';
@@ -174,10 +174,8 @@ const ReleaseOrder = ({
         }) =>
           useMemo(
             () => (
-              <div className="flex flex-col items-start gap-1">
-                <div className="text-black font-medium px-2">
-                  <span className="overflow-hidden text-ellipsis">{description}</span>
-                </div>
+              <div className="flex flex-col items-start gap-1 text-black font-medium px-2">
+                <span className="overflow-hidden text-ellipsis">{description}</span>
               </div>
             ),
             [],
@@ -256,9 +254,9 @@ const ReleaseOrder = ({
             () => (
               <Menu shadow="md" width={140} withinPortal>
                 <Menu.Target>
-                  <Button className="py-0" onClick={e => e.preventDefault()}>
+                  <ActionIcon className="py-0" onClick={e => e.preventDefault()}>
                     <MenuIcon />
-                  </Button>
+                  </ActionIcon>
                 </Menu.Target>
 
                 <Menu.Dropdown>

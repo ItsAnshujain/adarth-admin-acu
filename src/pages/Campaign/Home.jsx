@@ -26,6 +26,7 @@ const initialState = {
   limit: '10',
   sortBy: 'name',
   sortOrder: 'desc',
+  type: 'predefined',
 };
 
 const Home = () => {
