@@ -185,8 +185,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
             <div>
               <p className="text-slate-400">Printing Status</p>
               <p className="font-bold capitalize">
-                {bookingData?.currentStatus?.paymentStatus?.toLowerCase()?.includes('paid') ||
-                bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
+                {bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Printing upcoming'
                   : bookingData?.currentStatus?.printingStatus
                       ?.toLowerCase()
@@ -204,8 +203,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
             <div>
               <p className="text-slate-400">Mounting Status</p>
               <p className="font-bold capitalize">
-                {bookingData?.currentStatus?.paymentStatus?.toLowerCase()?.includes('paid') ||
-                bookingData?.currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
+                {bookingData?.currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Mounting upcoming'
                   : bookingData?.currentStatus?.mountingStatus
                       ?.toLowerCase()

@@ -1,7 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { ToWords } from 'to-words';
 import { DatePicker } from '@mantine/dates';
+import { ActionIcon, Button, Group, Menu } from '@mantine/core';
+import { Edit2, Trash2 } from 'react-feather';
 import Table from '../../Table/Table';
 import TextareaInput from '../../shared/TextareaInput';
 import TextInput from '../../shared/TextInput';
@@ -10,6 +12,7 @@ import { useFormContext } from '../../../context/formContext';
 import NumberInput from '../../shared/NumberInput';
 import NoData from '../../shared/NoData';
 import { useStyles } from '../../DateRange';
+import MenuIcon from '../../Menu';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
@@ -26,21 +29,28 @@ const styles = {
   },
 };
 
-const PurchaseOrder = ({ spacesList, totalPrice }) => {
+const PurchaseOrder = ({
+  totalPrice,
+  onClickAddItems = () => {},
+  bookingIdFromFinance,
+  addSpaceItem,
+  setAddSpaceItem = () => {},
+}) => {
   const { classes, cx } = useStyles();
   const { errors, setFieldValue, values } = useFormContext();
   const toWords = new ToWords();
-  const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
   const updateData = (key, val, id) => {
-    setUpdatedInventoryData(prev =>
-      prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
-    );
+    setAddSpaceItem(prev => prev.map(item => (item._id === id ? { ...item, [key]: val } : item)));
 
     setFieldValue(
       'spaces',
       values.spaces.map(item => (item._id === id ? { ...item, [key]: val } : item)),
     );
+  };
+
+  const handleDeleteSpaceItem = spaceId => {
+    setAddSpaceItem(addSpaceItem?.filter(item => item.itemId !== spaceId));
   };
 
   const COLUMNS = useMemo(
@@ -181,15 +191,140 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
           ),
       },
     ],
-    [updatedInventoryData],
+    [addSpaceItem],
   );
 
-  useEffect(() => {
-    if (spacesList) {
-      setUpdatedInventoryData(spacesList);
-      setFieldValue('spaces', spacesList);
-    }
-  }, [spacesList]);
+  const manualEntryColumn = useMemo(
+    () => [
+      {
+        Header: '#',
+        accessor: 'id',
+        disableSortBy: true,
+        Cell: ({ row: { index } }) => index + 1,
+      },
+      {
+        Header: 'DESCRIPTION OF GOODS AND SERVICE',
+        accessor: 'description',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { description },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex flex-col items-start gap-1 text-black font-medium px-2">
+                <span className="overflow-hidden text-ellipsis">{description}</span>
+              </div>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'DATE',
+        accessor: 'date',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { date },
+          },
+        }) => useMemo(() => <p>{dayjs(date).format(DATE_FORMAT)}</p>, []),
+      },
+      {
+        Header: 'QUANTITY',
+        accessor: 'quantity',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { quantity },
+          },
+        }) => useMemo(() => <p className="w-[14%]">{quantity}</p>, []),
+      },
+      {
+        Header: 'RATE',
+        accessor: 'rate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { rate },
+          },
+        }) =>
+          useMemo(
+            () => <p className="pl-2">{rate ? toIndianCurrency(Number.parseInt(rate, 10)) : 0}</p>,
+            [],
+          ),
+      },
+      {
+        Header: 'PER',
+        accessor: 'per',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { per },
+          },
+        }) => useMemo(() => <p className="w-[14%]">{per}</p>, []),
+      },
+      {
+        Header: 'PRICING',
+        accessor: 'price',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { price },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p className="pl-2">{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'ACTION',
+        accessor: 'action',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { itemId, description, date, quantity, rate, per, price },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <Menu shadow="md" width={140} withinPortal>
+                <Menu.Target>
+                  <ActionIcon className="py-0" onClick={e => e.preventDefault()}>
+                    <MenuIcon />
+                  </ActionIcon>
+                </Menu.Target>
+
+                <Menu.Dropdown>
+                  <Menu.Item
+                    className="cursor-pointer flex items-center gap-1"
+                    icon={<Edit2 className="h-4" />}
+                    onClick={() =>
+                      onClickAddItems({ description, date, quantity, rate, per, price, itemId })
+                    }
+                  >
+                    <span className="ml-1">Edit</span>
+                  </Menu.Item>
+
+                  <Menu.Item
+                    className="cursor-pointer flex items-center gap-1"
+                    icon={<Trash2 className="h-4" />}
+                    onClick={() => handleDeleteSpaceItem(itemId)}
+                  >
+                    <span className="ml-1">Delete</span>
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            ),
+            [],
+          ),
+      },
+    ],
+    [addSpaceItem],
+  );
 
   return (
     <div>
@@ -351,11 +486,22 @@ const PurchaseOrder = ({ spacesList, totalPrice }) => {
         </div>
       </div>
       <div className="pl-5 pr-7 py-4 mb-2">
-        <p className="font-bold text-2xl mb-4">Order Item Details</p>
-        {updatedInventoryData?.length ? (
+        <Group position="apart" align="center" className="mb-4">
+          <p className="font-bold text-2xl">Order Item Details</p>
+          {!bookingIdFromFinance ? (
+            <Button className="secondary-button" onClick={() => onClickAddItems()}>
+              Add Items
+            </Button>
+          ) : null}
+        </Group>
+        {addSpaceItem?.length ? (
           <>
             <div className="border-dashed border-0 border-black border-b-2 pb-4">
-              <Table COLUMNS={COLUMNS} data={updatedInventoryData || []} showPagination={false} />
+              <Table
+                COLUMNS={bookingIdFromFinance ? COLUMNS : manualEntryColumn}
+                data={bookingIdFromFinance ? addSpaceItem : addSpaceItem}
+                showPagination={false}
+              />
             </div>
             <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
               <p>Total Price: </p>

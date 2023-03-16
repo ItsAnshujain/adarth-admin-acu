@@ -19,7 +19,7 @@ import { useCampaignReport, useCampaignStats } from '../../hooks/campaigns.hooks
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import CampaignStatsContent from '../../components/Reports/Campaign/CampaignStatsContent';
 import CampaignPieContent from '../../components/Reports/Campaign/CampaignPieContent';
-import { dateByQuarter, daysInAWeek, monthsInShort, serialize } from '../../utils';
+import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../../utils';
 
 dayjs.extend(quarterOfYear);
 
@@ -43,17 +43,17 @@ const CampaignReport = () => {
     datasets: [
       {
         label: 'Upcoming',
-        data: Array.from({ length: 12 }, () => 0),
+        data: [],
         backgroundColor: '#FF900E',
       },
       {
         label: 'Ongoing',
-        data: Array.from({ length: 12 }, () => 0),
+        data: [],
         backgroundColor: '#914EFB',
       },
       {
         label: 'Completed',
-        data: Array.from({ length: 12 }, () => 0),
+        data: [],
         backgroundColor: '#28B446',
       },
     ],
@@ -140,32 +140,52 @@ const CampaignReport = () => {
   );
 
   const calculateBarData = useCallback(() => {
-    setUpdatedBarData(prevState => {
-      const tempBarData = { ...prevState, id: uuidv4() };
-      if (report) {
-        tempBarData.labels =
-          queryByTime.groupBy === 'dayOfWeek'
-            ? daysInAWeek
-            : queryByTime.groupBy === 'month'
-            ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
-            : monthsInShort;
+    if (report && report?.revenue) {
+      const tempBarData = {
+        labels: monthsInShort,
+        datasets: [
+          {
+            label: 'Upcoming',
+            data: [],
+            backgroundColor: '#FF900E',
+          },
+          {
+            label: 'Ongoing',
+            data: [],
+            backgroundColor: '#914EFB',
+          },
+          {
+            label: 'Completed',
+            data: [],
+            backgroundColor: '#28B446',
+          },
+        ],
+      };
+      tempBarData.labels =
+        queryByTime.groupBy === 'dayOfWeek'
+          ? daysInAWeek
+          : queryByTime.groupBy === 'dayOfMonth'
+          ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
+          : queryByTime.groupBy === 'quarter'
+          ? quarters
+          : monthsInShort;
 
-        report?.revenue?.forEach(item => {
-          if (item._id.month) {
-            if (item.upcoming) {
-              tempBarData.datasets[0].data[item._id.month - 1] = item.upcoming;
-            }
-            if (item.ongoing) {
-              tempBarData.datasets[1].data[item._id.month - 1] = item.ongoing;
-            }
-            if (item.completed) {
-              tempBarData.datasets[2].data[item._id.month - 1] = item.completed;
-            }
+      report?.revenue?.forEach(item => {
+        if (item?._id) {
+          if (item.upcoming) {
+            tempBarData.datasets[0].data[item._id - 1] = item.upcoming;
           }
-        });
-      }
-      return tempBarData;
-    });
+          if (item.ongoing) {
+            tempBarData.datasets[1].data[item._id - 1] = item.ongoing;
+          }
+          if (item.completed) {
+            tempBarData.datasets[2].data[item._id - 1] = item.completed;
+          }
+        }
+      });
+
+      setUpdatedBarData(tempBarData);
+    }
   }, [report]);
 
   useEffect(() => {
