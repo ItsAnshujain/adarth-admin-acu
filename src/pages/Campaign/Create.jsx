@@ -19,7 +19,7 @@ const initialValues = {
   description: '',
   price: null,
   healthStatus: null,
-  status: '',
+  createStatus: '',
   isFeatured: false,
   previousBrands: [],
   minImpression: 1600000,
@@ -121,13 +121,13 @@ const CreateCampaign = () => {
           item => item?.name?.toLowerCase() === 'published',
         )?._id;
 
-        data.status = statusId;
+        data.createStatus = statusId;
       } else if (submitType === 'save') {
         const statusId = campaignStatus?.docs?.find(
           item => item?.name?.toLowerCase() === 'created',
         )?._id;
 
-        data.status = statusId;
+        data.createStatus = statusId;
       }
 
       Object.keys(data).forEach(key => {

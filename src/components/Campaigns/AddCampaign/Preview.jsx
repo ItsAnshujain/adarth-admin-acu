@@ -172,11 +172,11 @@ const Preview = ({ data = {}, place = {} }) => {
                   name: item.spaceName,
                   address: item.location?.address,
                   cost: item.price,
-                  dimensions: `${item.dimension?.height || 0}ft x ${item.dimension?.width || 0}ft`, //
+                  dimensions: `${item.dimension?.height || 0}ft x ${item.dimension?.width || 0}ft`,
                   format: item.supportedMedia,
-                  lighting: item.mediaType,
+                  lighting: item.mediaType?.name,
                   resolution: item.resolutions,
-                  illumination: item.illuminations,
+                  illumination: item.illuminations?.name,
                   unit: item.unit,
                 }}
               />

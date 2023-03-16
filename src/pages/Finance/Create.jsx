@@ -1,11 +1,12 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Button, Select } from '@mantine/core';
+import { Button, Modal, Select } from '@mantine/core';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { useEffect, useMemo, useState } from 'react';
 import validator from 'validator';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
+import { useDisclosure } from '@mantine/hooks';
 import PurchaseOrder from '../../components/Finance/Create/PurchaseOrder';
 import ReleaseOrder from '../../components/Finance/Create/ReleaseOrder';
 import Invoice from '../../components/Finance/Create/Invoice';
@@ -14,6 +15,9 @@ import {
   useBookingById,
   useBookings,
   useGenerateInvoice,
+  // useGenerateManualInvoice,
+  // useGenerateManualPurchaseOrder,
+  // useGenerateManualReleaseOrder,
   useGeneratePurchaseOrder,
   useGenerateReleaseOrder,
 } from '../../hooks/booking.hooks';
@@ -305,11 +309,17 @@ const Home = () => {
   const [searchParam] = useSearchParams();
   const { type } = useParams();
   const form = useForm({ validate: yupResolver(schema[type]), initialValues: initialValues[type] });
+
   const ManualEntryView = orderView[type] ?? <div />;
   const Preview = preview[type] ?? <div />;
+
   const bookingId = searchParam.get('id');
+
+  const [opened, { open, close }] = useDisclosure(false);
   const [bookingIdFromFinance, setBookingIdFromFinance] = useState();
   const [addSpaceItem, setAddSpaceItem] = useState([]);
+  const [previewData] = useState();
+
   const {
     data: bookingDatas,
     isLoading: isBookingDatasLoading,
@@ -323,8 +333,20 @@ const Home = () => {
     useGeneratePurchaseOrder();
   const { mutateAsync: generateReleaseOrder, isLoading: isGenerateReleaseOrderLoading } =
     useGenerateReleaseOrder();
-  const { mutateAsync: generateInvoiceOrder, isLoading: isGenerateInvoiceOrderLoading } =
+  const { mutateAsync: generateInvoice, isLoading: isGenerateInvoiceLoading } =
     useGenerateInvoice();
+
+  // TODO: api integration left commented for now
+  // const {
+  //   mutateAsync: generateManualPurchaseOrder,
+  //   isLoading: isGenerateManualPurchaseOrderLoading,
+  // } = useGenerateManualPurchaseOrder();
+  // const {
+  //   mutateAsync: generateManualReleaseOrder,
+  //   isLoading: isGenerateManualReleaseOrderLoading,
+  // } = useGenerateManualReleaseOrder();
+  // const { mutateAsync: generateManualInvoice, isLoading: isGenerateManualInvoiceLoading } =
+  //   useGenerateManualInvoice();
 
   const redirectToHome = () => setTimeout(() => navigate(-1), 2000);
 
@@ -350,6 +372,7 @@ const Home = () => {
             setAddSpaceItem={setAddSpaceItem}
             addSpaceItem={addSpaceItem}
             item={item}
+            type={type}
           />
         ),
       },
@@ -400,7 +423,18 @@ const Home = () => {
           dueOn: item.dueOn || new Date(),
         }));
       } else {
-        data.spaces = addSpaceItem;
+        data.spaces = addSpaceItem?.map((item, index) => ({
+          name: item.name,
+          location: item.location,
+          titleDate: item.date,
+          dueOn: item.dueOn,
+          quantity: item.quantity,
+          rate: item.rate,
+          per: item.per,
+          price: item.price,
+          index: index + 1,
+        }));
+
         if (!data.spaces.length) {
           showNotification({
             title: 'Please create atleast one Order Item to continue',
@@ -427,7 +461,19 @@ const Home = () => {
       }
 
       if (!bookingIdFromFinance) {
-        data.spaces = addSpaceItem;
+        data.spaces = addSpaceItem?.map((item, index) => ({
+          location: item.location,
+          area: item.area,
+          city: item.city,
+          displayCost: item.displayCost,
+          height: item.height,
+          media: item.media,
+          mountingCost: item.mountingCost,
+          printingCost: item.printingCost,
+          width: item.width,
+          index: index + 1,
+        }));
+
         if (!data.spaces.length) {
           showNotification({
             title: 'Please create atleast one Order Item to continue',
@@ -460,7 +506,18 @@ const Home = () => {
       }
 
       if (!bookingIdFromFinance) {
-        data.spaces = addSpaceItem;
+        data.spaces = addSpaceItem?.map((item, index) => ({
+          name: item.name,
+          location: item.location,
+          titleDate: item.date,
+          dueOn: item.dueOn,
+          quantity: item.quantity,
+          rate: item.rate,
+          per: item.per,
+          price: item.price,
+          index: index + 1,
+        }));
+
         if (!data.spaces.length) {
           showNotification({
             title: 'Please create atleast one Order Item to continue',
@@ -471,7 +528,7 @@ const Home = () => {
 
       // console.log(data);
       // return;
-      const invoicePdf = await generateInvoiceOrder(
+      const invoicePdf = await generateInvoice(
         { id: bookingId || bookingIdFromFinance, data },
         { onSuccess: () => redirectToHome() },
       );
@@ -532,10 +589,13 @@ const Home = () => {
                   disabled={
                     isGeneratePurchaseOrderLoading ||
                     isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceOrderLoading
+                    isGenerateInvoiceLoading
                   }
                 >
                   Cancel
+                </Button>
+                <Button className="secondary-button" onClick={open}>
+                  Preview
                 </Button>
                 <Button
                   type="submit"
@@ -544,12 +604,12 @@ const Home = () => {
                   loading={
                     isGeneratePurchaseOrderLoading ||
                     isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceOrderLoading
+                    isGenerateInvoiceLoading
                   }
                   disabled={
                     isGeneratePurchaseOrderLoading ||
                     isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceOrderLoading
+                    isGenerateInvoiceLoading
                   }
                 >
                   Create
@@ -588,6 +648,30 @@ const Home = () => {
           </form>
         </FormProvider>
       </div>
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="Manual Entry"
+        centered
+        size="xl"
+        overlayBlur={3}
+        overlayOpacity={0.55}
+        radius={0}
+        padding={0}
+        classNames={{
+          title: 'font-dmSans text-xl px-4',
+          header: 'px-4 pt-4',
+          body: 'pb-4',
+          close: 'mr-4',
+        }}
+      >
+        <Preview
+          previewData={previewData}
+          previewSpaces={addSpaceItem}
+          totalPrice={calcutateTotalPrice || 0}
+          type={type}
+        />
+      </Modal>
     </div>
   );
 };

@@ -154,29 +154,29 @@ const Home = () => {
       },
       {
         Header: 'STATUS',
-        accessor: 'status',
+        accessor: 'createStatus.name',
         Cell: ({
           row: {
-            original: { _id, status },
+            original: { _id, createStatus },
           },
         }) =>
           useMemo(() => {
             const updatedCampaignList = [...campaignList];
-            if (!status) {
+            if (!createStatus) {
               updatedCampaignList.unshift({ label: 'Select', value: '' });
             }
 
             return (
               <NativeSelect
-                defaultValue={status || ''}
-                onChange={e => updateCampaign(_id, { status: e.target.value })}
+                defaultValue={createStatus?._id || ''}
+                onChange={e => updateCampaign(_id, { createStatus: e.target.value })}
                 data={updatedCampaignList}
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
               />
             );
-          }, [status, _id]),
+          }, [createStatus, _id]),
       },
       {
         Header: 'TOTAL PLACES',
@@ -184,7 +184,7 @@ const Home = () => {
       },
       {
         Header: 'PRICING',
-        accessor: 'totalPrice',
+        accessor: 'price',
         Cell: ({
           row: {
             original: { price },

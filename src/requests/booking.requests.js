@@ -35,3 +35,12 @@ export const bookingReportByRevenueGraph = query =>
 export const bookingRevenueByIndustry = query => http.get(`/booking/report/byIndustry?${query}`);
 
 export const bookingRevenueByLocation = query => http.get(`/booking/report/byLocation?${query}`);
+
+export const generateManualPurchaseReceipt = data =>
+  http.post('/booking/generate-receipt/manual/purchase', data);
+
+export const generateManualReleaseReceipt = data =>
+  http.post('/booking/generate-receipt/manual/release', data);
+
+export const generateManualInvoiceReceipt = data =>
+  http.post('/booking/generate-receipt/manual/invoice', data);
