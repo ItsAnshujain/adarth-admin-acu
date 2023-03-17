@@ -230,9 +230,9 @@ const PurchaseOrder = ({
                 <Text
                   className="overflow-hidden text-ellipsis max-w-[180px]"
                   lineClamp={1}
-                  title={location}
+                  title={typeof location !== 'object' ? location : '-'}
                 >
-                  {location || '-'}
+                  {typeof location !== 'object' ? location : '-'}
                 </Text>
                 <div className="text-black font-light pr-2 text-xs">
                   <span className="overflow-hidden text-ellipsis">
@@ -537,9 +537,9 @@ const PurchaseOrder = ({
             <div className="border-dashed border-0 border-black border-b-2 pb-4">
               <Table
                 COLUMNS={bookingIdFromFinance ? COLUMNS : manualEntryColumn}
-                // COLUMNS={bookingIdFromFinance ? COLUMNS : []}
                 data={bookingIdFromFinance ? addSpaceItem : addSpaceItem}
                 showPagination={false}
+                classNameWrapper="min-h-[150px]"
               />
             </div>
             <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">

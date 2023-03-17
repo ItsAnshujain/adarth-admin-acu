@@ -30,7 +30,7 @@ const ReleaseOrder = ({
   totalPrice,
   onClickAddItems = () => {},
   bookingIdFromFinance,
-  addSpaceItem,
+  addSpaceItem = [],
   setAddSpaceItem = () => {},
 }) => {
   const toWords = new ToWords();
@@ -205,9 +205,9 @@ const ReleaseOrder = ({
               <Text
                 className="overflow-hidden text-ellipsis max-w-[180px]"
                 lineClamp={1}
-                title={location}
+                title={typeof location !== 'object' ? location : '-'}
               >
-                {location}
+                {typeof location !== 'object' ? location : '-'}
               </Text>
             ),
             [],
@@ -472,51 +472,49 @@ const ReleaseOrder = ({
                 COLUMNS={bookingIdFromFinance ? COLUMNS : manualEntryColumn}
                 data={bookingIdFromFinance ? addSpaceItem : addSpaceItem}
                 showPagination={false}
+                classNameWrapper="min-h-[150px]"
               />
             </div>
-            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
+            <Group position="right">
               {/* TODO: wip */}
-              <p>Total Price: </p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-            </div>
-            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
-              <p>Discount: </p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-            </div>
-            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
-              <p>Sub Total: </p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-            </div>
-            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
-              <p>GST 18%: </p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-            </div>
-            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
-              <p>Total: </p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-            </div>
-            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
-              <p>For 3 months: </p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-            </div>
-            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
-              <p>Grand Total: </p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-            </div>
+              <div className="bg-red-200 w-[650px] grid grid-cols-4">
+                <div>
+                  <p>Total Price: </p>
+                  <p>Discount: </p>
+                  <p>Sub Total: </p>
+                  <p>GST 18%: </p>
+                  <p>Total: </p>
+                  <p>For 3 months: </p>
+                </div>
+
+                <div className="bg-red-300 text-center">
+                  <p>0</p>
+                  <p>0</p>
+                  <p>0</p>
+                  <p>0</p>
+                  <p>0</p>
+                  <p>0</p>
+                </div>
+
+                <div className="bg-red-300 text-center">
+                  <p>0</p>
+                  <p>0</p>
+                  <p>0</p>
+                  <p>0</p>
+                  <p>0</p>
+                  <p>0</p>
+                </div>
+
+                <div className="bg-red-300 text-center">
+                  <p>0</p>
+                  <p>0</p>
+                  <p>0</p>
+                  <p>0</p>
+                  <p>0</p>
+                  <p>0</p>
+                </div>
+              </div>
+            </Group>
           </>
         ) : (
           <div className="w-full min-h-[100px] flex justify-center items-center">

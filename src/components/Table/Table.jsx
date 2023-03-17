@@ -20,6 +20,7 @@ const Table = ({
   handleSorting = () => {},
   showPagination = true,
   className = '',
+  classNameWrapper = '',
 }) => {
   const columns = useMemo(() => COLUMNS, [COLUMNS]);
   const [searchParams] = useSearchParams('');
@@ -73,7 +74,7 @@ const Table = ({
   };
 
   return (
-    <div className="min-h-[450px] flex flex-col justify-between">
+    <div className={classNames('min-h-[450px] flex flex-col justify-between', classNameWrapper)}>
       <div className={classNames('overflow-x-auto', className)}>
         <table className="w-full" {...getTableProps()}>
           <thead className="bg-gray-100">
