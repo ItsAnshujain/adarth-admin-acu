@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { ToWords } from 'to-words';
-import { ActionIcon, Button, Group, Menu } from '@mantine/core';
+import { ActionIcon, Button, Group, Menu, Text } from '@mantine/core';
 import { Edit2, Trash2 } from 'react-feather';
 import Table from '../../Table/Table';
 import TextareaInput from '../../shared/TextareaInput';
@@ -55,15 +55,21 @@ const Invoice = ({
           useMemo(
             () => (
               <div className="flex flex-col items-start gap-1">
-                <div className="text-black font-medium px-2">
-                  <span className="overflow-hidden text-ellipsis">
-                    {basicInformation?.spaceName}
-                  </span>
-                </div>
-                <div className="text-black font-light px-2 text-sm">
-                  <span className="overflow-hidden text-ellipsis">{location?.address}</span>
-                </div>
-                <div className="text-black font-light px-2 text-xs">
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[280px]"
+                  lineClamp={1}
+                  title={basicInformation?.spaceName}
+                >
+                  {basicInformation?.spaceName}
+                </Text>
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[280px]"
+                  lineClamp={1}
+                  title={location?.address}
+                >
+                  {location?.address}
+                </Text>
+                <div className="text-black font-light pr-2 text-xs">
                   <span className="overflow-hidden text-ellipsis">
                     {startDate ? dayjs(startDate).format(DATE_FORMAT) : <NoData type="na" />}
                     {' to '}
@@ -171,13 +177,21 @@ const Invoice = ({
           useMemo(
             () => (
               <div className="flex flex-col items-start gap-1">
-                <div className="text-black font-medium px-2">
-                  <span className="overflow-hidden text-ellipsis">{name}</span>
-                </div>
-                <div className="text-black font-light px-2 text-sm">
-                  <span className="overflow-hidden text-ellipsis">{location}</span>
-                </div>
-                <div className="text-black font-light px-2 text-xs">
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[280px]"
+                  lineClamp={1}
+                  title={name}
+                >
+                  {name}
+                </Text>
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[180px]"
+                  lineClamp={1}
+                  title={location}
+                >
+                  {location}
+                </Text>
+                <div className="text-black font-light pr-2 text-xs">
                   <span className="overflow-hidden text-ellipsis">
                     {titleDate ? dayjs(titleDate).format(DATE_FORMAT) : <NoData type="na" />}
                   </span>
