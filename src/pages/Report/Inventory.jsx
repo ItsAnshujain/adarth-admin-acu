@@ -175,7 +175,7 @@ const InventoryReport = () => {
       accessor: 'basicInformation.spaceName',
       Cell: ({
         row: {
-          original: { _id, basicInformation, isUnderMaintenance },
+          original: { _id, basicInformation },
         },
       }) =>
         useMemo(
@@ -200,13 +200,6 @@ const InventoryReport = () => {
                   {basicInformation?.spaceName}
                 </Text>
               </Link>
-              <Badge
-                className="capitalize"
-                variant="filled"
-                color={isUnderMaintenance ? 'yellow' : 'green'}
-              >
-                {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
-              </Badge>
             </div>
           ),
           [],
@@ -389,7 +382,7 @@ const InventoryReport = () => {
       disableSortBy: true,
       Cell: ({
         row: {
-          original: { _id, basicInformation, isUnderMaintenance },
+          original: { _id, basicInformation },
         },
       }) =>
         useMemo(
@@ -414,13 +407,6 @@ const InventoryReport = () => {
                   {basicInformation?.spaceName}
                 </Text>
               </Link>
-              <Badge
-                className="capitalize"
-                variant="filled"
-                color={isUnderMaintenance ? 'yellow' : 'green'}
-              >
-                {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
-              </Badge>
             </div>
           ),
           [],
@@ -428,13 +414,13 @@ const InventoryReport = () => {
     },
     {
       Header: 'MEDIA OWNER NAME',
-      accessor: 'basicInformation.landlord',
+      accessor: 'basicInformation.mediaOwner.name',
       disableSortBy: true,
       Cell: ({
         row: {
           original: { basicInformation },
         },
-      }) => useMemo(() => <p className="w-fit">{basicInformation?.landlord}</p>, []),
+      }) => useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name}</p>, []),
     },
     {
       Header: 'CATEGORY',
@@ -444,7 +430,7 @@ const InventoryReport = () => {
         row: {
           original: { basicInformation },
         },
-      }) => useMemo(() => <p className="w-fit">{basicInformation?.category}</p>, []),
+      }) => useMemo(() => <p className="w-fit">{basicInformation?.category?.name}</p>, []),
     },
     {
       Header: 'DIMENSION',
@@ -506,6 +492,16 @@ const InventoryReport = () => {
           original: { location },
         },
       }) => useMemo(() => <p>{location?.city || '-'}</p>, []),
+    },
+    {
+      Header: 'ROI',
+      accessor: 'roi',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { roi },
+        },
+      }) => useMemo(() => <p className="pl-2">{roi ? Number(roi) : 0}</p>, []),
     },
     {
       Header: 'PRICING',

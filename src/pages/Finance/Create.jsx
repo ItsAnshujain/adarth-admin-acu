@@ -15,9 +15,9 @@ import {
   useBookingById,
   useBookings,
   useGenerateInvoice,
-  // useGenerateManualInvoice,
-  // useGenerateManualPurchaseOrder,
-  // useGenerateManualReleaseOrder,
+  useGenerateManualPurchaseOrder,
+  useGenerateManualReleaseOrder,
+  useGenerateManualInvoice,
   useGeneratePurchaseOrder,
   useGenerateReleaseOrder,
 } from '../../hooks/booking.hooks';
@@ -336,17 +336,16 @@ const Home = () => {
   const { mutateAsync: generateInvoice, isLoading: isGenerateInvoiceLoading } =
     useGenerateInvoice();
 
-  // TODO: api integration left commented for now
-  // const {
-  //   mutateAsync: generateManualPurchaseOrder,
-  //   isLoading: isGenerateManualPurchaseOrderLoading,
-  // } = useGenerateManualPurchaseOrder();
-  // const {
-  //   mutateAsync: generateManualReleaseOrder,
-  //   isLoading: isGenerateManualReleaseOrderLoading,
-  // } = useGenerateManualReleaseOrder();
-  // const { mutateAsync: generateManualInvoice, isLoading: isGenerateManualInvoiceLoading } =
-  //   useGenerateManualInvoice();
+  const {
+    mutateAsync: generateManualPurchaseOrder,
+    isLoading: isGenerateManualPurchaseOrderLoading,
+  } = useGenerateManualPurchaseOrder();
+  const {
+    mutateAsync: generateManualReleaseOrder,
+    isLoading: isGenerateManualReleaseOrderLoading,
+  } = useGenerateManualReleaseOrder();
+  const { mutateAsync: generateManualInvoice, isLoading: isGenerateManualInvoiceLoading } =
+    useGenerateManualInvoice();
 
   const redirectToHome = () => setTimeout(() => navigate(-1), 2000);
 
@@ -422,11 +421,19 @@ const Home = () => {
           per: +item.per || 1,
           dueOn: item.dueOn || new Date(),
         }));
+
+        const purchaseOrderPdf = await generatePurchaseOrder(
+          { id: bookingId || bookingIdFromFinance, data },
+          { onSuccess: () => redirectToHome() },
+        );
+        if (purchaseOrderPdf?.generatedPdf?.Location) {
+          downloadPdf(purchaseOrderPdf.generatedPdf.Location);
+        }
       } else {
         data.spaces = addSpaceItem?.map((item, index) => ({
           name: item.name,
           location: item.location,
-          titleDate: item.date,
+          titleDate: item.titleDate,
           dueOn: item.dueOn,
           quantity: item.quantity,
           rate: item.rate,
@@ -441,16 +448,8 @@ const Home = () => {
           });
           return;
         }
-      }
 
-      // console.log(data);
-      // return;
-      const purchaseOrderPdf = await generatePurchaseOrder(
-        { id: bookingId || bookingIdFromFinance, data },
-        { onSuccess: () => redirectToHome() },
-      );
-      if (purchaseOrderPdf?.generatedPdf?.Location) {
-        downloadPdf(purchaseOrderPdf.generatedPdf.Location);
+        await generateManualPurchaseOrder(data);
       }
     } else if (type === 'release') {
       if (data?.phone !== undefined && !data?.phone?.includes('+91')) {
@@ -460,7 +459,15 @@ const Home = () => {
         data.mobile = `+91${data?.mobile}`;
       }
 
-      if (!bookingIdFromFinance) {
+      if (bookingIdFromFinance) {
+        const releaseOrderPdf = await generateReleaseOrder(
+          { id: bookingId || bookingIdFromFinance, data },
+          { onSuccess: () => redirectToHome() },
+        );
+        if (releaseOrderPdf?.generatedPdf?.Location) {
+          downloadPdf(releaseOrderPdf.generatedPdf.Location);
+        }
+      } else {
         data.spaces = addSpaceItem?.map((item, index) => ({
           location: item.location,
           area: item.area,
@@ -481,16 +488,12 @@ const Home = () => {
           return;
         }
       }
+      data.grandTotal = 100;
+      data.grandTotalInWords = 'zero';
+      data.printingSqftCost = 10;
+      data.mountingSqftCost = 10;
 
-      // console.log(data);
-      // return;
-      const releaseOrderPdf = await generateReleaseOrder(
-        { id: bookingId || bookingIdFromFinance, data },
-        { onSuccess: () => redirectToHome() },
-      );
-      if (releaseOrderPdf?.generatedPdf?.Location) {
-        downloadPdf(releaseOrderPdf.generatedPdf.Location);
-      }
+      await generateManualReleaseOrder(data);
     } else if (type === 'invoice') {
       if (!data?.supplierPhone?.includes('+91')) {
         data.supplierPhone = `+91${data?.supplierPhone}`;
@@ -505,11 +508,19 @@ const Home = () => {
         data.buyerGst = data.buyerGst?.toUpperCase();
       }
 
-      if (!bookingIdFromFinance) {
+      if (bookingIdFromFinance) {
+        const invoicePdf = await generateInvoice(
+          { id: bookingId || bookingIdFromFinance, data },
+          { onSuccess: () => redirectToHome() },
+        );
+        if (invoicePdf?.generatedPdf?.Location) {
+          downloadPdf(invoicePdf.generatedPdf.Location);
+        }
+      } else {
         data.spaces = addSpaceItem?.map((item, index) => ({
           name: item.name,
           location: item.location,
-          titleDate: item.date,
+          titleDate: item.titleDate,
           dueOn: item.dueOn,
           quantity: item.quantity,
           rate: item.rate,
@@ -526,15 +537,7 @@ const Home = () => {
         }
       }
 
-      // console.log(data);
-      // return;
-      const invoicePdf = await generateInvoice(
-        { id: bookingId || bookingIdFromFinance, data },
-        { onSuccess: () => redirectToHome() },
-      );
-      if (invoicePdf?.generatedPdf?.Location) {
-        downloadPdf(invoicePdf.generatedPdf.Location);
-      }
+      await generateManualInvoice(data);
     }
     form.reset();
   };
@@ -589,7 +592,10 @@ const Home = () => {
                   disabled={
                     isGeneratePurchaseOrderLoading ||
                     isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceLoading
+                    isGenerateInvoiceLoading ||
+                    isGenerateManualPurchaseOrderLoading ||
+                    isGenerateManualReleaseOrderLoading ||
+                    isGenerateManualInvoiceLoading
                   }
                 >
                   Cancel
@@ -604,12 +610,18 @@ const Home = () => {
                   loading={
                     isGeneratePurchaseOrderLoading ||
                     isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceLoading
+                    isGenerateInvoiceLoading ||
+                    isGenerateManualPurchaseOrderLoading ||
+                    isGenerateManualReleaseOrderLoading ||
+                    isGenerateManualInvoiceLoading
                   }
                   disabled={
                     isGeneratePurchaseOrderLoading ||
                     isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceLoading
+                    isGenerateInvoiceLoading ||
+                    isGenerateManualPurchaseOrderLoading ||
+                    isGenerateManualReleaseOrderLoading ||
+                    isGenerateManualInvoiceLoading
                   }
                 >
                   Create

@@ -26,7 +26,7 @@ const Invoice = ({
   totalPrice,
   onClickAddItems = () => {},
   bookingIdFromFinance,
-  addSpaceItem,
+  addSpaceItem = [],
   setAddSpaceItem = () => {},
 }) => {
   const toWords = new ToWords();
@@ -187,9 +187,9 @@ const Invoice = ({
                 <Text
                   className="overflow-hidden text-ellipsis max-w-[180px]"
                   lineClamp={1}
-                  title={location}
+                  title={typeof location !== 'object' ? location : '-'}
                 >
-                  {location}
+                  {typeof location !== 'object' ? location : '-'}
                 </Text>
                 <div className="text-black font-light pr-2 text-xs">
                   <span className="overflow-hidden text-ellipsis">
@@ -547,6 +547,7 @@ const Invoice = ({
                 COLUMNS={bookingIdFromFinance ? COLUMNS : manualEntryColumn}
                 data={bookingIdFromFinance ? addSpaceItem : addSpaceItem}
                 showPagination={false}
+                classNameWrapper="min-h-[150px]"
               />
             </div>
             <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
