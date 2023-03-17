@@ -17,6 +17,9 @@ import {
   generateReleaseReceipt,
   updateBooking,
   updateBookingStatus,
+  generateManualPurchaseReceipt,
+  generateManualReleaseReceipt,
+  generateManualInvoiceReceipt,
 } from '../requests/booking.requests';
 
 export const useBookings = (filter, enabled = true) =>
@@ -300,3 +303,81 @@ export const useBookingRevenueByLocation = (query, enabled = true) =>
     },
     { enabled },
   );
+
+export const useGenerateManualPurchaseOrder = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async data => {
+      const res = await generateManualPurchaseReceipt(data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['finance-by-month']);
+        showNotification({
+          title: 'Purchase order created successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: 'Error',
+          message: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
+
+export const useGenerateManualReleaseOrder = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async data => {
+      const res = await generateManualReleaseReceipt(data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['finance-by-month']);
+        showNotification({
+          title: 'Release order created successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: 'Error',
+          message: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
+
+export const useGenerateManualInvoice = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async data => {
+      const res = await generateManualInvoiceReceipt(data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['bookings']);
+        showNotification({
+          title: 'Invoice created successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: 'Error',
+          message: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};

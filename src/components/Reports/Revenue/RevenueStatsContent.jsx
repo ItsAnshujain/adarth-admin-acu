@@ -17,12 +17,12 @@ const RevenueStatsContent = ({ revenueData }) => (
     <div className="border rounded p-8  flex-1">
       <Image src={OfflineRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
       <p className="my-2 text-sm font-light text-slate-400">Offline Revenue</p>
-      <p className="font-bold">{toIndianCurrency(revenueData?.offline ?? 0)}</p>
+      <p className="font-bold">{revenueData?.offline ?? 0}</p>
     </div>
     <div className="border rounded p-8 flex-1">
       <Image src={OnlineRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
       <p className="my-2 text-sm font-light text-slate-400">Online Revenue</p>
-      <p className="font-bold">{toIndianCurrency(revenueData?.online ?? 0)}</p>
+      <p className="font-bold">{revenueData?.online ?? 0}</p>
     </div>
     <div className="border rounded p-8 flex-1">
       <Image src={ProposalSentIcon} alt="folder" fit="contain" height={24} width={24} />

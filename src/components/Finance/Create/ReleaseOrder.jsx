@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { ToWords } from 'to-words';
-import { ActionIcon, Button, Group, Menu } from '@mantine/core';
+import { ActionIcon, Button, Group, Menu, Text } from '@mantine/core';
 import { Edit2, Trash2 } from 'react-feather';
 import Table from '../../Table/Table';
 import TextareaInput from '../../shared/TextareaInput';
@@ -164,82 +164,115 @@ const ReleaseOrder = ({
         Cell: ({ row: { index } }) => index + 1,
       },
       {
-        Header: 'DESCRIPTION OF GOODS AND SERVICE',
-        accessor: 'description',
+        Header: 'City',
+        accessor: 'city',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { description },
+            original: { city },
           },
         }) =>
           useMemo(
             () => (
-              <div className="flex flex-col items-start gap-1 text-black font-medium px-2">
-                <span className="overflow-hidden text-ellipsis">{description}</span>
-              </div>
+              <Text
+                className="overflow-hidden text-ellipsis max-w-[180px]"
+                lineClamp={1}
+                title={city}
+              >
+                {city}
+              </Text>
             ),
             [],
           ),
       },
       {
-        Header: 'DATE',
-        accessor: 'date',
+        Header: 'Location',
+        accessor: 'location',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { date },
-          },
-        }) => useMemo(() => <p>{dayjs(date).format(DATE_FORMAT)}</p>, []),
-      },
-      {
-        Header: 'QUANTITY',
-        accessor: 'quantity',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { quantity },
-          },
-        }) => useMemo(() => <p className="w-[14%]">{quantity}</p>, []),
-      },
-      {
-        Header: 'RATE',
-        accessor: 'rate',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { rate },
-          },
-        }) =>
-          useMemo(
-            () => <p className="pl-2">{rate ? toIndianCurrency(Number.parseInt(rate, 10)) : 0}</p>,
-            [],
-          ),
-      },
-      {
-        Header: 'PER',
-        accessor: 'per',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { per },
-          },
-        }) => useMemo(() => <p className="w-[14%]">{per}</p>, []),
-      },
-      {
-        Header: 'PRICING',
-        accessor: 'price',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { price },
+            original: { location },
           },
         }) =>
           useMemo(
             () => (
-              <p className="pl-2">{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>
+              <Text
+                className="overflow-hidden text-ellipsis max-w-[180px]"
+                lineClamp={1}
+                title={location}
+              >
+                {location}
+              </Text>
             ),
             [],
           ),
+      },
+      {
+        Header: 'Media',
+        accessor: 'media',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { media },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <Text
+                className="overflow-hidden text-ellipsis max-w-[180px]"
+                lineClamp={1}
+                title={media}
+              >
+                {media}
+              </Text>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'Width',
+        accessor: 'width',
+        disableSortBy: true,
+      },
+      {
+        Header: 'Height',
+        accessor: 'height',
+        disableSortBy: true,
+      },
+      {
+        Header: 'Area',
+        accessor: 'area',
+        disableSortBy: true,
+      },
+      {
+        Header: 'Total Display Cost/Month',
+        accessor: 'displayCost',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { displayCost },
+          },
+        }) => useMemo(() => <p>{displayCost}</p>, []),
+      },
+      {
+        Header: 'Printing Cost',
+        accessor: 'printingCost',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { printingCost },
+          },
+        }) => useMemo(() => <p>{printingCost}</p>, []),
+      },
+      {
+        Header: 'Mounting Cost',
+        accessor: 'mountingCost',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { mountingCost },
+          },
+        }) => useMemo(() => <p>{mountingCost}</p>, []),
       },
       {
         Header: 'ACTION',
@@ -247,7 +280,18 @@ const ReleaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { itemId, description, date, quantity, rate, per, price },
+            original: {
+              area,
+              city,
+              displayCost,
+              height,
+              itemId,
+              location,
+              media,
+              mountingCost,
+              printingCost,
+              width,
+            },
           },
         }) =>
           useMemo(
@@ -264,7 +308,18 @@ const ReleaseOrder = ({
                     className="cursor-pointer flex items-center gap-1"
                     icon={<Edit2 className="h-4" />}
                     onClick={() =>
-                      onClickAddItems({ description, date, quantity, rate, per, price, itemId })
+                      onClickAddItems({
+                        area,
+                        city,
+                        displayCost,
+                        height,
+                        itemId,
+                        location,
+                        media,
+                        mountingCost,
+                        printingCost,
+                        width,
+                      })
                     }
                   >
                     <span className="ml-1">Edit</span>
@@ -413,8 +468,47 @@ const ReleaseOrder = ({
                 showPagination={false}
               />
             </div>
-            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
+            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
+              {/* TODO: wip */}
               <p>Total Price: </p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+            </div>
+            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
+              <p>Discount: </p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+            </div>
+            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
+              <p>Sub Total: </p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+            </div>
+            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
+              <p>GST 18%: </p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+            </div>
+            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
+              <p>Total: </p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+            </div>
+            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
+              <p>For 3 months: </p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+            </div>
+            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16">
+              <p>Grand Total: </p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
               <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
             </div>
           </>

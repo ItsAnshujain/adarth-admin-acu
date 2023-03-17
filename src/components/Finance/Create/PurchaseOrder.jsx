@@ -204,17 +204,27 @@ const PurchaseOrder = ({
       },
       {
         Header: 'DESCRIPTION OF GOODS AND SERVICE',
-        accessor: 'description',
+        accessor: 'name',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { description },
+            original: { name, location, titleDate },
           },
         }) =>
           useMemo(
             () => (
-              <div className="flex flex-col items-start gap-1 text-black font-medium px-2">
-                <span className="overflow-hidden text-ellipsis">{description}</span>
+              <div className="flex flex-col items-start gap-1">
+                <div className="text-black font-medium px-2">
+                  <span className="overflow-hidden text-ellipsis">{name}</span>
+                </div>
+                <div className="text-black font-light px-2 text-sm">
+                  <span className="overflow-hidden text-ellipsis">{location}</span>
+                </div>
+                <div className="text-black font-light px-2 text-xs">
+                  <span className="overflow-hidden text-ellipsis">
+                    {titleDate ? dayjs(titleDate).format(DATE_FORMAT) : <NoData type="na" />}
+                  </span>
+                </div>
               </div>
             ),
             [],
@@ -226,9 +236,13 @@ const PurchaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { date },
+            original: { dueOn },
           },
-        }) => useMemo(() => <p>{dayjs(date).format(DATE_FORMAT)}</p>, []),
+        }) =>
+          useMemo(
+            () => <p>{dueOn ? dayjs(dueOn).format(DATE_FORMAT) : <NoData type="na" />}</p>,
+            [],
+          ),
       },
       {
         Header: 'QUANTITY',
@@ -286,7 +300,7 @@ const PurchaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { itemId, description, date, quantity, rate, per, price },
+            original: { itemId, name, location, titleDate, dueOn, quantity, rate, per, price },
           },
         }) =>
           useMemo(
@@ -303,7 +317,17 @@ const PurchaseOrder = ({
                     className="cursor-pointer flex items-center gap-1"
                     icon={<Edit2 className="h-4" />}
                     onClick={() =>
-                      onClickAddItems({ description, date, quantity, rate, per, price, itemId })
+                      onClickAddItems({
+                        name,
+                        location,
+                        titleDate,
+                        dueOn,
+                        quantity,
+                        rate,
+                        per,
+                        price,
+                        itemId,
+                      })
                     }
                   >
                     <span className="ml-1">Edit</span>

@@ -7,7 +7,6 @@ const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, typ
 
   return (
     <div className="px-5">
-      <h1>Booking Name</h1>
       <h2 className="font-medium capitalize text-lg underline">{type} order:</h2>
 
       <div className="max-h-[500px] overflow-y-auto">
