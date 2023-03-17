@@ -187,9 +187,9 @@ const Home = () => {
         accessor: 'totalPrice',
         Cell: ({
           row: {
-            original: { totalPrice },
+            original: { price },
           },
-        }) => toIndianCurrency(totalPrice || 0),
+        }) => toIndianCurrency(price || 0),
       },
       {
         Header: 'ACTION',

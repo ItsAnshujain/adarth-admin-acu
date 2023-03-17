@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Badge, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -41,10 +41,13 @@ const SelectSpace = () => {
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
 
-  const getTotalPrice = (places = []) => {
-    const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
-    return totalPrice;
-  };
+  const getTotalPrice = useCallback(
+    (places = []) => {
+      const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
+      return totalPrice;
+    },
+    [values?.place],
+  );
 
   const toggleFilter = () => setShowFilter(!showFilter);
 
@@ -347,7 +350,7 @@ const SelectSpace = () => {
         <div className="flex gap-4">
           <div>
             <p className="text-slate-400">Selected Places</p>
-            <p className="font-bold">{values?.place?.filter(item => !!item?.id)?.length}</p>
+            <p className="font-bold">{values?.place?.length}</p>
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
