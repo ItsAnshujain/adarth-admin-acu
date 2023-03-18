@@ -2,13 +2,11 @@ import React from 'react';
 import { ToWords } from 'to-words';
 import toIndianCurrency from '../../../utils/currencyFormat';
 
-const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, type }) => {
+const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice }) => {
   const toWords = new ToWords();
 
   return (
     <div className="px-5">
-      <h2 className="font-medium capitalize text-lg underline">{type} order:</h2>
-
       <div className="max-h-[500px] overflow-y-auto">
         <article className="my-3">
           <h2 className="font-medium capitalize text-xl mb-2">Invoice To:</h2>

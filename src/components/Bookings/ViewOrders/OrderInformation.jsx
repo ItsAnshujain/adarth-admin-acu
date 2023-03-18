@@ -236,7 +236,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
             <div>
               <p className="text-slate-400">Campaign Incharge</p>
               {userCachedData?.role === 'associate' ? (
-                <p>{userCachedData?.name}</p>
+                <p className="font-bold">{userCachedData?.name}</p>
               ) : (
                 <NativeSelect
                   styles={styles}
