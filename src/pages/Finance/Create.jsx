@@ -2,11 +2,12 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button, Group, Modal, Select } from '@mantine/core';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import validator from 'validator';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { useDisclosure } from '@mantine/hooks';
+import { ToWords } from 'to-words';
 import PurchaseOrder from '../../components/Finance/Create/PurchaseOrder';
 import ReleaseOrder from '../../components/Finance/Create/ReleaseOrder';
 import Invoice from '../../components/Finance/Create/Invoice';
@@ -27,13 +28,13 @@ import {
   mobileRegexMatch,
   onlyNumbersMatch,
   serialize,
-  orderTitle,
 } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
 import PurchaseOrderPreview from '../../components/Finance/Create/PurchaseOrderPreview';
 import ReleaseOrderPreview from '../../components/Finance/Create/ReleaseOrderPreview';
 import InvoicePreview from '../../components/Finance/Create/InvoicePreview';
 import ManualEntryContent from './ManualEntryContent';
+import FormHeader from '../../components/Finance/Create/FormHeader';
 
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
@@ -162,6 +163,26 @@ const releaseSchema = bookingId =>
     supplierName: yup.string().trim().required('Supplier Name is required'),
     supplierDesignation: yup.string().trim().required('Designation is required'),
     termsAndCondition: yup.string().trim(),
+    mountingSqftCost: yup
+      .number()
+      .concat(
+        !bookingId
+          ? yup
+              .number()
+              .min(0, 'Discount must be greater than or equal to 0')
+              .typeError('Must be a number')
+          : null,
+      ),
+    printingSqftCost: yup
+      .number()
+      .concat(
+        !bookingId
+          ? yup
+              .number()
+              .min(0, 'Discount must be greater than or equal to 0')
+              .typeError('Must be a number')
+          : null,
+      ),
     discount: yup.object({
       display: yup
         .number()
@@ -243,8 +264,9 @@ const initialReleaseValues = {
   },
   grandTotal: null,
   grandTotalInWords: '',
-  printingSqftCost: null,
-  mountingSqftCost: null,
+  printingSqftCost: 0,
+  mountingSqftCost: 0,
+  forMonth: 3,
 };
 
 const invoiceSchema = yup.object({
@@ -390,6 +412,7 @@ const Home = () => {
     validate: yupResolver(schema(type, bookingIdFromFinance)),
     initialValues: initialValues[type],
   });
+  const toWords = new ToWords();
 
   const ManualEntryView = orderView[type] ?? <div />;
   const Preview = preview[type] ?? <div />;
@@ -398,6 +421,7 @@ const Home = () => {
 
   const [opened, { open, close }] = useDisclosure(false);
   const [addSpaceItem, setAddSpaceItem] = useState([]);
+  const [updatedForm, setUpdatedForm] = useState();
   const [previewData] = useState();
 
   const {
@@ -443,22 +467,37 @@ const Home = () => {
     return initialPrice;
   }, [bookingData?.campaign?.spaces]);
 
-  const toggleAddItemModal = item =>
-    modals.openContextModal('basic', {
-      title: 'Manual Entry',
-      innerProps: {
-        modalBody: (
-          <ManualEntryContent
-            onClose={() => modals.closeModal()}
-            setAddSpaceItem={setAddSpaceItem}
-            addSpaceItem={addSpaceItem}
-            item={item}
-            type={type}
-          />
-        ),
-      },
-      ...updatedModalConfig,
-    });
+  const calculateManualTotalPrice = useMemo(() => {
+    const initialPrice = 0;
+    if (addSpaceItem.length) {
+      return addSpaceItem
+        .map(item => (item?.price ? Number(item.price) : 0))
+        .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
+    }
+    return initialPrice;
+  }, [addSpaceItem]);
+
+  const toggleAddItemModal = useCallback(
+    item =>
+      modals.openContextModal('basic', {
+        title: 'Manual Entry',
+        innerProps: {
+          modalBody: (
+            <ManualEntryContent
+              onClose={() => modals.closeModal()}
+              setAddSpaceItem={setAddSpaceItem}
+              addSpaceItem={addSpaceItem}
+              item={item}
+              type={type}
+              mountingSqftCost={form.values.mountingSqftCost}
+              printingSqftCost={form.values.printingSqftCost}
+            />
+          ),
+        },
+        ...updatedModalConfig,
+      }),
+    [form.values.mountingSqftCost, form.values.printingSqftCost],
+  );
 
   // TODO: preview integration left
   // eslint-disable-next-line no-unused-vars
@@ -529,7 +568,15 @@ const Home = () => {
           });
           return;
         }
-        open();
+        // open();
+        // setPreviewData(data);
+        // return;
+        data.subTotal = calculateManualTotalPrice;
+        data.gst = (data.subTotal * 18) / 100;
+        data.total = data.subTotal + data.gst;
+        data.totalInWords = toWords.convert(data.total);
+        // console.log(data);
+        // return;
         await generateManualPurchaseOrder(data);
       }
     } else if (type === 'release') {
@@ -569,10 +616,10 @@ const Home = () => {
           return;
         }
       }
-      // open();
-      // console.log(data);
+      open();
+      // console.log({ ...data, ...updatedForm });
       // return;
-      await generateManualReleaseOrder(data);
+      await generateManualReleaseOrder({ ...data, ...updatedForm });
     } else if (type === 'invoice') {
       if (!data?.supplierPhone?.includes('+91')) {
         data.supplierPhone = `+91${data?.supplierPhone}`;
@@ -615,13 +662,18 @@ const Home = () => {
           return;
         }
       }
-      open();
+      // open();
+      data.subTotal = calculateManualTotalPrice;
+      data.gst = (data.subTotal * 18) / 100;
+      data.total = data.subTotal + data.gst;
+      data.taxInWords = toWords.convert(data.gst);
+      data.totalInWords = toWords.convert(data.total);
+      // console.log(data);
+      // return;
       await generateManualInvoice(data);
     }
     // form.reset();
   };
-
-  const handleBack = () => navigate(-1);
 
   const updatedBookingsList = useMemo(() => {
     let arr = [{ label: 'Select', value: '' }];
@@ -657,54 +709,23 @@ const Home = () => {
     }
   }, [bookingIdFromFinance]);
 
-  // console.log(form.errors);
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <div className="pb-12">
         <FormProvider form={form}>
-          <form onSubmit={form.onSubmit(handleSubmit)}>
-            <header className="h-[60px] border-b flex items-center justify-between pl-5 pr-7 sticky top-0 z-50 bg-white">
-              <p className="font-bold text-lg">{`Create ${orderTitle[type]}`}</p>
-              <div className="flex gap-3">
-                <Button
-                  onClick={handleBack}
-                  variant="outline"
-                  disabled={
-                    isGeneratePurchaseOrderLoading ||
-                    isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceLoading ||
-                    isGenerateManualPurchaseOrderLoading ||
-                    isGenerateManualReleaseOrderLoading ||
-                    isGenerateManualInvoiceLoading
-                  }
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="primary-button mr-2"
-                  variant="filled"
-                  loading={
-                    isGeneratePurchaseOrderLoading ||
-                    isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceLoading ||
-                    isGenerateManualPurchaseOrderLoading ||
-                    isGenerateManualReleaseOrderLoading ||
-                    isGenerateManualInvoiceLoading
-                  }
-                  disabled={
-                    isGeneratePurchaseOrderLoading ||
-                    isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceLoading ||
-                    isGenerateManualPurchaseOrderLoading ||
-                    isGenerateManualReleaseOrderLoading ||
-                    isGenerateManualInvoiceLoading
-                  }
-                >
-                  Create
-                </Button>
-              </div>
-            </header>
+          <form
+          //  onSubmit={form.onSubmit(handleSubmit)}
+          >
+            <FormHeader
+              type={type}
+              isGeneratePurchaseOrderLoading={isGeneratePurchaseOrderLoading}
+              isGenerateReleaseOrderLoading={isGenerateReleaseOrderLoading}
+              isGenerateInvoiceLoading={isGenerateInvoiceLoading}
+              isGenerateManualPurchaseOrderLoading={isGenerateManualPurchaseOrderLoading}
+              isGenerateManualReleaseOrderLoading={isGenerateManualReleaseOrderLoading}
+              isGenerateManualInvoiceLoading={isGenerateManualInvoiceLoading}
+              handleFormSubmit={handleSubmit}
+            />
             <div className="pl-5 pr-7 pt-4 pb-8 border-b">
               <div className="grid grid-cols-2 gap-4">
                 <Select
@@ -729,44 +750,64 @@ const Home = () => {
             </div>
             <ManualEntryView
               totalPrice={calcutateTotalPrice || 0}
-              onClickAddItems={data => toggleAddItemModal(data)}
+              onClickAddItems={data => {
+                if (
+                  type === 'release' &&
+                  (form.values.printingSqftCost === 0 || form.values.printingSqftCost === 0)
+                ) {
+                  showNotification({
+                    title:
+                      'Please select printing ft² cost and mounting ft² cost before adding items',
+                    color: 'blue',
+                  });
+                  return;
+                }
+
+                toggleAddItemModal(data);
+              }}
               bookingIdFromFinance={bookingIdFromFinance}
               addSpaceItem={addSpaceItem}
               setAddSpaceItem={setAddSpaceItem}
+              updatedForm={updatedForm}
+              setUpdatedForm={setUpdatedForm}
             />
+            <Modal
+              opened={opened}
+              onClose={close}
+              title="Preview"
+              centered
+              size="xl"
+              overlayBlur={3}
+              overlayOpacity={0.55}
+              radius={0}
+              padding={0}
+              classNames={{
+                title: 'font-dmSans text-xl px-4',
+                header: 'px-4 pt-4',
+                body: 'pb-4',
+                close: 'mr-4',
+              }}
+            >
+              <Group position="apart" px="md" pb="md">
+                <h2 className="font-medium capitalize text-lg underline">{type} order:</h2>
+                <Button
+                  className="primary-button"
+                  type="submit"
+                  onClick={form.onSubmit(e => handleSubmit(e, 'save'))}
+                >
+                  Save
+                </Button>
+              </Group>
+              <Preview
+                previewData={previewData}
+                previewSpaces={addSpaceItem}
+                totalPrice={calcutateTotalPrice || 0}
+                type={type}
+              />
+            </Modal>
           </form>
         </FormProvider>
       </div>
-      <Modal
-        opened={opened}
-        onClose={close}
-        title="Preview"
-        centered
-        size="xl"
-        overlayBlur={3}
-        overlayOpacity={0.55}
-        radius={0}
-        padding={0}
-        classNames={{
-          title: 'font-dmSans text-xl px-4',
-          header: 'px-4 pt-4',
-          body: 'pb-4',
-          close: 'mr-4',
-        }}
-      >
-        <Group>
-          <h2 className="font-medium capitalize text-lg underline">{type} order:</h2>
-          <Button className="primary-button" onClick={open}>
-            Save
-          </Button>
-        </Group>
-        <Preview
-          previewData={previewData}
-          previewSpaces={addSpaceItem}
-          totalPrice={calcutateTotalPrice || 0}
-          type={type}
-        />
-      </Modal>
     </div>
   );
 };

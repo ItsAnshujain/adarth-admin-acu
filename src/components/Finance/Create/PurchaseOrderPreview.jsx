@@ -4,7 +4,7 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 
 const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice }) => {
   const toWords = new ToWords();
-
+  console.log(previewData, previewSpaces);
   return (
     <div className="px-5">
       <div className="max-h-[500px] overflow-y-auto">
@@ -88,7 +88,7 @@ const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice }) =
           <h2 className="font-medium capitalize text-xl mb-2">Description of Services:</h2>
           <section className="p-5 bg-gray-100">
             {previewSpaces.map((item, index) => (
-              <div className="flex" key={item?._id}>
+              <div className="flex" key={item?.itemId}>
                 <p className="text-lg min-w-[30px]">{index + 1}</p>
                 <p className="text-lg">{item?.basicInformation?.spaceName}</p>
               </div>

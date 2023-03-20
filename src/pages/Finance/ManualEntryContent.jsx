@@ -66,12 +66,12 @@ const initialReleaseValues = {
   city: 'Kolkata',
   location: 'Dum Dum',
   media: 'Space',
-  width: 10,
-  height: 5,
+  width: null,
+  height: null,
   area: null,
   displayCost: 500,
-  printingCost: 4000,
-  mountingCost: 5000,
+  printingCost: 0,
+  mountingCost: 0,
 };
 
 const releaseSchema = yup.object({
@@ -92,10 +92,9 @@ const releaseSchema = yup.object({
     .required('Height is required'),
   area: yup
     .number()
-    .positive('Must be a positive number')
+    .min(0, 'Must be greater than or equal to 0')
     .typeError('Must be a number')
-    .nullable()
-    .required('Area is required'),
+    .nullable(),
   displayCost: yup
     .number()
     .positive('Must be a positive number')
@@ -104,16 +103,12 @@ const releaseSchema = yup.object({
     .required('Display Cost is required'),
   printingCost: yup
     .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Printing Cost is required'),
+    .min(0, 'Must be greater than or equal to 0')
+    .typeError('Must be a number'),
   mountingCost: yup
     .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Mounting Cost is required'),
+    .min(0, 'Must be greater than or equal to 0')
+    .typeError('Must be a number'),
 });
 
 const initialInvoiceValues = {
@@ -263,12 +258,20 @@ const PurchaseAndInvoiceContent = () => {
   );
 };
 
-const ReleaseContent = () => {
-  const { errors, values, setFieldValue } = useFormContext();
+const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
+  const { errors, values, setFieldValue, setValues } = useFormContext();
 
   useEffect(() => {
-    setFieldValue('area', values.width * values.height);
-  }, []);
+    setValues({
+      ...values,
+      printingCost: printingSqftCost * values.area,
+      mountingCost: mountingSqftCost * values.area,
+    });
+  }, [values.area, mountingSqftCost, printingSqftCost]);
+
+  useEffect(() => {
+    setFieldValue('area', (values.width || 0) * (values.height || 0));
+  }, [values.width, values.height]);
 
   return (
     <>
@@ -313,8 +316,9 @@ const ReleaseContent = () => {
             className="mb-4"
             hideControls
             onChange={e => {
-              setFieldValue('width', e);
-              setFieldValue('area', values.height * e);
+              if (e !== null || !Number.isNaN(e)) {
+                setFieldValue('width', e);
+              }
             }}
           />
           <NumberInput
@@ -327,8 +331,9 @@ const ReleaseContent = () => {
             className="mb-4"
             hideControls
             onChange={e => {
-              setFieldValue('height', e);
-              setFieldValue('area', values.width * e);
+              if (e !== null || !Number.isNaN(e)) {
+                setFieldValue('height', e);
+              }
             }}
           />
         </div>
@@ -396,6 +401,8 @@ const ManualEntryContent = ({
   addSpaceItem,
   item,
   type,
+  mountingSqftCost,
+  printingSqftCost,
 }) => {
   const form = useForm({ validate: yupResolver(schema[type]), initialValues: initialValues[type] });
   const ManualEntries = contents[type] ?? <div />;
@@ -443,7 +450,7 @@ const ManualEntryContent = ({
   return (
     <FormProvider form={form}>
       <form className="px-5" onSubmit={form.onSubmit(onSubmit)}>
-        <ManualEntries />
+        <ManualEntries mountingSqftCost={mountingSqftCost} printingSqftCost={printingSqftCost} />
         <Group position="right">
           <Button type="submit" className="primary-button">
             {item ? 'Edit' : 'Add'}
