@@ -382,6 +382,7 @@ const ReleaseOrder = ({
         mounting: 0,
       },
       grandTotal: 0,
+      grandTotalInWords: '',
     };
 
     if (addSpaceItem?.length) {
@@ -432,6 +433,7 @@ const ReleaseOrder = ({
       tempInitialTotal.threeMonthTotal.printing +
       tempInitialTotal.threeMonthTotal.mounting;
 
+    tempInitialTotal.grandTotalInWords = toWords.convert(tempInitialTotal.grandTotal);
     return tempInitialTotal;
   }, [addSpaceItem, values]);
 
@@ -466,7 +468,7 @@ const ReleaseOrder = ({
         mounting: res.threeMonthTotal.mounting,
       },
       grandTotal: res.grandTotal,
-      grandTotalInWords: values?.grandTotal ? toWords.convert(values.grandTotal) : '',
+      grandTotalInWords: res.grandTotalInWords,
     });
   }, [addSpaceItem]);
 
@@ -590,29 +592,47 @@ const ReleaseOrder = ({
           ) : null}
         </Group>
         {!bookingIdFromFinance && addSpaceItem?.length ? (
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <NumberInput
-              styles={styles}
-              label="Total Display Cost Discount"
-              name="discount.display"
-              withAsterisk
-              placeholder="Write..."
-            />
-            <NumberInput
-              styles={styles}
-              label="Printing Cost Discount"
-              name="discount.printing"
-              withAsterisk
-              placeholder="Write..."
-            />
-            <NumberInput
-              styles={styles}
-              label="Mounting Cost Discount"
-              name="discount.mounting"
-              withAsterisk
-              placeholder="Write..."
-            />
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <NumberInput
+                styles={styles}
+                label="Printing SqFt Cost"
+                name="printingSqftCost"
+                withAsterisk
+                placeholder="Write..."
+              />
+              <NumberInput
+                styles={styles}
+                label="Mounting SqFt Cost"
+                name="mountingSqftCost"
+                withAsterisk
+                placeholder="Write..."
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <NumberInput
+                styles={styles}
+                label="Total Display Cost Discount"
+                name="discount.display"
+                withAsterisk
+                placeholder="Write..."
+              />
+              <NumberInput
+                styles={styles}
+                label="Printing Cost Discount"
+                name="discount.printing"
+                withAsterisk
+                placeholder="Write..."
+              />
+              <NumberInput
+                styles={styles}
+                label="Mounting Cost Discount"
+                name="discount.mounting"
+                withAsterisk
+                placeholder="Write..."
+              />
+            </div>
+          </>
         ) : null}
         {addSpaceItem?.length ? (
           <>
@@ -653,7 +673,6 @@ const ReleaseOrder = ({
                         : '-'}
                     </p>
                     <p className="bg-gray-100 text-center">
-                      {' '}
                       {values?.initTotal?.mounting
                         ? toIndianCurrency(values.initTotal.mounting)
                         : '-'}
@@ -777,7 +796,6 @@ const ReleaseOrder = ({
             placeholder="Maximum 200 characters"
             className="mb-7"
           />
-          {toIndianCurrency(100.0)}
         </div>
       </div>
     </div>

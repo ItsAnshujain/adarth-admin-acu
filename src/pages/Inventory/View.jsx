@@ -47,14 +47,16 @@ const SpaceDetails = () => {
             <Tabs.Tab value="basic-info" className="px-3 text-lg h-[60px]">
               Basic Information
             </Tabs.Tab>
-            <Tabs.Tab value="booking" className="px-3 text-lg h-[60px]">
-              Booking
-            </Tabs.Tab>
+            {!inventoryDetails?.isPeer ? (
+              <Tabs.Tab value="booking" className="px-3 text-lg h-[60px]">
+                Booking
+              </Tabs.Tab>
+            ) : null}
             <Tabs.Tab value="operational-cost" className="px-3 text-lg h-[60px]">
               Operational Cost
             </Tabs.Tab>
           </div>
-          {activeTab === 'basic-info' ? (
+          {activeTab === 'basic-info' && !inventoryDetails?.isPeer ? (
             <div className="flex pr-7">
               <div className="flex items-center pr-7">
                 <p className="text-lg mr-3">Under maintenance</p>
@@ -92,7 +94,10 @@ const SpaceDetails = () => {
           <Booking inventoryId={inventoryId} />
         </Tabs.Panel>
         <Tabs.Panel value="operational-cost" pt="xs">
-          <OperationalCost inventoryDetails={inventoryDetails?.inventory} />
+          <OperationalCost
+            inventoryDetails={inventoryDetails?.inventory}
+            isPeer={inventoryDetails?.isPeer}
+          />
         </Tabs.Panel>
       </Tabs>
     </div>

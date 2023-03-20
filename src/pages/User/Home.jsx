@@ -62,7 +62,7 @@ const Home = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <AreaHeader text="Team" setFilter={handleFilter} filter={filter} />
+      <AreaHeader setFilter={handleFilter} filter={filter} userId={userId} />
       <div className="flex justify-between h-20 items-center pr-7">
         <RowsPerPage
           setCount={currentLimit => handlePagination('limit', currentLimit)}

@@ -275,9 +275,19 @@ const Home = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, createdBy },
           },
-        }) => useMemo(() => <SpacesMenuPopover itemId={_id} />, []),
+        }) =>
+          useMemo(
+            () => (
+              <SpacesMenuPopover
+                itemId={_id}
+                enableDelete={createdBy && !createdBy?.isPeer}
+                enableEdit={createdBy && !createdBy?.isPeer}
+              />
+            ),
+            [],
+          ),
       },
     ],
     [inventoryData?.docs],

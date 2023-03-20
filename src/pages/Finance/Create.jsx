@@ -165,38 +165,32 @@ const releaseSchema = bookingId =>
     discount: yup.object({
       display: yup
         .number()
-        .nullable()
         .concat(
           !bookingId
             ? yup
                 .number()
-                .positive('Must be a positive number')
+                .min(0, 'Discount must be greater than or equal to 0')
                 .typeError('Must be a number')
-                .nullable()
             : null,
         ),
       printing: yup
         .number()
-        .nullable()
         .concat(
           !bookingId
             ? yup
                 .number()
-                .positive('Must be a positive number')
+                .min(0, 'Discount must be greater than or equal to 0')
                 .typeError('Must be a number')
-                .nullable()
             : null,
         ),
       mounting: yup
         .number()
-        .nullable()
         .concat(
           !bookingId
             ? yup
                 .number()
-                .positive('Must be a positive number')
+                .min(0, 'Discount must be greater than or equal to 0')
                 .typeError('Must be a number')
-                .nullable()
             : null,
         ),
     }),
@@ -223,9 +217,9 @@ const initialReleaseValues = {
     mounting: null,
   },
   discount: {
-    display: null,
-    printing: null,
-    mounting: null,
+    display: 0,
+    printing: 0,
+    mounting: 0,
   },
   subTotal: {
     display: null,
@@ -576,12 +570,9 @@ const Home = () => {
         }
       }
       // open();
-      data.grandTotal = 100;
-      data.grandTotalInWords = 'zero';
-      data.printingSqftCost = 10;
-      data.mountingSqftCost = 10;
-
-      // await generateManualReleaseOrder(data);
+      // console.log(data);
+      // return;
+      await generateManualReleaseOrder(data);
     } else if (type === 'invoice') {
       if (!data?.supplierPhone?.includes('+91')) {
         data.supplierPhone = `+91${data?.supplierPhone}`;

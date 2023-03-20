@@ -68,7 +68,7 @@ const initialReleaseValues = {
   media: 'Space',
   width: 10,
   height: 5,
-  area: 30,
+  area: null,
   displayCost: 500,
   printingCost: 4000,
   mountingCost: 5000,
@@ -264,7 +264,11 @@ const PurchaseAndInvoiceContent = () => {
 };
 
 const ReleaseContent = () => {
-  const { errors } = useFormContext();
+  const { errors, values, setFieldValue } = useFormContext();
+
+  useEffect(() => {
+    setFieldValue('area', values.width * values.height);
+  }, []);
 
   return (
     <>
@@ -308,6 +312,10 @@ const ReleaseContent = () => {
             size="md"
             className="mb-4"
             hideControls
+            onChange={e => {
+              setFieldValue('width', e);
+              setFieldValue('area', values.height * e);
+            }}
           />
           <NumberInput
             label="Height"
@@ -318,6 +326,10 @@ const ReleaseContent = () => {
             size="md"
             className="mb-4"
             hideControls
+            onChange={e => {
+              setFieldValue('height', e);
+              setFieldValue('area', values.width * e);
+            }}
           />
         </div>
       </div>
@@ -325,12 +337,13 @@ const ReleaseContent = () => {
         <NumberInput
           label="Area"
           name="area"
-          withAsterisk
           errors={errors}
           placeholder="Write..."
           size="md"
           className="mb-4"
           hideControls
+          readOnly
+          disabled
         />
         <NumberInput
           label="Total Display Cost/Month"
@@ -347,22 +360,24 @@ const ReleaseContent = () => {
         <NumberInput
           label="Printing Cost"
           name="printingCost"
-          withAsterisk
           errors={errors}
           placeholder="Write..."
           size="md"
           className="mb-4"
           hideControls
+          readOnly
+          disabled
         />
         <NumberInput
           label="Mounting Cost"
           name="mountingCost"
-          withAsterisk
           errors={errors}
           placeholder="Write..."
           size="md"
           className="mb-4"
           hideControls
+          readOnly
+          disabled
         />
       </div>
     </>

@@ -251,7 +251,7 @@ const ProposalDetails = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, createdBy },
           },
         }) =>
           useMemo(
@@ -259,6 +259,8 @@ const ProposalDetails = () => {
               <ProposalSpacesMenuPopover
                 inventoryId={_id}
                 spacesData={proposalData?.inventories?.docs}
+                enableEdit={createdBy && !createdBy?.isPeer}
+                enableDelete={createdBy && !createdBy?.isPeer}
               />
             ),
             [],
@@ -306,7 +308,7 @@ const ProposalDetails = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <Header />
+      <Header isPeer={proposalData?.proposal?.isPeer} />
       <Details
         proposalData={proposalData?.proposal}
         isProposalDataLoading={isProposalDataLoading}
