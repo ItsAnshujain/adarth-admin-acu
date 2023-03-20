@@ -1,5 +1,5 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Button, Modal, Select } from '@mantine/core';
+import { Button, Group, Modal, Select } from '@mantine/core';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { useEffect, useMemo, useState } from 'react';
@@ -124,57 +124,127 @@ const initialPurchaseValues = {
   spaces: [],
 };
 
-const releaseSchema = yup.object({
-  releaseOrderNo: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Release Order No is required'),
-  companyName: yup.string().trim().required('Company Name is required'),
-  quotationNo: yup
-    .string()
-    .trim()
-    .matches(onlyNumbersMatch, 'Must be a number')
-    .required('Quotation No is required'),
-  contactPerson: yup.string().trim().required('Contact Person is required'),
-  phone: yup
-    .string()
-    .trim()
-    // .test('valid', 'Must be a valid number', val => validator.isMobilePhone(val, 'en-IN'))
-    .matches(mobileRegexMatch, { message: 'Must be a valid number', excludeEmptyString: true })
-    .notRequired(),
-  mobile: yup
-    .string()
-    .trim()
-    .test('valid', 'Must be a valid number', val => validator.isMobilePhone(val, 'en-IN'))
-    .required('Mobile is required'),
-  email: yup.string().trim().required('Email is required').email('Invalid Email'),
-  streetAddress: yup.string().trim().required('Street Address is required'),
-  city: yup.string().trim().required('City is required'),
-  zip: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Pin is required'),
-  supplierName: yup.string().trim().required('Supplier Name is required'),
-  supplierDesignation: yup.string().trim().required('Designation is required'),
-  termsAndCondition: yup.string().trim(),
-});
+const releaseSchema = bookingId =>
+  yup.object({
+    releaseOrderNo: yup
+      .number()
+      .positive('Must be a positive number')
+      .typeError('Must be a number')
+      .nullable()
+      .required('Release Order No is required'),
+    companyName: yup.string().trim().required('Company Name is required'),
+    quotationNo: yup
+      .string()
+      .trim()
+      .matches(onlyNumbersMatch, 'Must be a number')
+      .required('Quotation No is required'),
+    contactPerson: yup.string().trim().required('Contact Person is required'),
+    phone: yup
+      .string()
+      .trim()
+      // .test('valid', 'Must be a valid number', val => validator.isMobilePhone(val, 'en-IN'))
+      .matches(mobileRegexMatch, { message: 'Must be a valid number', excludeEmptyString: true })
+      .notRequired(),
+    mobile: yup
+      .string()
+      .trim()
+      .test('valid', 'Must be a valid number', val => validator.isMobilePhone(val, 'en-IN'))
+      .required('Mobile is required'),
+    email: yup.string().trim().required('Email is required').email('Invalid Email'),
+    streetAddress: yup.string().trim().required('Street Address is required'),
+    city: yup.string().trim().required('City is required'),
+    zip: yup
+      .number()
+      .positive('Must be a positive number')
+      .typeError('Must be a number')
+      .nullable()
+      .required('Pin is required'),
+    supplierName: yup.string().trim().required('Supplier Name is required'),
+    supplierDesignation: yup.string().trim().required('Designation is required'),
+    termsAndCondition: yup.string().trim(),
+    discount: yup.object({
+      display: yup
+        .number()
+        .concat(
+          !bookingId
+            ? yup
+                .number()
+                .min(0, 'Discount must be greater than or equal to 0')
+                .typeError('Must be a number')
+            : null,
+        ),
+      printing: yup
+        .number()
+        .concat(
+          !bookingId
+            ? yup
+                .number()
+                .min(0, 'Discount must be greater than or equal to 0')
+                .typeError('Must be a number')
+            : null,
+        ),
+      mounting: yup
+        .number()
+        .concat(
+          !bookingId
+            ? yup
+                .number()
+                .min(0, 'Discount must be greater than or equal to 0')
+                .typeError('Must be a number')
+            : null,
+        ),
+    }),
+  });
 
 const initialReleaseValues = {
-  releaseOrderNo: null,
-  companyName: '',
-  quotationNo: '',
-  contactPerson: '',
-  phone: '',
-  mobile: '',
-  email: '',
-  zip: null,
-  supplierName: '',
-  supplierDesignation: '',
-  termsAndCondition: '',
+  releaseOrderNo: 123,
+  companyName: 'Burt and Case Plc',
+  quotationNo: '123456',
+  contactPerson: 'Repudiandae soluta v',
+  phone: '7897897890',
+  mobile: '7897897890',
+  email: 'dofyg@mailinator.com',
+  zip: 498,
+  streetAddress: 'streetAddress',
+  city: 'Kolkata',
+  supplierName: 'Neville Trujillo',
+  supplierDesignation: 'Accusamus proident ',
+  termsAndCondition:
+    'Culpa rerum Nam magni nostrum beatae beatae non corrupti commodi aute placeat et quasi rerum dolore lorem',
+  initTotal: {
+    display: null,
+    printing: null,
+    mounting: null,
+  },
+  discount: {
+    display: 0,
+    printing: 0,
+    mounting: 0,
+  },
+  subTotal: {
+    display: null,
+    printing: null,
+    mounting: null,
+  },
+  gst: {
+    display: null,
+    printing: null,
+    mounting: null,
+  },
+  total: {
+    display: null,
+    printing: null,
+    mounting: null,
+  },
+  threeMonthTotal: {
+    display: null,
+    printing: null,
+    mounting: null,
+  },
+  grandTotal: null,
+  grandTotalInWords: '',
+  printingSqftCost: null,
+  mountingSqftCost: null,
 };
 
 const invoiceSchema = yup.object({
@@ -284,10 +354,17 @@ const initialInvoiceValues = {
   declaration: '',
 };
 
-const schema = {
-  purchase: purchaseSchema,
-  release: releaseSchema,
-  invoice: invoiceSchema,
+const schema = (type, bookingId) => {
+  const obj = {
+    purchase: purchaseSchema,
+    invoice: invoiceSchema,
+  };
+
+  if (type === 'release') {
+    return releaseSchema(bookingId);
+  }
+
+  return obj[type];
 };
 
 const initialValues = {
@@ -308,7 +385,11 @@ const Home = () => {
   const navigate = useNavigate();
   const [searchParam] = useSearchParams();
   const { type } = useParams();
-  const form = useForm({ validate: yupResolver(schema[type]), initialValues: initialValues[type] });
+  const [bookingIdFromFinance, setBookingIdFromFinance] = useState();
+  const form = useForm({
+    validate: yupResolver(schema(type, bookingIdFromFinance)),
+    initialValues: initialValues[type],
+  });
 
   const ManualEntryView = orderView[type] ?? <div />;
   const Preview = preview[type] ?? <div />;
@@ -316,7 +397,6 @@ const Home = () => {
   const bookingId = searchParam.get('id');
 
   const [opened, { open, close }] = useDisclosure(false);
-  const [bookingIdFromFinance, setBookingIdFromFinance] = useState();
   const [addSpaceItem, setAddSpaceItem] = useState([]);
   const [previewData] = useState();
 
@@ -341,6 +421,8 @@ const Home = () => {
     isLoading: isGenerateManualPurchaseOrderLoading,
   } = useGenerateManualPurchaseOrder();
   const {
+    // TODO: wip
+    // eslint-disable-next-line no-unused-vars
     mutateAsync: generateManualReleaseOrder,
     isLoading: isGenerateManualReleaseOrderLoading,
   } = useGenerateManualReleaseOrder();
@@ -389,7 +471,6 @@ const Home = () => {
             previeData={formData}
             previewSpaces={spaces}
             totalPrice={calcutateTotalPrice || 0}
-            type={type}
           />
         ),
       },
@@ -448,7 +529,7 @@ const Home = () => {
           });
           return;
         }
-
+        open();
         await generateManualPurchaseOrder(data);
       }
     } else if (type === 'release') {
@@ -488,11 +569,9 @@ const Home = () => {
           return;
         }
       }
-      data.grandTotal = 100;
-      data.grandTotalInWords = 'zero';
-      data.printingSqftCost = 10;
-      data.mountingSqftCost = 10;
-
+      // open();
+      // console.log(data);
+      // return;
       await generateManualReleaseOrder(data);
     } else if (type === 'invoice') {
       if (!data?.supplierPhone?.includes('+91')) {
@@ -536,10 +615,10 @@ const Home = () => {
           return;
         }
       }
-
+      open();
       await generateManualInvoice(data);
     }
-    form.reset();
+    // form.reset();
   };
 
   const handleBack = () => navigate(-1);
@@ -578,6 +657,7 @@ const Home = () => {
     }
   }, [bookingIdFromFinance]);
 
+  // console.log(form.errors);
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <div className="pb-12">
@@ -599,9 +679,6 @@ const Home = () => {
                   }
                 >
                   Cancel
-                </Button>
-                <Button className="secondary-button" onClick={open}>
-                  Preview
                 </Button>
                 <Button
                   type="submit"
@@ -663,7 +740,7 @@ const Home = () => {
       <Modal
         opened={opened}
         onClose={close}
-        title="Manual Entry"
+        title="Preview"
         centered
         size="xl"
         overlayBlur={3}
@@ -677,6 +754,12 @@ const Home = () => {
           close: 'mr-4',
         }}
       >
+        <Group>
+          <h2 className="font-medium capitalize text-lg underline">{type} order:</h2>
+          <Button className="primary-button" onClick={open}>
+            Save
+          </Button>
+        </Group>
         <Preview
           previewData={previewData}
           previewSpaces={addSpaceItem}

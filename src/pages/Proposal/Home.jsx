@@ -209,9 +209,19 @@ const Proposals = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, creator },
           },
-        }) => useMemo(() => <ProposalsMenuPopover itemId={_id} />, []),
+        }) =>
+          useMemo(
+            () => (
+              <ProposalsMenuPopover
+                itemId={_id}
+                enableEdit={creator && !creator?.isPeer}
+                enableDelete={creator && !creator?.isPeer}
+              />
+            ),
+            [],
+          ),
       },
     ],
     [proposalsData?.docs, limit, proposalStatusData],

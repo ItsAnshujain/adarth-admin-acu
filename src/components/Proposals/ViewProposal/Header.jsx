@@ -7,7 +7,7 @@ import { downloadPdf } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
 import ShareContent from './ShareContent';
 
-const Header = () => {
+const Header = ({ isPeer }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const handleBack = () => navigate(-1);
@@ -48,14 +48,16 @@ const Header = () => {
             Share
           </Button>
         </div>
-        <div>
-          <Link
-            to={`/proposals/edit-details/${id}`}
-            className="bg-purple-450 flex items-center text-white rounded-md px-4 h-full font-bold text-sm"
-          >
-            Edit Proposal
-          </Link>
-        </div>
+        {!isPeer ? (
+          <div>
+            <Link
+              to={`/proposals/edit-details/${id}`}
+              className="bg-purple-450 flex items-center text-white rounded-md px-4 h-full font-bold text-sm"
+            >
+              Edit Proposal
+            </Link>
+          </div>
+        ) : null}
       </div>
     </div>
   );

@@ -78,6 +78,9 @@ const CreateUser = () => {
       if (userCachedData?.role === 'admin') {
         data.companyName = formData.companyName?.label;
         data.companyId = formData.companyName?.value;
+      } else {
+        data.companyName = userCachedData?.company;
+        data.companyId = userCachedData?.companyId;
       }
 
       Object.keys(data).forEach(key => {

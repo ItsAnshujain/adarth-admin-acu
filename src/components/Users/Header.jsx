@@ -2,16 +2,20 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Select } from '@mantine/core';
 import { Plus, ChevronDown } from 'react-feather';
+import { useQueryClient } from '@tanstack/react-query';
 import Filter from './Filter';
 
 const styles = {
   rightSection: { pointerEvents: 'none' },
 };
 
-const AreaHeader = ({ setFilter = () => {}, filter }) => {
+const AreaHeader = ({ setFilter = () => {}, filter, userId }) => {
   const [showFilter, setShowFilter] = useState(false);
   const toggleFilter = () => setShowFilter(!showFilter);
   const handleFilter = val => setFilter(val?.toLowerCase());
+  const queryClient = useQueryClient();
+
+  const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -19,7 +23,7 @@ const AreaHeader = ({ setFilter = () => {}, filter }) => {
         <Select
           value={filter.charAt(0).toUpperCase() + filter.slice(1)}
           onChange={handleFilter}
-          data={['Team', 'Peer']}
+          data={userCachedData?.role === 'admin' ? ['All', 'Team', 'Peer'] : ['Team', 'Peer']}
           styles={styles}
           rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
         />

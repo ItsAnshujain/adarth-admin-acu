@@ -3,11 +3,13 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Pagination, Skeleton } from '@mantine/core';
 import { useDebouncedState } from '@mantine/hooks';
 import { v4 as uuidv4 } from 'uuid';
+import { useQueryClient } from '@tanstack/react-query';
 import AreaHeader from '../../components/Users/Header';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Card from '../../components/Users/UI/Card';
 import { useFetchUsers } from '../../hooks/users.hooks';
+import useTokenIdStore from '../../store/user.store';
 
 const paginationStyles = {
   item: {
@@ -19,12 +21,15 @@ const skeletonList = () =>
   Array.apply('', Array(8)).map(_ => <Skeleton height={178} radius="sm" key={uuidv4()} />);
 
 const Home = () => {
+  const queryClient = useQueryClient();
+  const userId = useTokenIdStore(state => state.id);
+  const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
     'sortOrder': 'desc',
     'sortBy': 'createdAt',
-    'filter': 'team',
+    'filter': userCachedData?.role === 'admin' ? 'all' : 'team',
   });
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const { data: userData, isLoading: isLoadingUserData } = useFetchUsers(searchParams.toString());
@@ -57,7 +62,7 @@ const Home = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <AreaHeader text="Team" setFilter={handleFilter} filter={filter} />
+      <AreaHeader setFilter={handleFilter} filter={filter} userId={userId} />
       <div className="flex justify-between h-20 items-center pr-7">
         <RowsPerPage
           setCount={currentLimit => handlePagination('limit', currentLimit)}
