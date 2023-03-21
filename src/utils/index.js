@@ -98,7 +98,6 @@ export const aadhaarFormat = aadhaarNumber => {
 };
 
 export const roleTypes = {
-  'media_owner': 'Media Owner',
   'manager': 'Manager',
   'supervisor': 'Supervisor',
   'associate': 'Associate',
@@ -107,7 +106,6 @@ export const roleTypes = {
 // TODO: Remove one roleType object
 export const ROLES = {
   ADMIN: 'admin',
-  MEDIA_OWNER: 'media_owner',
   MANAGER: 'manager',
   SUPERVISOR: 'supervisor',
   ASSOCIATE: 'associate',
@@ -146,9 +144,9 @@ export const handleStopPropagation = (e, cb) => {
 };
 
 export const gstRegexMatch =
-  /^[0-9]{2}[a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}[1-9a-zA-Z]{1}[Z|z][0-9a-zA-Z]{1}$/;
+  /^([0-9]{2}[a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}[1-9a-zA-Z]{1}[Z|z][0-9a-zA-Z]{1}|)$/;
 
-export const panRegexMatch = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
+export const panRegexMatch = /^(([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?|)$/;
 
 export const aadhaarRegexMatch = /^\d{12}$/;
 

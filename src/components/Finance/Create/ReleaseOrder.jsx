@@ -400,22 +400,21 @@ const ReleaseOrder = ({
         }
       });
     }
-
-    tempInitialTotal.discount.display = values.discount.display || 0;
-    tempInitialTotal.discount.printing = values.discount.printing || 0;
-    tempInitialTotal.discount.mounting = values.discount.mounting || 0;
+    tempInitialTotal.discount.display = values.discount.display ?? 0;
+    tempInitialTotal.discount.printing = values.discount.printing ?? 0;
+    tempInitialTotal.discount.mounting = values.discount.mounting ?? 0;
 
     tempInitialTotal.subTotal.display = Math.max(
       0,
-      tempInitialTotal.initTotal.display - values.discount.display,
+      tempInitialTotal.initTotal.display - tempInitialTotal.discount.display,
     );
     tempInitialTotal.subTotal.printing = Math.max(
       0,
-      tempInitialTotal.initTotal.printing - values.discount.printing,
+      tempInitialTotal.initTotal.printing - tempInitialTotal.discount.printing,
     );
     tempInitialTotal.subTotal.mounting = Math.max(
       0,
-      tempInitialTotal.initTotal.mounting - values.discount.mounting,
+      tempInitialTotal.initTotal.mounting - tempInitialTotal.discount.mounting,
     );
 
     tempInitialTotal.gst.display = (tempInitialTotal.subTotal.display * 18) / 100;

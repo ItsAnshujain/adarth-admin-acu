@@ -83,7 +83,6 @@ const BasicInfo = ({ setUploadingFile }) => {
           label="Organization"
           name="company"
           styles={styles}
-          withAsterisk
           errors={errors}
           placeholder="Organization"
           disabled

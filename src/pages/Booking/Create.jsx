@@ -29,36 +29,41 @@ const initialValues = {
   description: '',
   place: [],
   price: 0,
+  industry: '',
 };
 
 const basicInformationSchema = yup.object({
   client: yup.object({
     companyName: yup.string().trim().required('Company name is required'),
     name: yup.string().trim().required('Client name is required'),
-    email: yup.string().trim().email('Email must be valid').required('Email is required'),
+    email: yup.string().trim().email('Email must be valid'),
     contactNumber: yup
       .string()
       .trim()
-      .test('valid', 'Contact Number must be valid', val => validator.isMobilePhone(val, 'en-IN'))
-      .required('Contact Number is required'),
+      .test('valid', 'Contact Number must be valid', val => {
+        if (val) {
+          return validator.isMobilePhone(val, 'en-IN');
+        }
+
+        return true;
+      }),
     panNumber: yup
       .string()
       .trim()
-      .matches(panRegexMatch, 'Pan number must be valid and in uppercase')
-      .required('Pan number is required'),
+      .matches(panRegexMatch, 'Pan number must be valid and in uppercase'),
     gstNumber: yup
       .string()
       .trim()
-      .matches(gstRegexMatch, 'GST number must be valid and in uppercase')
-      .required('GST number is required'),
+      .matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
   }),
-  paymentReference: yup.string().trim().required('Payment reference number is required'),
+  paymentReference: yup.string().trim(),
   paymentType: yup.string().trim(),
 });
 
 const campaignInformationSchema = yup.object({
   campaignName: yup.string().trim().required('Campaign name is required'),
   description: yup.string().trim(),
+  industry: yup.string().trim().required('Industry is required'),
 });
 
 const schemas = [basicInformationSchema, campaignInformationSchema, yup.object()];

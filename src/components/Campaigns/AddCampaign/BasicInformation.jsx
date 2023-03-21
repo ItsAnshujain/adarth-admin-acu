@@ -5,7 +5,6 @@ import TextInput from '../../shared/TextInput';
 import TextareaInput from '../../shared/TextareaInput';
 import MultiSelect from '../../shared/MultiSelect';
 import { useFormContext } from '../../../context/formContext';
-import NativeSelect from '../../shared/NativeSelect';
 
 const styles = {
   label: {
@@ -53,22 +52,8 @@ const multiSelectStyles = {
 
 const marks = [{ value: 1600000 }, { value: 3200000 }];
 
-const query = {
-  parentId: null,
-  limit: 100,
-  page: 1,
-  sortBy: 'name',
-  sortOrder: 'asc',
-};
-
 const BasicInformation = () => {
   const { values, errors, setFieldValue } = useFormContext();
-
-  const {
-    data: industryData,
-    isSuccess: isIndustryDataLoaded,
-    isLoading: isIndustryDataLoading,
-  } = useFetchMasters(serialize({ type: 'industry', ...query }));
 
   const { data: tagData } = useFetchMasters(
     serialize({ type: 'tag', parentId: null, limit: 100, page: 1 }),
@@ -89,23 +74,6 @@ const BasicInformation = () => {
             styles={styles}
             errors={errors}
             placeholder="Write..."
-          />
-          <NativeSelect
-            label="Industry"
-            name="industry"
-            styles={styles}
-            errors={errors}
-            disabled={isIndustryDataLoading}
-            placeholder="Select..."
-            options={
-              isIndustryDataLoaded
-                ? industryData.docs.map(type => ({
-                    label: type.name,
-                    value: type._id,
-                  }))
-                : []
-            }
-            className="mb-7"
           />
         </div>
         <TextareaInput

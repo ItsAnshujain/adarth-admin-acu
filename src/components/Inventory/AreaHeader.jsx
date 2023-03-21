@@ -143,7 +143,9 @@ const AreaHeader = ({ text, inventoryData }) => {
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
         </div>
         <div className="relative">
-          <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
+          <RoleBased
+            acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGER, ROLES.ASSOCIATE]}
+          >
             <Button
               onClick={toggleAddDetails}
               className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"

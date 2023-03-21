@@ -75,38 +75,32 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
           <section className="p-5 bg-gray-100">
             {hasBookingId
               ? previewSpaces.map((item, index) => (
-                  <>
-                    <div className="flex justify-between items-center" key={item?._id}>
-                      <Group>
-                        <p className="text-lg min-w-[30px]">{index + 1}</p>
-                        <Text
-                          className="overflow-hidden text-ellipsis max-w-[280px]"
-                          lineClamp={1}
-                          title={item?.basicInformation?.spaceName}
-                        >
-                          {item?.basicInformation?.spaceName}
-                        </Text>
-                      </Group>
-                      <Group className="min-w-[250px] flex justify-between">
-                        <div>
-                          <p>Quantity: 1</p>
-                          <p>Rate: {item?.basicInformation?.price}</p>
-                        </div>
-                        <div>
-                          <p>Per: {item?.per}</p>
-                          <p>Pricing: {item?.basicInformation?.price}</p>
-                        </div>
-                      </Group>
-                    </div>
-                    <div className="flex justify-end">
-                      <p className="text-lg font-bold">Total Price:</p>
-                      <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-                    </div>
-                  </>
+                  <div className="grid grid-cols-2" key={item?._id}>
+                    <Group>
+                      <p className="text-lg">{index + 1}</p>
+                      <Text
+                        className="overflow-hidden text-ellipsis max-w-[280px]"
+                        lineClamp={1}
+                        title={item?.basicInformation?.spaceName}
+                      >
+                        {item?.basicInformation?.spaceName}
+                      </Text>
+                    </Group>
+                    <Group className="grid grid-cols-2">
+                      <div>
+                        <p>Quantity: 1</p>
+                        <p>Rate: {item?.basicInformation?.price}</p>
+                      </div>
+                      <div>
+                        <p>Per: {item?.per}</p>
+                        <p>Pricing: {item?.basicInformation?.price}</p>
+                      </div>
+                    </Group>
+                  </div>
                 ))
               : previewData?.spaces?.map((item, index) => (
                   <div className="flex justify-between items-center" key={uuidv4()}>
-                    <p className="text-lg mr-1">{index + 1}</p>
+                    <p className="text-lg mr-2">{index + 1}</p>
                     <Group className="grid grid-cols-9">
                       <Text
                         className="overflow-hidden text-ellipsis max-w-[180px]"
@@ -139,6 +133,12 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                     </Group>
                   </div>
                 ))}
+            {hasBookingId ? (
+              <div className="flex justify-end">
+                <p className="text-lg font-bold">Total Price:</p>
+                <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              </div>
+            ) : null}
           </section>
         </article>
 

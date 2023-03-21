@@ -123,9 +123,9 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
           <section className="p-5 bg-gray-100">
             {hasBookingId
               ? previewSpaces.map((item, index) => (
-                  <div className="flex justify-between items-center" key={item?._id}>
+                  <div className="grid grid-cols-2" key={item?._id}>
                     <Group>
-                      <p className="text-lg min-w-[30px]">{index + 1}</p>
+                      <p className="text-lg">{index + 1}</p>
                       <Text
                         className="overflow-hidden text-ellipsis max-w-[280px]"
                         lineClamp={1}
@@ -134,7 +134,7 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
                         {item?.basicInformation?.spaceName}
                       </Text>
                     </Group>
-                    <Group className="min-w-[250px] flex justify-between">
+                    <Group className="grid grid-cols-2">
                       <div>
                         <p>Quantity: 1</p>
                         <p>Rate: {item?.basicInformation?.price}</p>
@@ -149,7 +149,7 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
               : previewData?.spaces?.map((item, index) => (
                   <div className="flex justify-between items-center" key={uuidv4()}>
                     <Group>
-                      <p className="text-lg min-w-[30px]">{index + 1}</p>
+                      <p className="text-lg">{index + 1}</p>
                       <div>
                         <Text
                           className="overflow-hidden text-ellipsis max-w-[280px]"
@@ -167,7 +167,7 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
                         </Text>
                       </div>
                     </Group>
-                    <Group className="min-w-[250px] flex justify-between">
+                    <Group className="grid grid-cols-2">
                       <div>
                         <p>Quantity: {item?.quantity}</p>
                         <p>Rate: {item?.rate}</p>

@@ -20,7 +20,6 @@ import DomToPdf from 'dom-to-pdf';
 import { v4 as uuidv4 } from 'uuid';
 import Header from '../../components/Reports/Header';
 import RevenueFilter from '../../components/Reports/RevenueFilter';
-import ViewByFilter from '../../components/Reports/ViewByFilter';
 import {
   useBookingReportByRevenueStats,
   useBookingReportByRevenueGraph,
@@ -163,7 +162,8 @@ const RevenueReport = () => {
     ],
   });
 
-  const [queryByIndustry, setQueryByIndustry] = useState({
+  // TODO: wip
+  const [queryByIndustry] = useState({
     'startDate': dayjs().startOf('year').format(DATE_FORMAT),
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
@@ -210,56 +210,6 @@ const RevenueReport = () => {
         'groupBy': 'quarter',
         ...dateByQuarter[dayjs().quarter()],
       });
-    }
-  };
-
-  //  TODO: need to add calendar instead of dropdown. depending on client */
-  // eslint-disable-next-line no-unused-vars
-  const handleLocationViewBy = viewType => {
-    if (viewType === 'reset') {
-      setQueryByLocation(prevState => ({
-        ...prevState,
-        'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-        'endDate': dayjs().endOf('year').format(DATE_FORMAT),
-      }));
-    }
-    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
-      setQueryByLocation(prevState => ({
-        ...prevState,
-        'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
-        'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
-      }));
-    }
-    if (viewType === 'quarter') {
-      setQueryByLocation(prevState => ({
-        ...prevState,
-        ...dateByQuarter[dayjs().quarter()],
-      }));
-    }
-  };
-
-  // TODO: need to add calendar instead of dropdown. depending on client */
-  // eslint-disable-next-line no-unused-vars
-  const handleIndustryViewBy = viewType => {
-    if (viewType === 'reset') {
-      setQueryByIndustry(prevState => ({
-        ...prevState,
-        'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-        'endDate': dayjs().endOf('year').format(DATE_FORMAT),
-      }));
-    }
-    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
-      setQueryByIndustry(prevState => ({
-        ...prevState,
-        'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
-        'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
-      }));
-    }
-    if (viewType === 'quarter') {
-      setQueryByIndustry(prevState => ({
-        ...prevState,
-        ...dateByQuarter[dayjs().quarter()],
-      }));
     }
   };
 
@@ -343,14 +293,17 @@ const RevenueReport = () => {
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-        <Header text="Revenue Report" onClickDownloadPdf={downloadPdf} />
+        <Header
+          text="Revenue Report"
+          onClickDownloadPdf={downloadPdf}
+          handleRevenueGraphViewBy={handleRevenueGraphViewBy}
+        />
         <div className="mr-7 pl-5 mt-5 mb-10" id="revenue-pdf">
           <RevenueStatsContent revenueData={revenueData} />
           <div className="flex gap-8">
             <div className="w-[70%] flex flex-col justify-between min-h-[300px]">
               <div className="flex justify-between items-center">
                 <p className="font-bold">Revenue Graph</p>
-                <ViewByFilter handleViewBy={handleRevenueGraphViewBy} />
               </div>
               {isRevenueGraphLoading ? (
                 <Loader className="m-auto" />
@@ -367,8 +320,6 @@ const RevenueReport = () => {
             <div className="w-[30%] flex flex-col">
               <div className="flex justify-between items-start">
                 <p className="font-bold">Industry wise revenue graph</p>
-                {/* TODO: need to add calendar instead of dropdown. depending on client */}
-                {/* <ViewByFilter handleViewBy={handleIndustryViewBy} /> */}
               </div>
               <div className="w-80 m-auto">
                 {isByIndustryLoading ? (
@@ -403,8 +354,6 @@ const RevenueReport = () => {
                     />
                   )}
                 </div>
-                {/* TODO: need to add calendar instead of dropdown. depending on client */}
-                {/* <ViewByFilter handleViewBy={handleLocationViewBy} /> */}
               </div>
             </div>
             <div className="flex flex-col pl-7 relative">
