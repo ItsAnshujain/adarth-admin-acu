@@ -41,14 +41,6 @@ const FormHeader = ({
           onClick={onSubmit(e => handleFormSubmit(e, 'preview'))}
           className="primary-button mr-2"
           variant="filled"
-          loading={
-            isGeneratePurchaseOrderLoading ||
-            isGenerateReleaseOrderLoading ||
-            isGenerateInvoiceLoading ||
-            isGenerateManualPurchaseOrderLoading ||
-            isGenerateManualReleaseOrderLoading ||
-            isGenerateManualInvoiceLoading
-          }
           disabled={
             isGeneratePurchaseOrderLoading ||
             isGenerateReleaseOrderLoading ||

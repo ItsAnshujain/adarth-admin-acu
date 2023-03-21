@@ -1,10 +1,12 @@
+import { Group, Text } from '@mantine/core';
 import React from 'react';
 import { ToWords } from 'to-words';
+import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../utils/currencyFormat';
 
-const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice }) => {
+const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, hasBookingId }) => {
   const toWords = new ToWords();
-  console.log(previewData, previewSpaces);
+
   return (
     <div className="px-5">
       <div className="max-h-[500px] overflow-y-auto">
@@ -87,12 +89,64 @@ const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice }) =
         <article className="my-3">
           <h2 className="font-medium capitalize text-xl mb-2">Description of Services:</h2>
           <section className="p-5 bg-gray-100">
-            {previewSpaces.map((item, index) => (
-              <div className="flex" key={item?.itemId}>
-                <p className="text-lg min-w-[30px]">{index + 1}</p>
-                <p className="text-lg">{item?.basicInformation?.spaceName}</p>
-              </div>
-            ))}
+            {hasBookingId
+              ? previewSpaces.map((item, index) => (
+                  <div className="flex justify-between items-center" key={item?._id}>
+                    <Group>
+                      <p className="text-lg min-w-[30px]">{index + 1}</p>
+                      <Text
+                        className="overflow-hidden text-ellipsis max-w-[280px]"
+                        lineClamp={1}
+                        title={item?.basicInformation?.spaceName}
+                      >
+                        {item?.basicInformation?.spaceName}
+                      </Text>
+                    </Group>
+                    <Group className="min-w-[250px] flex justify-between">
+                      <div>
+                        <p>Quantity: 1</p>
+                        <p>Rate: {item?.basicInformation?.price}</p>
+                      </div>
+                      <div>
+                        <p>Per: {item?.per}</p>
+                        <p>Pricing: {item?.basicInformation?.price}</p>
+                      </div>
+                    </Group>
+                  </div>
+                ))
+              : previewData?.spaces?.map((item, index) => (
+                  <div className="flex justify-between items-center" key={uuidv4()}>
+                    <Group>
+                      <p className="text-lg min-w-[30px]">{index + 1}</p>
+                      <div>
+                        <Text
+                          className="overflow-hidden text-ellipsis max-w-[280px]"
+                          lineClamp={1}
+                          title={item?.name}
+                        >
+                          {item?.name}
+                        </Text>
+                        <Text
+                          className="overflow-hidden text-ellipsis max-w-[180px]"
+                          lineClamp={1}
+                          title={item?.location}
+                        >
+                          {item?.location}
+                        </Text>
+                      </div>
+                    </Group>
+                    <Group className="min-w-[250px] flex justify-between">
+                      <div>
+                        <p>Quantity: {item?.quantity}</p>
+                        <p>Rate: {item?.rate}</p>
+                      </div>
+                      <div>
+                        <p>Per: {item?.per}</p>
+                        <p>Pricing: {item?.price}</p>
+                      </div>
+                    </Group>
+                  </div>
+                ))}
             <div className="flex justify-end">
               <p className="text-lg font-bold">Total Price:</p>
               <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>

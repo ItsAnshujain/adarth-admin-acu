@@ -50,26 +50,14 @@ const purchaseSchema = yup.object({
     .required('Pricing is required'),
 });
 
-// const initialReleaseValues = {
-//   city: '',
-//   location: '',
-//   media: '',
-//   width: null,
-//   height: null,
-//   area: null,
-//   displayCost: null,
-//   printingCost: null,
-//   mountingCost: null,
-// };
-
 const initialReleaseValues = {
-  city: 'Kolkata',
-  location: 'Dum Dum',
-  media: 'Space',
+  city: '',
+  location: '',
+  media: '',
   width: null,
   height: null,
   area: null,
-  displayCost: 500,
+  displayCost: null,
   printingCost: 0,
   mountingCost: 0,
 };

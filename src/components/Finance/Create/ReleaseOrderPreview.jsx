@@ -1,8 +1,11 @@
+import { Group, Text } from '@mantine/core';
 import React from 'react';
 import { ToWords } from 'to-words';
+import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../utils/currencyFormat';
+import ROCalculatedTable from './ROCalculatedTable';
 
-const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice }) => {
+const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, hasBookingId }) => {
   const toWords = new ToWords();
 
   return (
@@ -70,24 +73,90 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice }) =>
         <article className="my-3">
           <h2 className="font-medium capitalize text-xl mb-2">Description of Services:</h2>
           <section className="p-5 bg-gray-100">
-            {previewSpaces.map((item, index) => (
-              <div className="flex" key={item?._id}>
-                <p className="text-lg min-w-[30px]">{index + 1}</p>
-                <p className="text-lg">{item?.basicInformation?.spaceName}</p>
-              </div>
-            ))}
-            <div className="flex justify-end">
-              <p className="text-lg font-bold">Total Price:</p>
-              <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-            </div>
+            {hasBookingId
+              ? previewSpaces.map((item, index) => (
+                  <>
+                    <div className="flex justify-between items-center" key={item?._id}>
+                      <Group>
+                        <p className="text-lg min-w-[30px]">{index + 1}</p>
+                        <Text
+                          className="overflow-hidden text-ellipsis max-w-[280px]"
+                          lineClamp={1}
+                          title={item?.basicInformation?.spaceName}
+                        >
+                          {item?.basicInformation?.spaceName}
+                        </Text>
+                      </Group>
+                      <Group className="min-w-[250px] flex justify-between">
+                        <div>
+                          <p>Quantity: 1</p>
+                          <p>Rate: {item?.basicInformation?.price}</p>
+                        </div>
+                        <div>
+                          <p>Per: {item?.per}</p>
+                          <p>Pricing: {item?.basicInformation?.price}</p>
+                        </div>
+                      </Group>
+                    </div>
+                    <div className="flex justify-end">
+                      <p className="text-lg font-bold">Total Price:</p>
+                      <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+                    </div>
+                  </>
+                ))
+              : previewData?.spaces?.map((item, index) => (
+                  <div className="flex justify-between items-center" key={uuidv4()}>
+                    <p className="text-lg mr-1">{index + 1}</p>
+                    <Group className="grid grid-cols-9">
+                      <Text
+                        className="overflow-hidden text-ellipsis max-w-[180px]"
+                        lineClamp={1}
+                        title={item?.city}
+                      >
+                        {item?.city}
+                      </Text>
+                      <Text
+                        className="overflow-hidden text-ellipsis max-w-[180px]"
+                        lineClamp={1}
+                        title={item?.location}
+                      >
+                        {item?.location}
+                      </Text>
+                      <Text
+                        className="overflow-hidden text-ellipsis max-w-[180px]"
+                        lineClamp={1}
+                        title={item?.media}
+                      >
+                        {item?.media}
+                      </Text>
+
+                      <Text>{item?.width}</Text>
+                      <Text>{item?.height}</Text>
+                      <Text>{item?.area}</Text>
+                      <Text>{item?.displayCost}</Text>
+                      <Text>{item?.printingCost}</Text>
+                      <Text>{item?.mountingCost}</Text>
+                    </Group>
+                  </div>
+                ))}
           </section>
         </article>
+
+        {!hasBookingId ? (
+          <Group position="center">
+            <ROCalculatedTable isEditable={false} calculatedData={previewData} />
+          </Group>
+        ) : null}
 
         <article className="my-3">
           <section className="p-5 bg-gray-100">
             <div className="flex mb-1">
               <p className="text-lg font-bold">Amount Chargeable (in words):</p>
-              <p className="text-lg ml-2">{(totalPrice && toWords.convert(totalPrice)) || 0}</p>
+              <p className="text-lg ml-2">
+                {previewData?.grandTotalInWords
+                  ? previewData?.grandTotalInWords
+                  : totalPrice && toWords.convert(totalPrice)}
+              </p>
             </div>
             <p className="text-lg">
               <span className="font-bold">Terms & Conditions:</span>{' '}

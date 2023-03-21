@@ -5,7 +5,7 @@ import { useFormContext } from '../../../context/formContext';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import NumberInput from '../../shared/NumberInput';
 
-const ROCalculatedTable = ({ calculatedData }) => {
+const ROCalculatedTable = ({ calculatedData, isEditable = true }) => {
   const [isMonth, setIsMonth] = useState(false);
   const { values } = useFormContext();
   return (
@@ -103,7 +103,7 @@ const ROCalculatedTable = ({ calculatedData }) => {
         </section>
         <section className="bg-gray-100 grid grid-cols-4 mb-2 border border-gray-200 py-2">
           <div className="flex justify-center items-center">
-            {isMonth ? (
+            {isEditable && isMonth ? (
               <NumberInput
                 name="forMonths"
                 placeholder="Write..."
@@ -115,9 +115,11 @@ const ROCalculatedTable = ({ calculatedData }) => {
             ) : (
               <p className="text-center font-medium">For {values.forMonths} month(s): </p>
             )}
-            <ActionIcon onClick={() => setIsMonth(!isMonth)}>
-              <Edit className="text-purple-450" size={20} />
-            </ActionIcon>
+            {isEditable ? (
+              <ActionIcon onClick={() => setIsMonth(!isMonth)}>
+                <Edit className="text-purple-450" size={20} />
+              </ActionIcon>
+            ) : null}
           </div>
           <p className="bg-gray-100 text-center border-x-2 border-gray-200">
             {calculatedData?.threeMonthTotal?.display
