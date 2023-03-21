@@ -23,6 +23,7 @@ import {
   useGenerateReleaseOrder,
 } from '../../hooks/booking.hooks';
 import {
+  alertText,
   downloadPdf,
   gstRegexMatch,
   mobileRegexMatch,
@@ -406,7 +407,7 @@ const Home = () => {
   const navigate = useNavigate();
   const [searchParam] = useSearchParams();
   const { type } = useParams();
-  const [bookingIdFromFinance, setBookingIdFromFinance] = useState();
+  const [bookingIdFromFinance, setBookingIdFromFinance] = useState('');
   const form = useForm({
     validate: yupResolver(schema(type, bookingIdFromFinance)),
     initialValues: initialValues[type],
@@ -814,12 +815,11 @@ const Home = () => {
                   placeholder="Select..."
                   onChange={e => {
                     // eslint-disable-next-line no-alert
-                    const willChange = window.confirm(
-                      'Order item details if added, will get cleared if you change a booking',
-                    );
-                    if (willChange) {
-                      setBookingIdFromFinance(e);
+                    const willChange = window.confirm(alertText);
+                    if (!willChange) {
+                      return;
                     }
+                    setBookingIdFromFinance(e);
                   }}
                   data={updatedBookingsList}
                 />

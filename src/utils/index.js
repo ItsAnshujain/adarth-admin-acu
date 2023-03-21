@@ -286,3 +286,5 @@ export const orderTitle = {
   release: 'Release Order',
   invoice: 'Invoice',
 };
+
+export const alertText = 'Order item details if added, will get cleared if you change a booking';
