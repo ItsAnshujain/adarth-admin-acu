@@ -7,6 +7,7 @@ import validator from 'validator';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { useDisclosure } from '@mantine/hooks';
+import { ToWords } from 'to-words';
 import PurchaseOrder from '../../components/Finance/Create/PurchaseOrder';
 import ReleaseOrder from '../../components/Finance/Create/ReleaseOrder';
 import Invoice from '../../components/Finance/Create/Invoice';
@@ -22,18 +23,19 @@ import {
   useGenerateReleaseOrder,
 } from '../../hooks/booking.hooks';
 import {
+  alertText,
   downloadPdf,
   gstRegexMatch,
   mobileRegexMatch,
   onlyNumbersMatch,
   serialize,
-  orderTitle,
 } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
 import PurchaseOrderPreview from '../../components/Finance/Create/PurchaseOrderPreview';
 import ReleaseOrderPreview from '../../components/Finance/Create/ReleaseOrderPreview';
 import InvoicePreview from '../../components/Finance/Create/InvoicePreview';
 import ManualEntryContent from './ManualEntryContent';
+import FormHeader from '../../components/Finance/Create/FormHeader';
 
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
@@ -162,6 +164,26 @@ const releaseSchema = bookingId =>
     supplierName: yup.string().trim().required('Supplier Name is required'),
     supplierDesignation: yup.string().trim().required('Designation is required'),
     termsAndCondition: yup.string().trim(),
+    mountingSqftCost: yup
+      .number()
+      .concat(
+        !bookingId
+          ? yup
+              .number()
+              .min(0, 'Discount must be greater than or equal to 0')
+              .typeError('Must be a number')
+          : null,
+      ),
+    printingSqftCost: yup
+      .number()
+      .concat(
+        !bookingId
+          ? yup
+              .number()
+              .min(0, 'Discount must be greater than or equal to 0')
+              .typeError('Must be a number')
+          : null,
+      ),
     discount: yup.object({
       display: yup
         .number()
@@ -197,20 +219,19 @@ const releaseSchema = bookingId =>
   });
 
 const initialReleaseValues = {
-  releaseOrderNo: 123,
-  companyName: 'Burt and Case Plc',
-  quotationNo: '123456',
-  contactPerson: 'Repudiandae soluta v',
-  phone: '7897897890',
-  mobile: '7897897890',
-  email: 'dofyg@mailinator.com',
-  zip: 498,
-  streetAddress: 'streetAddress',
-  city: 'Kolkata',
-  supplierName: 'Neville Trujillo',
-  supplierDesignation: 'Accusamus proident ',
-  termsAndCondition:
-    'Culpa rerum Nam magni nostrum beatae beatae non corrupti commodi aute placeat et quasi rerum dolore lorem',
+  releaseOrderNo: null,
+  companyName: '',
+  quotationNo: '',
+  contactPerson: '',
+  phone: '',
+  mobile: '',
+  email: '',
+  zip: null,
+  streetAddress: '',
+  city: '',
+  supplierName: '',
+  supplierDesignation: '',
+  termsAndCondition: '',
   initTotal: {
     display: null,
     printing: null,
@@ -243,8 +264,9 @@ const initialReleaseValues = {
   },
   grandTotal: null,
   grandTotalInWords: '',
-  printingSqftCost: null,
-  mountingSqftCost: null,
+  printingSqftCost: 0,
+  mountingSqftCost: 0,
+  forMonths: 3,
 };
 
 const invoiceSchema = yup.object({
@@ -385,11 +407,12 @@ const Home = () => {
   const navigate = useNavigate();
   const [searchParam] = useSearchParams();
   const { type } = useParams();
-  const [bookingIdFromFinance, setBookingIdFromFinance] = useState();
+  const [bookingIdFromFinance, setBookingIdFromFinance] = useState('');
   const form = useForm({
     validate: yupResolver(schema(type, bookingIdFromFinance)),
     initialValues: initialValues[type],
   });
+  const toWords = new ToWords();
 
   const ManualEntryView = orderView[type] ?? <div />;
   const Preview = preview[type] ?? <div />;
@@ -398,7 +421,8 @@ const Home = () => {
 
   const [opened, { open, close }] = useDisclosure(false);
   const [addSpaceItem, setAddSpaceItem] = useState([]);
-  const [previewData] = useState();
+  const [updatedForm, setUpdatedForm] = useState();
+  const [previewData, setPreviewData] = useState();
 
   const {
     data: bookingDatas,
@@ -421,15 +445,13 @@ const Home = () => {
     isLoading: isGenerateManualPurchaseOrderLoading,
   } = useGenerateManualPurchaseOrder();
   const {
-    // TODO: wip
-    // eslint-disable-next-line no-unused-vars
     mutateAsync: generateManualReleaseOrder,
     isLoading: isGenerateManualReleaseOrderLoading,
   } = useGenerateManualReleaseOrder();
   const { mutateAsync: generateManualInvoice, isLoading: isGenerateManualInvoiceLoading } =
     useGenerateManualInvoice();
 
-  const redirectToHome = () => setTimeout(() => navigate(-1), 2000);
+  const redirectToHome = () => setTimeout(() => navigate('/finance'), 2000);
 
   const calcutateTotalPrice = useMemo(() => {
     const initialPrice = 0;
@@ -443,6 +465,16 @@ const Home = () => {
     return initialPrice;
   }, [bookingData?.campaign?.spaces]);
 
+  const calculateManualTotalPrice = useMemo(() => {
+    const initialPrice = 0;
+    if (addSpaceItem.length) {
+      return addSpaceItem
+        .map(item => (item?.price ? Number(item.price) : 0))
+        .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
+    }
+    return initialPrice;
+  }, [addSpaceItem]);
+
   const toggleAddItemModal = item =>
     modals.openContextModal('basic', {
       title: 'Manual Entry',
@@ -454,32 +486,16 @@ const Home = () => {
             addSpaceItem={addSpaceItem}
             item={item}
             type={type}
+            mountingSqftCost={form.values.mountingSqftCost}
+            printingSqftCost={form.values.printingSqftCost}
           />
         ),
       },
       ...updatedModalConfig,
     });
 
-  // TODO: preview integration left
-  // eslint-disable-next-line no-unused-vars
-  const toggleFormPreviewModal = (formData, spaces) =>
-    modals.openContextModal('basic', {
-      title: 'Preview',
-      innerProps: {
-        modalBody: (
-          <Preview
-            previeData={formData}
-            previewSpaces={spaces}
-            totalPrice={calcutateTotalPrice || 0}
-          />
-        ),
-      },
-      ...updatedModalConfig,
-    });
-
-  const handleSubmit = async formData => {
+  const handleSubmit = async (formData, submitType) => {
     const data = { ...formData };
-    // toggleFormPreviewModal(data, data?.spaces);
 
     Object.keys(data).forEach(key => {
       if (data[key] === '' || data[key] === null) {
@@ -502,13 +518,29 @@ const Home = () => {
           per: +item.per || 1,
           dueOn: item.dueOn || new Date(),
         }));
-
-        const purchaseOrderPdf = await generatePurchaseOrder(
-          { id: bookingId || bookingIdFromFinance, data },
-          { onSuccess: () => redirectToHome() },
-        );
-        if (purchaseOrderPdf?.generatedPdf?.Location) {
-          downloadPdf(purchaseOrderPdf.generatedPdf.Location);
+        if (submitType === 'preview') {
+          open();
+          setPreviewData(data);
+        } else if (submitType === 'save') {
+          const purchaseOrderPdf = await generatePurchaseOrder(
+            {
+              id: bookingId || bookingIdFromFinance,
+              data,
+            },
+            {
+              onSuccess: () => {
+                close();
+                setBookingIdFromFinance();
+                setPreviewData();
+                setAddSpaceItem([]);
+                form.reset();
+                redirectToHome();
+              },
+            },
+          );
+          if (purchaseOrderPdf?.generatedPdf?.Location) {
+            downloadPdf(purchaseOrderPdf.generatedPdf.Location);
+          }
         }
       } else {
         data.spaces = addSpaceItem?.map((item, index) => ({
@@ -529,8 +561,27 @@ const Home = () => {
           });
           return;
         }
-        open();
-        await generateManualPurchaseOrder(data);
+        data.subTotal = calculateManualTotalPrice;
+        data.gst = (data.subTotal * 18) / 100;
+        data.total = data.subTotal + data.gst;
+        data.totalInWords = toWords.convert(data.total);
+        if (submitType === 'preview') {
+          open();
+          setPreviewData(data);
+        } else if (submitType === 'save') {
+          const purchaseOrderPdf = await generateManualPurchaseOrder(data, {
+            onSuccess: () => {
+              close();
+              setPreviewData();
+              setAddSpaceItem([]);
+              form.reset();
+              redirectToHome();
+            },
+          });
+          if (purchaseOrderPdf?.generatedPdf?.Location) {
+            downloadPdf(purchaseOrderPdf.generatedPdf.Location);
+          }
+        }
       }
     } else if (type === 'release') {
       if (data?.phone !== undefined && !data?.phone?.includes('+91')) {
@@ -541,12 +592,44 @@ const Home = () => {
       }
 
       if (bookingIdFromFinance) {
-        const releaseOrderPdf = await generateReleaseOrder(
-          { id: bookingId || bookingIdFromFinance, data },
-          { onSuccess: () => redirectToHome() },
-        );
-        if (releaseOrderPdf?.generatedPdf?.Location) {
-          downloadPdf(releaseOrderPdf.generatedPdf.Location);
+        if (submitType === 'preview') {
+          open();
+          setPreviewData(data);
+        } else if (submitType === 'save') {
+          const deletedKey = [
+            'initTotal',
+            'discount',
+            'subTotal',
+            'gst',
+            'total',
+            'threeMonthTotal',
+            'grandTotal',
+            'grandTotalInWords',
+            'printingSqftCost',
+            'mountingSqftCost',
+            'forMonths',
+          ];
+          Object.keys(data).forEach(key => {
+            if (deletedKey.includes(key)) {
+              delete data[key];
+            }
+          });
+          const releaseOrderPdf = await generateReleaseOrder(
+            { id: bookingId || bookingIdFromFinance, data },
+            {
+              onSuccess: () => {
+                close();
+                setBookingIdFromFinance();
+                setPreviewData();
+                setAddSpaceItem([]);
+                form.reset();
+                redirectToHome();
+              },
+            },
+          );
+          if (releaseOrderPdf?.generatedPdf?.Location) {
+            downloadPdf(releaseOrderPdf.generatedPdf.Location);
+          }
         }
       } else {
         data.spaces = addSpaceItem?.map((item, index) => ({
@@ -568,11 +651,28 @@ const Home = () => {
           });
           return;
         }
+        if (submitType === 'preview') {
+          open();
+          setPreviewData({ ...data, ...updatedForm });
+        } else if (submitType === 'save') {
+          const releaseOrderPdf = await generateManualReleaseOrder(
+            { ...data, ...updatedForm },
+            {
+              onSuccess: () => {
+                close();
+                setBookingIdFromFinance();
+                setPreviewData();
+                setAddSpaceItem([]);
+                form.reset();
+                redirectToHome();
+              },
+            },
+          );
+          if (releaseOrderPdf?.generatedPdf?.Location) {
+            downloadPdf(releaseOrderPdf.generatedPdf.Location);
+          }
+        }
       }
-      // open();
-      // console.log(data);
-      // return;
-      await generateManualReleaseOrder(data);
     } else if (type === 'invoice') {
       if (!data?.supplierPhone?.includes('+91')) {
         data.supplierPhone = `+91${data?.supplierPhone}`;
@@ -588,12 +688,26 @@ const Home = () => {
       }
 
       if (bookingIdFromFinance) {
-        const invoicePdf = await generateInvoice(
-          { id: bookingId || bookingIdFromFinance, data },
-          { onSuccess: () => redirectToHome() },
-        );
-        if (invoicePdf?.generatedPdf?.Location) {
-          downloadPdf(invoicePdf.generatedPdf.Location);
+        if (submitType === 'preview') {
+          open();
+          setPreviewData(data);
+        } else if (submitType === 'save') {
+          const invoicePdf = await generateInvoice(
+            { id: bookingId || bookingIdFromFinance, data },
+            {
+              onSuccess: () => {
+                close();
+                setBookingIdFromFinance();
+                setPreviewData();
+                setAddSpaceItem([]);
+                form.reset();
+                redirectToHome();
+              },
+            },
+          );
+          if (invoicePdf?.generatedPdf?.Location) {
+            downloadPdf(invoicePdf.generatedPdf.Location);
+          }
         }
       } else {
         data.spaces = addSpaceItem?.map((item, index) => ({
@@ -614,14 +728,32 @@ const Home = () => {
           });
           return;
         }
+        data.subTotal = calculateManualTotalPrice;
+        data.gst = (data.subTotal * 18) / 100;
+        data.total = data.subTotal + data.gst;
+        data.taxInWords = toWords.convert(data.gst);
+        data.totalInWords = toWords.convert(data.total);
+        if (submitType === 'preview') {
+          open();
+          setPreviewData(data);
+        } else if (submitType === 'save') {
+          const invoicePdf = await generateManualInvoice(data, {
+            onSuccess: () => {
+              close();
+              setBookingIdFromFinance();
+              setPreviewData();
+              setAddSpaceItem([]);
+              form.reset();
+              redirectToHome();
+            },
+          });
+          if (invoicePdf?.generatedPdf?.Location) {
+            downloadPdf(invoicePdf.generatedPdf.Location);
+          }
+        }
       }
-      open();
-      await generateManualInvoice(data);
     }
-    // form.reset();
   };
-
-  const handleBack = () => navigate(-1);
 
   const updatedBookingsList = useMemo(() => {
     let arr = [{ label: 'Select', value: '' }];
@@ -657,54 +789,21 @@ const Home = () => {
     }
   }, [bookingIdFromFinance]);
 
-  // console.log(form.errors);
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <div className="pb-12">
         <FormProvider form={form}>
-          <form onSubmit={form.onSubmit(handleSubmit)}>
-            <header className="h-[60px] border-b flex items-center justify-between pl-5 pr-7 sticky top-0 z-50 bg-white">
-              <p className="font-bold text-lg">{`Create ${orderTitle[type]}`}</p>
-              <div className="flex gap-3">
-                <Button
-                  onClick={handleBack}
-                  variant="outline"
-                  disabled={
-                    isGeneratePurchaseOrderLoading ||
-                    isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceLoading ||
-                    isGenerateManualPurchaseOrderLoading ||
-                    isGenerateManualReleaseOrderLoading ||
-                    isGenerateManualInvoiceLoading
-                  }
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="primary-button mr-2"
-                  variant="filled"
-                  loading={
-                    isGeneratePurchaseOrderLoading ||
-                    isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceLoading ||
-                    isGenerateManualPurchaseOrderLoading ||
-                    isGenerateManualReleaseOrderLoading ||
-                    isGenerateManualInvoiceLoading
-                  }
-                  disabled={
-                    isGeneratePurchaseOrderLoading ||
-                    isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceLoading ||
-                    isGenerateManualPurchaseOrderLoading ||
-                    isGenerateManualReleaseOrderLoading ||
-                    isGenerateManualInvoiceLoading
-                  }
-                >
-                  Create
-                </Button>
-              </div>
-            </header>
+          <form>
+            <FormHeader
+              type={type}
+              isGeneratePurchaseOrderLoading={isGeneratePurchaseOrderLoading}
+              isGenerateReleaseOrderLoading={isGenerateReleaseOrderLoading}
+              isGenerateInvoiceLoading={isGenerateInvoiceLoading}
+              isGenerateManualPurchaseOrderLoading={isGenerateManualPurchaseOrderLoading}
+              isGenerateManualReleaseOrderLoading={isGenerateManualReleaseOrderLoading}
+              isGenerateManualInvoiceLoading={isGenerateManualInvoiceLoading}
+              handleFormSubmit={handleSubmit}
+            />
             <div className="pl-5 pr-7 pt-4 pb-8 border-b">
               <div className="grid grid-cols-2 gap-4">
                 <Select
@@ -716,57 +815,93 @@ const Home = () => {
                   placeholder="Select..."
                   onChange={e => {
                     // eslint-disable-next-line no-alert
-                    const willChange = window.confirm(
-                      'Order item details if added, will get cleared if you change a booking',
-                    );
-                    if (willChange) {
-                      setBookingIdFromFinance(e);
+                    const willChange = window.confirm(alertText);
+                    if (!willChange) {
+                      return;
                     }
+                    setBookingIdFromFinance(e);
                   }}
                   data={updatedBookingsList}
                 />
               </div>
             </div>
             <ManualEntryView
-              totalPrice={calcutateTotalPrice || 0}
-              onClickAddItems={data => toggleAddItemModal(data)}
+              totalPrice={bookingIdFromFinance ? calcutateTotalPrice : calculateManualTotalPrice}
+              onClickAddItems={data => {
+                if (
+                  type === 'release' &&
+                  (form.values.printingSqftCost === 0 || form.values.printingSqftCost === 0)
+                ) {
+                  showNotification({
+                    title:
+                      'Please select printing ft² cost and mounting ft² cost before adding items',
+                    color: 'blue',
+                  });
+                  return;
+                }
+
+                toggleAddItemModal(data);
+              }}
               bookingIdFromFinance={bookingIdFromFinance}
               addSpaceItem={addSpaceItem}
               setAddSpaceItem={setAddSpaceItem}
+              updatedForm={updatedForm}
+              setUpdatedForm={setUpdatedForm}
             />
+            <Modal
+              opened={opened}
+              onClose={close}
+              title="Preview"
+              centered
+              size="xl"
+              overlayBlur={3}
+              overlayOpacity={0.55}
+              radius={0}
+              padding={0}
+              classNames={{
+                title: 'font-dmSans text-xl px-4',
+                header: 'px-4 pt-4',
+                body: 'pb-4',
+                close: 'mr-4',
+              }}
+            >
+              <Group position="apart" px="md" pb="md">
+                <h2 className="font-medium capitalize text-lg underline">{type} order:</h2>
+                <Button
+                  className="primary-button"
+                  type="submit"
+                  onClick={form.onSubmit(e => handleSubmit(e, 'save'))}
+                  disabled={
+                    isGeneratePurchaseOrderLoading ||
+                    isGenerateReleaseOrderLoading ||
+                    isGenerateInvoiceLoading ||
+                    isGenerateManualPurchaseOrderLoading ||
+                    isGenerateManualReleaseOrderLoading ||
+                    isGenerateManualInvoiceLoading
+                  }
+                  loading={
+                    isGeneratePurchaseOrderLoading ||
+                    isGenerateReleaseOrderLoading ||
+                    isGenerateInvoiceLoading ||
+                    isGenerateManualPurchaseOrderLoading ||
+                    isGenerateManualReleaseOrderLoading ||
+                    isGenerateManualInvoiceLoading
+                  }
+                >
+                  Save
+                </Button>
+              </Group>
+              <Preview
+                previewData={previewData}
+                previewSpaces={addSpaceItem}
+                hasBookingId={!!bookingIdFromFinance}
+                totalPrice={bookingIdFromFinance ? calcutateTotalPrice : calculateManualTotalPrice}
+                type={type}
+              />
+            </Modal>
           </form>
         </FormProvider>
       </div>
-      <Modal
-        opened={opened}
-        onClose={close}
-        title="Preview"
-        centered
-        size="xl"
-        overlayBlur={3}
-        overlayOpacity={0.55}
-        radius={0}
-        padding={0}
-        classNames={{
-          title: 'font-dmSans text-xl px-4',
-          header: 'px-4 pt-4',
-          body: 'pb-4',
-          close: 'mr-4',
-        }}
-      >
-        <Group>
-          <h2 className="font-medium capitalize text-lg underline">{type} order:</h2>
-          <Button className="primary-button" onClick={open}>
-            Save
-          </Button>
-        </Group>
-        <Preview
-          previewData={previewData}
-          previewSpaces={addSpaceItem}
-          totalPrice={calcutateTotalPrice || 0}
-          type={type}
-        />
-      </Modal>
     </div>
   );
 };
