@@ -136,13 +136,12 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
       },
       {
         Header: 'MEDIA OWNER NAME',
-        accessor: 'basicInformation.mediaOwner.name',
+        accessor: 'mediaOwner.name',
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { mediaOwner },
           },
-        }) =>
-          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{mediaOwner?.name || '-'}</p>, []),
       },
       {
         Header: 'IMPRESSION',

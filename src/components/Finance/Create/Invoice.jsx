@@ -331,6 +331,7 @@ const Invoice = ({
             name="invoiceNo"
             withAsterisk
             placeholder="Write..."
+            id="invoiceNo"
           />
         </div>
       </div>
@@ -345,6 +346,7 @@ const Invoice = ({
             name="supplierName"
             withAsterisk
             placeholder="Write..."
+            id="supplierName"
           />
           <TextInput
             styles={styles}
@@ -352,6 +354,7 @@ const Invoice = ({
             name="supplierGst"
             withAsterisk
             placeholder="Write..."
+            id="supplierGst"
           />
         </div>
         <div className="grid grid-cols-4 gap-4 pb-4">
@@ -387,6 +390,7 @@ const Invoice = ({
             name="supplierPhone"
             withAsterisk
             placeholder="Write..."
+            id="supplierPhone"
           />
           <TextInput
             styles={styles}
@@ -394,6 +398,7 @@ const Invoice = ({
             name="supplierEmail"
             withAsterisk
             placeholder="Write..."
+            id="supplierEmail"
           />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
@@ -403,6 +408,7 @@ const Invoice = ({
             name="supplierRefNo"
             withAsterisk
             placeholder="Write..."
+            id="supplierRefNo"
           />
           <TextInput
             styles={styles}
@@ -431,6 +437,7 @@ const Invoice = ({
             name="buyerName"
             withAsterisk
             placeholder="Write..."
+            id="buyerName"
           />
           <TextInput
             styles={styles}
@@ -438,6 +445,7 @@ const Invoice = ({
             name="buyerContactPerson"
             withAsterisk
             placeholder="Write..."
+            id="buyerContactPerson"
           />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
@@ -447,6 +455,7 @@ const Invoice = ({
             name="buyerPhone"
             withAsterisk
             placeholder="Write..."
+            id="buyerPhone"
           />
           <TextInput
             styles={styles}
@@ -454,6 +463,7 @@ const Invoice = ({
             name="buyerGst"
             withAsterisk
             placeholder="Write..."
+            id="buyerGst"
           />
         </div>
         <div className="grid grid-cols-4 gap-4 pb-4">
@@ -464,6 +474,7 @@ const Invoice = ({
             name="buyerStreetAddress"
             withAsterisk
             placeholder="Write..."
+            id="buyerStreetAddress"
           />
           <TextInput
             className="col-span-1"
@@ -472,6 +483,7 @@ const Invoice = ({
             name="buyerCity"
             withAsterisk
             placeholder="Write..."
+            id="buyerCity"
           />
           <NumberInput
             className="col-span-1"
@@ -480,6 +492,7 @@ const Invoice = ({
             name="buyerZip"
             withAsterisk
             placeholder="Write..."
+            id="buyerZip"
           />
         </div>
         <div className="grid grid-cols-1 gap-4 pb-4">
@@ -489,6 +502,7 @@ const Invoice = ({
             name="buyerOrderNumber"
             withAsterisk
             placeholder="Write..."
+            id="buyerOrderNumber"
           />
         </div>
         <div className="grid grid-cols-3 gap-4 pb-4">
@@ -528,6 +542,7 @@ const Invoice = ({
             styles={styles}
             maxLength={200}
             placeholder="Maximum 200 characters"
+            id="termOfDelivery"
           />
         </div>
       </div>
@@ -583,6 +598,7 @@ const Invoice = ({
             name="bankName"
             withAsterisk
             placeholder="Write..."
+            id="bankName"
           />
           <TextInput
             styles={styles}
@@ -590,6 +606,7 @@ const Invoice = ({
             name="accountNo"
             withAsterisk
             placeholder="Write..."
+            id="accountNo"
           />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
@@ -599,6 +616,7 @@ const Invoice = ({
             name="ifscCode"
             withAsterisk
             placeholder="Write..."
+            id="ifscCode"
           />
           <TextInput
             styles={styles}
@@ -606,6 +624,7 @@ const Invoice = ({
             name="modeOfPayment"
             withAsterisk
             placeholder="Write..."
+            id="modeOfPayment"
           />
         </div>
       </div>
@@ -619,6 +638,7 @@ const Invoice = ({
             maxLength={200}
             placeholder="Maximum 200 characters"
             className="mb-7"
+            id="declaration"
           />
         </div>
       </div>

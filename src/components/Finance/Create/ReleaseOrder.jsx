@@ -467,6 +467,7 @@ const ReleaseOrder = ({
             name="releaseOrderNo"
             withAsterisk
             placeholder="Write..."
+            id="releaseOrderNo"
           />
         </div>
       </div>
@@ -481,6 +482,7 @@ const ReleaseOrder = ({
             name="companyName"
             withAsterisk
             placeholder="Write..."
+            id="companyName"
           />
           <TextInput
             styles={styles}
@@ -488,6 +490,7 @@ const ReleaseOrder = ({
             name="quotationNo"
             withAsterisk
             placeholder="Write..."
+            id="quotationNo"
           />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
@@ -497,6 +500,7 @@ const ReleaseOrder = ({
             name="contactPerson"
             withAsterisk
             placeholder="Write..."
+            id="contactPerson"
           />
           <TextInput styles={styles} label="Phone" name="phone" placeholder="Write..." />
         </div>
@@ -507,6 +511,7 @@ const ReleaseOrder = ({
             name="mobile"
             withAsterisk
             placeholder="Write..."
+            id="mobile"
           />
           <TextInput
             styles={styles}
@@ -514,6 +519,7 @@ const ReleaseOrder = ({
             name="email"
             withAsterisk
             placeholder="Write..."
+            id="email"
           />
         </div>
         <div className="grid grid-cols-4 gap-4">
@@ -524,6 +530,7 @@ const ReleaseOrder = ({
             name="streetAddress"
             withAsterisk
             placeholder="Write..."
+            id="streetAddress"
           />
           <TextInput
             className="col-span-1"
@@ -532,6 +539,7 @@ const ReleaseOrder = ({
             name="city"
             withAsterisk
             placeholder="Write..."
+            id="city"
           />
           <NumberInput
             className="col-span-1"
@@ -540,6 +548,7 @@ const ReleaseOrder = ({
             name="zip"
             withAsterisk
             placeholder="Write..."
+            id="zip"
           />
         </div>
       </div>
@@ -554,6 +563,7 @@ const ReleaseOrder = ({
             name="supplierName"
             withAsterisk
             placeholder="Write..."
+            id="supplierName"
           />
           <TextInput
             styles={styles}
@@ -561,6 +571,7 @@ const ReleaseOrder = ({
             withAsterisk
             name="supplierDesignation"
             placeholder="Write..."
+            id="supplierDesignation"
           />
         </div>
       </div>

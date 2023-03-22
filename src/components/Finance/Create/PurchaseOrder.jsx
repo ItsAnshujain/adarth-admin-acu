@@ -378,6 +378,7 @@ const PurchaseOrder = ({
           withAsterisk
           errors={errors}
           placeholder="Write..."
+          id="supplierName"
         />
         <div className="grid grid-cols-2 gap-4 pb-4">
           <NumberInput
@@ -387,6 +388,7 @@ const PurchaseOrder = ({
             withAsterisk
             errors={errors}
             placeholder="Write..."
+            id="invoiceNo"
           />
           <TextInput
             styles={styles}
@@ -394,6 +396,7 @@ const PurchaseOrder = ({
             name="supplierGst"
             withAsterisk
             placeholder="Write..."
+            id="supplierGst"
           />
         </div>
         <div className="grid grid-cols-4 gap-4">
@@ -405,6 +408,7 @@ const PurchaseOrder = ({
             withAsterisk
             errors={errors}
             placeholder="Write..."
+            id="supplierStreetAddress"
           />
           <TextInput
             className="col-span-1"
@@ -414,6 +418,7 @@ const PurchaseOrder = ({
             withAsterisk
             errors={errors}
             placeholder="Write..."
+            id="supplierCity"
           />
           <NumberInput
             className="col-span-1"
@@ -423,6 +428,7 @@ const PurchaseOrder = ({
             withAsterisk
             errors={errors}
             placeholder="Write..."
+            id="supplierZip"
           />
         </div>
       </div>
@@ -438,6 +444,7 @@ const PurchaseOrder = ({
             withAsterisk
             errors={errors}
             placeholder="Write..."
+            id="buyerName"
           />
           <TextInput
             styles={styles}
@@ -446,6 +453,7 @@ const PurchaseOrder = ({
             withAsterisk
             errors={errors}
             placeholder="Write..."
+            id="buyerGst"
           />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
@@ -456,6 +464,7 @@ const PurchaseOrder = ({
             withAsterisk
             errors={errors}
             placeholder="Write..."
+            id="supplierRefNo"
           />
           <TextInput
             styles={styles}
@@ -490,6 +499,7 @@ const PurchaseOrder = ({
             withAsterisk
             errors={errors}
             placeholder="Write..."
+            id="buyerStreetAddress"
           />
           <TextInput
             className="col-span-1"
@@ -499,6 +509,7 @@ const PurchaseOrder = ({
             withAsterisk
             errors={errors}
             placeholder="Write..."
+            id="buyerCity"
           />
           <NumberInput
             className="col-span-1"
@@ -508,6 +519,7 @@ const PurchaseOrder = ({
             withAsterisk
             errors={errors}
             placeholder="Write..."
+            id="buyerZip"
           />
         </div>
         <div className="grid grid-cols-1 gap-4">
@@ -520,6 +532,7 @@ const PurchaseOrder = ({
             maxLength={200}
             placeholder="Maximum 200 characters"
             className="mb-7"
+            id="termOfDelivery"
           />
         </div>
       </div>

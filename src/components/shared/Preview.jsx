@@ -53,6 +53,15 @@ const Preview = () => {
   return (
     <div className="grid grid-cols-2 gap-8 pl-5 pt-4">
       <div className="flex flex-1 flex-col w-full">
+        {!previewSpacesPhotos.length ? (
+          <Image
+            height={300}
+            width="100%"
+            alt="no_image_placeholder"
+            withPlaceholder
+            placeholder={<Text align="center">No Image Uploaded</Text>}
+          />
+        ) : null}
         <div className="flex flex-row flex-wrap justify-start">
           {previewSpacesPhotos?.map(
             (src, index) =>

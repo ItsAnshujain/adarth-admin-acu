@@ -18,6 +18,16 @@ const FormHeader = ({
   const handleBack = () => navigate(-1);
   const { onSubmit } = useFormContext();
 
+  const handleError = errors => {
+    const currentField = Object.keys(errors).map(k => k)?.[0];
+    if (currentField) {
+      const element = document.getElementById(currentField);
+      if (element) {
+        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  };
+
   return (
     <header className="h-[60px] border-b flex items-center justify-between pl-5 pr-7 sticky top-0 z-50 bg-white">
       <p className="font-bold text-lg">{`Create ${orderTitle[type]}`}</p>
@@ -38,7 +48,10 @@ const FormHeader = ({
         </Button>
         <Button
           type="submit"
-          onClick={onSubmit(e => handleFormSubmit(e, 'preview'))}
+          onClick={onSubmit(
+            e => handleFormSubmit(e, 'preview'),
+            error => handleError(error),
+          )}
           className="primary-button mr-2"
           variant="filled"
           disabled={

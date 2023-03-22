@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Loader, NativeSelect } from '@mantine/core';
@@ -11,6 +11,7 @@ import NoData from '../../shared/NoData';
 import { useFetchUsers } from '../../../hooks/users.hooks';
 import { useUpdateCampaign } from '../../../hooks/campaigns.hooks';
 import useTokenIdStore from '../../../store/user.store';
+import { useFetchMasters } from '../../../hooks/masters.hooks';
 
 const styles = {
   label: {
@@ -41,25 +42,45 @@ const config = {
   options: { responsive: true },
 };
 
+const query = {
+  parentId: null,
+  limit: 100,
+  page: 1,
+  sortBy: 'name',
+  sortOrder: 'asc',
+};
+
 const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bookingId }) => {
   const queryClient = useQueryClient();
   const userId = useTokenIdStore(state => state.id);
   const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
+  const [userQuery, setUserQuery] = useState({
+    page: 1,
+    limit: 100,
+    sortOrder: 'asc',
+    sortBy: 'createdAt',
+    filter: userCachedData?.role === 'admin' ? 'all' : 'team',
+  });
+  const {
+    data: organizationData,
+    isSuccess: isOrganizationDataLoaded,
+    isLoading: isOrganizationDataLoading,
+  } = useFetchMasters(
+    serialize({ type: 'organization', ...query }),
+    userCachedData?.role === 'admin',
+  );
 
   const { data: userData, isLoading: isLoadingUserData } = useFetchUsers(
-    serialize({
-      page: 1,
-      limit: 100,
-      sortOrder: 'asc',
-      sortBy: 'createdAt',
-      filter: userCachedData?.role === 'admin' ? 'all' : 'team',
-    }),
-    userCachedData?.role !== 'associate',
+    serialize(userQuery),
+    userCachedData?.role !== 'associate' && !!userQuery.company,
   );
 
   const { mutate: updateCampaign } = useUpdateCampaign();
 
   const handleAddIncharge = inchargeId => {
+    if (inchargeId === '') {
+      return;
+    }
     if (bookingData?.campaign) {
       updateCampaign(
         {
@@ -100,12 +121,22 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
     return arr;
   }, [userData?.docs]);
 
+  const organizationList = useMemo(() => {
+    if (organizationData?.docs) {
+      const updatedOrganizationList = [...organizationData.docs];
+      updatedOrganizationList.unshift({ name: 'Select', _id: '' });
+      return updatedOrganizationList;
+    }
+
+    return [];
+  });
+
   return isLoading ? (
     <div className="flex justify-center items-center h-[400px]">
       <Loader />
     </div>
   ) : (
-    <div className="pl-10 pr-7">
+    <div className="px-5">
       <p className="mt-5 font-bold text-lg">Stats</p>
       <div className="mt-2 flex flex-col gap-8">
         <div className="flex flex-wrap">
@@ -218,7 +249,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
         </div>
         <div>
           <p className="font-bold text-lg mb-2">Campaign Info</p>
-          <div className="flex p-4 gap-8 border  flex-wrap">
+          <div className="flex p-4 gap-8 border flex-wrap">
             <div>
               <p className="text-slate-400">Campaign Id</p>
               <p className="font-bold">{bookingData.campaign?.campaignId || '--'}</p>
@@ -233,6 +264,30 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
                 {bookingData?.currentStatus?.campaignStatus || <NoData type="na" />}
               </p>
             </div>
+            {userCachedData && userCachedData?.role === 'admin' ? (
+              <div>
+                <p className="text-slate-400">Organization</p>
+                <NativeSelect
+                  styles={styles}
+                  placeholder="Select..."
+                  data={
+                    isOrganizationDataLoaded
+                      ? organizationList.map(type => ({
+                          label: type.name,
+                          value: type.name,
+                        }))
+                      : []
+                  }
+                  disabled={isOrganizationDataLoading}
+                  onChange={e =>
+                    setUserQuery(preState => ({
+                      ...preState,
+                      company: e.target.value?.toLowerCase(),
+                    }))
+                  }
+                />
+              </div>
+            ) : null}
             <div>
               <p className="text-slate-400">Campaign Incharge</p>
               {userCachedData?.role === 'associate' ? (

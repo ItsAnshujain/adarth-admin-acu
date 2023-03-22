@@ -20,7 +20,7 @@ const initialValues = {
   basicInformation: {
     spaceName: '',
     landlord: '',
-    mediaOwner: '',
+    mediaOwner: { label: '', value: '' },
     category: { label: '', value: '' },
     subCategory: { label: '', value: '' },
     spaceType: { label: '', value: '' },
@@ -68,7 +68,10 @@ const basicInformationSchema = yup.object({
   basicInformation: yup.object({
     spaceName: yup.string().trim().required('Space name is required'),
     landlord: yup.string().trim().required('Landlord is required'),
-    mediaOwner: yup.string().trim(),
+    mediaOwner: yup.object({
+      label: yup.string().trim(),
+      value: yup.string().trim(),
+    }),
     spaceType: yup
       .object({
         label: yup.string().trim(),
@@ -223,6 +226,7 @@ const CreateSpace = () => {
       ...formData,
       basicInformation: {
         ...formData.basicInformation,
+        mediaOwner: formData?.basicInformation?.mediaOwner?.value,
         audience: formData?.basicInformation?.audience?.map(item => item?.value),
         category: formData?.basicInformation?.category?.value,
         demographic: formData?.basicInformation?.demographic?.value,
@@ -237,6 +241,7 @@ const CreateSpace = () => {
         previousBrands: formData?.specifications?.previousBrands?.map(item => item?.value),
         tags: formData?.specifications?.tags?.map(item => item?.value),
       },
+      company: formData?.basicInformation?.mediaOwner?.label,
     };
 
     setFormStep(prevState => prevState + 1);
@@ -290,7 +295,10 @@ const CreateSpace = () => {
         basicInformation: {
           spaceName: basicInformation?.spaceName || '',
           landlord: basicInformation?.landlord || '',
-          mediaOwner: basicInformation?.mediaOwner?._id || '',
+          mediaOwner: {
+            label: basicInformation?.mediaOwner?.name || '',
+            value: basicInformation?.mediaOwner?._id || '',
+          },
           description: basicInformation?.description || '',
           footFall: basicInformation?.footFall ? parseInt(basicInformation.footFall, 10) : null,
           price: basicInformation?.price ? parseInt(basicInformation?.price, 10) : null,

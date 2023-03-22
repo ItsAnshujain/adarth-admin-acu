@@ -8,6 +8,7 @@ import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { useDisclosure } from '@mantine/hooks';
 import { ToWords } from 'to-words';
+import dayjs from 'dayjs';
 import PurchaseOrder from '../../components/Finance/Create/PurchaseOrder';
 import ReleaseOrder from '../../components/Finance/Create/ReleaseOrder';
 import Invoice from '../../components/Finance/Create/Invoice';
@@ -451,7 +452,16 @@ const Home = () => {
   const { mutateAsync: generateManualInvoice, isLoading: isGenerateManualInvoiceLoading } =
     useGenerateManualInvoice();
 
-  const redirectToHome = () => setTimeout(() => navigate('/finance'), 2000);
+  const redirectToHome = () =>
+    setTimeout(
+      () =>
+        navigate(
+          `/finance/${dayjs().year()}/${
+            dayjs().month() + 1
+          }?page=1&limit=10&sortBy=createdAt&sortOrder=asc&recordType=${type}`,
+        ),
+      2000,
+    );
 
   const calcutateTotalPrice = useMemo(() => {
     const initialPrice = 0;
