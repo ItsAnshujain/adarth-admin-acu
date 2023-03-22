@@ -162,8 +162,7 @@ const RevenueReport = () => {
     ],
   });
 
-  // TODO: wip
-  const [queryByIndustry] = useState({
+  const [queryByIndustry, setQueryByIndustry] = useState({
     'startDate': dayjs().startOf('year').format(DATE_FORMAT),
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
@@ -184,13 +183,42 @@ const RevenueReport = () => {
 
   const handleRevenueGraphViewBy = viewType => {
     if (viewType === 'reset') {
+      const startDate = dayjs().startOf('year').format(DATE_FORMAT);
+      const endDate = dayjs().endOf('year').format(DATE_FORMAT);
+      setQueryByLocation({
+        'by': 'city',
+        startDate,
+        endDate,
+      });
+
+      setQueryByIndustry({
+        startDate,
+        endDate,
+      });
+
       setQueryByRevenueGraph({
         'groupBy': 'month',
-        'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-        'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+        startDate,
+        endDate,
       });
     }
+
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
+      const startDate = dayjs().startOf(viewType).format(DATE_FORMAT);
+      const endDate = dayjs().endOf(viewType).format(DATE_FORMAT);
+
+      setQueryByLocation(prevState => ({
+        ...prevState,
+        startDate,
+        endDate,
+      }));
+
+      setQueryByIndustry(prevState => ({
+        ...prevState,
+        startDate,
+        endDate,
+      }));
+
       setQueryByRevenueGraph(prevState => ({
         ...prevState,
         'groupBy':
@@ -201,11 +229,21 @@ const RevenueReport = () => {
             : viewType === 'week'
             ? 'dayOfWeek'
             : 'month',
-        'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
-        'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
+        startDate,
+        endDate,
       }));
     }
     if (viewType === 'quarter') {
+      setQueryByLocation(prevState => ({
+        ...prevState,
+        ...dateByQuarter[dayjs().quarter()],
+      }));
+
+      setQueryByIndustry(prevState => ({
+        ...prevState,
+        ...dateByQuarter[dayjs().quarter()],
+      }));
+
       setQueryByRevenueGraph({
         'groupBy': 'quarter',
         ...dateByQuarter[dayjs().quarter()],

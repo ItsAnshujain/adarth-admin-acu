@@ -38,7 +38,7 @@ const CampaignStatsContent = ({ isStatsLoading, healthStatusData, stats }) => (
       <div className="border rounded p-8 flex-1">
         <Image src={ImpressionsIcon} alt="folder" fit="contain" height={24} width={24} />
         <p className="my-2 text-sm font-light text-slate-400">Total Impression Count</p>
-        <p className="font-bold">{stats?.impression ?? 0}</p>
+        <p className="font-bold">{stats?.impression ? stats.impression.toLocaleString() : 0}</p>
       </div>
     </div>
     <div className="flex gap-4 p-4 border rounded-md items-center flex-1 flex-wrap-reverse">

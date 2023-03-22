@@ -127,6 +127,18 @@ const CreateBooking = () => {
       const totalPrice = form.values?.place?.reduce((acc, item) => acc + +(item.price || 0), 0);
       data.price = totalPrice;
 
+      Object.keys(data).forEach(k => {
+        if (data[k] === '') {
+          delete data[k];
+        }
+      });
+
+      Object.keys(data.client).forEach(k => {
+        if (data.client[k] === '') {
+          delete data.client[k];
+        }
+      });
+
       await createBooking(
         {
           ...data,

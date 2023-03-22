@@ -9,7 +9,6 @@ import { serialize } from '../../../utils';
 import { useFormContext } from '../../../context/formContext';
 import TextInput from '../../shared/TextInput';
 import TextareaInput from '../../shared/TextareaInput';
-import NativeSelect from '../../shared/NativeSelect';
 import { useDeleteUploadedFile, useUploadFile } from '../../../hooks/upload.hooks';
 import Select from '../../shared/Select';
 import NumberInput from '../../shared/NumberInput';
@@ -162,7 +161,7 @@ const BasicInfo = () => {
           placeholder="Write..."
           className="mb-7"
         />
-        <NativeSelect
+        <Select
           label="Inventory Owner (Organization)"
           name="basicInformation.mediaOwner"
           styles={styles}
