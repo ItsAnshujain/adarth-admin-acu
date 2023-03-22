@@ -311,7 +311,7 @@ const Home = () => {
 
   const handleSearch = () => {
     searchParams.set('search', searchInput);
-    searchParams.set('page', 1);
+    searchParams.set('page', searchInput === '' ? page : 1);
     setSearchParams(searchParams);
   };
 

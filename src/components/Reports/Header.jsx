@@ -9,13 +9,14 @@ const Header = ({
   onClickSharePdf = () => {},
   pdfLink,
   handleRevenueGraphViewBy = () => {},
+  showGlobalFilter = false,
 }) => (
   <div className="h-[60px] border-b border-gray-450 flex justify-between items-center pl-5 pr-7">
     <Text size="lg" weight="bold">
       {text}
     </Text>
     <div className="flex items-start">
-      <ViewByFilter handleViewBy={handleRevenueGraphViewBy} />
+      {showGlobalFilter ? <ViewByFilter handleViewBy={handleRevenueGraphViewBy} /> : null}
       <Button
         leftIcon={<Download size="20" color="white" />}
         className="primary-button mx-3"
