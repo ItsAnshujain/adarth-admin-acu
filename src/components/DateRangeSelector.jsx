@@ -12,6 +12,9 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 
 const useStyles = createStyles({
   outside: { opacity: 0 },
+  disabled: { color: '#ced4da !important' },
+  weekend: { color: '#495057 !important' },
+  selectedRange: { color: '#FFF !important' },
 });
 
 const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
@@ -71,6 +74,9 @@ const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
       dayClassName={(_, modifiers) =>
         cx({
           [classes.outside]: modifiers.outside,
+          [classes.weekend]: modifiers.weekend,
+          [classes.selectedRange]: modifiers.selectedInRange,
+          [classes.disabled]: modifiers.disabled,
         })
       }
       {...props}
