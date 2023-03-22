@@ -168,7 +168,7 @@ const Home = () => {
 
             return (
               <div>
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.MEDIA_OWNER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
                   <Select
                     className="mr-2"
                     data={filteredList}
@@ -353,7 +353,7 @@ const Home = () => {
 
             return (
               <div>
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.MEDIA_OWNER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
                   <Select
                     className="mr-2"
                     data={filteredList}
@@ -538,7 +538,7 @@ const Home = () => {
 
             return (
               <div>
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.MEDIA_OWNER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
                   <Select
                     className="mr-2"
                     data={filteredList}

@@ -2,6 +2,7 @@ import { Dropzone } from '@mantine/dropzone';
 import { ActionIcon, Button, FileButton, Image, Text } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import { useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import image from '../../../assets/image.png';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
@@ -13,7 +14,6 @@ import { useDeleteUploadedFile, useUploadFile } from '../../../hooks/upload.hook
 import Select from '../../shared/Select';
 import NumberInput from '../../shared/NumberInput';
 import AsyncMultiSelect from '../../shared/AsyncMultiSelect';
-import { useFetchUsers } from '../../../hooks/users.hooks';
 import trash from '../../../assets/trash.svg';
 import useTokenIdStore from '../../../store/user.store';
 
@@ -61,19 +61,10 @@ const BasicInfo = () => {
 
   const { errors, getInputProps, values, setFieldValue } = useFormContext();
   const {
-    data: userData,
-    isSuccess: isUserDataLoaded,
-    isLoading: isLoadingUserData,
-  } = useFetchUsers(
-    serialize({
-      page: 1,
-      limit: 100,
-      sortOrder: 'asc',
-      sortBy: 'createdAt',
-      filter: userCachedData?.role === 'admin' ? 'all' : 'team',
-      role: 'media_owner',
-    }),
-  );
+    data: organizationData,
+    isSuccess: isOrganizationDataLoaded,
+    isLoading: isOrganizationDataLoading,
+  } = useFetchMasters(serialize({ type: 'organization', ...query }));
 
   const {
     data: spaceTypeData,
@@ -143,6 +134,12 @@ const BasicInfo = () => {
     setFieldValue('basicInformation.otherPhotos', [...res]);
   };
 
+  useEffect(() => {
+    if (userCachedData && userCachedData?.role !== 'admin') {
+      setFieldValue('basicInformation.mediaOwner', userCachedData?.companyId);
+    }
+  }, [organizationData]);
+
   return (
     <div className="flex gap-8 pt-4">
       <div className="flex-1 pl-5">
@@ -166,15 +163,20 @@ const BasicInfo = () => {
           className="mb-7"
         />
         <NativeSelect
-          label="Inventory Owner"
+          label="Inventory Owner (Organization)"
           name="basicInformation.mediaOwner"
           styles={styles}
           errors={errors}
-          disabled={isLoadingUserData || !userData?.docs?.length}
-          placeholder={!userData?.docs?.length ? 'No Inventory Owner available' : 'Select...'}
+          disabled={
+            isOrganizationDataLoading || (userCachedData && userCachedData?.role !== 'admin')
+          }
+          placeholder="Select..."
           options={
-            isUserDataLoaded
-              ? userData?.docs?.map(item => ({ label: item?.name, value: item?._id }))
+            isOrganizationDataLoaded
+              ? organizationData.docs.map(type => ({
+                  label: type.name,
+                  value: type._id,
+                }))
               : []
           }
           className="mb-7"

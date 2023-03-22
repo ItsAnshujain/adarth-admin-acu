@@ -30,7 +30,6 @@ const initialValues = {
   thumbnail: '',
   thumbnailId: '',
   type: 'predefined',
-  industry: '',
 };
 
 const schema = yup.object({
@@ -48,7 +47,6 @@ const schema = yup.object({
   tags: yup.array().of(yup.string().trim()),
   isFeatured: yup.boolean(),
   thumbnail: yup.string(),
-  industry: yup.string().trim().required('Industry is required'),
 });
 
 const CreateCampaign = () => {

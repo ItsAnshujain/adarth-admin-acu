@@ -368,9 +368,7 @@ const Home = () => {
                 count={limit}
               />
               {viewType.inventory !== 'map' && (
-                <RoleBased
-                  acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
-                >
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGER]}>
                   {isDeletedInventoryDataLoading ? (
                     <p>Inventory deleting...</p>
                   ) : (

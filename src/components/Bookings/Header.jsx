@@ -39,9 +39,7 @@ const AreaHeader = ({ text }) => {
           </Button>
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
         </div>
-        <RoleBased
-          acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
-        >
+        <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGER]}>
           <div>
             <Link
               to="/bookings/create-order"
