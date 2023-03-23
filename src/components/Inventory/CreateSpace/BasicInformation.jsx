@@ -135,7 +135,8 @@ const BasicInfo = () => {
 
   useEffect(() => {
     if (userCachedData && userCachedData?.role !== 'admin') {
-      setFieldValue('basicInformation.mediaOwner', userCachedData?.companyId);
+      setFieldValue('basicInformation.mediaOwner.label', userCachedData?.company);
+      setFieldValue('basicInformation.mediaOwner.value', userCachedData?.companyId);
     }
   }, [organizationData]);
 
