@@ -101,6 +101,7 @@ export const roleTypes = {
   'manager': 'Manager',
   'supervisor': 'Supervisor',
   'associate': 'Associate',
+  'admin': 'Admin',
 };
 
 // TODO: Remove one roleType object

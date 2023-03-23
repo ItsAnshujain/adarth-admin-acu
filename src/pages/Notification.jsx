@@ -78,7 +78,7 @@ const Notifications = () => {
       <Header title="Notification" />
       <div className="grid grid-cols-12 pr-5">
         <Sidebar />
-        <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 flex flex-col justify-between">
+        <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 flex flex-col justify-start">
           {data?.docs?.length ? (
             <div className="flex justify-end pr-7 pt-4 pb-2">
               <Button
@@ -101,7 +101,7 @@ const Notifications = () => {
               </Button>
             </div>
           ) : null}
-          <section className="max-h-full overflow-y-auto">
+          <section className="max-h-full overflow-y-auto ">
             <div className="flex flex-col gap-4 pl-5 mt-4">
               {isFetchAllNotificationsLoading ? (
                 <div className="flex justify-center mt-40">

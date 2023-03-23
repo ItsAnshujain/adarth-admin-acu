@@ -15,7 +15,6 @@ import { useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
 import { useModals } from '@mantine/modals';
-import classNames from 'classnames';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
@@ -161,6 +160,15 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
           <SkeletonTopWrapper />
         ) : (
           <div className="flex flex-1 flex-col w-full">
+            {!previewSpacesPhotos.length ? (
+              <Image
+                height={300}
+                width="100%"
+                alt="no_image_placeholder"
+                withPlaceholder
+                placeholder={<Text align="center">No Image Uploaded</Text>}
+              />
+            ) : null}
             <div className="flex flex-row flex-wrap justify-start">
               {previewSpacesPhotos?.map(
                 (src, index) =>
@@ -192,31 +200,30 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
           </div>
         )}
       </div>
+
       {!isCampaignDataLoading ? (
-        <div className={classNames(previewSpacesPhotos?.length ? 'col-span-1' : 'col-span-2')}>
-          <div className="flex-1 pr-7 max-w-1/2">
-            <p className="text-lg font-bold">{campaignData.name || 'NA'}</p>
-            <div>
-              <Spoiler
-                maxHeight={45}
-                showLabel="Read more"
-                hideLabel="Read less"
-                className="text-purple-450 font-medium text-[14px]"
-                classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+        <div className="flex-1 pr-7 max-w-1/2">
+          <p className="text-lg font-bold">{campaignData.name || 'NA'}</p>
+          <div>
+            <Spoiler
+              maxHeight={45}
+              showLabel="Read more"
+              hideLabel="Read less"
+              className="text-purple-450 font-medium text-[14px]"
+              classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+            >
+              {campaignData?.description}
+            </Spoiler>
+            <div className="flex gap-3 items-center">
+              <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
+              <Badge
+                className="text-purple-450 bg-purple-100 capitalize"
+                size="lg"
+                variant="filled"
+                radius="md"
               >
-                {campaignData?.description}
-              </Spoiler>
-              <div className="flex gap-3 items-center">
-                <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
-                <Badge
-                  className="text-purple-450 bg-purple-100 capitalize"
-                  size="lg"
-                  variant="filled"
-                  radius="md"
-                >
-                  {`${getTotalImpressions || 0} + Total Impressions`}
-                </Badge>
-              </div>
+                {`${getTotalImpressions || 0} + Total Impressions`}
+              </Badge>
             </div>
           </div>
         </div>

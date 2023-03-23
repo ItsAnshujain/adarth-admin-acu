@@ -72,7 +72,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
 
   const { data: userData, isLoading: isLoadingUserData } = useFetchUsers(
     serialize(userQuery),
-    userCachedData?.role !== 'associate' && !!userQuery.company,
+    userCachedData?.role !== 'associate',
   );
 
   const { mutate: updateCampaign } = useUpdateCampaign();
