@@ -335,6 +335,7 @@ const RevenueReport = () => {
           text="Revenue Report"
           onClickDownloadPdf={downloadPdf}
           handleRevenueGraphViewBy={handleRevenueGraphViewBy}
+          showGlobalFilter
         />
         <div className="mr-7 pl-5 mt-5 mb-10" id="revenue-pdf">
           <RevenueStatsContent revenueData={revenueData} />

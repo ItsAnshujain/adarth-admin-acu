@@ -36,10 +36,11 @@ const Home = () => {
 
   const filter = searchParams.get('filter');
   const limit = searchParams.get('limit');
+  const page = searchParams.get('page');
 
   const handleSearch = () => {
     searchParams.set('search', searchInput);
-    searchParams.set('page', 1);
+    searchParams.set('page', searchInput === '' ? page : 1);
     setSearchParams(searchParams);
   };
   const handleFilter = currentVal => {
