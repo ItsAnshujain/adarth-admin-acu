@@ -1,4 +1,4 @@
-import { Box, Button, Image } from '@mantine/core';
+import { Box, Image } from '@mantine/core';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -51,13 +51,13 @@ const Home = () => {
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <div className="h-[60px] flex justify-end items-center border-b pr-7">
         <Link to="/edit-profile">
-          <Button className=" text-white p-2 px-4 font-thin text-sm bg-purple-450 rounded-lg">
+          <span className="text-white px-5 py-2 font-bold text-sm bg-purple-450 rounded-md">
             Edit
-          </Button>
+          </span>
         </Link>
       </div>
       <div className="pl-5 pr-7 flex justify-between mt-8 mb-8">
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
           <UserDetailsContent data={data} />
           <div className="flex flex-col gap-8">
             {docs.aadhaar ? (

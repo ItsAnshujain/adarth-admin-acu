@@ -211,9 +211,14 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
                 </div>
               </HoverCard.Dropdown>
             </HoverCard>
-            <ActionIcon title="Preview Media" onClick={() => toggleMediaPreviewModal(data?.media)}>
-              <Eye />
-            </ActionIcon>
+            {data?.media ? (
+              <ActionIcon
+                title="Preview Media"
+                onClick={() => toggleMediaPreviewModal(data?.media)}
+              >
+                <Eye />
+              </ActionIcon>
+            ) : null}
             <div className="flex gap-2 p-2 rounded-md">
               <Calendar />
               <span>

@@ -55,35 +55,32 @@ const ChangePassword = () => {
             <PasswordInput
               label="Current Password"
               name="oldPassword"
-              // disabled={isLoading}
               withAsterisk
               size="md"
               placeholder="Your Current Password"
               styles={styles}
               errors={form.errors}
-              className="w-4/12"
+              className="md:w-4/12"
             />
             <PasswordInput
               label="New Password"
               name="password"
-              // disabled={isLoading}
               withAsterisk
               size="md"
               placeholder="Your New Password"
               styles={styles}
               errors={form.errors}
-              className="w-4/12"
+              className="md:w-4/12"
             />
             <PasswordInput
               label="Confirm Password"
               name="confirmPassword"
-              // disabled={isLoading}
               withAsterisk
               size="md"
               placeholder="Confirm New Password"
               styles={styles}
               errors={form.errors}
-              className="w-4/12"
+              className="md:w-4/12"
             />
           </div>
           <Button

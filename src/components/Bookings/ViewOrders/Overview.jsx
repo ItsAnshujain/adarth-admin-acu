@@ -229,7 +229,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
             <div className="p-4 py-6 grid grid-cols-2 grid-rows-2 border rounded-md gap-y-4 mt-2">
               <div>
                 <p className="text-slate-400 text-sm">Total Media</p>
-                <p>{bookingData?.campaign?.medias.length ?? <NoData type="na" />}</p>
+                <p>{bookingData?.campaign?.medias?.length ?? <NoData type="na" />}</p>
               </div>
               <div>
                 <p className="text-slate-400 text-sm">Impressions</p>
@@ -275,18 +275,20 @@ const Overview = ({ bookingData = {}, isLoading }) => {
         </p>
         <div>
           {bookingData?.campaign?.spaces?.length ? (
-            bookingData?.campaign?.spaces?.map(item => (
-              <Places
-                key={uuidv4()}
-                data={item}
-                campaignId={bookingData?.campaign?._id}
-                bookingId={bookingData?._id}
-                hasPaymentType={
-                  (!!bookingData?.paymentStatus && !bookingData?.paymentStatus?.Unpaid) ||
-                  (!!bookingData?.paymentStatus && bookingData?.paymentStatus?.Paid)
-                }
-              />
-            ))
+            bookingData?.campaign?.spaces
+              ?.map(item => (
+                <Places
+                  key={uuidv4()}
+                  data={item}
+                  campaignId={bookingData?.campaign?._id}
+                  bookingId={bookingData?._id}
+                  hasPaymentType={
+                    (!!bookingData?.paymentStatus && !bookingData?.paymentStatus?.Unpaid) ||
+                    (!!bookingData?.paymentStatus && bookingData?.paymentStatus?.Paid)
+                  }
+                />
+              ))
+              .sort((a, b) => a.createdBy - b.createdBy)
           ) : (
             <div className="w-full min-h-[7rem] flex justify-center items-center">
               <p className="text-xl">No spaces found</p>
