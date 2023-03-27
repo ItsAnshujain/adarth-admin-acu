@@ -29,7 +29,7 @@ const View = () => {
   return (
     <>
       <Header tabs={tabs} setTabs={setTabs} />
-      <div className="relative pb-12 mb-16">{getTabs()}</div>
+      <div className="relative pb-12">{getTabs()}</div>
     </>
   );
 };

@@ -146,7 +146,7 @@ const Notification = () => {
       <form onSubmit={form.onSubmit(onSubmitHandler)}>
         <div className="pl-5 pr-7">
           <div className="py-8">
-            <div className="w-4/12 flex justify-between">
+            <div className="md:w-4/12 flex justify-between">
               <p className="font-bold text-xl">Message Notification</p>
               <Switch
                 styles={switchStyles}
@@ -159,7 +159,7 @@ const Notification = () => {
             </p>
             <TextInput
               styles={inputStyles}
-              className="w-4/12 mt-2 text-slate-400"
+              className="md:w-4/12 mt-2 text-slate-400"
               placeholder="Your phone number"
               withAsterisk={form.values.messageNotify}
               label="Mobile Number"
@@ -168,7 +168,7 @@ const Notification = () => {
             />
           </div>
           <div className="py-8 border border-l-0 border-r-0  border-t-slate-300 border-b-slate-300">
-            <div className="w-4/12 flex justify-between">
+            <div className="md:w-4/12 flex justify-between">
               <p className="font-bold text-xl">Email Notification</p>
               <Switch
                 styles={switchStyles}
@@ -183,7 +183,7 @@ const Notification = () => {
             </p>
             <TextInput
               styles={inputStyles}
-              className="w-4/12 mt-2"
+              className="md:w-4/12 mt-2"
               placeholder="Your email"
               withAsterisk={form.values.emailNotify}
               label="Email"
@@ -192,7 +192,7 @@ const Notification = () => {
             />
           </div>
           <div className="py-8">
-            <div className="w-4/12 flex justify-between">
+            <div className="md:w-4/12 flex justify-between">
               <p className="font-bold text-xl">Whatsapp Notification</p>
               <Switch
                 styles={switchStyles}
@@ -207,7 +207,7 @@ const Notification = () => {
             </p>
             <TextInput
               styles={inputStyles}
-              className="w-4/12 mt-2 text-slate-400"
+              className="md:w-4/12 mt-2 text-slate-400"
               placeholder="Your phone number"
               withAsterisk={form.values.whatsappNotify}
               label="Whatsapp Number"

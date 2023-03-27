@@ -115,7 +115,6 @@ const BasicInfo = () => {
     const res = await upload(formData);
     const arrayOfImages = res.map(item => item?.Location);
     const tempSpacePhotos = values?.basicInformation?.otherPhotos;
-    // TODO: delete from DB
     setFieldValue('basicInformation.otherPhotos', [...tempSpacePhotos, ...arrayOfImages]);
   };
 
@@ -130,7 +129,9 @@ const BasicInfo = () => {
   const handleDeleteMultipleImages = async docIndex => {
     const tempSpacePhotos = values?.basicInformation?.otherPhotos;
     const res = tempSpacePhotos.filter(item => item !== tempSpacePhotos[docIndex]);
-    setFieldValue('basicInformation.otherPhotos', [...res]);
+    await deleteFile(tempSpacePhotos[docIndex]?.split('/').at(-1), {
+      onSuccess: () => setFieldValue('basicInformation.otherPhotos', [...res]),
+    });
   };
 
   useEffect(() => {
@@ -401,6 +402,7 @@ const BasicInfo = () => {
                   <ActionIcon
                     className="absolute right-2 top-1 bg-white"
                     onClick={() => handleDeleteMultipleImages(index)}
+                    disabled={isDeleteLoading}
                   >
                     <Image src={trash} alt="trash-icon" />
                   </ActionIcon>

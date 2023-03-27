@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Loader, NativeSelect } from '@mantine/core';
+import { Loader, Select } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
 import completed from '../../../assets/completed.svg';
@@ -70,10 +70,11 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
     userCachedData?.role === 'admin',
   );
 
-  const { data: userData, isLoading: isLoadingUserData } = useFetchUsers(
-    serialize(userQuery),
-    userCachedData?.role !== 'associate',
-  );
+  const {
+    data: userData,
+    isSuccess: isUserDataLoaded,
+    isLoading: isLoadingUserData,
+  } = useFetchUsers(serialize(userQuery), userCachedData?.role !== 'associate');
 
   const { mutate: updateCampaign } = useUpdateCampaign();
 
@@ -107,7 +108,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
   );
 
   const inchargeList = useMemo(() => {
-    let arr = [{ label: 'Select', value: '' }];
+    let arr = [];
     if (userData?.docs && bookingData?.campaign?.incharge?.[0]?._id === userCachedData?._id) {
       arr = [
         { label: userCachedData?.name, value: userCachedData?._id },
@@ -122,14 +123,34 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
   }, [userData?.docs]);
 
   const organizationList = useMemo(() => {
+    let arr = [];
     if (organizationData?.docs) {
-      const updatedOrganizationList = [...organizationData.docs];
-      updatedOrganizationList.unshift({ name: 'Select', _id: '' });
-      return updatedOrganizationList;
+      arr = [...organizationData.docs.map(item => ({ label: item?.name, value: item?.name }))];
+
+      return arr;
     }
 
     return [];
-  });
+  }, [organizationData?.docs]);
+
+  const getDefaultOrganization = useMemo(
+    () =>
+      organizationList?.filter(item =>
+        item?.label?.toLowerCase()?.includes(bookingData?.campaign?.incharge?.[0]?.company),
+      )[0]?.label,
+    [bookingData?.campaign],
+  );
+
+  const handleUserQuery = useCallback(e => {
+    setUserQuery(preState => ({
+      ...preState,
+      company: e?.toLowerCase(),
+    }));
+  }, []);
+
+  useEffect(() => {
+    setUserQuery(prev => ({ ...prev, company: bookingData?.campaign?.incharge?.[0]?.company }));
+  }, [bookingData?.campaign]);
 
   return isLoading ? (
     <div className="flex justify-center items-center h-[400px]">
@@ -267,24 +288,13 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
             {userCachedData && userCachedData?.role === 'admin' ? (
               <div>
                 <p className="text-slate-400">Organization</p>
-                <NativeSelect
+                <Select
                   styles={styles}
                   placeholder="Select..."
-                  data={
-                    isOrganizationDataLoaded
-                      ? organizationList.map(type => ({
-                          label: type.name,
-                          value: type.name,
-                        }))
-                      : []
-                  }
+                  data={isOrganizationDataLoaded ? organizationList : []}
                   disabled={isOrganizationDataLoading}
-                  onChange={e =>
-                    setUserQuery(preState => ({
-                      ...preState,
-                      company: e.target.value?.toLowerCase(),
-                    }))
-                  }
+                  onChange={e => handleUserQuery(e)}
+                  defaultValue={getDefaultOrganization}
                 />
               </div>
             ) : null}
@@ -293,7 +303,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
               {userCachedData?.role === 'associate' ? (
                 <p className="font-bold">{userCachedData?.name}</p>
               ) : (
-                <NativeSelect
+                <Select
                   styles={styles}
                   disabled={
                     isLoadingUserData ||
@@ -301,8 +311,8 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
                       bookingData?.campaign?.incharge?.[0]?._id !== userCachedData?._id)
                   }
                   placeholder="Select..."
-                  data={inchargeList}
-                  onChange={e => handleAddIncharge(e.target.value)}
+                  data={isUserDataLoaded ? inchargeList : []}
+                  onChange={e => handleAddIncharge(e)}
                   className="mb-7"
                   value={bookingData ? bookingData?.campaign?.incharge?.[0]?._id : ''}
                 />

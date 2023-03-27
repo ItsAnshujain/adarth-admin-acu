@@ -2,7 +2,7 @@ import { Button } from '@mantine/core';
 import classNames from 'classnames';
 
 const Header = ({ tabs, setTabs }) => (
-  <div className="h-[60px] border-b border-gray-450 flex items-center">
+  <div className="h-[70px] border-b border-gray-450 flex items-center overflow-x-auto">
     <div className="flex pl-5 gap-6 items-center">
       <Button
         onClick={() => setTabs(0)}

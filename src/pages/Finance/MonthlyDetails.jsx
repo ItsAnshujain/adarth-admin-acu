@@ -113,7 +113,17 @@ const Home = () => {
           row: {
             original: { bookingId },
           },
-        }) => useMemo(() => <p>{bookingId}</p>, []),
+        }) => useMemo(() => <p>{bookingId || '-'}</p>, []),
+      },
+      {
+        Header: 'ORGANIZATION',
+        accessor: 'company',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { createdBy },
+          },
+        }) => useMemo(() => <p className="capitalize">{createdBy?.[0]?.company || '-'}</p>),
       },
       {
         Header: 'VOUCHER NO',
@@ -278,7 +288,17 @@ const Home = () => {
           row: {
             original: { bookingId },
           },
-        }) => useMemo(() => <p>{bookingId}</p>, []),
+        }) => useMemo(() => <p>{bookingId || '-'}</p>, []),
+      },
+      {
+        Header: 'ORGANIZATION',
+        accessor: 'company',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { createdBy },
+          },
+        }) => useMemo(() => <p className="capitalize">{createdBy?.[0]?.company || '-'}</p>),
       },
       {
         Header: 'RO ID',
@@ -453,7 +473,17 @@ const Home = () => {
           row: {
             original: { bookingId },
           },
-        }) => useMemo(() => <p>{bookingId}</p>, []),
+        }) => useMemo(() => <p>{bookingId || '-'}</p>, []),
+      },
+      {
+        Header: 'ORGANIZATION',
+        accessor: 'company',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { createdBy },
+          },
+        }) => useMemo(() => <p className="capitalize">{createdBy?.[0]?.company || '-'}</p>),
       },
       {
         Header: 'INVOICE ID',

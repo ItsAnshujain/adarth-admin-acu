@@ -98,6 +98,148 @@ const SignatureAndLetterhead = () => {
     <article>
       <FormProvider form={form}>
         <form onSubmit={form.onSubmit(handleSubmit)}>
+          <section className="border-b py-4 px-5 flex flex-wrap gap-x-5">
+            <div>
+              <p className="font-semibold text-lg">Letter Header</p>
+              <div className="mb-3">
+                <span className="font-bold text-gray-500 mr-2">Supported types</span>
+                {supportedTypes.map(item => (
+                  <Badge key={item} className="mr-2">
+                    {item}
+                  </Badge>
+                ))}
+              </div>
+              <div className="flex items-start">
+                {!form.values?.letterHead ? (
+                  <div className="h-[180px] w-[350px] mr-4 mb-2">
+                    <Dropzone
+                      onDrop={imagePath => onHandleDrop(imagePath, 'letterHead')}
+                      accept={['image/png', 'image/jpeg']}
+                      className="h-full w-full flex justify-center items-center bg-slate-100"
+                      loading={activeImage === 'letterHead' && isUploadLoading}
+                      name="letterHead"
+                      multiple={false}
+                      {...form.getInputProps('letterHead')}
+                    >
+                      <div className="flex items-center justify-center">
+                        <Image src={image} alt="placeholder" height={50} width={50} />
+                      </div>
+                      <p>
+                        Drag and Drop your file here, or{' '}
+                        <span className="text-purple-450 border-none">browse</span>
+                      </p>
+                    </Dropzone>
+                    {form.errors?.letterHead ? (
+                      <p className="mt-1 text-xs text-red-450">{form.errors?.letterHead}</p>
+                    ) : null}
+                  </div>
+                ) : null}
+                <Box
+                  className="bg-white border rounded-md cursor-zoom-in"
+                  onClick={() => toggleImagePreviewModal(form.values?.letterHead)}
+                >
+                  {form.values?.letterHead ? (
+                    <div className="relative">
+                      <Image
+                        src={form.values?.letterHead}
+                        alt="letter-head-preview"
+                        height={180}
+                        width={350}
+                        className="bg-slate-100"
+                        fit="contain"
+                        placeholder={
+                          <Text align="center">
+                            Unexpected error occured. Image cannot be loaded
+                          </Text>
+                        }
+                      />
+                      <ActionIcon
+                        className="absolute right-2 top-1 bg-white"
+                        onClick={e => handleDeleteImage(e, 'letterHead')}
+                        loading={activeImage === 'letterHead' && isDeleteLoading}
+                        disabled={isDeleteLoading}
+                      >
+                        <Image src={trash} alt="trash-icon" />
+                      </ActionIcon>
+                    </div>
+                  ) : null}
+                </Box>
+              </div>
+            </div>
+            <div>
+              {/* TODO: wip. api changes */}
+              <p className="font-semibold text-lg">Letter Footer</p>
+              {/* TODO: add image size upload message for user */}
+              <div className="mb-3">
+                <span className="font-bold text-gray-500 mr-2">Supported types</span>
+                {supportedTypes.map(item => (
+                  <Badge key={item} className="mr-2">
+                    {item}
+                  </Badge>
+                ))}
+              </div>
+              <div className="flex items-start">
+                {!form.values?.letterHead ? (
+                  <div className="h-[180px] w-[350px] mr-4 mb-2">
+                    <Dropzone
+                      onDrop={imagePath => onHandleDrop(imagePath, 'letterHead')}
+                      accept={['image/png', 'image/jpeg']}
+                      className="h-full w-full flex justify-center items-center bg-slate-100"
+                      loading={activeImage === 'letterHead' && isUploadLoading}
+                      name="letterHead"
+                      disabled
+                      multiple={false}
+                      {...form.getInputProps('letterHead')}
+                    >
+                      <div className="flex items-center justify-center">
+                        <Image src={image} alt="placeholder" height={50} width={50} />
+                      </div>
+                      <p>
+                        Drag and Drop your file here, or{' '}
+                        <span className="text-purple-450 border-none">browse</span>
+                      </p>
+                    </Dropzone>
+                    {form.errors?.letterHead ? (
+                      <p className="mt-1 text-xs text-red-450">{form.errors?.letterHead}</p>
+                    ) : null}
+                  </div>
+                ) : null}
+                <Box
+                  className="bg-white border rounded-md cursor-not-allowed"
+                  // onClick={() => toggleImagePreviewModal(form.values?.letterHead)}
+                >
+                  {form.values?.letterHead ? (
+                    <div className="relative">
+                      <Image
+                        // src={form.values?.letterHead}
+                        src={null}
+                        alt="letter-footer-preview"
+                        height={180}
+                        width={350}
+                        className="bg-slate-100"
+                        fit="contain"
+                        withPlaceholder
+                        placeholder={
+                          <Text align="center">
+                            Unexpected error occured. Image cannot be loaded
+                          </Text>
+                        }
+                      />
+                      <ActionIcon
+                        className="absolute right-2 top-1 bg-white cursor-not-allowed"
+                        // onClick={e => handleDeleteImage(e, 'letterHead')}
+                        loading={activeImage === 'letterHead' && isDeleteLoading}
+                        // disabled={isDeleteLoading}
+                        disabled
+                      >
+                        <Image src={trash} alt="trash-icon" />
+                      </ActionIcon>
+                    </div>
+                  ) : null}
+                </Box>
+              </div>
+            </div>
+          </section>
           <section className="border-b py-4 px-5">
             <p className="font-semibold text-lg mr-2">Signature</p>
             <div className="mb-3">
@@ -154,72 +296,6 @@ const SignatureAndLetterhead = () => {
                       className="absolute right-2 top-1 bg-white"
                       onClick={e => handleDeleteImage(e, 'signature')}
                       loading={activeImage === 'signature' && isDeleteLoading}
-                      disabled={isDeleteLoading}
-                    >
-                      <Image src={trash} alt="trash-icon" />
-                    </ActionIcon>
-                  </div>
-                ) : null}
-              </Box>
-            </div>
-          </section>
-
-          <section className="border-b py-4 px-5">
-            <p className="font-semibold text-lg">Stamp</p>
-            <div className="mb-3">
-              <span className="font-bold text-gray-500 mr-2">Supported types</span>
-              {supportedTypes.map(item => (
-                <Badge key={item} className="mr-2">
-                  {item}
-                </Badge>
-              ))}
-            </div>
-            <div className="flex items-start">
-              {!form.values?.letterHead ? (
-                <div className="h-[180px] w-[350px] mr-4 mb-2">
-                  <Dropzone
-                    onDrop={imagePath => onHandleDrop(imagePath, 'letterHead')}
-                    accept={['image/png', 'image/jpeg']}
-                    className="h-full w-full flex justify-center items-center bg-slate-100"
-                    loading={activeImage === 'letterHead' && isUploadLoading}
-                    name="letterHead"
-                    multiple={false}
-                    {...form.getInputProps('letterHead')}
-                  >
-                    <div className="flex items-center justify-center">
-                      <Image src={image} alt="placeholder" height={50} width={50} />
-                    </div>
-                    <p>
-                      Drag and Drop your file here, or{' '}
-                      <span className="text-purple-450 border-none">browse</span>
-                    </p>
-                  </Dropzone>
-                  {form.errors?.letterHead ? (
-                    <p className="mt-1 text-xs text-red-450">{form.errors?.letterHead}</p>
-                  ) : null}
-                </div>
-              ) : null}
-              <Box
-                className="bg-white border rounded-md cursor-zoom-in"
-                onClick={() => toggleImagePreviewModal(form.values?.letterHead)}
-              >
-                {form.values?.letterHead ? (
-                  <div className="relative">
-                    <Image
-                      src={form.values?.letterHead}
-                      alt="letterHead-preview"
-                      height={180}
-                      width={350}
-                      className="bg-slate-100"
-                      fit="contain"
-                      placeholder={
-                        <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
-                      }
-                    />
-                    <ActionIcon
-                      className="absolute right-2 top-1 bg-white"
-                      onClick={e => handleDeleteImage(e, 'letterHead')}
-                      loading={activeImage === 'letterHead' && isDeleteLoading}
                       disabled={isDeleteLoading}
                     >
                       <Image src={trash} alt="trash-icon" />

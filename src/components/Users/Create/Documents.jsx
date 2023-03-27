@@ -90,7 +90,7 @@ const Documents = ({ documents }) => {
         ))}
       </div>
 
-      <div className="grid grid-cols-4 gap-8">
+      <div className="grid md:grid-cols-4 gap-8">
         {uploadImageList?.map((doc, index) => (
           <PreviewCard
             key={uuidv4()}

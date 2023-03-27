@@ -80,7 +80,7 @@ const Notifications = () => {
         <Sidebar />
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 flex flex-col justify-start">
           {data?.docs?.length ? (
-            <div className="flex justify-end pr-7 pt-4 pb-2">
+            <div className="flex justify-end md:pr-7 pt-4 pb-2">
               <Button
                 onClick={handleReadAll}
                 className="primary-button mr-2"
@@ -142,7 +142,7 @@ const Notifications = () => {
                         className="mt-2 text-sm"
                       />
 
-                      <div className="flex justify-end">
+                      <div className="flex justify-end mt-2">
                         <Button
                           onClick={() => handleRead(messages?._id)}
                           className="primary-button mr-2"
@@ -180,7 +180,7 @@ const Notifications = () => {
                 : null}
             </div>
           </section>
-          {!isFetchAllNotificationsLoading || data?.docs?.length ? (
+          {!isFetchAllNotificationsLoading && data?.docs?.length ? (
             <Pagination
               styles={theme => ({
                 item: {
