@@ -280,6 +280,26 @@ export const checkCampaignStats = (currentStatus, item) => {
   return campaignStats[currentStatus?.campaignStatus]?.includes(item);
 };
 
+export const checkPrintingStats = (printingStatus = '', item = '') => {
+  const printingStats = {
+    upcoming: ['upcoming'],
+    'in progress': ['upcoming', 'in progress'],
+    completed: ['upcoming', 'in progress', 'completed'],
+  };
+
+  return printingStats[printingStatus?.toLowerCase()]?.includes(item?.toLowerCase());
+};
+
+export const checkMountingStats = (mountingStatus = '', item = '') => {
+  const printingStats = {
+    upcoming: ['upcoming'],
+    'in progress': ['upcoming', 'in progress'],
+    completed: ['upcoming', 'in progress', 'completed'],
+  };
+
+  return printingStats[mountingStatus?.toLowerCase()]?.includes(item?.toLowerCase());
+};
+
 export const orderTitle = {
   purchase: 'Purchase Order',
   release: 'Release Order',

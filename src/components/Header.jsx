@@ -32,6 +32,7 @@ const Header = ({ title }) => {
   const handleLogout = () => {
     setToken(null);
     setId(null);
+    localStorage.clear();
     navigate('/login');
     showNotification({
       title: 'Logged out successfully',

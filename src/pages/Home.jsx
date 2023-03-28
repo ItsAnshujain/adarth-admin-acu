@@ -31,6 +31,7 @@ import { useBookingStats, useFetchBookingRevenue } from '../hooks/booking.hooks'
 import { useInventoryStats } from '../hooks/inventory.hooks';
 import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../utils';
 import ViewByFilter from '../components/Reports/ViewByFilter';
+import { useFetchUsersById } from '../hooks/users.hooks';
 
 dayjs.extend(quarterOfYear);
 
@@ -68,7 +69,8 @@ const config = {
 const HomePage = () => {
   const queryClient = useQueryClient();
   const userId = useUserStore(state => state.id);
-  const user = queryClient.getQueryData(['users-by-id', userId]);
+  const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
+  const { data } = useFetchUsersById(userId, !!userId);
 
   const [queryByTime, setQueryByTime] = useState({
     'groupBy': 'month',
@@ -175,13 +177,19 @@ const HomePage = () => {
     }
   }, [bookingRevenue]);
 
+  useEffect(() => {
+    if (data) {
+      localStorage.setItem('hasTerms', data.hasAcceptedTerms);
+    }
+  }, [data]);
+
   return (
     <div className="absolute top-0">
       <Header title="" />
       <div className="grid grid-cols-12">
         <Sidebar />
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-          <AreaHeader text={`Hello, ${user?.name || 'User'}`} />
+          <AreaHeader text={`Hello, ${userCachedData?.name || 'User'}`} />
           <div className="pr-7 pl-5 mt-5 mb-10">
             <div className="grid grid-rows-2 mb-8 gap-y-4">
               <div className="grid grid-cols-1 gap-8 md:grid-cols-3">

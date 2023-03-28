@@ -15,7 +15,12 @@ import NoData from '../../../shared/NoData';
 import { useUpdateCampaignMedia, useUpdateCampaignStatus } from '../../../../hooks/campaigns.hooks';
 import { useUploadFile } from '../../../../hooks/upload.hooks';
 import { useFetchMasters } from '../../../../hooks/masters.hooks';
-import { serialize, supportedTypes } from '../../../../utils';
+import {
+  checkMountingStats,
+  checkPrintingStats,
+  serialize,
+  supportedTypes,
+} from '../../../../utils';
 import modalConfig from '../../../../utils/modalConfig';
 
 const updatedSupportedTypes = [...supportedTypes, 'MP4'];
@@ -84,7 +89,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
       return printingStatusData.data.docs.map(item => ({
         label: item?.name,
         value: item?.name,
-        disabled: Object.keys(data?.printingStatus || {}).includes(item?.name?.toLowerCase()),
+        disabled: checkPrintingStats(data?.currentStatus?.printingStatus, item?.name),
       }));
     }
 
@@ -96,7 +101,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
       return mountStatusData.data.docs.map(item => ({
         label: item?.name,
         value: item?.name,
-        disabled: Object.keys(data?.mountingStatus || {}).includes(item?.name?.toLowerCase()),
+        disabled: checkMountingStats(data?.currentStatus?.mountingStatus, item?.name),
       }));
     }
 

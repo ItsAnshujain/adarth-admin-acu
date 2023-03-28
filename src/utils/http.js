@@ -52,7 +52,10 @@ const handleError = (httpStatusCode, response = {}) => {
   }
 
   if (httpStatusCode === 401) {
-    if (window.location.pathname !== '/login') {
+    if (response?.data?.errors?.cause === 'TERMS_CONDITION_NOT_ACCEPTED') {
+      window.location.href = '/terms-conditions';
+      throw response;
+    } else if (window.location.pathname !== '/login') {
       localStorage.clear();
       window.location.href = '/login';
       throw response;

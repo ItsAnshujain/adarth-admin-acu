@@ -61,7 +61,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
           >
             {previewSpacesPhotos.length &&
               previewSpacesPhotos.map(item => (
-                <Carousel.Slide>
+                <Carousel.Slide key={uuidv4()}>
                   <Image src={item} height={400} width="100%" alt="preview" fit="contain" />
                 </Carousel.Slide>
               ))}
@@ -75,14 +75,14 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
     () =>
       proposalData?.categoryName?.length
         ? proposalData.categoryName?.map(item => (
-            <>
+            <div key={uuidv4()}>
               <Text weight="bolder" className="mr-2">
                 {item?.total}
               </Text>
               <Text weight="bolder" className="mr-2">
                 {item?._id}
               </Text>
-            </>
+            </div>
           ))
         : 0,
     [proposalData],

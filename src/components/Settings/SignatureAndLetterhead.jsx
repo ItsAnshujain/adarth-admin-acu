@@ -17,11 +17,13 @@ import useUserStore from '../../store/user.store';
 const initialValues = {
   signature: '',
   letterHead: '',
+  letterFooter: '',
 };
 
 const schema = yup.object({
   signature: yup.string().trim().required('Signature is required'),
-  letterHead: yup.string().trim().required('Stamp is required'),
+  letterHead: yup.string().trim().required('Letter Head is required'),
+  letterFooter: yup.string().trim().required('Letter Footer is required'),
 });
 
 const SignatureAndLetterhead = () => {
@@ -86,6 +88,7 @@ const SignatureAndLetterhead = () => {
     if (userData) {
       form.setValues({
         letterHead: userData?.letterHead || '',
+        letterFooter: userData?.letterFooter || '',
         signature: userData?.signature || '',
       });
     }
@@ -167,9 +170,7 @@ const SignatureAndLetterhead = () => {
               </div>
             </div>
             <div>
-              {/* TODO: wip. api changes */}
               <p className="font-semibold text-lg">Letter Footer</p>
-              {/* TODO: add image size upload message for user */}
               <div className="mb-3">
                 <span className="font-bold text-gray-500 mr-2">Supported types</span>
                 {supportedTypes.map(item => (
@@ -179,17 +180,16 @@ const SignatureAndLetterhead = () => {
                 ))}
               </div>
               <div className="flex items-start">
-                {!form.values?.letterHead ? (
+                {!form.values?.letterFooter ? (
                   <div className="h-[180px] w-[350px] mr-4 mb-2">
                     <Dropzone
-                      onDrop={imagePath => onHandleDrop(imagePath, 'letterHead')}
+                      onDrop={imagePath => onHandleDrop(imagePath, 'letterFooter')}
                       accept={['image/png', 'image/jpeg']}
                       className="h-full w-full flex justify-center items-center bg-slate-100"
-                      loading={activeImage === 'letterHead' && isUploadLoading}
-                      name="letterHead"
-                      disabled
+                      loading={activeImage === 'letterFooter' && isUploadLoading}
+                      name="letterFooter"
                       multiple={false}
-                      {...form.getInputProps('letterHead')}
+                      {...form.getInputProps('letterFooter')}
                     >
                       <div className="flex items-center justify-center">
                         <Image src={image} alt="placeholder" height={50} width={50} />
@@ -199,20 +199,19 @@ const SignatureAndLetterhead = () => {
                         <span className="text-purple-450 border-none">browse</span>
                       </p>
                     </Dropzone>
-                    {form.errors?.letterHead ? (
-                      <p className="mt-1 text-xs text-red-450">{form.errors?.letterHead}</p>
+                    {form.errors?.letterFooter ? (
+                      <p className="mt-1 text-xs text-red-450">{form.errors?.letterFooter}</p>
                     ) : null}
                   </div>
                 ) : null}
                 <Box
-                  className="bg-white border rounded-md cursor-not-allowed"
-                  // onClick={() => toggleImagePreviewModal(form.values?.letterHead)}
+                  className="bg-white border rounded-md cursor-zoom-in"
+                  onClick={() => toggleImagePreviewModal(form.values?.letterFooter)}
                 >
-                  {form.values?.letterHead ? (
+                  {form.values?.letterFooter ? (
                     <div className="relative">
                       <Image
-                        // src={form.values?.letterHead}
-                        src={null}
+                        src={form.values?.letterFooter}
                         alt="letter-footer-preview"
                         height={180}
                         width={350}
@@ -226,11 +225,10 @@ const SignatureAndLetterhead = () => {
                         }
                       />
                       <ActionIcon
-                        className="absolute right-2 top-1 bg-white cursor-not-allowed"
-                        // onClick={e => handleDeleteImage(e, 'letterHead')}
-                        loading={activeImage === 'letterHead' && isDeleteLoading}
-                        // disabled={isDeleteLoading}
-                        disabled
+                        className="absolute right-2 top-1 bg-white"
+                        onClick={e => handleDeleteImage(e, 'letterFooter')}
+                        loading={activeImage === 'letterFooter' && isDeleteLoading}
+                        disabled={isDeleteLoading}
                       >
                         <Image src={trash} alt="trash-icon" />
                       </ActionIcon>
@@ -307,7 +305,7 @@ const SignatureAndLetterhead = () => {
             <Button
               className="primary-button mt-4"
               type="submit"
-              loading={isUploadLoading || isUserUpdateLoading}
+              loading={isUserUpdateLoading}
               disabled={isUploadLoading || isUserUpdateLoading}
             >
               Upload

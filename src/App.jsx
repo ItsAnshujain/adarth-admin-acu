@@ -1,20 +1,21 @@
 import React, { Suspense, lazy } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import shallow from 'zustand/shallow';
-import Login from './pages/Login/Login';
-import LoginMain from './pages/Login/Home';
-import ChangePassword from './pages/Login/ChangePassword';
-import ForgotPassword from './pages/Login/ForgotPassword';
+import {
+  Routes,
+  Route,
+  Navigate,
+  //  useLocation
+} from 'react-router-dom';
+// import shallow from 'zustand/shallow';
+import { v4 as uuidv4 } from 'uuid';
 import Header from './Loader/Header';
 import CustomLoader from './Loader/Loader';
 import Sidebar from './Loader/Sidebar';
 import NoMatch from './pages/NoMatch';
-import { useFetchUsersById } from './hooks/users.hooks';
-import useTokenIdStore from './store/user.store';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import ProtectedRoute from './utils/ProtectedRoute';
 import { ROLES } from './utils';
 import FileUpload from './components/Finance/Create/FileUpload';
+// import useUserStore from './store/user.store';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -62,40 +63,48 @@ const HeaderSidebarLoader = () => (
   </>
 );
 
-const App = () => {
-  const location = useLocation();
-  const { token, id } = useTokenIdStore(state => ({ id: state.id, token: state.token }), shallow);
+const components = {
+  PUBLIC: [
+    { comp: lazy(() => import('./pages/Auth/LoginPage')), path: '/login' },
+    { comp: lazy(() => import('./pages/Auth/ForgotPasswordPage')), path: '/forgot-password' },
+    { comp: lazy(() => import('./pages/Auth/ChangePasswordPage')), path: '/change-password' },
+    { comp: lazy(() => import('./pages/Auth/TermsAndConditionsPage')), path: '/terms-conditions' },
+  ],
+};
 
-  useFetchUsersById(id, !!id);
+// TODO: wip
+// eslint-disable-next-line arrow-body-style
+const App = () => {
+  // const location = useLocation();
+  // const { token } = useUserStore(state => ({ token: state.token }), shallow);
 
   // to avoid logged in users to access the routes
-  if (
-    token &&
-    (location.pathname.includes('/login') ||
-      location.pathname.includes('/forgot-password') ||
-      location.pathname.includes('/change-password'))
-  ) {
-    if (location.search.includes('setting')) {
-      return <Navigate to="/settings?type=change_password" replace />;
-    }
-    return <Navigate to="/home" replace />;
-  }
+  // if (
+  //   token &&
+  //   (location.pathname.includes('/login') ||
+  //     location.pathname.includes('/forgot-password') ||
+  //     location.pathname.includes('/change-password'))
+  // ) {
+  //   if (location.search.includes('setting')) {
+  //     return <Navigate to="/settings?type=change_password" replace />;
+  //   }
+  //   return <Navigate to="/home" replace />;
+  // }
 
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
-      <Route
-        path="/"
-        element={
-          <Suspense fallback={<CustomLoader />}>
-            <Login />
-          </Suspense>
-        }
-      >
-        <Route path="/login" element={<LoginMain />} />
-        <Route path="/change-password" element={<ChangePassword />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-      </Route>
+      {components.PUBLIC.map(({ comp: Comp, path }) => (
+        <Route
+          key={uuidv4()}
+          path={path}
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <Comp />
+            </Suspense>
+          }
+        />
+      ))}
       <Route element={<ProtectedRoutes />}>
         <Route
           path="/home"
