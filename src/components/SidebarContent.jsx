@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import { ChevronDown } from 'react-feather';
-import { Image } from '@mantine/core';
+import { Image, Text } from '@mantine/core';
 import { Link, useLocation } from 'react-router-dom';
 import NestedSidebarContent from './NestedSidebarContent';
 import HomeIcon from '../assets/home-default.svg';
@@ -30,7 +30,7 @@ import { useFetchMastersTypes } from '../hooks/masters.hooks';
 const SidebarContent = ({ className }) => {
   const { pathname } = useLocation();
 
-  const { data, isSuccess: isMasterLoaded } = useFetchMastersTypes();
+  const { data, isSuccess: isMasterLoaded, isLoading } = useFetchMastersTypes();
 
   const renderList = useMemo(() => {
     const queries = serialize({
@@ -140,6 +140,11 @@ const SidebarContent = ({ className }) => {
 
   return (
     <div className={classNames('flex flex-col items-start', className)}>
+      {isLoading ? (
+        <Text mt="xl" px="xl">
+          Loading...
+        </Text>
+      ) : null}
       {sidebarMenuList.map(item => (
         <RoleBased acceptedRoles={item.acceptedRoles} key={uuidv4()}>
           <div className="w-full flex flex-col border-gray-450 border">

@@ -1,13 +1,14 @@
 import * as yup from 'yup';
 import { useState } from 'react';
 import { Text, Button } from '@mantine/core';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { useForm, yupResolver } from '@mantine/form';
 import SuccessModal from '../../components/shared/Modal';
 import { useResetPassword } from '../../hooks/auth.hooks';
 import PasswordInput from '../../components/shared/PasswordInput';
 import { FormProvider } from '../../context/formContext';
+import banner from '../../assets/login.svg';
 
 const initialValues = {
   confirmPassword: '',
@@ -28,22 +29,13 @@ const schema = yup.object({
     .oneOf([yup.ref('password'), null], 'New password and Confirm password must match'),
 });
 
-const Home = () => {
+const ChangePasswordPage = () => {
   const [open, setOpenSuccessModal] = useState(false);
   const { mutate: changePassword, isLoading } = useResetPassword();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const {
-    location: { hostname, search },
-  } = window;
-
-  let token = '';
-  if (hostname === 'localhost') {
-    token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzFiMjNhOTRlOWU2ODgwODQxMmU5ZTgiLCJpYXQiOjE2NjI5Nzk4MTQsImV4cCI6MTY2MzA2NjIxNH0.DI52v5EDobQG5TcbO0GYFzRgm-pVHKiBpji-Hc_Qm90';
-  } else {
-    token = search?.split('=')[1];
-  }
+  const token = searchParams.get('token');
 
   const form = useForm({ validate: yupResolver(schema), initialValues });
 
@@ -89,7 +81,10 @@ const Home = () => {
   };
 
   return (
-    <>
+    <div className="flex">
+      <div className="hidden md:mr-16 md:block">
+        <img src={banner} alt="login" className="h-screen" />
+      </div>
       <div className="flex h-screen w-full flex-col justify-center px-5 md:w-[31%] md:px-0">
         <p className="text-2xl font-bold">Change Password</p>
         <FormProvider form={form}>
@@ -146,8 +141,8 @@ const Home = () => {
         prompt="Login"
         path="login"
       />
-    </>
+    </div>
   );
 };
 
-export default Home;
+export default ChangePasswordPage;
