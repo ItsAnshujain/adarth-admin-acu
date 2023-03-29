@@ -5,10 +5,11 @@ import { Dropzone } from '@mantine/dropzone';
 import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
 import { useQueryClient } from '@tanstack/react-query';
+import { showNotification } from '@mantine/notifications';
 import modalConfig from '../../utils/modalConfig';
 import { useDeleteUploadedFile, useUploadFile } from '../../hooks/upload.hooks';
 import image from '../../assets/image.png';
-import { supportedTypes } from '../../utils';
+import { validateImageResolution, supportedTypes } from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
 import trash from '../../assets/trash.svg';
 import { useUpdateUsers } from '../../hooks/users.hooks';
@@ -38,6 +39,19 @@ const SignatureAndLetterhead = () => {
   const [activeImage, setActiveImage] = useState();
 
   const onHandleDrop = async (params, key) => {
+    const isValidResolution = await validateImageResolution(
+      params?.[0],
+      key === 'letterHead' ? 150 : key === 'letterFooter' ? 1300 : 512,
+      key === 'letterHead' ? 80 : key === 'letterFooter' ? 80 : 512,
+    );
+    if (!isValidResolution) {
+      showNotification({
+        title: 'Please upload below the recommended image size',
+        color: 'orange',
+      });
+      return;
+    }
+
     setActiveImage(key);
     const formData = new FormData();
     formData.append('files', params?.[0]);
@@ -111,6 +125,7 @@ const SignatureAndLetterhead = () => {
                     {item}
                   </Badge>
                 ))}
+                <p className="text-red-450">Recommended Size: Max 150px x 80px</p>
               </div>
               <div className="flex items-start">
                 {!form.values?.letterHead ? (
@@ -178,6 +193,7 @@ const SignatureAndLetterhead = () => {
                     {item}
                   </Badge>
                 ))}
+                <p className="text-red-450">Recommended Size: Max 1300px x 80px</p>
               </div>
               <div className="flex items-start">
                 {!form.values?.letterFooter ? (
@@ -247,6 +263,7 @@ const SignatureAndLetterhead = () => {
                   {item}
                 </Badge>
               ))}
+              <p className="text-red-450">Recommended Size: Max 512px x 512px</p>
             </div>
             <div className="flex items-start">
               {!form.values?.signature ? (

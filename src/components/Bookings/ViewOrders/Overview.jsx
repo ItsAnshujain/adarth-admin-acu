@@ -288,7 +288,13 @@ const Overview = ({ bookingData = {}, isLoading }) => {
                   }
                 />
               ))
-              .sort((a, b) => a.createdBy - b.createdBy)
+              .sort((a, b) => {
+                if (a?.basicInformation?.spaceName && b?.basicInformation?.spaceName) {
+                  return a.basicInformation.spaceName - b.basicInformation.spaceName;
+                }
+
+                return a?.basicInformation?.spaceName ? 1 : -1;
+              })
           ) : (
             <div className="w-full min-h-[7rem] flex justify-center items-center">
               <p className="text-xl">No spaces found</p>

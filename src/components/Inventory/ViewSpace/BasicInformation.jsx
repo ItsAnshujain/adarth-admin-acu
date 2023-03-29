@@ -116,8 +116,8 @@ const BasicInfo = ({
     () =>
       bookingRange?.some(
         item =>
-          dayjs().isBetween(item?.startDate, item?.endDate) ||
-          dayjs(item?.startDate).isSame(dayjs(item?.endDate), 'day'),
+          dayjs().isBetween(item?.startDate, item?.endDate, 'day') ||
+          dayjs().isSame(dayjs(item?.endDate), 'day'),
       ),
     [bookingRange],
   );

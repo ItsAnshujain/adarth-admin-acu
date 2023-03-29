@@ -1,13 +1,14 @@
-import { ActionIcon, Badge, Box, Group, Image, Radio, Text } from '@mantine/core';
+import { ActionIcon, Badge, Box, Group, Image as MantineImage, Radio, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useState } from 'react';
 import { Dropzone } from '@mantine/dropzone';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
+import { showNotification } from '@mantine/notifications';
 import TextareaInput from '../../shared/TextareaInput';
 import { useFormContext } from '../../../context/formContext';
 import TextInput from '../../shared/TextInput';
-import { serialize, supportedTypes } from '../../../utils';
+import { validateImageResolution, serialize, supportedTypes } from '../../../utils';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import NativeSelect from '../../shared/NativeSelect';
 import image from '../../../assets/image.png';
@@ -48,6 +49,19 @@ const BasicInfo = ({ proposalId, userData }) => {
   );
 
   const onHandleDrop = async (params, key) => {
+    const isValidResolution = await validateImageResolution(
+      params?.[0],
+      key === 'letterHead' ? 150 : key === 'letterFooter' ? 1300 : 0,
+      80,
+    );
+    if (!isValidResolution) {
+      showNotification({
+        title: 'Please upload below the recommended image size',
+        color: 'orange',
+      });
+      return;
+    }
+
     setActiveImage(key);
     const formData = new FormData();
     formData.append('files', params?.[0]);
@@ -62,9 +76,9 @@ const BasicInfo = ({ proposalId, userData }) => {
         modalBody: (
           <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
             {imgSrc ? (
-              <Image src={imgSrc} height={580} width={580} alt="preview" fit="contain" />
+              <MantineImage src={imgSrc} height={580} width={580} alt="preview" fit="contain" />
             ) : (
-              <Image src={null} height={580} width={580} withPlaceholder />
+              <MantineImage src={null} height={580} width={580} withPlaceholder />
             )}
           </Box>
         ),
@@ -135,7 +149,7 @@ const BasicInfo = ({ proposalId, userData }) => {
         styles={styles}
         {...getInputProps('uploadType')}
       >
-        <Group mb="xs">
+        <Group>
           <Radio
             value="existing"
             label="Use from Settings"
@@ -163,7 +177,7 @@ const BasicInfo = ({ proposalId, userData }) => {
           {userData?.letterHead ? (
             <div className="flex flex-col">
               <p className="font-semibold text-lg">Letter Header</p>
-              <Image
+              <MantineImage
                 src={userData.letterHead || null}
                 alt="letter-head-preview"
                 height={180}
@@ -179,7 +193,7 @@ const BasicInfo = ({ proposalId, userData }) => {
           {userData?.letterFooter ? (
             <div className="flex flex-col">
               <p className="font-semibold text-lg">Letter Footer</p>
-              <Image
+              <MantineImage
                 src={userData.letterFooter || null}
                 alt="letter-head-preview"
                 height={180}
@@ -204,6 +218,7 @@ const BasicInfo = ({ proposalId, userData }) => {
                   {item}
                 </Badge>
               ))}
+              <p className="text-red-450">Recommended Size: Max 150px x 80px</p>
             </div>
             <div className="flex items-start">
               {!values?.letterHead ? (
@@ -218,7 +233,7 @@ const BasicInfo = ({ proposalId, userData }) => {
                     {...getInputProps('letterHead')}
                   >
                     <div className="flex items-center justify-center">
-                      <Image src={image} alt="placeholder" height={50} width={50} />
+                      <MantineImage src={image} alt="placeholder" height={50} width={50} />
                     </div>
                     <p>
                       Drag and Drop your file here, or{' '}
@@ -236,7 +251,7 @@ const BasicInfo = ({ proposalId, userData }) => {
               >
                 {values?.letterHead ? (
                   <div className="relative">
-                    <Image
+                    <MantineImage
                       src={values?.letterHead}
                       alt="letter-head-preview"
                       height={180}
@@ -253,7 +268,7 @@ const BasicInfo = ({ proposalId, userData }) => {
                       loading={activeImage === 'letterHead' && isDeleteLoading}
                       disabled={isDeleteLoading}
                     >
-                      <Image src={trash} alt="trash-icon" />
+                      <MantineImage src={trash} alt="trash-icon" />
                     </ActionIcon>
                   </div>
                 ) : null}
@@ -270,6 +285,7 @@ const BasicInfo = ({ proposalId, userData }) => {
                   {item}
                 </Badge>
               ))}
+              <p className="text-red-450">Recommended Size: Max 1300px x 80px</p>
             </div>
             <div className="flex items-start">
               {!values?.letterFooter ? (
@@ -284,7 +300,7 @@ const BasicInfo = ({ proposalId, userData }) => {
                     {...getInputProps('letterFooter')}
                   >
                     <div className="flex items-center justify-center">
-                      <Image src={image} alt="placeholder" height={50} width={50} />
+                      <MantineImage src={image} alt="placeholder" height={50} width={50} />
                     </div>
                     <p>
                       Drag and Drop your file here, or{' '}
@@ -302,7 +318,7 @@ const BasicInfo = ({ proposalId, userData }) => {
               >
                 {values?.letterFooter ? (
                   <div className="relative">
-                    <Image
+                    <MantineImage
                       src={values?.letterFooter}
                       alt="letter-footer-preview"
                       height={180}
@@ -320,7 +336,7 @@ const BasicInfo = ({ proposalId, userData }) => {
                       loading={activeImage === 'letterFooter' && isDeleteLoading}
                       disabled={isDeleteLoading}
                     >
-                      <Image src={trash} alt="trash-icon" />
+                      <MantineImage src={trash} alt="trash-icon" />
                     </ActionIcon>
                   </div>
                 ) : null}

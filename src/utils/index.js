@@ -312,3 +312,18 @@ export const indianMapCoordinates = {
   latitude: 21.125681,
   longitude: 82.794998,
 };
+
+export const validateImageResolution = (file, width, height) =>
+  new Promise((resolve, reject) => {
+    const imageUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      if (img.width <= width && img.height <= height) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    };
+    img.onerror = err => reject(err);
+    img.src = imageUrl;
+  });
