@@ -2,7 +2,7 @@ import React from 'react';
 import * as yup from 'yup';
 import shallow from 'zustand/shallow';
 import { Title, Text, Button } from '@mantine/core';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { yupResolver } from '@mantine/form';
 import banner from '../../assets/login.svg';
 import { useForm, FormProvider } from '../../context/formContext';
@@ -28,12 +28,14 @@ const schema = yup.object({
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { setToken, setId } = useUserStore(
+  const { setToken, setId, setHasAcceptedTerms } = useUserStore(
     state => ({
       setToken: state.setToken,
       setId: state.setId,
       id: state.id,
+      setHasAcceptedTerms: state.setHasAcceptedTerms,
     }),
     shallow,
   );
@@ -47,9 +49,13 @@ const LoginPage = () => {
     const response = await login(formData);
     setToken(response.token);
     setId(response.id);
-
+    setHasAcceptedTerms(response.hasAcceptedTerms);
     if (!response.hasAcceptedTerms) {
-      navigate('/terms-conditions');
+      if (location.search.includes('setting')) {
+        navigate('/terms-conditions?redirect_to=setting&type=change_password');
+      } else {
+        navigate('/terms-conditions');
+      }
       return;
     }
 

@@ -9,11 +9,13 @@ const useUserStore = create(
         token: null,
         id: null,
         userDetails: {},
+        hasAcceptedTerms: null,
       },
       set => ({
         setToken: token => set(() => ({ token })),
         setId: id => set(() => ({ id })),
         setUserDetails: userDetails => set(() => ({ userDetails })),
+        setHasAcceptedTerms: hasAcceptedTerms => set(() => ({ hasAcceptedTerms })),
       }),
     ),
     {

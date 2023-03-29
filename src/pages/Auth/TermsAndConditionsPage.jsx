@@ -12,10 +12,11 @@ const TermsAndConditionsPage = () => {
   const form = useForm();
   const userId = useUserStore(state => state.id);
 
-  const { setToken, setId } = useUserStore(
+  const { setToken, setId, setHasAcceptedTerms } = useUserStore(
     state => ({
       setToken: state.setToken,
       setId: state.setId,
+      setHasAcceptedTerms: state.setHasAcceptedTerms,
     }),
     shallow,
   );
@@ -29,7 +30,7 @@ const TermsAndConditionsPage = () => {
       {
         onSuccess: () => {
           navigate('/home');
-          localStorage.setItem('hasTerms', true);
+          setHasAcceptedTerms(true);
         },
       },
     );
@@ -38,7 +39,7 @@ const TermsAndConditionsPage = () => {
   const handleBack = () => {
     setToken(null);
     setId(null);
-    localStorage.clear();
+    setHasAcceptedTerms(null);
     navigate('/login');
   };
 
