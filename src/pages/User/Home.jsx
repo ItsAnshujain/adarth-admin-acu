@@ -64,7 +64,7 @@ const Home = () => {
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
       <AreaHeader setFilter={handleFilter} filter={filter} userId={userId} />
-      <div className="flex justify-between h-20 items-center pr-7">
+      <div className="flex justify-between h-20 items-center pr-5">
         <RowsPerPage
           setCount={currentLimit => handlePagination('limit', currentLimit)}
           count={limit}
@@ -77,7 +77,7 @@ const Home = () => {
             <p className="text-xl">No records found</p>
           </div>
         ) : null}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 md:gap-3 pr-7 pl-5 relative mb-20">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 md:gap-3 px-5 relative mb-20">
           {userData?.docs?.map(user => (
             <Link to={`view-details/${user?._id}`} key={user?._id}>
               <Card {...user} />
