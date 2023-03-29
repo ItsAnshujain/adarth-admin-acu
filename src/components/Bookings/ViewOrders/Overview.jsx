@@ -22,6 +22,7 @@ import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
 import NoData from '../../shared/NoData';
 import modalConfig from '../../../utils/modalConfig';
+import { indianMapCoordinates } from '../../../utils';
 
 const TRANSITION_DURATION = 200;
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
@@ -137,16 +138,15 @@ const Overview = ({ bookingData = {}, isLoading }) => {
     if (mapInstance && bookingData?.campaign?.spaces?.length) {
       const bounds = new mapInstance.maps.LatLngBounds();
 
-      bookingData?.campaign?.spaces?.forEach(item => {
-        bounds.extend({
-          lat: +(item.location?.latitude || 0),
-          lng: +(item.location?.longitude || 0),
-        });
+      // default coordinates
+      bounds.extend({
+        lat: indianMapCoordinates.latitude,
+        lng: indianMapCoordinates.longitude,
       });
 
       mapInstance.map.fitBounds(bounds);
       mapInstance.map.setCenter(bounds.getCenter());
-      mapInstance.map.setZoom(Math.min(10, mapInstance.map.getZoom()));
+      mapInstance.map.setZoom(Math.min(5, mapInstance.map.getZoom()));
     }
   }, [bookingData?.campaign?.spaces?.length, mapInstance]);
 
