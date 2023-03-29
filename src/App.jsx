@@ -1,11 +1,6 @@
 import React, { Suspense, lazy } from 'react';
-import {
-  Routes,
-  Route,
-  Navigate,
-  //  useLocation
-} from 'react-router-dom';
-// import shallow from 'zustand/shallow';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import shallow from 'zustand/shallow';
 import { v4 as uuidv4 } from 'uuid';
 import Header from './Loader/Header';
 import CustomLoader from './Loader/Loader';
@@ -15,7 +10,8 @@ import ProtectedRoutes from './utils/ProtectedRoutes';
 import ProtectedRoute from './utils/ProtectedRoute';
 import { ROLES } from './utils';
 import FileUpload from './components/Finance/Create/FileUpload';
-// import useUserStore from './store/user.store';
+import useUserStore from './store/user.store';
+import { useFetchUsersById } from './hooks/users.hooks';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -72,24 +68,32 @@ const components = {
   ],
 };
 
-// TODO: wip
-// eslint-disable-next-line arrow-body-style
 const App = () => {
-  // const location = useLocation();
-  // const { token } = useUserStore(state => ({ token: state.token }), shallow);
+  const location = useLocation();
+  const { token, hasAcceptedTerms, userId } = useUserStore(
+    state => ({
+      token: state.token,
+      hasAcceptedTerms: state.hasAcceptedTerms,
+      userId: state.id,
+    }),
+    shallow,
+  );
 
-  // to avoid logged in users to access the routes
-  // if (
-  //   token &&
-  //   (location.pathname.includes('/login') ||
-  //     location.pathname.includes('/forgot-password') ||
-  //     location.pathname.includes('/change-password'))
-  // ) {
-  //   if (location.search.includes('setting')) {
-  //     return <Navigate to="/settings?type=change_password" replace />;
-  //   }
-  //   return <Navigate to="/home" replace />;
-  // }
+  const { _ } = useFetchUsersById(userId, !!hasAcceptedTerms);
+
+  if (
+    token &&
+    hasAcceptedTerms &&
+    (location.pathname.includes('/login') ||
+      location.pathname.includes('/forgot-password') ||
+      location.pathname.includes('/change-password') ||
+      location.pathname.includes('/terms-conditions'))
+  ) {
+    if (location.search.includes('setting')) {
+      return <Navigate to="/settings?type=change_password" replace />;
+    }
+    return <Navigate to="/home" replace />;
+  }
 
   return (
     <Routes>

@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 import MarkerIcon from '../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
 import { useFetchMasters } from '../../hooks/masters.hooks';
-import { serialize } from '../../utils';
+import { indianMapCoordinates, serialize } from '../../utils';
 
 const styles = {
   rightSection: { pointerEvents: 'none' },
@@ -80,16 +80,15 @@ const MapView = ({ lists = [] }) => {
     if (mapInstance && lists?.length) {
       const bounds = new mapInstance.maps.LatLngBounds();
 
-      lists?.forEach(item => {
-        bounds.extend({
-          lat: +(item.location?.latitude || 0),
-          lng: +(item.location?.longitude || 0),
-        });
+      // default coordinates
+      bounds.extend({
+        lat: indianMapCoordinates.latitude,
+        lng: indianMapCoordinates.longitude,
       });
 
       mapInstance.map.fitBounds(bounds);
       mapInstance.map.setCenter(bounds.getCenter());
-      mapInstance.map.setZoom(Math.min(10, mapInstance.map.getZoom()));
+      mapInstance.map.setZoom(Math.min(5, mapInstance.map.getZoom()));
     }
   }, [lists?.length, mapInstance]);
 

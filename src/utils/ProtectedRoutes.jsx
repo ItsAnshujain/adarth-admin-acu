@@ -1,10 +1,17 @@
 import React from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
-import useTokenIdStore from '../store/user.store';
+import shallow from 'zustand/shallow';
+import useUserStore from '../store/user.store';
 
 const ProtectedRoutes = () => {
-  const token = useTokenIdStore(state => state.token);
+  const { token, hasAcceptedTerms } = useUserStore(
+    state => ({ token: state.token, hasAcceptedTerms: state.hasAcceptedTerms }),
+    shallow,
+  );
 
+  if (token && !hasAcceptedTerms) {
+    return <Navigate to="/terms-conditions" replace />;
+  }
   return token ? <Outlet /> : <Navigate to="/login" replace />;
 };
 

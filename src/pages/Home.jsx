@@ -31,7 +31,6 @@ import { useBookingStats, useFetchBookingRevenue } from '../hooks/booking.hooks'
 import { useInventoryStats } from '../hooks/inventory.hooks';
 import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../utils';
 import ViewByFilter from '../components/Reports/ViewByFilter';
-import { useFetchUsersById } from '../hooks/users.hooks';
 
 dayjs.extend(quarterOfYear);
 
@@ -70,7 +69,6 @@ const HomePage = () => {
   const queryClient = useQueryClient();
   const userId = useUserStore(state => state.id);
   const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
-  const { data } = useFetchUsersById(userId, !!userId);
 
   const [queryByTime, setQueryByTime] = useState({
     'groupBy': 'month',
@@ -176,12 +174,6 @@ const HomePage = () => {
       setUpdatedLineData(tempData);
     }
   }, [bookingRevenue]);
-
-  useEffect(() => {
-    if (data) {
-      localStorage.setItem('hasTerms', data.hasAcceptedTerms);
-    }
-  }, [data]);
 
   return (
     <div className="absolute top-0">

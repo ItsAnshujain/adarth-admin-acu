@@ -7,6 +7,7 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
 import Places from './UI/Places';
+import { indianMapCoordinates } from '../../../utils';
 
 const defaultProps = {
   center: {
@@ -50,16 +51,15 @@ const Preview = ({ data = {}, place = {} }) => {
     if (mapInstance && place?.docs?.length) {
       const bounds = new mapInstance.maps.LatLngBounds();
 
-      place?.docs?.forEach(item => {
-        bounds.extend({
-          lat: +(item.location?.latitude || 0),
-          lng: +(item.location?.longitude || 0),
-        });
+      // default coordinates
+      bounds.extend({
+        lat: indianMapCoordinates.latitude,
+        lng: indianMapCoordinates.longitude,
       });
 
       mapInstance.map.fitBounds(bounds);
       mapInstance.map.setCenter(bounds.getCenter());
-      mapInstance.map.setZoom(Math.min(10, mapInstance.map.getZoom()));
+      mapInstance.map.setZoom(Math.min(5, mapInstance.map.getZoom()));
     }
   }, [place?.docs?.length, mapInstance]);
 

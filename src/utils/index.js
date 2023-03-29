@@ -307,3 +307,8 @@ export const orderTitle = {
 };
 
 export const alertText = 'Order item details if added, will get cleared if you change a booking';
+
+export const indianMapCoordinates = {
+  latitude: 21.125681,
+  longitude: 82.794998,
+};
