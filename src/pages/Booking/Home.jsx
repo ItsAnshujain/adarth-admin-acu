@@ -247,7 +247,7 @@ const Bookings = () => {
                   ? 'Printing in progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Printing completed'
-                  : '-'}
+                  : 'Printing upcoming'}
               </p>
             ),
             [],
@@ -270,7 +270,7 @@ const Bookings = () => {
                   ? 'Mounting in progress'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                   ? 'Mounting completed'
-                  : '-'}
+                  : 'Mounting upcoming'}
               </p>
             ),
             [],

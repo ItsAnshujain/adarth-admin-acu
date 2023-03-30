@@ -14,10 +14,10 @@ const styles = {
 
 const defaultProps = {
   center: {
-    lat: 22.567646,
-    lng: 88.370743,
+    lat: indianMapCoordinates.latitude,
+    lng: indianMapCoordinates.longitude,
   },
-  zoom: 11,
+  zoom: 5,
 };
 
 const Marker = ({ title }) => <Image src={MarkerIcon} width={40} height={40} title={title} />;

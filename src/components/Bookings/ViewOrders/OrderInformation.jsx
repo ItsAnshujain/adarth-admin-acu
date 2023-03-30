@@ -338,12 +338,6 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
                 )}
               </p>
             </div>
-            <div>
-              <p className="text-slate-400">Campaign Type</p>
-              <p className="font-bold capitalize">
-                {bookingData?.campaign?.type || <NoData type="na" />}
-              </p>
-            </div>
           </div>
         </div>
         <div className="mb-16">
@@ -358,7 +352,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
             <div>
               <p className="text-slate-400">Status</p>
               <p className="font-bold">
-                <NoData type="upcoming" />
+                {bookingData?.currentStatus?.paymentStatus || <NoData type="upcoming" />}
               </p>
             </div>
             <div>
@@ -370,7 +364,11 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
             <div>
               <p className="text-slate-400">Payment Date</p>
               <p className="font-bold">
-                <NoData type="upcoming" />
+                {bookingData?.paymentStatus?.Paid ? (
+                  dayjs(bookingData.paymentStatus.Paid).format('DD MMM YYYY h:mm A')
+                ) : (
+                  <NoData type="upcoming" />
+                )}
               </p>
             </div>
             <div>
