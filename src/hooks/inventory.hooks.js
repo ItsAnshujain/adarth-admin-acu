@@ -157,9 +157,9 @@ export const useCsvImport = () =>
           color: 'green',
         });
       },
-      onError: () => {
+      onError: err => {
         showNotification({
-          title: 'Oops! Something went wrong. Please provide correct values',
+          title: err?.message,
           color: 'red',
         });
       },

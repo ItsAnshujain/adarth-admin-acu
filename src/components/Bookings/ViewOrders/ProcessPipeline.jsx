@@ -100,7 +100,7 @@ const ProcessPipeline = ({ bookingData }) => {
             hasBottomEdge: false,
           },
           {
-            status: 'Campaign Started',
+            status: 'Campaign Ongoing',
             date: bookingData?.campaignStatus?.Ongoing || bookingData?.campaignStatus?.Completed,
             isSuccess:
               bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'ongoing' ||

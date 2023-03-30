@@ -207,7 +207,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
             className="text-purple-450 font-medium text-[14px]"
             classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
           >
-            {bookingData?.description}
+            {bookingData?.campaign?.description || 'NA'}
           </Spoiler>
           <div className="flex mt-4 items-center gap-2 ">
             <span>{toIndianCurrency(bookingData?.campaign?.totalPrice || 0)}</span>
