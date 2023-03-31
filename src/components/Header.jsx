@@ -43,7 +43,7 @@ const Header = ({ title }) => {
 
   return (
     <>
-      <header className="grid grid-cols-12 h-[60px]  relative w-screen">
+      <header className="grid grid-cols-12 h-[60px] relative w-screen">
         <div className="flex items-center justify-center md:justify-start  col-span-2 pl-2 lg:pl-7 self-center bg-purple-450 h-full">
           <Menu onClick={() => setOpened(true)} className="mr-2 h-6 w-6 inline-block lg:hidden" />
           <Link to="/home" className="hidden md:block">
