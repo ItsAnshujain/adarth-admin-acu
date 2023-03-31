@@ -26,7 +26,7 @@ const NestedSidebarContent = ({ list, path }) => {
 
   return (
     <Collapse in={isActive}>
-      <div className="flex flex-col items-start pl-5 bg-orange-400 overflow-y-auto max-h-[300px]">
+      <div className="flex flex-col items-start pl-5 bg-orange-400 overflow-y-auto max-h-[260px]">
         {list.map(item => (
           <Link
             key={uuidv4()}

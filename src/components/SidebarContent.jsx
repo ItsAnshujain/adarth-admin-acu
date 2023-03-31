@@ -118,16 +118,16 @@ const SidebarContent = ({ className }) => {
         <RoleBased acceptedRoles={item.acceptedRoles} key={uuidv4()}>
           <div
             className={classNames(
-              'w-full flex flex-col border rounded-sm',
-              pathname.includes(item.path)
-                ? 'bg-orange-400 border-orange-400'
-                : 'border-purple-450',
+              'w-full flex flex-col rounded-sm',
+              pathname.includes(item.path) && 'bg-gradient-to-r from-orange-400 to-red-500',
             )}
           >
             <div
               className={classNames(
                 'flex items-center justify-between',
-                pathname.includes(item.path) && item.nested && 'bg-orange-400',
+                pathname.includes(item.path) &&
+                  item.nested &&
+                  'bg-gradient-to-r from-orange-400 to-red-500',
               )}
             >
               <div className="pl-3 pr-1">
