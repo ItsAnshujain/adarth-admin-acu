@@ -206,12 +206,12 @@ const ProposalTableView = ({ data, isLoading }) => {
   return (
     <div className="mt-8">
       {isLoading ? (
-        <div className="flex justify-center items-center h-[400px]">
+        <div className="flex justify-center items-center h-[380px]">
           <Loader />
         </div>
       ) : null}
       {!data?.docs?.length && !isLoading ? (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
+        <div className="w-full min-h-[380px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>
       ) : null}

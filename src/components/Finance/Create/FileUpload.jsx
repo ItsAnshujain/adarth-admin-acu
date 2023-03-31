@@ -219,7 +219,7 @@ const FileUpload = () => {
   }, [bookingId]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <header className="h-[60px] border-b border-gray-450 flex justify-between items-center pl-5 pr-7">
         <p className="text-xl font-bold">Upload PDF</p>
         <Button
@@ -284,7 +284,7 @@ const FileUpload = () => {
             loading={isLoading || isUpdateBookingLoading}
             variant="filled"
             type="submit"
-            className="p-2 rounded mx-auto block mt-3 primary-button"
+            className="p-2 rounded mx-auto block my-3 primary-button"
           >
             Upload File
           </Button>

@@ -1,7 +1,7 @@
 import { Loader } from '@mantine/core';
 
 const CustomLoader = () => (
-  <div className="flex justify-center items-center w-screen h-[calc(100vh-80px)]">
+  <div className="flex justify-center items-center w-screen">
     <Loader />
   </div>
 );

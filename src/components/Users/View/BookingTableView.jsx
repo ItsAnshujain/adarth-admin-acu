@@ -498,7 +498,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
   }, [searchInput]);
 
   return (
-    <div className="mt-8">
+    <div className="">
       <div className="pr-7">
         <div className="flex justify-between h-20 items-center">
           <RowsPerPage
@@ -509,12 +509,12 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         </div>
       </div>
       {isLoading ? (
-        <div className="flex justify-center items-center h-[400px]">
+        <div className="flex justify-center items-center h-[380px]">
           <Loader />
         </div>
       ) : null}
       {!bookingData?.docs?.length && !isLoading ? (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
+        <div className="w-full min-h-[380px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>
       ) : null}

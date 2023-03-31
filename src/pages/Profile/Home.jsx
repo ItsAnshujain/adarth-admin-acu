@@ -48,7 +48,7 @@ const Home = () => {
   }, [data]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <div className="h-[60px] flex justify-end items-center border-b pr-7">
         <Link to="/edit-profile">
           <span className="text-white px-5 py-2 font-bold text-sm bg-purple-450 rounded-md">

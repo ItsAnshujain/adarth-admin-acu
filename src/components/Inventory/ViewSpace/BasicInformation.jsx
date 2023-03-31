@@ -128,7 +128,7 @@ const BasicInfo = ({
   }, [inventoryDetails]);
 
   return (
-    <div className="flex gap-8 pt-4">
+    <div className="flex gap-8 py-4">
       <div className="flex-1 pl-5 max-w-1/2">
         {isInventoryDetailsLoading ? (
           <SkeletonTopWrapper />
