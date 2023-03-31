@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Loader, Select } from '@mantine/core';
+import { Group, Loader, Select } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
 import completed from '../../../assets/completed.svg';
@@ -212,7 +212,10 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
             </div>
             <div>
               <p className="text-slate-400">Price</p>
-              <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.totalPrice)}</p>
+              <Group>
+                <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.price)}</p>
+                <p>**inclusive of gst</p>
+              </Group>
             </div>
             <div>
               <p className="text-slate-400">Start Date</p>

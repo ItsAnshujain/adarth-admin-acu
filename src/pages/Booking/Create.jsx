@@ -14,6 +14,8 @@ import { FormProvider, useForm } from '../../context/formContext';
 import { useCreateBookings } from '../../hooks/booking.hooks';
 import { gstRegexMatch, panRegexMatch, isValidURL } from '../../utils';
 
+const DATE_FORMAT = 'YYYY-MM-DD';
+
 const initialValues = {
   client: {
     companyName: '',
@@ -95,8 +97,8 @@ const CreateBooking = () => {
         id: item._id,
         price: +item.price,
         media: isValidURL(item.media) ? item.media : undefined,
-        startDate: item.startDate,
-        endDate: item.endDate,
+        startDate: dayjs(item.startDate).format(DATE_FORMAT),
+        endDate: dayjs(item.endDate).format(DATE_FORMAT),
       }));
       if (data.place.some(item => !(item.startDate || item.endDate))) {
         showNotification({
@@ -107,8 +109,8 @@ const CreateBooking = () => {
       }
 
       data.place.forEach(item => {
-        const start = item.startDate.setHours(0, 0, 0, 0);
-        const end = item.endDate.setHours(0, 0, 0, 0);
+        const start = item.startDate;
+        const end = item.endDate;
 
         if (!minDate) minDate = start;
         if (!maxDate) maxDate = end;
@@ -125,7 +127,8 @@ const CreateBooking = () => {
       }
 
       const totalPrice = form.values?.place?.reduce((acc, item) => acc + +(item.price || 0), 0);
-      data.price = totalPrice;
+      const gstCalculation = (totalPrice * 18) / 100;
+      data.price = totalPrice + gstCalculation;
 
       Object.keys(data).forEach(k => {
         if (data[k] === '') {
@@ -142,8 +145,8 @@ const CreateBooking = () => {
       await createBooking(
         {
           ...data,
-          startDate: dayjs(minDate).format('YYYY-MM-DD'),
-          endDate: dayjs(maxDate).format('YYYY-MM-DD'),
+          startDate: minDate,
+          endDate: maxDate,
         },
         {
           onSuccess: () => {

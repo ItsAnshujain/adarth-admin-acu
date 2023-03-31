@@ -3,6 +3,8 @@ import { Phone, Mail } from 'react-feather';
 import UserImage from '../../../assets/placeholders/user.png';
 import { roleTypes } from '../../../utils';
 
+const updatedRoleTypes = { ...roleTypes, 'admin': 'Admin' };
+
 const UserCard = ({
   name = 'NA',
   role = 'NA',
@@ -21,7 +23,7 @@ const UserCard = ({
         >
           {name}
         </p>
-        <p className="text-[#914EFB]">{roleTypes[role] || 'NA'}</p>
+        <p className="text-[#914EFB]">{updatedRoleTypes[role] || 'NA'}</p>
         <p>{company}</p>
       </div>
     </div>

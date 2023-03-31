@@ -1,4 +1,4 @@
-import { Button, Modal } from '@mantine/core';
+import { Button, List, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import React, { useState } from 'react';
 import CookiePolicyContent from './DocAndPolicies/CookiePolicyContent';
@@ -27,23 +27,23 @@ const Sidebar = () => {
     <div className="hidden lg:block lg:col-span-2 pt-4 bg-purple-450 overflow-y-auto">
       <div className="h-full flex flex-col justify-between">
         <SidebarContent className="gap-3 px-5" />
-        <ui className="p-5 text-white">
-          <li>
+        <List className="p-5 text-white">
+          <List.Item>
             <Button className="p-0 text-base" onClick={() => handleModal('privacyPolicy')}>
               Privacy Policy
             </Button>
-          </li>
-          <li>
+          </List.Item>
+          <List.Item>
             <Button className="p-0 text-base " onClick={() => handleModal('disclaimerPolicy')}>
               Disclaimer policy
             </Button>
-          </li>
-          <li>
+          </List.Item>
+          <List.Item>
             <Button className="p-0 text-base" onClick={() => handleModal('cookiePolicy')}>
               Cookie Policy
             </Button>
-          </li>
-        </ui>
+          </List.Item>
+        </List>
       </div>
       <Modal
         opened={opened}

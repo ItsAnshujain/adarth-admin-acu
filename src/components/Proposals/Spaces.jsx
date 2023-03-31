@@ -9,7 +9,7 @@ import Search from '../Search';
 import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
 import { useFetchInventory } from '../../hooks/inventory.hooks';
-import { categoryColors } from '../../utils';
+import { categoryColors, getDate } from '../../utils';
 import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
@@ -17,13 +17,7 @@ import DateRangeSelector from '../DateRangeSelector';
 
 dayjs.extend(isBetween);
 
-const getDate = (selectionItem, item, key) => {
-  if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
-
-  if (item && item[key]) return new Date(item[key]);
-
-  return null;
-};
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 const Spaces = () => {
   const { values, setFieldValue } = useFormContext();
@@ -98,8 +92,8 @@ const Spaces = () => {
           useMemo(() => {
             const isOccupied = bookingRange?.some(
               item =>
-                dayjs().isBetween(item?.startDate, item?.endDate, 'day') ||
-                dayjs().isSame(dayjs(item?.endDate), 'day'),
+                dayjs(dayjs().format(DATE_FORMAT)).isBetween(item?.startDate, item?.endDate) ||
+                dayjs(dayjs().format(DATE_FORMAT)).isSame(dayjs(item?.endDate)),
             );
 
             return (

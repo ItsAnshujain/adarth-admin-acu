@@ -25,6 +25,8 @@ import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
 
 dayjs.extend(isBetween);
 
+const DATE_FORMAT = 'YYYY-MM-DD';
+
 const initialValues = {
   spaces: [],
 };
@@ -96,8 +98,8 @@ const Home = () => {
           useMemo(() => {
             const isOccupied = bookingRange?.some(
               item =>
-                dayjs().isBetween(item?.startDate, item?.endDate, 'day') ||
-                dayjs().isSame(dayjs(item?.endDate), 'day'),
+                dayjs(dayjs().format(DATE_FORMAT)).isBetween(item?.startDate, item?.endDate) ||
+                dayjs(dayjs().format(DATE_FORMAT)).isSame(dayjs(item?.endDate)),
             );
 
             return (
@@ -312,6 +314,10 @@ const Home = () => {
   const handleSearch = () => {
     searchParams.set('search', searchInput);
     searchParams.set('page', searchInput === '' ? page : 1);
+    if (searchInput !== '') {
+      searchParams.delete('sortBy');
+      searchParams.delete('sortOrder');
+    }
     setSearchParams(searchParams);
   };
 

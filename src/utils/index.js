@@ -101,7 +101,6 @@ export const roleTypes = {
   'manager': 'Manager',
   'supervisor': 'Supervisor',
   'associate': 'Associate',
-  'admin': 'Admin',
 };
 
 // TODO: Remove one roleType object
@@ -327,3 +326,11 @@ export const validateImageResolution = (file, width, height) =>
     img.onerror = err => reject(err);
     img.src = imageUrl;
   });
+
+export const getDate = (selectionItem, item, key) => {
+  if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
+
+  if (item && item[key]) return new Date(item[key]);
+
+  return null;
+};
