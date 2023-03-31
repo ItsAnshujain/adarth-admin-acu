@@ -14,9 +14,9 @@ const Campaigns = () => {
     headerTitle = 'Proposals';
   }
   return (
-    <div className="absolute top-0">
+    <div>
       <Header title={headerTitle} />
-      <div className="grid grid-cols-12">
+      <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
         <Sidebar />
         <Outlet />
       </div>

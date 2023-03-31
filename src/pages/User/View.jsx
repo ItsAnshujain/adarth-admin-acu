@@ -69,7 +69,7 @@ const UserDetails = () => {
   }, []);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <Tabs value={activeTab} onTabChange={setActiveTab}>
         <Tabs.List className="h-[60px] relative">
           <Tabs.Tab className="text-base hover:bg-transparent" value="first">

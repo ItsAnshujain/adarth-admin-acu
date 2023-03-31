@@ -74,9 +74,9 @@ const Notifications = () => {
   };
 
   return (
-    <div className="absolute top-0 w-screen">
+    <div className="w-screen">
       <Header title="Notification" />
-      <div className="grid grid-cols-12 pr-5">
+      <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
         <Sidebar />
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 flex flex-col justify-start">
           {data?.docs?.length ? (

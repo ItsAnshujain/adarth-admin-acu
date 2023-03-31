@@ -329,88 +329,84 @@ const RevenueReport = () => {
   }, [revenueDataByIndustry]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-        <Header
-          text="Revenue Report"
-          onClickDownloadPdf={downloadPdf}
-          handleRevenueGraphViewBy={handleRevenueGraphViewBy}
-          showGlobalFilter
-        />
-        <div className="mr-7 pl-5 mt-5 mb-10" id="revenue-pdf">
-          <RevenueStatsContent revenueData={revenueData} />
-          <div className="flex gap-8">
-            <div className="w-[70%] flex flex-col justify-between min-h-[300px]">
-              <div className="flex justify-between items-center">
-                <p className="font-bold">Revenue Graph</p>
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+      <Header
+        text="Revenue Report"
+        onClickDownloadPdf={downloadPdf}
+        handleRevenueGraphViewBy={handleRevenueGraphViewBy}
+        showGlobalFilter
+      />
+      <div className="mr-7 pl-5 mt-5 mb-10" id="revenue-pdf">
+        <RevenueStatsContent revenueData={revenueData} />
+        <div className="flex gap-8">
+          <div className="w-[70%] flex flex-col justify-between min-h-[300px]">
+            <div className="flex justify-between items-center">
+              <p className="font-bold">Revenue Graph</p>
+            </div>
+            {isRevenueGraphLoading ? (
+              <Loader className="m-auto" />
+            ) : (
+              <div className="flex flex-col pl-7 relative">
+                <p className="transform rotate-[-90deg] absolute left-[-25px] top-[40%]">
+                  In Lakhs &gt;
+                </p>
+                <Line height="100" data={updatedReveueGraph} options={options} key={uuidv4()} />
+                <p className="text-center">Months &gt;</p>
               </div>
-              {isRevenueGraphLoading ? (
-                <Loader className="m-auto" />
+            )}
+          </div>
+          <div className="w-[30%] flex flex-col">
+            <div className="flex justify-between items-start">
+              <p className="font-bold">Industry wise revenue graph</p>
+            </div>
+            <div className="w-80 m-auto">
+              {isByIndustryLoading ? (
+                <Loader className="mx-auto" />
+              ) : !updatedIndustry.datasets[0].data.length ? (
+                <p className="text-center">NA</p>
               ) : (
-                <div className="flex flex-col pl-7 relative">
-                  <p className="transform rotate-[-90deg] absolute left-[-25px] top-[40%]">
-                    In Lakhs &gt;
-                  </p>
-                  <Line height="100" data={updatedReveueGraph} options={options} key={uuidv4()} />
-                  <p className="text-center">Months &gt;</p>
-                </div>
+                <Pie
+                  data={updatedIndustry}
+                  options={barDataConfigByIndustry.options}
+                  key={uuidv4()}
+                />
               )}
             </div>
-            <div className="w-[30%] flex flex-col">
-              <div className="flex justify-between items-start">
-                <p className="font-bold">Industry wise revenue graph</p>
-              </div>
-              <div className="w-80 m-auto">
-                {isByIndustryLoading ? (
-                  <Loader className="mx-auto" />
-                ) : !updatedIndustry.datasets[0].data.length ? (
-                  <p className="text-center">NA</p>
-                ) : (
-                  <Pie
-                    data={updatedIndustry}
-                    options={barDataConfigByIndustry.options}
-                    key={uuidv4()}
+          </div>
+        </div>
+
+        <div className="my-10">
+          <div className="flex justify-between items-center">
+            <p className="font-bold">City Or State</p>
+            <div className="flex justify-around">
+              <div className="mx-2">
+                <Button onClick={toggleFilter} variant="default" className="font-medium">
+                  <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
+                </Button>
+                {showFilter && (
+                  <RevenueFilter
+                    isOpened={showFilter}
+                    setShowFilter={setShowFilter}
+                    handleQueryByLocation={setQueryByLocation}
+                    queryByLocation={queryByLocation}
                   />
                 )}
               </div>
             </div>
           </div>
-
-          <div className="my-10">
-            <div className="flex justify-between items-center">
-              <p className="font-bold">City Or State</p>
-              <div className="flex justify-around">
-                <div className="mx-2">
-                  <Button onClick={toggleFilter} variant="default" className="font-medium">
-                    <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
-                  </Button>
-                  {showFilter && (
-                    <RevenueFilter
-                      isOpened={showFilter}
-                      setShowFilter={setShowFilter}
-                      handleQueryByLocation={setQueryByLocation}
-                      queryByLocation={queryByLocation}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col pl-7 relative">
-              <p className="transform rotate-[-90deg] absolute left-[-15px] top-[40%]">
-                Total &gt;
-              </p>
-              {isByLocationLoading ? (
-                <Loader className="mx-auto my-10" />
-              ) : (
-                <Bar
-                  height="80"
-                  data={updatedLocation}
-                  options={barDataConfigByLocation.options}
-                  key={uuidv4()}
-                />
-              )}
-              <p className="text-center">City or State &gt;</p>
-            </div>
+          <div className="flex flex-col pl-7 relative">
+            <p className="transform rotate-[-90deg] absolute left-[-15px] top-[40%]">Total &gt;</p>
+            {isByLocationLoading ? (
+              <Loader className="mx-auto my-10" />
+            ) : (
+              <Bar
+                height="80"
+                data={updatedLocation}
+                options={barDataConfigByLocation.options}
+                key={uuidv4()}
+              />
+            )}
+            <p className="text-center">City or State &gt;</p>
           </div>
         </div>
       </div>

@@ -29,7 +29,6 @@ const ViewProposal = lazy(() => import('./pages/Proposal/View'));
 const BookingHome = lazy(() => import('./pages/Booking/Home'));
 const Booking = lazy(() => import('./pages/Booking/Bookings'));
 const ViewBooking = lazy(() => import('./pages/Booking/View'));
-const Generate = lazy(() => import('./pages/Booking/Generate'));
 const CreateOrder = lazy(() => import('./pages/Booking/Create'));
 const UserHome = lazy(() => import('./pages/User/Home'));
 const User = lazy(() => import('./pages/User/Users'));
@@ -258,30 +257,6 @@ const App = () => {
             element={
               <Suspense fallback={<CustomLoader />}>
                 <ViewBooking />
-              </Suspense>
-            }
-          />
-          <Route
-            path="generate-purchase-order/:id"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <Generate />
-              </Suspense>
-            }
-          />
-          <Route
-            path="generate-release-order/:id"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <Generate />
-              </Suspense>
-            }
-          />
-          <Route
-            path="generate-invoice/:id"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <Generate />
               </Suspense>
             }
           />
