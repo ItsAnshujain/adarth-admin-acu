@@ -6,7 +6,7 @@ import shallow from 'zustand/shallow';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
 import { useQueryClient } from '@tanstack/react-query';
-import logo from '../assets/logo.svg';
+import logoWhite from '../assets/logo-white.svg';
 import useUserStore from '../store/user.store';
 import DrawerSidebar from './DrawerSidebar';
 import NotificationsIcon from '../assets/notifications.svg';
@@ -43,14 +43,14 @@ const Header = ({ title }) => {
 
   return (
     <>
-      <header className="grid grid-cols-12 h-[60px] border-b border-gray-450 relative w-screen">
-        <div className="flex items-center justify-center md:justify-start  col-span-2 pl-2 lg:pl-7 self-center">
+      <header className="grid grid-cols-12 h-[60px] relative w-screen">
+        <div className="flex items-center justify-center md:justify-start  col-span-2 pl-2 lg:pl-7 self-center bg-purple-450 h-full">
           <Menu onClick={() => setOpened(true)} className="mr-2 h-6 w-6 inline-block lg:hidden" />
           <Link to="/home" className="hidden md:block">
-            <img className="w-16 lg:w-24" src={logo} alt="logo" />
+            <img className="w-16 lg:w-24" src={logoWhite} alt="logo" />
           </Link>
         </div>
-        <div className="flex justify-between items-center col-span-10 border-l border-gray-450">
+        <div className="flex justify-between items-center col-span-10 border-b border-gray-450">
           <div className="pl-5">
             <p className="text-2xl font-bold tracking-wide hidden md:block">{title}</p>
           </div>

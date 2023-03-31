@@ -26,15 +26,15 @@ const NestedSidebarContent = ({ list, path }) => {
 
   return (
     <Collapse in={isActive}>
-      <div className="flex flex-col items-start pl-5 bg-gray-100 overflow-y-auto max-h-[300px]">
+      <div className="flex flex-col items-start pl-5 bg-orange-400 overflow-y-auto max-h-[300px]">
         {list.map(item => (
           <Link
             key={uuidv4()}
             to={item.subPath ? `${path}${item.subPath}` : path}
             className={classNames(
-              checkActive(item?.label, item?.subPath) ? 'text-black' : 'text-gray-400',
+              checkActive(item?.label, item?.subPath) ? 'text-black' : 'text-white',
               pathname.includes('masters') ? 'mb-2' : pathname.includes('reports') ? 'mb-2' : '',
-              'font-normal text-base pl-[28px]',
+              'font-medium text-base pl-[28px]',
             )}
           >
             {item?.label}
