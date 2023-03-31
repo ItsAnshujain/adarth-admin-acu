@@ -1,21 +1,22 @@
-import { Button, Group, Text, Title } from '@mantine/core';
+import { Button, Group, Modal, Title } from '@mantine/core';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import shallow from 'zustand/shallow';
+import { useDisclosure } from '@mantine/hooks';
 import { FormProvider, useForm } from '../../context/formContext';
 import { useUpdateUsers } from '../../hooks/users.hooks';
 import useUserStore from '../../store/user.store';
 import banner from '../../assets/login.svg';
+import TermsAndConditionsContent from '../../components/DocAndPolicies/TermsAndConditionsContent';
 
 const TermsAndConditionsPage = () => {
   const navigate = useNavigate();
   const form = useForm();
   const userId = useUserStore(state => state.id);
+  const [opened, { open, close }] = useDisclosure(false);
 
-  const { setToken, setId, setHasAcceptedTerms } = useUserStore(
+  const { setHasAcceptedTerms } = useUserStore(
     state => ({
-      setToken: state.setToken,
-      setId: state.setId,
       setHasAcceptedTerms: state.setHasAcceptedTerms,
     }),
     shallow,
@@ -36,13 +37,6 @@ const TermsAndConditionsPage = () => {
     );
   };
 
-  const handleBack = () => {
-    setToken(null);
-    setId(null);
-    setHasAcceptedTerms(null);
-    navigate('/login');
-  };
-
   return (
     <div className="flex">
       <div className="hidden md:mr-16 md:block">
@@ -51,8 +45,11 @@ const TermsAndConditionsPage = () => {
       <div className="flex h-screen w-full flex-col justify-center px-5 md:w-[35%] md:px-0">
         <FormProvider form={form}>
           <form>
-            <Title className="mb-5">Terms and Conditions</Title>
-            <Text>Please accept the terms and conditions before signing in</Text>
+            <Title>Terms and Conditions</Title>
+            <Button className="text-purple-450 px-0 underline text-lg mb-2" onClick={open}>
+              See the terms and conditions here
+            </Button>
+
             {form.errors ? <p className="text-red-450">{form.errors.hasAcceptedTerms}</p> : null}
             <Group mt="xs">
               <Button
@@ -63,17 +60,28 @@ const TermsAndConditionsPage = () => {
               >
                 Accept
               </Button>
-              <Button
-                className="secondary-button"
-                onClick={handleBack}
-                disabled={isUserUpdateLoading}
-              >
-                Decline
-              </Button>
             </Group>
           </form>
         </FormProvider>
       </div>
+      <Modal
+        opened={opened}
+        onClose={close}
+        withCloseButton={false}
+        centered
+        size="xl"
+        overlayBlur={3}
+        overlayOpacity={0.55}
+        radius={0}
+        padding={0}
+        classNames={{
+          header: 'pt-2',
+          body: 'py-4',
+          close: 'mr-4',
+        }}
+      >
+        <TermsAndConditionsContent />
+      </Modal>
     </div>
   );
 };
