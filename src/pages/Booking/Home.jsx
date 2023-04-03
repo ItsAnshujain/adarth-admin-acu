@@ -381,12 +381,12 @@ const Bookings = () => {
       },
       {
         Header: 'PRICING',
-        accessor: 'campaign.totalPrice',
+        accessor: 'campaign.price',
         Cell: ({
           row: {
             original: { campaign },
           },
-        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
+        }) => useMemo(() => toIndianCurrency(campaign?.price || 0), []),
       },
       {
         Header: 'PURCHASE ORDER',

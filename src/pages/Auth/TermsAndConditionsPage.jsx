@@ -46,8 +46,12 @@ const TermsAndConditionsPage = () => {
         <FormProvider form={form}>
           <form>
             <Title>Terms and Conditions</Title>
+            <p className="text-lg">
+              Thank you for visiting our website. Before you proceed to use our services, You will
+              need accept the terms and condition.
+            </p>
             <Button className="text-purple-450 px-0 underline text-lg mb-2" onClick={open}>
-              See the terms and conditions here
+              Click Here to read more
             </Button>
 
             {form.errors ? <p className="text-red-450">{form.errors.hasAcceptedTerms}</p> : null}

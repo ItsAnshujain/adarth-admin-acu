@@ -9,6 +9,7 @@ import {
   Chip,
   HoverCard,
   Text,
+  Group,
 } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -24,7 +25,7 @@ import Table from '../../Table/Table';
 import { useFetchInventory } from '../../../hooks/inventory.hooks';
 import upload from '../../../assets/upload.svg';
 import { useFormContext } from '../../../context/formContext';
-import { categoryColors, supportedTypes } from '../../../utils';
+import { categoryColors, getDate, supportedTypes } from '../../../utils';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import Filter from '../../Inventory/Filter';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
@@ -33,6 +34,8 @@ import DateRangeSelector from '../../DateRangeSelector';
 dayjs.extend(isBetween);
 
 const updatedSupportedTypes = [...supportedTypes, 'MP4'];
+
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 const styles = {
   padding: 0,
@@ -192,8 +195,8 @@ const SelectSpace = () => {
           useMemo(() => {
             const isOccupied = bookingRange?.some(
               item =>
-                dayjs().isBetween(item?.startDate, item?.endDate, 'day') ||
-                dayjs().isSame(dayjs(item?.endDate), 'day'),
+                dayjs(dayjs().format(DATE_FORMAT)).isBetween(item?.startDate, item?.endDate) ||
+                dayjs(dayjs().format(DATE_FORMAT)).isSame(dayjs(item?.endDate)),
             );
 
             return (
@@ -455,6 +458,8 @@ const SelectSpace = () => {
       const finalData = [];
 
       for (const item of docs) {
+        const selectionItem = values?.place?.find(pl => pl._id === item._id);
+
         const obj = {};
         obj.photo = item.basicInformation.spacePhoto;
         obj._id = item._id;
@@ -472,8 +477,8 @@ const SelectSpace = () => {
         obj.price = item.basicInformation?.price || 0;
         obj.landlord = item.basicInformation?.mediaOwner?.name;
         obj.campaigns = item?.campaigns;
-        obj.startDate = item.startDate ? new Date(item.startDate) : null;
-        obj.endDate = item.endDate ? new Date(item.endDate) : null;
+        obj.startDate = getDate(selectionItem, item, 'startDate');
+        obj.endDate = getDate(selectionItem, item, 'endDate');
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
         finalData.push(obj);
       }
@@ -512,7 +517,10 @@ const SelectSpace = () => {
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
-            <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
+            <Group>
+              <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
+              <p>**additional gst to be included</p>
+            </Group>
           </div>
         </div>
         <div className="flex justify-between mb-4 items-center">
