@@ -100,10 +100,6 @@ export const useShareRecord = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['finance-by-month']);
-        showNotification({
-          title: 'Record has been shared successfully',
-          color: 'green',
-        });
       },
       onError: err => {
         showNotification({

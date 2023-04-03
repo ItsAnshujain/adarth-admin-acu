@@ -20,7 +20,12 @@ export const useStyles = createStyles(theme => ({
   selected: { color: `${theme.white} !important` },
 }));
 
-const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate'] }) => {
+const DateRange = ({
+  handleClose = () => {},
+  dateKeys = ['startDate', 'endDate'],
+  rangeCalendarMinDate,
+  datePickerMinDate,
+}) => {
   const { classes, cx } = useStyles();
   const [value, setValue] = useState([null, null]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,7 +72,7 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
     setValue(p => {
       const newState = [...p];
       dateKeys.forEach((item, index) => {
-        newState[index] = new Date(searchParams.get(item)) || null;
+        newState[index] = searchParams.get(item) !== null ? new Date(searchParams.get(item)) : null;
       });
 
       return newState;
@@ -114,6 +119,7 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
                 [classes.selectedInRange]: modifiers.selectedInRange,
               })
             }
+            minDate={rangeCalendarMinDate}
           />
         </div>
         <div className="flex-1 flex flex-col items-start gap-2">
@@ -133,6 +139,8 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
                 [classes.selected]: modifiers.selected,
               })
             }
+            minDate={datePickerMinDate}
+            placeholder="Month Day, Year"
           />
           <p className="font-bold mt-3">Date To</p>
           <DatePicker
@@ -149,6 +157,8 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
                 [classes.selected]: modifiers.selected,
               })
             }
+            minDate={datePickerMinDate}
+            placeholder="Month Day, Year"
           />
         </div>
       </div>

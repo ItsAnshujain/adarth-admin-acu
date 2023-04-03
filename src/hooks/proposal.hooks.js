@@ -124,10 +124,6 @@ export const useShareProposal = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['proposals-by-id']);
-        showNotification({
-          title: 'Proposal has been shared successfully',
-          color: 'green',
-        });
       },
       onError: err => {
         showNotification({

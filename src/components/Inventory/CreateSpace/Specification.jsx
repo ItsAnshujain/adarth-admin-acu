@@ -121,24 +121,32 @@ const Specification = () => {
             className="mb-7"
           />
           <div className="grid grid-cols-2 gap-4">
-            <NumberInput
-              label="Width"
-              name="specifications.size.width"
-              withAsterisk
-              styles={styles}
-              errors={errors}
-              placeholder="Write..."
-              className="mb-7"
-            />
-            <NumberInput
-              label="Height"
-              name="specifications.size.height"
-              withAsterisk
-              styles={styles}
-              errors={errors}
-              placeholder="Write..."
-              className="mb-7"
-            />
+            <div>
+              <p className="mt-[9px] font-bold text-[15px]">
+                Width <span className="italic font-medium">in sqft</span>
+              </p>
+              <NumberInput
+                name="specifications.size.width"
+                withAsterisk
+                styles={styles}
+                errors={errors}
+                placeholder="Write..."
+                className="mb-7"
+              />
+            </div>
+            <div>
+              <p className="mt-[9px] font-bold text-[15px]">
+                Height <span className="italic font-medium">in sqft</span>
+              </p>
+              <NumberInput
+                name="specifications.size.height"
+                withAsterisk
+                styles={styles}
+                errors={errors}
+                placeholder="Write..."
+                className="mb-7"
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -392,7 +392,7 @@ const PurchaseOrder = ({
           />
           <TextInput
             styles={styles}
-            label="GST"
+            label="GSTIN"
             name="supplierGst"
             withAsterisk
             placeholder="Write..."
@@ -448,7 +448,7 @@ const PurchaseOrder = ({
           />
           <TextInput
             styles={styles}
-            label="GST"
+            label="GSTIN"
             name="buyerGst"
             withAsterisk
             errors={errors}

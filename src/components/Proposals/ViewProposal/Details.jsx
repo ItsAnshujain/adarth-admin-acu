@@ -1,5 +1,5 @@
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
-import { BackgroundImage, Center, Image, Skeleton, Text } from '@mantine/core';
+import { BackgroundImage, Center, Group, Image, Skeleton, Spoiler, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
@@ -74,14 +74,14 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
   const renderSpacesByCategories = useMemo(
     () =>
       proposalData?.categoryName?.length
-        ? proposalData.categoryName?.map(item => (
-            <div key={uuidv4()}>
-              <Text weight="bolder" className="mr-2">
-                {item?.total}
-              </Text>
-              <Text weight="bolder" className="mr-2">
-                {item?._id}
-              </Text>
+        ? proposalData.categoryName?.map((item, index) => (
+            <div key={uuidv4()} className="flex">
+              <Group>
+                <Text weight="bolder">{item?.total}</Text>
+                <Text weight="bolder" className="mr-2">
+                  {item?._id} {index + 1 !== proposalData?.categoryName?.length ? ',' : ''}
+                </Text>
+              </Group>
             </div>
           ))
         : 0,
@@ -146,22 +146,30 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                 <Text color="grey" weight="400">
                   Description
                 </Text>
-                <Text>
-                  {proposalData?.description
-                    ? proposalData.description
-                    : `Our outdoor advertisementcampaign is the perfect way to get your brand in front of a large audience. 
+                <Spoiler
+                  maxHeight={45}
+                  showLabel="Read more"
+                  hideLabel="Read less"
+                  className="text-purple-450 font-medium text-[14px]"
+                  classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+                >
+                  <Text>
+                    {proposalData?.description
+                      ? proposalData.description
+                      : `Our outdoor advertisementcampaign is the perfect way to get your brand in front of a large audience. 
                         With eye-catching graphics and strategic placement, our billboards and digital displays will capture the attention of anyone passing by. 
                         Our team will work with you to create a curated campaign that perfectly showcases your brand's message and identity.
                          From busy city streets to suburban highways, our outdoor advertising options are the perfect way to increase your brand's visibility and reach.
                        Don't miss out on the opportunity to make a lasting impression with your target audience.`}
-                </Text>
+                  </Text>
+                </Spoiler>
               </div>
               <div className="grid grid-cols-2 mb-3">
                 <div className="col-span-1">
                   <Text color="grey" weight="400">
                     Total Spaces
                   </Text>
-                  <div className="flex">{renderSpacesByCategories}</div>
+                  <div className="flex flex-wrap">{renderSpacesByCategories}</div>
                 </div>
                 <div>
                   <Text color="grey" weight="400">

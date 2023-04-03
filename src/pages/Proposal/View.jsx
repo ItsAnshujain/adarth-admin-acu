@@ -2,15 +2,13 @@ import { useMemo, useState, useEffect } from 'react';
 import { Badge, Box, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { useClickOutside, useDebouncedState } from '@mantine/hooks';
+import { useDebouncedState } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Header from '../../components/Proposals/ViewProposal/Header';
 import Details from '../../components/Proposals/ViewProposal/Details';
-import DateRange from '../../components/DateRange';
-import calendar from '../../assets/data-table.svg';
 import Table from '../../components/Table/Table';
 import { useFetchProposalById } from '../../hooks/proposal.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -25,8 +23,6 @@ const ProposalDetails = () => {
   const userId = useUserStore(state => state.id);
   const [searchInput, setSearchInput] = useDebouncedState('', 1000);
   const [showFilter, setShowFilter] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const ref = useClickOutside(() => setShowDatePicker(false));
   const [searchParams, setSearchParams] = useSearchParams({
     'owner': 'all',
     'page': 1,
@@ -35,7 +31,6 @@ const ProposalDetails = () => {
     'sortOrder': 'desc',
   });
 
-  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const { id: proposalId } = useParams();
@@ -319,16 +314,6 @@ const ProposalDetails = () => {
           Selected Inventory
         </Text>
         <div className="flex gap-2">
-          <div ref={ref} className="mr-2 relative">
-            <Button onClick={toggleDatePicker} variant="default">
-              <Image src={calendar} className="h-5" alt="calendar" />
-            </Button>
-            {showDatePicker && (
-              <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
-                <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
-              </div>
-            )}
-          </div>
           <div>
             <Button onClick={toggleFilter} variant="default">
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
