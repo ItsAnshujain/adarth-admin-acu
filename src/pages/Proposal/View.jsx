@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { Badge, Box, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -21,7 +21,8 @@ import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesM
 const ProposalDetails = () => {
   const modals = useModals();
   const userId = useUserStore(state => state.id);
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [showFilter, setShowFilter] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams({
     'owner': 'all',
@@ -282,8 +283,8 @@ const ProposalDetails = () => {
   };
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', searchInput === '' ? page : 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
     setSearchParams(searchParams, { replace: true });
   };
 
@@ -295,11 +296,11 @@ const ProposalDetails = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams, { replace: true });
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">

@@ -135,13 +135,7 @@ const ReleaseOrder = ({
           ),
       },
       {
-        Header: 'PER',
-        accessor: 'per',
-        disableSortBy: true,
-        Cell: () => useMemo(() => <p className="w-[14%]">1</p>, []),
-      },
-      {
-        Header: 'PRICING',
+        Header: 'TOTAL AMOUNT',
         accessor: 'basicInformation.price',
         disableSortBy: true,
         Cell: ({

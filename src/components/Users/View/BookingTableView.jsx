@@ -1,5 +1,5 @@
-import { useDebouncedState } from '@mantine/hooks';
-import { useEffect, useMemo } from 'react';
+import { useDebouncedValue } from '@mantine/hooks';
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { Button, Loader, Progress, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
@@ -36,7 +36,8 @@ const DATE_FORMAT = 'DD MMM YYYY';
 
 const BookingTableView = ({ data: bookingData, isLoading }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
 
   const { data: campaignStatus } = useFetchMasters(
     serialize({
@@ -484,6 +485,12 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
     setSearchParams(searchParams);
   };
 
+  const handleSearch = () => {
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', 1);
+    setSearchParams(searchParams);
+  };
+
   const handlePagination = (key, val) => {
     if (val !== '') searchParams.set(key, val);
     else searchParams.delete(key);
@@ -492,10 +499,12 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
   };
 
   useEffect(() => {
-    if (!searchInput) searchParams.delete('search');
-    else searchParams.set('searchParams');
-    setSearchParams(searchParams);
-  }, [searchInput]);
+    handleSearch();
+    if (debouncedSearch === '') {
+      searchParams.delete('search');
+      setSearchParams(searchParams);
+    }
+  }, [debouncedSearch]);
 
   return (
     <div className="">

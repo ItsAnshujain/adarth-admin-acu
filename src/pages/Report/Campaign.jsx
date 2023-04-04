@@ -193,7 +193,11 @@ const CampaignReport = () => {
   }, [report, isSuccess]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div
+      className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto"
+      id="campaign_report_pdf"
+    >
+      {/* TODO: lg:col-span-12 for pdf */}
       <Header text="Campaign Report" />
       <div className="pr-7 pl-5 mt-5" id="campaign-pdf">
         <CampaignStatsContent
@@ -215,6 +219,7 @@ const CampaignReport = () => {
                   <span className="font-bold">{report?.proposal?.created ?? 0}</span>
                 </p>
               </div>
+              {/* TODO: hide for pdf */}
               <ViewByFilter handleViewBy={handleViewBy} />
             </div>
 

@@ -39,16 +39,13 @@ const InputModal = ({ opened, setOpened, isEdit = false, itemId, name }) => {
 
   const type = searchParams.get('type');
   const parentId = searchParams.get('parentId');
-  const masterType = useMemo(
-    () => masterTypes[searchParams.get('type')],
-    [searchParams.get('type')],
-  );
+  const masterType = useMemo(() => masterTypes[type], [type]);
 
   const {
     data: parentData,
     isLoading: isParentDataLoading,
     isSuccess: isParentDateLoaded,
-  } = useFetchMasters(serialize(query));
+  } = useFetchMasters(serialize(query), parentId !== 'null');
 
   const { mutate: create, isLoading } = useCreateMaster();
   const { mutate: edit, isLoading: isUpdateMasterLoading } = useUpdateMaster();

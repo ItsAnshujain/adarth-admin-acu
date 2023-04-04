@@ -4,7 +4,7 @@ import { ChevronDown } from 'react-feather';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import Search from '../Search';
 import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
@@ -28,7 +28,8 @@ const Spaces = () => {
     'sortBy': 'basicInformation.spaceName',
     'isUnderMaintenance': false,
   });
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
@@ -320,8 +321,8 @@ const Spaces = () => {
   };
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', searchInput === '' ? pages : 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? pages : 1);
     setSearchParams(searchParams);
   };
 
@@ -365,11 +366,11 @@ const Spaces = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   return (
     <>

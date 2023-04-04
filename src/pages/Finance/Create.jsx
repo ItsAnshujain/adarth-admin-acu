@@ -38,6 +38,8 @@ import InvoicePreview from '../../components/Finance/Create/InvoicePreview';
 import ManualEntryContent from './ManualEntryContent';
 import FormHeader from '../../components/Finance/Create/FormHeader';
 
+const DATE_FORMAT = 'YYYY-MM-DD';
+
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
 const bookingStyles = {
@@ -525,8 +527,9 @@ const Home = () => {
       if (bookingIdFromFinance) {
         data.spaces = addSpaceItem?.map(item => ({
           id: item._id,
-          per: +item.per || 1,
-          dueOn: item.dueOn || new Date(),
+          quantity: +item.quantity || 1,
+          dueOn: dayjs(item.dueOn).format(DATE_FORMAT) || dayjs().format(DATE_FORMAT),
+          amount: 0,
         }));
         if (submitType === 'preview') {
           open();
@@ -560,7 +563,6 @@ const Home = () => {
           dueOn: item.dueOn,
           quantity: item.quantity,
           rate: item.rate,
-          per: item.per,
           price: item.price,
           index: index + 1,
         }));
@@ -727,7 +729,6 @@ const Home = () => {
           dueOn: item.dueOn,
           quantity: item.quantity,
           rate: item.rate,
-          per: item.per,
           price: item.price,
           index: index + 1,
         }));

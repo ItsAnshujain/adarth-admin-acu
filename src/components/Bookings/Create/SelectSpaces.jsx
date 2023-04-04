@@ -15,7 +15,7 @@ import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 import { Dropzone } from '@mantine/dropzone';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import { v4 as uuidv4 } from 'uuid';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
@@ -118,7 +118,8 @@ const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
 
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -426,8 +427,8 @@ const SelectSpace = () => {
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', searchInput === '' ? pages : 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? pages : 1);
     setSearchParams(searchParams);
   };
 
@@ -490,11 +491,11 @@ const SelectSpace = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   return (
     <>

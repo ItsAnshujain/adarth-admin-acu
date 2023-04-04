@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ActionIcon, Badge, Box, Image, Loader, Progress, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
@@ -32,7 +32,8 @@ const initialValues = {
 };
 
 const Home = () => {
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
     'limit': 10,
@@ -312,9 +313,9 @@ const Home = () => {
   };
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', searchInput === '' ? page : 1);
-    if (searchInput !== '') {
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
+    if (debouncedSearch !== '') {
       searchParams.delete('sortBy');
       searchParams.delete('sortOrder');
     }
@@ -349,11 +350,11 @@ const Home = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">

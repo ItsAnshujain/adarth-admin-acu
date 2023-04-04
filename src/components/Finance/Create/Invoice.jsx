@@ -128,13 +128,7 @@ const Invoice = ({
           ),
       },
       {
-        Header: 'PER',
-        accessor: 'per',
-        disableSortBy: true,
-        Cell: () => useMemo(() => <p className="w-[14%]">1</p>, []),
-      },
-      {
-        Header: 'PRICING',
+        Header: 'TOTAL AMOUNT',
         accessor: 'basicInformation.price',
         disableSortBy: true,
         Cell: ({
@@ -240,17 +234,7 @@ const Invoice = ({
           ),
       },
       {
-        Header: 'PER',
-        accessor: 'per',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { per },
-          },
-        }) => useMemo(() => <p className="w-[14%]">{per}</p>, []),
-      },
-      {
-        Header: 'PRICING',
+        Header: 'TOTAL AMOUNT',
         accessor: 'price',
         disableSortBy: true,
         Cell: ({

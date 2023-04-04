@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Badge, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import Filter from '../../Inventory/Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -25,7 +25,8 @@ const getHealthTag = score =>
 
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
-  const [search, setSearch] = useDebouncedState('', 500);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [showFilter, setShowFilter] = useState(false);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
@@ -293,11 +294,14 @@ const SelectSpace = () => {
   };
 
   useEffect(() => {
-    if (search) searchParams.set('search', search);
-    else searchParams.delete('search');
+    if (debouncedSearch) {
+      searchParams.set('search', debouncedSearch);
+    } else {
+      searchParams.delete('search');
+    }
 
     setSearchParams(searchParams);
-  }, [search]);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     if (inventoryData) {
@@ -371,7 +375,7 @@ const SelectSpace = () => {
             ) : null}
           </p>
 
-          <Search search={search} setSearch={setSearch} />
+          <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
       {isLoading ? (

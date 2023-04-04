@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Text, Button, Image, Box, Badge, Loader } from '@mantine/core';
 import { Plus } from 'react-feather';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useClickOutside, useDebouncedState } from '@mantine/hooks';
+import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
@@ -24,7 +24,8 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
     'sortBy': 'basicInformation.spaceName',
   });
   const ref = useClickOutside(() => setShowDatePicker(false));
-  const [search, setSearch] = useDebouncedState('', 500);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const navigate = useNavigate();
   const modals = useModals();
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
@@ -210,15 +211,24 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
     setSearchParams(searchParams);
   };
 
+  const handlePagination = (key, val) => {
+    if (val !== '') {
+      searchParams.set(key, val);
+    } else {
+      searchParams.delete(key);
+    }
+    setSearchParams(searchParams);
+  };
+
   useEffect(() => {
-    if (search) {
-      searchParams.set('search', search);
+    if (debouncedSearch) {
+      searchParams.set('search', debouncedSearch);
     } else {
       searchParams.delete('search');
     }
 
     setSearchParams(searchParams);
-  }, [search]);
+  }, [debouncedSearch]);
   return (
     <>
       <div className="mt-5 pl-5 pr-7 flex justify-between">
@@ -255,7 +265,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
             }}
             count={searchParams.get('limit')}
           />
-          <Search search={search} setSearch={setSearch} />
+          <Search search={searchInput} setSearch={setSearchInput} />
         </div>
         {isCampaignDataLoading ? (
           <div className="flex justify-center items-center h-[400px]">
@@ -272,6 +282,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
             data={spacesData?.docs || []}
             COLUMNS={COLUMNS}
             handleSorting={handleSortByColumn}
+            setActivePage={currentPage => handlePagination('page', currentPage)}
           />
         ) : null}
       </div>

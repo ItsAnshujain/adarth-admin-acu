@@ -113,8 +113,8 @@ const PurchaseOrder = ({
           useMemo(
             () => (
               <DatePicker
-                defaultValue={dueOn}
-                placeholder="DD/MM/YYYY"
+                defaultValue={dueOn || new Date()}
+                placeholder="Month Day, Year"
                 minDate={new Date()}
                 onChange={val => updateData('dueOn', val, _id)}
                 dayClassName={(_, modifiers) =>
@@ -127,14 +127,28 @@ const PurchaseOrder = ({
                 }
               />
             ),
-            [],
+            [dueOn],
           ),
       },
       {
         Header: 'QUANTITY',
         accessor: 'quantity',
         disableSortBy: true,
-        Cell: () => useMemo(() => <p className="w-[14%]">1</p>, []),
+        Cell: ({
+          row: {
+            original: { quantity, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <NumberInput
+                hideControls
+                defaultValue={+(quantity ?? 1)}
+                onBlur={e => updateData('quantity', e.target.value, _id)}
+              />
+            ),
+            [quantity],
+          ),
       },
       {
         Header: 'RATE',
@@ -157,27 +171,7 @@ const PurchaseOrder = ({
           ),
       },
       {
-        Header: 'PER',
-        accessor: 'per',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { per, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <NumberInput
-                hideControls
-                defaultValue={+(per || 1)}
-                onBlur={e => updateData('per', e.target.value, _id)}
-              />
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'PRICING',
+        Header: 'TOTAL AMOUNT',
         accessor: 'basicInformation.price',
         disableSortBy: true,
         Cell: ({
@@ -283,17 +277,7 @@ const PurchaseOrder = ({
           ),
       },
       {
-        Header: 'PER',
-        accessor: 'per',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { per },
-          },
-        }) => useMemo(() => <p className="w-[14%]">{per}</p>, []),
-      },
-      {
-        Header: 'PRICING',
+        Header: 'TOTAL AMOUNT',
         accessor: 'price',
         disableSortBy: true,
         Cell: ({

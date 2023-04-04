@@ -3,7 +3,7 @@ import icon from '../assets/icon.svg';
 
 const Search = ({ search, setSearch = () => {}, ...props }) => (
   <TextInput
-    defaultValue={search}
+    value={search}
     onChange={e => setSearch(e.currentTarget.value)}
     className="w-3/12"
     placeholder="Search"

@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Text, Button, Image, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useClickOutside, useDebouncedState } from '@mantine/hooks';
+import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import DateRange from '../../DateRange';
@@ -19,7 +19,8 @@ import BookingsMenuPopover from '../../Popovers/BookingsMenuPopover';
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const Booking = ({ inventoryId }) => {
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
@@ -258,8 +259,8 @@ const Booking = ({ inventoryId }) => {
   );
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', searchInput === '' ? page : 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
     setSearchParams(searchParams, { replace: true });
   };
 
@@ -287,11 +288,11 @@ const Booking = ({ inventoryId }) => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams, { replace: true });
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   return (
     <div className="flex flex-col">
