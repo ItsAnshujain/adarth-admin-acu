@@ -1,5 +1,5 @@
 import { Button, Loader, Select } from '@mantine/core';
-import { useClickOutside, useDebouncedState } from '@mantine/hooks';
+import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { useParams, useSearchParams } from 'react-router-dom';
@@ -33,7 +33,8 @@ const approvalStatList = [
 const Home = () => {
   const modals = useModals();
   const queryClient = useQueryClient();
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
@@ -65,8 +66,8 @@ const Home = () => {
   };
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', searchInput === '' ? page : 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
     setSearchParams(searchParams);
   };
 
@@ -663,11 +664,11 @@ const Home = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     if (financeRecordId) {

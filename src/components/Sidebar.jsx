@@ -27,7 +27,7 @@ const Sidebar = () => {
     <div className="hidden lg:block lg:col-span-2 pt-4 bg-purple-450 overflow-y-auto">
       <div className="h-full flex flex-col justify-between">
         <SidebarContent className="gap-3 px-5" />
-        <List className="p-5 text-white">
+        <List className="p-5 text-white" listStyleType="disc">
           <List.Item>
             <Button className="p-0 text-base" onClick={() => handleModal('privacyPolicy')}>
               Privacy Policy

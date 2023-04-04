@@ -15,7 +15,6 @@ const initialPurchaseValues = {
   dueOn: '',
   quantity: null,
   rate: null,
-  per: null,
   price: null,
 };
 
@@ -36,12 +35,6 @@ const purchaseSchema = yup.object({
     .typeError('Must be a number')
     .nullable()
     .required('Rate is required'),
-  per: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Per is required'),
   price: yup
     .number()
     .positive('Must be a positive number')
@@ -106,7 +99,6 @@ const initialInvoiceValues = {
   dueOn: '',
   quantity: null,
   rate: null,
-  per: null,
   price: null,
 };
 
@@ -127,12 +119,6 @@ const invoiceSchema = yup.object({
     .typeError('Must be a number')
     .nullable()
     .required('Rate is required'),
-  per: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Per is required'),
   price: yup
     .number()
     .positive('Must be a positive number')
@@ -154,7 +140,11 @@ const schema = {
 };
 
 const PurchaseAndInvoiceContent = () => {
-  const { errors } = useFormContext();
+  const { values, errors, setFieldValue } = useFormContext();
+
+  useEffect(() => {
+    setFieldValue('price', values.quantity * values.rate);
+  }, [values.quantity, values.rate]);
 
   return (
     <>
@@ -198,7 +188,7 @@ const PurchaseAndInvoiceContent = () => {
         size="md"
         className="mb-4"
       />
-      <div className="grid grid-cols-2 gap-x-4">
+      <div className="grid grid-cols-3 gap-x-4">
         <NumberInput
           label="Quantity"
           name="quantity"
@@ -219,27 +209,16 @@ const PurchaseAndInvoiceContent = () => {
           className="mb-4"
           hideControls
         />
-      </div>
-      <div className="grid grid-cols-2 gap-x-4">
         <NumberInput
-          label="Per"
-          name="per"
-          withAsterisk
-          errors={errors}
-          placeholder="Write..."
-          size="md"
-          className="mb-4"
-          hideControls
-        />
-        <NumberInput
-          label="Pricing"
+          label="Total Amount"
           name="price"
-          withAsterisk
           errors={errors}
           placeholder="Write..."
           size="md"
           className="mb-4"
           hideControls
+          readOnly
+          disabled
         />
       </div>
     </>
@@ -420,7 +399,6 @@ const ManualEntryContent = ({
         dueOn: item?.dueOn,
         quantity: item?.quantity,
         rate: item?.rate,
-        per: item?.per,
         price: item?.price,
         area: item?.area,
         city: item?.city,

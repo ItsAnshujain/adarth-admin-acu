@@ -1,5 +1,5 @@
-import { useMemo, useEffect } from 'react';
-import { useDebouncedState } from '@mantine/hooks';
+import { useMemo, useEffect, useState } from 'react';
+import { useDebouncedValue } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Loader, Text } from '@mantine/core';
 import Header from './Header';
@@ -11,7 +11,8 @@ import { useFetchMasters } from '../../hooks/masters.hooks';
 import { masterTypes } from '../../utils';
 
 const Home = () => {
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [searchParams, setSearchParams] = useSearchParams({
     'type': 'category',
     'parentId': null,
@@ -31,14 +32,17 @@ const Home = () => {
   const limit = searchParams.get('limit');
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', searchInput === '' ? page : 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
     setSearchParams(searchParams);
   };
 
   const handlePagination = (key, val) => {
-    if (val !== '') searchParams.set(key, val);
-    else searchParams.delete(key);
+    if (val !== '') {
+      searchParams.set(key, val);
+    } else {
+      searchParams.delete(key);
+    }
     setSearchParams(searchParams);
   };
 
@@ -118,11 +122,15 @@ const Home = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+    setSearchInput('');
+  }, [type, parentId]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
@@ -132,6 +140,7 @@ const Home = () => {
           setCount={currentLimit => handlePagination('limit', currentLimit)}
           count={limit}
         />
+
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       {isMasterDataLoading ? (

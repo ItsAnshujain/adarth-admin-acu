@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Pagination, Skeleton } from '@mantine/core';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import { v4 as uuidv4 } from 'uuid';
 import { useQueryClient } from '@tanstack/react-query';
 import AreaHeader from '../../components/Users/Header';
@@ -31,7 +31,8 @@ const Home = () => {
     'sortBy': 'createdAt',
     'filter': userCachedData?.role === 'admin' ? 'all' : 'team',
   });
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const { data: userData, isLoading: isLoadingUserData } = useFetchUsers(searchParams.toString());
 
   const filter = searchParams.get('filter');
@@ -39,8 +40,8 @@ const Home = () => {
   const page = searchParams.get('page');
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', searchInput === '' ? page : 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
     setSearchParams(searchParams);
   };
   const handleFilter = currentVal => {
@@ -55,11 +56,11 @@ const Home = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">

@@ -1,9 +1,9 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { NativeSelect, Progress, Image, Loader, Text } from '@mantine/core';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ChevronDown } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import classNames from 'classnames';
 import { useCampaigns, useUpdateCampaign } from '../../hooks/campaigns.hooks';
 import AreaHeader from '../../components/Campaigns/Header';
@@ -31,7 +31,8 @@ const initialState = {
 
 const Home = () => {
   const queryClient = useQueryClient();
-  const [search, setSearch] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const viewType = useLayoutView(state => state.activeLayout);
   const [searchParams, setSearchParams] = useSearchParams(initialState);
 
@@ -250,20 +251,20 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (search) {
-      searchParams.set('search', search);
+    if (debouncedSearch) {
+      searchParams.set('search', debouncedSearch);
       searchParams.set('page', 1);
     } else searchParams.delete('search');
 
     setSearchParams(searchParams);
-  }, [search]);
+  }, [debouncedSearch]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <AreaHeader text="Campaign List" />
       <div className="flex justify-between h-20 items-center pr-7">
         <RowsPerPage setCount={data => setQuery('limit', data)} count={limit} />
-        <Search search={search} setSearch={setSearch} />
+        <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       {isLoading ? (
         <div className="flex justify-center items-center h-[400px]">

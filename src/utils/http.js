@@ -48,6 +48,10 @@ const getBody = (body, hasFiles = false) => {
  */
 const handleError = (httpStatusCode, response = {}) => {
   if (httpStatusCode === 403 || httpStatusCode === 406) {
+    if (!response?.data?.errors?.cause) {
+      localStorage.clear();
+      window.location.href = '/login';
+    }
     throw response;
   }
 

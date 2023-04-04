@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import DomToPdf from 'dom-to-pdf';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import Header from '../../components/Reports/Header';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -77,7 +77,8 @@ const InventoryReport = () => {
     'sortBy': 'basicInformation.spaceName',
   });
   const chartRef = useRef(null);
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
 
   const [queryByTime, setQueryByTime] = useState({
     'groupBy': 'month',
@@ -599,8 +600,8 @@ const InventoryReport = () => {
   };
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', searchInput === '' ? page : 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
     setSearchParams(searchParams);
   };
 
@@ -612,11 +613,11 @@ const InventoryReport = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     const chart = chartRef.current;
