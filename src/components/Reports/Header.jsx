@@ -1,13 +1,16 @@
-import { Anchor, Button, Menu, Text } from '@mantine/core';
-import { Mail, Share2, Download, Link as LinkIcon } from 'react-feather';
-import whatsapp from '../../assets/whatsapp.svg';
+import {
+  // Anchor, Button, Menu,
+  Text,
+} from '@mantine/core';
+// import { Mail, Share2, Download, Link as LinkIcon } from 'react-feather';
+// import whatsapp from '../../assets/whatsapp.svg';
 import ViewByFilter from './ViewByFilter';
 
 const Header = ({
   text,
-  onClickDownloadPdf = () => {},
-  onClickSharePdf = () => {},
-  pdfLink,
+  // onClickDownloadPdf = () => {},
+  // onClickSharePdf = () => {},
+  // pdfLink,
   handleRevenueGraphViewBy = () => {},
   showGlobalFilter = false,
 }) => (
@@ -17,7 +20,8 @@ const Header = ({
     </Text>
     <div className="flex items-start">
       {showGlobalFilter ? <ViewByFilter handleViewBy={handleRevenueGraphViewBy} /> : null}
-      <Button
+      {/* TODO: commented for now */}
+      {/* <Button
         leftIcon={<Download size="20" color="white" />}
         className="primary-button mx-3"
         onClick={onClickDownloadPdf}
@@ -70,7 +74,7 @@ const Header = ({
             Copy Link
           </Menu.Item>
         </Menu.Dropdown>
-      </Menu>
+      </Menu> */}
     </div>
   </div>
 );

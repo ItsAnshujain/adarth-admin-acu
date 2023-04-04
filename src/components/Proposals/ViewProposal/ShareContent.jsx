@@ -159,6 +159,12 @@ const ShareContent = ({ id }) => {
       {
         onSuccess: () => {
           setActiveFileType([]);
+          if (data.shareVia !== 'copy_link') {
+            showNotification({
+              title: 'Proposal has been shared successfully',
+              color: 'green',
+            });
+          }
           form.setFieldValue('name', '');
           form.setFieldValue('to', '');
         },

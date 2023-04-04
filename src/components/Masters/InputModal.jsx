@@ -67,6 +67,12 @@ const InputModal = ({ opened, setOpened, isEdit = false, itemId, name }) => {
 
   const form = useForm({ validate: yupResolver(schema), initialValues });
 
+  const onHandleCloseAndClear = () => {
+    form.setFieldValue('name', '');
+    setOpened(false);
+    form.clearErrors();
+  };
+
   const onSubmit = formData => {
     let data = {};
     data = { ...formData, type };
@@ -78,18 +84,17 @@ const InputModal = ({ opened, setOpened, isEdit = false, itemId, name }) => {
     });
 
     if (isEdit) {
-      edit({ masterId: itemId, data });
+      edit(
+        { masterId: itemId, data },
+        {
+          onSuccess: () => onHandleCloseAndClear(),
+        },
+      );
     } else {
-      create(data);
+      create(data, {
+        onSuccess: () => onHandleCloseAndClear(),
+      });
     }
-    form.reset();
-    setOpened(false);
-    form.clearErrors();
-  };
-
-  const onHandleCloseAndClear = () => {
-    setOpened(false);
-    form.clearErrors();
   };
 
   useEffect(() => {

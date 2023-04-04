@@ -106,6 +106,12 @@ const ShareContent = ({ id }) => {
       { id, data },
       {
         onSuccess: () => {
+          if (data.shareVia !== 'copy_link') {
+            showNotification({
+              title: 'Record has been shared successfully',
+              color: 'green',
+            });
+          }
           form.setFieldValue('name', '');
           form.setFieldValue('to', '');
         },
