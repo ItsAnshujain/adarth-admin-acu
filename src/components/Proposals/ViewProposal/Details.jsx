@@ -1,5 +1,5 @@
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
-import { BackgroundImage, Center, Group, Image, Skeleton, Spoiler, Text } from '@mantine/core';
+import { BackgroundImage, Center, Image, Skeleton, Spoiler, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
@@ -76,12 +76,12 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
       proposalData?.categoryName?.length
         ? proposalData.categoryName?.map((item, index) => (
             <div key={uuidv4()} className="flex">
-              <Group>
+              <div className="flex flex-row">
                 <Text weight="bolder">{item?.total}</Text>
-                <Text weight="bolder" className="mr-2">
+                <Text weight="bolder" className="mx-2">
                   {item?._id} {index + 1 !== proposalData?.categoryName?.length ? ',' : ''}
                 </Text>
-              </Group>
+              </div>
             </div>
           ))
         : 0,

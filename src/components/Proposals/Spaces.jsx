@@ -137,7 +137,7 @@ const Spaces = () => {
           row: {
             original: { mediaOwner },
           },
-        }) => useMemo(() => <p className="w-fit">{mediaOwner || '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{mediaOwner}</p>, []),
       },
       {
         Header: 'PEER',
@@ -146,7 +146,7 @@ const Spaces = () => {
           row: {
             original: { peer },
           },
-        }) => useMemo(() => <p className="w-fit">{peer || '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{peer}</p>, []),
       },
       {
         Header: 'CATEGORY',
@@ -344,8 +344,14 @@ const Spaces = () => {
         obj.spaceName = item?.basicInformation?.spaceName;
         obj.spacePhoto = item?.basicInformation?.spacePhoto;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
-        obj.mediaOwner = item?.basicInformation?.mediaOwner?.name;
-        obj.peer = item?.createdBy?.isPeer && item.createdBy?.name;
+        obj.mediaOwner =
+          item?.createdBy && !item.createdBy?.isPeer
+            ? item?.basicInformation?.mediaOwner?.name
+            : '-';
+        obj.peer =
+          item?.createdBy && item.createdBy?.isPeer
+            ? item?.basicInformation?.mediaOwner?.name
+            : '-';
         obj.category = item?.basicInformation?.category?.name;
         obj.height = item?.specifications?.size?.height;
         obj.width = item?.specifications?.size?.width;

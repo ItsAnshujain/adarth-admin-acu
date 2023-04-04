@@ -16,7 +16,7 @@ import BookingFilter from '../../Bookings/Filter';
 import { useBookingStatByIncharge } from '../../../hooks/booking.hooks';
 import { serialize } from '../../../utils';
 
-const ManagingSubHeader = ({ activeTable, userId, counts }) => {
+const ManagingSubHeader = ({ activeChildTab, userId }) => {
   const navigate = useNavigate();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -40,7 +40,7 @@ const ManagingSubHeader = ({ activeTable, userId, counts }) => {
             {showDatePicker && (
               <div
                 className={classNames(
-                  activeTable === 'booking' ? '-translate-x-[460px]' : '-translate-x-1/2',
+                  activeChildTab === 'booking' ? '-translate-x-[460px]' : '-translate-x-1/2',
                   'absolute z-20 bg-white -top-0.3',
                 )}
               >
@@ -52,14 +52,14 @@ const ManagingSubHeader = ({ activeTable, userId, counts }) => {
             <Button onClick={toggleFilter} variant="default" className="font-medium">
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
-            {showFilter && activeTable === 'booking' && (
+            {showFilter && activeChildTab === 'booking' && (
               <BookingFilter isOpened={showFilter} setShowFilter={setShowFilter} />
             )}
-            {showFilter && activeTable === 'proposal' && (
+            {showFilter && activeChildTab === 'proposal' && (
               <ProposalFilter isOpened={showFilter} setShowFilter={setShowFilter} />
             )}
           </div>
-          {activeTable === 'proposal' && (
+          {activeChildTab === 'proposal' && (
             <div className="mr-2">
               <Button
                 variant="default"
@@ -93,12 +93,12 @@ const ManagingSubHeader = ({ activeTable, userId, counts }) => {
           <div className="border rounded p-8 pr-20">
             <Image src={ProposalSentIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-slate-400 text-sm">Total Proposal</p>
-            <p>{counts?.proposals || 0}</p>
+            <p>{bookingStatsByIncharge?.totalProposal || 0}</p>
           </div>
           <div className="border rounded p-8 pr-20">
             <Image src={BookingsIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-slate-400 text-sm">Total Bookings</p>
-            <p>{counts?.bookings || 0}</p>
+            <p>{bookingStatsByIncharge?.totalBooking || 0}</p>
           </div>
         </div>
       </div>

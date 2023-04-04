@@ -143,21 +143,32 @@ const Home = () => {
         accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { createdBy, basicInformation },
           },
         }) =>
-          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || '-'}</p>, []),
+          useMemo(
+            () => (
+              <p className="w-fit">
+                {createdBy && !createdBy?.isPeer ? basicInformation?.mediaOwner?.name : '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PEER',
         accessor: 'peer',
         Cell: ({
           row: {
-            original: { createdBy },
+            original: { createdBy, basicInformation },
           },
         }) =>
           useMemo(
-            () => <p className="w-fit">{createdBy && createdBy?.isPeer ? createdBy.name : '-'}</p>,
+            () => (
+              <p className="w-fit">
+                {createdBy && createdBy?.isPeer ? basicInformation?.mediaOwner?.name : '-'}
+              </p>
+            ),
             [],
           ),
       },

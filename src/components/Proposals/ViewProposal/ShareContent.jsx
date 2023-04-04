@@ -173,7 +173,7 @@ const ShareContent = ({ id }) => {
     if (activeShare === 'copy_link' && res?.link?.messageText) {
       navigator.clipboard.writeText(res?.link?.messageText);
       showNotification({
-        title: 'Copied',
+        title: 'Link Copied',
         color: 'blue',
       });
     }
