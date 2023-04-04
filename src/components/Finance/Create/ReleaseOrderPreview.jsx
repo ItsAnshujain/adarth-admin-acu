@@ -86,14 +86,18 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                         {item?.basicInformation?.spaceName}
                       </Text>
                     </Group>
-                    <Group className="grid grid-cols-2">
+                    <Group className="grid grid-cols-3">
                       <div>
-                        <p>Quantity: 1</p>
-                        <p>Rate: {item?.basicInformation?.price}</p>
+                        <p>Quantity:</p>
+                        <p>1</p>
                       </div>
                       <div>
-                        <p>Per: {item?.per}</p>
-                        <p>Pricing: {item?.basicInformation?.price}</p>
+                        <p>Rate:</p>
+                        <p>{item?.basicInformation?.price}</p>
+                      </div>
+                      <div>
+                        <p>Pricing:</p>
+                        <p>{item?.basicInformation?.price}</p>
                       </div>
                     </Group>
                   </div>
@@ -134,10 +138,22 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                   </div>
                 ))}
             {hasBookingId ? (
-              <div className="flex justify-end">
-                <p className="text-lg font-bold">Total Price:</p>
-                <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>
-              </div>
+              <>
+                <div className="flex justify-end">
+                  <p className="text-lg font-bold">Amount:</p>
+                  <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+                </div>
+                <div className="flex justify-end">
+                  <p className="text-lg font-bold">GST 18%:</p>
+                  <p className="text-lg ml-2">{toIndianCurrency(totalPrice * 0.18) || 0}</p>
+                </div>
+                <div className="flex justify-end">
+                  <p className="text-lg font-bold">Total:</p>
+                  <p className="text-lg ml-2">
+                    {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
+                  </p>
+                </div>
+              </>
             ) : null}
           </section>
         </article>

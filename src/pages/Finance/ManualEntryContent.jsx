@@ -148,16 +148,16 @@ const PurchaseAndInvoiceContent = () => {
 
   return (
     <>
-      <TextInput
-        label="Description of Goods and Service"
-        name="name"
-        withAsterisk
-        errors={errors}
-        placeholder="Write..."
-        size="md"
-        className="mb-4"
-      />
       <div className="grid grid-cols-2 gap-x-4">
+        <TextInput
+          label="Description of Goods and Service"
+          name="name"
+          withAsterisk
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+        />
         <TextInput
           label="Location"
           name="location"
@@ -167,6 +167,8 @@ const PurchaseAndInvoiceContent = () => {
           size="md"
           className="mb-4"
         />
+      </div>
+      <div className="grid grid-cols-2 gap-x-4">
         <DatePicker
           label="Date"
           name="titleDate"
@@ -177,17 +179,17 @@ const PurchaseAndInvoiceContent = () => {
           size="md"
           className="mb-4"
         />
+        <DatePicker
+          label="Due On"
+          name="dueOn"
+          withAsterisk
+          placeholder="DD/MM/YYYY"
+          minDate={new Date()}
+          errors={errors}
+          size="md"
+          className="mb-4"
+        />
       </div>
-      <DatePicker
-        label="Due On"
-        name="dueOn"
-        withAsterisk
-        placeholder="DD/MM/YYYY"
-        minDate={new Date()}
-        errors={errors}
-        size="md"
-        className="mb-4"
-      />
       <div className="grid grid-cols-3 gap-x-4">
         <NumberInput
           label="Quantity"
