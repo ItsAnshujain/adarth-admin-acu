@@ -594,6 +594,7 @@ const ReleaseOrder = ({
               name="printingSqftCost"
               withAsterisk
               placeholder="Write..."
+              min={0}
             />
             <NumberInput
               styles={styles}
@@ -601,12 +602,14 @@ const ReleaseOrder = ({
               name="mountingSqftCost"
               withAsterisk
               placeholder="Write..."
+              min={0}
             />
             <NumberInput
               styles={styles}
               label="Mounting GST Charges"
               name="mountingGst"
               placeholder="Write..."
+              min={0}
               max={100}
             />
           </div>
@@ -618,6 +621,7 @@ const ReleaseOrder = ({
               label="Total Display Cost Discount"
               name="discount.display"
               placeholder="Write..."
+              min={0}
               max={calculatedData?.initTotal?.display}
             />
             <NumberInput
@@ -625,6 +629,7 @@ const ReleaseOrder = ({
               label="Printing Cost Discount"
               name="discount.printing"
               placeholder="Write..."
+              min={0}
               max={calculatedData?.initTotal?.printing}
             />
             <NumberInput
@@ -632,6 +637,7 @@ const ReleaseOrder = ({
               label="Mounting Cost Discount"
               name="discount.mounting"
               placeholder="Write..."
+              min={0}
               max={calculatedData?.initTotal?.mounting}
             />
           </div>
