@@ -41,7 +41,7 @@ const SignatureAndLetterhead = () => {
   const onHandleDrop = async (params, key) => {
     const isValidResolution = await validateImageResolution(
       params?.[0],
-      key === 'letterHead' ? 150 : key === 'letterFooter' ? 1300 : 512,
+      key === 'letterHead' ? 1350 : key === 'letterFooter' ? 1350 : 512,
       key === 'letterHead' ? 80 : key === 'letterFooter' ? 80 : 512,
     );
     if (!isValidResolution) {
@@ -125,7 +125,7 @@ const SignatureAndLetterhead = () => {
                     {item}
                   </Badge>
                 ))}
-                <p className="text-red-450">Recommended Size: Max 150px x 80px</p>
+                <p className="text-red-450">Recommended Size: Max 1350px x 80px</p>
               </div>
               <div className="flex items-start">
                 {!form.values?.letterHead ? (
@@ -193,7 +193,7 @@ const SignatureAndLetterhead = () => {
                     {item}
                   </Badge>
                 ))}
-                <p className="text-red-450">Recommended Size: Max 1300px x 80px</p>
+                <p className="text-red-450">Recommended Size: Max 1350px x 80px</p>
               </div>
               <div className="flex items-start">
                 {!form.values?.letterFooter ? (

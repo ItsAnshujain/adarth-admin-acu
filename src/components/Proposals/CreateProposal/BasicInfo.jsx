@@ -49,11 +49,7 @@ const BasicInfo = ({ proposalId, userData }) => {
   );
 
   const onHandleDrop = async (params, key) => {
-    const isValidResolution = await validateImageResolution(
-      params?.[0],
-      key === 'letterHead' ? 150 : key === 'letterFooter' ? 1300 : 0,
-      80,
-    );
+    const isValidResolution = await validateImageResolution(params?.[0], 1350, 80);
     if (!isValidResolution) {
       showNotification({
         title: 'Please upload below the recommended image size',
@@ -218,7 +214,7 @@ const BasicInfo = ({ proposalId, userData }) => {
                   {item}
                 </Badge>
               ))}
-              <p className="text-red-450">Recommended Size: Max 150px x 80px</p>
+              <p className="text-red-450">Recommended Size: Max 1350px x 80px</p>
             </div>
             <div className="flex items-start">
               {!values?.letterHead ? (
@@ -285,7 +281,7 @@ const BasicInfo = ({ proposalId, userData }) => {
                   {item}
                 </Badge>
               ))}
-              <p className="text-red-450">Recommended Size: Max 1300px x 80px</p>
+              <p className="text-red-450">Recommended Size: Max 1350px x 80px</p>
             </div>
             <div className="flex items-start">
               {!values?.letterFooter ? (
