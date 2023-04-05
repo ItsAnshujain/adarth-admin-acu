@@ -248,9 +248,9 @@ const SelectSpace = () => {
         accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
           row: {
-            original: { landlord },
+            original: { mediaOwner },
           },
-        }) => useMemo(() => <p className="w-fit">{landlord || '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{mediaOwner}</p>, []),
       },
       {
         Header: 'UPLOAD MEDIA',
@@ -280,7 +280,7 @@ const SelectSpace = () => {
           row: {
             original: { peer },
           },
-        }) => useMemo(() => <p className="w-fit">{peer || '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{peer}</p>, []),
       },
       {
         Header: 'CATEGORY',
@@ -467,7 +467,14 @@ const SelectSpace = () => {
         obj.spaceName = item.basicInformation?.spaceName;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.category = item.basicInformation?.category?.name;
-        obj.peer = item?.createdBy?.isPeer && item.createdBy?.name;
+        obj.mediaOwner =
+          item?.createdBy && !item.createdBy?.isPeer
+            ? item?.basicInformation?.mediaOwner?.name
+            : '-';
+        obj.peer =
+          item?.createdBy && item.createdBy?.isPeer
+            ? item?.basicInformation?.mediaOwner?.name
+            : '-';
         obj.dimension = `${item.specifications?.size?.height || 0}ft x ${
           item.specifications?.size?.width || 0
         }ft`;
@@ -476,7 +483,6 @@ const SelectSpace = () => {
         obj.location = item?.location?.city;
         obj.mediaType = item.basicInformation?.mediaType?.name;
         obj.price = item.basicInformation?.price || 0;
-        obj.landlord = item.basicInformation?.mediaOwner?.name;
         obj.campaigns = item?.campaigns;
         obj.startDate = getDate(selectionItem, item, 'startDate');
         obj.endDate = getDate(selectionItem, item, 'endDate');

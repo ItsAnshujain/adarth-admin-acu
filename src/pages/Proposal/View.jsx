@@ -123,16 +123,16 @@ const ProposalDetails = () => {
         accessor: 'mediaOwner',
         Cell: ({
           row: {
-            original: { mediaOwner },
+            original: { peer, mediaOwner },
           },
-        }) => useMemo(() => <p className="w-fit">{mediaOwner || '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{!peer ? mediaOwner : '-'}</p>, []),
       },
       {
         Header: 'PEER',
         accessor: 'peer',
         Cell: ({
           row: {
-            original: { peer, peerId },
+            original: { peer, peerId, mediaOwner },
           },
         }) =>
           useMemo(
@@ -143,7 +143,7 @@ const ProposalDetails = () => {
                   'w-fit',
                 )}
               >
-                {peer || '-'}
+                {peer ? mediaOwner : '-'}
               </p>
             ),
             [],

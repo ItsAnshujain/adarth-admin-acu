@@ -32,41 +32,21 @@ const UserDetails = () => {
   const { data: userDetails, isLoading: isUserDetailsLoading } = useFetchUsersById(userId);
   const initialBookingValue = tableBookingQueries(userId);
   const initalProposalValue = tableProposalQueries(userId);
-  //   // TODO: wip
-  // eslint-disable-next-line no-unused-vars
-  const [bookingQuery, setBookingQuery] = useState({
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'desc',
-    'incharge': userId,
-  });
-  //   // TODO: wip
-  // eslint-disable-next-line no-unused-vars
-  const [proposalQuery, setProposalQuery] = useState({
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'desc',
-    'userId': userId,
-  });
 
-  const [bookingSearchParams, setBookingSearchParams] = useSearchParams(bookingQuery);
-  const [proposalSearchParams, setProposalSearchParams] = useSearchParams(proposalQuery);
+  const [bookingSearchParams, setBookingSearchParams] = useSearchParams(initialBookingValue);
+  const [proposalSearchParams, setProposalSearchParams] = useSearchParams(initalProposalValue);
 
   const { data: bookingData = {}, isLoading: isLoadingBookingData } = useBookings(
     bookingSearchParams.toString(),
-    // activeTable === 'booking',
-    activeParentTab === 'managing',
+    setActiveChildTab === 'booking',
   );
 
   const { data: proposalsData = {}, isLoading: isLoadingProposalsData } = useFetchProposals(
     proposalSearchParams.toString(),
-    // activeTable === 'proposal',
-    activeParentTab === 'managing',
+    setActiveChildTab === 'proposal',
   );
 
-  const handleTabChange = val => {
+  const handleChildTab = val => {
     setActiveChildTab(val);
 
     const defaultBookingValue = new URLSearchParams(initialBookingValue);
@@ -81,23 +61,12 @@ const UserDetails = () => {
   };
 
   useEffect(() => {
-    if (activeParentTab === 'managing' && activeChildTab === 'booking') {
+    // TODO: fix this to reduce one extra api call
+    if (setActiveChildTab === 'booking') {
       bookingSearchParams.delete('userId');
-      setBookingSearchParams(bookingSearchParams.toString());
+      setBookingSearchParams(bookingSearchParams);
     }
-  }, [activeChildTab]);
-
-  // useEffect(() => {
-  //   // TODO: fix this to reduce one extra api call
-  //   if (activeParentTab === 'managing' && activeChildTab === 'booking') {
-  //     bookingSearchParams.delete('userId');
-  //     setBookingSearchParams(bookingSearchParams);
-  //   }
-  //   // if (activeTable === 'proposal') {
-  //   //   proposalSearchParams.delete('incharge');
-  //   //   setBookingSearchParams(bookingSearchParams);
-  //   // }
-  // }, [activeParentTab]);
+  }, []);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
@@ -117,16 +86,9 @@ const UserDetails = () => {
           />
         </Tabs.Panel>
         <Tabs.Panel value="managing">
-          <ManagingCampaignSubHeader
-            activeTable={activeChildTab}
-            userId={userId}
-            counts={{
-              bookings: bookingData?.totalDocs || 0,
-              proposals: proposalsData?.totalDocs || 0,
-            }}
-          />
+          <ManagingCampaignSubHeader activeChildTab={activeChildTab} userId={userId} />
           <div>
-            <Tabs value={activeChildTab} onTabChange={handleTabChange}>
+            <Tabs value={activeChildTab} onTabChange={handleChildTab}>
               <Tabs.List className="h-16">
                 <Tabs.Tab className="hover:bg-transparent text-base" value="booking">
                   Bookings
@@ -140,7 +102,12 @@ const UserDetails = () => {
                 <BookingTableView data={bookingData} isLoading={isLoadingBookingData} />
               </Tabs.Panel>
               <Tabs.Panel value="proposal" className="mr-5">
-                <ProposalTableView data={proposalsData} isLoading={isLoadingProposalsData} />
+                <ProposalTableView
+                  viewType={setActiveChildTab === 'proposal'}
+                  userId={userId}
+                  data={proposalsData}
+                  isLoading={isLoadingProposalsData}
+                />
               </Tabs.Panel>
             </Tabs>
           </div>

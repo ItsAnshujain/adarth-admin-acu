@@ -10,15 +10,12 @@ const styles = {
   yearPickerControlActive: { backgroundColor: '#4B0DAF !important' },
 };
 
-export const useStyles = createStyles(theme => ({
+export const useStyles = createStyles({
   outside: { opacity: 0 },
-  disabled: { color: 'transparent !important' },
+  disabled: { color: '#ced4da !important' },
   weekend: { color: '#495057 !important' },
-  firstInRange: { color: `${theme.white} !important` },
-  lastInRange: { color: `${theme.white} !important` },
-  selectedInRange: { color: `${theme.white} !important` },
-  selected: { color: `${theme.white} !important` },
-}));
+  selectedRange: { color: '#FFF !important' },
+});
 
 const DateRange = ({
   handleClose = () => {},
@@ -116,7 +113,8 @@ const DateRange = ({
               cx({
                 [classes.outside]: modifiers.outside,
                 [classes.weekend]: modifiers.weekend,
-                [classes.selectedInRange]: modifiers.selectedInRange,
+                [classes.selectedRange]: modifiers.selectedInRange,
+                [classes.disabled]: modifiers.disabled,
               })
             }
             minDate={rangeCalendarMinDate}
@@ -136,7 +134,8 @@ const DateRange = ({
               cx({
                 [classes.outside]: modifiers.outside,
                 [classes.weekend]: modifiers.weekend,
-                [classes.selected]: modifiers.selected,
+                [classes.selectedRange]: modifiers.selectedInRange,
+                [classes.disabled]: modifiers.disabled,
               })
             }
             minDate={datePickerMinDate}
@@ -154,7 +153,8 @@ const DateRange = ({
               cx({
                 [classes.outside]: modifiers.outside,
                 [classes.weekend]: modifiers.weekend,
-                [classes.selected]: modifiers.selected,
+                [classes.selectedRange]: modifiers.selectedInRange,
+                [classes.disabled]: modifiers.disabled,
               })
             }
             minDate={datePickerMinDate}
