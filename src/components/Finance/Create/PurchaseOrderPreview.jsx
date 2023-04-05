@@ -105,15 +105,15 @@ const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, has
                     <Group className="grid grid-cols-3">
                       <div>
                         <p>Quantity:</p>
-                        <p>1</p>
+                        <p>{item?.quantity ?? 1}</p>
                       </div>
                       <div>
                         <p>Rate:</p>
-                        <p>{item?.basicInformation?.price}</p>
+                        <p>{item?.campaignPrice}</p>
                       </div>
                       <div>
-                        <p>Pricing:</p>
-                        <p>{item?.basicInformation?.price}</p>
+                        <p>Total Amount:</p>
+                        <p>{+(item.quantity || 1) * item.campaignPrice}</p>
                       </div>
                     </Group>
                   </div>
@@ -149,7 +149,7 @@ const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, has
                         <p>{item?.rate}</p>
                       </div>
                       <div>
-                        <p>Pricing:</p>
+                        <p>Total Amount:</p>
                         <p>{item?.price}</p>
                       </div>
                     </Group>
@@ -176,7 +176,9 @@ const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, has
           <section className="p-5 bg-gray-100">
             <div className="flex mb-1">
               <p className="text-lg font-bold">Amount Chargeable (in words):</p>
-              <p className="text-lg ml-2">{(totalPrice && toWords.convert(totalPrice)) || 0}</p>
+              <p className="text-lg ml-2">
+                {(totalPrice && toWords.convert(Math.round(totalPrice + totalPrice * 0.18))) || 0}
+              </p>
             </div>
           </section>
         </article>

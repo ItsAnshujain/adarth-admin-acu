@@ -120,17 +120,11 @@ const ReleaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { campaignPrice },
           },
         }) =>
           useMemo(
-            () => (
-              <p className="pl-2">
-                {basicInformation?.price
-                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
-                  : 0}
-              </p>
-            ),
+            () => <p className="pl-2">{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>,
             [],
           ),
       },
@@ -140,17 +134,11 @@ const ReleaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { campaignPrice },
           },
         }) =>
           useMemo(
-            () => (
-              <p className="pl-2">
-                {basicInformation?.price
-                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
-                  : 0}
-              </p>
-            ),
+            () => <p className="pl-2">{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>,
             [],
           ),
       },
@@ -377,7 +365,7 @@ const ReleaseOrder = ({
         printing: 0,
         mounting: 0,
       },
-      mountingGst: 0,
+      mountingGstPercentage: 0,
       grandTotal: 0,
       grandTotalInWords: '',
     };
@@ -412,13 +400,13 @@ const ReleaseOrder = ({
       tempInitialTotal.initTotal.mounting - tempInitialTotal.discount.mounting,
     );
 
-    tempInitialTotal.mountingGst = values.mountingGst;
+    tempInitialTotal.mountingGstPercentage = values.mountingGstPercentage;
 
     tempInitialTotal.gst.display = tempInitialTotal.subTotal.display * 0.18;
     tempInitialTotal.gst.printing = tempInitialTotal.subTotal.printing * 0.18;
     tempInitialTotal.gst.mounting =
-      values.mountingGst > 0
-        ? tempInitialTotal.subTotal.mounting * (tempInitialTotal.mountingGst / 100)
+      values.mountingGstPercentage > 0
+        ? tempInitialTotal.subTotal.mounting * (tempInitialTotal.mountingGstPercentage / 100)
         : tempInitialTotal.subTotal.mounting * 0.18;
 
     tempInitialTotal.total.display =
@@ -438,7 +426,7 @@ const ReleaseOrder = ({
       tempInitialTotal.threeMonthTotal.mounting;
 
     tempInitialTotal.grandTotalInWords = toWords.convert(
-      !Number.isNaN(tempInitialTotal.grandTotal) ? tempInitialTotal.grandTotal : 0,
+      !Number.isNaN(tempInitialTotal.grandTotal) ? Math.round(tempInitialTotal.grandTotal) : 0,
     );
     return tempInitialTotal;
   }, [addSpaceItem, values.discount, values.forMonths]);
@@ -607,7 +595,7 @@ const ReleaseOrder = ({
             <NumberInput
               styles={styles}
               label="Mounting GST Charges"
-              name="mountingGst"
+              name="mountingGstPercentage"
               placeholder="Write..."
               min={0}
               max={100}
@@ -652,7 +640,26 @@ const ReleaseOrder = ({
                 classNameWrapper="min-h-[150px]"
               />
             </div>
-            {!bookingIdFromFinance ? <ROCalculatedTable calculatedData={calculatedData} /> : null}
+            {!bookingIdFromFinance ? (
+              <ROCalculatedTable calculatedData={calculatedData} />
+            ) : (
+              <div className="max-w-screen mt-3 flex flex-col justify-end mr-7 pr-16 text-lg">
+                <div className="flex justify-end">
+                  <p className="text-lg font-bold">Amount:</p>
+                  <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+                </div>
+                <div className="flex justify-end">
+                  <p className="text-lg font-bold">GST 18%:</p>
+                  <p className="text-lg ml-2">{toIndianCurrency(totalPrice * 0.18) || 0}</p>
+                </div>
+                <div className="flex justify-end">
+                  <p className="text-lg font-bold">Total:</p>
+                  <p className="text-lg ml-2">
+                    {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
+                  </p>
+                </div>
+              </div>
+            )}
           </>
         ) : (
           <div className="w-full min-h-[100px] flex justify-center items-center">
@@ -668,7 +675,7 @@ const ReleaseOrder = ({
           placeholder="Write..."
           value={
             bookingIdFromFinance
-              ? toWords.convert(totalPrice)
+              ? toWords.convert(totalPrice + totalPrice * 0.18)
               : calculatedData?.grandTotalInWords
               ? calculatedData.grandTotalInWords
               : ''

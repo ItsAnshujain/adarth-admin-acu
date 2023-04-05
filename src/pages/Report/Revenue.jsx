@@ -28,6 +28,7 @@ import {
 } from '../../hooks/booking.hooks';
 import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../../utils';
 import RevenueStatsContent from '../../components/Reports/Revenue/RevenueStatsContent';
+import ViewByFilter from '../../components/Reports/ViewByFilter';
 
 dayjs.extend(quarterOfYear);
 
@@ -338,6 +339,9 @@ const RevenueReport = () => {
       />
       <div className="mr-7 pl-5 mt-5 mb-10" id="revenue-pdf">
         <RevenueStatsContent revenueData={revenueData} />
+        <div className="h-[60px] border-b border-t my-5 border-gray-450 flex justify-end items-center">
+          <ViewByFilter handleViewBy={handleRevenueGraphViewBy} />
+        </div>
         <div className="flex gap-8">
           <div className="w-[70%] flex flex-col justify-between min-h-[300px]">
             <div className="flex justify-between items-center">

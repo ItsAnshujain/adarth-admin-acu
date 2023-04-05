@@ -322,9 +322,9 @@ const SelectSpace = () => {
         accessor: 'specifications.impressions.max',
         Cell: ({
           row: {
-            original: { impression },
+            original: { impressionMax },
           },
-        }) => useMemo(() => <p>{`${impression || 0}+`}</p>, []),
+        }) => useMemo(() => <p>{`${impressionMax || 0}+`}</p>, []),
       },
       {
         Header: 'HEALTH',
@@ -478,8 +478,9 @@ const SelectSpace = () => {
         obj.dimension = `${item.specifications?.size?.height || 0}ft x ${
           item.specifications?.size?.width || 0
         }ft`;
-        obj.impression = item.specifications?.impressions?.max || 0;
-        obj.health = item?.specifications?.health;
+        obj.impressionMax = item.specifications?.impressions?.max || 0;
+        obj.impressionMin = item.specifications?.impressions?.min || 0;
+        obj.health = item?.specifications?.health ?? 0;
         obj.location = item?.location?.city;
         obj.mediaType = item.basicInformation?.mediaType?.name;
         obj.price = item.basicInformation?.price || 0;

@@ -699,7 +699,7 @@ const InventoryReport = () => {
             <Image src={WorstIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Worst Performing Inventory</p>
             <p className="font-bold">
-              {inventoryStats?.worst?.at(-1)?.basicInformation?.spaceName || '--'}
+              {inventoryStats?.worst?.at(0)?.basicInformation?.spaceName || '--'}
             </p>
           </div>
         </div>

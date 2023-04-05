@@ -269,7 +269,7 @@ const initialReleaseValues = {
   grandTotalInWords: '',
   printingSqftCost: 0,
   mountingSqftCost: 0,
-  mountingGst: 0,
+  mountingGstPercentage: 0,
   forMonths: 3,
 };
 
@@ -470,9 +470,7 @@ const Home = () => {
     const initialPrice = 0;
     if (bookingData?.campaign?.spaces?.length > 0) {
       return bookingData?.campaign?.spaces
-        .map(item =>
-          item?.basicInformation?.price ? Number.parseInt(item.basicInformation.price, 10) : 0,
-        )
+        .map(item => (item?.campaignPrice ? +item.campaignPrice : 0))
         .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
     }
     return initialPrice;
@@ -483,6 +481,20 @@ const Home = () => {
     if (addSpaceItem.length) {
       return addSpaceItem
         .map(item => (item?.price ? Number(item.price) : 0))
+        .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
+    }
+    return initialPrice;
+  }, [addSpaceItem]);
+
+  const calcutatePurchaseOrderTotalPrice = useMemo(() => {
+    const initialPrice = 0;
+    if (addSpaceItem?.length > 0) {
+      return addSpaceItem
+        .map(item =>
+          item?.campaignPrice && item?.quantity
+            ? +item.campaignPrice * (+item.quantity || 1)
+            : item?.campaignPrice,
+        )
         .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
     }
     return initialPrice;
@@ -530,7 +542,7 @@ const Home = () => {
           id: item._id,
           quantity: +item.quantity || 1,
           dueOn: dayjs(item.dueOn).format(DATE_FORMAT) || dayjs().format(DATE_FORMAT),
-          amount: 0,
+          amount: (+item.quantity || 1) * item.campaignPrice,
         }));
         if (submitType === 'preview') {
           open();
@@ -669,7 +681,9 @@ const Home = () => {
           setPreviewData({ ...data, ...updatedForm });
         } else if (submitType === 'save') {
           const finalData = { ...data, ...updatedForm };
-          delete finalData.mountingGst;
+          if (finalData.mountingGst === 0 || finalData.mountingGst === 18) {
+            delete finalData.mountingGst;
+          }
 
           const releaseOrderPdf = await generateManualReleaseOrder(finalData, {
             onSuccess: () => {
@@ -838,7 +852,13 @@ const Home = () => {
               </div>
             </div>
             <ManualEntryView
-              totalPrice={bookingIdFromFinance ? calcutateTotalPrice : calculateManualTotalPrice}
+              totalPrice={
+                bookingIdFromFinance
+                  ? type === 'purchase'
+                    ? calcutatePurchaseOrderTotalPrice
+                    : calcutateTotalPrice
+                  : calculateManualTotalPrice
+              }
               onClickAddItems={data => {
                 if (
                   type === 'release' &&
@@ -907,7 +927,13 @@ const Home = () => {
                 previewData={previewData}
                 previewSpaces={addSpaceItem}
                 hasBookingId={!!bookingIdFromFinance}
-                totalPrice={bookingIdFromFinance ? calcutateTotalPrice : calculateManualTotalPrice}
+                totalPrice={
+                  bookingIdFromFinance
+                    ? type === 'purchase'
+                      ? calcutatePurchaseOrderTotalPrice
+                      : calcutateTotalPrice
+                    : calculateManualTotalPrice
+                }
                 type={type}
               />
             </Modal>

@@ -136,15 +136,16 @@ const PurchaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { quantity, _id },
+            original: { quantity = 1, _id },
           },
         }) =>
           useMemo(
             () => (
               <NumberInput
                 hideControls
-                defaultValue={+(quantity ?? 1)}
+                defaultValue={+quantity || 1}
                 onBlur={e => updateData('quantity', e.target.value, _id)}
+                min={1}
               />
             ),
             [quantity],
@@ -156,17 +157,11 @@ const PurchaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { campaignPrice },
           },
         }) =>
           useMemo(
-            () => (
-              <p className="pl-2">
-                {basicInformation?.price
-                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
-                  : 0}
-              </p>
-            ),
+            () => <p className="pl-2">{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>,
             [],
           ),
       },
@@ -176,15 +171,13 @@ const PurchaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { campaignPrice, quantity = 1 },
           },
         }) =>
           useMemo(
             () => (
               <p className="pl-2">
-                {basicInformation?.price
-                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
-                  : 0}
+                {campaignPrice ? toIndianCurrency(+campaignPrice * (+quantity || 1)) : 0}
               </p>
             ),
             [],
@@ -539,9 +532,21 @@ const PurchaseOrder = ({
                 classNameWrapper="min-h-[150px]"
               />
             </div>
-            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
-              <p>Total Price: </p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+            <div className="max-w-screen mt-3 flex flex-col justify-end mr-7 pr-16 text-lg">
+              <div className="flex justify-end">
+                <p className="text-lg font-bold">Amount:</p>
+                <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              </div>
+              <div className="flex justify-end">
+                <p className="text-lg font-bold">GST 18%:</p>
+                <p className="text-lg ml-2">{toIndianCurrency(totalPrice * 0.18) || 0}</p>
+              </div>
+              <div className="flex justify-end">
+                <p className="text-lg font-bold">Total:</p>
+                <p className="text-lg ml-2">
+                  {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
+                </p>
+              </div>
             </div>
           </>
         ) : (
@@ -556,7 +561,7 @@ const PurchaseOrder = ({
           label="Amount Chargeable (in words)"
           name="amountChargeable"
           placeholder="Write..."
-          value={toWords.convert(totalPrice)}
+          value={toWords.convert(Math.round(totalPrice + totalPrice * 0.18))}
           readOnly
           disabled
         />
