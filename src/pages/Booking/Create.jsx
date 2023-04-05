@@ -127,7 +127,7 @@ const CreateBooking = () => {
       }
 
       const totalPrice = form.values?.place?.reduce((acc, item) => acc + +(item.price || 0), 0);
-      const gstCalculation = (totalPrice * 18) / 100;
+      const gstCalculation = totalPrice * 0.18;
       data.price = totalPrice + gstCalculation;
 
       Object.keys(data).forEach(k => {

@@ -269,6 +269,7 @@ const initialReleaseValues = {
   grandTotalInWords: '',
   printingSqftCost: 0,
   mountingSqftCost: 0,
+  mountingGst: 0,
   forMonths: 3,
 };
 
@@ -574,7 +575,7 @@ const Home = () => {
           return;
         }
         data.subTotal = calculateManualTotalPrice;
-        data.gst = (data.subTotal * 18) / 100;
+        data.gst = data.subTotal * 0.18;
         data.total = data.subTotal + data.gst;
         data.totalInWords = toWords.convert(data.total);
         if (submitType === 'preview') {
@@ -667,19 +668,19 @@ const Home = () => {
           open();
           setPreviewData({ ...data, ...updatedForm });
         } else if (submitType === 'save') {
-          const releaseOrderPdf = await generateManualReleaseOrder(
-            { ...data, ...updatedForm },
-            {
-              onSuccess: () => {
-                close();
-                setBookingIdFromFinance();
-                setPreviewData();
-                setAddSpaceItem([]);
-                form.reset();
-                redirectToHome();
-              },
+          const finalData = { ...data, ...updatedForm };
+          delete finalData.mountingGst;
+
+          const releaseOrderPdf = await generateManualReleaseOrder(finalData, {
+            onSuccess: () => {
+              close();
+              setBookingIdFromFinance();
+              setPreviewData();
+              setAddSpaceItem([]);
+              form.reset();
+              redirectToHome();
             },
-          );
+          });
           if (releaseOrderPdf?.generatedPdf?.Location) {
             downloadPdf(releaseOrderPdf.generatedPdf.Location);
           }
@@ -740,7 +741,7 @@ const Home = () => {
           return;
         }
         data.subTotal = calculateManualTotalPrice;
-        data.gst = (data.subTotal * 18) / 100;
+        data.gst = data.subTotal * 0.18;
         data.total = data.subTotal + data.gst;
         data.taxInWords = toWords.convert(data.gst);
         data.totalInWords = toWords.convert(data.total);
