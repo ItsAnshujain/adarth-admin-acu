@@ -377,6 +377,7 @@ const ReleaseOrder = ({
         printing: 0,
         mounting: 0,
       },
+      mountingGst: 0,
       grandTotal: 0,
       grandTotalInWords: '',
     };
@@ -411,9 +412,14 @@ const ReleaseOrder = ({
       tempInitialTotal.initTotal.mounting - tempInitialTotal.discount.mounting,
     );
 
-    tempInitialTotal.gst.display = (tempInitialTotal.subTotal.display * 18) / 100;
-    tempInitialTotal.gst.printing = (tempInitialTotal.subTotal.printing * 18) / 100;
-    tempInitialTotal.gst.mounting = (tempInitialTotal.subTotal.mounting * 18) / 100;
+    tempInitialTotal.mountingGst = values.mountingGst;
+
+    tempInitialTotal.gst.display = tempInitialTotal.subTotal.display * 0.18;
+    tempInitialTotal.gst.printing = tempInitialTotal.subTotal.printing * 0.18;
+    tempInitialTotal.gst.mounting =
+      values.mountingGst > 0
+        ? tempInitialTotal.subTotal.mounting * (tempInitialTotal.mountingGst / 100)
+        : tempInitialTotal.subTotal.mounting * 0.18;
 
     tempInitialTotal.total.display =
       tempInitialTotal.subTotal.display + tempInitialTotal.gst.display;
@@ -581,13 +587,14 @@ const ReleaseOrder = ({
         </Group>
 
         {!bookingIdFromFinance ? (
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-3 gap-4 mb-4">
             <NumberInput
               styles={styles}
               label="Printing ft&sup2; Cost"
               name="printingSqftCost"
               withAsterisk
               placeholder="Write..."
+              min={0}
             />
             <NumberInput
               styles={styles}
@@ -595,6 +602,15 @@ const ReleaseOrder = ({
               name="mountingSqftCost"
               withAsterisk
               placeholder="Write..."
+              min={0}
+            />
+            <NumberInput
+              styles={styles}
+              label="Mounting GST Charges"
+              name="mountingGst"
+              placeholder="Write..."
+              min={0}
+              max={100}
             />
           </div>
         ) : null}
@@ -605,18 +621,24 @@ const ReleaseOrder = ({
               label="Total Display Cost Discount"
               name="discount.display"
               placeholder="Write..."
+              min={0}
+              max={calculatedData?.initTotal?.display}
             />
             <NumberInput
               styles={styles}
               label="Printing Cost Discount"
               name="discount.printing"
               placeholder="Write..."
+              min={0}
+              max={calculatedData?.initTotal?.printing}
             />
             <NumberInput
               styles={styles}
               label="Mounting Cost Discount"
               name="discount.mounting"
               placeholder="Write..."
+              min={0}
+              max={calculatedData?.initTotal?.mounting}
             />
           </div>
         ) : null}

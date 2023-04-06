@@ -5,20 +5,20 @@ import classNames from 'classnames';
 import { useParams, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
-import { useQueryClient } from '@tanstack/react-query';
 import { useModals } from '@mantine/modals';
 import Header from '../../components/Finance/Header';
 import Search from '../../components/Search';
 import DateRange from '../../components/DateRange';
 import calendar from '../../assets/data-table.svg';
 import Table from '../../components/Table/Table';
-import { useFetchFinanceByYearAndMonth, useUpdateFinanceById } from '../../hooks/finance.hooks';
+import { useFetchFinanceByYearAndMonth } from '../../hooks/finance.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import FinanceMenuPopover from '../../components/Popovers/FinanceMenuPopover';
 import { downloadPdf, orderTitle, ROLES } from '../../utils';
 import RoleBased from '../../components/RoleBased';
 import modalConfig from '../../utils/modalConfig';
 import PreviewContent from '../../components/Finance/PreviewContent';
+import VerifyApprovalContent from '../../components/VerifyApprovalContent';
 
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
@@ -32,7 +32,6 @@ const approvalStatList = [
 
 const Home = () => {
   const modals = useModals();
-  const queryClient = useQueryClient();
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -47,7 +46,7 @@ const Home = () => {
   const { data: financialDataByMonth, isLoading } = useFetchFinanceByYearAndMonth(
     `${year}/${month}?${searchParams.toString()}`,
   );
-  const { mutate, isLoading: isUpdateFinaceLoading } = useUpdateFinanceById();
+
   const ref = useClickOutside(() => setShowDatePicker(false));
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
 
@@ -77,16 +76,20 @@ const Home = () => {
     setSearchParams(searchParams);
   };
 
-  const invalidate = () => queryClient.invalidateQueries(['finance-by-month']);
-
-  const handleApprovalStatus = (financeId, value) => {
-    mutate(
-      { id: financeId, data: { approvalStatus: value } },
-      {
-        onSuccess: invalidate,
+  const toggleApproveModal = (financeId, value) =>
+    modals.openContextModal('basic', {
+      title: '',
+      innerProps: {
+        modalBody: (
+          <VerifyApprovalContent
+            onClickCancel={id => modals.closeModal(id)}
+            financeId={financeId}
+            value={value}
+          />
+        ),
       },
-    );
-  };
+      ...modalConfig,
+    });
 
   // TODO: disable SortBy in all col for now
   const purchaseOrderColumn = useMemo(
@@ -183,12 +186,12 @@ const Home = () => {
                   <Select
                     className="mr-2"
                     data={filteredList}
-                    disabled={isUpdateFinaceLoading}
+                    disabled={approvalStatus?.toLowerCase() === 'rejected'}
                     styles={{ rightSection: { pointerEvents: 'none' } }}
                     rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                     rightSectionWidth={40}
-                    onChange={e => handleApprovalStatus(_id, e)}
-                    defaultValue={approvalStatus || ''}
+                    onChange={e => toggleApproveModal(_id, e)}
+                    value={approvalStatus || ''}
                   />
                 </RoleBased>
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
@@ -378,11 +381,11 @@ const Home = () => {
                   <Select
                     className="mr-2"
                     data={filteredList}
-                    disabled={isUpdateFinaceLoading}
+                    disabled={approvalStatus?.toLowerCase() === 'rejected'}
                     styles={{ rightSection: { pointerEvents: 'none' } }}
                     rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                     rightSectionWidth={40}
-                    onChange={e => handleApprovalStatus(_id, e)}
+                    onChange={e => toggleApproveModal(_id, e)}
                     defaultValue={approvalStatus || ''}
                   />
                 </RoleBased>
@@ -573,11 +576,11 @@ const Home = () => {
                   <Select
                     className="mr-2"
                     data={filteredList}
-                    disabled={isUpdateFinaceLoading}
+                    disabled={approvalStatus?.toLowerCase() === 'rejected'}
                     styles={{ rightSection: { pointerEvents: 'none' } }}
                     rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                     rightSectionWidth={40}
-                    onChange={e => handleApprovalStatus(_id, e)}
+                    onChange={e => toggleApproveModal(_id, e)}
                     defaultValue={approvalStatus || ''}
                   />
                 </RoleBased>
