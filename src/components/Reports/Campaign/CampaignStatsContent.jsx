@@ -1,6 +1,7 @@
 import { Image, Loader } from '@mantine/core';
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
+import { getWord } from 'num-count';
 import TotalCampaignIcon from '../../../assets/total-campaign.svg';
 import OngoingCampaignIcon from '../../../assets/ongoing-campaign.svg';
 import UpcomingCampaignIcon from '../../../assets/upcoming-campaign.svg';
@@ -35,14 +36,16 @@ const CampaignStatsContent = ({ isStatsLoading, healthStatusData, stats }) => (
         <p className="my-2 text-sm font-light text-slate-400">Completed Campaign</p>
         <p className="font-bold">{stats?.completed ?? 0}</p>
       </div>
-      <div className="border rounded p-8 flex-1">
+      <div className="border rounded p-7 flex-1">
         <Image src={ImpressionsIcon} alt="folder" fit="contain" height={24} width={24} />
         <p className="my-2 text-sm font-light text-slate-400">Total Impression Count</p>
         <p
-          className="font-bold overflow-x-hidden overflow-ellipsis w-[80px]"
+          className="font-bold overflow-x-hidden overflow-ellipsis w-[80px] capitalize"
           title={stats?.impression}
         >
-          {stats?.impression ? stats.impression.toLocaleString() : 0}
+          {stats?.impression && stats.impression?.toString()?.length > 6
+            ? `${getWord(stats?.impression)}+`
+            : stats?.impression?.toLocaleString()}
         </p>
       </div>
     </div>

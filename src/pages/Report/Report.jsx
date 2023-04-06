@@ -1,17 +1,20 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useSearchParams } from 'react-router-dom';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 
-const Reports = () => (
-  <div>
-    {/* TODO: hide for pdf */}
-    <Header title="Reports" />
-    <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
-      {/* TODO: hide for pdf */}
-      <Sidebar />
-      <Outlet />
+const Reports = () => {
+  const [searchParams] = useSearchParams();
+  const share = searchParams.get('share');
+
+  return (
+    <div>
+      {share !== 'report' ? <Header title="Reports" /> : null}
+      <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
+        {share !== 'report' ? <Sidebar /> : null}
+        <Outlet />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default Reports;

@@ -1,8 +1,0 @@
-diff --git a/node_modules/dom-to-pdf/index.d.ts b/node_modules/dom-to-pdf/index.d.ts
-new file mode 100644
-index 0000000..97d48c7
---- /dev/null
-+++ b/node_modules/dom-to-pdf/index.d.ts
-@@ -0,0 +1 @@
-+declare module 'dom-to-pdf';
-\ No newline at end of file

@@ -14,12 +14,26 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
+import { useModals } from '@mantine/modals';
+import { useSearchParams } from 'react-router-dom';
+import { showNotification } from '@mantine/notifications';
+import classNames from 'classnames';
 import Header from '../../components/Reports/Header';
 import { useCampaignReport, useCampaignStats } from '../../hooks/campaigns.hooks';
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import CampaignStatsContent from '../../components/Reports/Campaign/CampaignStatsContent';
 import CampaignPieContent from '../../components/Reports/Campaign/CampaignPieContent';
-import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../../utils';
+import {
+  dateByQuarter,
+  daysInAWeek,
+  downloadPdf,
+  monthsInShort,
+  quarters,
+  serialize,
+} from '../../utils';
+import { useShareReport } from '../../hooks/report.hooks';
+import modalConfig from '../../utils/modalConfig';
+import ShareContent from '../../components/Reports/ShareContent';
 
 dayjs.extend(quarterOfYear);
 
@@ -28,9 +42,14 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 ChartJS.register(ArcElement, Tooltip, CategoryScale, LinearScale, BarElement, Title, Legend);
 const options = {
   responsive: true,
+  maintainAspectRatio: false,
 };
 
 const CampaignReport = () => {
+  const modals = useModals();
+  const [searchParams] = useSearchParams();
+  const share = searchParams.get('share');
+  const { mutateAsync, isLoading: isDownloadLoading } = useShareReport();
   const [queryByTime, setQueryByTime] = useState({
     'groupBy': 'month',
     'startDate': dayjs().startOf('year').format(DATE_FORMAT),
@@ -188,17 +207,60 @@ const CampaignReport = () => {
     }
   }, [report]);
 
+  const toggleShareOptions = () => {
+    modals.openContextModal('basic', {
+      title: 'Share via:',
+      innerProps: {
+        modalBody: <ShareContent url={{}} />,
+      },
+      ...modalConfig,
+    });
+  };
+
+  const handleDownloadPdf = async () => {
+    let activeUrl = window.location.href;
+    if (activeUrl.includes('&')) {
+      activeUrl += '&share=report';
+    } else {
+      activeUrl += '?share=report';
+    }
+
+    await mutateAsync(
+      { url: activeUrl },
+      {
+        onSuccess: data => {
+          showNotification({
+            title: 'Report has been downloaded successfully',
+            color: 'green',
+          });
+          if (data?.link) {
+            downloadPdf(data.link);
+          }
+        },
+      },
+    );
+  };
+
   useEffect(() => {
     calculateBarData();
   }, [report, isSuccess]);
 
   return (
     <div
-      className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto"
+      className={classNames(
+        'col-span-12 md:col-span-12 border-l border-gray-450 overflow-y-auto',
+        share !== 'report' ? 'lg:col-span-10 ' : 'lg:col-span-12',
+      )}
       id="campaign_report_pdf"
     >
-      {/* TODO: lg:col-span-12 for pdf */}
-      <Header text="Campaign Report" />
+      {share !== 'report' ? (
+        <Header
+          text="Campaign Report"
+          onClickDownloadPdf={handleDownloadPdf}
+          onClickSharePdf={toggleShareOptions}
+          isDownloadLoading={isDownloadLoading}
+        />
+      ) : null}
       <div className="pr-7 pl-5 mt-5" id="campaign-pdf">
         <CampaignStatsContent
           isStatsLoading={isStatsLoading}
@@ -219,15 +281,22 @@ const CampaignReport = () => {
                   <span className="font-bold">{report?.proposal?.created ?? 0}</span>
                 </p>
               </div>
-              {/* TODO: hide for pdf */}
-              <ViewByFilter handleViewBy={handleViewBy} />
+              {share !== 'report' ? <ViewByFilter handleViewBy={handleViewBy} /> : null}
             </div>
 
             <div>
               {isReportLoading ? (
                 <Loader className="mx-auto" mt={80} />
               ) : (
-                <Bar options={options} data={updatedBarData} key={updatedBarData.id} />
+                <div className="max-h-[350px]">
+                  <Bar
+                    // height="100"
+                    options={options}
+                    data={updatedBarData}
+                    key={updatedBarData.id}
+                    className="w-full"
+                  />
+                </div>
               )}
             </div>
           </div>
