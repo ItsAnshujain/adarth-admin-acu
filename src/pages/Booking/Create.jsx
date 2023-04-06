@@ -93,13 +93,21 @@ const CreateBooking = () => {
       let minDate = null;
       let maxDate = null;
 
-      data.place = form.values?.place?.map(item => ({
-        id: item._id,
-        price: +item.price,
-        media: isValidURL(item.media) ? item.media : undefined,
-        startDate: dayjs(item.startDate).format(DATE_FORMAT),
-        endDate: dayjs(item.endDate).format(DATE_FORMAT),
-      }));
+      const totalImpressionAndHealth = data.place.reduce(
+        (acc, item) => ({
+          maxImpression: acc.maxImpression + item.impressionMax,
+          minImpression: acc.minImpression + item.impressionMin,
+          healthStatus: acc.healthStatus + item.health,
+        }),
+        {
+          maxImpression: 0,
+          minImpression: 0,
+          healthStatus: 0,
+        },
+      );
+
+      totalImpressionAndHealth.healthStatus /= data.place.length;
+
       if (data.place.some(item => !(item.startDate || item.endDate))) {
         showNotification({
           title: 'Please select the occupancy date to continue',
@@ -107,6 +115,18 @@ const CreateBooking = () => {
         });
         return;
       }
+
+      data.place = form.values?.place?.map(item => ({
+        id: item._id,
+        price: +item.price,
+        media: isValidURL(item.media) ? item.media : undefined,
+        startDate: item.startDate
+          ? dayjs(item.startDate).format(DATE_FORMAT)
+          : dayjs().format(DATE_FORMAT),
+        endDate: item.startDate
+          ? dayjs(item.endDate).format(DATE_FORMAT)
+          : dayjs().format(DATE_FORMAT),
+      }));
 
       data.place.forEach(item => {
         const start = item.startDate;
@@ -145,6 +165,7 @@ const CreateBooking = () => {
       await createBooking(
         {
           ...data,
+          ...totalImpressionAndHealth,
           startDate: minDate,
           endDate: maxDate,
         },

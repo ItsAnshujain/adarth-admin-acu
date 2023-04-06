@@ -141,11 +141,11 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
                       </div>
                       <div>
                         <p>Rate:</p>
-                        <p>{item?.basicInformation?.price}</p>
+                        <p>{item?.campaignPrice}</p>
                       </div>
                       <div>
-                        <p>Pricing:</p>
-                        <p>{item?.basicInformation?.price}</p>
+                        <p>Total Amount:</p>
+                        <p>{item?.campaignPrice}</p>
                       </div>
                     </Group>
                   </div>
@@ -181,7 +181,7 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
                         <p>{item?.rate}</p>
                       </div>
                       <div>
-                        <p>Pricing:</p>
+                        <p>Total Amount:</p>
                         <p>{item?.price}</p>
                       </div>
                     </Group>
@@ -206,7 +206,9 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
 
         <article className="my-3 p-5 bg-gray-100 flex mb-1">
           <p className="text-lg font-bold">Amount Chargeable (in words):</p>
-          <p className="text-lg ml-2">{(totalPrice && toWords.convert(totalPrice)) || 0}</p>
+          <p className="text-lg ml-2">
+            {(totalPrice && toWords.convert(totalPrice + totalPrice * 0.18)) || 0}
+          </p>
         </article>
 
         <article className="my-3">

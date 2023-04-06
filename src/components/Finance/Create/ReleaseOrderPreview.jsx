@@ -93,11 +93,11 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                       </div>
                       <div>
                         <p>Rate:</p>
-                        <p>{item?.basicInformation?.price}</p>
+                        <p>{item?.campaignPrice}</p>
                       </div>
                       <div>
-                        <p>Pricing:</p>
-                        <p>{item?.basicInformation?.price}</p>
+                        <p>Total Amount:</p>
+                        <p>{item?.campaignPrice}</p>
                       </div>
                     </Group>
                   </div>
@@ -171,7 +171,7 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
               <p className="text-lg ml-2">
                 {previewData?.grandTotalInWords
                   ? previewData?.grandTotalInWords
-                  : totalPrice && toWords.convert(totalPrice)}
+                  : totalPrice && toWords.convert(totalPrice + totalPrice * 0.18)}
               </p>
             </div>
             <p className="text-lg">

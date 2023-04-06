@@ -38,12 +38,12 @@ const UserDetails = () => {
 
   const { data: bookingData = {}, isLoading: isLoadingBookingData } = useBookings(
     bookingSearchParams.toString(),
-    setActiveChildTab === 'booking',
+    activeParentTab === 'managing' && activeChildTab === 'booking',
   );
 
   const { data: proposalsData = {}, isLoading: isLoadingProposalsData } = useFetchProposals(
     proposalSearchParams.toString(),
-    setActiveChildTab === 'proposal',
+    activeParentTab === 'managing' && activeChildTab === 'proposal',
   );
 
   const handleChildTab = val => {

@@ -87,19 +87,21 @@ const ROCalculatedTable = ({ calculatedData, isEditable = true }) => {
             {calculatedData?.gst?.printing ? toIndianCurrency(calculatedData.gst.printing) : 0}
           </p>
           <p className="bg-gray-100 text-center">
-            {!calculatedData?.mountingGst ||
-            (calculatedData?.mountingGst === 18 && calculatedData?.gst?.mounting)
+            {!calculatedData?.mountingGstPercentage ||
+            (calculatedData?.mountingGstPercentage === 18 && calculatedData?.gst?.mounting)
               ? toIndianCurrency(calculatedData?.gst?.mounting)
               : '-'}
           </p>
         </section>
 
-        {calculatedData?.mountingGst && calculatedData.mountingGst !== 18 ? (
+        {calculatedData?.mountingGstPercentage && calculatedData.mountingGstPercentage !== 18 ? (
           <section className="bg-gray-100 grid grid-cols-4 mb-2 border border-gray-200 py-1">
-            <p className="text-center font-medium">Manual GST {calculatedData.mountingGst}%: </p>
+            <p className="text-center font-medium">
+              Manual GST {calculatedData.mountingGstPercentage}%:{' '}
+            </p>
             <p className="bg-gray-100 text-center border-x-2 border-gray-200">-</p>
             <p className="bg-gray-100 text-center border-r-2 border-gray-200">-</p>
-            <p className="bg-gray-100 text-center">{calculatedData.mountingGst ?? '-'}</p>
+            <p className="bg-gray-100 text-center">{calculatedData.mountingGstPercentage ?? '-'}</p>
           </section>
         ) : null}
 

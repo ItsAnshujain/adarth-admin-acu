@@ -4,22 +4,18 @@ import {
 } from '@mantine/core';
 // import { Mail, Share2, Download, Link as LinkIcon } from 'react-feather';
 // import whatsapp from '../../assets/whatsapp.svg';
-import ViewByFilter from './ViewByFilter';
 
 const Header = ({
   text,
   // onClickDownloadPdf = () => {},
   // onClickSharePdf = () => {},
   // pdfLink,
-  handleRevenueGraphViewBy = () => {},
-  showGlobalFilter = false,
 }) => (
   <div className="h-[60px] border-b border-gray-450 flex justify-between items-center pl-5 pr-7">
     <Text size="lg" weight="bold">
       {text}
     </Text>
     <div className="flex items-start">
-      {showGlobalFilter ? <ViewByFilter handleViewBy={handleRevenueGraphViewBy} /> : null}
       {/* TODO: commented for now */}
       {/* <Button
         leftIcon={<Download size="20" color="white" />}
