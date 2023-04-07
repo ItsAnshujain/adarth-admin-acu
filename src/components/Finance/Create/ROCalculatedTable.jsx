@@ -101,7 +101,7 @@ const ROCalculatedTable = ({ calculatedData, isEditable = true }) => {
             </p>
             <p className="bg-gray-100 text-center border-x-2 border-gray-200">-</p>
             <p className="bg-gray-100 text-center border-r-2 border-gray-200">-</p>
-            <p className="bg-gray-100 text-center">{calculatedData.mountingGstPercentage ?? '-'}</p>
+            <p className="bg-gray-100 text-center">₹{calculatedData.gst?.mounting ?? 0}</p>
           </section>
         ) : null}
 
