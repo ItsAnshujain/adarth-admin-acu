@@ -211,22 +211,18 @@ const CampaignReport = () => {
     modals.openContextModal('basic', {
       title: 'Share via:',
       innerProps: {
-        modalBody: <ShareContent url={{}} />,
+        modalBody: <ShareContent />,
       },
       ...modalConfig,
     });
   };
 
   const handleDownloadPdf = async () => {
-    let activeUrl = window.location.href;
-    if (activeUrl.includes('&')) {
-      activeUrl += '&share=report';
-    } else {
-      activeUrl += '?share=report';
-    }
+    const activeUrl = new URL(window.location.href);
+    activeUrl.searchParams.append('share', 'report');
 
     await mutateAsync(
-      { url: activeUrl },
+      { url: activeUrl.toString() },
       {
         onSuccess: data => {
           showNotification({
@@ -248,8 +244,8 @@ const CampaignReport = () => {
   return (
     <div
       className={classNames(
-        'col-span-12 md:col-span-12 border-l border-gray-450 overflow-y-auto',
-        share !== 'report' ? 'lg:col-span-10 ' : 'lg:col-span-12',
+        'border-l border-gray-450 overflow-y-auto',
+        share !== 'report' ? 'col-span-10 ' : 'col-span-12',
       )}
       id="campaign_report_pdf"
     >
