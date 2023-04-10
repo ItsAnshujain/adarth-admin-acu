@@ -277,22 +277,18 @@ const RevenueReport = () => {
     modals.openContextModal('basic', {
       title: 'Share via:',
       innerProps: {
-        modalBody: <ShareContent url={{}} />,
+        modalBody: <ShareContent />,
       },
       ...modalConfig,
     });
   };
 
   const handleDownloadPdf = async () => {
-    let activeUrl = window.location.href;
-    if (activeUrl.includes('&')) {
-      activeUrl += '&share=report';
-    } else {
-      activeUrl += '?share=report';
-    }
+    const activeUrl = new URL(window.location.href);
+    activeUrl.searchParams.append('share', 'report');
 
     await mutateAsync(
-      { url: activeUrl },
+      { url: activeUrl.toString() },
       {
         onSuccess: data => {
           showNotification({
@@ -343,7 +339,16 @@ const RevenueReport = () => {
   }, [revenueGraphData]);
 
   const handleUpdatedReveueByLocation = useCallback(() => {
-    const tempBarData = { ...updatedLocation, id: uuidv4() };
+    const tempBarData = {
+      labels: [],
+      datasets: [
+        {
+          label: 'City or State',
+          data: [],
+          ...barDataConfigByLocation.styles,
+        },
+      ],
+    };
     if (revenueDataByLocation) {
       revenueDataByLocation?.forEach((item, index) => {
         tempBarData.labels[index] = item?._id;
@@ -354,7 +359,16 @@ const RevenueReport = () => {
   }, [revenueDataByLocation]);
 
   const handleUpdatedReveueByIndustry = useCallback(() => {
-    const tempBarData = { ...updatedIndustry, id: uuidv4() };
+    const tempBarData = {
+      labels: [],
+      datasets: [
+        {
+          label: '',
+          data: [],
+          ...barDataConfigByIndustry.styles,
+        },
+      ],
+    };
     if (revenueDataByIndustry) {
       revenueDataByIndustry?.forEach((item, index) => {
         tempBarData.labels[index] = item?._id;
@@ -379,8 +393,8 @@ const RevenueReport = () => {
   return (
     <div
       className={classNames(
-        'col-span-12 md:col-span-12 border-l border-gray-450 overflow-y-auto',
-        share !== 'report' ? 'lg:col-span-10 ' : 'lg:col-span-12',
+        'border-l border-gray-450 overflow-y-auto',
+        share !== 'report' ? 'col-span-10 ' : 'col-span-12',
       )}
     >
       {share !== 'report' ? (
@@ -415,7 +429,7 @@ const RevenueReport = () => {
                     // height="100"
                     data={updatedReveueGraph}
                     options={options}
-                    key={uuidv4()}
+                    key={updatedReveueGraph.id}
                     className="w-full"
                   />
                 </div>
@@ -436,7 +450,7 @@ const RevenueReport = () => {
                 <Pie
                   data={updatedIndustry}
                   options={barDataConfigByIndustry.options}
-                  key={uuidv4()}
+                  key={updatedIndustry.id}
                 />
               )}
             </div>
@@ -474,7 +488,7 @@ const RevenueReport = () => {
                   // height="80"
                   data={updatedLocation}
                   options={barDataConfigByLocation.options}
-                  key={uuidv4()}
+                  key={updatedLocation.id}
                   className="w-full"
                 />
               </div>
