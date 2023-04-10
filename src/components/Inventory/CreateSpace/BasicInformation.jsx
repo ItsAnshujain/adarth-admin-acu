@@ -2,7 +2,7 @@ import { Dropzone } from '@mantine/dropzone';
 import { ActionIcon, Button, FileButton, Image, Text } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import image from '../../../assets/image.png';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
@@ -57,7 +57,7 @@ const BasicInfo = () => {
   const queryClient = useQueryClient();
   const userId = useTokenIdStore(state => state.id);
   const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
-
+  const ref = useRef();
   const { errors, getInputProps, values, setFieldValue } = useFormContext();
   const {
     data: organizationData,
@@ -132,6 +132,7 @@ const BasicInfo = () => {
     await deleteFile(tempSpacePhotos[docIndex]?.split('/').at(-1), {
       onSuccess: () => setFieldValue('basicInformation.otherPhotos', [...res]),
     });
+    ref.current.value = '';
   };
 
   useEffect(() => {
@@ -386,6 +387,7 @@ const BasicInfo = () => {
               accept="image/png,image/jpeg"
               multiple
               loading={isLoading}
+              ref={ref}
             >
               {props => (
                 <Button loaderProps={{ color: 'black' }} {...props}>

@@ -27,12 +27,6 @@ export const useUpdateFinanceById = () =>
       return res?.data;
     },
     {
-      onSuccess: () => {
-        showNotification({
-          title: 'Approval status updated successfully',
-          color: 'green',
-        });
-      },
       onError: err => {
         showNotification({
           title: 'Error',

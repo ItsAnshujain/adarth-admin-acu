@@ -2,9 +2,15 @@ import { Button, Divider, Image } from '@mantine/core';
 import React, { useState } from 'react';
 import { useModals } from '@mantine/modals';
 import { useQueryClient } from '@tanstack/react-query';
+import { showNotification } from '@mantine/notifications';
 import CheckIcon from '../assets/check.svg';
 import TrashIcon from '../assets/trash.svg';
 import { useUpdateFinanceById } from '../hooks/finance.hooks';
+
+const label = {
+  approved: 'Approve',
+  rejected: 'Reject',
+};
 
 const VerifyApprovalContent = ({ onClickCancel = () => {}, financeId, value }) => {
   const modals = useModals();
@@ -16,6 +22,10 @@ const VerifyApprovalContent = ({ onClickCancel = () => {}, financeId, value }) =
   const invalidate = () => {
     queryClient.invalidateQueries(['finance-by-month']);
     setAccept(true);
+    showNotification({
+      title: `${value ? value[0].toUpperCase() + value.substr(1) : ''} status updated successfully`,
+      color: 'green',
+    });
     setTimeout(() => modals.closeModal(), 2000);
   };
 
@@ -34,7 +44,9 @@ const VerifyApprovalContent = ({ onClickCancel = () => {}, financeId, value }) =
       <div className="flex flex-col justify-evenly items-center min-h-[230px]">
         <Image src={!accept ? TrashIcon : CheckIcon} height={65} width={65} />
         <p className="font-bold text-2xl">
-          {!accept ? 'Are you sure you Proceed?' : 'Processed successfully'}
+          {!accept
+            ? `Are you sure you want to ${label[value]}?`
+            : `${value ? value[0].toUpperCase() + value.substr(1) : 'Processed'} successfully`}
         </p>
         {!accept ? (
           <div className="flex gap-2  justify-end">

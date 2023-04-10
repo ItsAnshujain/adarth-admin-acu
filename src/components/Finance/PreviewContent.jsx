@@ -3,6 +3,7 @@ import { useModals } from '@mantine/modals';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
+import { showNotification } from '@mantine/notifications';
 import { useFetchSingleRecordById, useUpdateFinanceById } from '../../hooks/finance.hooks';
 import { downloadPdf } from '../../utils';
 
@@ -140,18 +141,22 @@ const PreviewContent = ({ financeRecordId, recordType, onClose = () => {} }) => 
 
   const { mutate, isLoading: isUpdateFinaceLoading } = useUpdateFinanceById();
 
-  const invalidate = () => {
-    modals.closeModal();
-    queryClient.invalidateQueries(['finance-by-month']);
-    onClose();
-  };
-
   const handleApprovalStatus = (financeId, value) => {
     setActiveStatus(value);
     mutate(
       { id: financeId, data: { approvalStatus: value } },
       {
-        onSuccess: invalidate,
+        onSuccess: () => {
+          showNotification({
+            title: `${
+              value ? value[0].toUpperCase() + value.substr(1) : ''
+            } status updated successfully`,
+            color: 'green',
+          });
+          modals.closeModal();
+          queryClient.invalidateQueries(['finance-by-month']);
+          onClose();
+        },
       },
     );
   };
