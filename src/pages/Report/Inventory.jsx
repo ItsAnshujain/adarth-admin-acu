@@ -17,8 +17,10 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
-import DomToPdf from 'dom-to-pdf';
 import { useDebouncedValue } from '@mantine/hooks';
+import classNames from 'classnames';
+import { showNotification } from '@mantine/notifications';
+import { useModals } from '@mantine/modals';
 import Header from '../../components/Reports/Header';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -39,10 +41,14 @@ import {
   categoryColors,
   dateByQuarter,
   daysInAWeek,
+  downloadPdf,
   monthsInShort,
   quarters,
   serialize,
 } from '../../utils';
+import { useShareReport } from '../../hooks/report.hooks';
+import modalConfig from '../../utils/modalConfig';
+import ShareContent from '../../components/Reports/ShareContent';
 
 dayjs.extend(quarterOfYear);
 
@@ -62,6 +68,7 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 
 const options = {
   responsive: true,
+  maintainAspectRatio: false,
 };
 
 const config = {
@@ -70,6 +77,7 @@ const config = {
 };
 
 const InventoryReport = () => {
+  const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
     'limit': 10,
     'page': 1,
@@ -107,8 +115,11 @@ const InventoryReport = () => {
   } = useInventoryReport(serialize(queryByTime));
   const { data: inventoryReportList, isLoading: inventoryReportListLoading } =
     useFetchInventoryReportList(searchParams.toString());
+  const { mutateAsync, isLoading: isDownloadLoading } = useShareReport();
+
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
+  const share = searchParams.get('share');
 
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
@@ -575,12 +586,34 @@ const InventoryReport = () => {
     }
   }, [inventoryReports]);
 
-  const downloadPdf = () => {
-    const element = document.getElementById('inventory-pdf');
-    const option = {
-      filename: 'inventory.pdf',
-    };
-    DomToPdf(element, option);
+  const toggleShareOptions = () => {
+    modals.openContextModal('basic', {
+      title: 'Share via:',
+      innerProps: {
+        modalBody: <ShareContent />,
+      },
+      ...modalConfig,
+    });
+  };
+
+  const handleDownloadPdf = async () => {
+    const activeUrl = new URL(window.location.href);
+    activeUrl.searchParams.append('share', 'report');
+
+    await mutateAsync(
+      { url: activeUrl.toString() },
+      {
+        onSuccess: data => {
+          showNotification({
+            title: 'Report has been downloaded successfully',
+            color: 'green',
+          });
+          if (data?.link) {
+            downloadPdf(data.link);
+          }
+        },
+      },
+    );
   };
 
   const handleSortByColumn = colId => {
@@ -630,8 +663,20 @@ const InventoryReport = () => {
   }, [inventoryReports, isSuccess]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
-      <Header text="Inventory Report" onClickDownloadPdf={downloadPdf} />
+    <div
+      className={classNames(
+        'border-l border-gray-450 overflow-y-auto',
+        share !== 'report' ? 'col-span-10 ' : 'col-span-12',
+      )}
+    >
+      {share !== 'report' ? (
+        <Header
+          text="Inventory Report"
+          onClickDownloadPdf={handleDownloadPdf}
+          onClickSharePdf={toggleShareOptions}
+          isDownloadLoading={isDownloadLoading}
+        />
+      ) : null}
       <div className="pr-7 pl-5 mt-5 mb-10" id="inventory-pdf">
         <InventoryStatsContent
           inventoryReports={inventoryReports}
@@ -641,23 +686,26 @@ const InventoryReport = () => {
           <div className="w-[70%]">
             <div className="flex justify-between">
               <p className="font-bold">Revenue Graph</p>
-              <ViewByFilter handleViewBy={handleViewBy} />
+              {share !== 'report' ? <ViewByFilter handleViewBy={handleViewBy} /> : null}
             </div>
             {isInventoryReportLoading ? (
               <Loader className="mx-auto mt-10" />
             ) : (
-              <Line
-                height="120"
-                data={areaData}
-                options={options}
-                ref={chartRef}
-                key={areaData.id}
-              />
+              <div className="max-h-[350px]">
+                <Line
+                  // height="100"
+                  data={areaData}
+                  options={options}
+                  ref={chartRef}
+                  key={areaData.id}
+                  className="w-full"
+                />
+              </div>
             )}
           </div>
 
           <div className="w-[30%] flex gap-8 h-[50%] p-4 border items-center rounded-md">
-            <div className="w-[40%]">
+            <div className="w-32">
               {isInventoryStatsLoading ? (
                 <Loader className="mx-auto" />
               ) : inventoryStats?.healthy === 0 && inventoryStats?.unHealthy === 0 ? (
@@ -703,83 +751,85 @@ const InventoryReport = () => {
             </p>
           </div>
         </div>
-        <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mt-10">
-          <Tabs defaultValue="gallery">
-            <Tabs.List>
-              <Tabs.Tab value="gallery">
-                <Text size="md" weight="bold">
-                  Inventory Report
-                </Text>
-              </Tabs.Tab>
-              <Tabs.Tab value="messages">
-                <Text size="md" weight="bold">
-                  Best Performing Inventory
-                </Text>
-              </Tabs.Tab>
-              <Tabs.Tab value="settings">
-                <Text size="md" weight="bold">
-                  Worst Performing Inventory
-                </Text>
-              </Tabs.Tab>
-            </Tabs.List>
+        {share !== 'report' ? (
+          <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450">
+            <Tabs defaultValue="gallery">
+              <Tabs.List>
+                <Tabs.Tab value="gallery">
+                  <Text size="md" weight="bold">
+                    Inventory Report
+                  </Text>
+                </Tabs.Tab>
+                <Tabs.Tab value="messages">
+                  <Text size="md" weight="bold">
+                    Best Performing Inventory
+                  </Text>
+                </Tabs.Tab>
+                <Tabs.Tab value="settings">
+                  <Text size="md" weight="bold">
+                    Worst Performing Inventory
+                  </Text>
+                </Tabs.Tab>
+              </Tabs.List>
 
-            <Tabs.Panel value="gallery">
-              <div className="flex justify-between h-20 items-center">
-                <RowsPerPage
-                  setCount={currentLimit => handlePagination('limit', currentLimit)}
-                  count={limit}
-                />
-                <div className="flex flex-1 justify-end items-center">
-                  <Search search={searchInput} setSearch={setSearchInput} />
-                  <SubHeader />
+              <Tabs.Panel value="gallery">
+                <div className="flex justify-between h-20 items-center">
+                  <RowsPerPage
+                    setCount={currentLimit => handlePagination('limit', currentLimit)}
+                    count={limit}
+                  />
+                  <div className="flex flex-1 justify-end items-center">
+                    <Search search={searchInput} setSearch={setSearchInput} />
+                    <SubHeader />
+                  </div>
                 </div>
-              </div>
-              {!inventoryReportList?.docs?.length && !inventoryReportListLoading ? (
-                <div className="w-full min-h-[400px] flex justify-center items-center">
-                  <p className="text-xl">No records found</p>
-                </div>
-              ) : null}
-              {inventoryReportList?.docs?.length ? (
-                <Table
-                  COLUMNS={inventoryColumn}
-                  data={inventoryReportList?.docs || []}
-                  handleSorting={handleSortByColumn}
-                  activePage={inventoryReportList?.page || 1}
-                  totalPages={inventoryReportList?.totalPages || 1}
-                  setActivePage={currentPage => handlePagination('page', currentPage)}
-                />
-              ) : null}
-            </Tabs.Panel>
-            <Tabs.Panel value="messages" pt="lg">
-              {!inventoryStats?.best?.length && !isInventoryStatsLoading ? (
-                <div className="w-full min-h-[400px] flex justify-center items-center">
-                  <p className="text-xl">No records found</p>
-                </div>
-              ) : null}
-              {inventoryStats?.best?.length ? (
-                <Table
-                  COLUMNS={performingInventoryColumn}
-                  data={inventoryStats?.best || []}
-                  showPagination={false}
-                />
-              ) : null}
-            </Tabs.Panel>
-            <Tabs.Panel value="settings" pt="lg">
-              {!inventoryStats?.worst?.length && !isInventoryStatsLoading ? (
-                <div className="w-full min-h-[400px] flex justify-center items-center">
-                  <p className="text-xl">No records found</p>
-                </div>
-              ) : null}
-              {inventoryStats?.worst?.length ? (
-                <Table
-                  COLUMNS={performingInventoryColumn}
-                  data={inventoryStats?.worst || []}
-                  showPagination={false}
-                />
-              ) : null}
-            </Tabs.Panel>
-          </Tabs>
-        </div>
+                {!inventoryReportList?.docs?.length && !inventoryReportListLoading ? (
+                  <div className="w-full min-h-[400px] flex justify-center items-center">
+                    <p className="text-xl">No records found</p>
+                  </div>
+                ) : null}
+                {inventoryReportList?.docs?.length ? (
+                  <Table
+                    COLUMNS={inventoryColumn}
+                    data={inventoryReportList?.docs || []}
+                    handleSorting={handleSortByColumn}
+                    activePage={inventoryReportList?.page || 1}
+                    totalPages={inventoryReportList?.totalPages || 1}
+                    setActivePage={currentPage => handlePagination('page', currentPage)}
+                  />
+                ) : null}
+              </Tabs.Panel>
+              <Tabs.Panel value="messages" pt="lg">
+                {!inventoryStats?.best?.length && !isInventoryStatsLoading ? (
+                  <div className="w-full min-h-[400px] flex justify-center items-center">
+                    <p className="text-xl">No records found</p>
+                  </div>
+                ) : null}
+                {inventoryStats?.best?.length ? (
+                  <Table
+                    COLUMNS={performingInventoryColumn}
+                    data={inventoryStats?.best || []}
+                    showPagination={false}
+                  />
+                ) : null}
+              </Tabs.Panel>
+              <Tabs.Panel value="settings" pt="lg">
+                {!inventoryStats?.worst?.length && !isInventoryStatsLoading ? (
+                  <div className="w-full min-h-[400px] flex justify-center items-center">
+                    <p className="text-xl">No records found</p>
+                  </div>
+                ) : null}
+                {inventoryStats?.worst?.length ? (
+                  <Table
+                    COLUMNS={performingInventoryColumn}
+                    data={inventoryStats?.worst || []}
+                    showPagination={false}
+                  />
+                ) : null}
+              </Tabs.Panel>
+            </Tabs>
+          </div>
+        ) : null}
       </div>
     </div>
   );

@@ -16,8 +16,11 @@ import { Button, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import dayjs from 'dayjs';
-import DomToPdf from 'dom-to-pdf';
 import { v4 as uuidv4 } from 'uuid';
+import { useSearchParams } from 'react-router-dom';
+import { showNotification } from '@mantine/notifications';
+import classNames from 'classnames';
+import { useModals } from '@mantine/modals';
 import Header from '../../components/Reports/Header';
 import RevenueFilter from '../../components/Reports/RevenueFilter';
 import {
@@ -26,9 +29,19 @@ import {
   useBookingRevenueByIndustry,
   useBookingRevenueByLocation,
 } from '../../hooks/booking.hooks';
-import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../../utils';
+import {
+  dateByQuarter,
+  daysInAWeek,
+  downloadPdf,
+  monthsInShort,
+  quarters,
+  serialize,
+} from '../../utils';
 import RevenueStatsContent from '../../components/Reports/Revenue/RevenueStatsContent';
 import ViewByFilter from '../../components/Reports/ViewByFilter';
+import { useShareReport } from '../../hooks/report.hooks';
+import modalConfig from '../../utils/modalConfig';
+import ShareContent from '../../components/Reports/ShareContent';
 
 dayjs.extend(quarterOfYear);
 
@@ -49,6 +62,7 @@ ChartJS.register(
 const barDataConfigByLocation = {
   options: {
     responsive: true,
+    maintainAspectRatio: false,
   },
   styles: {
     backgroundColor: '#914EFB',
@@ -83,6 +97,7 @@ const barDataConfigByIndustry = {
 
 const options = {
   responsive: true,
+  maintainAspectRatio: false,
 };
 
 export const pieData = {
@@ -113,6 +128,12 @@ export const pieData = {
 };
 
 const RevenueReport = () => {
+  const modals = useModals();
+  const [searchParams] = useSearchParams();
+  const { mutateAsync, isLoading: isDownloadLoading } = useShareReport();
+
+  const share = searchParams.get('share');
+
   const [updatedReveueGraph, setUpdatedRevenueGraph] = useState({
     id: uuidv4(),
     labels: monthsInShort,
@@ -252,12 +273,34 @@ const RevenueReport = () => {
     }
   };
 
-  const downloadPdf = () => {
-    const element = document.getElementById('revenue-pdf');
-    const option = {
-      filename: 'revenue.pdf',
-    };
-    DomToPdf(element, option);
+  const toggleShareOptions = () => {
+    modals.openContextModal('basic', {
+      title: 'Share via:',
+      innerProps: {
+        modalBody: <ShareContent />,
+      },
+      ...modalConfig,
+    });
+  };
+
+  const handleDownloadPdf = async () => {
+    const activeUrl = new URL(window.location.href);
+    activeUrl.searchParams.append('share', 'report');
+
+    await mutateAsync(
+      { url: activeUrl.toString() },
+      {
+        onSuccess: data => {
+          showNotification({
+            title: 'Report has been downloaded successfully',
+            color: 'green',
+          });
+          if (data?.link) {
+            downloadPdf(data.link);
+          }
+        },
+      },
+    );
   };
 
   const handleUpdateRevenueGraph = useCallback(() => {
@@ -296,7 +339,16 @@ const RevenueReport = () => {
   }, [revenueGraphData]);
 
   const handleUpdatedReveueByLocation = useCallback(() => {
-    const tempBarData = { ...updatedLocation, id: uuidv4() };
+    const tempBarData = {
+      labels: [],
+      datasets: [
+        {
+          label: 'City or State',
+          data: [],
+          ...barDataConfigByLocation.styles,
+        },
+      ],
+    };
     if (revenueDataByLocation) {
       revenueDataByLocation?.forEach((item, index) => {
         tempBarData.labels[index] = item?._id;
@@ -307,7 +359,16 @@ const RevenueReport = () => {
   }, [revenueDataByLocation]);
 
   const handleUpdatedReveueByIndustry = useCallback(() => {
-    const tempBarData = { ...updatedIndustry, id: uuidv4() };
+    const tempBarData = {
+      labels: [],
+      datasets: [
+        {
+          label: '',
+          data: [],
+          ...barDataConfigByIndustry.styles,
+        },
+      ],
+    };
     if (revenueDataByIndustry) {
       revenueDataByIndustry?.forEach((item, index) => {
         tempBarData.labels[index] = item?._id;
@@ -330,18 +391,27 @@ const RevenueReport = () => {
   }, [revenueDataByIndustry]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
-      <Header
-        text="Revenue Report"
-        onClickDownloadPdf={downloadPdf}
-        handleRevenueGraphViewBy={handleRevenueGraphViewBy}
-        showGlobalFilter
-      />
+    <div
+      className={classNames(
+        'border-l border-gray-450 overflow-y-auto',
+        share !== 'report' ? 'col-span-10 ' : 'col-span-12',
+      )}
+    >
+      {share !== 'report' ? (
+        <Header
+          text="Revenue Report"
+          onClickDownloadPdf={handleDownloadPdf}
+          onClickSharePdf={toggleShareOptions}
+          isDownloadLoading={isDownloadLoading}
+        />
+      ) : null}
       <div className="mr-7 pl-5 mt-5 mb-10" id="revenue-pdf">
         <RevenueStatsContent revenueData={revenueData} />
-        <div className="h-[60px] border-b border-t my-5 border-gray-450 flex justify-end items-center">
-          <ViewByFilter handleViewBy={handleRevenueGraphViewBy} />
-        </div>
+        {share !== 'report' ? (
+          <div className="h-[60px] border-b border-t my-5 border-gray-450 flex justify-end items-center">
+            <ViewByFilter handleViewBy={handleRevenueGraphViewBy} />
+          </div>
+        ) : null}
         <div className="flex gap-8">
           <div className="w-[70%] flex flex-col justify-between min-h-[300px]">
             <div className="flex justify-between items-center">
@@ -354,7 +424,15 @@ const RevenueReport = () => {
                 <p className="transform rotate-[-90deg] absolute left-[-25px] top-[40%]">
                   In Lakhs &gt;
                 </p>
-                <Line height="100" data={updatedReveueGraph} options={options} key={uuidv4()} />
+                <div className="max-h-[350px]">
+                  <Line
+                    // height="100"
+                    data={updatedReveueGraph}
+                    options={options}
+                    key={updatedReveueGraph.id}
+                    className="w-full"
+                  />
+                </div>
                 <p className="text-center">Months &gt;</p>
               </div>
             )}
@@ -372,7 +450,7 @@ const RevenueReport = () => {
                 <Pie
                   data={updatedIndustry}
                   options={barDataConfigByIndustry.options}
-                  key={uuidv4()}
+                  key={updatedIndustry.id}
                 />
               )}
             </div>
@@ -384,9 +462,11 @@ const RevenueReport = () => {
             <p className="font-bold">City Or State</p>
             <div className="flex justify-around">
               <div className="mx-2">
-                <Button onClick={toggleFilter} variant="default" className="font-medium">
-                  <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
-                </Button>
+                {share !== 'report' ? (
+                  <Button onClick={toggleFilter} variant="default" className="font-medium">
+                    <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
+                  </Button>
+                ) : null}
                 {showFilter && (
                   <RevenueFilter
                     isOpened={showFilter}
@@ -403,12 +483,15 @@ const RevenueReport = () => {
             {isByLocationLoading ? (
               <Loader className="mx-auto my-10" />
             ) : (
-              <Bar
-                height="80"
-                data={updatedLocation}
-                options={barDataConfigByLocation.options}
-                key={uuidv4()}
-              />
+              <div className="max-h-[350px]">
+                <Bar
+                  // height="80"
+                  data={updatedLocation}
+                  options={barDataConfigByLocation.options}
+                  key={updatedLocation.id}
+                  className="w-full"
+                />
+              </div>
             )}
             <p className="text-center">City or State &gt;</p>
           </div>
