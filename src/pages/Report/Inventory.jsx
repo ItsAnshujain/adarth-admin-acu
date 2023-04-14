@@ -76,23 +76,46 @@ const config = {
   options: { responsive: true },
 };
 
+const unwantedQueriesForReveueGraph = [
+  'limit',
+  'page',
+  'sortOrder',
+  'sortBy',
+  'owner',
+  'category',
+  'subCategory',
+  'mediaType',
+  'tier',
+  'minPrice',
+  'maxPrice',
+  'zone',
+  'minFootFall',
+  'maxFootfall',
+  'facing',
+  'tags',
+  'demographic',
+  'audience',
+  'search',
+  'from',
+  'to',
+];
+
+const unwantedQuriesForInventories = ['groupBy', 'startDate', 'endDate'];
+
 const InventoryReport = () => {
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
-    'limit': 10,
-    'page': 1,
-    'sortOrder': 'desc',
-    'sortBy': 'basicInformation.spaceName',
+    limit: 10,
+    page: 1,
+    sortOrder: 'desc',
+    sortBy: 'basicInformation.spaceName',
+    startDate: dayjs().startOf('year').format(DATE_FORMAT),
+    endDate: dayjs().endOf('year').format(DATE_FORMAT),
+    groupBy: 'month',
   });
   const chartRef = useRef(null);
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
-
-  const [queryByTime, setQueryByTime] = useState({
-    'groupBy': 'month',
-    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
-  });
 
   const [areaData, setAreaData] = useState({
     id: uuidv4(),
@@ -107,48 +130,60 @@ const InventoryReport = () => {
     ],
   });
 
+  const removeUnwantedQueries = removeArr => {
+    const params = [...searchParams];
+    let updatedParams = params.filter(elem => !removeArr.includes(elem[0]));
+    updatedParams = Object.fromEntries(updatedParams);
+    return serialize(updatedParams);
+  };
+
   const { data: inventoryStats, isLoading: isInventoryStatsLoading } = useInventoryStats('');
   const {
     data: inventoryReports,
     isLoading: isInventoryReportLoading,
     isSuccess,
-  } = useInventoryReport(serialize(queryByTime));
+  } = useInventoryReport(removeUnwantedQueries(unwantedQueriesForReveueGraph));
   const { data: inventoryReportList, isLoading: inventoryReportListLoading } =
-    useFetchInventoryReportList(searchParams.toString());
+    useFetchInventoryReportList(removeUnwantedQueries(unwantedQuriesForInventories));
   const { mutateAsync, isLoading: isDownloadLoading } = useShareReport();
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
   const share = searchParams.get('share');
+  const groupBy = searchParams.get('groupBy');
 
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
-      setQueryByTime({
-        'groupBy': 'month',
-        'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-        'endDate': dayjs().endOf('year').format(DATE_FORMAT),
-      });
+      const startDate = dayjs().startOf('year').format(DATE_FORMAT);
+      const endDate = dayjs().endOf('year').format(DATE_FORMAT);
+      searchParams.set('startDate', startDate);
+      searchParams.set('endDate', endDate);
+      searchParams.set('groupBy', 'year');
+      setSearchParams(searchParams);
     }
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
-      setQueryByTime(prevState => ({
-        ...prevState,
-        'groupBy':
-          viewType === 'year'
-            ? 'month'
-            : viewType === 'month'
-            ? 'dayOfMonth'
-            : viewType === 'week'
-            ? 'dayOfWeek'
-            : 'month',
-        'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
-        'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
-      }));
+      const startDate = dayjs().startOf(viewType).format(DATE_FORMAT);
+      const endDate = dayjs().endOf(viewType).format(DATE_FORMAT);
+
+      searchParams.set('startDate', startDate);
+      searchParams.set('endDate', endDate);
+      searchParams.set(
+        'groupBy',
+        viewType === 'year'
+          ? 'month'
+          : viewType === 'month'
+          ? 'dayOfMonth'
+          : viewType === 'week'
+          ? 'dayOfWeek'
+          : 'month',
+      );
+      setSearchParams(searchParams);
     }
     if (viewType === 'quarter') {
-      setQueryByTime({
-        'groupBy': 'quarter',
-        ...dateByQuarter[dayjs().quarter()],
-      });
+      searchParams.set('startDate', dateByQuarter[dayjs().quarter()].startDate);
+      searchParams.set('endDate', dateByQuarter[dayjs().quarter()].endDate);
+      searchParams.set('groupBy', 'quarter');
+      setSearchParams(searchParams);
     }
   };
 
@@ -567,11 +602,11 @@ const InventoryReport = () => {
       };
 
       tempAreaData.labels =
-        queryByTime.groupBy === 'dayOfWeek'
+        groupBy === 'dayOfWeek'
           ? daysInAWeek
-          : queryByTime.groupBy === 'dayOfMonth'
+          : groupBy === 'dayOfMonth'
           ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
-          : queryByTime.groupBy === 'quarter'
+          : groupBy === 'quarter'
           ? quarters
           : monthsInShort;
 
@@ -669,14 +704,14 @@ const InventoryReport = () => {
         share !== 'report' ? 'col-span-10 ' : 'col-span-12',
       )}
     >
-      {share !== 'report' ? (
-        <Header
-          text="Inventory Report"
-          onClickDownloadPdf={handleDownloadPdf}
-          onClickSharePdf={toggleShareOptions}
-          isDownloadLoading={isDownloadLoading}
-        />
-      ) : null}
+      <Header
+        shareType={share}
+        text="Inventory Report"
+        onClickDownloadPdf={handleDownloadPdf}
+        onClickSharePdf={toggleShareOptions}
+        isDownloadLoading={isDownloadLoading}
+      />
+
       <div className="pr-7 pl-5 mt-5 mb-10" id="inventory-pdf">
         <InventoryStatsContent
           inventoryReports={inventoryReports}
@@ -693,7 +728,6 @@ const InventoryReport = () => {
             ) : (
               <div className="max-h-[350px]">
                 <Line
-                  // height="100"
                   data={areaData}
                   options={options}
                   ref={chartRef}

@@ -594,7 +594,7 @@ const ReleaseOrder = ({
             />
             <NumberInput
               styles={styles}
-              label="Mounting GST Charges"
+              label="Mounting GST Charges in %"
               name="mountingGstPercentage"
               placeholder="Write..."
               min={0}

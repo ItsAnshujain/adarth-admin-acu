@@ -23,14 +23,7 @@ import { useCampaignReport, useCampaignStats } from '../../hooks/campaigns.hooks
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import CampaignStatsContent from '../../components/Reports/Campaign/CampaignStatsContent';
 import CampaignPieContent from '../../components/Reports/Campaign/CampaignPieContent';
-import {
-  dateByQuarter,
-  daysInAWeek,
-  downloadPdf,
-  monthsInShort,
-  quarters,
-  serialize,
-} from '../../utils';
+import { dateByQuarter, daysInAWeek, downloadPdf, monthsInShort, quarters } from '../../utils';
 import { useShareReport } from '../../hooks/report.hooks';
 import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/Reports/ShareContent';
@@ -47,14 +40,16 @@ const options = {
 
 const CampaignReport = () => {
   const modals = useModals();
-  const [searchParams] = useSearchParams();
-  const share = searchParams.get('share');
-  const { mutateAsync, isLoading: isDownloadLoading } = useShareReport();
-  const [queryByTime, setQueryByTime] = useState({
-    'groupBy': 'month',
-    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+  const [searchParams, setSearchParams] = useSearchParams({
+    startDate: dayjs().startOf('year').format(DATE_FORMAT),
+    endDate: dayjs().endOf('year').format(DATE_FORMAT),
+    groupBy: 'month',
   });
+
+  const share = searchParams.get('share');
+  const groupBy = searchParams.get('groupBy');
+
+  const { mutateAsync, isLoading: isDownloadLoading } = useShareReport();
 
   const [updatedBarData, setUpdatedBarData] = useState({
     id: uuidv4(),
@@ -83,36 +78,40 @@ const CampaignReport = () => {
     data: report,
     isLoading: isReportLoading,
     isSuccess,
-  } = useCampaignReport(serialize(queryByTime));
+  } = useCampaignReport(searchParams.toString());
 
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
-      setQueryByTime({
-        'groupBy': 'month',
-        'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-        'endDate': dayjs().endOf('year').format(DATE_FORMAT),
-      });
+      const startDate = dayjs().startOf('year').format(DATE_FORMAT);
+      const endDate = dayjs().endOf('year').format(DATE_FORMAT);
+      searchParams.set('startDate', startDate);
+      searchParams.set('endDate', endDate);
+      searchParams.set('groupBy', 'year');
+      setSearchParams(searchParams);
     }
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
-      setQueryByTime(prevState => ({
-        ...prevState,
-        'groupBy':
-          viewType === 'year'
-            ? 'month'
-            : viewType === 'month'
-            ? 'dayOfMonth'
-            : viewType === 'week'
-            ? 'dayOfWeek'
-            : 'month',
-        'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
-        'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
-      }));
+      const startDate = dayjs().startOf(viewType).format(DATE_FORMAT);
+      const endDate = dayjs().endOf(viewType).format(DATE_FORMAT);
+
+      searchParams.set('startDate', startDate);
+      searchParams.set('endDate', endDate);
+      searchParams.set(
+        'groupBy',
+        viewType === 'year'
+          ? 'month'
+          : viewType === 'month'
+          ? 'dayOfMonth'
+          : viewType === 'week'
+          ? 'dayOfWeek'
+          : 'month',
+      );
+      setSearchParams(searchParams);
     }
     if (viewType === 'quarter') {
-      setQueryByTime({
-        'groupBy': 'quarter',
-        ...dateByQuarter[dayjs().quarter()],
-      });
+      searchParams.set('startDate', dateByQuarter[dayjs().quarter()].startDate);
+      searchParams.set('endDate', dateByQuarter[dayjs().quarter()].endDate);
+      searchParams.set('groupBy', 'quarter');
+      setSearchParams(searchParams);
     }
   };
 
@@ -181,11 +180,11 @@ const CampaignReport = () => {
         ],
       };
       tempBarData.labels =
-        queryByTime.groupBy === 'dayOfWeek'
+        groupBy === 'dayOfWeek'
           ? daysInAWeek
-          : queryByTime.groupBy === 'dayOfMonth'
+          : groupBy === 'dayOfMonth'
           ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
-          : queryByTime.groupBy === 'quarter'
+          : groupBy === 'quarter'
           ? quarters
           : monthsInShort;
 
@@ -249,14 +248,14 @@ const CampaignReport = () => {
       )}
       id="campaign_report_pdf"
     >
-      {share !== 'report' ? (
-        <Header
-          text="Campaign Report"
-          onClickDownloadPdf={handleDownloadPdf}
-          onClickSharePdf={toggleShareOptions}
-          isDownloadLoading={isDownloadLoading}
-        />
-      ) : null}
+      <Header
+        shareType={share}
+        text="Campaign Report"
+        onClickDownloadPdf={handleDownloadPdf}
+        onClickSharePdf={toggleShareOptions}
+        isDownloadLoading={isDownloadLoading}
+      />
+
       <div className="pr-7 pl-5 mt-5" id="campaign-pdf">
         <CampaignStatsContent
           isStatsLoading={isStatsLoading}
@@ -286,7 +285,6 @@ const CampaignReport = () => {
               ) : (
                 <div className="max-h-[350px]">
                   <Bar
-                    // height="100"
                     options={options}
                     data={updatedBarData}
                     key={updatedBarData.id}
