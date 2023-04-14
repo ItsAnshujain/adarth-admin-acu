@@ -45,7 +45,7 @@ const VerifyApprovalContent = ({ onClickCancel = () => {}, financeId, value }) =
         <Image src={!accept ? TrashIcon : CheckIcon} height={65} width={65} />
         <p className="font-bold text-2xl">
           {!accept
-            ? `Are you sure you want to ${label[value]}?`
+            ? `Are you sure you want to ${label[value]} the status?`
             : `${value ? value[0].toUpperCase() + value.substr(1) : 'Processed'} successfully`}
         </p>
         {!accept ? (

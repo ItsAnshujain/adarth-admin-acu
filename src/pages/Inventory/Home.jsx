@@ -40,7 +40,6 @@ const Home = () => {
     'page': 1,
     'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
-    // 'isUnderMaintenance': false,
   });
   const form = useForm({ initialValues });
   const viewType = useLayoutView(state => state.activeLayout);

@@ -129,10 +129,18 @@ export const pieData = {
 
 const RevenueReport = () => {
   const modals = useModals();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams({
+    startDate: dayjs().startOf('year').format(DATE_FORMAT),
+    endDate: dayjs().endOf('year').format(DATE_FORMAT),
+    by: 'city',
+    groupBy: 'month',
+  });
+
   const { mutateAsync, isLoading: isDownloadLoading } = useShareReport();
 
   const share = searchParams.get('share');
+  const groupBy = searchParams.get('groupBy');
+  const by = searchParams.get('by');
 
   const [updatedReveueGraph, setUpdatedRevenueGraph] = useState({
     id: uuidv4(),
@@ -148,12 +156,6 @@ const RevenueReport = () => {
     ],
   });
 
-  const [queryByReveueGraph, setQueryByRevenueGraph] = useState({
-    'groupBy': 'month',
-    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
-  });
-
   const [updatedLocation, setUpdatedLocation] = useState({
     id: uuidv4(),
     labels: [],
@@ -164,12 +166,6 @@ const RevenueReport = () => {
         ...barDataConfigByLocation.styles,
       },
     ],
-  });
-
-  const [queryByLocation, setQueryByLocation] = useState({
-    'by': 'city',
-    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
 
   const [updatedIndustry, setUpdatedIndustry] = useState({
@@ -184,92 +180,63 @@ const RevenueReport = () => {
     ],
   });
 
-  const [queryByIndustry, setQueryByIndustry] = useState({
-    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
-  });
-
   const [showFilter, setShowFilter] = useState(false);
   const toggleFilter = () => setShowFilter(!showFilter);
+
+  const removeUnwantedQueries = removeArr => {
+    const params = [...searchParams];
+    let updatedParams = params.filter(elem => !removeArr.includes(elem[0]));
+    updatedParams = Object.fromEntries(updatedParams);
+    return serialize(updatedParams);
+  };
 
   const { data: revenueData } = useBookingReportByRevenueStats();
   const {
     data: revenueGraphData,
     isLoading: isRevenueGraphLoading,
     isSuccess,
-  } = useBookingReportByRevenueGraph(serialize(queryByReveueGraph));
+  } = useBookingReportByRevenueGraph(removeUnwantedQueries(['by']));
   const { data: revenueDataByLocation, isLoading: isByLocationLoading } =
-    useBookingRevenueByLocation(serialize(queryByLocation));
+    useBookingRevenueByLocation(removeUnwantedQueries(['groupBy']));
   const { data: revenueDataByIndustry, isLoading: isByIndustryLoading } =
-    useBookingRevenueByIndustry(serialize(queryByIndustry));
+    useBookingRevenueByIndustry(removeUnwantedQueries(['groupBy', 'by']));
 
   const handleRevenueGraphViewBy = viewType => {
     if (viewType === 'reset') {
       const startDate = dayjs().startOf('year').format(DATE_FORMAT);
       const endDate = dayjs().endOf('year').format(DATE_FORMAT);
-      setQueryByLocation({
-        'by': 'city',
-        startDate,
-        endDate,
-      });
-
-      setQueryByIndustry({
-        startDate,
-        endDate,
-      });
-
-      setQueryByRevenueGraph({
-        'groupBy': 'month',
-        startDate,
-        endDate,
-      });
+      searchParams.set('startDate', startDate);
+      searchParams.set('endDate', endDate);
+      searchParams.set('by', by);
+      searchParams.set('groupBy', 'year');
+      setSearchParams(searchParams);
     }
 
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
       const startDate = dayjs().startOf(viewType).format(DATE_FORMAT);
       const endDate = dayjs().endOf(viewType).format(DATE_FORMAT);
 
-      setQueryByLocation(prevState => ({
-        ...prevState,
-        startDate,
-        endDate,
-      }));
-
-      setQueryByIndustry(prevState => ({
-        ...prevState,
-        startDate,
-        endDate,
-      }));
-
-      setQueryByRevenueGraph(prevState => ({
-        ...prevState,
-        'groupBy':
-          viewType === 'year'
-            ? 'month'
-            : viewType === 'month'
-            ? 'dayOfMonth'
-            : viewType === 'week'
-            ? 'dayOfWeek'
-            : 'month',
-        startDate,
-        endDate,
-      }));
+      searchParams.set('startDate', startDate);
+      searchParams.set('endDate', endDate);
+      searchParams.set('by', by);
+      searchParams.set(
+        'groupBy',
+        viewType === 'year'
+          ? 'month'
+          : viewType === 'month'
+          ? 'dayOfMonth'
+          : viewType === 'week'
+          ? 'dayOfWeek'
+          : 'month',
+      );
+      setSearchParams(searchParams);
     }
     if (viewType === 'quarter') {
-      setQueryByLocation(prevState => ({
-        ...prevState,
-        ...dateByQuarter[dayjs().quarter()],
-      }));
-
-      setQueryByIndustry(prevState => ({
-        ...prevState,
-        ...dateByQuarter[dayjs().quarter()],
-      }));
-
-      setQueryByRevenueGraph({
-        'groupBy': 'quarter',
-        ...dateByQuarter[dayjs().quarter()],
-      });
+      searchParams.set('startDate', dateByQuarter[dayjs().quarter()].startDate);
+      searchParams.set('endDate', dateByQuarter[dayjs().quarter()].endDate);
+      searchParams.set('by', by);
+      searchParams.set('groupBy', 'quarter');
+      setSearchParams(searchParams);
     }
   };
 
@@ -318,11 +285,11 @@ const RevenueReport = () => {
         ],
       };
       tempData.labels =
-        queryByReveueGraph.groupBy === 'dayOfWeek'
+        groupBy === 'dayOfWeek'
           ? daysInAWeek
-          : queryByReveueGraph.groupBy === 'dayOfMonth'
+          : groupBy === 'dayOfMonth'
           ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
-          : queryByReveueGraph.groupBy === 'quarter'
+          : groupBy === 'quarter'
           ? quarters
           : monthsInShort;
 
@@ -397,14 +364,14 @@ const RevenueReport = () => {
         share !== 'report' ? 'col-span-10 ' : 'col-span-12',
       )}
     >
-      {share !== 'report' ? (
-        <Header
-          text="Revenue Report"
-          onClickDownloadPdf={handleDownloadPdf}
-          onClickSharePdf={toggleShareOptions}
-          isDownloadLoading={isDownloadLoading}
-        />
-      ) : null}
+      <Header
+        shareType={share}
+        text="Revenue Report"
+        onClickDownloadPdf={handleDownloadPdf}
+        onClickSharePdf={toggleShareOptions}
+        isDownloadLoading={isDownloadLoading}
+      />
+
       <div className="mr-7 pl-5 mt-5 mb-10" id="revenue-pdf">
         <RevenueStatsContent revenueData={revenueData} />
         {share !== 'report' ? (
@@ -426,7 +393,6 @@ const RevenueReport = () => {
                 </p>
                 <div className="max-h-[350px]">
                   <Line
-                    // height="100"
                     data={updatedReveueGraph}
                     options={options}
                     key={updatedReveueGraph.id}
@@ -468,12 +434,7 @@ const RevenueReport = () => {
                   </Button>
                 ) : null}
                 {showFilter && (
-                  <RevenueFilter
-                    isOpened={showFilter}
-                    setShowFilter={setShowFilter}
-                    handleQueryByLocation={setQueryByLocation}
-                    queryByLocation={queryByLocation}
-                  />
+                  <RevenueFilter isOpened={showFilter} setShowFilter={setShowFilter} />
                 )}
               </div>
             </div>
@@ -485,7 +446,6 @@ const RevenueReport = () => {
             ) : (
               <div className="max-h-[350px]">
                 <Bar
-                  // height="80"
                   data={updatedLocation}
                   options={barDataConfigByLocation.options}
                   key={updatedLocation.id}
