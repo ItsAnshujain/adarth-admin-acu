@@ -123,7 +123,7 @@ const Specification = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="mt-[9px] font-bold text-[15px]">
-                Width <span className="italic font-medium">in sqft</span>
+                Width <span className="font-medium text-xs text-gray-500">(in sqft)</span>
               </p>
               <NumberInput
                 name="specifications.size.width"
@@ -136,7 +136,7 @@ const Specification = () => {
             </div>
             <div>
               <p className="mt-[9px] font-bold text-[15px]">
-                Height <span className="italic font-medium">in sqft</span>
+                Height <span className="font-medium text-xs text-gray-500">(in sqft)</span>
               </p>
               <NumberInput
                 name="specifications.size.height"

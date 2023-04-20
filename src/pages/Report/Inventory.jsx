@@ -354,8 +354,8 @@ const InventoryReport = () => {
             <div className="w-24">
               <Progress
                 sections={[
-                  { value: specifications?.health, color: 'green' },
-                  { value: 100 - (specifications?.health || 0), color: 'red' },
+                  { value: specifications?.health, color: 'purple' },
+                  { value: 100 - (specifications?.health || 0), color: 'orange' },
                 ]}
               />
             </div>
@@ -521,8 +521,8 @@ const InventoryReport = () => {
             <div className="w-24">
               <Progress
                 sections={[
-                  { value: specifications?.health, color: 'green' },
-                  { value: 100 - (specifications?.health || 0), color: 'red' },
+                  { value: specifications?.health, color: 'purple' },
+                  { value: 100 - (specifications?.health || 0), color: 'orange' },
                 ]}
               />
             </div>

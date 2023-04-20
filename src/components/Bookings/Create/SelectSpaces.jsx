@@ -335,8 +335,8 @@ const SelectSpace = () => {
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: original.health, color: 'green' },
-                    { value: 100 - original.health, color: 'red' },
+                    { value: original.health, color: 'purple' },
+                    { value: 100 - original.health, color: 'orange' },
                   ]}
                 />
               </div>
@@ -527,7 +527,7 @@ const SelectSpace = () => {
             <p className="text-slate-400">Total Price</p>
             <Group>
               <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
-              <p>**additional gst to be included</p>
+              <p className="text-xs">**additional gst to be included</p>
             </Group>
           </div>
         </div>

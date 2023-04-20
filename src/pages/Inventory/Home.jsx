@@ -103,29 +103,36 @@ const Home = () => {
             );
 
             return (
-              <div className="flex items-center gap-2">
-                <Box
-                  className="bg-white border rounded-md cursor-zoom-in"
-                  onClick={() => toggleImagePreviewModal(basicInformation?.spacePhoto)}
-                >
-                  {basicInformation?.spacePhoto ? (
-                    <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
-                  ) : (
-                    <Image src={null} withPlaceholder height={32} width={32} />
-                  )}
-                </Box>
-                <Link
-                  to={`/inventory/view-details/${_id}`}
-                  className="text-purple-450 font-medium px-2"
-                >
-                  <Text
-                    className="overflow-hidden text-ellipsis max-w-[180px] underline"
-                    lineClamp={1}
-                    title={basicInformation?.spaceName}
+              <div className="flex items-center justify-between gap-2 w-[380px] mr-4">
+                <div className="flex justify-start items-center flex-1">
+                  <Box
+                    className="bg-white border rounded-md cursor-zoom-in"
+                    onClick={() => toggleImagePreviewModal(basicInformation?.spacePhoto)}
                   >
-                    {basicInformation?.spaceName}
-                  </Text>
-                </Link>
+                    {basicInformation?.spacePhoto ? (
+                      <Image
+                        src={basicInformation?.spacePhoto}
+                        alt="banner"
+                        height={32}
+                        width={32}
+                      />
+                    ) : (
+                      <Image src={null} withPlaceholder height={32} width={32} />
+                    )}
+                  </Box>
+                  <Link
+                    to={`/inventory/view-details/${_id}`}
+                    className="text-purple-450 font-medium px-2"
+                  >
+                    <Text
+                      className="overflow-hidden text-ellipsis underline"
+                      lineClamp={1}
+                      title={basicInformation?.spaceName}
+                    >
+                      {basicInformation?.spaceName}
+                    </Text>
+                  </Link>
+                </div>
                 <Badge
                   className="capitalize"
                   variant="filled"
@@ -236,8 +243,8 @@ const Home = () => {
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: specifications?.health, color: 'green' },
-                    { value: 100 - (specifications?.health || 0), color: 'red' },
+                    { value: specifications?.health, color: 'purple' },
+                    { value: 100 - (specifications?.health || 0), color: 'orange' },
                   ]}
                 />
               </div>

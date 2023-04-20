@@ -158,7 +158,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
     </div>
   ) : (
     <div className="px-5">
-      <p className="mt-5 font-bold text-lg">Stats</p>
+      <p className="mt-5 font-bold text-lg">Statistics</p>
       <div className="mt-2 flex flex-col gap-8">
         <div className="flex flex-wrap">
           <div className="flex gap-x-4 p-4 border rounded-md items-center mr-20">
@@ -212,9 +212,9 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
             </div>
             <div>
               <p className="text-slate-400">Price</p>
-              <Group>
+              <Group className="gap-1">
                 <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.price)}</p>
-                <p>**inclusive of gst</p>
+                <p className="text-xs italic">**inclusive of gst</p>
               </Group>
             </div>
             <div>

@@ -204,8 +204,8 @@ const Spaces = () => {
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: health, color: 'green' },
-                    { value: 100 - (health || 0), color: 'red' },
+                    { value: health, color: 'purple' },
+                    { value: 100 - (health || 0), color: 'orange' },
                   ]}
                 />
               </div>
