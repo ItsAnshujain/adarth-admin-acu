@@ -144,8 +144,8 @@ const Home = () => {
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: healthStatus, color: 'purple' },
-                    { value: 100 - (healthStatus || 0), color: 'orange' },
+                    { value: healthStatus, color: 'green' },
+                    { value: 100 - (healthStatus || 0), color: 'red' },
                   ]}
                 />
               </div>

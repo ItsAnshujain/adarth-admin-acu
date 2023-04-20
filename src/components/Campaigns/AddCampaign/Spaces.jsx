@@ -178,8 +178,8 @@ const SelectSpace = () => {
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: original.health, color: 'purple' },
-                    { value: 100 - original.health, color: 'orange' },
+                    { value: original.health, color: 'green' },
+                    { value: 100 - original.health, color: 'red' },
                   ]}
                 />
               </div>

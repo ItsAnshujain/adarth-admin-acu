@@ -299,8 +299,8 @@ const Bookings = () => {
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: campaign?.avgHealth, color: 'purple' },
-                    { value: 100 - (campaign?.avgHealth || 0), color: 'orange' },
+                    { value: campaign?.avgHealth, color: 'green' },
+                    { value: 100 - (campaign?.avgHealth || 0), color: 'red' },
                   ]}
                 />
               </div>

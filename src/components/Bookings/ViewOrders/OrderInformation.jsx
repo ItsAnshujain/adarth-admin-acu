@@ -98,8 +98,8 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
       datasets: [
         {
           data: [bookingStats?.offline ?? 0, bookingStats?.online ?? 0],
-          backgroundColor: ['#914EFB', '#FF900E'],
-          borderColor: ['#914EFB', '#FF900E'],
+          backgroundColor: ['#FF900E', '#914EFB'],
+          borderColor: ['#FF900E', '#914EFB'],
           borderWidth: 1,
         },
       ],
@@ -175,14 +175,14 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
               <p className="font-medium">Health Status</p>
               <div className="flex gap-8 mt-6">
                 <div className="flex gap-2 items-center">
-                  <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+                  <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                   <div>
                     <p className="text-xs font-lighter mb-1">Online Sale</p>
                     <p className="font-bold text-md">{bookingStats?.online ?? 0}</p>
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
-                  <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+                  <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                   <div>
                     <p className="font-lighter text-xs mb-1">Offline Sale</p>
                     <p className="font-bold text-md">{bookingStats?.offline ?? 0}</p>
