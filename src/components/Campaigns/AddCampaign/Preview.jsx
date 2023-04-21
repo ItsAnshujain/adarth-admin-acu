@@ -3,6 +3,7 @@ import GoogleMapReact from 'google-map-react';
 import { BackgroundImage, Badge, Center, Image, Pagination, Spoiler, Text } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import { getWord } from 'num-count';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
@@ -126,7 +127,11 @@ const Preview = ({ data = {}, place = {} }) => {
                 variant="filled"
                 radius="md"
               >
-                {`${getTotalImpressions || 0} + Total Impressions`}
+                {`${
+                  getTotalImpressions && getTotalImpressions.toString().length > 6
+                    ? getWord(getTotalImpressions)
+                    : getTotalImpressions || 0
+                } + Total Impressions`}
               </Badge>
             </div>
           </div>

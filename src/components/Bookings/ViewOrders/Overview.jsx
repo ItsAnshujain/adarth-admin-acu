@@ -16,6 +16,7 @@ import ReactPlayer from 'react-player';
 import { useModals } from '@mantine/modals';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
+import { getWord } from 'num-count';
 import Places from './UI/Places';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
@@ -218,9 +219,11 @@ const Overview = ({ bookingData = {}, isLoading }) => {
               radius="md"
             >
               {calcutateTotalImpressions && !Number.isNaN(calcutateTotalImpressions)
-                ? calcutateTotalImpressions
+                ? calcutateTotalImpressions.toString().length > 6
+                  ? getWord(calcutateTotalImpressions)
+                  : calcutateTotalImpressions
                 : 0}
-              + Total Impressions{' '}
+              + Total Impressions
             </Badge>
           </div>
           <div className="mt-8">

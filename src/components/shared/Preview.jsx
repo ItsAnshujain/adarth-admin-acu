@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Badge, Image, Text, BackgroundImage, Center, Spoiler } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
+import { getWord } from 'num-count';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { useFormContext } from '../../context/formContext';
 
@@ -124,7 +125,12 @@ const Preview = () => {
                 variant="filled"
                 radius="md"
               >
-                {`${values?.specifications?.impressions?.max || 0}+ Total Impressions`}
+                {`${
+                  values?.specifications?.impressions?.max &&
+                  values.specifications.impressions.max.toString().length > 6
+                    ? getWord(values.specifications.impressions.max)
+                    : values.specifications.impressions.max.length || 0
+                }+ Total Impressions`}
               </Badge>
             </div>
             {values?.basicInformation?.audience?.length
