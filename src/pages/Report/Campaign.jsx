@@ -120,8 +120,8 @@ const CampaignReport = () => {
       datasets: [
         {
           data: [stats?.unhealthy ?? 0, stats?.healthy ?? 0],
-          backgroundColor: ['#914EFB', '#FF900E'],
-          borderColor: ['#914EFB', '#FF900E'],
+          backgroundColor: ['#FF900E', '#914EFB'],
+          borderColor: ['#FF900E', '#914EFB'],
           borderWidth: 1,
         },
       ],

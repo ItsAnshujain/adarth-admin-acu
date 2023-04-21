@@ -51,6 +51,7 @@ const BasicInfo = () => {
             errors={errors}
             className="mr-2"
             data={[
+              { label: 'NA', value: 'na' },
               { label: 'NEFT', value: 'neft' },
               { label: 'RTGS', value: 'rtgs' },
               { label: 'CHEQUE', value: 'cheque' },

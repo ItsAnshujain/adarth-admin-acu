@@ -142,6 +142,13 @@ const BasicInfo = () => {
     }
   }, [organizationData]);
 
+  useEffect(() => {
+    if (!subCategories?.docs?.length) {
+      setFieldValue('basicInformation.subCategory.label', '');
+      setFieldValue('basicInformation.subCategory.value', '');
+    }
+  }, [values.basicInformation.category, subCategories?.docs]);
+
   return (
     <div className="flex gap-8 pt-4">
       <div className="flex-1 pl-5">

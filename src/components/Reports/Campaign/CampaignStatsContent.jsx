@@ -63,14 +63,14 @@ const CampaignStatsContent = ({ isStatsLoading, healthStatusData, stats }) => (
         <p className="font-medium">Health Status</p>
         <div className="flex gap-8 mt-6 flex-wrap">
           <div className="flex gap-2 items-center">
-            <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+            <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
             <div>
               <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
               <p className="font-bold text-lg">{stats?.healthy ?? 0}</p>
             </div>
           </div>
           <div className="flex gap-2 items-center">
-            <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+            <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
             <div>
               <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
               <p className="font-bold text-lg">{stats?.unhealthy ?? 0}</p>

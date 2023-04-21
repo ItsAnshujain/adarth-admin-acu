@@ -527,7 +527,7 @@ const SelectSpace = () => {
             <p className="text-slate-400">Total Price</p>
             <Group>
               <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
-              <p>**additional gst to be included</p>
+              <p className="text-xs">**additional gst to be included</p>
             </Group>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { Button, Group, Modal, Title } from '@mantine/core';
+import { Button, Group, Modal } from '@mantine/core';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import shallow from 'zustand/shallow';
@@ -45,13 +45,13 @@ const TermsAndConditionsPage = () => {
       <div className="flex h-screen w-full flex-col justify-center px-5 md:w-[35%] md:px-0">
         <FormProvider form={form}>
           <form>
-            <Title>Terms and Conditions</Title>
+            <h3 className="font-bold text-xl underline">Terms and Conditions</h3>
             <p className="text-sm">
-              Thank you for visiting our website. Before you proceed to use our services, You will
-              need accept the terms and condition.
+              Thank you for visiting our website. Before you proceed to use our services, you will
+              need to accept the terms and conditions.
             </p>
             <Button className="text-purple-450 px-0 underline text-sm mb-2" onClick={open}>
-              Click Here to read more
+              Click here to read more
             </Button>
 
             {form.errors ? <p className="text-red-450">{form.errors.hasAcceptedTerms}</p> : null}
