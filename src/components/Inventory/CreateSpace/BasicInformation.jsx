@@ -147,7 +147,7 @@ const BasicInfo = () => {
       setFieldValue('basicInformation.subCategory.label', '');
       setFieldValue('basicInformation.subCategory.value', '');
     }
-  }, [values.basicInformation.category]);
+  }, [values.basicInformation.category, subCategories?.docs]);
 
   return (
     <div className="flex gap-8 pt-4">
