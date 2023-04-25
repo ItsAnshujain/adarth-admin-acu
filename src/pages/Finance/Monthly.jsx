@@ -2,8 +2,8 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Folder } from 'react-feather';
 import { Box, Loader, Text } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
+import { useEffect, useState } from 'react';
 import Header from '../../components/Finance/Header';
-import toIndianCurrency from '../../utils/currencyFormat';
 import { useFetchFinanceByYear } from '../../hooks/finance.hooks';
 import { months } from '../../utils';
 
@@ -12,18 +12,39 @@ const Home = () => {
   const { state } = useLocation();
   const { year } = useParams();
   const { data: financialDataByYear, isLoading } = useFetchFinanceByYear(year);
+  const [updatedFinanceData, setUpdatedFinanceData] = useState([]);
 
   const handleNavigation = finance => {
     navigate(`${finance?._id}`, {
       state: {
-        totalSales: finance?.totalSales,
-        totalOperationlCost: finance?.totalOperationlCost,
+        totalPurchaseOrder: finance?.totalPurchaseOrder,
+        totalReleaseOrder: finance?.totalReleaseOrder,
+        totalInvoices: finance?.totalInvoices,
       },
     });
   };
 
+  useEffect(() => {
+    if (financialDataByYear) {
+      const tempData = { ...financialDataByYear };
+      setUpdatedFinanceData(() => {
+        const tempArr = [];
+        Object.keys(tempData[0]).forEach(key => {
+          tempData[0][key].forEach(ele => {
+            const index = tempArr.findIndex(item => item._id === ele._id);
+            if (index > -1) {
+              tempArr[index] = { ...tempArr[index], [key]: (tempArr[index][key] || 0) + ele.total };
+            } else tempArr.push({ _id: ele._id, [key]: ele.total });
+          });
+        });
+
+        return tempArr;
+      });
+    }
+  }, [financialDataByYear]);
+
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <Header {...state} />
       <div className="flex flex-wrap gap-4 pl-5 pr-7">
         {!financialDataByYear?.length && !isLoading ? (
@@ -35,7 +56,7 @@ const Home = () => {
         ) : null}
         <div className="w-full">{isLoading ? <Loader className="w-full mt-20" /> : null}</div>
 
-        {financialDataByYear?.map(finance => (
+        {updatedFinanceData?.map(finance => (
           <Box
             key={uuidv4()}
             onClick={() => handleNavigation(finance)}
@@ -45,16 +66,18 @@ const Home = () => {
             {finance?._id ? (
               <p className="font-bold text-lg">{months[finance._id - 1 || 0]}</p>
             ) : null}
-            <div className="flex justify-between gap-4">
-              <div>
-                <p className="text-xs font-medium text-slate-400 mb-1">Total Sales</p>
-                <p className="text-orange-400">{toIndianCurrency(finance?.totalSales || 0)}</p>
+            <div className="flex flex-col">
+              <div className="flex">
+                <p className="text-sm font-medium text-slate-400 mr-2">Total Purchase Orders</p>
+                <p className="text-green-400">{finance?.totalPurchaseOrder || 0}</p>
               </div>
-              <div>
-                <p className="text-xs font-medium text-slate-400 mb-1">Total Operational Cost</p>
-                <p className="text-green-400">
-                  {toIndianCurrency(finance?.totalOperationlCost || 0)}
-                </p>
+              <div className="flex">
+                <p className="text-sm font-medium text-slate-400 mr-2">Total Release Orders</p>
+                <p className="text-purple-400">{finance?.totalReleaseOrder || 0}</p>
+              </div>
+              <div className="flex">
+                <p className="text-sm font-medium text-slate-400 mr-2">Total Invoices</p>
+                <p className="text-orange-400">{finance?.totalInvoices || 0}</p>
               </div>
             </div>
           </Box>

@@ -1,25 +1,23 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Text, Button, Progress, Image, NumberInput, Badge, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
+import isBetween from 'dayjs/plugin/isBetween';
+import dayjs from 'dayjs';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import Search from '../Search';
 import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
 import { useFetchInventory } from '../../hooks/inventory.hooks';
-import { categoryColors } from '../../utils';
+import { categoryColors, getDate } from '../../utils';
 import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../DateRangeSelector';
 
-const getDate = (selectionItem, item, key) => {
-  if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
+dayjs.extend(isBetween);
 
-  if (item && item[key]) return new Date(item[key]);
-
-  return null;
-};
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 const Spaces = () => {
   const { values, setFieldValue } = useFormContext();
@@ -30,7 +28,8 @@ const Spaces = () => {
     'sortBy': 'basicInformation.spaceName',
     'isUnderMaintenance': false,
   });
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
@@ -88,11 +87,17 @@ const Spaces = () => {
         accessor: 'basicInformation.spaceName',
         Cell: ({
           row: {
-            original: { _id, spaceName, spacePhoto, isUnderMaintenance },
+            original: { _id, spaceName, spacePhoto, isUnderMaintenance, bookingRange },
           },
         }) =>
-          useMemo(
-            () => (
+          useMemo(() => {
+            const isOccupied = bookingRange?.some(
+              item =>
+                dayjs(dayjs().format(DATE_FORMAT)).isBetween(item?.startDate, item?.endDate) ||
+                dayjs(dayjs().format(DATE_FORMAT)).isSame(dayjs(item?.endDate)),
+            );
+
+            return (
               <div className="flex items-center gap-2">
                 <div className="bg-white border rounded-md">
                   {spacePhoto ? (
@@ -103,24 +108,27 @@ const Spaces = () => {
                 </div>
                 <Link
                   to={`/inventory/view-details/${_id}`}
-                  className="text-black font-medium px-2"
+                  className="font-medium px-2 underline"
                   target="_blank"
                 >
-                  <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                  <Text
+                    className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
+                    lineClamp={1}
+                    title={spaceName}
+                  >
                     {spaceName}
                   </Text>
                 </Link>
                 <Badge
                   className="capitalize"
                   variant="filled"
-                  color={isUnderMaintenance ? 'yellow' : 'green'}
+                  color={isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'}
                 >
-                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                  {isUnderMaintenance ? 'Under Maintenance' : isOccupied ? 'Occupied' : 'Available'}
                 </Badge>
               </div>
-            ),
-            [],
-          ),
+            );
+          }, []),
       },
       {
         Header: 'MEDIA OWNER NAME',
@@ -129,7 +137,7 @@ const Spaces = () => {
           row: {
             original: { mediaOwner },
           },
-        }) => useMemo(() => <p className="w-fit">{mediaOwner || '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{mediaOwner}</p>, []),
       },
       {
         Header: 'PEER',
@@ -138,7 +146,7 @@ const Spaces = () => {
           row: {
             original: { peer },
           },
-        }) => useMemo(() => <p className="w-fit">{peer || '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{peer}</p>, []),
       },
       {
         Header: 'CATEGORY',
@@ -313,8 +321,8 @@ const Spaces = () => {
   };
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? pages : 1);
     setSearchParams(searchParams);
   };
 
@@ -336,10 +344,15 @@ const Spaces = () => {
         obj.spaceName = item?.basicInformation?.spaceName;
         obj.spacePhoto = item?.basicInformation?.spacePhoto;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
-        obj.mediaOwner = item?.basicInformation?.mediaOwner?.name;
-        obj.peer = item?.basicInformation?.companyName;
+        obj.mediaOwner =
+          item?.createdBy && !item.createdBy?.isPeer
+            ? item?.basicInformation?.mediaOwner?.name
+            : '-';
+        obj.peer =
+          item?.createdBy && item.createdBy?.isPeer
+            ? item?.basicInformation?.mediaOwner?.name
+            : '-';
         obj.category = item?.basicInformation?.category?.name;
-        obj.spaceType = item?.basicInformation?.spaceType?.name;
         obj.height = item?.specifications?.size?.height;
         obj.width = item?.specifications?.size?.width;
         obj.impressions = item?.specifications?.impressions?.max;
@@ -359,11 +372,11 @@ const Spaces = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   return (
     <>
@@ -409,7 +422,7 @@ const Spaces = () => {
           <Loader />
         </div>
       ) : null}
-      {inventoryData?.docs?.length === 0 && !isLoading ? (
+      {!inventoryData?.docs?.length && !isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

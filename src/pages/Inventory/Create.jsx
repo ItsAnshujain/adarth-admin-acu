@@ -20,7 +20,7 @@ const initialValues = {
   basicInformation: {
     spaceName: '',
     landlord: '',
-    mediaOwner: '',
+    mediaOwner: { label: '', value: '' },
     category: { label: '', value: '' },
     subCategory: { label: '', value: '' },
     spaceType: { label: '', value: '' },
@@ -36,7 +36,6 @@ const initialValues = {
   },
   specifications: {
     illuminations: { label: '', value: '' },
-    spaceStatus: { label: '', value: '' },
     unit: 0,
     resolutions: '',
     size: {
@@ -69,7 +68,10 @@ const basicInformationSchema = yup.object({
   basicInformation: yup.object({
     spaceName: yup.string().trim().required('Space name is required'),
     landlord: yup.string().trim().required('Landlord is required'),
-    mediaOwner: yup.string().trim(),
+    mediaOwner: yup.object({
+      label: yup.string().trim(),
+      value: yup.string().trim(),
+    }),
     spaceType: yup
       .object({
         label: yup.string().trim(),
@@ -124,12 +126,6 @@ const specificationsValues = yup.object({
         value: yup.string().trim(),
       })
       .test('illuminations', 'Illumination is required', obj => obj.value !== ''),
-    spaceStatus: yup
-      .object({
-        label: yup.string().trim(),
-        value: yup.string().trim(),
-      })
-      .test('spaceStatus', 'Space Status is required', obj => obj.value !== ''),
     unit: yup
       .number()
       .positive('Unit must be a positive number')
@@ -230,6 +226,7 @@ const CreateSpace = () => {
       ...formData,
       basicInformation: {
         ...formData.basicInformation,
+        mediaOwner: formData?.basicInformation?.mediaOwner?.value,
         audience: formData?.basicInformation?.audience?.map(item => item?.value),
         category: formData?.basicInformation?.category?.value,
         demographic: formData?.basicInformation?.demographic?.value,
@@ -241,10 +238,10 @@ const CreateSpace = () => {
       specifications: {
         ...formData.specifications,
         illuminations: formData?.specifications?.illuminations?.value,
-        spaceStatus: formData?.specifications?.spaceStatus?.value,
         previousBrands: formData?.specifications?.previousBrands?.map(item => item?.value),
         tags: formData?.specifications?.tags?.map(item => item?.value),
       },
+      company: formData?.basicInformation?.mediaOwner?.label,
     };
 
     setFormStep(prevState => prevState + 1);
@@ -298,7 +295,10 @@ const CreateSpace = () => {
         basicInformation: {
           spaceName: basicInformation?.spaceName || '',
           landlord: basicInformation?.landlord || '',
-          mediaOwner: basicInformation?.mediaOwner?._id || '',
+          mediaOwner: {
+            label: basicInformation?.mediaOwner?.name || '',
+            value: basicInformation?.mediaOwner?._id || '',
+          },
           description: basicInformation?.description || '',
           footFall: basicInformation?.footFall ? parseInt(basicInformation.footFall, 10) : null,
           price: basicInformation?.price ? parseInt(basicInformation?.price, 10) : null,
@@ -347,10 +347,6 @@ const CreateSpace = () => {
             height: specifications?.size?.height ? parseInt(specifications.size.height, 10) : null,
             width: specifications?.size?.width ? parseInt(specifications.size.width, 10) : null,
           },
-          spaceStatus: {
-            label: specifications?.spaceStatus?.name || '',
-            value: specifications?.spaceStatus?._id || '',
-          },
           previousBrands: arrOfPreviousBrands?.length ? arrOfPreviousBrands : [],
           tags: arrOfTags?.length ? arrOfTags : [],
         },
@@ -371,7 +367,7 @@ const CreateSpace = () => {
   }, [inventoryDetails?.inventory]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <FormProvider form={form}>
         <form onSubmit={form.onSubmit(onSubmitInventoryForm)}>
           <Header

@@ -2,15 +2,13 @@ import { useMemo, useState, useEffect } from 'react';
 import { Badge, Box, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { useClickOutside, useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Header from '../../components/Proposals/ViewProposal/Header';
 import Details from '../../components/Proposals/ViewProposal/Details';
-import DateRange from '../../components/DateRange';
-import calendar from '../../assets/data-table.svg';
 import Table from '../../components/Table/Table';
 import { useFetchProposalById } from '../../hooks/proposal.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -23,10 +21,9 @@ import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesM
 const ProposalDetails = () => {
   const modals = useModals();
   const userId = useUserStore(state => state.id);
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [showFilter, setShowFilter] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const ref = useClickOutside(() => setShowDatePicker(false));
   const [searchParams, setSearchParams] = useSearchParams({
     'owner': 'all',
     'page': 1,
@@ -35,7 +32,6 @@ const ProposalDetails = () => {
     'sortOrder': 'desc',
   });
 
-  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const { id: proposalId } = useParams();
@@ -101,8 +97,12 @@ const ProposalDetails = () => {
                     <Image src={null} withPlaceholder height={32} width={32} />
                   )}
                 </Box>
-                <Link to={`/inventory/view-details/${_id}`} className="text-black font-medium px-2">
-                  <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                <Link to={`/inventory/view-details/${_id}`} className="font-medium px-2 underline">
+                  <Text
+                    className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
+                    lineClamp={1}
+                    title={spaceName}
+                  >
                     {spaceName}
                   </Text>
                 </Link>
@@ -118,22 +118,21 @@ const ProposalDetails = () => {
             [],
           ),
       },
-      // TODO: change key after api update
       {
         Header: 'MEDIA OWNER NAME',
         accessor: 'mediaOwner',
         Cell: ({
           row: {
-            original: { mediaOwner },
+            original: { peer, mediaOwner },
           },
-        }) => useMemo(() => <p className="w-fit">{mediaOwner || '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{!peer ? mediaOwner : '-'}</p>, []),
       },
       {
         Header: 'PEER',
         accessor: 'peer',
         Cell: ({
           row: {
-            original: { peer, peerId },
+            original: { peer, peerId, mediaOwner },
           },
         }) =>
           useMemo(
@@ -144,7 +143,7 @@ const ProposalDetails = () => {
                   'w-fit',
                 )}
               >
-                {peer || '-'}
+                {peer ? mediaOwner : '-'}
               </p>
             ),
             [],
@@ -233,7 +232,6 @@ const ProposalDetails = () => {
           },
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
-      // TODO: change key after api update
       {
         Header: 'PRICING',
         accessor: 'price',
@@ -249,7 +247,7 @@ const ProposalDetails = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, createdBy },
           },
         }) =>
           useMemo(
@@ -257,6 +255,8 @@ const ProposalDetails = () => {
               <ProposalSpacesMenuPopover
                 inventoryId={_id}
                 spacesData={proposalData?.inventories?.docs}
+                enableEdit={createdBy && !createdBy?.isPeer}
+                enableDelete={createdBy && !createdBy?.isPeer}
               />
             ),
             [],
@@ -283,8 +283,8 @@ const ProposalDetails = () => {
   };
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
     setSearchParams(searchParams, { replace: true });
   };
 
@@ -296,15 +296,15 @@ const ProposalDetails = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams, { replace: true });
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <Header />
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+      <Header isPeer={proposalData?.proposal?.isPeer} />
       <Details
         proposalData={proposalData?.proposal}
         isProposalDataLoading={isProposalDataLoading}
@@ -315,16 +315,6 @@ const ProposalDetails = () => {
           Selected Inventory
         </Text>
         <div className="flex gap-2">
-          <div ref={ref} className="mr-2 relative">
-            <Button onClick={toggleDatePicker} variant="default">
-              <Image src={calendar} className="h-5" alt="calendar" />
-            </Button>
-            {showDatePicker && (
-              <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
-                <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
-              </div>
-            )}
-          </div>
           <div>
             <Button onClick={toggleFilter} variant="default">
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
@@ -346,7 +336,7 @@ const ProposalDetails = () => {
           <Loader />
         </div>
       ) : null}
-      {proposalData?.inventories?.docs?.length === 0 && !isProposalDataLoading ? (
+      {!proposalData?.inventories?.docs?.length && !isProposalDataLoading ? (
         <div className="w-full min-h-[300px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

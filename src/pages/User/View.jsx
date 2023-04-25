@@ -26,8 +26,8 @@ const tableProposalQueries = userId => ({
 });
 
 const UserDetails = () => {
-  const [activeTab, setActiveTab] = useState('first');
-  const [activeTable, setActiveTable] = useState('booking');
+  const [activeParentTab, setActiveParentTab] = useState('overview');
+  const [activeChildTab, setActiveChildTab] = useState('booking');
   const { id: userId } = useParams();
   const { data: userDetails, isLoading: isUserDetailsLoading } = useFetchUsersById(userId);
   const initialBookingValue = tableBookingQueries(userId);
@@ -38,16 +38,16 @@ const UserDetails = () => {
 
   const { data: bookingData = {}, isLoading: isLoadingBookingData } = useBookings(
     bookingSearchParams.toString(),
-    activeTable === 'booking',
+    activeParentTab === 'managing' && activeChildTab === 'booking',
   );
 
   const { data: proposalsData = {}, isLoading: isLoadingProposalsData } = useFetchProposals(
     proposalSearchParams.toString(),
-    activeTable === 'proposal',
+    activeParentTab === 'managing' && activeChildTab === 'proposal',
   );
 
-  const handleTabChange = val => {
-    setActiveTable(val);
+  const handleChildTab = val => {
+    setActiveChildTab(val);
 
     const defaultBookingValue = new URLSearchParams(initialBookingValue);
     const defaultProposalValue = new URLSearchParams(initalProposalValue);
@@ -62,40 +62,33 @@ const UserDetails = () => {
 
   useEffect(() => {
     // TODO: fix this to reduce one extra api call
-    if (activeTable === 'booking') {
+    if (setActiveChildTab === 'booking') {
       bookingSearchParams.delete('userId');
       setBookingSearchParams(bookingSearchParams);
     }
   }, []);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <Tabs value={activeTab} onTabChange={setActiveTab}>
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+      <Tabs value={activeParentTab} onTabChange={setActiveParentTab}>
         <Tabs.List className="h-[60px] relative">
-          <Tabs.Tab className="text-base hover:bg-transparent" value="first">
+          <Tabs.Tab className="text-base hover:bg-transparent" value="overview">
             Overview
           </Tabs.Tab>
-          <Tabs.Tab className="text-base hover:bg-transparent" value="second">
+          <Tabs.Tab className="text-base hover:bg-transparent" value="managing">
             Managing
           </Tabs.Tab>
         </Tabs.List>
-        <Tabs.Panel value="first">
+        <Tabs.Panel value="overview">
           <OverviewUserDetails
             userDetails={userDetails}
             isUserDetailsLoading={isUserDetailsLoading}
           />
         </Tabs.Panel>
-        <Tabs.Panel value="second">
-          <ManagingCampaignSubHeader
-            activeTable={activeTable}
-            userId={userId}
-            counts={{
-              bookings: bookingData?.totalDocs || 0,
-              proposals: proposalsData?.totalDocs || 0,
-            }}
-          />
+        <Tabs.Panel value="managing">
+          <ManagingCampaignSubHeader activeChildTab={activeChildTab} userId={userId} />
           <div>
-            <Tabs value={activeTable} onTabChange={handleTabChange}>
+            <Tabs value={activeChildTab} onTabChange={handleChildTab}>
               <Tabs.List className="h-16">
                 <Tabs.Tab className="hover:bg-transparent text-base" value="booking">
                   Bookings
@@ -110,7 +103,7 @@ const UserDetails = () => {
               </Tabs.Panel>
               <Tabs.Panel value="proposal" className="mr-5">
                 <ProposalTableView
-                  viewType={activeTable === 'proposal'}
+                  viewType={setActiveChildTab === 'proposal'}
                   userId={userId}
                   data={proposalsData}
                   isLoading={isLoadingProposalsData}

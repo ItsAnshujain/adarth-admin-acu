@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Text, Button, Loader } from '@mantine/core';
-import { useClickOutside, useDebouncedState } from '@mantine/hooks';
+import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
@@ -19,7 +19,8 @@ import NoData from '../../shared/NoData';
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const TotalBookings = ({ campaignId }) => {
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
     limit: 10,
@@ -94,7 +95,7 @@ const TotalBookings = ({ campaignId }) => {
                 className={classNames(
                   currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
                     ? 'text-blue-600'
-                    : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
+                    : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
                     ? 'text-purple-450'
                     : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                     ? 'text-green-400'
@@ -104,7 +105,7 @@ const TotalBookings = ({ campaignId }) => {
               >
                 {currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Printing upcoming'
-                  : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Printing in progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Printing completed'
@@ -128,7 +129,7 @@ const TotalBookings = ({ campaignId }) => {
                 className={classNames(
                   currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
                     ? 'text-blue-600'
-                    : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                    : currentStatus?.mountingStatus?.toLowerCase()?.includes('in progress')
                     ? 'text-purple-450'
                     : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                     ? 'text-green-400'
@@ -138,7 +139,7 @@ const TotalBookings = ({ campaignId }) => {
               >
                 {currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Mounting upcoming'
-                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Mounting in progress'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                   ? 'Mounting completed'
@@ -255,8 +256,8 @@ const TotalBookings = ({ campaignId }) => {
   };
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
     setSearchParams(searchParams);
   };
 
@@ -269,11 +270,11 @@ const TotalBookings = ({ campaignId }) => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     searchParams.set('sortBy', 'createdAt');
@@ -311,7 +312,7 @@ const TotalBookings = ({ campaignId }) => {
           </div>
         ) : null}
 
-        {bookingData?.docs?.length === 0 && !isLoadingBookingData ? (
+        {!bookingData?.docs?.length && !isLoadingBookingData ? (
           <div className="w-full min-h-[400px] flex justify-center items-center">
             <p className="text-xl">No records found</p>
           </div>

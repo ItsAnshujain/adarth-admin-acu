@@ -1,9 +1,9 @@
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
-import { BackgroundImage, Center, Image, Skeleton, Text } from '@mantine/core';
+import { BackgroundImage, Center, Image, Skeleton, Spoiler, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -61,7 +61,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
           >
             {previewSpacesPhotos.length &&
               previewSpacesPhotos.map(item => (
-                <Carousel.Slide>
+                <Carousel.Slide key={uuidv4()}>
                   <Image src={item} height={400} width="100%" alt="preview" fit="contain" />
                 </Carousel.Slide>
               ))}
@@ -70,6 +70,23 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
       },
       ...updatedModalConfig,
     });
+
+  const renderSpacesByCategories = useMemo(
+    () =>
+      proposalData?.categoryName?.length
+        ? proposalData.categoryName?.map((item, index) => (
+            <div key={uuidv4()} className="flex">
+              <div className="flex flex-row">
+                <Text weight="bolder">{item?.total}</Text>
+                <Text weight="bolder" className="mx-2">
+                  {item?._id} {index + 1 !== proposalData?.categoryName?.length ? ',' : ''}
+                </Text>
+              </div>
+            </div>
+          ))
+        : 0,
+    [proposalData],
+  );
 
   useEffect(() => {
     const result = getAllSpacePhotos();
@@ -111,8 +128,8 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                 {previewSpacesPhotos?.length > 4 && (
                   <div className="border-[1px] border-gray mr-2 mb-4">
                     <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
-                      <Center className="h-full">
-                        <Text weight="bold" color="white" className="mix-blend-difference">
+                      <Center className="h-full transparent-black">
+                        <Text weight="bold" color="white">
                           +{previewSpacesPhotos.length - 4} more
                         </Text>
                       </Center>
@@ -125,21 +142,34 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
               <Text weight="bold" className="capitalize">
                 {proposalData?.name}
               </Text>
-              <Text size="sm" className="mb-3">
-                {proposalData?.description}
-              </Text>
-              <div className="grid grid-cols-3 mb-3">
+              <div className="grid grid-cols-1 mb-2">
+                <Text color="grey" weight="400">
+                  Description
+                </Text>
+                <Spoiler
+                  maxHeight={45}
+                  showLabel="Read more"
+                  hideLabel="Read less"
+                  className="text-purple-450 font-medium text-[14px]"
+                  classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+                >
+                  <Text>
+                    {proposalData?.description
+                      ? proposalData.description
+                      : `Our outdoor advertisementcampaign is the perfect way to get your brand in front of a large audience. 
+                        With eye-catching graphics and strategic placement, our billboards and digital displays will capture the attention of anyone passing by. 
+                        Our team will work with you to create a curated campaign that perfectly showcases your brand's message and identity.
+                         From busy city streets to suburban highways, our outdoor advertising options are the perfect way to increase your brand's visibility and reach.
+                       Don't miss out on the opportunity to make a lasting impression with your target audience.`}
+                  </Text>
+                </Spoiler>
+              </div>
+              <div className="grid grid-cols-2 mb-3">
                 <div className="col-span-1">
                   <Text color="grey" weight="400">
                     Total Spaces
                   </Text>
-                  <Text weight="bolder">{proposalData?.totalSpaces || 0}</Text>
-                </div>
-                <div>
-                  <Text color="grey" weight="400">
-                    Total Media
-                  </Text>
-                  <Text weight="bolder">{proposalData?.totalSpaces || 0}</Text>
+                  <div className="flex flex-wrap">{renderSpacesByCategories}</div>
                 </div>
                 <div>
                   <Text color="grey" weight="400">
@@ -148,7 +178,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                   <Text weight="bolder">{proposalData?.totalImpression || 0}</Text>
                 </div>
               </div>
-              <div className="grid grid-cols-3 mb-3">
+              <div className="grid grid-cols-2 mb-3">
                 <div className="col-span-1">
                   <Text color="grey" weight="400">
                     Price
@@ -164,7 +194,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                   <Text weight="bolder">{proposalData?.totalCities || 0}</Text>
                 </div>
               </div>
-              <div className="grid grid-cols-3 mb-3">
+              <div className="grid grid-cols-2 mb-3">
                 <div>
                   <Text color="grey" weight="400">
                     Overall Start Date
@@ -181,22 +211,6 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                   </Text>
                   <Text weight="bolder">
                     {proposalData?.endDate ? dayjs(proposalData.endDate).format(DATE_FORMAT) : 'NA'}
-                  </Text>
-                </div>
-              </div>
-              <div className="grid grid-cols-1">
-                <div>
-                  <Text color="grey" weight="400">
-                    Description
-                  </Text>
-                  <Text weight="bolder">
-                    {proposalData?.description
-                      ? proposalData.description
-                      : `Our outdoor advertisementcampaign is the perfect way to get your brand in front of a large audience. 
-                        With eye-catching graphics and strategic placement, our billboards and digital displays will capture the attention of anyone passing by. 
-                        Our team will work with you to create a curated campaign that perfectly showcases your brand's message and identity.
-                         From busy city streets to suburban highways, our outdoor advertising options are the perfect way to increase your brand's visibility and reach.
-                       Don't miss out on the opportunity to make a lasting impression with your target audience.`}
                   </Text>
                 </div>
               </div>

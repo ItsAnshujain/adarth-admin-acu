@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ActionIcon, Badge, Box, Image, Loader, Progress, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
+import isBetween from 'dayjs/plugin/isBetween';
+import dayjs from 'dayjs';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/Inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -21,19 +23,23 @@ import TrashIcon from '../../assets/delete.png';
 import RoleBased from '../../components/RoleBased';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
 
+dayjs.extend(isBetween);
+
+const DATE_FORMAT = 'YYYY-MM-DD';
+
 const initialValues = {
   spaces: [],
 };
 
 const Home = () => {
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
     'limit': 10,
     'page': 1,
     'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
-    // 'isUnderMaintenance': false,
   });
   const form = useForm({ initialValues });
   const viewType = useLayoutView(state => state.activeLayout);
@@ -86,53 +92,91 @@ const Home = () => {
         accessor: 'basicInformation.spaceName',
         Cell: ({
           row: {
-            original: { _id, basicInformation, isUnderMaintenance },
+            original: { _id, basicInformation, isUnderMaintenance, bookingRange },
           },
         }) =>
-          useMemo(
-            () => (
-              <div className="flex items-center gap-2">
-                <Box
-                  className="bg-white border rounded-md cursor-zoom-in"
-                  onClick={() => toggleImagePreviewModal(basicInformation?.spacePhoto)}
-                >
-                  {basicInformation?.spacePhoto ? (
-                    <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
-                  ) : (
-                    <Image src={null} withPlaceholder height={32} width={32} />
-                  )}
-                </Box>
-                <Link to={`/inventory/view-details/${_id}`} className="text-black font-medium px-2">
-                  <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
-                    {basicInformation?.spaceName}
-                  </Text>
-                </Link>
+          useMemo(() => {
+            const isOccupied = bookingRange?.some(
+              item =>
+                dayjs(dayjs().format(DATE_FORMAT)).isBetween(item?.startDate, item?.endDate) ||
+                dayjs(dayjs().format(DATE_FORMAT)).isSame(dayjs(item?.endDate)),
+            );
+
+            return (
+              <div className="flex items-center justify-between gap-2 w-[380px] mr-4">
+                <div className="flex justify-start items-center flex-1">
+                  <Box
+                    className="bg-white border rounded-md cursor-zoom-in"
+                    onClick={() => toggleImagePreviewModal(basicInformation?.spacePhoto)}
+                  >
+                    {basicInformation?.spacePhoto ? (
+                      <Image
+                        src={basicInformation?.spacePhoto}
+                        alt="banner"
+                        height={32}
+                        width={32}
+                      />
+                    ) : (
+                      <Image src={null} withPlaceholder height={32} width={32} />
+                    )}
+                  </Box>
+                  <Link
+                    to={`/inventory/view-details/${_id}`}
+                    className="text-purple-450 font-medium px-2"
+                  >
+                    <Text
+                      className="overflow-hidden text-ellipsis underline"
+                      lineClamp={1}
+                      title={basicInformation?.spaceName}
+                    >
+                      {basicInformation?.spaceName}
+                    </Text>
+                  </Link>
+                </div>
                 <Badge
                   className="capitalize"
                   variant="filled"
-                  color={isUnderMaintenance ? 'yellow' : 'green'}
+                  color={isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'}
                 >
-                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                  {isUnderMaintenance ? 'Under Maintenance' : isOccupied ? 'Occupied' : 'Available'}
                 </Badge>
               </div>
-            ),
-            [],
-          ),
+            );
+          }, []),
       },
       {
         Header: 'MEDIA OWNER NAME',
         accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { createdBy, basicInformation },
           },
         }) =>
-          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || '-'}</p>, []),
+          useMemo(
+            () => (
+              <p className="w-fit">
+                {createdBy && !createdBy?.isPeer ? basicInformation?.mediaOwner?.name : '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PEER',
         accessor: 'peer',
-        Cell: () => useMemo(() => <p>-</p>),
+        Cell: ({
+          row: {
+            original: { createdBy, basicInformation },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p className="w-fit">
+                {createdBy && createdBy?.isPeer ? basicInformation?.mediaOwner?.name : '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'CATEGORY',
@@ -251,9 +295,19 @@ const Home = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, createdBy },
           },
-        }) => useMemo(() => <SpacesMenuPopover itemId={_id} />, []),
+        }) =>
+          useMemo(
+            () => (
+              <SpacesMenuPopover
+                itemId={_id}
+                enableDelete={createdBy && !createdBy?.isPeer}
+                enableEdit={createdBy && !createdBy?.isPeer}
+              />
+            ),
+            [],
+          ),
       },
     ],
     [inventoryData?.docs],
@@ -276,8 +330,12 @@ const Home = () => {
   };
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
+    if (debouncedSearch !== '') {
+      searchParams.delete('sortBy');
+      searchParams.delete('sortOrder');
+    }
     setSearchParams(searchParams);
   };
 
@@ -292,7 +350,7 @@ const Home = () => {
   const handleSubmit = formData => {
     let data = {};
     data = formData.spaces.map(item => item._id);
-    if (data.length === 0) {
+    if (!data.length) {
       showNotification({
         title: 'Please select atleast one place to delete',
         color: 'blue',
@@ -309,14 +367,14 @@ const Home = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <FormProvider form={form}>
         <form
           onSubmit={form.onSubmit(handleSubmit)}
@@ -327,16 +385,14 @@ const Home = () => {
             isLoading={isDeletedInventoryDataLoading}
             inventoryData={inventoryData}
           />
-          {viewType.inventory !== 'map' && (
-            <div className="flex justify-between h-20 items-center pr-7">
-              <div className="flex items-center">
-                <RowsPerPage
-                  setCount={currentLimit => handlePagination('limit', currentLimit)}
-                  count={limit}
-                />
-                <RoleBased
-                  acceptedRoles={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.SUPERVISOR, ROLES.MANAGER]}
-                >
+          <div className="flex justify-between h-20 items-center pr-7">
+            <div className="flex items-center">
+              <RowsPerPage
+                setCount={currentLimit => handlePagination('limit', currentLimit)}
+                count={limit}
+              />
+              {viewType.inventory !== 'map' && (
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGER]}>
                   {isDeletedInventoryDataLoading ? (
                     <p>Inventory deleting...</p>
                   ) : (
@@ -345,16 +401,20 @@ const Home = () => {
                     </ActionIcon>
                   )}
                 </RoleBased>
-              </div>
-              <Search search={searchInput} setSearch={setSearchInput} form="nosubmit" />
+              )}
             </div>
-          )}
+            {viewType.inventory !== 'map' && (
+              <Search search={searchInput} setSearch={setSearchInput} form="nosubmit" />
+            )}
+          </div>
           {isInventoryDataLoading && viewType.inventory === 'list' ? (
             <div className="flex justify-center items-center h-[400px]">
               <Loader />
             </div>
           ) : null}
-          {inventoryData?.docs?.length === 0 && !isInventoryDataLoading ? (
+          {!inventoryData?.docs?.length &&
+          !isInventoryDataLoading &&
+          viewType.inventory !== 'map' ? (
             <div className="w-full min-h-[400px] flex justify-center items-center">
               <p className="text-xl">No records found</p>
             </div>
@@ -382,7 +442,7 @@ const Home = () => {
               setActivePage={currentPage => handlePagination('page', currentPage)}
             />
           ) : viewType.inventory === 'map' ? (
-            <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto mt-5">
+            <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
               <MapView lists={inventoryData?.docs} />
             </div>
           ) : null}

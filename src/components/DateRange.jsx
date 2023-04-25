@@ -10,17 +10,19 @@ const styles = {
   yearPickerControlActive: { backgroundColor: '#4B0DAF !important' },
 };
 
-export const useStyles = createStyles(theme => ({
+export const useStyles = createStyles({
   outside: { opacity: 0 },
-  disabled: { color: 'transparent !important' },
+  disabled: { color: '#ced4da !important' },
   weekend: { color: '#495057 !important' },
-  firstInRange: { color: `${theme.white} !important` },
-  lastInRange: { color: `${theme.white} !important` },
-  selectedInRange: { color: `${theme.white} !important` },
-  selected: { color: `${theme.white} !important` },
-}));
+  selectedRange: { color: '#FFF !important' },
+});
 
-const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate'] }) => {
+const DateRange = ({
+  handleClose = () => {},
+  dateKeys = ['startDate', 'endDate'],
+  rangeCalendarMinDate,
+  datePickerMinDate,
+}) => {
   const { classes, cx } = useStyles();
   const [value, setValue] = useState([null, null]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,7 +69,7 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
     setValue(p => {
       const newState = [...p];
       dateKeys.forEach((item, index) => {
-        newState[index] = new Date(searchParams.get(item)) || null;
+        newState[index] = searchParams.get(item) !== null ? new Date(searchParams.get(item)) : null;
       });
 
       return newState;
@@ -111,9 +113,11 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
               cx({
                 [classes.outside]: modifiers.outside,
                 [classes.weekend]: modifiers.weekend,
-                [classes.selectedInRange]: modifiers.selectedInRange,
+                [classes.selectedRange]: modifiers.selectedInRange,
+                [classes.disabled]: modifiers.disabled,
               })
             }
+            minDate={rangeCalendarMinDate}
           />
         </div>
         <div className="flex-1 flex flex-col items-start gap-2">
@@ -130,9 +134,12 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
               cx({
                 [classes.outside]: modifiers.outside,
                 [classes.weekend]: modifiers.weekend,
-                [classes.selected]: modifiers.selected,
+                [classes.selectedRange]: modifiers.selectedInRange,
+                [classes.disabled]: modifiers.disabled,
               })
             }
+            minDate={datePickerMinDate}
+            placeholder="Month Day, Year"
           />
           <p className="font-bold mt-3">Date To</p>
           <DatePicker
@@ -146,9 +153,12 @@ const DateRange = ({ handleClose = () => {}, dateKeys = ['startDate', 'endDate']
               cx({
                 [classes.outside]: modifiers.outside,
                 [classes.weekend]: modifiers.weekend,
-                [classes.selected]: modifiers.selected,
+                [classes.selectedRange]: modifiers.selectedInRange,
+                [classes.disabled]: modifiers.disabled,
               })
             }
+            minDate={datePickerMinDate}
+            placeholder="Month Day, Year"
           />
         </div>
       </div>

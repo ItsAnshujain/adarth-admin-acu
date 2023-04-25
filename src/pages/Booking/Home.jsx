@@ -1,23 +1,17 @@
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { Progress, Loader, Button, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
+import multiDownload from 'multi-download';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import AreaHeader from '../../components/Bookings/Header';
 import { useBookings, useBookingStats, useUpdateBookingStatus } from '../../hooks/booking.hooks';
-import {
-  downloadAll,
-  checkCampaignStats,
-  serialize,
-  temporaryPurchaseOrderPdfLink,
-  temporaryReleaseOrderPdfLink,
-  temporaryInvoicePdfLink,
-} from '../../utils';
+import { checkCampaignStats, serialize } from '../../utils';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from './BookingStatisticsView';
@@ -31,7 +25,8 @@ const statusSelectStyle = {
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const Bookings = () => {
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
@@ -107,6 +102,29 @@ const Bookings = () => {
           }, []),
       },
       {
+        Header: 'CAMPAIGN NAME',
+        accessor: 'campaign.name',
+        Cell: ({
+          row: {
+            original: { campaign, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <Link to={`/bookings/view-details/${_id}`} className="text-purple-450 font-medium">
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[180px] underline"
+                  lineClamp={1}
+                  title={campaign?.name}
+                >
+                  {campaign?.name || '-'}
+                </Text>
+              </Link>
+            ),
+            [],
+          ),
+      },
+      {
         Header: 'CLIENT',
         accessor: 'client.name',
         Cell: ({
@@ -132,25 +150,6 @@ const Bookings = () => {
               <p className="font-medium bg-gray-450 px-2 rounded-sm">
                 {dayjs(original.createdAt).format(DATE_FORMAT)}
               </p>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'CAMPAIGN NAME',
-        accessor: 'campaign.name',
-        Cell: ({
-          row: {
-            original: { campaign, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <Link to={`/bookings/view-details/${_id}`} className="text-black font-medium">
-                <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
-                  {campaign?.name || '-'}
-                </Text>
-              </Link>
             ),
             [],
           ),
@@ -245,11 +244,11 @@ const Bookings = () => {
               <p className="w-[200px]">
                 {currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Printing upcoming'
-                  : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Printing in progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Printing completed'
-                  : '-'}
+                  : 'Printing upcoming'}
               </p>
             ),
             [],
@@ -268,11 +267,11 @@ const Bookings = () => {
               <p className="w-[200px]">
                 {currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Mounting upcoming'
-                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Mounting in progress'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                   ? 'Mounting completed'
-                  : '-'}
+                  : 'Mounting upcoming'}
               </p>
             ),
             [],
@@ -369,7 +368,7 @@ const Bookings = () => {
                   'font-medium  text-base',
                 )}
                 disabled={!campaign?.medias?.length}
-                onClick={() => downloadAll(campaign?.medias)}
+                onClick={() => multiDownload(campaign?.medias)}
               >
                 Download
               </Button>
@@ -383,12 +382,12 @@ const Bookings = () => {
       },
       {
         Header: 'PRICING',
-        accessor: 'campaign.totalPrice',
+        accessor: 'campaign.price',
         Cell: ({
           row: {
             original: { campaign },
           },
-        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
+        }) => useMemo(() => toIndianCurrency(campaign?.price || 0), []),
       },
       {
         Header: 'PURCHASE ORDER',
@@ -402,8 +401,7 @@ const Bookings = () => {
           useMemo(
             () => (
               <a
-                href={temporaryPurchaseOrderPdfLink}
-                // TODO: kept it for demo purpose will remove later
+                href={purchaseOrder}
                 className={classNames(
                   purchaseOrder
                     ? 'text-purple-450 cursor-pointer'
@@ -432,8 +430,7 @@ const Bookings = () => {
           useMemo(
             () => (
               <a
-                href={temporaryReleaseOrderPdfLink}
-                // TODO: kept it for demo purpose will remove later
+                href={releaseOrder}
                 className={classNames(
                   releaseOrder
                     ? 'text-purple-450 cursor-pointer'
@@ -462,8 +459,7 @@ const Bookings = () => {
           useMemo(
             () => (
               <a
-                href={temporaryInvoicePdfLink}
-                // TODO: kept it for demo purpose will remove later
+                href={invoice}
                 className={classNames(
                   invoice ? 'text-purple-450 cursor-pointer' : 'pointer-events-none text-gray-450',
                   'font-medium',
@@ -509,8 +505,8 @@ const Bookings = () => {
   };
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
     setSearchParams(searchParams);
   };
 
@@ -522,14 +518,14 @@ const Bookings = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto ">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto ">
       <AreaHeader text="Order" />
       <div className="pr-7">
         <BookingStatisticsView bookingStats={bookingStats} isLoading={isBookingStatsLoading} />
@@ -546,7 +542,7 @@ const Bookings = () => {
           <Loader />
         </div>
       ) : null}
-      {bookingData?.docs?.length === 0 && !isLoadingBookingData ? (
+      {!bookingData?.docs?.length && !isLoadingBookingData ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

@@ -14,8 +14,8 @@ const BookingStatisticsView = ({ bookingStats, isLoading }) => {
       datasets: [
         {
           data: [bookingStats?.offline ?? 0, bookingStats?.online ?? 0],
-          backgroundColor: ['#914EFB', '#FF900E'],
-          borderColor: ['#914EFB', '#FF900E'],
+          backgroundColor: ['#FF900E', '#914EFB'],
+          borderColor: ['#FF900E', '#914EFB'],
           borderWidth: 1,
         },
       ],
@@ -30,6 +30,8 @@ const BookingStatisticsView = ({ bookingStats, isLoading }) => {
           <div className="w-32">
             {isLoading ? (
               <Loader className="mx-auto" />
+            ) : bookingStats?.online === 0 && bookingStats?.offline === 0 ? (
+              <p className="text-center">NA</p>
             ) : (
               <Doughnut options={{ responsive: true }} data={revenueBreakupData} />
             )}
@@ -38,7 +40,7 @@ const BookingStatisticsView = ({ bookingStats, isLoading }) => {
             <p className="font-medium">Revenue Breakup</p>
             <div className="flex gap-8 mt-6">
               <div className="flex gap-2 items-center">
-                <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+                <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                 <div>
                   <Text size="xs" weight="200">
                     Online Sale
@@ -49,7 +51,7 @@ const BookingStatisticsView = ({ bookingStats, isLoading }) => {
                 </div>
               </div>
               <div className="flex gap-2 items-center">
-                <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+                <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                 <div>
                   <Text size="xs" weight="200">
                     Offline Sale

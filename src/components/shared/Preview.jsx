@@ -1,12 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Badge, Button, Image, Text, BackgroundImage, Center } from '@mantine/core';
-import { useToggle } from '@mantine/hooks';
+import { Badge, Image, Text, BackgroundImage, Center, Spoiler } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { useFormContext } from '../../context/formContext';
 
 const Preview = () => {
-  const [readMore, toggle] = useToggle();
   const { values } = useFormContext();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
 
@@ -55,6 +53,15 @@ const Preview = () => {
   return (
     <div className="grid grid-cols-2 gap-8 pl-5 pt-4">
       <div className="flex flex-1 flex-col w-full">
+        {!previewSpacesPhotos.length ? (
+          <Image
+            height={300}
+            width="100%"
+            alt="no_image_placeholder"
+            withPlaceholder
+            placeholder={<Text align="center">No Image Uploaded</Text>}
+          />
+        ) : null}
         <div className="flex flex-row flex-wrap justify-start">
           {previewSpacesPhotos?.map(
             (src, index) =>
@@ -73,8 +80,8 @@ const Preview = () => {
           {previewSpacesPhotos?.length > 4 && (
             <div className="border-[1px] border-gray mr-2 mb-4">
               <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
-                <Center className="h-full">
-                  <Text weight="bold" color="white" className="mix-blend-difference">
+                <Center className="h-full transparent-black">
+                  <Text weight="bold" color="white">
                     +{previewSpacesPhotos.length - 4} more
                   </Text>
                 </Center>
@@ -93,15 +100,18 @@ const Preview = () => {
                 {values?.basicInformation?.category?.label}
               </p>
               <Text weight="bolder" size="xs">
-                {values?.specifications?.spaceStatus?.label}
+                {values?.basicInformation?.spaceType?.label}
               </Text>
             </div>
-            <p className="font-light text-slate-400">
+            <Spoiler
+              maxHeight={45}
+              showLabel="Read more"
+              hideLabel="Read less"
+              className="text-purple-450 font-medium text-[14px]"
+              classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+            >
               {values?.basicInformation?.description}
-              <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
-                {readMore ? 'Read less' : 'Read more'}
-              </Button>
-            </p>
+            </Spoiler>
             <div className="flex gap-3 items-center">
               <p className="font-bold my-2">
                 {values?.basicInformation?.price
@@ -121,7 +131,7 @@ const Preview = () => {
               ? renderColoredBadges(values?.basicInformation?.audience)
               : null}
             <div className="mb-2">
-              <p className="text-slate-400">Previously advertised brands</p>
+              <p className="text-slate-400">Advertising brands</p>
               <div className="flex w-full flex-wrap">
                 {values?.specifications?.previousBrands?.length
                   ? renderBadges(values?.specifications?.previousBrands)
@@ -129,7 +139,7 @@ const Preview = () => {
               </div>
             </div>
             <div className="mb-2">
-              <p className="text-slate-400">Previously advertised tags</p>
+              <p className="text-slate-400">Advertising tags</p>
               <div className="flex w-full flex-wrap">
                 {values?.specifications?.tags?.length
                   ? renderBadges(values?.specifications?.tags)

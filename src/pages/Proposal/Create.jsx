@@ -13,26 +13,45 @@ import {
   useUpdateProposal,
   useFetchProposalById,
 } from '../../hooks/proposal.hooks';
+import { useFetchUsersById } from '../../hooks/users.hooks';
 import { FormProvider, useForm } from '../../context/formContext';
 import { useFetchMasters } from '../../hooks/masters.hooks';
 import { serialize } from '../../utils';
-
-const schema = yup.object({
-  image: yup.string().trim(),
-  name: yup.string().trim().required('Name is required'),
-  description: yup.string().trim(),
-  status: yup.string().trim(),
-});
+import useUserStore from '../../store/user.store';
 
 const initialValues = {
-  image: '',
   name: '',
   description: '',
   startDate: '',
   endDate: '',
   status: '',
   spaces: [],
+  letterHead: '',
+  letterFooter: '',
+  uploadType: 'new',
 };
+
+const schema = yup.object({
+  name: yup.string().trim().required('Name is required'),
+  description: yup.string().trim(),
+  status: yup.string().trim(),
+  letterHead: yup
+    .string()
+    .trim()
+    .when('uploadType', {
+      is: val => val === 'new',
+      then: yup.string().trim().required('Letter Head is Required'),
+      otherwise: yup.string().trim(),
+    }),
+  letterFooter: yup
+    .string()
+    .trim()
+    .when('uploadType', {
+      is: val => val === 'new',
+      then: yup.string().trim().required('Letter Footer is Required'),
+      otherwise: yup.string().trim(),
+    }),
+});
 
 const CreateProposals = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
@@ -40,6 +59,8 @@ const CreateProposals = () => {
   const form = useForm({ validate: yupResolver(schema), initialValues });
   const navigate = useNavigate();
   const { id: proposalId } = useParams();
+  const userId = useUserStore(state => state.id);
+
   const [query] = useState({
     owner: 'all',
     page: 1,
@@ -48,6 +69,7 @@ const CreateProposals = () => {
     sortOrder: 'asc',
   });
 
+  const { data: userData } = useFetchUsersById(userId);
   const { mutate: create, isLoading: isCreateProposalLoading } = useCreateProposal();
   const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalData } = useFetchProposalById(
@@ -59,14 +81,15 @@ const CreateProposals = () => {
     serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
   );
 
-  const getForm = () => (formStep === 1 ? <BasicInfo proposalId={proposalId} /> : <Spaces />);
+  const getForm = () =>
+    formStep === 1 ? <BasicInfo proposalId={proposalId} userData={userData} /> : <Spaces />;
 
   const onSubmit = formData => {
     let data = {};
     data = { ...formData };
     setFormStep(2);
     if (formStep === 2) {
-      if (form.values?.spaces?.length === 0) {
+      if (!form.values?.spaces?.length) {
         showNotification({
           title: 'Please select atleast one space to continue',
           color: 'blue',
@@ -81,8 +104,13 @@ const CreateProposals = () => {
         endDate: item.endDate,
       }));
 
+      if (data.uploadType === 'existing') {
+        data.letterHead = userData?.letterHead;
+        data.letterFooter = userData?.letterFooter;
+      }
+
       Object.keys(data).forEach(key => {
-        if (data[key] === '' || data[key] === undefined) {
+        if (data[key] === undefined) {
           delete data[key];
         }
       });
@@ -109,6 +137,7 @@ const CreateProposals = () => {
         if (end > maxDate) maxDate = end;
       });
 
+      delete data.uploadType;
       if (proposalId) {
         update(
           { proposalId, data },
@@ -147,7 +176,7 @@ const CreateProposals = () => {
   useEffect(() => {
     if (proposalData) {
       form.setValues({
-        image: proposalData?.proposal?.image,
+        ...form.values,
         name: proposalData?.proposal?.name,
         description: proposalData?.proposal?.description || '',
         status: proposalData?.proposal?.status,
@@ -164,12 +193,14 @@ const CreateProposals = () => {
             startDate: new Date(item.startDate),
             endDate: new Date(item.endDate),
           })) || [],
+        letterHead: proposalData?.proposal?.letterHead,
+        letterFooter: proposalData?.proposal?.letterFooter,
       });
     }
-  }, [proposalData]);
+  }, [proposalData, userData]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <FormProvider form={form}>
         <form onSubmit={form.onSubmit(onSubmit)}>
           <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">

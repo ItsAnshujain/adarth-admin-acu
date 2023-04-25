@@ -8,7 +8,7 @@ import ProposalSentIcon from '../../../assets/proposal-sent.svg';
 import OperationalCostIcon from '../../../assets/operational-cost.svg';
 
 const RevenueStatsContent = ({ revenueData }) => (
-  <div className="flex flex-1 justify-between gap-4 flex-wrap mb-8">
+  <div className="flex flex-1 justify-between gap-4 flex-wrap mb-4">
     <div className="border rounded p-8 flex-1">
       <Image src={TotalRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
       <p className="my-2 text-sm font-light text-slate-400">Total Revenue</p>
@@ -22,7 +22,7 @@ const RevenueStatsContent = ({ revenueData }) => (
     <div className="border rounded p-8 flex-1">
       <Image src={OnlineRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
       <p className="my-2 text-sm font-light text-slate-400">Online Revenue</p>
-      <p className="font-bold">{toIndianCurrency(revenueData?.online ?? 0)}</p>
+      <p className="font-bold">{revenueData?.online ?? 0}</p>
     </div>
     <div className="border rounded p-8 flex-1">
       <Image src={ProposalSentIcon} alt="folder" fit="contain" height={24} width={24} />

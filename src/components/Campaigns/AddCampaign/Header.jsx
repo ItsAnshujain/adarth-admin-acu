@@ -2,11 +2,22 @@ import { Chip, Button } from '@mantine/core';
 import classNames from 'classnames';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
+import { useFormContext } from '../../../context/formContext';
 
 const initialState = ['Basic Information', 'Select Spaces', 'Cover Image'];
 
-const Header = ({ setFormStep, formStep, handlePublish, submitRef, disabled, loading }) => {
+const Header = ({ setFormStep, formStep, handleFormSubmit, disabled, loading }) => {
+  const { onSubmit } = useFormContext();
   const navigate = useNavigate();
+  const handleCampaigns = () => navigate('/campaigns');
+  const handleBack = () => {
+    if (formStep === 1) {
+      navigate('/campaigns');
+    } else {
+      setFormStep(formStep - 1);
+    }
+  };
+
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <div className="flex gap-6 pl-5 relative">
@@ -48,30 +59,28 @@ const Header = ({ setFormStep, formStep, handlePublish, submitRef, disabled, loa
         ))}
       </div>
       <div className="flex gap-4 pr-7">
-        <Button onClick={() => navigate(-1)} className="border-black radius-md text-black">
+        <Button onClick={handleCampaigns} className="border-black radius-md text-black">
           Cancel
         </Button>
-        <Button
-          onClick={() => {
-            if (formStep === 1) {
-              navigate(-1);
-            } else {
-              setFormStep(formStep - 1);
-            }
-          }}
-          className="bg-black"
-        >
+        <Button onClick={handleBack} className="bg-black">
           <ChevronLeft className="mr-2 h-4" />
           Back
         </Button>
 
-        <Button onClick={() => submitRef.current?.click()} className="bg-purple-450">
+        <Button
+          type="submit"
+          onClick={onSubmit(e => handleFormSubmit(e, 'save'))}
+          className="bg-purple-450"
+          disabled={disabled}
+          loading={loading}
+        >
           {formStep === 3 ? 'Preview' : formStep === 4 ? 'Save' : 'Next'}
           {formStep < 3 && <ChevronRight className="ml-1 h-4" />}
         </Button>
         {formStep === 4 && (
           <Button
-            onClick={handlePublish}
+            type="submit"
+            onClick={onSubmit(e => handleFormSubmit(e, 'publish'))}
             className="bg-purple-450"
             disabled={disabled}
             loading={loading}

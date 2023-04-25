@@ -1,18 +1,12 @@
-import { useDebouncedState } from '@mantine/hooks';
-import { useEffect, useMemo } from 'react';
+import { useDebouncedValue } from '@mantine/hooks';
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { Button, Loader, Progress, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { Link, useSearchParams } from 'react-router-dom';
-import {
-  downloadAll,
-  checkCampaignStats,
-  serialize,
-  temporaryPurchaseOrderPdfLink,
-  temporaryReleaseOrderPdfLink,
-  temporaryInvoicePdfLink,
-} from '../../../utils';
+import multiDownload from 'multi-download';
+import { checkCampaignStats, serialize } from '../../../utils';
 import { useUpdateBookingStatus } from '../../../hooks/booking.hooks';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -42,7 +36,8 @@ const DATE_FORMAT = 'DD MMM YYYY';
 
 const BookingTableView = ({ data: bookingData, isLoading }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
 
   const { data: campaignStatus } = useFetchMasters(
     serialize({
@@ -103,6 +98,28 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           }, []),
       },
       {
+        Header: 'CAMPAIGN NAME',
+        accessor: 'campaign.name',
+        Cell: ({
+          row: {
+            original: { campaign, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <Link to={`/bookings/view-details/${_id}`} className="font-medium underline">
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
+                  lineClamp={1}
+                >
+                  {campaign?.name || '-'}
+                </Text>
+              </Link>
+            ),
+            [],
+          ),
+      },
+      {
         Header: 'CLIENT',
         accessor: 'client.name',
         Cell: ({
@@ -120,25 +137,6 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
               <p className="font-medium bg-gray-450 px-2 rounded-sm">
                 {dayjs(original.createdAt).format(DATE_FORMAT)}
               </p>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'CAMPAIGN NAME',
-        accessor: 'campaign.name',
-        Cell: ({
-          row: {
-            original: { campaign, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <Link to={`/bookings/view-details/${_id}`} className="text-black font-medium">
-                <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
-                  {campaign?.name || '-'}
-                </Text>
-              </Link>
             ),
             [],
           ),
@@ -234,7 +232,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
               <p className="w-[200px]">
                 {currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Printing upcoming'
-                  : currentStatus?.printingStatus?.toLowerCase()?.includes('print')
+                  : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Printing in progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Printing completed'
@@ -257,7 +255,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
               <p className="w-[200px]">
                 {currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
                   ? 'Mounting upcoming'
-                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('mount')
+                  : currentStatus?.mountingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Mounting in progress'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                   ? 'Mounting completed'
@@ -358,7 +356,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
                   'font-medium  text-base',
                 )}
                 disabled={!campaign?.medias?.length}
-                onClick={() => downloadAll(campaign?.medias)}
+                onClick={() => multiDownload(campaign?.medias)}
               >
                 Download
               </Button>
@@ -391,8 +389,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           useMemo(
             () => (
               <a
-                href={temporaryPurchaseOrderPdfLink}
-                // TODO: kept it for demo purpose will remove later
+                href={purchaseOrder}
                 className={classNames(
                   purchaseOrder
                     ? 'text-purple-450 cursor-pointer'
@@ -421,8 +418,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           useMemo(
             () => (
               <a
-                href={temporaryReleaseOrderPdfLink}
-                // TODO: kept it for demo purpose will remove later
+                href={releaseOrder}
                 className={classNames(
                   releaseOrder
                     ? 'text-purple-450 cursor-pointer'
@@ -451,8 +447,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           useMemo(
             () => (
               <a
-                href={temporaryInvoicePdfLink}
-                // TODO: kept it for demo purpose will remove later
+                href={invoice}
                 className={classNames(
                   invoice ? 'text-purple-450 cursor-pointer' : 'pointer-events-none text-gray-450',
                   'font-medium',
@@ -490,6 +485,12 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
     setSearchParams(searchParams);
   };
 
+  const handleSearch = () => {
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', 1);
+    setSearchParams(searchParams);
+  };
+
   const handlePagination = (key, val) => {
     if (val !== '') searchParams.set(key, val);
     else searchParams.delete(key);
@@ -498,13 +499,15 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
   };
 
   useEffect(() => {
-    if (!searchInput) searchParams.delete('search');
-    else searchParams.set('searchParams');
-    setSearchParams(searchParams);
-  }, [searchInput]);
+    handleSearch();
+    if (debouncedSearch === '') {
+      searchParams.delete('search');
+      setSearchParams(searchParams);
+    }
+  }, [debouncedSearch]);
 
   return (
-    <div className="mt-8">
+    <div className="">
       <div className="pr-7">
         <div className="flex justify-between h-20 items-center">
           <RowsPerPage
@@ -515,12 +518,12 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         </div>
       </div>
       {isLoading ? (
-        <div className="flex justify-center items-center h-[400px]">
+        <div className="flex justify-center items-center h-[380px]">
           <Loader />
         </div>
       ) : null}
-      {bookingData?.docs?.length === 0 && !isLoading ? (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
+      {!bookingData?.docs?.length && !isLoading ? (
+        <div className="w-full min-h-[380px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>
       ) : null}

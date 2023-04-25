@@ -17,12 +17,14 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
-import DomToPdf from 'dom-to-pdf';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
+import classNames from 'classnames';
+import { showNotification } from '@mantine/notifications';
+import { useModals } from '@mantine/modals';
 import Header from '../../components/Reports/Header';
 import Table from '../../components/Table/Table';
-// import RowsPerPage from '../../components/RowsPerPage';
-// import Search from '../../components/Search';
+import RowsPerPage from '../../components/RowsPerPage';
+import Search from '../../components/Search';
 import BestIcon from '../../assets/best-performing-inventory.svg';
 import WorstIcon from '../../assets/worst-performing-inventory.svg';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -34,8 +36,19 @@ import {
 } from '../../hooks/inventory.hooks';
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import InventoryStatsContent from '../../components/Reports/Inventory/InventoryStatsContent';
-// import SubHeader from '../../components/Reports/Inventory/SubHeader';
-import { categoryColors, monthsInShort, serialize } from '../../utils';
+import SubHeader from '../../components/Reports/Inventory/SubHeader';
+import {
+  categoryColors,
+  dateByQuarter,
+  daysInAWeek,
+  downloadPdf,
+  monthsInShort,
+  quarters,
+  serialize,
+} from '../../utils';
+import { useShareReport } from '../../hooks/report.hooks';
+import modalConfig from '../../utils/modalConfig';
+import ShareContent from '../../components/Reports/ShareContent';
 
 dayjs.extend(quarterOfYear);
 
@@ -55,6 +68,7 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 
 const options = {
   responsive: true,
+  maintainAspectRatio: false,
 };
 
 const config = {
@@ -62,61 +76,115 @@ const config = {
   options: { responsive: true },
 };
 
-const InventoryReport = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const chartRef = useRef(null);
-  // eslint-disable-next-line no-unused-vars
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
-  const [inventoryQuery, setInventoryQuery] = useState({
-    'limit': 10,
-    'page': 1,
-    'sortOrder': 'desc',
-    'sortBy': 'basicInformation.spaceName',
-  });
+const unwantedQueriesForReveueGraph = [
+  'limit',
+  'page',
+  'sortOrder',
+  'sortBy',
+  'owner',
+  'category',
+  'subCategory',
+  'mediaType',
+  'tier',
+  'minPrice',
+  'maxPrice',
+  'zone',
+  'minFootFall',
+  'maxFootfall',
+  'facing',
+  'tags',
+  'demographic',
+  'audience',
+  'search',
+  'from',
+  'to',
+];
 
-  // eslint-disable-next-line no-unused-vars
-  const [count, setCount] = useState('20');
+const unwantedQuriesForInventories = ['groupBy', 'startDate', 'endDate'];
+
+const InventoryReport = () => {
+  const modals = useModals();
+  const [searchParams, setSearchParams] = useSearchParams({
+    limit: 10,
+    page: 1,
+    sortOrder: 'desc',
+    sortBy: 'basicInformation.spaceName',
+    startDate: dayjs().startOf('year').format(DATE_FORMAT),
+    endDate: dayjs().endOf('year').format(DATE_FORMAT),
+    groupBy: 'month',
+  });
+  const chartRef = useRef(null);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
+
   const [areaData, setAreaData] = useState({
     id: uuidv4(),
     labels: monthsInShort,
     datasets: [
       {
         label: 'Revenue',
-        data: Array.from({ length: 12 }, () => 0),
+        data: [],
         borderColor: '#914EFB',
         cubicInterpolationMode: 'monotone',
       },
     ],
   });
 
+  const removeUnwantedQueries = removeArr => {
+    const params = [...searchParams];
+    let updatedParams = params.filter(elem => !removeArr.includes(elem[0]));
+    updatedParams = Object.fromEntries(updatedParams);
+    return serialize(updatedParams);
+  };
+
   const { data: inventoryStats, isLoading: isInventoryStatsLoading } = useInventoryStats('');
   const {
     data: inventoryReports,
     isLoading: isInventoryReportLoading,
     isSuccess,
-  } = useInventoryReport('');
+  } = useInventoryReport(removeUnwantedQueries(unwantedQueriesForReveueGraph));
   const { data: inventoryReportList, isLoading: inventoryReportListLoading } =
-    useFetchInventoryReportList(serialize(inventoryQuery));
+    useFetchInventoryReportList(removeUnwantedQueries(unwantedQuriesForInventories));
+  const { mutateAsync, isLoading: isDownloadLoading } = useShareReport();
+
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
+  const share = searchParams.get('share');
+  const groupBy = searchParams.get('groupBy');
 
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
-      searchParams.delete('startDate');
-      searchParams.delete('endDate');
+      const startDate = dayjs().startOf('year').format(DATE_FORMAT);
+      const endDate = dayjs().endOf('year').format(DATE_FORMAT);
+      searchParams.set('startDate', startDate);
+      searchParams.set('endDate', endDate);
+      searchParams.set('groupBy', 'year');
+      setSearchParams(searchParams);
     }
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
-      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
-      searchParams.set('endDate', dayjs().add(1, viewType).format(DATE_FORMAT));
+      const startDate = dayjs().startOf(viewType).format(DATE_FORMAT);
+      const endDate = dayjs().endOf(viewType).format(DATE_FORMAT);
+
+      searchParams.set('startDate', startDate);
+      searchParams.set('endDate', endDate);
+      searchParams.set(
+        'groupBy',
+        viewType === 'year'
+          ? 'month'
+          : viewType === 'month'
+          ? 'dayOfMonth'
+          : viewType === 'week'
+          ? 'dayOfWeek'
+          : 'month',
+      );
+      setSearchParams(searchParams);
     }
     if (viewType === 'quarter') {
-      searchParams.set('startDate', dayjs().format(DATE_FORMAT));
-      searchParams.set(
-        'endDate',
-        dayjs(dayjs().format(DATE_FORMAT)).quarter(2).format(DATE_FORMAT),
-      );
+      searchParams.set('startDate', dateByQuarter[dayjs().quarter()].startDate);
+      searchParams.set('endDate', dateByQuarter[dayjs().quarter()].endDate);
+      searchParams.set('groupBy', 'quarter');
+      setSearchParams(searchParams);
     }
-    setSearchParams(searchParams);
   };
 
   const inventoryHealthStatus = useMemo(
@@ -124,8 +192,8 @@ const InventoryReport = () => {
       datasets: [
         {
           data: [inventoryStats?.unHealthy ?? 0, inventoryStats?.healthy ?? 0],
-          backgroundColor: ['#914EFB', '#FF900E'],
-          borderColor: ['#914EFB', '#FF900E'],
+          backgroundColor: ['#FF900E', '#914EFB'],
+          borderColor: ['#FF900E', '#914EFB'],
           borderWidth: 1,
         },
       ],
@@ -133,8 +201,6 @@ const InventoryReport = () => {
     [inventoryStats],
   );
 
-  // TODO: kept it for demo purpose will remove later
-  // disabled sortBy for now
   const inventoryColumn = [
     {
       Header: '#',
@@ -154,16 +220,15 @@ const InventoryReport = () => {
     {
       Header: 'SPACE NAME & PHOTO',
       accessor: 'basicInformation.spaceName',
-      disableSortBy: true,
       Cell: ({
         row: {
-          original: { _id, basicInformation, isUnderMaintenance },
+          original: { _id, basicInformation },
         },
       }) =>
         useMemo(
           () => (
             <div className="flex items-center gap-2">
-              <div className="bg-white border rounded-md cursor-zoom-in">
+              <div className="bg-white border rounded-md">
                 {basicInformation?.spacePhoto ? (
                   <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
                 ) : (
@@ -172,19 +237,16 @@ const InventoryReport = () => {
               </div>
               <Link
                 to={`/inventory/view-details/${_id}`}
-                className="text-black font-medium px-2 max-w-[180px]"
+                className="font-medium px-2 max-w-[180px] underline"
               >
-                <Text className="overflow-hidden text-ellipsis" lineClamp={1}>
+                <Text
+                  className="overflow-hidden text-ellipsis text-purple-450"
+                  lineClamp={1}
+                  title={basicInformation?.spaceName}
+                >
                   {basicInformation?.spaceName}
                 </Text>
               </Link>
-              <Badge
-                className="capitalize"
-                variant="filled"
-                color={isUnderMaintenance ? 'yellow' : 'green'}
-              >
-                {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
-              </Badge>
             </div>
           ),
           [],
@@ -193,7 +255,6 @@ const InventoryReport = () => {
     {
       Header: 'MEDIA OWNER NAME',
       accessor: 'basicInformation.mediaOwner.name',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { basicInformation },
@@ -203,7 +264,6 @@ const InventoryReport = () => {
     {
       Header: 'CATEGORY',
       accessor: 'basicInformation.category.name',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { basicInformation },
@@ -230,7 +290,6 @@ const InventoryReport = () => {
     {
       Header: 'TOTAL REVENUE',
       accessor: 'revenue',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { revenue },
@@ -239,8 +298,7 @@ const InventoryReport = () => {
     },
     {
       Header: 'TOTAL BOOKING',
-      accessor: 'totalBookings',
-      disableSortBy: true,
+      accessor: 'totalBooking',
       Cell: ({
         row: {
           original: { totalBookings },
@@ -250,7 +308,6 @@ const InventoryReport = () => {
     {
       Header: 'TOTAL OPERATIONAL COST',
       accessor: 'operationalCost',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { operationalCost },
@@ -261,7 +318,6 @@ const InventoryReport = () => {
     {
       Header: 'DIMENSION',
       accessor: 'specifications.size.min',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { specifications },
@@ -279,7 +335,6 @@ const InventoryReport = () => {
     {
       Header: 'IMPRESSION',
       accessor: 'specifications.impressions.max',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { specifications },
@@ -289,7 +344,6 @@ const InventoryReport = () => {
     {
       Header: 'HEALTH STATUS',
       accessor: 'specifications.health',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { specifications },
@@ -312,7 +366,6 @@ const InventoryReport = () => {
     {
       Header: 'LOCATION',
       accessor: 'location.city',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { location },
@@ -322,7 +375,6 @@ const InventoryReport = () => {
     {
       Header: 'PRICING',
       accessor: 'basicInformation.price',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { basicInformation },
@@ -377,7 +429,7 @@ const InventoryReport = () => {
       disableSortBy: true,
       Cell: ({
         row: {
-          original: { _id, basicInformation, isUnderMaintenance },
+          original: { _id, basicInformation },
         },
       }) =>
         useMemo(
@@ -392,19 +444,16 @@ const InventoryReport = () => {
               </div>
               <Link
                 to={`/inventory/view-details/${_id}`}
-                className="text-black font-medium px-2 max-w-[180px]"
+                className="font-medium px-2 max-w-[180px] underline"
               >
-                <Text className="overflow-hidden text-ellipsis" lineClamp={1}>
+                <Text
+                  className="overflow-hidden text-ellipsis text-purple-450"
+                  lineClamp={1}
+                  title={basicInformation?.spaceName}
+                >
                   {basicInformation?.spaceName}
                 </Text>
               </Link>
-              <Badge
-                className="capitalize"
-                variant="filled"
-                color={isUnderMaintenance ? 'yellow' : 'green'}
-              >
-                {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
-              </Badge>
             </div>
           ),
           [],
@@ -412,13 +461,13 @@ const InventoryReport = () => {
     },
     {
       Header: 'MEDIA OWNER NAME',
-      accessor: 'basicInformation.landlord',
+      accessor: 'basicInformation.mediaOwner.name',
       disableSortBy: true,
       Cell: ({
         row: {
           original: { basicInformation },
         },
-      }) => useMemo(() => <p className="w-fit">{basicInformation?.landlord}</p>, []),
+      }) => useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name}</p>, []),
     },
     {
       Header: 'CATEGORY',
@@ -428,7 +477,7 @@ const InventoryReport = () => {
         row: {
           original: { basicInformation },
         },
-      }) => useMemo(() => <p className="w-fit">{basicInformation?.category}</p>, []),
+      }) => useMemo(() => <p className="w-fit">{basicInformation?.category?.name}</p>, []),
     },
     {
       Header: 'DIMENSION',
@@ -492,6 +541,16 @@ const InventoryReport = () => {
       }) => useMemo(() => <p>{location?.city || '-'}</p>, []),
     },
     {
+      Header: 'ROI',
+      accessor: 'roi',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { roi },
+        },
+      }) => useMemo(() => <p className="pl-2">{roi ? Number(roi) : 0}</p>, []),
+    },
+    {
       Header: 'PRICING',
       accessor: 'basicInformation.price',
       disableSortBy: true,
@@ -528,47 +587,105 @@ const InventoryReport = () => {
   ];
 
   const calculateLineData = useCallback(() => {
-    setAreaData(prevState => {
-      const tempAreaData = { ...prevState, id: uuidv4() };
+    if (inventoryReports && inventoryReports?.revenue) {
+      const tempAreaData = {
+        labels: monthsInShort,
+        datasets: [
+          {
+            label: 'Revenue',
+            data: [],
+            borderColor: '#914EFB',
+            backgroundColor: '#914EFB',
+            cubicInterpolationMode: 'monotone',
+          },
+        ],
+      };
 
-      if (inventoryReports) {
-        inventoryReports?.revenue?.forEach(item => {
-          if (item._id.month) {
-            tempAreaData.datasets[0].data[item._id.month - 1] = item.price;
-          }
-        });
-      }
+      tempAreaData.labels =
+        groupBy === 'dayOfWeek'
+          ? daysInAWeek
+          : groupBy === 'dayOfMonth'
+          ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
+          : groupBy === 'quarter'
+          ? quarters
+          : monthsInShort;
 
-      return tempAreaData;
-    });
+      tempAreaData.datasets[0].data = Array.from({ length: dayjs().daysInMonth() }, () => 0);
+
+      inventoryReports.revenue?.forEach(item => {
+        if (item._id) {
+          tempAreaData.datasets[0].data[item._id] = item?.total;
+        }
+      });
+      setAreaData(tempAreaData);
+    }
   }, [inventoryReports]);
 
-  const downloadPdf = () => {
-    const element = document.getElementById('inventory-pdf');
-    const option = {
-      filename: 'inventory.pdf',
-    };
-    DomToPdf(element, option);
+  const toggleShareOptions = () => {
+    modals.openContextModal('basic', {
+      title: 'Share via:',
+      innerProps: {
+        modalBody: <ShareContent />,
+      },
+      ...modalConfig,
+    });
+  };
+
+  const handleDownloadPdf = async () => {
+    const activeUrl = new URL(window.location.href);
+    activeUrl.searchParams.append('share', 'report');
+
+    await mutateAsync(
+      { url: activeUrl.toString() },
+      {
+        onSuccess: data => {
+          showNotification({
+            title: 'Report has been downloaded successfully',
+            color: 'green',
+          });
+          if (data?.link) {
+            downloadPdf(data.link);
+          }
+        },
+      },
+    );
+  };
+
+  const handleSortByColumn = colId => {
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
+      searchParams.set('sortOrder', 'asc');
+      setSearchParams(searchParams);
+      return;
+    }
+    if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'asc') {
+      searchParams.set('sortOrder', 'desc');
+      setSearchParams(searchParams);
+      return;
+    }
+
+    searchParams.set('sortBy', colId);
+    setSearchParams(searchParams);
   };
 
   const handleSearch = () => {
-    setInventoryQuery(prevState => ({ ...prevState, search: searchInput, page: 1 }));
-    // searchParams.set('search', searchInput);
-    // searchParams.set('page', 1);
-    // setSearchParams(searchParams);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
+    setSearchParams(searchParams);
+  };
+
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
+    setSearchParams(searchParams);
   };
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
-      setInventoryQuery({
-        'limit': 10,
-        'page': 1,
-        'sortOrder': 'desc',
-        'sortBy': 'basicInformation.spaceName',
-      });
+    if (debouncedSearch === '') {
+      searchParams.delete('search');
+      setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     const chart = chartRef.current;
@@ -581,79 +698,95 @@ const InventoryReport = () => {
   }, [inventoryReports, isSuccess]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-        <Header text="Inventory Report" onClickDownloadPdf={downloadPdf} />
-        <div className="pr-7 pl-5 mt-5 mb-10" id="inventory-pdf">
-          <InventoryStatsContent
-            inventoryReports={inventoryReports}
-            inventoryStats={inventoryStats}
-          />
-          <div className="flex w-full gap-4">
-            <div className="w-[70%]">
-              <div className="flex justify-between">
-                <p className="font-bold">Revenue Graph</p>
-                <ViewByFilter handleViewBy={handleViewBy} />
-              </div>
-              {isInventoryReportLoading ? (
-                <Loader className="mx-auto mt-10" />
-              ) : (
+    <div
+      className={classNames(
+        'border-l border-gray-450 overflow-y-auto',
+        share !== 'report' ? 'col-span-10 ' : 'col-span-12',
+      )}
+    >
+      <Header
+        shareType={share}
+        text="Inventory Report"
+        onClickDownloadPdf={handleDownloadPdf}
+        onClickSharePdf={toggleShareOptions}
+        isDownloadLoading={isDownloadLoading}
+      />
+
+      <div className="pr-7 pl-5 mt-5 mb-10" id="inventory-pdf">
+        <InventoryStatsContent
+          inventoryReports={inventoryReports}
+          inventoryStats={inventoryStats}
+        />
+        <div className="flex w-full gap-4">
+          <div className="w-[70%]">
+            <div className="flex justify-between">
+              <p className="font-bold">Revenue Graph</p>
+              {share !== 'report' ? <ViewByFilter handleViewBy={handleViewBy} /> : null}
+            </div>
+            {isInventoryReportLoading ? (
+              <Loader className="mx-auto mt-10" />
+            ) : (
+              <div className="max-h-[350px]">
                 <Line
-                  height="120"
                   data={areaData}
                   options={options}
                   ref={chartRef}
                   key={areaData.id}
+                  className="w-full"
                 />
+              </div>
+            )}
+          </div>
+
+          <div className="w-[30%] flex gap-8 h-[50%] p-4 border items-center rounded-md">
+            <div className="w-32">
+              {isInventoryStatsLoading ? (
+                <Loader className="mx-auto" />
+              ) : inventoryStats?.healthy === 0 && inventoryStats?.unHealthy === 0 ? (
+                <p className="text-center">NA</p>
+              ) : (
+                <Doughnut options={config.options} data={inventoryHealthStatus} />
               )}
             </div>
-
-            <div className="w-[30%] flex gap-8 h-[50%] p-4 border rounded-md">
-              <div className="w-[40%]">
-                {isInventoryStatsLoading ? (
-                  <Loader className="mx-auto" />
-                ) : (
-                  <Doughnut options={config.options} data={inventoryHealthStatus} />
-                )}
-              </div>
-              <div className="flex flex-col">
-                <p className="font-medium">Health Status</p>
-                <div className="flex flex-col gap-8 mt-4">
-                  <div className="flex gap-2 items-center">
-                    <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
-                    <div>
-                      <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
-                      <p className="font-bold text-lg">{inventoryStats?.healthy ?? 0}</p>
-                    </div>
+            <div className="flex flex-col">
+              <p className="font-medium">Health Status</p>
+              <div className="flex flex-col gap-8 mt-4">
+                <div className="flex gap-2 items-center">
+                  <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+                  <div>
+                    <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
+                    <p className="font-bold text-lg">{inventoryStats?.healthy ?? 0}</p>
                   </div>
-                  <div className="flex gap-2 items-center">
-                    <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
-                    <div>
-                      <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
-                      <p className="font-bold text-lg">{inventoryStats?.unHealthy ?? 0}</p>
-                    </div>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+                  <div>
+                    <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
+                    <p className="font-bold text-lg">{inventoryStats?.unHealthy ?? 0}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex justify-between gap-4 flex-wrap my-8">
-            <div className="border rounded p-8  flex-1">
-              <Image src={BestIcon} alt="folder" fit="contain" height={24} width={24} />
-              <p className="my-2 text-sm font-light text-slate-400">Best Performing Inventory</p>
-              <p className="font-bold">
-                {inventoryStats?.best?.[0]?.basicInformation?.spaceName || '--'}
-              </p>
-            </div>
-            <div className="border rounded p-8 flex-1">
-              <Image src={WorstIcon} alt="folder" fit="contain" height={24} width={24} />
-              <p className="my-2 text-sm font-light text-slate-400">Worst Performing Inventory</p>
-              <p className="font-bold">
-                {inventoryStats?.worst?.at(-1)?.basicInformation?.spaceName || '--'}
-              </p>
-            </div>
+        </div>
+        <div className="flex justify-between gap-4 flex-wrap my-8">
+          <div className="border rounded p-8  flex-1">
+            <Image src={BestIcon} alt="folder" fit="contain" height={24} width={24} />
+            <p className="my-2 text-sm font-light text-slate-400">Best Performing Inventory</p>
+            <p className="font-bold">
+              {inventoryStats?.best?.[0]?.basicInformation?.spaceName || '--'}
+            </p>
           </div>
-          <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mt-10">
+          <div className="border rounded p-8 flex-1">
+            <Image src={WorstIcon} alt="folder" fit="contain" height={24} width={24} />
+            <p className="my-2 text-sm font-light text-slate-400">Worst Performing Inventory</p>
+            <p className="font-bold">
+              {inventoryStats?.worst?.at(0)?.basicInformation?.spaceName || '--'}
+            </p>
+          </div>
+        </div>
+        {share !== 'report' ? (
+          <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450">
             <Tabs defaultValue="gallery">
               <Tabs.List>
                 <Tabs.Tab value="gallery">
@@ -673,24 +806,35 @@ const InventoryReport = () => {
                 </Tabs.Tab>
               </Tabs.List>
 
-              <Tabs.Panel value="gallery" pt="lg">
-                {/* TODO: kept it for demo purpose will remove later */}
-                {/* <SubHeader />
-                <div className="flex justify-between h-20 items-center pr-7">
-                  <RowsPerPage setCount={setCount} count={count} />
-                  <Search search={searchInput} setSearch={setSearchInput} />
-                </div> */}
-                {inventoryReportList?.docs?.length === 0 && !inventoryReportListLoading ? (
+              <Tabs.Panel value="gallery">
+                <div className="flex justify-between h-20 items-center">
+                  <RowsPerPage
+                    setCount={currentLimit => handlePagination('limit', currentLimit)}
+                    count={limit}
+                  />
+                  <div className="flex flex-1 justify-end items-center">
+                    <Search search={searchInput} setSearch={setSearchInput} />
+                    <SubHeader />
+                  </div>
+                </div>
+                {!inventoryReportList?.docs?.length && !inventoryReportListLoading ? (
                   <div className="w-full min-h-[400px] flex justify-center items-center">
                     <p className="text-xl">No records found</p>
                   </div>
                 ) : null}
                 {inventoryReportList?.docs?.length ? (
-                  <Table COLUMNS={inventoryColumn} data={inventoryReportList?.docs} count={count} />
+                  <Table
+                    COLUMNS={inventoryColumn}
+                    data={inventoryReportList?.docs || []}
+                    handleSorting={handleSortByColumn}
+                    activePage={inventoryReportList?.page || 1}
+                    totalPages={inventoryReportList?.totalPages || 1}
+                    setActivePage={currentPage => handlePagination('page', currentPage)}
+                  />
                 ) : null}
               </Tabs.Panel>
               <Tabs.Panel value="messages" pt="lg">
-                {inventoryStats?.best?.length === 0 && !isInventoryStatsLoading ? (
+                {!inventoryStats?.best?.length && !isInventoryStatsLoading ? (
                   <div className="w-full min-h-[400px] flex justify-center items-center">
                     <p className="text-xl">No records found</p>
                   </div>
@@ -704,7 +848,7 @@ const InventoryReport = () => {
                 ) : null}
               </Tabs.Panel>
               <Tabs.Panel value="settings" pt="lg">
-                {inventoryStats?.worst?.length === 0 && !isInventoryStatsLoading ? (
+                {!inventoryStats?.worst?.length && !isInventoryStatsLoading ? (
                   <div className="w-full min-h-[400px] flex justify-center items-center">
                     <p className="text-xl">No records found</p>
                   </div>
@@ -719,7 +863,7 @@ const InventoryReport = () => {
               </Tabs.Panel>
             </Tabs>
           </div>
-        </div>
+        ) : null}
       </div>
     </div>
   );

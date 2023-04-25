@@ -1,9 +1,9 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { NativeSelect, Progress, Image, Loader, Text } from '@mantine/core';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ChevronDown } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import classNames from 'classnames';
 import { useCampaigns, useUpdateCampaign } from '../../hooks/campaigns.hooks';
 import AreaHeader from '../../components/Campaigns/Header';
@@ -26,11 +26,13 @@ const initialState = {
   limit: '10',
   sortBy: 'name',
   sortOrder: 'desc',
+  type: 'predefined',
 };
 
 const Home = () => {
   const queryClient = useQueryClient();
-  const [search, setSearch] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const viewType = useLayoutView(state => state.activeLayout);
   const [searchParams, setSearchParams] = useSearchParams(initialState);
 
@@ -82,7 +84,7 @@ const Home = () => {
             () => (
               <Link
                 to={`/campaigns/view-details/${_id}`}
-                className="flex items-center cursor-pointer"
+                className="flex items-center cursor-pointer underline"
               >
                 <div className="flex flex-1 gap-2 items-center">
                   <Image
@@ -94,7 +96,11 @@ const Home = () => {
                     src={thumbnail}
                     className="rounded-md overflow-hidden"
                   />
-                  <Text className="w-[200px]" title={name} lineClamp={1}>
+                  <Text
+                    className="w-[200px] text-purple-450 font-medium"
+                    title={name}
+                    lineClamp={1}
+                  >
                     {name}
                   </Text>
                 </div>
@@ -149,29 +155,29 @@ const Home = () => {
       },
       {
         Header: 'STATUS',
-        accessor: 'status',
+        accessor: 'createStatus.name',
         Cell: ({
           row: {
-            original: { _id, status },
+            original: { _id, createStatus },
           },
         }) =>
           useMemo(() => {
             const updatedCampaignList = [...campaignList];
-            if (!status) {
+            if (!createStatus) {
               updatedCampaignList.unshift({ label: 'Select', value: '' });
             }
 
             return (
               <NativeSelect
-                defaultValue={status || ''}
-                onChange={e => updateCampaign(_id, { status: e.target.value })}
+                defaultValue={createStatus?._id || ''}
+                onChange={e => updateCampaign(_id, { createStatus: e.target.value })}
                 data={updatedCampaignList}
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
               />
             );
-          }, [status, _id]),
+          }, [createStatus, _id]),
       },
       {
         Header: 'TOTAL PLACES',
@@ -179,12 +185,12 @@ const Home = () => {
       },
       {
         Header: 'PRICING',
-        accessor: 'totalPrice',
+        accessor: 'price',
         Cell: ({
           row: {
-            original: { totalPrice },
+            original: { price },
           },
-        }) => toIndianCurrency(totalPrice || 0),
+        }) => toIndianCurrency(price || 0),
       },
       {
         Header: 'ACTION',
@@ -245,27 +251,27 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (search) {
-      searchParams.set('search', search);
+    if (debouncedSearch) {
+      searchParams.set('search', debouncedSearch);
       searchParams.set('page', 1);
     } else searchParams.delete('search');
 
     setSearchParams(searchParams);
-  }, [search]);
+  }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <AreaHeader text="Campaign List" />
       <div className="flex justify-between h-20 items-center pr-7">
         <RowsPerPage setCount={data => setQuery('limit', data)} count={limit} />
-        <Search search={search} setSearch={setSearch} />
+        <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       {isLoading ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
         </div>
       ) : null}
-      {campaignData?.docs?.length === 0 && !isLoading ? (
+      {!campaignData?.docs?.length && !isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

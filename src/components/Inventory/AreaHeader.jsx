@@ -78,7 +78,7 @@ const AreaHeader = ({ text, inventoryData }) => {
           ) : null}
           <Button
             className={classNames(
-              'px-4 border-gray-300 border rounded-md',
+              'px-4 border-gray-300 border rounded-l-md rounded-r-none',
               activeLayout.inventory === 'list' ? 'bg-purple-450' : 'bg-white',
             )}
             onClick={handleListClick}
@@ -93,7 +93,7 @@ const AreaHeader = ({ text, inventoryData }) => {
           </Button>
           <Button
             className={classNames(
-              `text-white border-gray-300 border px-4 rounded-md ${
+              `text-white border-gray-300 border px-4 rounded-none ${
                 activeLayout.inventory === 'grid' ? 'bg-purple-450' : 'bg-white'
               }`,
             )}
@@ -109,7 +109,7 @@ const AreaHeader = ({ text, inventoryData }) => {
           </Button>
           <Button
             className={classNames(
-              `px-4 border-gray-300 border rounded-md ${
+              `px-4 border-gray-300 border rounded-r-md rounded-l-none ${
                 activeLayout.inventory === 'map' ? 'bg-purple-450' : 'bg-white'
               }`,
             )}
@@ -131,7 +131,12 @@ const AreaHeader = ({ text, inventoryData }) => {
           </Button>
           {showDatePicker && (
             <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
-              <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
+              <DateRange
+                handleClose={toggleDatePicker}
+                dateKeys={['from', 'to']}
+                rangeCalendarMinDate={new Date()}
+                datePickerMinDate={new Date()}
+              />
             </div>
           )}
         </div>
@@ -143,7 +148,9 @@ const AreaHeader = ({ text, inventoryData }) => {
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
         </div>
         <div className="relative">
-          <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]}>
+          <RoleBased
+            acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGER, ROLES.ASSOCIATE]}
+          >
             <Button
               onClick={toggleAddDetails}
               className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"

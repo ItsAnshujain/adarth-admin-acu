@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Accordion, Button, Drawer, Radio } from '@mantine/core';
+import { useSearchParams } from 'react-router-dom';
 
 const styles = { title: { fontWeight: 'bold' } };
 
@@ -16,6 +17,7 @@ const RevenueFilter = ({
   handleQueryByLocation = () => {},
   queryByLocation,
 }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filterOptions, setFilterOptions] = useState({ by: queryByLocation?.by || '' });
 
   const handleCheckedValues = (filterValues, filterKey) =>
@@ -38,12 +40,9 @@ const RevenueFilter = ({
 
   const handleApply = () => {
     handleQueryByLocation(prevState => ({ ...prevState, ...filterOptions }));
+    searchParams.set('by', filterOptions.by);
+    setSearchParams(searchParams);
     setShowFilter(false);
-  };
-
-  const handleReset = () => {
-    handleQueryByLocation();
-    setFilterOptions({ by: '' });
   };
 
   return (
@@ -64,9 +63,6 @@ const RevenueFilter = ({
     >
       <div className="w-full flex justify-end">
         <div className="w-full flex justify-end">
-          <Button onClick={handleReset} className="border-black text-black radius-md mr-3">
-            Reset
-          </Button>
           <Button variant="default" className="mb-3 bg-purple-450 text-white" onClick={handleApply}>
             Apply Filters
           </Button>

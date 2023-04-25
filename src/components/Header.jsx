@@ -6,7 +6,7 @@ import shallow from 'zustand/shallow';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
 import { useQueryClient } from '@tanstack/react-query';
-import logo from '../assets/logo.svg';
+import logoWhite from '../assets/logo-white.svg';
 import useUserStore from '../store/user.store';
 import DrawerSidebar from './DrawerSidebar';
 import NotificationsIcon from '../assets/notifications.svg';
@@ -21,10 +21,11 @@ const Header = ({ title }) => {
   const userId = useUserStore(state => state.id);
   const user = queryClient.getQueryData(['users-by-id', userId]);
 
-  const { setToken, setId } = useUserStore(
+  const { setToken, setId, setHasAcceptedTerms } = useUserStore(
     state => ({
       setToken: state.setToken,
       setId: state.setId,
+      setHasAcceptedTerms: state.setHasAcceptedTerms,
     }),
     shallow,
   );
@@ -32,6 +33,7 @@ const Header = ({ title }) => {
   const handleLogout = () => {
     setToken(null);
     setId(null);
+    setHasAcceptedTerms(null);
     navigate('/login');
     showNotification({
       title: 'Logged out successfully',
@@ -41,43 +43,39 @@ const Header = ({ title }) => {
 
   return (
     <>
-      <header className="grid grid-cols-12 h-[60px] border-b border-gray-450 relative w-screen">
-        <div className="flex items-center col-span-2 pl-2 lg:pl-7 self-center">
+      <header className="grid grid-cols-12 h-[60px] relative w-screen">
+        <div className="flex items-center justify-center md:justify-start  col-span-2 pl-2 lg:pl-7 self-center bg-purple-450 h-full">
           <Menu onClick={() => setOpened(true)} className="mr-2 h-6 w-6 inline-block lg:hidden" />
-          <Link to="/">
-            <img className="w-16 lg:w-24" src={logo} alt="logo" />
+          <Link to="/home" className="hidden md:block">
+            <img className="w-16 lg:w-24" src={logoWhite} alt="logo" />
           </Link>
         </div>
-        <div className="flex justify-between items-center col-span-10 border-l border-gray-450">
+        <div className="flex justify-between items-center col-span-10 border-b border-gray-450">
           <div className="pl-5">
-            <p className="text-2xl font-bold tracking-wide">{title}</p>
+            <p className="text-2xl font-bold tracking-wide hidden md:block">{title}</p>
           </div>
-          <div className="flex items-center mr-7">
-            <Link to="/notification">
-              <Button
-                variant="subtle"
-                color="gray"
+          <div className="flex items-center mr-2 md:mr-5">
+            <Link to="/notification" className="flex items-center">
+              <Image src={NotificationsIcon} height={24} width={24} />
+              <span
                 className={classNames(
-                  'font-medium',
-                  ['/notification'].includes(pathname) ? 'text-purple-450' : '',
+                  'font-medium ml-2 mr-4 hidden md:block',
+                  ['/notification'].includes(pathname) ? 'text-purple-450' : 'text-gray-400',
                 )}
-                leftIcon={<Image src={NotificationsIcon} height={24} width={24} />}
               >
                 Notifications
-              </Button>
+              </span>
             </Link>
-            <Link to="/settings">
-              <Button
-                variant="subtle"
-                color="gray"
+            <Link to="/settings" className="flex items-center mx-4 md:mx-0">
+              <Image src={SettingsIcon} height={24} width={24} />
+              <span
                 className={classNames(
-                  'font-medium mr-4 ml-2',
-                  ['/settings'].includes(pathname) ? 'text-purple-450' : '',
+                  'font-medium mr-4 ml-2 hidden md:block',
+                  ['/settings'].includes(pathname) ? 'text-purple-450' : 'text-gray-400',
                 )}
-                leftIcon={<Image src={SettingsIcon} height={24} width={24} />}
               >
                 Settings
-              </Button>
+              </span>
             </Link>
             <MenuProfile shadow="md" width={150}>
               <MenuProfile.Target>

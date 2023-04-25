@@ -1,20 +1,18 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   BackgroundImage,
   Badge,
-  Button,
   Center,
   Image,
   Pagination,
   Skeleton,
+  Spoiler,
   Text,
 } from '@mantine/core';
-import { useToggle } from '@mantine/hooks';
 import GoogleMapReact from 'google-map-react';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import ReactPlayer from 'react-player';
-import classNames from 'classnames';
 import { useModals } from '@mantine/modals';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
@@ -24,6 +22,7 @@ import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
 import NoData from '../../shared/NoData';
 import modalConfig from '../../../utils/modalConfig';
+import { indianMapCoordinates } from '../../../utils';
 
 const TRANSITION_DURATION = 200;
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
@@ -51,7 +50,6 @@ const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Overview = ({ bookingData = {}, isLoading }) => {
   const modals = useModals();
-  const [readMore, toggle] = useToggle();
   const [mapInstance, setMapInstance] = useState(null);
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -62,6 +60,18 @@ const Overview = ({ bookingData = {}, isLoading }) => {
   const [embla, setEmbla] = useState(null);
 
   useAnimationOffsetEffect(embla, TRANSITION_DURATION);
+
+  const getAllSpacePhotos = useCallback(() => {
+    const tempPics = [];
+    const tempArr = bookingData;
+    tempArr?.campaign?.spaces?.map(item => {
+      if (item?.basicInformation?.spacePhoto) tempPics.push(item.basicInformation.spacePhoto);
+      if (item?.basicInformation?.otherPhotos) tempPics.push(...item.basicInformation.otherPhotos);
+      return tempPics;
+    });
+
+    return tempPics;
+  }, [bookingData]);
 
   const calculateTotalCities = useMemo(() => {
     const initialCity = 0;
@@ -128,24 +138,26 @@ const Overview = ({ bookingData = {}, isLoading }) => {
     if (mapInstance && bookingData?.campaign?.spaces?.length) {
       const bounds = new mapInstance.maps.LatLngBounds();
 
-      bookingData?.campaign?.spaces?.forEach(item => {
-        bounds.extend({
-          lat: +(item.location?.latitude || 0),
-          lng: +(item.location?.longitude || 0),
-        });
+      // default coordinates
+      bounds.extend({
+        lat: indianMapCoordinates.latitude,
+        lng: indianMapCoordinates.longitude,
       });
 
       mapInstance.map.fitBounds(bounds);
       mapInstance.map.setCenter(bounds.getCenter());
-      mapInstance.map.setZoom(Math.min(10, mapInstance.map.getZoom()));
+      mapInstance.map.setZoom(Math.min(5, mapInstance.map.getZoom()));
     }
   }, [bookingData?.campaign?.spaces?.length, mapInstance]);
 
-  useEffect(() => setPreviewSpacesPhotos(bookingData?.campaign?.medias), [bookingData]);
+  useEffect(() => {
+    const result = getAllSpacePhotos();
+    setPreviewSpacesPhotos(result);
+  }, [bookingData]);
 
   return (
     <>
-      <div className="flex gap-8 pt-4">
+      <div className="flex gap-4 pt-4">
         <div className="flex-1 pl-5 max-w-1/2">
           <div className="flex flex-col">
             {isLoading ? (
@@ -153,35 +165,26 @@ const Overview = ({ bookingData = {}, isLoading }) => {
             ) : (
               <div className="flex flex-1 flex-col w-full">
                 <div className="flex flex-row flex-wrap justify-start">
-                  {previewSpacesPhotos?.map((src, index) =>
-                    index < 4 && !src?.includes(['mp4']) ? (
-                      <Image
-                        key={uuidv4()}
-                        height={index === 0 ? 300 : 96}
-                        width={index === 0 ? '100%' : 112}
-                        src={src}
-                        fit="cover"
-                        alt="poster"
-                        className="mr-2 mb-4 border-[1px] border-gray bg-slate-100 cursor-zoom-in"
-                        onClick={() => toggleImagePreviewModal(index)}
-                      />
-                    ) : (
-                      <div
-                        key={uuidv4()}
-                        className={classNames(
-                          index === 0 ? 'h-[300px] w-full' : 'h-[96px] w-[112px]',
-                          'border-[1px] border-gray bg-slate-100 mr-2 mb-4',
-                        )}
-                      >
-                        <ReactPlayer url={`${src}#t=0.1`} width="100%" height="100%" />
-                      </div>
-                    ),
+                  {previewSpacesPhotos?.map(
+                    (src, index) =>
+                      index < 4 && (
+                        <Image
+                          key={uuidv4()}
+                          className="mr-2 mb-4 border-[1px] border-gray bg-slate-100 cursor-zoom-in"
+                          height={index === 0 ? 300 : 96}
+                          width={index === 0 ? '100%' : 112}
+                          src={src}
+                          fit="cover"
+                          alt="poster"
+                          onClick={() => toggleImagePreviewModal(index)}
+                        />
+                      ),
                   )}
                   {previewSpacesPhotos?.length > 4 && (
                     <div className="border-[1px] border-gray mr-2 mb-4">
                       <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
-                        <Center className="h-full">
-                          <Text weight="bold" color="white" className="mix-blend-difference">
+                        <Center className="h-full transparent-black">
+                          <Text weight="bold" color="white">
                             +{previewSpacesPhotos.length - 4} more
                           </Text>
                         </Center>
@@ -197,20 +200,15 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           <p className="font-bold text-2xl mb-2">
             {bookingData?.campaign?.name || <NoData type="na" />}
           </p>
-          <div>
-            <p className="text-slate-400 font-light text-[14px]">
-              {bookingData?.description?.split(' ')?.length > 4
-                ? readMore
-                  ? `${bookingData?.description?.split(' ')?.slice(0, 3).join(' ')}...`
-                  : bookingData?.description
-                : bookingData.description || <NoData type="na" />}
-              {bookingData?.description?.split(' ')?.length > 4 ? (
-                <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
-                  {readMore ? 'Read more' : 'Read less'}
-                </Button>
-              ) : null}
-            </p>
-          </div>
+          <Spoiler
+            maxHeight={45}
+            showLabel="Read more"
+            hideLabel="Read less"
+            className="text-purple-450 font-medium text-[14px]"
+            classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+          >
+            {bookingData?.campaign?.description || 'NA'}
+          </Spoiler>
           <div className="flex mt-4 items-center gap-2 ">
             <span>{toIndianCurrency(bookingData?.campaign?.totalPrice || 0)}</span>
             <Badge
@@ -231,7 +229,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
             <div className="p-4 py-6 grid grid-cols-2 grid-rows-2 border rounded-md gap-y-4 mt-2">
               <div>
                 <p className="text-slate-400 text-sm">Total Media</p>
-                <p>{bookingData?.campaign?.medias.length ?? <NoData type="na" />}</p>
+                <p>{bookingData?.campaign?.medias?.length ?? <NoData type="na" />}</p>
               </div>
               <div>
                 <p className="text-slate-400 text-sm">Impressions</p>
@@ -254,7 +252,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
         <p className="text-sm font-light text-slate-400">
           All the places been covered by this campaign
         </p>
-        <div className="mt-1 mb-8 h-[30vh]">
+        <div className="mt-1 mb-8 h-[40vh]">
           <GoogleMapReact
             bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY, libraries: 'places' }}
             defaultCenter={defaultProps.center}
@@ -277,18 +275,26 @@ const Overview = ({ bookingData = {}, isLoading }) => {
         </p>
         <div>
           {bookingData?.campaign?.spaces?.length ? (
-            bookingData?.campaign?.spaces?.map(item => (
-              <Places
-                key={uuidv4()}
-                data={item}
-                campaignId={bookingData?.campaign?._id}
-                bookingId={bookingData?._id}
-                hasPaymentType={
-                  (!!bookingData?.paymentStatus && !bookingData?.paymentStatus?.Unpaid) ||
-                  (!!bookingData?.paymentStatus && bookingData?.paymentStatus?.Paid)
+            bookingData?.campaign?.spaces
+              ?.map(item => (
+                <Places
+                  key={uuidv4()}
+                  data={item}
+                  campaignId={bookingData?.campaign?._id}
+                  bookingId={bookingData?._id}
+                  hasPaymentType={
+                    (!!bookingData?.paymentStatus && !bookingData?.paymentStatus?.Unpaid) ||
+                    (!!bookingData?.paymentStatus && bookingData?.paymentStatus?.Paid)
+                  }
+                />
+              ))
+              .sort((a, b) => {
+                if (a?.basicInformation?.spaceName && b?.basicInformation?.spaceName) {
+                  return a.basicInformation.spaceName - b.basicInformation.spaceName;
                 }
-              />
-            ))
+
+                return a?.basicInformation?.spaceName ? 1 : -1;
+              })
           ) : (
             <div className="w-full min-h-[7rem] flex justify-center items-center">
               <p className="text-xl">No spaces found</p>

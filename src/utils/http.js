@@ -47,8 +47,19 @@ const getBody = (body, hasFiles = false) => {
  * @param {Object | Error} response
  */
 const handleError = (httpStatusCode, response = {}) => {
-  if (httpStatusCode === 401 || httpStatusCode === 403) {
-    if (window.location.pathname !== '/login') {
+  if (httpStatusCode === 403 || httpStatusCode === 406) {
+    if (!response?.data?.errors?.cause) {
+      localStorage.clear();
+      window.location.href = '/login';
+    }
+    throw response;
+  }
+
+  if (httpStatusCode === 401) {
+    if (response?.data?.errors?.cause === 'TERMS_CONDITION_NOT_ACCEPTED') {
+      window.location.href = '/terms-conditions';
+      throw response;
+    } else if (window.location.pathname !== '/login') {
       localStorage.clear();
       window.location.href = '/login';
       throw response;

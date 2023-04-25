@@ -34,6 +34,7 @@ export const masterTypes = {
   campaign_status: 'Campaign Status',
   industry: 'Industry',
   operational_cost_type: 'Operational Cost Type',
+  organization: 'Organization',
 };
 
 /**
@@ -97,7 +98,6 @@ export const aadhaarFormat = aadhaarNumber => {
 };
 
 export const roleTypes = {
-  'media_owner': 'Media Owner',
   'manager': 'Manager',
   'supervisor': 'Supervisor',
   'associate': 'Associate',
@@ -106,7 +106,6 @@ export const roleTypes = {
 // TODO: Remove one roleType object
 export const ROLES = {
   ADMIN: 'admin',
-  MEDIA_OWNER: 'media_owner',
   MANAGER: 'manager',
   SUPERVISOR: 'supervisor',
   ASSOCIATE: 'associate',
@@ -145,9 +144,9 @@ export const handleStopPropagation = (e, cb) => {
 };
 
 export const gstRegexMatch =
-  /^[0-9]{2}[a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}[1-9a-zA-Z]{1}[Z|z][0-9a-zA-Z]{1}$/;
+  /^([0-9]{2}[a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}[1-9a-zA-Z]{1}[Z|z][0-9a-zA-Z]{1}|)$/;
 
-export const panRegexMatch = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
+export const panRegexMatch = /^(([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?|)$/;
 
 export const aadhaarRegexMatch = /^\d{12}$/;
 
@@ -226,6 +225,8 @@ export const monthsInShort = [
   'Dec',
 ];
 
+export const quarters = ['First quarter', 'Second quarter', 'Third quarter', 'Fourth quarter'];
+
 export const daysInAWeek = [
   'Sunday',
   'Monday',
@@ -278,10 +279,58 @@ export const checkCampaignStats = (currentStatus, item) => {
   return campaignStats[currentStatus?.campaignStatus]?.includes(item);
 };
 
-// TODO: kept it for demo purpose will remove later
-export const temporaryPurchaseOrderPdfLink =
-  'https://adarth-assets-dev.s3.ap-south-1.amazonaws.com/4e21f0ce-1cee-45fe-8bf4-c1a8ad49c20a-purchase_order.pdf';
-export const temporaryReleaseOrderPdfLink =
-  'https://adarth-assets-dev.s3.ap-south-1.amazonaws.com/3e0b897e-db99-41c3-9183-22ec68a9c5f9-release_order.pdf';
-export const temporaryInvoicePdfLink =
-  'https://adarth-assets-dev.s3.ap-south-1.amazonaws.com/24819b90-5868-4d85-8b53-aed4ec97a9db-invoice.pdf';
+export const checkPrintingStats = (printingStatus = '', item = '') => {
+  const printingStats = {
+    upcoming: ['upcoming'],
+    'in progress': ['upcoming', 'in progress'],
+    completed: ['upcoming', 'in progress', 'completed'],
+  };
+
+  return printingStats[printingStatus?.toLowerCase()]?.includes(item?.toLowerCase());
+};
+
+export const checkMountingStats = (mountingStatus = '', item = '') => {
+  const printingStats = {
+    upcoming: ['upcoming'],
+    'in progress': ['upcoming', 'in progress'],
+    completed: ['upcoming', 'in progress', 'completed'],
+  };
+
+  return printingStats[mountingStatus?.toLowerCase()]?.includes(item?.toLowerCase());
+};
+
+export const orderTitle = {
+  purchase: 'Purchase Order',
+  release: 'Release Order',
+  invoice: 'Invoice',
+};
+
+export const alertText = 'Order item details if added, will get cleared if you change a booking';
+
+export const indianMapCoordinates = {
+  latitude: 21.125681,
+  longitude: 82.794998,
+};
+
+export const validateImageResolution = (file, width, height) =>
+  new Promise((resolve, reject) => {
+    const imageUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      if (img.width <= width && img.height <= height) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    };
+    img.onerror = err => reject(err);
+    img.src = imageUrl;
+  });
+
+export const getDate = (selectionItem, item, key) => {
+  if (selectionItem && selectionItem[key]) return new Date(selectionItem[key]);
+
+  if (item && item[key]) return new Date(item[key]);
+
+  return null;
+};

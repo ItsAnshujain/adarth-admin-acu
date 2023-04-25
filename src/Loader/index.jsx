@@ -6,7 +6,7 @@ const rows = new Array(10).fill(true);
 const height = 24;
 
 const Loader = () => (
-  <div className="grid lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+  <div className="grid lg:col-span-10 border-l border-gray-450 overflow-y-auto">
     <table className="w-full">
       <thead className="bg-gray-100">
         <tr>

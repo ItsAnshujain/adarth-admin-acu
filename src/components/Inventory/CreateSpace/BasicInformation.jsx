@@ -1,19 +1,20 @@
 import { Dropzone } from '@mantine/dropzone';
 import { ActionIcon, Button, FileButton, Image, Text } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
 import image from '../../../assets/image.png';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
 import { serialize } from '../../../utils';
 import { useFormContext } from '../../../context/formContext';
 import TextInput from '../../shared/TextInput';
 import TextareaInput from '../../shared/TextareaInput';
-import NativeSelect from '../../shared/NativeSelect';
 import { useDeleteUploadedFile, useUploadFile } from '../../../hooks/upload.hooks';
 import Select from '../../shared/Select';
 import NumberInput from '../../shared/NumberInput';
 import AsyncMultiSelect from '../../shared/AsyncMultiSelect';
-import { useFetchUsers } from '../../../hooks/users.hooks';
 import trash from '../../../assets/trash.svg';
+import useTokenIdStore from '../../../store/user.store';
 
 const styles = {
   label: {
@@ -53,21 +54,16 @@ const query = {
 };
 
 const BasicInfo = () => {
+  const queryClient = useQueryClient();
+  const userId = useTokenIdStore(state => state.id);
+  const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
+  const ref = useRef();
   const { errors, getInputProps, values, setFieldValue } = useFormContext();
   const {
-    data: userData,
-    isSuccess: isUserDataLoaded,
-    isLoading: isLoadingUserData,
-  } = useFetchUsers(
-    serialize({
-      page: 1,
-      limit: 100,
-      sortOrder: 'asc',
-      sortBy: 'createdAt',
-      filter: 'team',
-      role: 'media_owner',
-    }),
-  );
+    data: organizationData,
+    isSuccess: isOrganizationDataLoaded,
+    isLoading: isOrganizationDataLoading,
+  } = useFetchMasters(serialize({ type: 'organization', ...query }));
 
   const {
     data: spaceTypeData,
@@ -119,7 +115,6 @@ const BasicInfo = () => {
     const res = await upload(formData);
     const arrayOfImages = res.map(item => item?.Location);
     const tempSpacePhotos = values?.basicInformation?.otherPhotos;
-    // TODO: delete from DB
     setFieldValue('basicInformation.otherPhotos', [...tempSpacePhotos, ...arrayOfImages]);
   };
 
@@ -134,8 +129,25 @@ const BasicInfo = () => {
   const handleDeleteMultipleImages = async docIndex => {
     const tempSpacePhotos = values?.basicInformation?.otherPhotos;
     const res = tempSpacePhotos.filter(item => item !== tempSpacePhotos[docIndex]);
-    setFieldValue('basicInformation.otherPhotos', [...res]);
+    await deleteFile(tempSpacePhotos[docIndex]?.split('/').at(-1), {
+      onSuccess: () => setFieldValue('basicInformation.otherPhotos', [...res]),
+    });
+    ref.current.value = '';
   };
+
+  useEffect(() => {
+    if (userCachedData && userCachedData?.role !== 'admin') {
+      setFieldValue('basicInformation.mediaOwner.label', userCachedData?.company);
+      setFieldValue('basicInformation.mediaOwner.value', userCachedData?.companyId);
+    }
+  }, [organizationData]);
+
+  useEffect(() => {
+    if (!subCategories?.docs?.length) {
+      setFieldValue('basicInformation.subCategory.label', '');
+      setFieldValue('basicInformation.subCategory.value', '');
+    }
+  }, [values.basicInformation.category, subCategories?.docs]);
 
   return (
     <div className="flex gap-8 pt-4">
@@ -159,16 +171,21 @@ const BasicInfo = () => {
           placeholder="Write..."
           className="mb-7"
         />
-        <NativeSelect
-          label="Inventory Owner"
+        <Select
+          label="Inventory Owner (Organization)"
           name="basicInformation.mediaOwner"
           styles={styles}
           errors={errors}
-          disabled={isLoadingUserData || userData?.docs?.length === 0}
-          placeholder={userData?.docs?.length === 0 ? 'No Inventory Owner available' : 'Select...'}
+          disabled={
+            isOrganizationDataLoading || (userCachedData && userCachedData?.role !== 'admin')
+          }
+          placeholder="Select..."
           options={
-            isUserDataLoaded
-              ? userData?.docs?.map(item => ({ label: item?.name, value: item?._id }))
+            isOrganizationDataLoaded
+              ? organizationData.docs.map(type => ({
+                  label: type.name,
+                  value: type._id,
+                }))
               : []
           }
           className="mb-7"
@@ -214,10 +231,8 @@ const BasicInfo = () => {
           name="basicInformation.subCategory"
           styles={styles}
           errors={errors}
-          disabled={isSubCategoryLoading || subCategories?.docs?.length === 0}
-          placeholder={
-            subCategories?.docs?.length === 0 ? 'No Sub Category available' : 'Select...'
-          }
+          disabled={isSubCategoryLoading || !subCategories?.docs?.length}
+          placeholder={!subCategories?.docs?.length ? 'No Sub Category available' : 'Select...'}
           options={
             subCategoryLoaded
               ? subCategories.docs.map(subCategory => ({
@@ -312,8 +327,8 @@ const BasicInfo = () => {
           name="basicInformation.description"
           styles={styles}
           errors={errors}
-          maxLength={200}
-          placeholder="Maximum 200 characters"
+          maxLength={400}
+          placeholder="Maximum 400 characters"
           className="mb-7"
         />
       </div>
@@ -379,8 +394,13 @@ const BasicInfo = () => {
               accept="image/png,image/jpeg"
               multiple
               loading={isLoading}
+              ref={ref}
             >
-              {props => <Button {...props}> Add More Photos</Button>}
+              {props => (
+                <Button loaderProps={{ color: 'black' }} {...props}>
+                  Add More Photo
+                </Button>
+              )}
             </FileButton>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -391,6 +411,7 @@ const BasicInfo = () => {
                   <ActionIcon
                     className="absolute right-2 top-1 bg-white"
                     onClick={() => handleDeleteMultipleImages(index)}
+                    disabled={isDeleteLoading}
                   >
                     <Image src={trash} alt="trash-icon" />
                   </ActionIcon>

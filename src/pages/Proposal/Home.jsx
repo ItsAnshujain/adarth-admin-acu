@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import { Loader, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
@@ -30,7 +30,8 @@ const Proposals = () => {
   });
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
-  const [searchInput, setSearchinput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
 
   const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalsData, isLoading: isLoadingProposalsData } = useFetchProposals(
@@ -43,8 +44,8 @@ const Proposals = () => {
   const viewType = useLayoutView(state => state.activeLayout);
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
     setSearchParams(searchParams);
   };
 
@@ -86,8 +87,12 @@ const Proposals = () => {
         }) =>
           useMemo(
             () => (
-              <Link to={`view-details/${_id}`} className="text-black font-medium">
-                <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+              <Link to={`view-details/${_id}`} className="text-purple-450 font-medium">
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[180px] underline"
+                  lineClamp={1}
+                  title={name}
+                >
                   {name || '-'}
                 </Text>
               </Link>
@@ -104,7 +109,7 @@ const Proposals = () => {
           },
         }) =>
           useMemo(
-            () => <p className="text-black font-medium max-w-[250px]">{creator?.name}</p>,
+            () => <p className="text-black font-medium max-w-[250px]">{creator?.name || '-'}</p>,
             [],
           ),
       },
@@ -205,9 +210,19 @@ const Proposals = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, creator },
           },
-        }) => useMemo(() => <ProposalsMenuPopover itemId={_id} />, []),
+        }) =>
+          useMemo(
+            () => (
+              <ProposalsMenuPopover
+                itemId={_id}
+                enableEdit={creator && !creator?.isPeer}
+                enableDelete={creator && !creator?.isPeer}
+              />
+            ),
+            [],
+          ),
       },
     ],
     [proposalsData?.docs, limit, proposalStatusData],
@@ -231,28 +246,28 @@ const Proposals = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <AreaHeader text="Proposals List" />
       <div className="flex justify-between h-20 items-center pr-7">
         <RowsPerPage
           setCount={currentLimit => handlePagination('limit', currentLimit)}
           count={limit}
         />
-        <Search search={searchInput} setSearch={setSearchinput} />
+        <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       {isLoadingProposalsData && viewType.proposal === 'list' ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
         </div>
       ) : null}
-      {proposalsData?.docs?.length === 0 && !isLoadingProposalsData ? (
+      {!proposalsData?.docs?.length && !isLoadingProposalsData ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

@@ -4,6 +4,7 @@ import NotificationSettings from './Notification';
 import ChangePassword from './ChangePassword';
 import DeleteAccount from './DeleteAccount';
 import Header from './Header';
+import SignatureAndLetterhead from './SignatureAndLetterhead';
 
 const View = () => {
   const [tabs, setTabs] = useState(0);
@@ -11,7 +12,15 @@ const View = () => {
   const type = searchParams.get('type');
 
   const getTabs = () =>
-    tabs === 0 ? <NotificationSettings /> : tabs === 1 ? <ChangePassword /> : <DeleteAccount />;
+    tabs === 0 ? (
+      <NotificationSettings />
+    ) : tabs === 1 ? (
+      <ChangePassword />
+    ) : tabs === 2 ? (
+      <SignatureAndLetterhead />
+    ) : (
+      <DeleteAccount />
+    );
 
   useEffect(() => {
     if (type) setTabs(1);
@@ -20,7 +29,7 @@ const View = () => {
   return (
     <>
       <Header tabs={tabs} setTabs={setTabs} />
-      <div className="relative pb-12 mb-16">{getTabs()}</div>
+      <div className="relative pb-12">{getTabs()}</div>
     </>
   );
 };

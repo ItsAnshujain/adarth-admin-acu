@@ -29,7 +29,7 @@ import TotalCampaignIcon from '../assets/total-campaign.svg';
 import useUserStore from '../store/user.store';
 import { useBookingStats, useFetchBookingRevenue } from '../hooks/booking.hooks';
 import { useInventoryStats } from '../hooks/inventory.hooks';
-import { dateByQuarter, daysInAWeek, monthsInShort, serialize } from '../utils';
+import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../utils';
 import ViewByFilter from '../components/Reports/ViewByFilter';
 
 dayjs.extend(quarterOfYear);
@@ -39,6 +39,7 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 const timeLegend = {
   dayOfWeek: 'Days',
   dayOfMonth: 'Days',
+  quarter: 'Months',
   month: 'Months',
 };
 
@@ -67,10 +68,10 @@ const config = {
 const HomePage = () => {
   const queryClient = useQueryClient();
   const userId = useUserStore(state => state.id);
-  const user = queryClient.getQueryData(['users-by-id', userId]);
+  const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
 
   const [queryByTime, setQueryByTime] = useState({
-    'type': 'month',
+    'groupBy': 'month',
     'startDate': dayjs().startOf('year').format(DATE_FORMAT),
     'endDate': dayjs().endOf('year').format(DATE_FORMAT),
   });
@@ -99,8 +100,8 @@ const HomePage = () => {
       datasets: [
         {
           data: [inventoryStats?.unHealthy ?? 0, inventoryStats?.healthy ?? 0],
-          backgroundColor: ['#914EFB', '#FF900E'],
-          borderColor: ['#914EFB', '#FF900E'],
+          backgroundColor: ['#FF900E', '#914EFB'],
+          borderColor: ['#FF900E', '#914EFB'],
           borderWidth: 1,
         },
       ],
@@ -111,7 +112,7 @@ const HomePage = () => {
   const handleViewBy = viewType => {
     if (viewType === 'reset') {
       setQueryByTime({
-        'type': 'month',
+        'groupBy': 'month',
         'startDate': dayjs().startOf('year').format(DATE_FORMAT),
         'endDate': dayjs().endOf('year').format(DATE_FORMAT),
       });
@@ -119,7 +120,7 @@ const HomePage = () => {
     if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
       setQueryByTime(prevState => ({
         ...prevState,
-        'type':
+        'groupBy':
           viewType === 'year'
             ? 'month'
             : viewType === 'month'
@@ -133,7 +134,7 @@ const HomePage = () => {
     }
     if (viewType === 'quarter') {
       setQueryByTime({
-        'type': 'month',
+        'groupBy': 'quarter',
         ...dateByQuarter[dayjs().quarter()],
       });
     }
@@ -154,17 +155,19 @@ const HomePage = () => {
         ],
       };
       tempData.labels =
-        queryByTime.type === 'dayOfWeek'
+        queryByTime.groupBy === 'dayOfWeek'
           ? daysInAWeek
-          : queryByTime.type === 'dayOfMonth'
+          : queryByTime.groupBy === 'dayOfMonth'
           ? Array.from({ length: dayjs().daysInMonth() }, (_, index) => index + 1)
+          : queryByTime.groupBy === 'quarter'
+          ? quarters
           : monthsInShort;
 
       tempData.datasets[0].data = Array.from({ length: dayjs().daysInMonth() }, () => 0);
 
       bookingRevenue?.forEach(item => {
         if (item._id) {
-          tempData.datasets[0].data[item._id - 1] = item.price / 100000 || 0;
+          tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
         }
       });
 
@@ -173,12 +176,12 @@ const HomePage = () => {
   }, [bookingRevenue]);
 
   return (
-    <div className="absolute top-0">
+    <div>
       <Header title="" />
-      <div className="grid grid-cols-12">
+      <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
         <Sidebar />
-        <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-          <AreaHeader text={`Hello, ${user?.name || 'User'}`} />
+        <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+          <AreaHeader text={`Hello, ${userCachedData?.name || 'User'}`} />
           <div className="pr-7 pl-5 mt-5 mb-10">
             <div className="grid grid-rows-2 mb-8 gap-y-4">
               <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
@@ -254,7 +257,7 @@ const HomePage = () => {
                       In Lakhs &gt;
                     </p>
                     <Line height="100" data={updatedLineData} options={options} key={uuidv4()} />
-                    <p className="text-center">{timeLegend[queryByTime.type]} &gt;</p>
+                    <p className="text-center">{timeLegend[queryByTime.groupBy]} &gt;</p>
                   </div>
                 )}
               </div>
@@ -262,6 +265,8 @@ const HomePage = () => {
                 <div className="w-32">
                   {isInventoryStatsLoading ? (
                     <Loader className="mx-auto" />
+                  ) : inventoryStats?.healthy === 0 && inventoryStats?.unHealthy === 0 ? (
+                    <p className="text-center">NA</p>
                   ) : (
                     <Doughnut options={config.options} data={inventoryHealthStatus} />
                   )}
@@ -270,14 +275,14 @@ const HomePage = () => {
                   <p className="font-medium text-center">Health Status of Inventory</p>
                   <div className="flex gap-8 mt-6 flex-row">
                     <div className="flex gap-2 items-center">
-                      <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+                      <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                       <div>
                         <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
                         <p className="font-bold text-lg">{inventoryStats?.healthy || 0}</p>
                       </div>
                     </div>
                     <div className="flex gap-2 items-center">
-                      <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+                      <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                       <div>
                         <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
                         <p className="font-bold text-lg">{inventoryStats?.unHealthy || 0}</p>

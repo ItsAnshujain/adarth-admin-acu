@@ -3,26 +3,24 @@ import GoogleMapReact from 'google-map-react';
 import {
   BackgroundImage,
   Badge,
-  Button,
   Center,
   Image,
   Pagination,
   Skeleton,
+  Spoiler,
   Text,
 } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
-import { useToggle } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
 import { useModals } from '@mantine/modals';
-import classNames from 'classnames';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
 import Places from './UI/Places';
-import NoData from '../../shared/NoData';
 import modalConfig from '../../../utils/modalConfig';
+import { indianMapCoordinates } from '../../../utils';
 
 const TRANSITION_DURATION = 200;
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
@@ -50,7 +48,6 @@ const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading }) => {
   const modals = useModals();
-  const [readMore, toggle] = useToggle();
   const [searchParams, setSearchParams] = useSearchParams();
   const [mapInstance, setMapInstance] = useState(null);
   const [updatedPlace, setUpdatedPlace] = useState();
@@ -135,16 +132,15 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
     if (mapInstance && spacesData?.docs?.length) {
       const bounds = new mapInstance.maps.LatLngBounds();
 
-      spacesData?.docs?.forEach(item => {
-        bounds.extend({
-          lat: +(item.location?.latitude || 0),
-          lng: +(item.location?.longitude || 0),
-        });
+      // default coordinates
+      bounds.extend({
+        lat: indianMapCoordinates.latitude,
+        lng: indianMapCoordinates.longitude,
       });
 
       mapInstance.map.fitBounds(bounds);
       mapInstance.map.setCenter(bounds.getCenter());
-      mapInstance.map.setZoom(Math.min(10, mapInstance.map.getZoom()));
+      mapInstance.map.setZoom(Math.min(5, mapInstance.map.getZoom()));
     }
   }, [spacesData?.docs?.length, mapInstance]);
 
@@ -164,6 +160,15 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
           <SkeletonTopWrapper />
         ) : (
           <div className="flex flex-1 flex-col w-full">
+            {!previewSpacesPhotos.length ? (
+              <Image
+                height={300}
+                width="100%"
+                alt="no_image_placeholder"
+                withPlaceholder
+                placeholder={<Text align="center">No Image Uploaded</Text>}
+              />
+            ) : null}
             <div className="flex flex-row flex-wrap justify-start">
               {previewSpacesPhotos?.map(
                 (src, index) =>
@@ -183,8 +188,8 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
               {previewSpacesPhotos?.length > 4 && (
                 <div className="border-[1px] border-gray mr-2 mb-4">
                   <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
-                    <Center className="h-full">
-                      <Text weight="bold" color="white" className="mix-blend-difference">
+                    <Center className="h-full transparent-black">
+                      <Text weight="bold" color="white">
                         +{previewSpacesPhotos.length - 4} more
                       </Text>
                     </Center>
@@ -195,34 +200,30 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
           </div>
         )}
       </div>
+
       {!isCampaignDataLoading ? (
-        <div className={classNames(previewSpacesPhotos?.length ? 'col-span-1' : 'col-span-2')}>
-          <div className="flex-1 pr-7 max-w-1/2">
-            <p className="text-lg font-bold">{campaignData.name || 'NA'}</p>
-            <div>
-              <p className="text-slate-400 font-light text-[14px]">
-                {campaignData?.description?.split(' ')?.length > 4
-                  ? readMore
-                    ? `${campaignData?.description?.split(' ')?.slice(0, 3).join(' ')}...`
-                    : campaignData?.description
-                  : campaignData.description || <NoData type="na" />}
-                {campaignData?.description?.split(' ')?.length > 4 ? (
-                  <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
-                    {readMore ? 'Read more' : 'Read less'}
-                  </Button>
-                ) : null}
-              </p>
-              <div className="flex gap-3 items-center">
-                <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
-                <Badge
-                  className="text-purple-450 bg-purple-100 capitalize"
-                  size="lg"
-                  variant="filled"
-                  radius="md"
-                >
-                  {`${getTotalImpressions || 0} + Total Impressions`}
-                </Badge>
-              </div>
+        <div className="flex-1 pr-7 max-w-1/2">
+          <p className="text-lg font-bold">{campaignData.name || 'NA'}</p>
+          <div>
+            <Spoiler
+              maxHeight={45}
+              showLabel="Read more"
+              hideLabel="Read less"
+              className="text-purple-450 font-medium text-[14px]"
+              classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+            >
+              {campaignData?.description}
+            </Spoiler>
+            <div className="flex gap-3 items-center">
+              <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
+              <Badge
+                className="text-purple-450 bg-purple-100 capitalize"
+                size="lg"
+                variant="filled"
+                radius="md"
+              >
+                {`${getTotalImpressions || 0} + Total Impressions`}
+              </Badge>
             </div>
           </div>
         </div>
@@ -237,7 +238,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
             All the places been covered by this campaign
           </Text>
         </div>
-        <div className="mt-1 mb-8 h-[30vh]">
+        <div className="mt-1 mb-8 h-[40vh]">
           <GoogleMapReact
             bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY, libraries: 'places' }}
             defaultCenter={defaultProps.center}
@@ -278,7 +279,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
                 }}
               />
             ))}
-            {updatedPlace?.length === 0 ? (
+            {!updatedPlace?.length ? (
               <div className="w-full min-h-[100px] flex justify-center items-center">
                 <p className="text-xl">No records found</p>
               </div>

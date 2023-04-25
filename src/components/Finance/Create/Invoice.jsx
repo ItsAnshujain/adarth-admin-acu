@@ -1,12 +1,15 @@
 import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { ToWords } from 'to-words';
+import { ActionIcon, Button, Group, Menu, Text } from '@mantine/core';
+import { Edit2, Trash2 } from 'react-feather';
 import Table from '../../Table/Table';
 import TextareaInput from '../../shared/TextareaInput';
 import TextInput from '../../shared/TextInput';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import NumberInput from '../../shared/NumberInput';
 import NoData from '../../shared/NoData';
+import MenuIcon from '../../Menu';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
@@ -19,8 +22,18 @@ const styles = {
   },
 };
 
-const Invoice = ({ spacesList, totalPrice }) => {
+const Invoice = ({
+  totalPrice,
+  onClickAddItems = () => {},
+  bookingIdFromFinance,
+  addSpaceItem = [],
+  setAddSpaceItem = () => {},
+}) => {
   const toWords = new ToWords();
+
+  const handleDeleteSpaceItem = spaceId => {
+    setAddSpaceItem(addSpaceItem?.filter(item => item.itemId !== spaceId));
+  };
 
   const COLUMNS = useMemo(
     () => [
@@ -42,15 +55,21 @@ const Invoice = ({ spacesList, totalPrice }) => {
           useMemo(
             () => (
               <div className="flex flex-col items-start gap-1">
-                <div className="text-black font-medium px-2">
-                  <span className="overflow-hidden text-ellipsis">
-                    {basicInformation?.spaceName}
-                  </span>
-                </div>
-                <div className="text-black font-light px-2 text-sm">
-                  <span className="overflow-hidden text-ellipsis">{location?.address}</span>
-                </div>
-                <div className="text-black font-light px-2 text-xs">
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[280px]"
+                  lineClamp={1}
+                  title={basicInformation?.spaceName}
+                >
+                  {basicInformation?.spaceName}
+                </Text>
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[280px]"
+                  lineClamp={1}
+                  title={location?.address}
+                >
+                  {location?.address}
+                </Text>
+                <div className="text-black font-light pr-2 text-xs">
                   <span className="overflow-hidden text-ellipsis">
                     {startDate ? dayjs(startDate).format(DATE_FORMAT) : <NoData type="na" />}
                     {' to '}
@@ -94,48 +113,184 @@ const Invoice = ({ spacesList, totalPrice }) => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { campaignPrice },
+          },
+        }) =>
+          useMemo(
+            () => <p className="pl-2">{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>,
+            [],
+          ),
+      },
+      {
+        Header: 'TOTAL AMOUNT',
+        accessor: 'basicInformation.price',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { campaignPrice },
+          },
+        }) =>
+          useMemo(
+            () => <p className="pl-2">{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>,
+            [],
+          ),
+      },
+    ],
+    [addSpaceItem],
+  );
+
+  const manualEntryColumn = useMemo(
+    () => [
+      {
+        Header: '#',
+        accessor: 'id',
+        disableSortBy: true,
+        Cell: ({ row: { index } }) => index + 1,
+      },
+      {
+        Header: 'DESCRIPTION OF GOODS AND SERVICE',
+        accessor: 'name',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { name, location, titleDate },
           },
         }) =>
           useMemo(
             () => (
-              <p className="pl-2">
-                {basicInformation?.price
-                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
-                  : 0}
-              </p>
+              <div className="flex flex-col items-start gap-1">
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[280px]"
+                  lineClamp={1}
+                  title={name}
+                >
+                  {name}
+                </Text>
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[180px]"
+                  lineClamp={1}
+                  title={typeof location !== 'object' ? location : '-'}
+                >
+                  {typeof location !== 'object' ? location : '-'}
+                </Text>
+                <div className="text-black font-light pr-2 text-xs">
+                  <span className="overflow-hidden text-ellipsis">
+                    {titleDate ? dayjs(titleDate).format(DATE_FORMAT) : <NoData type="na" />}
+                  </span>
+                </div>
+              </div>
             ),
             [],
           ),
       },
       {
-        Header: 'PER',
-        accessor: 'per',
-        disableSortBy: true,
-        Cell: () => useMemo(() => <p className="w-[14%]">1</p>, []),
-      },
-      {
-        Header: 'PRICING',
-        accessor: 'basicInformation.price',
+        Header: 'DATE',
+        accessor: 'date',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { basicInformation },
+            original: { dueOn },
+          },
+        }) =>
+          useMemo(
+            () => <p>{dueOn ? dayjs(dueOn).format(DATE_FORMAT) : <NoData type="na" />}</p>,
+            [],
+          ),
+      },
+      {
+        Header: 'QUANTITY',
+        accessor: 'quantity',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { quantity },
+          },
+        }) => useMemo(() => <p className="w-[14%]">{quantity}</p>, []),
+      },
+      {
+        Header: 'RATE',
+        accessor: 'rate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { rate },
+          },
+        }) =>
+          useMemo(
+            () => <p className="pl-2">{rate ? toIndianCurrency(Number.parseInt(rate, 10)) : 0}</p>,
+            [],
+          ),
+      },
+      {
+        Header: 'TOTAL AMOUNT',
+        accessor: 'price',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { price },
           },
         }) =>
           useMemo(
             () => (
-              <p className="pl-2">
-                {basicInformation?.price
-                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
-                  : 0}
-              </p>
+              <p className="pl-2">{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'ACTION',
+        accessor: 'action',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { itemId, name, location, titleDate, dueOn, quantity, rate, per, price },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <Menu shadow="md" width={140} withinPortal>
+                <Menu.Target>
+                  <ActionIcon className="py-0" onClick={e => e.preventDefault()}>
+                    <MenuIcon />
+                  </ActionIcon>
+                </Menu.Target>
+
+                <Menu.Dropdown>
+                  <Menu.Item
+                    className="cursor-pointer flex items-center gap-1"
+                    icon={<Edit2 className="h-4" />}
+                    onClick={() =>
+                      onClickAddItems({
+                        name,
+                        location,
+                        titleDate,
+                        dueOn,
+                        quantity,
+                        rate,
+                        per,
+                        price,
+                        itemId,
+                      })
+                    }
+                  >
+                    <span className="ml-1">Edit</span>
+                  </Menu.Item>
+
+                  <Menu.Item
+                    className="cursor-pointer flex items-center gap-1"
+                    icon={<Trash2 className="h-4" />}
+                    onClick={() => handleDeleteSpaceItem(itemId)}
+                  >
+                    <span className="ml-1">Delete</span>
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
             ),
             [],
           ),
       },
     ],
-    [spacesList],
+    [addSpaceItem],
   );
 
   return (
@@ -148,6 +303,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="invoiceNo"
             withAsterisk
             placeholder="Write..."
+            id="invoiceNo"
           />
         </div>
       </div>
@@ -162,6 +318,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="supplierName"
             withAsterisk
             placeholder="Write..."
+            id="supplierName"
           />
           <TextInput
             styles={styles}
@@ -169,6 +326,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="supplierGst"
             withAsterisk
             placeholder="Write..."
+            id="supplierGst"
           />
         </div>
         <div className="grid grid-cols-4 gap-4 pb-4">
@@ -204,6 +362,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="supplierPhone"
             withAsterisk
             placeholder="Write..."
+            id="supplierPhone"
           />
           <TextInput
             styles={styles}
@@ -211,6 +370,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="supplierEmail"
             withAsterisk
             placeholder="Write..."
+            id="supplierEmail"
           />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
@@ -220,6 +380,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="supplierRefNo"
             withAsterisk
             placeholder="Write..."
+            id="supplierRefNo"
           />
           <TextInput
             styles={styles}
@@ -248,6 +409,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="buyerName"
             withAsterisk
             placeholder="Write..."
+            id="buyerName"
           />
           <TextInput
             styles={styles}
@@ -255,6 +417,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="buyerContactPerson"
             withAsterisk
             placeholder="Write..."
+            id="buyerContactPerson"
           />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
@@ -264,6 +427,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="buyerPhone"
             withAsterisk
             placeholder="Write..."
+            id="buyerPhone"
           />
           <TextInput
             styles={styles}
@@ -271,6 +435,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="buyerGst"
             withAsterisk
             placeholder="Write..."
+            id="buyerGst"
           />
         </div>
         <div className="grid grid-cols-4 gap-4 pb-4">
@@ -281,6 +446,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="buyerStreetAddress"
             withAsterisk
             placeholder="Write..."
+            id="buyerStreetAddress"
           />
           <TextInput
             className="col-span-1"
@@ -289,6 +455,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="buyerCity"
             withAsterisk
             placeholder="Write..."
+            id="buyerCity"
           />
           <NumberInput
             className="col-span-1"
@@ -297,6 +464,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="buyerZip"
             withAsterisk
             placeholder="Write..."
+            id="buyerZip"
           />
         </div>
         <div className="grid grid-cols-1 gap-4 pb-4">
@@ -306,6 +474,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="buyerOrderNumber"
             withAsterisk
             placeholder="Write..."
+            id="buyerOrderNumber"
           />
         </div>
         <div className="grid grid-cols-3 gap-4 pb-4">
@@ -345,19 +514,44 @@ const Invoice = ({ spacesList, totalPrice }) => {
             styles={styles}
             maxLength={200}
             placeholder="Maximum 200 characters"
+            id="termOfDelivery"
           />
         </div>
       </div>
       <div className="pl-5 pr-7 py-4 mb-2">
-        <p className="font-bold text-2xl mb-4">Order Item Details</p>
-        {spacesList?.length ? (
+        <Group position="apart" align="center" className="mb-4">
+          <p className="font-bold text-2xl">Order Item Details</p>
+          {!bookingIdFromFinance ? (
+            <Button className="secondary-button" onClick={() => onClickAddItems()}>
+              Add Items
+            </Button>
+          ) : null}
+        </Group>
+        {addSpaceItem?.length ? (
           <>
             <div className="border-dashed border-0 border-black border-b-2 pb-4">
-              <Table COLUMNS={COLUMNS} data={spacesList || []} showPagination={false} />
+              <Table
+                COLUMNS={bookingIdFromFinance ? COLUMNS : manualEntryColumn}
+                data={bookingIdFromFinance ? addSpaceItem : addSpaceItem}
+                showPagination={false}
+                classNameWrapper="min-h-[150px]"
+              />
             </div>
-            <div className="max-w-screen mt-3 flex justify-end mr-7 pr-16 text-lg">
-              <p>Total Price: </p>
-              <p className="ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+            <div className="max-w-screen mt-3 flex flex-col justify-end mr-7 pr-16 text-lg">
+              <div className="flex justify-end">
+                <p className="text-lg font-bold">Amount:</p>
+                <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>
+              </div>
+              <div className="flex justify-end">
+                <p className="text-lg font-bold">GST 18%:</p>
+                <p className="text-lg ml-2">{toIndianCurrency(totalPrice * 0.18) || 0}</p>
+              </div>
+              <div className="flex justify-end">
+                <p className="text-lg font-bold">Total:</p>
+                <p className="text-lg ml-2">
+                  {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
+                </p>
+              </div>
             </div>
           </>
         ) : (
@@ -372,7 +566,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
           label="Amount Chargeable (in words)"
           name="amountChargeable"
           placeholder="Write..."
-          value={toWords.convert(totalPrice)}
+          value={toWords.convert(totalPrice + totalPrice * 0.18)}
           readOnly
           disabled
         />
@@ -388,6 +582,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="bankName"
             withAsterisk
             placeholder="Write..."
+            id="bankName"
           />
           <TextInput
             styles={styles}
@@ -395,6 +590,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="accountNo"
             withAsterisk
             placeholder="Write..."
+            id="accountNo"
           />
         </div>
         <div className="grid grid-cols-2 gap-4 pb-4">
@@ -404,6 +600,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="ifscCode"
             withAsterisk
             placeholder="Write..."
+            id="ifscCode"
           />
           <TextInput
             styles={styles}
@@ -411,6 +608,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             name="modeOfPayment"
             withAsterisk
             placeholder="Write..."
+            id="modeOfPayment"
           />
         </div>
       </div>
@@ -424,6 +622,7 @@ const Invoice = ({ spacesList, totalPrice }) => {
             maxLength={200}
             placeholder="Maximum 200 characters"
             className="mb-7"
+            id="declaration"
           />
         </div>
       </div>

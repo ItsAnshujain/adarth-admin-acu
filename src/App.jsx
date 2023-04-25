@@ -1,20 +1,17 @@
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import shallow from 'zustand/shallow';
-import Login from './pages/Login/Login';
-import LoginMain from './pages/Login/Home';
-import ChangePassword from './pages/Login/ChangePassword';
-import ForgotPassword from './pages/Login/ForgotPassword';
+import { v4 as uuidv4 } from 'uuid';
 import Header from './Loader/Header';
 import CustomLoader from './Loader/Loader';
 import Sidebar from './Loader/Sidebar';
 import NoMatch from './pages/NoMatch';
-import { useFetchUsersById } from './hooks/users.hooks';
-import useTokenIdStore from './store/user.store';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import ProtectedRoute from './utils/ProtectedRoute';
 import { ROLES } from './utils';
 import FileUpload from './components/Finance/Create/FileUpload';
+import useUserStore from './store/user.store';
+import { useFetchUsersById } from './hooks/users.hooks';
 
 const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
 const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
@@ -32,7 +29,6 @@ const ViewProposal = lazy(() => import('./pages/Proposal/View'));
 const BookingHome = lazy(() => import('./pages/Booking/Home'));
 const Booking = lazy(() => import('./pages/Booking/Bookings'));
 const ViewBooking = lazy(() => import('./pages/Booking/View'));
-const Generate = lazy(() => import('./pages/Booking/Generate'));
 const CreateOrder = lazy(() => import('./pages/Booking/Create'));
 const UserHome = lazy(() => import('./pages/User/Home'));
 const User = lazy(() => import('./pages/User/Users'));
@@ -62,18 +58,35 @@ const HeaderSidebarLoader = () => (
   </>
 );
 
+const components = {
+  PUBLIC: [
+    { comp: lazy(() => import('./pages/Auth/LoginPage')), path: '/login' },
+    { comp: lazy(() => import('./pages/Auth/ForgotPasswordPage')), path: '/forgot-password' },
+    { comp: lazy(() => import('./pages/Auth/ChangePasswordPage')), path: '/change-password' },
+    { comp: lazy(() => import('./pages/Auth/TermsAndConditionsPage')), path: '/terms-conditions' },
+  ],
+};
+
 const App = () => {
   const location = useLocation();
-  const { token, id } = useTokenIdStore(state => ({ id: state.id, token: state.token }), shallow);
+  const { token, hasAcceptedTerms, userId } = useUserStore(
+    state => ({
+      token: state.token,
+      hasAcceptedTerms: state.hasAcceptedTerms,
+      userId: state.id,
+    }),
+    shallow,
+  );
 
-  useFetchUsersById(id, !!id);
+  const { _ } = useFetchUsersById(userId, !!hasAcceptedTerms);
 
-  // to avoid logged in users to access the routes
   if (
     token &&
+    hasAcceptedTerms &&
     (location.pathname.includes('/login') ||
       location.pathname.includes('/forgot-password') ||
-      location.pathname.includes('/change-password'))
+      location.pathname.includes('/change-password') ||
+      location.pathname.includes('/terms-conditions'))
   ) {
     if (location.search.includes('setting')) {
       return <Navigate to="/settings?type=change_password" replace />;
@@ -84,18 +97,17 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
-      <Route
-        path="/"
-        element={
-          <Suspense fallback={<CustomLoader />}>
-            <Login />
-          </Suspense>
-        }
-      >
-        <Route path="/login" element={<LoginMain />} />
-        <Route path="/change-password" element={<ChangePassword />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-      </Route>
+      {components.PUBLIC.map(({ comp: Comp, path }) => (
+        <Route
+          key={uuidv4()}
+          path={path}
+          element={
+            <Suspense fallback={<CustomLoader />}>
+              <Comp />
+            </Suspense>
+          }
+        />
+      ))}
       <Route element={<ProtectedRoutes />}>
         <Route
           path="/home"
@@ -249,30 +261,6 @@ const App = () => {
             }
           />
           <Route
-            path="generate-purchase-order/:id"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <Generate />
-              </Suspense>
-            }
-          />
-          <Route
-            path="generate-release-order/:id"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <Generate />
-              </Suspense>
-            }
-          />
-          <Route
-            path="generate-invoice/:id"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <Generate />
-              </Suspense>
-            }
-          />
-          <Route
             path="create-order"
             element={
               <Suspense fallback={<CustomLoader />}>
@@ -284,9 +272,7 @@ const App = () => {
         <Route
           path="users"
           element={
-            <ProtectedRoute
-              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
-            >
+            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
                 <User />
               </Suspense>
@@ -329,9 +315,7 @@ const App = () => {
         <Route
           path="/reports"
           element={
-            <ProtectedRoute
-              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
-            >
+            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
                 <ReportHome />
               </Suspense>
@@ -417,9 +401,7 @@ const App = () => {
         <Route
           path="/"
           element={
-            <ProtectedRoute
-              accepted={[ROLES.ADMIN, ROLES.MEDIA_OWNER, ROLES.MANAGER, ROLES.SUPERVISOR]}
-            >
+            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
                 <Finance />
               </Suspense>

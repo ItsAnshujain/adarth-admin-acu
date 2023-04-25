@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -19,7 +19,7 @@ const initialValues = {
   description: '',
   price: null,
   healthStatus: null,
-  status: 'Created',
+  createStatus: '',
   isFeatured: false,
   previousBrands: [],
   minImpression: 1600000,
@@ -30,7 +30,6 @@ const initialValues = {
   thumbnail: '',
   thumbnailId: '',
   type: 'predefined',
-  industry: '',
 };
 
 const schema = yup.object({
@@ -48,13 +47,10 @@ const schema = yup.object({
   tags: yup.array().of(yup.string().trim()),
   isFeatured: yup.boolean(),
   thumbnail: yup.string(),
-  industry: yup.string().trim(),
 });
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
-  const submitRef = useRef();
-  const [publish, setPublish] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ initialValues, validate: yupResolver(schema) });
@@ -69,7 +65,7 @@ const CreateCampaign = () => {
   );
   const { id } = useParams();
 
-  const { data } = useCampaign({ id, query: searchParams.toString() }, !!id);
+  const { data: campaignData } = useCampaign({ id, query: searchParams.toString() }, !!id);
   const { mutateAsync: add, isLoading: isSaving } = useCreateCampaign();
   const { mutate: update, isLoading: isUpdating } = useUpdateCampaign();
 
@@ -84,14 +80,10 @@ const CreateCampaign = () => {
       <Preview data={form.values} place={{ docs: form.values?.place || [] }} />
     );
 
-  const handlePublish = () => {
-    setPublish(true);
-    submitRef.current.click();
-  };
-
-  const handleSubmit = async () => {
+  const handleSubmit = async (formData, submitType) => {
+    const data = { ...formData };
     if (formStep === 2) {
-      if (form.values?.place?.length === 0) {
+      if (!form.values?.place?.length) {
         showNotification({
           title: 'Please select atleast one place to continue',
           color: 'blue',
@@ -108,68 +100,71 @@ const CreateCampaign = () => {
       return;
     }
 
-    if (formStep <= 3) setFormStep(formStep + 1);
-
+    setFormStep(prevState => prevState + 1);
     if (formStep === 4) {
-      const newData = { ...form.values };
+      setFormStep(4);
 
-      newData.place = newData.place.map(item => ({
+      const totalPrice = data?.place?.reduce((acc, item) => acc + +(item.price || 0), 0);
+      data.price = totalPrice;
+
+      data.place = data.place.map(item => ({
         id: item._id,
         price: item.price,
       }));
 
-      const totalPrice = newData.place.reduce((acc, item) => acc + +(item.price || 0), 0);
+      data.healthStatus = +data.healthStatus || 0;
 
-      newData.healthStatus = +newData.healthStatus || 0;
-      newData.price = totalPrice || 0;
-
-      delete newData.createdBy;
-
-      if (!['predefined', 'customized'].includes(newData.type)) {
-        newData.type = 'predefined';
-      }
-      if (publish) {
-        const publishedId = campaignStatus?.docs?.find(
+      if (submitType === 'publish') {
+        const statusId = campaignStatus?.docs?.find(
           item => item?.name?.toLowerCase() === 'published',
         )?._id;
 
-        if (publishedId) {
-          newData.status = publishedId;
-        }
+        data.createStatus = statusId;
+      } else if (submitType === 'save') {
+        const statusId = campaignStatus?.docs?.find(
+          item => item?.name?.toLowerCase() === 'created',
+        )?._id;
+
+        data.createStatus = statusId;
       }
-      Object.keys(newData).forEach(key => {
-        if (newData[key] === '' || newData[key] === undefined || newData[key]?.length === 0) {
-          delete newData[key];
+
+      Object.keys(data).forEach(key => {
+        if (data[key] === '') {
+          delete data[key];
         }
       });
 
+      if (!['predefined', 'customized'].includes(data.type)) {
+        data.type = 'predefined';
+      }
+
       if (id) {
+        delete data.createdBy;
+
         update(
-          {
-            id,
-            data: newData,
-          },
+          { id, data },
           {
             onSuccess: () => {
               setTimeout(() => navigate('/campaigns'), 2000);
             },
           },
         );
-      } else
-        await add(newData, {
+      } else {
+        await add(data, {
           onSuccess: () => {
             setOpenSuccessModal(true);
             setTimeout(() => navigate('/campaigns'), 2000);
           },
         });
+      }
     }
   };
 
   useEffect(() => {
-    if (data?.campaign && !form.isTouched()) {
+    if (campaignData?.campaign && !form.isTouched()) {
       form.setValues({
-        ...data.campaign,
-        place: data.campaign.place.map(({ id: inventoryObj, ...item }) => ({
+        ...campaignData.campaign,
+        place: campaignData.campaign.place.map(({ id: inventoryObj, ...item }) => ({
           ...item,
           photo: inventoryObj?.basicInformation?.spacePhoto,
           spaceName: inventoryObj?.basicInformation?.spaceName,
@@ -182,7 +177,7 @@ const CreateCampaign = () => {
             latitude: inventoryObj?.location?.latitude,
             longitude: inventoryObj?.location?.longitude,
           },
-          cost: inventoryObj.price,
+          cost: inventoryObj?.price,
           dimension: {
             height: inventoryObj?.specifications?.size?.height || 0,
             width: inventoryObj?.specifications?.size?.width || 0,
@@ -191,38 +186,27 @@ const CreateCampaign = () => {
           resolutions: inventoryObj?.specifications?.resolutions,
           unit: inventoryObj?.specifications?.unit,
           impression: inventoryObj?.specifications?.impressions?.max,
-          _id: inventoryObj._id,
+          _id: inventoryObj?._id,
         })),
       });
     }
-  }, [data, form.isTouched]);
+  }, [campaignData, form.isTouched]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
-      <div className="mb-24">
-        <Header
-          setFormStep={setFormStep}
-          formStep={formStep}
-          handlePublish={handlePublish}
-          submitRef={submitRef}
-          disabled={isSaving || isUpdating}
-          loading={isSaving || isUpdating}
-        />
-        <div>
-          <FormProvider form={form}>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-              {getForm()}
-              <button
-                type="submit"
-                className="hidden"
-                ref={submitRef}
-                disabled={isSaving || isUpdating}
-              >
-                Submit
-              </button>
-            </form>
-          </FormProvider>
-        </div>
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+      <div>
+        <FormProvider form={form}>
+          <form>
+            <Header
+              setFormStep={setFormStep}
+              formStep={formStep}
+              handleFormSubmit={handleSubmit}
+              disabled={isSaving || isUpdating}
+              loading={isSaving || isUpdating}
+            />
+            {getForm()}
+          </form>
+        </FormProvider>
         <SuccessModal
           title="Campaign Successfully Added"
           text=""

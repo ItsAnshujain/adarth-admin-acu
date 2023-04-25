@@ -48,6 +48,14 @@ const sliderStyle = {
 
 const marks = [{ value: 1600000 }, { value: 3200000 }];
 
+const query = {
+  parentId: null,
+  limit: 100,
+  page: 1,
+  sortBy: 'name',
+  sortOrder: 'asc',
+};
+
 const Specification = () => {
   const { values, errors, setFieldValue } = useFormContext();
 
@@ -55,22 +63,17 @@ const Specification = () => {
     data: illuminationData,
     isLoading: isIlluminationLoading,
     isSuccess: isIlluminationLoaded,
-  } = useFetchMasters(serialize({ type: 'illumination', limit: 100, page: 1 }));
-  const {
-    data: spaceStatusData,
-    isLoading: isSpaceStatusLoading,
-    isSuccess: isSpaceStatusLoaded,
-  } = useFetchMasters(serialize({ type: 'space_status', limit: 100, page: 1 }));
+  } = useFetchMasters(serialize({ type: 'illumination', ...query }));
   const {
     data: brandData,
     isLoading: isBrandLoading,
     isSuccess: isBrandLoaded,
-  } = useFetchMasters(serialize({ type: 'brand', limit: 100, page: 1 }));
+  } = useFetchMasters(serialize({ type: 'brand', ...query }));
   const {
     data: tagData,
     isLoading: isTagLoading,
     isSuccess: isTagLoaded,
-  } = useFetchMasters(serialize({ type: 'tag', limit: 100, page: 1 }));
+  } = useFetchMasters(serialize({ type: 'tag', ...query }));
 
   return (
     <div className="flex flex-col pl-5 pr-7 pt-4 mb-44">
@@ -118,24 +121,32 @@ const Specification = () => {
             className="mb-7"
           />
           <div className="grid grid-cols-2 gap-4">
-            <NumberInput
-              label="Width"
-              name="specifications.size.width"
-              withAsterisk
-              styles={styles}
-              errors={errors}
-              placeholder="Write..."
-              className="mb-7"
-            />
-            <NumberInput
-              label="Height"
-              name="specifications.size.height"
-              withAsterisk
-              styles={styles}
-              errors={errors}
-              placeholder="Write..."
-              className="mb-7"
-            />
+            <div>
+              <p className="mt-[9px] font-bold text-[15px]">
+                Width <span className="font-medium text-xs text-gray-500">(in sqft)</span>
+              </p>
+              <NumberInput
+                name="specifications.size.width"
+                withAsterisk
+                styles={styles}
+                errors={errors}
+                placeholder="Write..."
+                className="mb-7"
+              />
+            </div>
+            <div>
+              <p className="mt-[9px] font-bold text-[15px]">
+                Height <span className="font-medium text-xs text-gray-500">(in sqft)</span>
+              </p>
+              <NumberInput
+                name="specifications.size.height"
+                withAsterisk
+                styles={styles}
+                errors={errors}
+                placeholder="Write..."
+                className="mb-7"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -147,24 +158,6 @@ const Specification = () => {
             styles={styles}
             errors={errors}
             placeholder="Write..."
-            className="mb-7"
-          />
-          <Select
-            label="Space Status"
-            name="specifications.spaceStatus"
-            withAsterisk
-            styles={styles}
-            errors={errors}
-            disabled={isSpaceStatusLoading}
-            placeholder="Select..."
-            options={
-              isSpaceStatusLoaded
-                ? spaceStatusData.docs.map(category => ({
-                    label: category.name,
-                    value: category._id,
-                  }))
-                : []
-            }
             className="mb-7"
           />
         </div>

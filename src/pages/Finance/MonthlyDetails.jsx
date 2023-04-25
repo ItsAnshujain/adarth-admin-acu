@@ -1,38 +1,39 @@
 import { Button, Loader, Select } from '@mantine/core';
-import { useClickOutside, useDebouncedState } from '@mantine/hooks';
+import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { useParams, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
-import { useQueryClient } from '@tanstack/react-query';
+import { useModals } from '@mantine/modals';
 import Header from '../../components/Finance/Header';
 import Search from '../../components/Search';
 import DateRange from '../../components/DateRange';
 import calendar from '../../assets/data-table.svg';
 import Table from '../../components/Table/Table';
-import { useFetchFinanceByYearAndMonth, useUpdateFinanceById } from '../../hooks/finance.hooks';
+import { useFetchFinanceByYearAndMonth } from '../../hooks/finance.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import FinanceMenuPopover from '../../components/Popovers/FinanceMenuPopover';
-import {
-  downloadPdf,
-  ROLES,
-  temporaryInvoicePdfLink,
-  temporaryPurchaseOrderPdfLink,
-  temporaryReleaseOrderPdfLink,
-} from '../../utils';
+import { downloadPdf, orderTitle, ROLES } from '../../utils';
 import RoleBased from '../../components/RoleBased';
+import modalConfig from '../../utils/modalConfig';
+import PreviewContent from '../../components/Finance/PreviewContent';
+import VerifyApprovalContent from '../../components/VerifyApprovalContent';
+
+const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
 const DATE_FORMAT = 'DD MMM, YYYY';
 
 const approvalStatList = [
   { label: 'Approved', value: 'approved' },
+  { label: 'Rejected', value: 'rejected' },
   { label: 'Sent for Approval', value: 'sent_for_approval' },
 ];
 
 const Home = () => {
-  const queryClient = useQueryClient();
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const modals = useModals();
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
@@ -45,25 +46,27 @@ const Home = () => {
   const { data: financialDataByMonth, isLoading } = useFetchFinanceByYearAndMonth(
     `${year}/${month}?${searchParams.toString()}`,
   );
-  const { mutate, isLoading: isUpdateFinaceLoading } = useUpdateFinanceById();
+
   const ref = useClickOutside(() => setShowDatePicker(false));
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
+  const financeRecordId = searchParams.get('id');
   const recordType = searchParams.get('recordType');
   const [pageType, setPageType] = useState(recordType || 'purchase');
 
   const handleTabs = type => {
     searchParams.set('recordType', type);
     searchParams.set('page', 1);
+    searchParams.delete('id');
     setSearchParams(searchParams);
     setPageType(type);
   };
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? page : 1);
     setSearchParams(searchParams);
   };
 
@@ -73,16 +76,20 @@ const Home = () => {
     setSearchParams(searchParams);
   };
 
-  const invalidate = () => queryClient.invalidateQueries(['finance-by-month']);
-
-  const handleApprovalStatus = (financeId, value) => {
-    mutate(
-      { id: financeId, data: { approvalStatus: value } },
-      {
-        onSuccess: invalidate,
+  const toggleApproveModal = (financeId, value) =>
+    modals.openContextModal('basic', {
+      title: '',
+      innerProps: {
+        modalBody: (
+          <VerifyApprovalContent
+            onClickCancel={id => modals.closeModal(id)}
+            financeId={financeId}
+            value={value}
+          />
+        ),
       },
-    );
-  };
+      ...modalConfig,
+    });
 
   // TODO: disable SortBy in all col for now
   const purchaseOrderColumn = useMemo(
@@ -110,7 +117,17 @@ const Home = () => {
           row: {
             original: { bookingId },
           },
-        }) => useMemo(() => <p>{bookingId}</p>, []),
+        }) => useMemo(() => <p>{bookingId || '-'}</p>, []),
+      },
+      {
+        Header: 'ORGANIZATION',
+        accessor: 'company',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { createdBy },
+          },
+        }) => useMemo(() => <p className="capitalize">{createdBy?.[0]?.company || '-'}</p>),
       },
       {
         Header: 'VOUCHER NO',
@@ -160,21 +177,21 @@ const Home = () => {
 
             const filteredList = updatedList.map(item => ({
               ...item,
-              disabled: approvalStatus?.includes(item.value),
+              disabled: approvalStatus?.includes(item.value) || item.value === 'sent_for_approval',
             }));
 
             return (
               <div>
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.MEDIA_OWNER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
                   <Select
                     className="mr-2"
                     data={filteredList}
-                    disabled={isUpdateFinaceLoading}
+                    disabled={approvalStatus?.toLowerCase() === 'rejected'}
                     styles={{ rightSection: { pointerEvents: 'none' } }}
                     rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                     rightSectionWidth={40}
-                    onChange={e => handleApprovalStatus(_id, e)}
-                    defaultValue={approvalStatus || ''}
+                    onChange={e => toggleApproveModal(_id, e)}
+                    value={approvalStatus || ''}
                   />
                 </RoleBased>
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
@@ -231,17 +248,15 @@ const Home = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, file },
           },
         }) =>
           useMemo(
             () => (
               <FinanceMenuPopover
                 itemId={_id}
-                // TODO: kept it for demo purpose will remove later
-                onClickCopyLink={() => navigator.clipboard.writeText(temporaryPurchaseOrderPdfLink)}
-                onClickDownloadPdf={() => downloadPdf(temporaryPurchaseOrderPdfLink)}
-                pdfLink={temporaryPurchaseOrderPdfLink}
+                onClickDownloadPdf={() => downloadPdf(file)}
+                type={recordType}
               />
             ),
             [],
@@ -277,7 +292,17 @@ const Home = () => {
           row: {
             original: { bookingId },
           },
-        }) => useMemo(() => <p>{bookingId}</p>, []),
+        }) => useMemo(() => <p>{bookingId || '-'}</p>, []),
+      },
+      {
+        Header: 'ORGANIZATION',
+        accessor: 'company',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { createdBy },
+          },
+        }) => useMemo(() => <p className="capitalize">{createdBy?.[0]?.company || '-'}</p>),
       },
       {
         Header: 'RO ID',
@@ -347,20 +372,20 @@ const Home = () => {
 
             const filteredList = updatedList.map(item => ({
               ...item,
-              disabled: approvalStatus?.includes(item.value),
+              disabled: approvalStatus?.includes(item.value) || item.value === 'sent_for_approval',
             }));
 
             return (
               <div>
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.MEDIA_OWNER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
                   <Select
                     className="mr-2"
                     data={filteredList}
-                    disabled={isUpdateFinaceLoading}
+                    disabled={approvalStatus?.toLowerCase() === 'rejected'}
                     styles={{ rightSection: { pointerEvents: 'none' } }}
                     rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                     rightSectionWidth={40}
-                    onChange={e => handleApprovalStatus(_id, e)}
+                    onChange={e => toggleApproveModal(_id, e)}
                     defaultValue={approvalStatus || ''}
                   />
                 </RoleBased>
@@ -408,17 +433,15 @@ const Home = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, file },
           },
         }) =>
           useMemo(
             () => (
               <FinanceMenuPopover
                 itemId={_id}
-                // TODO: kept it for demo purpose will remove later
-                onClickCopyLink={() => navigator.clipboard.writeText(temporaryReleaseOrderPdfLink)}
-                onClickDownloadPdf={() => downloadPdf(temporaryReleaseOrderPdfLink)}
-                pdfLink={temporaryReleaseOrderPdfLink}
+                onClickDownloadPdf={() => downloadPdf(file)}
+                type={recordType}
               />
             ),
             [],
@@ -454,7 +477,17 @@ const Home = () => {
           row: {
             original: { bookingId },
           },
-        }) => useMemo(() => <p>{bookingId}</p>, []),
+        }) => useMemo(() => <p>{bookingId || '-'}</p>, []),
+      },
+      {
+        Header: 'ORGANIZATION',
+        accessor: 'company',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { createdBy },
+          },
+        }) => useMemo(() => <p className="capitalize">{createdBy?.[0]?.company || '-'}</p>),
       },
       {
         Header: 'INVOICE ID',
@@ -534,20 +567,20 @@ const Home = () => {
 
             const filteredList = updatedList.map(item => ({
               ...item,
-              disabled: approvalStatus?.includes(item.value),
+              disabled: approvalStatus?.includes(item.value) || item.value === 'sent_for_approval',
             }));
 
             return (
               <div>
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER, ROLES.MEDIA_OWNER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
                   <Select
                     className="mr-2"
                     data={filteredList}
-                    disabled={isUpdateFinaceLoading}
+                    disabled={approvalStatus?.toLowerCase() === 'rejected'}
                     styles={{ rightSection: { pointerEvents: 'none' } }}
                     rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                     rightSectionWidth={40}
-                    onChange={e => handleApprovalStatus(_id, e)}
+                    onChange={e => toggleApproveModal(_id, e)}
                     defaultValue={approvalStatus || ''}
                   />
                 </RoleBased>
@@ -595,17 +628,15 @@ const Home = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, file },
           },
         }) =>
           useMemo(
             () => (
               <FinanceMenuPopover
                 itemId={_id}
-                // TODO: kept it for demo purpose will remove later
-                onClickCopyLink={() => navigator.clipboard.writeText(temporaryInvoicePdfLink)}
-                onClickDownloadPdf={() => downloadPdf(temporaryInvoicePdfLink)}
-                pdfLink={temporaryInvoicePdfLink}
+                onClickDownloadPdf={() => downloadPdf(file)}
+                type={recordType}
               />
             ),
             [],
@@ -615,16 +646,41 @@ const Home = () => {
     [financialDataByMonth?.finances?.docs],
   );
 
+  const togglePreviewModal = () =>
+    modals.openContextModal('basic', {
+      title: `${orderTitle[recordType]} Current Status`,
+      innerProps: {
+        modalBody: (
+          <PreviewContent
+            financeRecordId={financeRecordId}
+            recordType={recordType}
+            onClose={() => {
+              searchParams.delete('id');
+              setSearchParams(searchParams);
+            }}
+          />
+        ),
+      },
+      closeOnClickOutside: false,
+      ...updatedModalConfig,
+    });
+
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+    if (financeRecordId) {
+      togglePreviewModal();
+    }
+  }, [financeRecordId]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <Header
         year={year}
         month={month}

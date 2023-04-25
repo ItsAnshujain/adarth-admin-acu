@@ -11,7 +11,7 @@ import AddOperationalCostModal from './AddOperationalCostModal';
 
 const DATE_FORMAT = 'DD-MM-YYYY';
 
-const OperationalCost = ({ inventoryDetails }) => {
+const OperationalCost = ({ inventoryDetails, isPeer }) => {
   const modals = useModals();
   const { id: inventoryId } = useParams();
   const { data: operationaCostData, isLoading } = useFetchOperationalCost(inventoryId);
@@ -62,20 +62,22 @@ const OperationalCost = ({ inventoryDetails }) => {
                     className="py-3 border-b border-black flex justify-between pl-5 pr-10"
                   >
                     <Group align="flex-start">
-                      <ActionIcon
-                        onClick={e =>
-                          handleOperationalCost(
-                            e,
-                            item?._id,
-                            item?.type,
-                            item?.amount,
-                            item?.description,
-                            item?.date,
-                          )
-                        }
-                      >
-                        <Edit className="text-black" />
-                      </ActionIcon>
+                      {!isPeer ? (
+                        <ActionIcon
+                          onClick={e =>
+                            handleOperationalCost(
+                              e,
+                              item?._id,
+                              item?.type,
+                              item?.amount,
+                              item?.description,
+                              item?.date,
+                            )
+                          }
+                        >
+                          <Edit className="text-black" />
+                        </ActionIcon>
+                      ) : null}
                       <div>
                         <p className="font-medium">{item?.type?.name}</p>
                         <p className="text-xs">Created at:</p>
@@ -92,11 +94,13 @@ const OperationalCost = ({ inventoryDetails }) => {
               )}
             </div>
             <p className="py-3 font-medium">Total: {toIndianCurrency(totalAmount ?? 0)}</p>
-            <Group position="right">
-              <Button className="primary-button" onClick={handleOperationalCost}>
-                Add Operational Cost
-              </Button>
-            </Group>
+            {!isPeer ? (
+              <Group position="right">
+                <Button className="primary-button" onClick={handleOperationalCost}>
+                  Add Operational Cost
+                </Button>
+              </Group>
+            ) : null}
           </div>
         </div>
       )}

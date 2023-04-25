@@ -1,18 +1,23 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Button, Text, Image, Skeleton, Badge, BackgroundImage, Center } from '@mantine/core';
-import { useToggle } from '@mantine/hooks';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Text, Image, Skeleton, Badge, BackgroundImage, Center, Spoiler } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import { useModals } from '@mantine/modals';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
 import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MapView from '../CreateSpace/MapView';
 import { tierList } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
 
+dayjs.extend(isBetween);
+
 const TRANSITION_DURATION = 200;
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
+
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 const SkeletonTopWrapper = () => (
   <div className="flex flex-col gap-2">
@@ -32,9 +37,9 @@ const BasicInfo = ({
   totalOccupancy,
   totalRevenue,
   isInventoryDetailsLoading,
+  bookingRange,
 }) => {
   const modals = useModals();
-  const [readMore, toggle] = useToggle();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
   const [embla, setEmbla] = useState(null);
 
@@ -109,18 +114,37 @@ const BasicInfo = ({
       ...updatedModalConfig,
     });
 
+  const isOccupied = useMemo(
+    () =>
+      bookingRange?.some(
+        item =>
+          dayjs(dayjs().format(DATE_FORMAT)).isBetween(item?.startDate, item?.endDate) ||
+          dayjs(dayjs().format(DATE_FORMAT)).isSame(dayjs(item?.endDate)),
+      ),
+    [bookingRange],
+  );
+
   useEffect(() => {
     const result = getAllSpacePhotos();
     setPreviewSpacesPhotos(result);
   }, [inventoryDetails]);
 
   return (
-    <div className="flex gap-8 pt-4">
+    <div className="flex gap-8 py-4">
       <div className="flex-1 pl-5 max-w-1/2">
         {isInventoryDetailsLoading ? (
           <SkeletonTopWrapper />
         ) : (
           <div className="flex flex-1 flex-col w-full">
+            {!previewSpacesPhotos.length ? (
+              <Image
+                height={300}
+                width="100%"
+                alt="no_image_placeholder"
+                withPlaceholder
+                placeholder={<Text align="center">No Image Uploaded</Text>}
+              />
+            ) : null}
             <div className="flex flex-row flex-wrap justify-start">
               {previewSpacesPhotos?.map(
                 (src, index) =>
@@ -140,8 +164,8 @@ const BasicInfo = ({
               {previewSpacesPhotos?.length > 4 && (
                 <div className="border-[1px] border-gray mr-2 mb-4">
                   <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
-                    <Center className="h-full">
-                      <Text weight="bold" color="white" className="mix-blend-difference">
+                    <Center className="h-full transparent-black">
+                      <Text weight="bold" color="white">
                         +{previewSpacesPhotos.length - 4} more
                       </Text>
                     </Center>
@@ -226,23 +250,32 @@ const BasicInfo = ({
                   {inventoryDetails?.basicInformation?.category?.name}
                 </Text>
                 <Text weight="bolder" size="xs">
-                  {inventoryDetails?.specifications?.spaceStatus?.name}
+                  {inventoryDetails?.basicInformation?.spaceType?.name}
                 </Text>
               </div>
-              <Text weight="300" color="gray">
+              <Spoiler
+                maxHeight={45}
+                showLabel="Read more"
+                hideLabel="Read less"
+                className="text-purple-450 font-medium text-[14px]"
+                classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+              >
                 {inventoryDetails?.basicInformation?.description}
-                <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
-                  {readMore ? 'Read less' : 'Read more'}
-                </Button>
-              </Text>
+              </Spoiler>
               <Badge
                 className="capitalize"
                 variant="filled"
-                color={inventoryDetails?.isUnderMaintenance ? 'yellow' : 'green'}
+                color={
+                  inventoryDetails?.isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'
+                }
                 size="lg"
                 mt="xs"
               >
-                {inventoryDetails?.isUnderMaintenance ? 'Under maintenance' : 'Available'}
+                {inventoryDetails?.isUnderMaintenance
+                  ? 'Under Maintenance'
+                  : isOccupied
+                  ? 'Occupied'
+                  : 'Available'}
               </Badge>
               <Text weight="bold" className="my-2">
                 {toIndianCurrency(inventoryDetails?.basicInformation?.price || 0)}
@@ -253,7 +286,7 @@ const BasicInfo = ({
                   : null}
               </div>
               <div className="mb-2">
-                <p className="text-slate-400">Previously advertised brands</p>
+                <p className="text-slate-400">Advertising brands</p>
                 <div className="flex w-full flex-wrap">
                   {inventoryDetails?.specifications?.previousBrands?.length
                     ? renderBadges(inventoryDetails?.specifications?.previousBrands)
@@ -261,7 +294,7 @@ const BasicInfo = ({
                 </div>
               </div>
               <div className="mb-2">
-                <p className="text-slate-400">Previously advertised tags</p>
+                <p className="text-slate-400">Advertising tags</p>
                 <div className="flex w-full flex-wrap">
                   {inventoryDetails?.specifications?.tags.length
                     ? renderBadges(inventoryDetails?.specifications?.tags)
@@ -372,8 +405,18 @@ const BasicInfo = ({
                     </div>
                   </div>
                   <MapView
-                    latitude={Number(inventoryDetails?.location.latitude)}
-                    longitude={Number(inventoryDetails?.location.longitude)}
+                    latitude={
+                      inventoryDetails?.location.latitude &&
+                      !Number.isNaN(inventoryDetails.location.latitude)
+                        ? Number(inventoryDetails.location.latitude)
+                        : 0
+                    }
+                    longitude={
+                      inventoryDetails?.location.longitude &&
+                      !Number.isNaN(inventoryDetails.location.longitude)
+                        ? Number(inventoryDetails?.location.longitude)
+                        : 0
+                    }
                   />
                 </div>
               ) : (

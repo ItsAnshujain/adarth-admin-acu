@@ -3,9 +3,9 @@ import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 
 const Profile = () => (
-  <div className="absolute top-0">
+  <div>
     <Header title="My Profile" />
-    <div className="grid grid-cols-12">
+    <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
       <Sidebar />
       <Outlet />
     </div>

@@ -1,14 +1,13 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import GoogleMapReact from 'google-map-react';
-import { BackgroundImage, Badge, Button, Center, Image, Pagination, Text } from '@mantine/core';
-import { useToggle } from '@mantine/hooks';
+import { BackgroundImage, Badge, Center, Image, Pagination, Spoiler, Text } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
 import Places from './UI/Places';
-import NoData from '../../shared/NoData';
+import { indianMapCoordinates } from '../../../utils';
 
 const defaultProps = {
   center: {
@@ -21,7 +20,6 @@ const defaultProps = {
 const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Preview = ({ data = {}, place = {} }) => {
-  const [readMore, toggle] = useToggle();
   const [searchParams, setSearchParams] = useSearchParams();
   const [mapInstance, setMapInstance] = useState(null);
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
@@ -53,16 +51,15 @@ const Preview = ({ data = {}, place = {} }) => {
     if (mapInstance && place?.docs?.length) {
       const bounds = new mapInstance.maps.LatLngBounds();
 
-      place?.docs?.forEach(item => {
-        bounds.extend({
-          lat: +(item.location?.latitude || 0),
-          lng: +(item.location?.longitude || 0),
-        });
+      // default coordinates
+      bounds.extend({
+        lat: indianMapCoordinates.latitude,
+        lng: indianMapCoordinates.longitude,
       });
 
       mapInstance.map.fitBounds(bounds);
       mapInstance.map.setCenter(bounds.getCenter());
-      mapInstance.map.setZoom(Math.min(10, mapInstance.map.getZoom()));
+      mapInstance.map.setZoom(Math.min(5, mapInstance.map.getZoom()));
     }
   }, [place?.docs?.length, mapInstance]);
 
@@ -95,8 +92,8 @@ const Preview = ({ data = {}, place = {} }) => {
               {previewSpacesPhotos?.length > 4 && (
                 <div className="border-[1px] border-gray mr-2 mb-4">
                   <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
-                    <Center className="h-full">
-                      <Text weight="bold" color="white" className="mix-blend-difference">
+                    <Center className="h-full transparent-black">
+                      <Text weight="bold" color="white">
                         +{previewSpacesPhotos.length - 4} more
                       </Text>
                     </Center>
@@ -111,18 +108,15 @@ const Preview = ({ data = {}, place = {} }) => {
         <div className="flex-1 pr-7 max-w-1/2">
           <p className="text-lg font-bold">{data.name || 'NA'}</p>
           <div>
-            <p className="text-slate-400 font-light text-[14px]">
-              {data?.description?.split(' ')?.length > 4
-                ? readMore
-                  ? `${data?.description?.split(' ')?.slice(0, 3).join(' ')}...`
-                  : data?.description
-                : data.description || <NoData type="na" />}
-              {data?.description?.split(' ')?.length > 4 ? (
-                <Button onClick={() => toggle()} className="text-purple-450 font-medium p-0">
-                  {readMore ? 'Read more' : 'Read less'}
-                </Button>
-              ) : null}
-            </p>
+            <Spoiler
+              maxHeight={45}
+              showLabel="Read more"
+              hideLabel="Read less"
+              className="text-purple-450 font-medium text-[14px]"
+              classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+            >
+              {data?.description}
+            </Spoiler>
             <div className="flex gap-3 items-center">
               <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
 
@@ -148,7 +142,7 @@ const Preview = ({ data = {}, place = {} }) => {
             All the places been covered by this campaign
           </Text>
         </div>
-        <div className="mt-1 mb-8 h-[30vh]">
+        <div className="mt-1 mb-8 h-[40vh]">
           <GoogleMapReact
             bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY, libraries: 'places' }}
             defaultCenter={defaultProps.center}
@@ -178,11 +172,11 @@ const Preview = ({ data = {}, place = {} }) => {
                   name: item.spaceName,
                   address: item.location?.address,
                   cost: item.price,
-                  dimensions: `${item.dimension?.height || 0}ft x ${item.dimension?.width || 0}ft`, //
+                  dimensions: `${item.dimension?.height || 0}ft x ${item.dimension?.width || 0}ft`,
                   format: item.supportedMedia,
-                  lighting: item.mediaType,
+                  lighting: item.mediaType?.name,
                   resolution: item.resolutions,
-                  illumination: item.illuminations,
+                  illumination: item.illuminations?.name,
                   unit: item.unit,
                 }}
               />

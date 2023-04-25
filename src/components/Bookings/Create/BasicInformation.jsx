@@ -34,7 +34,6 @@ const BasicInfo = () => {
             styles={styles}
             label="Client Email"
             name="client.email"
-            withAsterisk
             placeholder="Write..."
             errors={errors}
           />
@@ -42,7 +41,6 @@ const BasicInfo = () => {
             styles={styles}
             label="Client Pan Number"
             name="client.panNumber"
-            withAsterisk
             placeholder="Write..."
             errors={errors}
           />
@@ -50,10 +48,10 @@ const BasicInfo = () => {
             styles={styles}
             label="Payment Type"
             name="paymentType"
-            withAsterisk
             errors={errors}
             className="mr-2"
             data={[
+              { label: 'NA', value: 'na' },
               { label: 'NEFT', value: 'neft' },
               { label: 'RTGS', value: 'rtgs' },
               { label: 'CHEQUE', value: 'cheque' },
@@ -76,7 +74,6 @@ const BasicInfo = () => {
             styles={styles}
             label="Client Contact Number"
             name="client.contactNumber"
-            withAsterisk
             placeholder="Write..."
             errors={errors}
           />
@@ -84,7 +81,6 @@ const BasicInfo = () => {
             styles={styles}
             label="Client GST Number"
             name="client.gstNumber"
-            withAsterisk
             placeholder="Write..."
             errors={errors}
           />
@@ -92,7 +88,6 @@ const BasicInfo = () => {
             styles={styles}
             label="Payment Reference Number"
             name="paymentReference"
-            withAsterisk
             placeholder="Write..."
             errors={errors}
           />

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, Skeleton } from '@mantine/core';
+import { v4 as uuidv4 } from 'uuid';
 import PreviewCard from '../Create/UI/PreviewCard';
 import UserImage from '../../../assets/placeholders/user.png';
 
@@ -73,7 +74,7 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false }) => (
         </>
       ) : null}
       {userDetails?.docs?.map(doc => (
-        <div className="flex flex-col col-span-1" key={doc._id}>
+        <div className="flex flex-col col-span-1" key={uuidv4()}>
           <PreviewCard
             filename={doc}
             cardText={doc}

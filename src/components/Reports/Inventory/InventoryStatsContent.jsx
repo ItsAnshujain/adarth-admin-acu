@@ -5,6 +5,7 @@ import OperationalCostIcon from '../../../assets/operational-cost.svg';
 import VacantIcon from '../../../assets/vacant.svg';
 import OccupiedIcon from '../../../assets/occupied.svg';
 import UnderMaintenanceIcon from '../../../assets/under-maintenance.svg';
+import toIndianCurrency from '../../../utils/currencyFormat';
 
 const InventoryStatsContent = ({ inventoryReports, inventoryStats }) => (
   <div className="flex justify-between gap-4 flex-wrap mb-8">
@@ -30,8 +31,8 @@ const InventoryStatsContent = ({ inventoryReports, inventoryStats }) => (
     </div>
     <div className="border rounded p-8 flex-1">
       <Image src={OperationalCostIcon} alt="folder" fit="contain" height={24} width={24} />
-      <p className="my-2 text-sm font-light text-slate-400">Total Opertaional Cost</p>
-      <p className="font-bold">{inventoryReports?.totalOperationalCost ?? 0}</p>
+      <p className="my-2 text-sm font-light text-slate-400">Total Operational Cost</p>
+      <p className="font-bold">{toIndianCurrency(inventoryReports?.totalOperationalCost ?? 0)}</p>
     </div>
   </div>
 );

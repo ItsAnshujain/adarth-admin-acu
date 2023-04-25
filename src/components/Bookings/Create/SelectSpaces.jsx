@@ -9,26 +9,33 @@ import {
   Chip,
   HoverCard,
   Text,
+  Group,
 } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 import { Dropzone } from '@mantine/dropzone';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import { v4 as uuidv4 } from 'uuid';
+import isBetween from 'dayjs/plugin/isBetween';
+import dayjs from 'dayjs';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 import { useFetchInventory } from '../../../hooks/inventory.hooks';
 import upload from '../../../assets/upload.svg';
 import { useFormContext } from '../../../context/formContext';
-import { categoryColors, supportedTypes } from '../../../utils';
+import { categoryColors, getDate, supportedTypes } from '../../../utils';
 import { useUploadFile } from '../../../hooks/upload.hooks';
 import Filter from '../../Inventory/Filter';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../../DateRangeSelector';
 
+dayjs.extend(isBetween);
+
 const updatedSupportedTypes = [...supportedTypes, 'MP4'];
+
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 const styles = {
   padding: 0,
@@ -111,7 +118,8 @@ const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
 
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
-  const [searchInput, setSearchInput] = useDebouncedState('', 1000);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -182,11 +190,17 @@ const SelectSpace = () => {
         accessor: 'basicInformation.spaceName',
         Cell: ({
           row: {
-            original: { photo, spaceName, isUnderMaintenance, _id },
+            original: { photo, spaceName, isUnderMaintenance, bookingRange, _id },
           },
         }) =>
-          useMemo(
-            () => (
+          useMemo(() => {
+            const isOccupied = bookingRange?.some(
+              item =>
+                dayjs(dayjs().format(DATE_FORMAT)).isBetween(item?.startDate, item?.endDate) ||
+                dayjs(dayjs().format(DATE_FORMAT)).isSame(dayjs(item?.endDate)),
+            );
+
+            return (
               <div className="grid grid-cols-2 gap-2 items-center">
                 <div className="flex flex-1 gap-2 items-center w-44">
                   <Image
@@ -200,10 +214,14 @@ const SelectSpace = () => {
                   />
                   <Link
                     to={`/inventory/view-details/${_id}`}
-                    className="text-black font-medium px-2"
+                    className="font-medium px-2 underline"
                     target="_blank"
                   >
-                    <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                    <Text
+                      className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
+                      lineClamp={1}
+                      title={spaceName}
+                    >
                       {spaceName}
                     </Text>
                   </Link>
@@ -212,24 +230,27 @@ const SelectSpace = () => {
                   <Badge
                     className="capitalize"
                     variant="filled"
-                    color={isUnderMaintenance ? 'yellow' : 'green'}
+                    color={isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'}
                   >
-                    {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                    {isUnderMaintenance
+                      ? 'Under Maintenance'
+                      : isOccupied
+                      ? 'Occupied'
+                      : 'Available'}
                   </Badge>
                 </div>
               </div>
-            ),
-            [isUnderMaintenance],
-          ),
+            );
+          }, [isUnderMaintenance]),
       },
       {
         Header: 'MEDIA OWNER NAME',
         accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
           row: {
-            original: { landlord },
+            original: { mediaOwner },
           },
-        }) => useMemo(() => <p className="w-fit">{landlord || '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{mediaOwner}</p>, []),
       },
       {
         Header: 'UPLOAD MEDIA',
@@ -251,6 +272,15 @@ const SelectSpace = () => {
             ),
             [],
           ),
+      },
+      {
+        Header: 'PEER',
+        accessor: 'peer',
+        Cell: ({
+          row: {
+            original: { peer },
+          },
+        }) => useMemo(() => <p className="w-fit">{peer}</p>, []),
       },
       {
         Header: 'CATEGORY',
@@ -292,9 +322,9 @@ const SelectSpace = () => {
         accessor: 'specifications.impressions.max',
         Cell: ({
           row: {
-            original: { impression },
+            original: { impressionMax },
           },
-        }) => useMemo(() => <p>{`${impression || 0}+`}</p>, []),
+        }) => useMemo(() => <p>{`${impressionMax || 0}+`}</p>, []),
       },
       {
         Header: 'HEALTH',
@@ -397,8 +427,8 @@ const SelectSpace = () => {
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const handleSearch = () => {
-    searchParams.set('search', searchInput);
-    searchParams.set('page', 1);
+    searchParams.set('search', debouncedSearch);
+    searchParams.set('page', debouncedSearch === '' ? pages : 1);
     setSearchParams(searchParams);
   };
 
@@ -429,25 +459,34 @@ const SelectSpace = () => {
       const finalData = [];
 
       for (const item of docs) {
+        const selectionItem = values?.place?.find(pl => pl._id === item._id);
+
         const obj = {};
         obj.photo = item.basicInformation.spacePhoto;
         obj._id = item._id;
         obj.spaceName = item.basicInformation?.spaceName;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.category = item.basicInformation?.category?.name;
-        obj.spaceType = item.basicInformation?.spaceType?.name;
+        obj.mediaOwner =
+          item?.createdBy && !item.createdBy?.isPeer
+            ? item?.basicInformation?.mediaOwner?.name
+            : '-';
+        obj.peer =
+          item?.createdBy && item.createdBy?.isPeer
+            ? item?.basicInformation?.mediaOwner?.name
+            : '-';
         obj.dimension = `${item.specifications?.size?.height || 0}ft x ${
           item.specifications?.size?.width || 0
         }ft`;
-        obj.impression = item.specifications?.impressions?.max || 0;
-        obj.health = item?.specifications?.health;
+        obj.impressionMax = item.specifications?.impressions?.max || 0;
+        obj.impressionMin = item.specifications?.impressions?.min || 0;
+        obj.health = item?.specifications?.health ?? 0;
         obj.location = item?.location?.city;
         obj.mediaType = item.basicInformation?.mediaType?.name;
         obj.price = item.basicInformation?.price || 0;
-        obj.landlord = item.basicInformation?.mediaOwner?.name;
         obj.campaigns = item?.campaigns;
-        obj.startDate = item.startDate ? new Date(item.startDate) : null;
-        obj.endDate = item.endDate ? new Date(item.endDate) : null;
+        obj.startDate = getDate(selectionItem, item, 'startDate');
+        obj.endDate = getDate(selectionItem, item, 'endDate');
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
         finalData.push(obj);
       }
@@ -459,11 +498,11 @@ const SelectSpace = () => {
 
   useEffect(() => {
     handleSearch();
-    if (searchInput === '') {
+    if (debouncedSearch === '') {
       searchParams.delete('search');
       setSearchParams(searchParams);
     }
-  }, [searchInput]);
+  }, [debouncedSearch]);
 
   return (
     <>
@@ -486,7 +525,10 @@ const SelectSpace = () => {
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
-            <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
+            <Group>
+              <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
+              <p className="text-xs">**additional gst to be included</p>
+            </Group>
           </div>
         </div>
         <div className="flex justify-between mb-4 items-center">
@@ -506,7 +548,7 @@ const SelectSpace = () => {
           <Loader />
         </div>
       ) : null}
-      {inventoryData?.docs?.length === 0 && !isLoading ? (
+      {!inventoryData?.docs?.length && !isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

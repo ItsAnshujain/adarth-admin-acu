@@ -1,13 +1,12 @@
 import { showNotification } from '@mantine/notifications';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  deleteFinanceById,
   fetchFinance,
-  fetchFinanceByIndustry,
-  fetchFinanceByLocation,
-  fetchFinanceByRevenueGraph,
-  fetchFinanceByStats,
   fetchFinanceByYear,
   fetchFinanceByYearAndMonth,
+  fetchSingleRecordById,
+  shareRecord,
   updateFinanceById,
 } from '../requests/finance.requests';
 
@@ -28,12 +27,6 @@ export const useUpdateFinanceById = () =>
       return res?.data;
     },
     {
-      onSuccess: () => {
-        showNotification({
-          title: 'Approval status updated successfully',
-          color: 'green',
-        });
-      },
       onError: err => {
         showNotification({
           title: 'Error',
@@ -64,41 +57,59 @@ export const useFetchFinanceByYearAndMonth = (query, enabled = true) =>
     { enabled },
   );
 
-export const useFetchFinanceByStats = (enabled = true) =>
-  useQuery(
-    ['finance-by-stats'],
-    async () => {
-      const res = await fetchFinanceByStats();
+export const useDeleteFinanceById = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ({ financeId, type }) => {
+      const res = await deleteFinanceById(financeId, type);
       return res?.data;
     },
-    { enabled },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['finance-by-month']);
+        showNotification({
+          title: 'Finance deleted successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
   );
+};
 
-export const useFetchFinanceByLocation = (query, enabled = true) =>
-  useQuery(
-    ['finance-by-location', query],
-    async () => {
-      const res = await fetchFinanceByLocation(query);
+export const useShareRecord = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ({ id, data }) => {
+      const res = await shareRecord(id, data);
       return res?.data;
     },
-    { enabled },
-  );
-
-export const useFetchFinanceByIndustry = (query, enabled = true) =>
-  useQuery(
-    ['finance-by-industry', query],
-    async () => {
-      const res = await fetchFinanceByIndustry(query);
-      return res?.data;
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['finance-by-month']);
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
     },
-    { enabled },
   );
+};
 
-export const useFetchFinanceByRevenueGraph = (query, enabled = true) =>
+export const useFetchSingleRecordById = (id, enabled = true) =>
   useQuery(
-    ['finance-by-reveue-graph', query],
+    ['single-record-by-id', id],
     async () => {
-      const res = await fetchFinanceByRevenueGraph(query);
+      const res = await fetchSingleRecordById(id);
       return res?.data;
     },
     { enabled },

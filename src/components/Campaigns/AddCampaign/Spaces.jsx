@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Badge, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useDebouncedState } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import Filter from '../../Inventory/Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -25,7 +25,8 @@ const getHealthTag = score =>
 
 const SelectSpace = () => {
   const { setFieldValue, values } = useFormContext();
-  const [search, setSearch] = useDebouncedState('', 500);
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [showFilter, setShowFilter] = useState(false);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
@@ -41,10 +42,13 @@ const SelectSpace = () => {
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
 
-  const getTotalPrice = (places = []) => {
-    const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
-    return totalPrice;
-  };
+  const getTotalPrice = useCallback(
+    (places = []) => {
+      const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
+      return totalPrice;
+    },
+    [values?.place],
+  );
 
   const toggleFilter = () => setShowFilter(!showFilter);
 
@@ -86,10 +90,13 @@ const SelectSpace = () => {
                   />
                   <Link
                     to={`/inventory/view-details/${_id}`}
-                    className="text-black font-medium"
+                    className="font-medium underline"
                     target="_blank"
                   >
-                    <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                    <Text
+                      className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
+                      lineClamp={1}
+                    >
                       {spaceName}
                     </Text>
                   </Link>
@@ -287,11 +294,14 @@ const SelectSpace = () => {
   };
 
   useEffect(() => {
-    if (search) searchParams.set('search', search);
-    else searchParams.delete('search');
+    if (debouncedSearch) {
+      searchParams.set('search', debouncedSearch);
+    } else {
+      searchParams.delete('search');
+    }
 
     setSearchParams(searchParams);
-  }, [search]);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     if (inventoryData) {
@@ -306,7 +316,6 @@ const SelectSpace = () => {
         obj.spaceName = item?.basicInformation?.spaceName;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.category = item?.basicInformation?.category?.name;
-        obj.spaceType = item?.basicInformation?.spaceType?.name;
         obj.dimension = item?.specifications?.size;
         obj.impression = item?.specifications?.impressions?.max || 0;
         obj.health = item?.specifications?.health;
@@ -366,7 +375,7 @@ const SelectSpace = () => {
             ) : null}
           </p>
 
-          <Search search={search} setSearch={setSearch} />
+          <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
       {isLoading ? (
@@ -374,7 +383,7 @@ const SelectSpace = () => {
           <Loader />
         </div>
       ) : null}
-      {inventoryData?.docs?.length === 0 && !isLoading ? (
+      {!inventoryData?.docs?.length && !isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>

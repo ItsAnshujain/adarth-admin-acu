@@ -46,7 +46,7 @@ const GridView = ({
         ))}
         {isLoadingList ? skeletonList() : null}
       </div>
-      <div className="flex justify-end my-4 pr-7">
+      <div className="flex justify-end my-4 pr-7 pb-4">
         <Pagination
           styles={theme => ({
             item: {

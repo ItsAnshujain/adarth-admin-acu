@@ -26,3 +26,21 @@ export const generateReleaseReceipt = (id, data) =>
   http.post(`/booking/${id}/generate-receipt/release`, data);
 
 export const bookingRevenue = query => http.get(`/booking/revenue?${query}`);
+
+export const bookingReportByRevenueStats = () => http.get('/booking/report/revenue-stats');
+
+export const bookingReportByRevenueGraph = query =>
+  http.get(`/booking/report/revenue-graph?${query}`);
+
+export const bookingRevenueByIndustry = query => http.get(`/booking/report/byIndustry?${query}`);
+
+export const bookingRevenueByLocation = query => http.get(`/booking/report/byLocation?${query}`);
+
+export const generateManualPurchaseReceipt = data =>
+  http.post('/booking/generate-receipt/manual/purchase', data);
+
+export const generateManualReleaseReceipt = data =>
+  http.post('/booking/generate-receipt/manual/release', data);
+
+export const generateManualInvoiceReceipt = data =>
+  http.post('/booking/generate-receipt/manual/invoice', data);

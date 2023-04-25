@@ -23,10 +23,6 @@ const BasicInfo = ({ setUploadingFile }) => {
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const [uploadImage, setUploadImage] = useState([]);
 
-  useEffect(() => {
-    setUploadingFile(isLoading);
-  }, [isLoading]);
-
   const onHandleDrop = async params => {
     const formData = new FormData();
     formData.append('files', params?.[0]);
@@ -35,8 +31,12 @@ const BasicInfo = ({ setUploadingFile }) => {
     setFieldValue('image', res?.[0].Location);
   };
 
+  useEffect(() => {
+    setUploadingFile(isLoading);
+  }, [isLoading]);
+
   return (
-    <div className="pl-5 pr-7 mt-4">
+    <div className="px-5 mt-4">
       <p className="text-xl font-bold">Just some basic information about your profile</p>
       <div className="mt-8 flex flex-col">
         <p className="font-bold text-lg">Upload Profile Picture</p>
@@ -70,7 +70,7 @@ const BasicInfo = ({ setUploadingFile }) => {
         </div>
         {errors?.image ? <p className="mt-1 text-xs text-red-450">{errors?.image}</p> : null}
       </div>
-      <div className="grid grid-cols-2 gap-6 mt-4 mb-12">
+      <div className="md:grid md:grid-cols-2 gap-6 mt-4 mb-12">
         <TextInput
           label="Name"
           name="name"
@@ -78,14 +78,16 @@ const BasicInfo = ({ setUploadingFile }) => {
           withAsterisk
           errors={errors}
           placeholder="Name"
+          className="mb-3 md:mb-0"
         />
         <TextInput
           label="Organization"
           name="company"
           styles={styles}
-          withAsterisk
           errors={errors}
           placeholder="Organization"
+          disabled
+          className="mb-3 md:mb-0"
         />
         <TextInput
           label="Phone Number"
@@ -94,6 +96,7 @@ const BasicInfo = ({ setUploadingFile }) => {
           withAsterisk
           errors={errors}
           placeholder="Phone Number"
+          className="mb-3 md:mb-0"
         />
         <TextInput
           label="State"
@@ -102,6 +105,7 @@ const BasicInfo = ({ setUploadingFile }) => {
           withAsterisk
           errors={errors}
           placeholder="State"
+          className="mb-3 md:mb-0"
         />
         <TextInput
           label="Address"
@@ -110,7 +114,7 @@ const BasicInfo = ({ setUploadingFile }) => {
           withAsterisk
           errors={errors}
           placeholder="Address"
-          className="col-span-2"
+          className="col-span-2 mb-3 md:mb-0"
         />
         <TextInput
           label="City"
@@ -119,6 +123,7 @@ const BasicInfo = ({ setUploadingFile }) => {
           withAsterisk
           errors={errors}
           placeholder="City"
+          className="mb-3 md:mb-0"
         />
         <TextInput
           label="Pin"
@@ -127,6 +132,7 @@ const BasicInfo = ({ setUploadingFile }) => {
           withAsterisk
           errors={errors}
           placeholder="Pin"
+          className="mb-3 md:mb-0"
         />
         <TextInput
           label="Aadhaar"
@@ -135,6 +141,7 @@ const BasicInfo = ({ setUploadingFile }) => {
           withAsterisk
           errors={errors}
           placeholder="Aadhaar"
+          className="mb-3 md:mb-0"
         />
         <TextInput
           label="Pan"
@@ -143,6 +150,7 @@ const BasicInfo = ({ setUploadingFile }) => {
           withAsterisk
           errors={errors}
           placeholder="Pan"
+          className="mb-3 md:mb-0"
         />
         <TextInput
           label="About you"
@@ -151,7 +159,7 @@ const BasicInfo = ({ setUploadingFile }) => {
           withAsterisk
           errors={errors}
           placeholder="Write"
-          className="col-span-2"
+          className="col-span-2 mb-3 md:mb-0"
         />
       </div>
     </div>
