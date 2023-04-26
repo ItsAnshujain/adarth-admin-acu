@@ -25,8 +25,6 @@ import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
 
 dayjs.extend(isBetween);
 
-const DATE_FORMAT = 'YYYY-MM-DD';
-
 const initialValues = {
   spaces: [],
 };
@@ -98,8 +96,8 @@ const Home = () => {
           useMemo(() => {
             const isOccupied = bookingRange?.some(
               item =>
-                dayjs(dayjs().format(DATE_FORMAT)).isBetween(item?.startDate, item?.endDate) ||
-                dayjs(dayjs().format(DATE_FORMAT)).isSame(dayjs(item?.endDate)),
+                dayjs().isBetween(item?.startDate, item?.endDate) ||
+                dayjs().isSame(dayjs(item?.endDate), 'day'),
             );
 
             return (
