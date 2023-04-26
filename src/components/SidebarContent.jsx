@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import { ChevronDown } from 'react-feather';
-import { Image } from '@mantine/core';
+import { Box, Image } from '@mantine/core';
 import { Link, useLocation } from 'react-router-dom';
 import NestedSidebarContent from './NestedSidebarContent';
 import HomeIcon from '../assets/home-default.svg';
@@ -20,7 +20,9 @@ import { useFetchMastersTypes } from '../hooks/masters.hooks';
 
 const SidebarContent = ({ className }) => {
   const { pathname } = useLocation();
-
+  const [toggleNestedTab, setToggleNestedTab] = useState(
+    pathname.includes('masters') || pathname.includes('reports'),
+  );
   const { data, isSuccess: isMasterLoaded } = useFetchMastersTypes();
 
   const renderList = useMemo(() => {
@@ -122,13 +124,14 @@ const SidebarContent = ({ className }) => {
               pathname.includes(item.path) && 'bg-gradient-to-r from-orange-400 to-red-500',
             )}
           >
-            <div
+            <Box
               className={classNames(
                 'flex items-center justify-between',
                 pathname.includes(item.path) &&
                   item.nested &&
                   'bg-gradient-to-r from-orange-400 to-red-500',
               )}
+              onClick={() => setToggleNestedTab(!toggleNestedTab)}
             >
               <div className="pl-3 pr-1">
                 <Image src={item.icon} height={24} width={24} fit="contain" />
@@ -140,8 +143,12 @@ const SidebarContent = ({ className }) => {
                 <span className="font-medium text-base text-white">{item.label}</span>
               </Link>
               {item?.nested ? <ChevronDown className="h-4 mr-5" color="white" /> : null}
-            </div>
-            <NestedSidebarContent list={item.nested || []} path={item.path} />
+            </Box>
+            <NestedSidebarContent
+              list={item.nested || []}
+              path={item.path}
+              toggleNestedTab={toggleNestedTab}
+            />
           </div>
         </RoleBased>
       ))}
