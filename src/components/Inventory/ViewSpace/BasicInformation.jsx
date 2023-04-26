@@ -17,8 +17,6 @@ dayjs.extend(isBetween);
 const TRANSITION_DURATION = 200;
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
-const DATE_FORMAT = 'YYYY-MM-DD';
-
 const SkeletonTopWrapper = () => (
   <div className="flex flex-col gap-2">
     <Skeleton height={300} width="100%" mb="md" />
@@ -118,8 +116,8 @@ const BasicInfo = ({
     () =>
       bookingRange?.some(
         item =>
-          dayjs(dayjs().format(DATE_FORMAT)).isBetween(item?.startDate, item?.endDate) ||
-          dayjs(dayjs().format(DATE_FORMAT)).isSame(dayjs(item?.endDate)),
+          dayjs().isBetween(item?.startDate, item?.endDate) ||
+          dayjs().isSame(dayjs(item?.endDate), 'day'),
       ),
     [bookingRange],
   );

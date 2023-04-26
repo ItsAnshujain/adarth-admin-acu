@@ -5,7 +5,7 @@ import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { masterTypes } from '../utils';
 
-const NestedSidebarContent = ({ list, path }) => {
+const NestedSidebarContent = ({ list, path, toggleNestedTab }) => {
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
   const type = searchParams.get('type');
@@ -25,7 +25,7 @@ const NestedSidebarContent = ({ list, path }) => {
   };
 
   return (
-    <Collapse in={isActive}>
+    <Collapse in={isActive && toggleNestedTab}>
       <div className="flex flex-col items-start pl-5 bg-orange-400 overflow-y-auto max-h-[260px]">
         {list.map(item => (
           <Link

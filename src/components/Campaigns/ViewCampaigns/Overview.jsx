@@ -15,6 +15,7 @@ import { useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
 import { useModals } from '@mantine/modals';
+import { getWord } from 'num-count';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
@@ -222,7 +223,11 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
                 variant="filled"
                 radius="md"
               >
-                {`${getTotalImpressions || 0} + Total Impressions`}
+                {`${
+                  getTotalImpressions && getTotalImpressions.toString().length > 6
+                    ? getWord(getTotalImpressions)
+                    : getTotalImpressions || 0
+                } + Total Impressions`}
               </Badge>
             </div>
           </div>

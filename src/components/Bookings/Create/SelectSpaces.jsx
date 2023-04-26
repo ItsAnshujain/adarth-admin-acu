@@ -35,8 +35,6 @@ dayjs.extend(isBetween);
 
 const updatedSupportedTypes = [...supportedTypes, 'MP4'];
 
-const DATE_FORMAT = 'YYYY-MM-DD';
-
 const styles = {
   padding: 0,
   border: 'none',
@@ -196,8 +194,8 @@ const SelectSpace = () => {
           useMemo(() => {
             const isOccupied = bookingRange?.some(
               item =>
-                dayjs(dayjs().format(DATE_FORMAT)).isBetween(item?.startDate, item?.endDate) ||
-                dayjs(dayjs().format(DATE_FORMAT)).isSame(dayjs(item?.endDate)),
+                dayjs().isBetween(item?.startDate, item?.endDate) ||
+                dayjs().isSame(dayjs(item?.endDate), 'day'),
             );
 
             return (

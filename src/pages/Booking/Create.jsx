@@ -14,8 +14,6 @@ import { FormProvider, useForm } from '../../context/formContext';
 import { useCreateBookings } from '../../hooks/booking.hooks';
 import { gstRegexMatch, panRegexMatch, isValidURL } from '../../utils';
 
-const DATE_FORMAT = 'YYYY-MM-DD';
-
 const initialValues = {
   client: {
     companyName: '',
@@ -120,12 +118,8 @@ const CreateBooking = () => {
         id: item._id,
         price: +item.price,
         media: isValidURL(item.media) ? item.media : undefined,
-        startDate: item.startDate
-          ? dayjs(item.startDate).format(DATE_FORMAT)
-          : dayjs().format(DATE_FORMAT),
-        endDate: item.startDate
-          ? dayjs(item.endDate).format(DATE_FORMAT)
-          : dayjs().format(DATE_FORMAT),
+        startDate: item.startDate ? dayjs(item.startDate).startOf('day') : dayjs().startOf('day'),
+        endDate: item.startDate ? dayjs(item.endDate).endOf('day') : dayjs().endOf('day'),
       }));
 
       data.place.forEach(item => {
