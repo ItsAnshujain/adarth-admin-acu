@@ -3,22 +3,22 @@ import React from 'react';
 
 const CookiePolicyContent = () => (
   <div className="px-5 max-h-[500px] overflow-y-auto">
-    <h2 className="text-center font-bold mb-5">COOKIE POLICY</h2>
+    <h2 className="text-center font-bold my-3">COOKIE POLICY</h2>
 
     <section>
       <p>
         This Cookie Policy describes the different types of cookies put by{' '}
-        <span className="font-bold">M/S ADARTH PRIVATE LIMITED</span> on its Website and/or
-        Application. We may change this Cookie Policy at any time in order to reflect, for example,
-        changes to the cookies we use or for other operational, legal or regulatory reasons.
+        <span className="font-bold">ADARTH PRIVATE LIMITED</span> on its Website and/or Application.
+        We may change this Cookie Policy at any time in order to reflect, for example, changes to
+        the cookies we use or for other operational, legal or regulatory reasons.
       </p>
       <p>
         If you have questions regarding this Cookie Policy, please contact us at{' '}
-        <span className="underline text-blue-600">priyashaa@adarth.in</span>
+        <span className="underline text-blue-600">info@adarth.in</span>
       </p>
     </section>
 
-    <section>
+    <section className="mt-5">
       <h2 className="font-bold mb-5">What is a cookie?</h2>
       <p>
         A cookie is a small file of letters and numbers that we store on your browser or the hard
@@ -31,17 +31,8 @@ const CookiePolicyContent = () => (
       </p>
     </section>
 
-    <section>
+    <section className="mt-5">
       <h2 className="font-bold mb-5">What cookies do we use?</h2>
-      <p>
-        A cookie is a small file of letters and numbers that we store on your browser or the hard
-        drive of your computer if you agree. By continuing to browse the platform, you are agreeing
-        to our use of cookies. Cookies contain information that is transferred to your computer’s
-        hard drive. You can set your browser to refuse all or some browser cookies, or to alert you
-        when a Website and/or Application. sets or access cookies. If you disable or refuse cookies,
-        please note some parts of this Website and/or Application. may become inaccessible or not
-        function properly.
-      </p>
       <List withPadding listStyleType="disc" type="ordered">
         <List.Item>
           <span className="font-bold">Strictly necessary cookies:</span> These are cookies that are
@@ -67,14 +58,16 @@ const CookiePolicyContent = () => (
           our Website and/or Application., the pages you have visited and the links you have
           followed. We will use this information to make our Website and/or Application. and the
           advertising displayed on it more relevant to your interests. We may also share this
-          information with third-parties for this purpose. Please note that third-parties
-          (including, for example, advertising networks and providers of external services like web
-          traffic analysis services) may also use cookies, over which we have no control. These
-          cookies are likely to be analytical/performance cookies or targeting cookies. You can
-          block cookies by activating the setting on your browser that allows you to refuse the
-          setting of all or some cookies. However, if you use your browser settings to block all
-          cookies (including essential cookies) you may not be able to access all or parts of our
-          Website and/or Application.
+          information with third-parties for this purpose.
+          <p className="mt-2">
+            Please note that third-parties (including, for example, advertising networks and
+            providers of external services like web traffic analysis services) may also use cookies,
+            over which we have no control. These cookies are likely to be analytical/performance
+            cookies or targeting cookies. You can block cookies by activating the setting on your
+            browser that allows you to refuse the setting of all or some cookies. However, if you
+            use your browser settings to block all cookies (including essential cookies) you may not
+            be able to access all or parts of our Website and/or Application.
+          </p>
         </List.Item>
         <List.Item>
           <span className="font-bold">Advertising cookies:</span> Cookies that are used to collect
@@ -84,7 +77,7 @@ const CookiePolicyContent = () => (
       </List>
     </section>
 
-    <section className="mb-5">
+    <section className="my-5">
       <h2 className="text-center font-bold">WEBSITE ANALYTICS</h2>
       <p>
         We use various Analytics platforms to help us to understand how you make use of our content
@@ -92,6 +85,8 @@ const CookiePolicyContent = () => (
         collecting anonymous data on where you have come from, which pages you visit, and how long
         you spend on the site. This data is then stored by Google, windows, ios operating system and
         other similar platforms to create reports. These cookies do not store your personal data.
+      </p>
+      <p>
         The information generated by the cookie about your use of the App, including your IP
         address, may be transmitted to and stored by Google servers, windows, ios operating system
         and other similar platforms on servers in the United States or other domicile country.
@@ -105,15 +100,14 @@ const CookiePolicyContent = () => (
       </p>
     </section>
 
-    <section className="mb-5">
+    <section className="my-5">
       <h2 className="text-center font-bold">GOOGLE ADSENSE AND SIMILAR ADVERTISEMENT PLATFORM</h2>
       <p>
         Google AdSense and similar advertisement platforms allows Application publishers to deliver
         advertisements to site visitors in exchange for revenue calculated on a per-click or
-        per-impression basis. To do this, Google and similar advertisement platforms{' '}
-        <span className="font-bold">uses cookies and tracking technology</span> to deliver ads
-        personalized to a App user/visitor. In this regard the following terms are specified to the
-        Users:
+        per-impression basis. To do this, Google and similar advertisement platforms uses cookies
+        and tracking technology to deliver ads personalized to a App user/visitor. In this regard
+        the following terms are specified to the Users:
       </p>
 
       <List withPadding listStyleType="disc" type="ordered">
@@ -148,8 +142,11 @@ const CookiePolicyContent = () => (
         You can choose whether to accept our cookies (except Strictly Necessary Cookies) by clicking
         on the Website and/or Appropriate opt-out links in our Cookie Preference Center, which can
         be found in our Site’s footer and cookie banner. You also have the right to refuse or accept
-        cookies at any time by activating settings on your browser. Note that blocking some types of
-        cookies may impact your experience on our Site and the services we are able to offer you.
+        cookies at any time by activating settings on your browser.
+      </p>
+      <p>
+        Note that blocking some types of cookies may impact your experience on our Site and the
+        services we are able to offer you.
       </p>
     </section>
   </div>

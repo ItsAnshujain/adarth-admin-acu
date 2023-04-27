@@ -44,7 +44,7 @@ const Invoice = ({
         Cell: ({ row: { index } }) => index + 1,
       },
       {
-        Header: 'DESCRIPTION OF GOODS AND SERVICE',
+        Header: 'DESCRIPTION OF GOODS AND SERVICES',
         accessor: 'basicInformation.spaceName',
         disableSortBy: true,
         Cell: ({
@@ -148,7 +148,7 @@ const Invoice = ({
         Cell: ({ row: { index } }) => index + 1,
       },
       {
-        Header: 'DESCRIPTION OF GOODS AND SERVICE',
+        Header: 'DESCRIPTION OF GOODS AND SERVICES',
         accessor: 'name',
         disableSortBy: true,
         Cell: ({

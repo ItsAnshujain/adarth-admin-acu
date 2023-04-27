@@ -155,7 +155,7 @@ const Notification = () => {
               />
             </div>
             <p className="font-medium text-sm mt-2 text-slate-400">
-              Get all update notification in your email
+              Get all update notification in your message
             </p>
             <TextInput
               styles={inputStyles}
