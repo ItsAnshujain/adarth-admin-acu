@@ -2,118 +2,100 @@ import React from 'react';
 
 const DisclaimerPolicyContent = () => (
   <div className="px-5 max-h-[500px] overflow-y-auto">
-    <h2 className="text-center font-bold text-red-450 mb-5">
-      PRIVATE AND CONFIDENTIAL - FOR CLIENT USE AND DISCUSSION ONLY
+    <h2 className="text-center font-bold mb-5 border-b border-black mt-3 pb-2">
+      DISCLAIMER POLICY
     </h2>
-    <h2 className="text-center font-bold mb-5 border-b border-black">DISCLAIMER POLICY</h2>
-    <p className="mb-5">
-      We try to keep the <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> up and
-      running and free of annoyances. But we make no promises that we will succeed.
+    <p className="mb-5 font-medium">
+      We try to keep the application and/or website up and running and free of annoyances. but we
+      make no promises that we will succeed.
     </p>
 
     <p className="mb-5 font-medium">
-      THE <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> IS PROVIDED “AS IS” AND
-      “AS AVAILABLE” AND TO THE EXTENT PERMITTED BY LAW WITHOUT WARRANTIES OF ANY KIND, EITHER
-      EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES FOR A PARTICULAR
-      PURPOSE, TITLE, AND NON-INFRINGEMENT. IN ADDITION, WHILE COMPANY ATTEMPTS TO PROVIDE A GOOD
-      USER EXPERIENCE, WE DO NOT REPRESENT OR WARRANT THAT: (A) THE{' '}
-      <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> WILL ALWAYS BE SECURE,
-      ERROR-FREE, (B) THE <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> WILL
-      ALWAYS FUNCTION WITHOUT DELAYS, DISRUPTIONS, OR IMPERFECTIONS; OR (C) THAT ANY CONTENT, USER
-      CONTENT, OR INFORMATION YOU OBTAIN ON OR THROUGH THE{' '}
-      <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> WILL BE TIMELY OR ACCURATE.
+      The application and/or website is provided “as is” and “as available” and to the extent
+      permitted by law without warranties of any kind, either express or implied, including, but not
+      limited to, implied warranties for a particular purpose, title, and non-infringement. In
+      addition, while company attempts to provide a good user experience, we do not represent or
+      warrant that: (a) the application and/or website will always be secure, error-free, (b) the
+      application and/or website will always function without delays, disruptions, or imperfections;
+      or (c) that any content, user content, or information you obtain on or through the application
+      and/or website will be timely or accurate.
     </p>
 
     <p className="mb-5 font-medium">
-      YOU UNDERSTAND AND AGREE THAT YOU MAY BE EXPOSED TO CONTENT THAT MIGHT BE OFFENSIVE, ILLEGAL,
-      MISLEADING, OR OTHERWISE INAPPROPRIATE, NONE OF WHICH COMPANY WILL BE RESPONSIBLE FOR. THE
-      COMPANY WILL NOT BE RESPONSIBLE FOR ANY DAMAGE SUFFERED BY USERS FROM USE OF THE{' '}
-      <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> PROVIDED ON THE SERVICES
-      AVAILABLE ON THE <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> OR THE
-      CONTENT ON THIS <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span>. THIS INCLUDES
-      BUT IS NOT LIMITED TO, LOSS OF REVENUE/DATA RESULTING FROM DELAYS, AS MAY OCCUR BECAUSE OF ANY
-      ACT/OMISSION OF PARTIES.
+      You understand and agree that you may be exposed to content that might be offensive, illegal,
+      misleading, or otherwise inappropriate, none of which company will be responsible for.
     </p>
 
     <p className="mb-5 font-medium">
-      THIS DISCLAIMER OF LIABILITY ALSO APPLIES TO ANY DAMAGES OR INJURY CAUSED BY ANY FAILURE OF
-      PERFORMANCE, ERROR, OMISSION, INTERRUPTION, DELETION, DEFECT, DELAY IN OPERATION OR
-      TRANSMISSION, COMPUTER VIRUS, COMMUNICATION LINE FAILURE, THEFT OR DESTRUCTION OR UNAUTHORIZED
-      ACCESS TO, ALTERATION OF, OR USE OF RECORD, WHETHER FOR BREACH OF CONTRACT, TORTUOUS
-      BEHAVIOUR, NEGLIGENCE, OR UNDER ANY OTHER CAUSE OF ACTION.
+      The company will not be responsible for any damage suffered by users from use of the
+      application and/or website provided on the services available on the application and/or
+      website or the content on this application and/or website. This includes but is not limited
+      to, loss of revenue/data resulting from delays, as may occur because of any act/omission of
+      parties. This disclaimer of liability also applies to any damages or injury caused by any
+      failure of performance, error, omission, interruption, deletion, defect, delay in operation or
+      transmission, computer virus, communication line failure, theft or destruction or unauthorized
+      access to, alteration of, or use of record, whether for breach of contract, tortuous
+      behaviour, negligence, or under any other cause of action.
     </p>
 
     <p className="mb-5 font-medium">
-      THE COMPANY ALSO MAKES IT CLEAR THAT IT SHALL NOT BE HELD LIABLE FOR ANY
-      DAMAGE/HURT/INCONVENIENCE CAUSED TO THE USER THROUGH THE COURSE OF USAGE OF THE{' '}
-      <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> AND/OR CONTENT OR AS A RESULT
-      OF THE USERS’ ACTIONS. THE COMPANY MAKES NO REPRESENTATIONS OR WARRANTIES AS TO THE CONDUCT OF
-      THE USERS.
+      The company also makes it clear that it shall not be held liable for any
+      damage/hurt/inconvenience caused to the user through the course of usage of the application
+      and/or website and/or content or as a result of the users’ actions. The company makes no
+      representations or warranties as to the conduct of the users.
     </p>
 
     <p className="mb-5 font-medium">
-      THE CONTENT ON THE <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> ARE
-      INTENDED TO BE SUBJECT TO AVAILABILITY, WITHOUT ANY PROMISES OR GUARANTEES ON THE SAME BY THE
-      COMPANY OR BY THE WEBSITE & <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span>,
-      AND WHILE CERTAIN INFORMATION AVAILABLE ON THE{' '}
-      <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> IS THE PROPERTY OF THE COMPANY
-      AND THE COMPANY ENDEAVOURS TO KEEP THE SAID INFORMATION UPDATED AND ACCURATE, THE COMPANY
-      SHALL NOT MAKE NO REPRESENTATIONS OR WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, ABOUT THE
-      COMPLETENESS, ACCURACY, RELIABILITY, SUITABILITY OR AVAILABILITY WITH RESPECT TO THE{' '}
-      <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> OR
+      The content on the application and/or website are intended to be subject to availability,
+      without any promises or guarantees on the same by the company or by the website & application
+      and/or website, and while certain information available on the application and/or website is
+      the property of the company and the company endeavours to keep the said information updated
+      and accurate, the company shall not make no representations or warranties of any kind, express
+      or implied, about the completeness, accuracy, reliability, suitability or availability with
+      respect to the application and/or website or the information, or related graphics contained on
+      the application and/or website for any purpose. any reliance you place on such information is
+      therefore strictly at your own risk.
     </p>
 
     <p className="mb-5 font-medium">
-      THE INFORMATION, OR RELATED GRAPHICS CONTAINED ON THE{' '}
-      <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> FOR ANY PURPOSE. ANY RELIANCE
-      YOU PLACE ON SUCH INFORMATION IS THEREFORE STRICTLY AT YOUR OWN RISK.
+      The company bears no responsibility whatsoever for any consequences arising from the use of
+      the application and/or website by users. The use of the application and/or website are the
+      sole responsibility of the user (or legally authorized person on behalf of the user), and in
+      case of any negligence on the part of the user in acting on the same shall not be construed as
+      imposing any liability, direct or indirect, on the company/application and/or website.
     </p>
 
     <p className="mb-5 font-medium">
-      THE COMPANY BEARS NO RESPONSIBILITY WHATSOEVER FOR ANY CONSEQUENCES ARISING FROM THE USE OF
-      THE <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> BY USERS. THE USE OF THE{' '}
-      <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> ARE THE SOLE RESPONSIBILITY OF
-      THE USER (OR LEGALLY AUTHORIZED PERSON ON BEHALF OF THE USER), AND IN CASE OF ANY NEGLIGENCE
-      ON THE PART OF THE USER IN ACTING ON THE SAME SHALL NOT BE CONSTRUED AS IMPOSING ANY
-      LIABILITY, DIRECT OR INDIRECT, ON THE COMPANY/APPLICATION AND/OR WEBSITE.
+      The company shall disclaim all responsibility and owns no liability to users for any outcome
+      (incidental, direct, indirect or otherwise) from the use of the application and/or website. in
+      no event will the company be liable for any loss or damage including without limitation,
+      indirect or consequential loss or damage, or any loss or damage whatsoever arising from loss
+      of data or profits arising out of, or in connection with, the use of the application and/or
+      website.
     </p>
 
     <p className="mb-5 font-medium">
-      THE COMPANY SHALL DISCLAIM ALL RESPONSIBILITY AND OWNS NO LIABILITY TO USERS FOR ANY OUTCOME
-      (INCIDENTAL, DIRECT, INDIRECT OR OTHERWISE) FROM THE USE OF THE{' '}
-      <span className="bg-gray-200">APPLICATION AND/OR WEBSITE.</span> IN NO EVENT WILL THE COMPANY
-      BE LIABLE FOR ANY LOSS OR DAMAGE INCLUDING WITHOUT LIMITATION, INDIRECT OR CONSEQUENTIAL LOSS
-      OR DAMAGE, OR ANY LOSS OR DAMAGE WHATSOEVER ARISING FROM LOSS OF DATA OR PROFITS ARISING OUT
-      OF, OR IN CONNECTION WITH, THE USE OF THE{' '}
-      <span className="bg-gray-200">APPLICATION AND/OR WEBSITE.</span>
+      Through this application and/or website, you are able to link to other application and/or
+      websites which are not under the control of the company. we have no control over nature,
+      content and availability of those sites. The inclusion of any links does not necessarily imply
+      a recommendation or endorse the views expressed within them. Every effort is made to keep the
+      application and/or website up and running smoothly. However, the company takes no
+      responsibility for, and will not be liable for, the application and/or website being
+      temporarily unavailable due to technical issues beyond our control.
     </p>
 
     <p className="mb-5 font-medium">
-      THROUGH THIS <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span>, YOU ARE ABLE TO
-      LINK TO OTHER <span className="bg-gray-200">APPLICATION AND/OR WEBSITES</span> WHICH ARE NOT
-      UNDER THE CONTROL OF THE COMPANY. WE HAVE NO CONTROL OVER NATURE, CONTENT AND AVAILABILITY OF
-      THOSE SITES. THE INCLUSION OF ANY LINKS DOES NOT NECESSARILY IMPLY A RECOMMENDATION OR ENDORSE
-      THE VIEWS EXPRESSED WITHIN THEM. EVERY EFFORT IS MADE TO KEEP THE
-      <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> UP AND RUNNING SMOOTHLY.
-      HOWEVER, THE COMPANY TAKES NO RESPONSIBILITY FOR, AND WILL NOT BE LIABLE FOR, THE{' '}
-      <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> BEING TEMPORARILY UNAVAILABLE
-      DUE TO TECHNICAL ISSUES BEYOND OUR CONTROL.
+      To the maximum extent permitted by applicable law, the company will have no liability related
+      to user content arising under intellectual property rights, libel, privacy, publicity,
+      obscenity or other laws. application and/or website also disclaims all liability with respect
+      to the misuse, loss, modification or unavailability of any user content.
     </p>
 
     <p className="mb-5 font-medium">
-      TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE COMPANY WILL HAVE NO LIABILITY RELATED
-      TO USER CONTENT ARISING UNDER INTELLECTUAL PROPERTY RIGHTS, LIBEL, PRIVACY, PUBLICITY,
-      OBSCENITY OR OTHER LAWS. <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> ALSO
-      DISCLAIMS ALL LIABILITY WITH RESPECT TO THE MISUSE, LOSS, MODIFICATION OR UNAVAILABILITY OF
-      ANY USER CONTENT.
-    </p>
-
-    <p className="mb-5 font-medium">
-      THE USER UNDERSTANDS AND AGREES THAT ANY MATERIAL OR DATA DOWNLOADED OR OTHERWISE OBTAINED
-      THROUGH THE <span className="bg-gray-200">APPLICATION AND/OR WEBSITE</span> ARE DONE ENTIRELY
-      AT HIS/HER OWN DISCRETION AND RISK AND HE/SHE WILL BE SOLELY RESPONSIBLE FOR ANY DAMAGE TO
-      HIS/HER COMPUTER SYSTEMS OR LOSS OF DATA THAT RESULTS FROM THE DOWNLOAD OF SUCH MATERIAL OR
-      DATA.
+      The user understands and agrees that any material or data downloaded or otherwise obtained
+      through the application and/or website are done entirely at his/her own discretion and risk
+      and he/she will be solely responsible for any damage to his/her computer systems or loss of
+      data that results from the download of such material or data.
     </p>
   </div>
 );

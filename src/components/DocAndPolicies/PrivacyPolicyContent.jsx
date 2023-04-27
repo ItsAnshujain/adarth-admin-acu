@@ -3,17 +3,17 @@ import React from 'react';
 
 const PrivacyPolicyContent = () => (
   <div className="px-5 max-h-[500px] overflow-y-auto">
-    <h2 className="text-center font-bold text-red-450 mb-5">
-      PRIVATE AND CONFIDENTIAL - FOR CLIENT USE AND DISCUSSION ONLY
-    </h2>
-    <h2 className="text-center font-bold mb-5 border-b border-black">PRIVACY POLICY</h2>
+    <h2 className="text-center font-bold mb-5 border-b border-black mt-3 pb-2">PRIVACY POLICY</h2>
     <h3 className="text-center font-bold italic mb-5">Welcome to Adarth’s Privacy Policy</h3>
 
     <section className="mb-5">
       The creator of this Privacy Policy ensures a steady commitment to Your privacy with regard to
       the protection of your invaluable information that you may share across this Website and
-      Applications. This privacy policy contains information about the Website and Application. To
-      provide You with Our uninterrupted use of the Website, We may collect and, in some
+      Applications. This privacy policy contains information about the Website and Application.
+    </section>
+
+    <section className="mb-5">
+      To provide You with Our uninterrupted use of the Website, We may collect and, in some
       circumstances, disclose information about you with your permission. To ensure better
       protection of Your privacy, We provide this notice explaining Our information collection and
       disclosure policies, and the choices You make about the way Your information is collected and
@@ -32,7 +32,7 @@ const PrivacyPolicyContent = () => (
         <List.Item>Google Analytics</List.Item>
         <List.Item>Google Adsense</List.Item>
         <List.Item>Your Rights</List.Item>
-        <List.Item>Compliances </List.Item>
+        <List.Item>Compliances</List.Item>
         <List.Item>Confidentiality</List.Item>
         <List.Item>Other Information Collectors</List.Item>
         <List.Item>Our Disclosure of Your Information</List.Item>
@@ -52,8 +52,8 @@ const PrivacyPolicyContent = () => (
         unenforceable as of that date. If you do not agree with the terms and conditions of our
         Privacy Policy, including in relation to the manner of collection or use of your
         information, please do not use or access the Site. If you have any questions or concerns
-        regarding this Privacy Policy, you should contact our Customer Support Desk at{' '}
-        <span className="bg-yellow-300">info@adarth.in.</span>
+        regarding this Privacy Policy, you should contact our Customer Support Desk at
+        info@adarth.in
       </p>
     </section>
 
@@ -66,6 +66,11 @@ const PrivacyPolicyContent = () => (
 
     <section className="mb-5">
       <h2 className="text-center font-bold">INFORMATION WE COLLECT</h2>
+      <p>
+        We are committed to respecting Your online privacy. We further recognize Your need for
+        appropriate protection and management of any Personal Information You share with us. We may
+        collect the following information:
+      </p>
       <List type="ordered" withPadding listStyleType="disc">
         <List.Item>
           Personal data including but not limited to Name, Gender, Phone Number, Email ID, Aadhar
@@ -87,6 +92,7 @@ const PrivacyPolicyContent = () => (
       </List>
 
       <div>
+        <p>Details of App usage for analytics.</p>
         <p>
           This privacy policy also applies to data we collect from users who are not registered as
           members of this App, including, but not limited to, browsing behavior, pages viewed etc.
@@ -101,7 +107,7 @@ const PrivacyPolicyContent = () => (
             To communicate the necessary account and service-related information from time to time;
           </List.Item>
           <List.Item>
-            To allow you to receive quaList.Itemty customer care services and data Collection;
+            To allow you to receive quality customer care services and data Collection;
           </List.Item>
           <List.Item>To comply with applicable laws, rules and regulations;</List.Item>
         </List>
@@ -113,14 +119,16 @@ const PrivacyPolicyContent = () => (
           also use contact information internally to direct its efforts for service improvement but
           shall immediately delete all such information upon withdrawal of your consent for the same
           through the <span className="font-bold">‘unsubscribe’</span> button or through an email to
-          be sent to <span className="font-bold">“info@adarth.com”.</span> To the extent possible,
-          we provide You with the option of not divulging any specific information that you wish for
-          us not to collect, store or use. You may also choose not to use a particular service or
-          feature on the App and opt-out of any non-essential communications from the App. Further,
-          transacting over the internet has inherent risks which can only be avoided by following
-          security practices yourself, such as not revealing account/login related information to
-          any other person and informing our customer care team about any suspicious activity or
-          where your account has/may have been compromised.
+          be sent to <span className="font-bold">“info@adarth.com”.</span>
+        </p>
+        <p>
+          To the extent possible, we provide You with the option of not divulging any specific
+          information that you wish for us not to collect, store or use. You may also choose not to
+          use a particular service or feature on the App and opt-out of any non-essential
+          communications from the App. Further, transacting over the internet has inherent risks
+          which can only be avoided by following security practices yourself, such as not revealing
+          account/login related information to any other person and informing our customer care team
+          about any suspicious activity or where your account has/may have been compromised.
         </p>
       </div>
     </section>
@@ -140,15 +148,21 @@ const PrivacyPolicyContent = () => (
       <p>
         For more details about the nature of such communications, please refer to our Terms of
         Service. Further, your data and Sensitive Personal data may be collected and stored by Us
-        for internal record. We use Your tracking information such as IP addresses, and or Device ID
-        to help identify you and to gather broad demographic information and make further services
-        available to you. We will not sell, license or trade Your personal information. We will not
-        share your personal information with others unless they are acting under our instructions or
-        we are required to do so by law. Information collected via Our server logs includes
-        user&apos;s IP addresses and the pages visited; this will be used to manage the web system
-        and troubleshoot problems. We also use third-party analytics, tracking, optimization and
-        targeting tools to understand how users engage with our App so that we can improve it and
-        cater personalized content/ads according to their preferences.
+        for internal record.
+      </p>
+      <p>
+        We use Your tracking information such as IP addresses, and or Device ID to help identify you
+        and to gather broad demographic information and make further services available to you. We
+        will not sell, license or trade Your personal information. We will not share your personal
+        information with others unless they are acting under our instructions or we are required to
+        do so by law.
+      </p>
+      <p>
+        Information collected via Our server logs includes user&apos;s IP addresses and the pages
+        visited; this will be used to manage the web system and troubleshoot problems. We also use
+        third-party analytics, tracking, optimization and targeting tools to understand how users
+        engage with our App so that we can improve it and cater personalized content/ads according
+        to their preferences.
       </p>
     </section>
 
@@ -163,9 +177,11 @@ const PrivacyPolicyContent = () => (
         those purposes specified by us, within the scope of the consent of the individual concerned
         or as required by law. We will only retain personal information as long as necessary for the
         fulfillment of those purposes. We will collect personal information by lawful and fair means
-        and with the knowledge and consent of the individual concerned. Personal data should be
-        relevant to the purposes for which it is to be used, and, to the extent necessary for those
-        purposes, should be accurate, complete, and up-to-date.
+        and with the knowledge and consent of the individual concerned.
+      </p>
+      <p>
+        Personal data should be relevant to the purposes for which it is to be used, and, to the
+        extent necessary for those purposes, should be accurate, complete, and up-to-date.
       </p>
     </section>
 
@@ -207,15 +223,10 @@ const PrivacyPolicyContent = () => (
           services.
         </List.Item>
         <List.Item>
-          <span className="font-bold"> Analytical/performance cookies.</span> They allow us to
+          <span className="font-bold">Analytical/performance cookies.</span> They allow us to
           recognize and count the number of visitors and to see how visitors move around our App
           when they are using it. This helps us to improve the way our App works, for example, by
           ensuring that users are finding what they are looking for easily.
-        </List.Item>
-        <List.Item>
-          <span className="font-bold">Functionality cookies.</span> These are used to recognize you
-          when you return to our App. This enables us to personalize our content for you, greet you
-          by name and remember your preferences (for example, your choice of language or region).
         </List.Item>
         <List.Item>
           <span className="font-bold">Functionality cookies.</span> These are used to recognize you
@@ -242,6 +253,8 @@ const PrivacyPolicyContent = () => (
         collecting anonymous data on where you have come from, which pages you visit, and how long
         you spend on the site. This data is then stored by Google, windows, ios operating system and
         other similar platforms to create reports. These cookies do not store your personal data.
+      </p>
+      <p>
         The information generated by the cookie about your use of the App, including your IP
         address, may be transmitted to and stored by Google servers, windows, ios operating system
         and other similar platforms on servers in the United States or other domicile country.
@@ -271,7 +284,7 @@ const PrivacyPolicyContent = () => (
           other Apps.
         </List.Item>
         <List.Item>
-          Googlea&pos;s and similar platform’s use of advertising cookies enables us and our
+          Google&apos;s and similar platform’s use of advertising cookies enables us and our
           partners to serve advertisements to you based on their visit to our Platform and/or other
           Apps on the Internet.
         </List.Item>
@@ -293,6 +306,7 @@ const PrivacyPolicyContent = () => (
 
     <section className="mb-5">
       <h2 className="text-center font-bold">YOUR RIGHTS</h2>
+      <p>Unless subject to an exemption, you have the following rights concerning your data: </p>
       <List type="ordered" withPadding listStyleType="disc">
         <List.Item>The right to request a copy of your data which we hold about you;</List.Item>
         <List.Item>
@@ -438,21 +452,28 @@ const PrivacyPolicyContent = () => (
         We may host surveys for survey creators for our App who are the owners and users of your
         survey responses. We do not own or sell your responses. Anything you expressly disclose in
         your responses will be disclosed to survey creators. Please contact the survey creator
-        directly to better understand how they might share your survey responses. Information
-        collected will not be considered as sensitive if it is freely available and accessible in
-        the public domain or is furnished under the Right to Information Act, 2005, any rules made
-        thereunder or any other law for the time being in force. Due to the existing regulatory
-        environment, we cannot ensure that all of your private communications and other personally
-        identifiable information will never be disclosed in ways not otherwise described in this
-        Privacy Policy. By way of example (without limiting and foregoing), we may be forced to
-        disclose information to the government, law enforcement agencies or third parties.
-        Therefore, although we use industry-standard practices to protect your privacy, we do not
-        promise, and you should not expect, that your personally identifiable information or private
-        communications would always remain private. We do however assure you that any disclosure of
-        your personally identifiable information shall be personally intimated to you through an
-        email sent to your provided email address. As a matter of policy, we do not sell or rent any
-        personally identifiable information about you to any third party. However, the following
-        describes some of the ways that your personally identifiable information may be disclosed:
+        directly to better understand how they might share your survey responses.
+      </p>
+      <p>
+        Information collected will not be considered as sensitive if it is freely available and
+        accessible in the public domain or is furnished under the Right to Information Act, 2005,
+        any rules made thereunder or any other law for the time being in force.
+      </p>
+      <p>
+        Due to the existing regulatory environment, we cannot ensure that all of your private
+        communications and other personally identifiable information will never be disclosed in ways
+        not otherwise described in this Privacy Policy. By way of example (without limiting and
+        foregoing), we may be forced to disclose information to the government, law enforcement
+        agencies or third parties. Therefore, although we use industry-standard practices to protect
+        your privacy, we do not promise, and you should not expect, that your personally
+        identifiable information or private communications would always remain private. We do
+        however assure you that any disclosure of your personally identifiable information shall be
+        personally intimated to you through an email sent to your provided email address.
+      </p>
+      <p>
+        As a matter of policy, we do not sell or rent any personally identifiable information about
+        you to any third party. However, the following describes some of the ways that your
+        personally identifiable information may be disclosed:
       </p>
       <List type="ordered" withPadding listStyleType="disc">
         <List.Item>
@@ -495,6 +516,8 @@ const PrivacyPolicyContent = () => (
         employ many different security techniques to protect such data from unauthorized access by
         members inside and outside the Firm. We follow generally accepted industry standards to
         protect the Personal Information submitted to us and information that we have accessed.
+      </p>
+      <p>
         However, as effective as encryption technology is, no security system is impenetrable. Our
         Firm cannot guarantee the security of our database, nor can we guarantee that information
         you provide won’t be intercepted while being transmitted to the Firm over the Internet.
@@ -545,13 +568,12 @@ const PrivacyPolicyContent = () => (
       <p className="text-center font-bold">CONTACT US</p>
       <p>
         If you have any questions or concerns regarding this privacy policy, you should contact us
-        by sending an e-mail to{' '}
-        <span className="bg-yellow-300 font-bold">“__________________.com”</span> or by writing to
+        by sending an e-mail to <span className="font-bold">“info@adarth.in”</span> or by writing to
         us at:
       </p>
     </section>
 
-    <h2 className="text-center font-bold underline">M/s. ADARTH PRIVATE LIMITED</h2>
+    <h2 className="text-center font-bold underline">ADARTH PRIVATE LIMITED</h2>
     <h2 className="text-center font-bold underline">
       208, 2ND FLOOR, DLF STAR TOWER, SECTOR - 30 GURGAON, HARYANA- 122001
     </h2>
