@@ -150,7 +150,7 @@ const PurchaseAndInvoiceContent = () => {
     <>
       <div className="grid grid-cols-2 gap-x-4">
         <TextInput
-          label="Description of Goods and Service"
+          label="Description of Goods and Services"
           name="name"
           withAsterisk
           errors={errors}

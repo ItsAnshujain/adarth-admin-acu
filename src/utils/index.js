@@ -212,7 +212,7 @@ export const months = [
 
 export const monthsInShort = [
   'Jan',
-  'Febr',
+  'Feb',
   'Mar',
   'Apr',
   'May',
