@@ -129,7 +129,7 @@ const Preview = () => {
                   values?.specifications?.impressions?.max &&
                   values.specifications.impressions.max.toString().length > 6
                     ? getWord(values.specifications.impressions.max)
-                    : values.specifications.impressions.max.length || 0
+                    : values.specifications.impressions.max || 0
                 }+ Total Impressions`}
               </Badge>
             </div>
@@ -173,7 +173,13 @@ const Preview = () => {
                       {values?.specifications?.size?.width || 0}ft
                     </p>
                     <p className=" text-slate-400 text-md font-light">Impressions</p>
-                    <p className="mb-4">{values?.specifications?.impressions?.max || 'NA'}</p>
+                    <p className="mb-4">
+                      {values?.specifications?.impressions?.max &&
+                      values.specifications.impressions.max.toString().length > 6
+                        ? getWord(values.specifications.impressions.max)
+                        : values.specifications.impressions.max || 0}
+                      +
+                    </p>
                     <p className="text-slate-400 text-md font-light">Resolution</p>
                     <p>{values?.specifications?.resolutions || 'NA'}</p>
                   </div>

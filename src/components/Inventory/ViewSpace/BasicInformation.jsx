@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
+import { getWord } from 'num-count';
 import layers from '../../../assets/layers.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MapView from '../CreateSpace/MapView';
@@ -332,10 +333,14 @@ const BasicInfo = ({
                       {inventoryDetails?.specifications?.size?.width || 0}ft
                     </Text>
                     <Text color="gray" size="xs" weight="300">
-                      Impression
+                      Impressions
                     </Text>
                     <Text className="mb-4">
-                      {inventoryDetails?.specifications?.impressions?.max || 0}+
+                      {inventoryDetails?.specifications?.impressions?.max &&
+                      inventoryDetails.specifications.impressions.max.toString().length > 6
+                        ? getWord(inventoryDetails.specifications.impressions.max)
+                        : inventoryDetails.specifications.impressions.max || 0}
+                      +
                     </Text>
                     <Text color="gray" size="xs" weight="300">
                       Resolution
