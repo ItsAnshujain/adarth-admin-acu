@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ActionIcon, Badge, Box, Image, Loader, Progress, Text } from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
@@ -345,12 +345,34 @@ const Home = () => {
 
   const handleSelection = selectedRows => form.setFieldValue('spaces', selectedRows);
 
-  const handleSubmit = formData => {
+  const handleDeleteInventories = formData => {
+    // console.log('delete');
+    // return;
     let data = {};
     data = formData.spaces.map(item => item._id);
     if (!data.length) {
       showNotification({
-        title: 'Please select atleast one place to delete',
+        title: 'Please select atleast one space to delete',
+        color: 'blue',
+      });
+      return;
+    }
+
+    deleteInventoryData(data, {
+      onSuccess: () => {
+        form.reset();
+      },
+    });
+  };
+
+  const handleDisableInventories = formData => {
+    // console.log('disable');
+    // return;
+    let data = {};
+    data = formData.spaces.map(item => item._id);
+    if (!data.length) {
+      showNotification({
+        title: 'Please select atleast one space to disable',
         color: 'blue',
       });
       return;
@@ -374,10 +396,7 @@ const Home = () => {
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <FormProvider form={form}>
-        <form
-          onSubmit={form.onSubmit(handleSubmit)}
-          className={classNames(viewType.inventory === 'grid' ? 'h-[70%]' : '')}
-        >
+        <form className={classNames(viewType.inventory === 'grid' ? 'h-[70%]' : '')}>
           <AreaHeader
             text="List of spaces"
             isLoading={isDeletedInventoryDataLoading}
@@ -394,9 +413,20 @@ const Home = () => {
                   {isDeletedInventoryDataLoading ? (
                     <p>Inventory deleting...</p>
                   ) : (
-                    <ActionIcon size={20} type="submit">
+                    <ActionIcon size={20} onClick={form.onSubmit(e => handleDeleteInventories(e))}>
                       <Image src={TrashIcon} />
                     </ActionIcon>
+                  )}
+
+                  {isDeletedInventoryDataLoading ? (
+                    <p>Inventory disabling...</p>
+                  ) : (
+                    <Button
+                      className="secondary-button ml-4"
+                      onClick={form.onSubmit(e => handleDisableInventories(e))}
+                    >
+                      Disable
+                    </Button>
                   )}
                 </RoleBased>
               )}

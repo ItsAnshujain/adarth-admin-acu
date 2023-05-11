@@ -16,7 +16,7 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
   const { id: inventoryId } = useParams();
   const { data: operationaCostData, isLoading } = useFetchOperationalCost(inventoryId);
 
-  const handleOperationalCost = (_, costId, type, amount, description, date) =>
+  const handleOperationalCost = (_, costId, type, amount, description, date, bookingId) =>
     modals.openContextModal('basic', {
       title: `${costId ? 'Edit' : 'Add'} Operational Cost`,
       innerProps: {
@@ -29,6 +29,7 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
             amount={amount}
             description={description}
             date={date}
+            bookingId={bookingId}
           />
         ),
       },
@@ -72,6 +73,7 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
                               item?.amount,
                               item?.description,
                               item?.date,
+                              item?.bookingId,
                             )
                           }
                         >

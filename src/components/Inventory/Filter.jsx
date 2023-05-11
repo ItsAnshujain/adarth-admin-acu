@@ -63,6 +63,12 @@ const Filter = ({ isOpened, setShowFilter }) => {
     min: 0,
     max: 10000,
   });
+  const widthMin = searchParams.get('widthMin');
+  const widthMax = searchParams.get('widthMax');
+
+  const heightMin = searchParams.get('heightMin');
+  const heightMax = searchParams.get('heightMax');
+
   const minPrice = searchParams.get('minPrice');
   const maxPrice = searchParams.get('maxPrice');
 
@@ -187,8 +193,46 @@ const Filter = ({ isOpened, setShowFilter }) => {
     searchParams.delete('minPrice');
     searchParams.delete('minFootFall');
     searchParams.delete('maxFootfall');
+    searchParams.delete('widthMax');
+    searchParams.delete('widthMin');
+    searchParams.delete('heightMin');
+    searchParams.delete('heightMax');
     setSearchParams(searchParams);
     setFilterOptions(defaultValue);
+  };
+
+  const handleMinWidth = e => {
+    setDynamicNumInput(prevState => ({ ...prevState, min: e }));
+    searchParams.set('widthMin', e);
+    searchParams.set('widthMax', searchParams.get('widthMax') || 3000000);
+  };
+  const handleMaxWidth = e => {
+    setDynamicNumInput(prevState => ({ ...prevState, max: e }));
+    searchParams.set('widthMax', e);
+    searchParams.set('widthMin', searchParams.get('widthMin') || 0);
+  };
+  const handleWidthSlider = val => {
+    setDynamicNumInput(prevState => ({ ...prevState, min: val[0] }));
+    setDynamicNumInput(prevState => ({ ...prevState, max: val[1] }));
+    searchParams.set('widthMin', val[0]);
+    searchParams.set('widthMax', val[1]);
+  };
+
+  const handleMinHeight = e => {
+    setDynamicNumInput(prevState => ({ ...prevState, min: e }));
+    searchParams.set('heightMin', e);
+    searchParams.set('heightMax', searchParams.get('heightMax') || 3000000);
+  };
+  const handleMaxHeight = e => {
+    setDynamicNumInput(prevState => ({ ...prevState, max: e }));
+    searchParams.set('heightMax', e);
+    searchParams.set('heightMin', searchParams.get('heightMin') || 0);
+  };
+  const handleHeightSlider = val => {
+    setDynamicNumInput(prevState => ({ ...prevState, min: val[0] }));
+    setDynamicNumInput(prevState => ({ ...prevState, max: val[1] }));
+    searchParams.set('heightMin', val[0]);
+    searchParams.set('heightMax', val[1]);
   };
 
   const handleMinPrice = e => {
@@ -317,6 +361,112 @@ const Filter = ({ isOpened, setShowFilter }) => {
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">{renderDynamicOptionsArr(inititalFilterData.tier, 'tier')}</div>
+            </Accordion.Panel>
+          </Accordion.Item>
+
+          <Accordion.Item value="width" className="mb-4 rounded-xl border">
+            <Accordion.Control>
+              <p className="text-lg">Width</p>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <div className="mt-2">
+                <div className="flex flex-col gap-2 mb-2">
+                  <div className="flex justify-between gap-8">
+                    <div>
+                      <NumberInput
+                        value={
+                          widthMin && !Number.isNaN(parseInt(widthMin, 10))
+                            ? parseInt(widthMin, 10)
+                            : 0
+                        }
+                        onChange={handleMinWidth}
+                        label="Min"
+                      />
+                    </div>
+                    <div>
+                      <NumberInput
+                        value={
+                          widthMax && !Number.isNaN(parseInt(widthMax, 10))
+                            ? parseInt(widthMax, 10)
+                            : 10000
+                        }
+                        onChange={handleMaxWidth}
+                        label="Max"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <RangeSlider
+                      onChange={handleWidthSlider}
+                      min={0}
+                      max={10000}
+                      styles={sliderStyle}
+                      step={1000}
+                      value={[
+                        widthMin && !Number.isNaN(parseInt(widthMin, 10))
+                          ? parseInt(widthMin, 10)
+                          : 0,
+                        widthMax && !Number.isNaN(parseInt(widthMax, 10))
+                          ? parseInt(widthMax, 10)
+                          : 10000,
+                      ]}
+                    />
+                  </div>
+                </div>
+              </div>
+            </Accordion.Panel>
+          </Accordion.Item>
+
+          <Accordion.Item value="height" className="mb-4 rounded-xl border">
+            <Accordion.Control>
+              <p className="text-lg">Height</p>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <div className="mt-2">
+                <div className="flex flex-col gap-2 mb-2">
+                  <div className="flex justify-between gap-8">
+                    <div>
+                      <NumberInput
+                        value={
+                          heightMin && !Number.isNaN(parseInt(heightMin, 10))
+                            ? parseInt(heightMin, 10)
+                            : 0
+                        }
+                        onChange={handleMinHeight}
+                        label="Min"
+                      />
+                    </div>
+                    <div>
+                      <NumberInput
+                        value={
+                          heightMax && !Number.isNaN(parseInt(heightMax, 10))
+                            ? parseInt(heightMax, 10)
+                            : 10000
+                        }
+                        onChange={handleMaxHeight}
+                        label="Max"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <RangeSlider
+                      onChange={handleHeightSlider}
+                      min={0}
+                      max={10000}
+                      styles={sliderStyle}
+                      step={1000}
+                      value={[
+                        heightMin && !Number.isNaN(parseInt(heightMin, 10))
+                          ? parseInt(heightMin, 10)
+                          : 0,
+                        heightMax && !Number.isNaN(parseInt(heightMax, 10))
+                          ? parseInt(heightMax, 10)
+                          : 10000,
+                      ]}
+                    />
+                  </div>
+                </div>
+              </div>
             </Accordion.Panel>
           </Accordion.Item>
 
