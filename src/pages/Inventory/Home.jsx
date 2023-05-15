@@ -386,8 +386,6 @@ const Home = () => {
       return;
     }
 
-    // console.log('disable', { inventoryId: data, data: { isActive: false } });
-    // return;
     update(
       { inventoryIds: data, data: { isActive: false } },
       {
