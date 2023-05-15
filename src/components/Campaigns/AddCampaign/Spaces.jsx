@@ -116,6 +116,12 @@ const SelectSpace = () => {
           ),
       },
       {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+      },
+      {
         Header: 'MEDIA OWNER NAME',
         accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
@@ -314,6 +320,7 @@ const SelectSpace = () => {
         obj.otherPhotos = item?.basicInformation?.otherPhotos;
         obj._id = item?._id;
         obj.spaceName = item?.basicInformation?.spaceName;
+        obj.inventoryId = item?.inventoryId;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.category = item?.basicInformation?.category?.name;
         obj.dimension = item?.specifications?.size;

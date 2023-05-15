@@ -14,7 +14,11 @@ import Search from '../../components/Search';
 import GridView from '../../components/Inventory/Grid';
 import MapView from '../../components/Inventory/MapView';
 import useLayoutView from '../../store/layout.store';
-import { useDeleteInventory, useFetchInventory } from '../../hooks/inventory.hooks';
+import {
+  useDeleteInventory,
+  useFetchInventory,
+  useUpdateInventory,
+} from '../../hooks/inventory.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
 import { categoryColors, ROLES } from '../../utils';
@@ -47,6 +51,8 @@ const Home = () => {
   const { mutate: deleteInventoryData, isLoading: isDeletedInventoryDataLoading } =
     useDeleteInventory();
   const [selectedCards, setSelectedCards] = useState([]);
+
+  const { mutate: update, isLoading: isUpdateInventoryLoading } = useUpdateInventory();
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
@@ -141,6 +147,12 @@ const Home = () => {
               </div>
             );
           }, []),
+      },
+      {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
       },
       {
         Header: 'MEDIA OWNER NAME',
@@ -346,8 +358,6 @@ const Home = () => {
   const handleSelection = selectedRows => form.setFieldValue('spaces', selectedRows);
 
   const handleDeleteInventories = formData => {
-    // console.log('delete');
-    // return;
     let data = {};
     data = formData.spaces.map(item => item._id);
     if (!data.length) {
@@ -366,8 +376,6 @@ const Home = () => {
   };
 
   const handleDisableInventories = formData => {
-    // console.log('disable');
-    // return;
     let data = {};
     data = formData.spaces.map(item => item._id);
     if (!data.length) {
@@ -378,11 +386,16 @@ const Home = () => {
       return;
     }
 
-    deleteInventoryData(data, {
-      onSuccess: () => {
-        form.reset();
+    // console.log('disable', { inventoryId: data, data: { isActive: false } });
+    // return;
+    update(
+      { inventoryIds: data, data: { isActive: false } },
+      {
+        onSuccess: () => {
+          form.reset();
+        },
       },
-    });
+    );
   };
 
   useEffect(() => {
@@ -397,11 +410,7 @@ const Home = () => {
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <FormProvider form={form}>
         <form className={classNames(viewType.inventory === 'grid' ? 'h-[70%]' : '')}>
-          <AreaHeader
-            text="List of spaces"
-            isLoading={isDeletedInventoryDataLoading}
-            inventoryData={inventoryData}
-          />
+          <AreaHeader text="List of spaces" inventoryData={inventoryData} />
           <div className="flex justify-between h-20 items-center pr-7">
             <div className="flex items-center">
               <RowsPerPage
@@ -418,8 +427,8 @@ const Home = () => {
                     </ActionIcon>
                   )}
 
-                  {isDeletedInventoryDataLoading ? (
-                    <p>Inventory disabling...</p>
+                  {isUpdateInventoryLoading ? (
+                    <p className="mx-3">Inventory disabling...</p>
                   ) : (
                     <Button
                       className="secondary-button ml-4"

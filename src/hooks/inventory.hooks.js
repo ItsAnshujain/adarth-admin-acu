@@ -55,8 +55,13 @@ export const useUpdateInventory = () => {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async ({ inventoryId, data }) => {
-      const res = await updateInventory(inventoryId, data);
+    async ({ inventoryIds, data }) => {
+      const query =
+        inventoryIds?.length === 1
+          ? `/${inventoryIds[0]}`
+          : `?${inventoryIds.map(item => `id=${item}`).join('&')}`;
+      // single id takes url param and multiple ids take query params
+      const res = await updateInventory(query, data);
       return res;
     },
     {
