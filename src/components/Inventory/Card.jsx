@@ -1,9 +1,15 @@
 import { Badge, Box, Checkbox, Image, Text } from '@mantine/core';
+import classNames from 'classnames';
 import toIndianCurrency from '../../utils/currencyFormat';
 import SpacesMenuPopover from '../Popovers/SpacesMenuPopover';
 
 const Card = ({ data, isSelected = false, onSelect = () => {} }) => (
-  <div className="flex flex-col drop-shadow-md bg-white w-[270px] max-h-[420px] mb-6">
+  <div
+    className={classNames(
+      'flex flex-col drop-shadow-md bg-white w-[270px] max-h-[420px] mb-6',
+      !data?.isActive ? 'opacity-50' : '',
+    )}
+  >
     <div className="flex-1 w-full">
       {data?.basicInformation?.spacePhoto ? (
         <Image

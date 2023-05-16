@@ -13,6 +13,14 @@ import NumberInput from '../../shared/NumberInput';
 import Select from '../../shared/Select';
 import TextareaInput from '../../shared/TextareaInput';
 import DatePicker from '../../shared/DatePicker';
+import { useBookings } from '../../../hooks/booking.hooks';
+
+const bookingQueries = {
+  page: 1,
+  limit: 100,
+  sortBy: 'createdAt',
+  sortOrder: 'desc',
+};
 
 const styles = {
   label: {
@@ -31,6 +39,8 @@ const initialValues = {
   amount: null,
   description: '',
   date: '',
+  inventoryId: '',
+  bookingId: '',
 };
 
 const schema = yup.object({
@@ -56,6 +66,7 @@ const AddOperationalCostModal = ({
   amount,
   description,
   date,
+  bookingId,
 }) => {
   const form = useForm({ validate: yupResolver(schema), initialValues });
   const {
@@ -71,6 +82,13 @@ const AddOperationalCostModal = ({
       sortOrder: 'asc',
     }),
   );
+
+  const {
+    data: bookingDatas,
+    isLoading: isBookingDatasLoading,
+    isSuccess: isBookingDatasLoaded,
+  } = useBookings(serialize(bookingQueries));
+
   const { mutate: addCost, isLoading: isAddLoading } = useAddOperationalCost();
   const { mutate: editCost, isLoading: isEditLoading } = useUpdateOperationalCost();
 
@@ -78,6 +96,10 @@ const AddOperationalCostModal = ({
     const data = { ...formData };
     data.type = data.type.value;
     data.inventoryId = inventoryId;
+
+    if (data.bookingId?.value) {
+      data.bookingId = data.bookingId.value;
+    }
 
     Object.keys(data).forEach(key => {
       if (data[key] === '') {
@@ -102,6 +124,9 @@ const AddOperationalCostModal = ({
         },
         date: new Date(date) || new Date(),
         description,
+        bookingId: {
+          value: bookingId,
+        },
       });
     }
   }, [costId]);
@@ -157,6 +182,25 @@ const AddOperationalCostModal = ({
             disabled={isOperationalCostLoading || isAddLoading || isEditLoading}
             placeholder="Maximun 200 characters"
             maxLength={200}
+            className="mb-4"
+          />
+          <Select
+            label="Bookings"
+            name="bookingId"
+            errors={form.errors}
+            disabled={
+              isOperationalCostLoading || isAddLoading || isEditLoading || isBookingDatasLoading
+            }
+            placeholder="Select..."
+            size="md"
+            options={
+              isBookingDatasLoaded
+                ? bookingDatas?.docs?.map(booking => ({
+                    label: booking?.campaign?.name,
+                    value: booking?._id,
+                  }))
+                : []
+            }
             className="mb-4"
           />
           <Group position="right">

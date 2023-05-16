@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ActionIcon, Badge, Box, Image, Loader, Progress, Text } from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
@@ -14,7 +14,11 @@ import Search from '../../components/Search';
 import GridView from '../../components/Inventory/Grid';
 import MapView from '../../components/Inventory/MapView';
 import useLayoutView from '../../store/layout.store';
-import { useDeleteInventory, useFetchInventory } from '../../hooks/inventory.hooks';
+import {
+  useDeleteInventory,
+  useFetchInventory,
+  useUpdateInventory,
+} from '../../hooks/inventory.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
 import { categoryColors, ROLES } from '../../utils';
@@ -47,6 +51,8 @@ const Home = () => {
   const { mutate: deleteInventoryData, isLoading: isDeletedInventoryDataLoading } =
     useDeleteInventory();
   const [selectedCards, setSelectedCards] = useState([]);
+
+  const { mutate: update, isLoading: isUpdateInventoryLoading } = useUpdateInventory();
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
@@ -141,6 +147,12 @@ const Home = () => {
               </div>
             );
           }, []),
+      },
+      {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
       },
       {
         Header: 'MEDIA OWNER NAME',
@@ -345,12 +357,12 @@ const Home = () => {
 
   const handleSelection = selectedRows => form.setFieldValue('spaces', selectedRows);
 
-  const handleSubmit = formData => {
+  const handleDeleteInventories = formData => {
     let data = {};
     data = formData.spaces.map(item => item._id);
     if (!data.length) {
       showNotification({
-        title: 'Please select atleast one place to delete',
+        title: 'Please select atleast one space to delete',
         color: 'blue',
       });
       return;
@@ -361,6 +373,27 @@ const Home = () => {
         form.reset();
       },
     });
+  };
+
+  const handleDisableInventories = formData => {
+    let data = {};
+    data = formData.spaces.map(item => item._id);
+    if (!data.length) {
+      showNotification({
+        title: 'Please select atleast one space to disable',
+        color: 'blue',
+      });
+      return;
+    }
+
+    update(
+      { inventoryIds: data, data: { isActive: false } },
+      {
+        onSuccess: () => {
+          form.reset();
+        },
+      },
+    );
   };
 
   useEffect(() => {
@@ -374,15 +407,8 @@ const Home = () => {
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <FormProvider form={form}>
-        <form
-          onSubmit={form.onSubmit(handleSubmit)}
-          className={classNames(viewType.inventory === 'grid' ? 'h-[70%]' : '')}
-        >
-          <AreaHeader
-            text="List of spaces"
-            isLoading={isDeletedInventoryDataLoading}
-            inventoryData={inventoryData}
-          />
+        <form className={classNames(viewType.inventory === 'grid' ? 'h-[70%]' : '')}>
+          <AreaHeader text="List of spaces" inventoryData={inventoryData} />
           <div className="flex justify-between h-20 items-center pr-7">
             <div className="flex items-center">
               <RowsPerPage
@@ -394,9 +420,20 @@ const Home = () => {
                   {isDeletedInventoryDataLoading ? (
                     <p>Inventory deleting...</p>
                   ) : (
-                    <ActionIcon size={20} type="submit">
+                    <ActionIcon size={20} onClick={form.onSubmit(e => handleDeleteInventories(e))}>
                       <Image src={TrashIcon} />
                     </ActionIcon>
+                  )}
+
+                  {isUpdateInventoryLoading ? (
+                    <p className="mx-3">Inventory disabling...</p>
+                  ) : (
+                    <Button
+                      className="secondary-button ml-4"
+                      onClick={form.onSubmit(e => handleDisableInventories(e))}
+                    >
+                      Disable
+                    </Button>
                   )}
                 </RoleBased>
               )}

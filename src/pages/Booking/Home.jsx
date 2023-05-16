@@ -125,6 +125,12 @@ const Bookings = () => {
           ),
       },
       {
+        Header: 'BOOKING ID',
+        accessor: 'bookingId',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.bookingId || '-'}</p>, []),
+      },
+      {
         Header: 'CLIENT',
         accessor: 'client.name',
         Cell: ({
