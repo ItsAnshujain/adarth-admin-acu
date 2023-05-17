@@ -178,13 +178,13 @@ const Spaces = () => {
           }, []),
       },
       {
-        Header: 'DIMENSION',
+        Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
         Cell: ({
           row: {
             original: { height, width },
           },
-        }) => useMemo(() => <p>{`${height || 0}ft x ${width || 0}ft`}</p>, []),
+        }) => useMemo(() => <p>{`${width || 0}ft x ${height || 0}ft`}</p>, []),
       },
       {
         Header: 'IMPRESSION',

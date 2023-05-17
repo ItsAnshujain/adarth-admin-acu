@@ -326,11 +326,11 @@ const BasicInfo = ({
                 <div className="grid grid-cols-2 p-4 border rounded-md mb-4 flex-1">
                   <div>
                     <Text color="gray" size="xs" weight="300">
-                      Size
+                      Size (WxH)
                     </Text>
                     <Text className="mb-4">
-                      {inventoryDetails?.specifications?.size?.height || 0}ft X{' '}
-                      {inventoryDetails?.specifications?.size?.width || 0}ft
+                      {inventoryDetails?.specifications?.size?.width || 0}ft X{' '}
+                      {inventoryDetails?.specifications?.size?.height || 0}ft
                     </Text>
                     <Text color="gray" size="xs" weight="300">
                       Impressions

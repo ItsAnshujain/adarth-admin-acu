@@ -215,7 +215,7 @@ const Home = () => {
           }, []),
       },
       {
-        Header: 'DIMENSION',
+        Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
         Cell: ({
           row: {
@@ -224,8 +224,8 @@ const Home = () => {
         }) =>
           useMemo(
             () => (
-              <p>{`${specifications?.size?.height || 0}ft x ${
-                specifications?.size?.width || 0
+              <p>{`${specifications?.size?.width || 0}ft x ${
+                specifications?.size?.height || 0
               }ft`}</p>
             ),
             [],

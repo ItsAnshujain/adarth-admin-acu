@@ -177,7 +177,7 @@ const Preview = ({ data = {}, place = {} }) => {
                   name: item.spaceName,
                   address: item.location?.address,
                   cost: item.price,
-                  dimensions: `${item.dimension?.height || 0}ft x ${item.dimension?.width || 0}ft`,
+                  dimensions: `${item.dimension?.width || 0}ft x ${item.dimension?.height || 0}ft`,
                   format: item.supportedMedia,
                   lighting: item.mediaType?.name,
                   resolution: item.resolutions,

@@ -313,7 +313,7 @@ const SelectSpace = () => {
           }, []),
       },
       {
-        Header: 'DIMENSION',
+        Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
         Cell: ({
           row: {
@@ -480,8 +480,8 @@ const SelectSpace = () => {
           item?.createdBy && item.createdBy?.isPeer
             ? item?.basicInformation?.mediaOwner?.name
             : '-';
-        obj.dimension = `${item.specifications?.size?.height || 0}ft x ${
-          item.specifications?.size?.width || 0
+        obj.dimension = `${item.specifications?.size?.width || 0}ft x ${
+          item.specifications?.size?.height || 0
         }ft`;
         obj.impressionMax = item.specifications?.impressions?.max || 0;
         obj.impressionMin = item.specifications?.impressions?.min || 0;
