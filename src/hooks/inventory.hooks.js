@@ -55,12 +55,19 @@ export const useUpdateInventory = () => {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async ({ inventoryIds, data }) => {
-      const query =
-        inventoryIds?.length === 1
-          ? `/${inventoryIds[0]}`
-          : `?${inventoryIds.map(item => `id=${item}`).join('&')}`;
-      // single id takes url param and multiple ids take query params
+    async ({ inventoryId, data }) => {
+      let query;
+
+      if (typeof inventoryId === 'string') {
+        query = inventoryId;
+      } else {
+        query =
+          inventoryId?.length === 1
+            ? `/${inventoryId[0]}`
+            : `?${inventoryId?.map(item => `id=${item}`).join('&')}`;
+        // single id takes url param and multiple ids take query params
+      }
+
       const res = await updateInventory(query, data);
       return res;
     },
@@ -125,7 +132,7 @@ export const useDeleteInventory = () => {
   return useMutation(
     async data => {
       const query =
-        data?.length === 1 ? `/${data[0]}` : `?${data.map(item => `id=${item}`).join('&')}`;
+        data?.length === 1 ? `/${data[0]}` : `?${data?.map(item => `id=${item}`).join('&')}`;
       // single id takes url param and multiple ids take query params
       const res = await deleteInventory(query);
       return res?.data;

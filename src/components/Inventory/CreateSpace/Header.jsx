@@ -67,18 +67,16 @@ const Header = ({ setFormStep, formStep, isLoading, isSaved }) => {
         ) : null}
 
         {formStep < 3 ? (
-          <Button type="submit" className="bg-purple-450 order-3">
+          <Button type="submit" className="bg-purple-450 order-3" disabled={isLoading}>
             Next
             <ChevronRight className="ml-1 h-4" />
           </Button>
         ) : null}
-
         {formStep === 3 ? (
           <Button type="submit" className="bg-purple-450 order-3">
             Preview
           </Button>
         ) : null}
-
         {isSaved ? (
           <Chip checked color="lime" variant="filled" size="lg">
             Saved

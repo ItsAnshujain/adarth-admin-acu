@@ -46,7 +46,7 @@ const Places = ({ data }) => (
         </div>
         <div>
           <div className="mb-4">
-            <p className="text-slate-400 text-sm tracking-wide">Size</p>
+            <p className="text-slate-400 text-sm tracking-wide">Size (WxH)</p>
             <p className="font-normal">{data.dimensions}</p>
           </div>
           <div>

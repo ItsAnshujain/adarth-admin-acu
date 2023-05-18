@@ -318,7 +318,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
             </div>
 
             <Link
-              to={`/inventory/view-details/${data?._id}?tabType=operational-cost`}
+              to={`/inventory/view-details/${data?._id}?tabType=operational-cost&bookingId=${bookingId}`}
               className="primary-button w-fit self-center my-auto px-3 py-2 rounded-md font-medium hover:shadow-md"
             >
               Add Operational Cost

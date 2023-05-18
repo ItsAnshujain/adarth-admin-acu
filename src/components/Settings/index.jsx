@@ -5,6 +5,7 @@ import ChangePassword from './ChangePassword';
 import DeleteAccount from './DeleteAccount';
 import Header from './Header';
 import SignatureAndLetterhead from './SignatureAndLetterhead';
+import SmtpSetup from '../../pageComponents/Settings/SmtpSetup';
 
 const View = () => {
   const [tabs, setTabs] = useState(0);
@@ -18,6 +19,8 @@ const View = () => {
       <ChangePassword />
     ) : tabs === 2 ? (
       <SignatureAndLetterhead />
+    ) : tabs === 3 ? (
+      <SmtpSetup />
     ) : (
       <DeleteAccount />
     );

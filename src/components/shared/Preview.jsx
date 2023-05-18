@@ -167,10 +167,10 @@ const Preview = () => {
                     <p className="text-slate-400 text-md font-light">Media Type</p>
                     <p className="mb-4">{values?.basicInformation?.mediaType?.label}</p>
 
-                    <p className="text-slate-400 text-md font-light">Size</p>
+                    <p className="text-slate-400 text-md font-light">Size (WxH)</p>
                     <p className="mb-4">
-                      {values?.specifications?.size?.height || 0}ft X{' '}
-                      {values?.specifications?.size?.width || 0}ft
+                      {values?.specifications?.size?.width || 0}ft X{' '}
+                      {values?.specifications?.size?.height || 0}ft
                     </p>
                     <p className=" text-slate-400 text-md font-light">Impressions</p>
                     <p className="mb-4">

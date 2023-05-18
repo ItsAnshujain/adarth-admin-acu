@@ -46,6 +46,17 @@ const Header = ({ tabs, setTabs }) => (
           'font-medium tracking-wide px-0',
         )}
       >
+        SMTP Setup
+      </Button>
+      <Button
+        onClick={() => setTabs(4)}
+        className={classNames(
+          tabs === 4
+            ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3  after:bg-purple-450'
+            : 'text-black',
+          'font-medium tracking-wide px-0',
+        )}
+      >
         Delete Account
       </Button>
     </div>

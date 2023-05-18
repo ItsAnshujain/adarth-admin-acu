@@ -37,6 +37,7 @@ const SelectSpace = () => {
     'sortBy': 'basicInformation.spaceName',
     'sortOrder': 'desc',
     'isUnderMaintenance': false,
+    isActive: true,
   });
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
   const pages = searchParams.get('page');
@@ -157,14 +158,14 @@ const SelectSpace = () => {
           }, []),
       },
       {
-        Header: 'DIMENSION',
+        Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
         Cell: ({
           row: {
             original: { dimension },
           },
         }) =>
-          useMemo(() => <p>{`${dimension?.height || 0}ft x ${dimension?.width || 0}ft`}</p>, []),
+          useMemo(() => <p>{`${dimension?.width || 0}ft x ${dimension?.height || 0}ft`}</p>, []),
       },
       {
         Header: 'IMPRESSION',
