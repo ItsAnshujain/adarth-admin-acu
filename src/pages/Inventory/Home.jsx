@@ -390,7 +390,7 @@ const Home = () => {
     }
 
     update(
-      { inventoryIds: data, data: { isActive: state } },
+      { inventoryId: data, data: { isActive: state } },
       {
         onSuccess: () => {
           form.reset();
