@@ -26,6 +26,7 @@ import { FormProvider, useForm } from '../../context/formContext';
 import TrashIcon from '../../assets/delete.png';
 import RoleBased from '../../components/RoleBased';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
+import ViewByFilter from '../../pageComponents/Inventory/ViewByFilter';
 
 dayjs.extend(isBetween);
 
@@ -42,6 +43,7 @@ const Home = () => {
     'page': 1,
     'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
+    isActive: true,
   });
   const form = useForm({ initialValues });
   const viewType = useLayoutView(state => state.activeLayout);
@@ -56,6 +58,7 @@ const Home = () => {
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
+  const isActive = searchParams.get('isActive');
 
   const toggleImagePreviewModal = imgSrc =>
     modals.openContextModal('basic', {
@@ -375,7 +378,7 @@ const Home = () => {
     });
   };
 
-  const handleDisableInventories = formData => {
+  const handleToggleInventories = (formData, state) => {
     let data = {};
     data = formData.spaces.map(item => item._id);
     if (!data.length) {
@@ -387,13 +390,19 @@ const Home = () => {
     }
 
     update(
-      { inventoryIds: data, data: { isActive: false } },
+      { inventoryIds: data, data: { isActive: state } },
       {
         onSuccess: () => {
           form.reset();
         },
       },
     );
+  };
+
+  const handleViewBy = type => {
+    searchParams.set('isActive', type === 'active');
+    searchParams.set('page', 1);
+    setSearchParams(searchParams);
   };
 
   useEffect(() => {
@@ -425,22 +434,38 @@ const Home = () => {
                     </ActionIcon>
                   )}
 
-                  {isUpdateInventoryLoading ? (
-                    <p className="mx-3">Inventory disabling...</p>
+                  {isActive === 'true' ? (
+                    <Button
+                      className="secondary-button ml-4"
+                      onClick={form.onSubmit(e => handleToggleInventories(e, false))}
+                      loading={isUpdateInventoryLoading}
+                    >
+                      Disable
+                    </Button>
                   ) : (
                     <Button
                       className="secondary-button ml-4"
-                      onClick={form.onSubmit(e => handleDisableInventories(e))}
+                      onClick={form.onSubmit(e => handleToggleInventories(e, true))}
+                      loading={isUpdateInventoryLoading}
                     >
-                      Disable
+                      Enable
                     </Button>
                   )}
                 </RoleBased>
               )}
             </div>
-            {viewType.inventory !== 'map' && (
-              <Search search={searchInput} setSearch={setSearchInput} form="nosubmit" />
-            )}
+
+            <section className="flex gap-3">
+              {viewType.inventory !== 'map' && (
+                <Search
+                  search={searchInput}
+                  setSearch={setSearchInput}
+                  form="nosubmit"
+                  className="min-w-[400px]"
+                />
+              )}
+              <ViewByFilter handleViewBy={handleViewBy} />
+            </section>
           </div>
           {isInventoryDataLoading && viewType.inventory === 'list' ? (
             <div className="flex justify-center items-center h-[400px]">

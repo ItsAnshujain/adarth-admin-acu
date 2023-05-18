@@ -25,6 +25,7 @@ const Spaces = () => {
     'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
     'isUnderMaintenance': false,
+    isActive: true,
   });
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);

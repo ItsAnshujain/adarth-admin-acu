@@ -37,6 +37,7 @@ const SelectSpace = () => {
     'sortBy': 'basicInformation.spaceName',
     'sortOrder': 'desc',
     'isUnderMaintenance': false,
+    isActive: true,
   });
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
   const pages = searchParams.get('page');
