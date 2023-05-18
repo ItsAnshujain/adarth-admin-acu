@@ -67,6 +67,7 @@ const AddOperationalCostModal = ({
   description,
   date,
   bookingId,
+  bookingIdFromUrl,
 }) => {
   const form = useForm({ validate: yupResolver(schema), initialValues });
   const {
@@ -128,6 +129,8 @@ const AddOperationalCostModal = ({
           value: bookingId,
         },
       });
+    } else {
+      form.setFieldValue('bookingId', { value: bookingIdFromUrl });
     }
   }, [costId]);
 
