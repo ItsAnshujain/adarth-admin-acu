@@ -1,7 +1,6 @@
 import { Button, Menu } from '@mantine/core';
 import classNames from 'classnames';
 import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 
 const viewBy = {
   'active': 'Active',
@@ -29,7 +28,7 @@ const ViewByFilter = ({ handleViewBy = () => {} }) => {
       <Menu.Dropdown>
         {list.map(({ label, value }) => (
           <Menu.Item
-            key={uuidv4()}
+            key={label}
             onClick={() => handleActiveView(value)}
             className={classNames(activeView === value && 'text-purple-450 font-medium')}
           >
