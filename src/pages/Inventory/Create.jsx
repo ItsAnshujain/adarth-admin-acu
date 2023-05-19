@@ -205,7 +205,11 @@ const CreateSpace = () => {
     isLoading: isUpdateInventoryLoading,
     isSuccess: isEditSuccess,
   } = useUpdateInventory();
-  const { data: inventoryDetails } = useFetchInventoryById(inventoryId, !!inventoryId);
+  const {
+    data: inventoryDetails,
+    status,
+    fetchStatus,
+  } = useFetchInventoryById(inventoryId, !!inventoryId);
 
   const getForm = () =>
     formStep === 1 ? (
@@ -373,7 +377,11 @@ const CreateSpace = () => {
           <Header
             setFormStep={setFormStep}
             formStep={formStep}
-            isLoading={isLoading || isUpdateInventoryLoading}
+            isLoading={
+              isLoading ||
+              isUpdateInventoryLoading ||
+              (fetchStatus === 'fetching' && status === 'loading')
+            }
             isSaved={isCreateSuccess || isEditSuccess}
           />
           {getForm()}

@@ -273,8 +273,8 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
                   name: item?.basicInformation?.spaceName,
                   address: item.location?.address,
                   price: item?.basicInformation?.price,
-                  dimensions: `${item?.specifications?.size?.height || 0}ft x ${
-                    item?.specifications?.size?.width || 0
+                  dimensions: `${item?.specifications?.size?.width || 0}ft x ${
+                    item?.specifications?.size?.height || 0
                   }ft`,
                   supportedMedia: item?.basicInformation?.supportedMedia,
                   mediaType: item?.mediaType?.name,

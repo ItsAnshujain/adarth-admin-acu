@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import ReactPlayer from 'react-player';
 import { useModals } from '@mantine/modals';
+import { Link } from 'react-router-dom';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import uploadIcon from '../../../../assets/upload.svg';
 import uploadWhiteIcon from '../../../../assets/upload-white.svg';
@@ -310,11 +311,18 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
               <p>{data?.basicInformation?.supportedMedia || <NoData type="na" />}</p>
             </div>
           </div>
-          <div>
+          <div className="flex flex-col">
             <div className="mb-4">
               <p className="mb-2 text-sm font-light text-slate-400">Illumination</p>
               <p>{data?.specifications?.illuminations?.name || <NoData type="na" />}</p>
             </div>
+
+            <Link
+              to={`/inventory/view-details/${data?._id}?tabType=operational-cost&bookingId=${bookingId}`}
+              className="primary-button w-fit self-center my-auto px-3 py-2 rounded-md font-medium hover:shadow-md"
+            >
+              Add Operational Cost
+            </Link>
           </div>
         </div>
       </div>

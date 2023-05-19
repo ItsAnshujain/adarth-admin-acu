@@ -76,7 +76,6 @@ const Location = () => {
             />
           ) : (
             <TextInput
-              label="Address"
               name="location.address"
               withAsterisk
               styles={styles}

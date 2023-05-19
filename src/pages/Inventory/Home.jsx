@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ActionIcon, Badge, Box, Image, Loader, Progress, Text } from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
@@ -14,7 +14,11 @@ import Search from '../../components/Search';
 import GridView from '../../components/Inventory/Grid';
 import MapView from '../../components/Inventory/MapView';
 import useLayoutView from '../../store/layout.store';
-import { useDeleteInventory, useFetchInventory } from '../../hooks/inventory.hooks';
+import {
+  useDeleteInventory,
+  useFetchInventory,
+  useUpdateInventory,
+} from '../../hooks/inventory.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
 import { categoryColors, ROLES } from '../../utils';
@@ -22,6 +26,7 @@ import { FormProvider, useForm } from '../../context/formContext';
 import TrashIcon from '../../assets/delete.png';
 import RoleBased from '../../components/RoleBased';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
+import ViewByFilter from '../../pageComponents/Inventory/ViewByFilter';
 
 dayjs.extend(isBetween);
 
@@ -38,6 +43,7 @@ const Home = () => {
     'page': 1,
     'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
+    isActive: true,
   });
   const form = useForm({ initialValues });
   const viewType = useLayoutView(state => state.activeLayout);
@@ -48,8 +54,11 @@ const Home = () => {
     useDeleteInventory();
   const [selectedCards, setSelectedCards] = useState([]);
 
+  const { mutate: update, isLoading: isUpdateInventoryLoading } = useUpdateInventory();
+
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
+  const isActive = searchParams.get('isActive');
 
   const toggleImagePreviewModal = imgSrc =>
     modals.openContextModal('basic', {
@@ -143,6 +152,12 @@ const Home = () => {
           }, []),
       },
       {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+      },
+      {
         Header: 'MEDIA OWNER NAME',
         accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
@@ -203,7 +218,7 @@ const Home = () => {
           }, []),
       },
       {
-        Header: 'DIMENSION',
+        Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
         Cell: ({
           row: {
@@ -212,8 +227,8 @@ const Home = () => {
         }) =>
           useMemo(
             () => (
-              <p>{`${specifications?.size?.height || 0}ft x ${
-                specifications?.size?.width || 0
+              <p>{`${specifications?.size?.width || 0}ft x ${
+                specifications?.size?.height || 0
               }ft`}</p>
             ),
             [],
@@ -345,12 +360,12 @@ const Home = () => {
 
   const handleSelection = selectedRows => form.setFieldValue('spaces', selectedRows);
 
-  const handleSubmit = formData => {
+  const handleDeleteInventories = formData => {
     let data = {};
     data = formData.spaces.map(item => item._id);
     if (!data.length) {
       showNotification({
-        title: 'Please select atleast one place to delete',
+        title: 'Please select atleast one space to delete',
         color: 'blue',
       });
       return;
@@ -361,6 +376,33 @@ const Home = () => {
         form.reset();
       },
     });
+  };
+
+  const handleToggleInventories = (formData, state) => {
+    let data = {};
+    data = formData.spaces.map(item => item._id);
+    if (!data.length) {
+      showNotification({
+        title: 'Please select atleast one space to disable',
+        color: 'blue',
+      });
+      return;
+    }
+
+    update(
+      { inventoryId: data, data: { isActive: state } },
+      {
+        onSuccess: () => {
+          form.reset();
+        },
+      },
+    );
+  };
+
+  const handleViewBy = type => {
+    searchParams.set('isActive', type === 'active');
+    searchParams.set('page', 1);
+    setSearchParams(searchParams);
   };
 
   useEffect(() => {
@@ -374,15 +416,8 @@ const Home = () => {
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <FormProvider form={form}>
-        <form
-          onSubmit={form.onSubmit(handleSubmit)}
-          className={classNames(viewType.inventory === 'grid' ? 'h-[70%]' : '')}
-        >
-          <AreaHeader
-            text="List of spaces"
-            isLoading={isDeletedInventoryDataLoading}
-            inventoryData={inventoryData}
-          />
+        <form className={classNames(viewType.inventory === 'grid' ? 'h-[70%]' : '')}>
+          <AreaHeader text="List of spaces" inventoryData={inventoryData} />
           <div className="flex justify-between h-20 items-center pr-7">
             <div className="flex items-center">
               <RowsPerPage
@@ -394,16 +429,43 @@ const Home = () => {
                   {isDeletedInventoryDataLoading ? (
                     <p>Inventory deleting...</p>
                   ) : (
-                    <ActionIcon size={20} type="submit">
+                    <ActionIcon size={20} onClick={form.onSubmit(e => handleDeleteInventories(e))}>
                       <Image src={TrashIcon} />
                     </ActionIcon>
+                  )}
+
+                  {isActive === 'true' ? (
+                    <Button
+                      className="secondary-button ml-4"
+                      onClick={form.onSubmit(e => handleToggleInventories(e, false))}
+                      loading={isUpdateInventoryLoading}
+                    >
+                      Disable
+                    </Button>
+                  ) : (
+                    <Button
+                      className="secondary-button ml-4"
+                      onClick={form.onSubmit(e => handleToggleInventories(e, true))}
+                      loading={isUpdateInventoryLoading}
+                    >
+                      Enable
+                    </Button>
                   )}
                 </RoleBased>
               )}
             </div>
-            {viewType.inventory !== 'map' && (
-              <Search search={searchInput} setSearch={setSearchInput} form="nosubmit" />
-            )}
+
+            <section className="flex gap-3">
+              {viewType.inventory !== 'map' && (
+                <Search
+                  search={searchInput}
+                  setSearch={setSearchInput}
+                  form="nosubmit"
+                  className="min-w-[400px]"
+                />
+              )}
+              <ViewByFilter handleViewBy={handleViewBy} />
+            </section>
           </div>
           {isInventoryDataLoading && viewType.inventory === 'list' ? (
             <div className="flex justify-center items-center h-[400px]">

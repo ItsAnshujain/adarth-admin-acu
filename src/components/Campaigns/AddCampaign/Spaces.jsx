@@ -37,6 +37,7 @@ const SelectSpace = () => {
     'sortBy': 'basicInformation.spaceName',
     'sortOrder': 'desc',
     'isUnderMaintenance': false,
+    isActive: true,
   });
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
   const pages = searchParams.get('page');
@@ -116,6 +117,12 @@ const SelectSpace = () => {
           ),
       },
       {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+      },
+      {
         Header: 'MEDIA OWNER NAME',
         accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
@@ -151,14 +158,14 @@ const SelectSpace = () => {
           }, []),
       },
       {
-        Header: 'DIMENSION',
+        Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
         Cell: ({
           row: {
             original: { dimension },
           },
         }) =>
-          useMemo(() => <p>{`${dimension?.height || 0}ft x ${dimension?.width || 0}ft`}</p>, []),
+          useMemo(() => <p>{`${dimension?.width || 0}ft x ${dimension?.height || 0}ft`}</p>, []),
       },
       {
         Header: 'IMPRESSION',
@@ -314,6 +321,7 @@ const SelectSpace = () => {
         obj.otherPhotos = item?.basicInformation?.otherPhotos;
         obj._id = item?._id;
         obj.spaceName = item?.basicInformation?.spaceName;
+        obj.inventoryId = item?.inventoryId;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.category = item?.basicInformation?.category?.name;
         obj.dimension = item?.specifications?.size;

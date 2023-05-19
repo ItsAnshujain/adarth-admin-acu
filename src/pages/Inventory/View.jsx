@@ -1,8 +1,8 @@
 import { Button, Loader, Switch, Tabs } from '@mantine/core';
 import { ArrowLeft } from 'react-feather';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useToggle } from '@mantine/hooks';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Booking from '../../components/Inventory/ViewSpace/Booking';
 import BasicInfo from '../../components/Inventory/ViewSpace/BasicInformation';
 import OperationalCost from '../../components/Inventory/ViewSpace/OperationalCost';
@@ -12,7 +12,17 @@ const SpaceDetails = () => {
   const navigate = useNavigate();
   const { id: inventoryId } = useParams();
   const [isUnderMaintenance, toggle] = useToggle();
-  const [activeTab, setActiveTab] = useState('basic-info');
+  const [searchParams, setSearchParams] = useSearchParams({
+    'tabType': 'basic-info',
+  });
+
+  const tabType = searchParams.get('tabType');
+
+  const handleTabs = type => {
+    searchParams.set('tabType', type);
+    setSearchParams(searchParams);
+  };
+
   const { data: inventoryDetails, isLoading: isInventoryDetailsLoading } = useFetchInventoryById(
     inventoryId,
     !!inventoryId,
@@ -41,7 +51,7 @@ const SpaceDetails = () => {
       {isInventoryDetailsLoading ? (
         <Loader className="mx-auto mt-72" />
       ) : (
-        <Tabs value={activeTab} onTabChange={setActiveTab}>
+        <Tabs value={tabType} onTabChange={handleTabs}>
           <Tabs.List className="flex items-center justify-between">
             <div className="flex items-center">
               <Button onClick={handleBack} className="mr-4">
@@ -59,7 +69,7 @@ const SpaceDetails = () => {
                 Operational Cost
               </Tabs.Tab>
             </div>
-            {activeTab === 'basic-info' && !inventoryDetails?.isPeer ? (
+            {tabType === 'basic-info' && !inventoryDetails?.isPeer ? (
               <div className="flex pr-7">
                 <div className="flex items-center pr-7">
                   <p className="text-lg mr-3">Under maintenance</p>

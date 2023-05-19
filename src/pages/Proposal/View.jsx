@@ -175,13 +175,13 @@ const ProposalDetails = () => {
           }, []),
       },
       {
-        Header: 'DIMENSION',
+        Header: 'DIMENSION (WxH)',
         accessor: 'size.height',
         Cell: ({
           row: {
             original: { size },
           },
-        }) => useMemo(() => <p>{`${size?.height || 0}ft x ${size?.width || 0}ft`}</p>, []),
+        }) => useMemo(() => <p>{`${size?.width || 0}ft x ${size?.height || 0}ft`}</p>, []),
       },
       {
         Header: 'IMPRESSION',

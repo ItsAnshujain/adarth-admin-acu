@@ -316,7 +316,7 @@ const InventoryReport = () => {
         useMemo(() => <p className="w-fit mr-2">{toIndianCurrency(operationalCost ?? 0)}</p>, []),
     },
     {
-      Header: 'DIMENSION',
+      Header: 'DIMENSION (WxH)',
       accessor: 'specifications.size.min',
       Cell: ({
         row: {
@@ -325,8 +325,8 @@ const InventoryReport = () => {
       }) =>
         useMemo(
           () => (
-            <p>{`${specifications?.size?.height || 0}ft x ${
-              specifications?.size?.width || 0
+            <p>{`${specifications?.size?.width || 0}ft x ${
+              specifications?.size?.height || 0
             }ft`}</p>
           ),
           [],
@@ -480,7 +480,7 @@ const InventoryReport = () => {
       }) => useMemo(() => <p className="w-fit">{basicInformation?.category?.name}</p>, []),
     },
     {
-      Header: 'DIMENSION',
+      Header: 'DIMENSION (WxH)',
       accessor: 'specifications.size.min',
       disableSortBy: true,
       Cell: ({
@@ -490,8 +490,8 @@ const InventoryReport = () => {
       }) =>
         useMemo(
           () => (
-            <p>{`${specifications?.size?.height || 0}ft x ${
-              specifications?.size?.width || 0
+            <p>{`${specifications?.size?.width || 0}ft x ${
+              specifications?.size?.height || 0
             }ft`}</p>
           ),
           [],

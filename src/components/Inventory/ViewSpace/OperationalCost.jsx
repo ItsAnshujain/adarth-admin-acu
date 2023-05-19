@@ -3,7 +3,7 @@ import { useModals } from '@mantine/modals';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { Edit } from 'react-feather';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useFetchOperationalCost } from '../../../hooks/operationalCost.hooks';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import modalConfig from '../../../utils/modalConfig';
@@ -13,10 +13,12 @@ const DATE_FORMAT = 'DD-MM-YYYY';
 
 const OperationalCost = ({ inventoryDetails, isPeer }) => {
   const modals = useModals();
+  const [searchParams] = useSearchParams();
   const { id: inventoryId } = useParams();
   const { data: operationaCostData, isLoading } = useFetchOperationalCost(inventoryId);
+  const bookingIdFromUrl = searchParams.get('bookingId');
 
-  const handleOperationalCost = (_, costId, type, amount, description, date) =>
+  const handleOperationalCost = (_, costId, type, amount, description, date, bookingId) =>
     modals.openContextModal('basic', {
       title: `${costId ? 'Edit' : 'Add'} Operational Cost`,
       innerProps: {
@@ -29,6 +31,8 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
             amount={amount}
             description={description}
             date={date}
+            bookingId={bookingId}
+            bookingIdFromUrl={bookingIdFromUrl}
           />
         ),
       },
@@ -72,6 +76,7 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
                               item?.amount,
                               item?.description,
                               item?.date,
+                              item?.bookingId,
                             )
                           }
                         >

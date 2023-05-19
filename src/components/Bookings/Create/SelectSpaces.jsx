@@ -126,6 +126,7 @@ const SelectSpace = () => {
     'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
     'isUnderMaintenance': false,
+    isActive: true,
   });
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
@@ -242,6 +243,12 @@ const SelectSpace = () => {
           }, [isUnderMaintenance]),
       },
       {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+      },
+      {
         Header: 'MEDIA OWNER NAME',
         accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
@@ -307,7 +314,7 @@ const SelectSpace = () => {
           }, []),
       },
       {
-        Header: 'DIMENSION',
+        Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
         Cell: ({
           row: {
@@ -463,6 +470,7 @@ const SelectSpace = () => {
         obj.photo = item.basicInformation.spacePhoto;
         obj._id = item._id;
         obj.spaceName = item.basicInformation?.spaceName;
+        obj.inventoryId = item?.inventoryId;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.category = item.basicInformation?.category?.name;
         obj.mediaOwner =
@@ -473,8 +481,8 @@ const SelectSpace = () => {
           item?.createdBy && item.createdBy?.isPeer
             ? item?.basicInformation?.mediaOwner?.name
             : '-';
-        obj.dimension = `${item.specifications?.size?.height || 0}ft x ${
-          item.specifications?.size?.width || 0
+        obj.dimension = `${item.specifications?.size?.width || 0}ft x ${
+          item.specifications?.size?.height || 0
         }ft`;
         obj.impressionMax = item.specifications?.impressions?.max || 0;
         obj.impressionMin = item.specifications?.impressions?.min || 0;

@@ -25,6 +25,7 @@ const Spaces = () => {
     'sortOrder': 'desc',
     'sortBy': 'basicInformation.spaceName',
     'isUnderMaintenance': false,
+    isActive: true,
   });
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
@@ -129,6 +130,12 @@ const Spaces = () => {
           }, []),
       },
       {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+      },
+      {
         Header: 'MEDIA OWNER NAME',
         accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
@@ -172,13 +179,13 @@ const Spaces = () => {
           }, []),
       },
       {
-        Header: 'DIMENSION',
+        Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
         Cell: ({
           row: {
             original: { height, width },
           },
-        }) => useMemo(() => <p>{`${height || 0}ft x ${width || 0}ft`}</p>, []),
+        }) => useMemo(() => <p>{`${width || 0}ft x ${height || 0}ft`}</p>, []),
       },
       {
         Header: 'IMPRESSION',
@@ -341,6 +348,7 @@ const Spaces = () => {
         obj._id = item._id;
         obj.spaceName = item?.basicInformation?.spaceName;
         obj.spacePhoto = item?.basicInformation?.spacePhoto;
+        obj.inventoryId = item?.inventoryId;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.mediaOwner =
           item?.createdBy && !item.createdBy?.isPeer
