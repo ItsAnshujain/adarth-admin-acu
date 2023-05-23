@@ -17,7 +17,7 @@ import useLayoutView from '../../store/layout.store';
 import {
   useDeleteInventory,
   useFetchInventory,
-  useUpdateInventory,
+  useUpdateInventories,
 } from '../../hooks/inventory.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
@@ -54,7 +54,7 @@ const Home = () => {
     useDeleteInventory();
   const [selectedCards, setSelectedCards] = useState([]);
 
-  const { mutate: update, isLoading: isUpdateInventoryLoading } = useUpdateInventory();
+  const { mutate: update, isLoading: isUpdateInventoryLoading } = useUpdateInventories();
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
