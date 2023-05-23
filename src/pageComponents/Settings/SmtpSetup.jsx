@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import * as yup from 'yup';
@@ -9,7 +9,7 @@ import PasswordInput from '../../components/shared/PasswordInput';
 import NativeSelect from '../../components/shared/NativeSelect';
 import { smtpSupportedServices } from '../../utils/constants';
 import NumberInput from '../../components/shared/NumberInput';
-import { useUpdateUsers } from '../../hooks/users.hooks';
+import { useFetchUsersById, useUpdateUsers } from '../../hooks/users.hooks';
 import useUserStore from '../../store/user.store';
 
 const initialValues = {
@@ -51,6 +51,7 @@ const SmtpSetup = () => {
   const form = useForm({ validate: yupResolver(schema), initialValues });
   const userId = useUserStore(state => state.id);
   const { mutateAsync: updateUser, isLoading: isUserUpdateLoading } = useUpdateUsers();
+  const { data: userData } = useFetchUsersById(userId);
 
   const onSubmit = async formData => {
     const data = { ...formData };
@@ -67,6 +68,18 @@ const SmtpSetup = () => {
       },
     );
   };
+
+  useEffect(() => {
+    if (userData?.smtp) {
+      form.setValues({
+        ...form.values,
+        service: userData?.smtp?.service,
+        username: userData?.smtp?.username,
+        host: userData?.smtp?.host || '',
+        port: userData?.smtp?.port || null,
+      });
+    }
+  }, [userData?.smtp]);
 
   return (
     <article className="px-5 mt-4">
