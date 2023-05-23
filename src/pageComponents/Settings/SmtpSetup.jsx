@@ -61,7 +61,7 @@ const SmtpSetup = () => {
     }
 
     updateUser(
-      { userId, data },
+      { userId, data: { smtp: data } },
       {
         onSuccess: () => form.reset(),
       },
