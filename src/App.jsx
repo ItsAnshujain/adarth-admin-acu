@@ -25,42 +25,44 @@ const CreateBulkInventoriesPage = lazy(() =>
 );
 const InventoryDetailsPage = lazy(() => import('./pages/InventoryPage/InventoryDetailsPage'));
 
-const BookingHome = lazy(() => import('./pages/Booking/Home'));
-const Booking = lazy(() => import('./pages/Booking/Bookings'));
-const ViewBooking = lazy(() => import('./pages/Booking/View'));
-const CreateOrder = lazy(() => import('./pages/Booking/Create'));
+const BookingsPage = lazy(() => import('./pages/BookingsPage'));
+const BookingsDashboardPage = lazy(() => import('./pages/BookingsPage/BookingsDashboardPage'));
+const CreateBookingPage = lazy(() => import('./pages/BookingsPage/CreateBookingPage'));
+const BookingDetailsPage = lazy(() => import('./pages/BookingsPage/BookingDetailsPage'));
 
-const ProposalPage = lazy(() => import('./pages/ProposalPage'));
-const ProposalDashboardPage = lazy(() => import('./pages/ProposalPage/ProposalDashboardPage'));
-const CreateProposalPage = lazy(() => import('./pages/ProposalPage/CreateProposalPage'));
-const ProposalDetailsPage = lazy(() => import('./pages/ProposalPage/ProposalDetailsPage'));
+const ProposalsPage = lazy(() => import('./pages/ProposalsPage'));
+const ProposalDashboardPage = lazy(() => import('./pages/ProposalsPage/ProposalDashboardPage'));
+const CreateProposalPage = lazy(() => import('./pages/ProposalsPage/CreateProposalPage'));
+const ProposalDetailsPage = lazy(() => import('./pages/ProposalsPage/ProposalDetailsPage'));
 
-const UserHome = lazy(() => import('./pages/User/Home'));
-const User = lazy(() => import('./pages/User/Users'));
-const CreateUser = lazy(() => import('./pages/User/Create'));
-const ViewUser = lazy(() => import('./pages/User/View'));
+const UsersPage = lazy(() => import('./pages/UsersPage'));
+const UsersDashboardPage = lazy(() => import('./pages/UsersPage/UsersDashboardPage'));
+const CreateUsersPage = lazy(() => import('./pages/UsersPage/CreateUsersPage'));
+const UsersDetailsPage = lazy(() => import('./pages/UsersPage/UsersDetailsPage'));
 
-const MasterHome = lazy(() => import('./pages/Master/Master'));
+const MastersPage = lazy(() => import('./pages/MastersPage'));
 
-const CampaignHome = lazy(() => import('./pages/Campaign/Home'));
-const Campaigns = lazy(() => import('./pages/Campaign/Campaigns'));
-const CampaignCreate = lazy(() => import('./pages/Campaign/Create'));
-const CampaignView = lazy(() => import('./pages/Campaign/View'));
+const CampaignsPage = lazy(() => import('./pages/CampaignsPage'));
+const CampaignsDashboardPage = lazy(() => import('./pages/CampaignsPage/CampaignsDashboardPage'));
+const CreateCampaignPage = lazy(() => import('./pages/CampaignsPage/CreateCampaignPage'));
+const CampaignDetailsPage = lazy(() => import('./pages/CampaignsPage/CampaignDetailsPage'));
 
-const ReportsPage = lazy(() => import('./pages/ReportPage'));
-const InventoryReportsPage = lazy(() => import('./pages/ReportPage/InventoryReportsPage'));
-const RevenueReportsPage = lazy(() => import('./pages/ReportPage/RevenueReportsPage'));
-const CampaignReportsPage = lazy(() => import('./pages/ReportPage/CampaignReportsPage'));
+const ReportsPage = lazy(() => import('./pages/ReportsPage'));
+const InventoryReportsPage = lazy(() => import('./pages/ReportsPage/InventoryReportsPage'));
+const RevenueReportsPage = lazy(() => import('./pages/ReportsPage/RevenueReportsPage'));
+const CampaignReportsPage = lazy(() => import('./pages/ReportsPage/CampaignReportsPage'));
 
-const Profile = lazy(() => import('./pages/Profile/Profile'));
-const ProfileHome = lazy(() => import('./pages/Profile/Home'));
-const ProfileEdit = lazy(() => import('./pages/Profile/Edit'));
+const MyProfilePage = lazy(() => import('./pages/MyProfilePage'));
+const ViewMyProfilePage = lazy(() => import('./pages/MyProfilePage/ViewMyProfilePage'));
+const EditMyProfilePage = lazy(() => import('./pages/MyProfilePage/EditMyProfilePage'));
 
-const Finance = lazy(() => import('./pages/Finance/Finance'));
-const FinanceHome = lazy(() => import('./pages/Finance/Home'));
-const FinanceMonthly = lazy(() => import('./pages/Finance/Monthly'));
-const FinanceMonthlyDetails = lazy(() => import('./pages/Finance/MonthlyDetails'));
-const FinanceCreateOrder = lazy(() => import('./pages/Finance/Create'));
+const FinancePage = lazy(() => import('./pages/FinancePage'));
+const FinanceDashboardPage = lazy(() => import('./pages/FinancePage/FinanceDashboardPage'));
+const CreateFinancePage = lazy(() => import('./pages/FinancePage/CreateFinancePage'));
+const FinanceMonthlyPage = lazy(() => import('./pages/FinancePage/FinanceMonthlyPage'));
+const FinanceMonthlyDetailsPage = lazy(() =>
+  import('./pages/FinancePage/FinanceMonthlyDetailsPage'),
+);
 
 const HeaderSidebarLoader = () => (
   <>
@@ -71,11 +73,11 @@ const HeaderSidebarLoader = () => (
 
 const components = {
   PUBLIC: [
-    { comp: lazy(() => import('./pages/AuthPage/LoginPage')), path: '/login' },
-    { comp: lazy(() => import('./pages/AuthPage/ForgotPasswordPage')), path: '/forgot-password' },
-    { comp: lazy(() => import('./pages/AuthPage/ChangePasswordPage')), path: '/change-password' },
+    { comp: lazy(() => import('./pages/LoginPage')), path: '/login' },
+    { comp: lazy(() => import('./pages/ForgotPasswordPage')), path: '/forgot-password' },
+    { comp: lazy(() => import('./pages/ChangePasswordPage')), path: '/change-password' },
     {
-      comp: lazy(() => import('./pages/AuthPage/TermsAndConditionsPage')),
+      comp: lazy(() => import('./pages/TermsAndConditionsPage')),
       path: '/terms-conditions',
     },
   ],
@@ -178,7 +180,7 @@ const App = () => {
           element={
             <ProtectedRoute accepted={[ROLES.ADMIN]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
-                <Campaigns />
+                <CampaignsPage />
               </Suspense>
             </ProtectedRoute>
           }
@@ -187,7 +189,7 @@ const App = () => {
             path=""
             element={
               <Suspense fallback={<CustomLoader />}>
-                <CampaignHome />
+                <CampaignsDashboardPage />
               </Suspense>
             }
           />
@@ -195,7 +197,7 @@ const App = () => {
             path="create-campaign"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <CampaignCreate />
+                <CreateCampaignPage />
               </Suspense>
             }
           />
@@ -203,7 +205,7 @@ const App = () => {
             path="edit-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <CampaignCreate />
+                <CreateCampaignPage />
               </Suspense>
             }
           />
@@ -211,7 +213,7 @@ const App = () => {
             path="view-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <CampaignView />
+                <CampaignDetailsPage />
               </Suspense>
             }
           />
@@ -220,7 +222,7 @@ const App = () => {
           path="/proposals"
           element={
             <Suspense fallback={<HeaderSidebarLoader />}>
-              <ProposalPage />
+              <ProposalsPage />
             </Suspense>
           }
         >
@@ -254,7 +256,7 @@ const App = () => {
           path="/bookings"
           element={
             <Suspense fallback={<HeaderSidebarLoader />}>
-              <Booking />
+              <BookingsPage />
             </Suspense>
           }
         >
@@ -262,7 +264,7 @@ const App = () => {
             path=""
             element={
               <Suspense fallback={<CustomLoader />}>
-                <BookingHome />
+                <BookingsDashboardPage />
               </Suspense>
             }
           />
@@ -270,7 +272,7 @@ const App = () => {
             path="view-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ViewBooking />
+                <BookingDetailsPage />
               </Suspense>
             }
           />
@@ -278,7 +280,7 @@ const App = () => {
             path="create-order"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <CreateOrder />
+                <CreateBookingPage />
               </Suspense>
             }
           />
@@ -288,7 +290,7 @@ const App = () => {
           element={
             <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
-                <User />
+                <UsersPage />
               </Suspense>
             </ProtectedRoute>
           }
@@ -297,7 +299,7 @@ const App = () => {
             path=""
             element={
               <Suspense fallback={<CustomLoader />}>
-                <UserHome />
+                <UsersDashboardPage />
               </Suspense>
             }
           />
@@ -305,7 +307,7 @@ const App = () => {
             path="create-user"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <CreateUser />
+                <CreateUsersPage />
               </Suspense>
             }
           />
@@ -313,7 +315,7 @@ const App = () => {
             path="edit-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <CreateUser />
+                <CreateUsersPage />
               </Suspense>
             }
           />
@@ -321,7 +323,7 @@ const App = () => {
             path="view-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ViewUser />
+                <UsersDetailsPage />
               </Suspense>
             }
           />
@@ -366,7 +368,7 @@ const App = () => {
           element={
             <ProtectedRoute accepted={ROLES.ADMIN}>
               <Suspense fallback={<HeaderSidebarLoader />}>
-                <MasterHome />
+                <MastersPage />
               </Suspense>
             </ProtectedRoute>
           }
@@ -391,7 +393,7 @@ const App = () => {
           path="/"
           element={
             <Suspense fallback={<HeaderSidebarLoader />}>
-              <Profile />
+              <MyProfilePage />
             </Suspense>
           }
         >
@@ -399,7 +401,7 @@ const App = () => {
             path="profile"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ProfileHome />
+                <ViewMyProfilePage />
               </Suspense>
             }
           />
@@ -407,7 +409,7 @@ const App = () => {
             path="edit-profile"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ProfileEdit />
+                <EditMyProfilePage />
               </Suspense>
             }
           />
@@ -417,7 +419,7 @@ const App = () => {
           element={
             <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
-                <Finance />
+                <FinancePage />
               </Suspense>
             </ProtectedRoute>
           }
@@ -426,7 +428,7 @@ const App = () => {
             path="/finance"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <FinanceHome />
+                <FinanceDashboardPage />
               </Suspense>
             }
           />
@@ -434,7 +436,7 @@ const App = () => {
             path="/finance/:year"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <FinanceMonthly />
+                <FinanceMonthlyPage />
               </Suspense>
             }
           />
@@ -442,7 +444,7 @@ const App = () => {
             path="/finance/:year/:month"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <FinanceMonthlyDetails />
+                <FinanceMonthlyDetailsPage />
               </Suspense>
             }
           />
@@ -450,7 +452,7 @@ const App = () => {
             path="/finance/create-order/:type"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <FinanceCreateOrder />
+                <CreateFinancePage />
               </Suspense>
             }
           />
