@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { Loader } from '@mantine/core';
 import useTokenIdStore from '../store/user.store';
-import NoMatch from '../pages/NoMatch';
+import NoMatchFoundPage from '../pages/NoMatchFoundPage';
 
 const ProtectedRoute = ({ accepted, children }) => {
   const userId = useTokenIdStore(state => state.id);
@@ -15,7 +15,7 @@ const ProtectedRoute = ({ accepted, children }) => {
       </div>
     );
   }
-  return accepted?.includes(userCachedData?.role) ? children : <NoMatch />;
+  return accepted?.includes(userCachedData?.role) ? children : <NoMatchFoundPage />;
 };
 
 export default ProtectedRoute;

@@ -127,7 +127,7 @@ export const pieData = {
   ],
 };
 
-const RevenueReport = () => {
+const RevenueReportsPage = () => {
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
     startDate: dayjs().startOf('year').format(DATE_FORMAT),
@@ -366,7 +366,7 @@ const RevenueReport = () => {
     >
       <Header
         shareType={share}
-        text="Revenue Report"
+        text="Revenue Reports"
         onClickDownloadPdf={handleDownloadPdf}
         onClickSharePdf={toggleShareOptions}
         isDownloadLoading={isDownloadLoading}
@@ -461,4 +461,4 @@ const RevenueReport = () => {
   );
 };
 
-export default RevenueReport;
+export default RevenueReportsPage;

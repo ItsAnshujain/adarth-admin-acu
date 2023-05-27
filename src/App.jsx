@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Header from './Loader/Header';
 import CustomLoader from './Loader/Loader';
 import Sidebar from './Loader/Sidebar';
-import NoMatch from './pages/NoMatch';
+import NoMatchFoundPage from './pages/NoMatchFoundPage';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import ProtectedRoute from './utils/ProtectedRoute';
 import { ROLES } from './utils';
@@ -13,38 +13,49 @@ import FileUpload from './components/Finance/Create/FileUpload';
 import useUserStore from './store/user.store';
 import { useFetchUsersById } from './hooks/users.hooks';
 
-const InventoryHome = lazy(() => import('./pages/Inventory/Home'));
-const Inventory = lazy(() => import('./pages/Inventory/Inventory'));
-const CreateSpaceSingle = lazy(() => import('./pages/Inventory/Create'));
-const CreateSpaceBulk = lazy(() => import('./pages/Inventory/CreateBulk'));
-const SpaceDetails = lazy(() => import('./pages/Inventory/View'));
-const CampaignHome = lazy(() => import('./pages/Campaign/Home'));
-const Campaigns = lazy(() => import('./pages/Campaign/Campaigns'));
-const CampaignCreate = lazy(() => import('./pages/Campaign/Create'));
-const CampaignView = lazy(() => import('./pages/Campaign/View'));
-const ProposalsHome = lazy(() => import('./pages/Proposal/Home'));
-const Proposals = lazy(() => import('./pages/Proposal/Proposals'));
-const CreateProposals = lazy(() => import('./pages/Proposal/Create'));
-const ViewProposal = lazy(() => import('./pages/Proposal/View'));
+const HomePage = lazy(() => import('./pages/HomePage'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+
+const InventoryPage = lazy(() => import('./pages/InventoryPage'));
+const InventoryDashboardPage = lazy(() => import('./pages/InventoryPage/InventoryDashboardPage'));
+const CreateInventoryPage = lazy(() => import('./pages/InventoryPage/CreateInventoryPage'));
+const CreateBulkInventoriesPage = lazy(() =>
+  import('./pages/InventoryPage/CreateBulkInventoriesPage'),
+);
+const InventoryDetailsPage = lazy(() => import('./pages/InventoryPage/InventoryDetailsPage'));
+
 const BookingHome = lazy(() => import('./pages/Booking/Home'));
 const Booking = lazy(() => import('./pages/Booking/Bookings'));
 const ViewBooking = lazy(() => import('./pages/Booking/View'));
 const CreateOrder = lazy(() => import('./pages/Booking/Create'));
+
+const ProposalPage = lazy(() => import('./pages/ProposalPage'));
+const ProposalDashboardPage = lazy(() => import('./pages/ProposalPage/ProposalDashboardPage'));
+const CreateProposalPage = lazy(() => import('./pages/ProposalPage/CreateProposalPage'));
+const ProposalDetailsPage = lazy(() => import('./pages/ProposalPage/ProposalDetailsPage'));
+
 const UserHome = lazy(() => import('./pages/User/Home'));
 const User = lazy(() => import('./pages/User/Users'));
 const CreateUser = lazy(() => import('./pages/User/Create'));
 const ViewUser = lazy(() => import('./pages/User/View'));
-const ReportHome = lazy(() => import('./pages/Report/Report'));
-const ReportInventory = lazy(() => import('./pages/Report/Inventory'));
-const ReportRevenue = lazy(() => import('./pages/Report/Revenue'));
-const ReportCampaign = lazy(() => import('./pages/Report/Campaign'));
+
 const MasterHome = lazy(() => import('./pages/Master/Master'));
-const HomePage = lazy(() => import('./pages/Home'));
-const Notifications = lazy(() => import('./pages/Notification'));
-const Settings = lazy(() => import('./pages/Setting/Home'));
+
+const CampaignHome = lazy(() => import('./pages/Campaign/Home'));
+const Campaigns = lazy(() => import('./pages/Campaign/Campaigns'));
+const CampaignCreate = lazy(() => import('./pages/Campaign/Create'));
+const CampaignView = lazy(() => import('./pages/Campaign/View'));
+
+const ReportsPage = lazy(() => import('./pages/ReportPage'));
+const InventoryReportsPage = lazy(() => import('./pages/ReportPage/InventoryReportsPage'));
+const RevenueReportsPage = lazy(() => import('./pages/ReportPage/RevenueReportsPage'));
+const CampaignReportsPage = lazy(() => import('./pages/ReportPage/CampaignReportsPage'));
+
 const Profile = lazy(() => import('./pages/Profile/Profile'));
 const ProfileHome = lazy(() => import('./pages/Profile/Home'));
 const ProfileEdit = lazy(() => import('./pages/Profile/Edit'));
+
 const Finance = lazy(() => import('./pages/Finance/Finance'));
 const FinanceHome = lazy(() => import('./pages/Finance/Home'));
 const FinanceMonthly = lazy(() => import('./pages/Finance/Monthly'));
@@ -60,10 +71,13 @@ const HeaderSidebarLoader = () => (
 
 const components = {
   PUBLIC: [
-    { comp: lazy(() => import('./pages/Auth/LoginPage')), path: '/login' },
-    { comp: lazy(() => import('./pages/Auth/ForgotPasswordPage')), path: '/forgot-password' },
-    { comp: lazy(() => import('./pages/Auth/ChangePasswordPage')), path: '/change-password' },
-    { comp: lazy(() => import('./pages/Auth/TermsAndConditionsPage')), path: '/terms-conditions' },
+    { comp: lazy(() => import('./pages/AuthPage/LoginPage')), path: '/login' },
+    { comp: lazy(() => import('./pages/AuthPage/ForgotPasswordPage')), path: '/forgot-password' },
+    { comp: lazy(() => import('./pages/AuthPage/ChangePasswordPage')), path: '/change-password' },
+    {
+      comp: lazy(() => import('./pages/AuthPage/TermsAndConditionsPage')),
+      path: '/terms-conditions',
+    },
   ],
 };
 
@@ -121,16 +135,16 @@ const App = () => {
           path="/inventory"
           element={
             <Suspense fallback={<HeaderSidebarLoader />}>
-              <Inventory />
+              <InventoryPage />
             </Suspense>
           }
         >
-          <Route path="" element={<InventoryHome />} />
+          <Route path="" element={<InventoryDashboardPage />} />
           <Route
             path="create-space/single"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <CreateSpaceSingle />
+                <CreateInventoryPage />
               </Suspense>
             }
           />
@@ -138,7 +152,7 @@ const App = () => {
             path="create-space/bulk"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <CreateSpaceBulk />
+                <CreateBulkInventoriesPage />
               </Suspense>
             }
           />
@@ -146,7 +160,7 @@ const App = () => {
             path="edit-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <CreateSpaceSingle />
+                <CreateInventoryPage />
               </Suspense>
             }
           />
@@ -154,7 +168,7 @@ const App = () => {
             path="view-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <SpaceDetails />
+                <InventoryDetailsPage />
               </Suspense>
             }
           />
@@ -206,7 +220,7 @@ const App = () => {
           path="/proposals"
           element={
             <Suspense fallback={<HeaderSidebarLoader />}>
-              <Proposals />
+              <ProposalPage />
             </Suspense>
           }
         >
@@ -214,16 +228,16 @@ const App = () => {
             path=""
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ProposalsHome />
+                <ProposalDashboardPage />
               </Suspense>
             }
           />
-          <Route path="create-proposals" element={<CreateProposals />} />
+          <Route path="create-proposals" element={<CreateProposalPage />} />
           <Route
             path="edit-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <CreateProposals />
+                <CreateProposalPage />
               </Suspense>
             }
           />
@@ -231,7 +245,7 @@ const App = () => {
             path="view-details/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ViewProposal />
+                <ProposalDetailsPage />
               </Suspense>
             }
           />
@@ -317,7 +331,7 @@ const App = () => {
           element={
             <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
-                <ReportHome />
+                <ReportsPage />
               </Suspense>
             </ProtectedRoute>
           }
@@ -326,7 +340,7 @@ const App = () => {
             path="inventories"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ReportInventory />
+                <InventoryReportsPage />
               </Suspense>
             }
           />
@@ -334,7 +348,7 @@ const App = () => {
             path="revenue"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ReportRevenue />
+                <RevenueReportsPage />
               </Suspense>
             }
           />
@@ -342,7 +356,7 @@ const App = () => {
             path="campaign"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ReportCampaign />
+                <CampaignReportsPage />
               </Suspense>
             }
           />
@@ -361,7 +375,7 @@ const App = () => {
           path="/notification"
           element={
             <Suspense fallback={<HeaderSidebarLoader />}>
-              <Notifications />
+              <NotificationsPage />
             </Suspense>
           }
         />
@@ -369,7 +383,7 @@ const App = () => {
           path="/settings"
           element={
             <Suspense fallback={<HeaderSidebarLoader />}>
-              <Settings />
+              <SettingsPage />
             </Suspense>
           }
         />
@@ -450,7 +464,7 @@ const App = () => {
           />
         </Route>
       </Route>
-      <Route path="*" element={<NoMatch />} />
+      <Route path="*" element={<NoMatchFoundPage />} />
     </Routes>
   );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from '../assets/login.svg';
 
-const NoMatch = () => (
+const NoMatchFoundPage = () => (
   <div className="flex">
     <div>
       <img src={Image} alt="login" className="h-screen" />
@@ -12,4 +12,4 @@ const NoMatch = () => (
   </div>
 );
 
-export default NoMatch;
+export default NoMatchFoundPage;

@@ -21,7 +21,7 @@ const nativeSelectStyles = {
 };
 const DATE_FORMAT = 'DD MMM YYYY';
 
-const Proposals = () => {
+const ProposalDashboardPage = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
@@ -296,4 +296,4 @@ const Proposals = () => {
   );
 };
 
-export default Proposals;
+export default ProposalDashboardPage;

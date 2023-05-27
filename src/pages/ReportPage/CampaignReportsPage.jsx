@@ -38,7 +38,7 @@ const options = {
   maintainAspectRatio: false,
 };
 
-const CampaignReport = () => {
+const CampaignReportsPage = () => {
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
     startDate: dayjs().startOf('year').format(DATE_FORMAT),
@@ -250,7 +250,7 @@ const CampaignReport = () => {
     >
       <Header
         shareType={share}
-        text="Campaign Report"
+        text="Campaign Reports"
         onClickDownloadPdf={handleDownloadPdf}
         onClickSharePdf={toggleShareOptions}
         isDownloadLoading={isDownloadLoading}
@@ -306,4 +306,4 @@ const CampaignReport = () => {
   );
 };
 
-export default CampaignReport;
+export default CampaignReportsPage;

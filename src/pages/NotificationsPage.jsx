@@ -22,7 +22,7 @@ const query = {
   'sortBy': 'createdAt',
   'sortOrder': 'asc',
 };
-const Notifications = () => {
+const NotificationsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams(query);
   const [activeButtonId, setActiveButtonId] = useState(-1);
   const {
@@ -75,7 +75,7 @@ const Notifications = () => {
 
   return (
     <div className="w-screen">
-      <Header title="Notification" />
+      <Header title="Notifications" />
       <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
         <Sidebar />
         <div className="col-span-12 md:col-span-12 lg:col-span-10 h-[calc(100vh-80px)] border-l border-gray-450 flex flex-col justify-start">
@@ -201,4 +201,4 @@ const Notifications = () => {
   );
 };
 
-export default Notifications;
+export default NotificationsPage;

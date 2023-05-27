@@ -2,7 +2,7 @@ import { Outlet, useSearchParams } from 'react-router-dom';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 
-const Reports = () => {
+const ReportsPage = () => {
   const [searchParams] = useSearchParams();
   const share = searchParams.get('share');
 
@@ -17,4 +17,4 @@ const Reports = () => {
   );
 };
 
-export default Reports;
+export default ReportsPage;

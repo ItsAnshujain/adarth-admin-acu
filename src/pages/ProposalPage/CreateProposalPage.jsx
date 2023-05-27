@@ -53,7 +53,7 @@ const schema = yup.object({
     }),
 });
 
-const CreateProposals = () => {
+const CreateProposalPage = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ validate: yupResolver(schema), initialValues });
@@ -226,4 +226,4 @@ const CreateProposals = () => {
   );
 };
 
-export default CreateProposals;
+export default CreateProposalPage;

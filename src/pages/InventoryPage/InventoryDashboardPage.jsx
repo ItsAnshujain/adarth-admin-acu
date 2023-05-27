@@ -34,7 +34,7 @@ const initialValues = {
   spaces: [],
 };
 
-const Home = () => {
+const InventoryDashboardPage = () => {
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const modals = useModals();
@@ -512,4 +512,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default InventoryDashboardPage;

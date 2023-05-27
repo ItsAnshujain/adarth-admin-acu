@@ -18,7 +18,7 @@ import Filter from '../../components/Inventory/Filter';
 import useUserStore from '../../store/user.store';
 import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesMenuPopover';
 
-const ProposalDetails = () => {
+const ProposalDetailsPage = () => {
   const modals = useModals();
   const userId = useUserStore(state => state.id);
   const [searchInput, setSearchInput] = useState('');
@@ -357,4 +357,4 @@ const ProposalDetails = () => {
   );
 };
 
-export default ProposalDetails;
+export default ProposalDetailsPage;

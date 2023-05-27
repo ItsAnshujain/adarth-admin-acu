@@ -102,7 +102,7 @@ const unwantedQueriesForReveueGraph = [
 
 const unwantedQuriesForInventories = ['groupBy', 'startDate', 'endDate'];
 
-const InventoryReport = () => {
+const InventoryReportsPage = () => {
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
     limit: 10,
@@ -706,7 +706,7 @@ const InventoryReport = () => {
     >
       <Header
         shareType={share}
-        text="Inventory Report"
+        text="Inventory Reports"
         onClickDownloadPdf={handleDownloadPdf}
         onClickSharePdf={toggleShareOptions}
         isDownloadLoading={isDownloadLoading}
@@ -869,4 +869,4 @@ const InventoryReport = () => {
   );
 };
 
-export default InventoryReport;
+export default InventoryReportsPage;

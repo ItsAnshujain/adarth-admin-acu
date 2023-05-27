@@ -189,7 +189,7 @@ const locationValues = yup.object({
 
 const schemas = [basicInformationSchema, specificationsValues, locationValues, yup.object()];
 
-const CreateSpace = () => {
+const CreateInventoryPage = () => {
   const navigate = useNavigate();
   const { id: inventoryId } = useParams();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
@@ -399,4 +399,4 @@ const CreateSpace = () => {
   );
 };
 
-export default CreateSpace;
+export default CreateInventoryPage;

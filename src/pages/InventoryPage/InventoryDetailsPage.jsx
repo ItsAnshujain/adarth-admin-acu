@@ -8,7 +8,7 @@ import BasicInfo from '../../components/Inventory/ViewSpace/BasicInformation';
 import OperationalCost from '../../components/Inventory/ViewSpace/OperationalCost';
 import { useFetchInventoryById, useUpdateInventory } from '../../hooks/inventory.hooks';
 
-const SpaceDetails = () => {
+const InventoryDetailsPage = () => {
   const navigate = useNavigate();
   const { id: inventoryId } = useParams();
   const [isUnderMaintenance, toggle] = useToggle();
@@ -118,4 +118,4 @@ const SpaceDetails = () => {
   );
 };
 
-export default SpaceDetails;
+export default InventoryDetailsPage;

@@ -2,17 +2,18 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 
-const Campaigns = () => {
+const InventoryPage = () => {
   const { pathname } = useLocation();
-
   let headerTitle = '';
+
   if (pathname.includes('view')) {
-    headerTitle = 'Proposal Details';
+    headerTitle = 'Spaces Details';
   } else if (pathname.includes('create')) {
-    headerTitle = 'Create Proposals';
+    headerTitle = 'Create Spaces';
   } else {
-    headerTitle = 'Proposals';
+    headerTitle = 'Inventory';
   }
+
   return (
     <div>
       <Header title={headerTitle} />
@@ -24,4 +25,4 @@ const Campaigns = () => {
   );
 };
 
-export default Campaigns;
+export default InventoryPage;
