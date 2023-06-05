@@ -11,6 +11,7 @@ import {
   fetchInventoryReportList,
   inventoryReport,
   inventoryStats,
+  updateInventories,
   updateInventory,
 } from '../requests/inventory.requests';
 
@@ -56,19 +57,36 @@ export const useUpdateInventory = () => {
 
   return useMutation(
     async ({ inventoryId, data }) => {
-      let query;
+      const res = await updateInventory(inventoryId, data);
+      return res;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['inventory']);
+        queryClient.invalidateQueries(['inventory-by-id']);
+        showNotification({
+          title: 'Inventory updated successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
 
-      if (typeof inventoryId === 'string') {
-        query = inventoryId;
-      } else {
-        query =
-          inventoryId?.length === 1
-            ? `/${inventoryId[0]}`
-            : `?${inventoryId?.map(item => `id=${item}`).join('&')}`;
-        // single id takes url param and multiple ids take query params
-      }
+export const useUpdateInventories = () => {
+  const queryClient = useQueryClient();
 
-      const res = await updateInventory(query, data);
+  return useMutation(
+    async ({ inventoryId, data }) => {
+      const query = `?${inventoryId?.map(item => `id=${item}`).join('&')}`;
+
+      const res = await updateInventories(query, data);
       return res;
     },
     {
