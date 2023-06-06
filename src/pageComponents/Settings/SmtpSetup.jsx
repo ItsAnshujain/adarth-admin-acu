@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import * as yup from 'yup';
@@ -8,31 +8,78 @@ import TextInput from '../../components/shared/TextInput';
 import PasswordInput from '../../components/shared/PasswordInput';
 import NativeSelect from '../../components/shared/NativeSelect';
 import { smtpSupportedServices } from '../../utils/constants';
+import NumberInput from '../../components/shared/NumberInput';
+import { useFetchUsersById, useUpdateUsers } from '../../hooks/users.hooks';
+import useUserStore from '../../store/user.store';
 
 const initialValues = {
-  type: '',
+  service: '',
   username: '',
   password: '',
   host: '',
-  port: '',
+  port: null,
 };
 
 const schema = yup.object({
-  type: yup.string().trim().required('Type is required'),
+  service: yup.string().trim().required('Service is required'),
   username: yup.string().trim().required('Username is required'),
   password: yup.string().trim().required('Password is required'),
-  host: yup.string(),
-  port: yup.string(),
+  host: yup
+    .string()
+    .trim()
+    .when('service', {
+      is: 'others',
+      then: yup.string().trim().required('SMTP host is required'),
+    }),
+  port: yup
+    .number()
+    .positive('Must be a positive number')
+    .typeError('Must be a number')
+    .nullable()
+    .when('service', {
+      is: 'others',
+      then: yup
+        .number()
+        .positive('Must be a positive number')
+        .typeError('Must be a number')
+        .nullable()
+        .required('SMTP port is required'),
+    }),
 });
 
 const SmtpSetup = () => {
   const form = useForm({ validate: yupResolver(schema), initialValues });
+  const userId = useUserStore(state => state.id);
+  const { mutateAsync: updateUser, isLoading: isUserUpdateLoading } = useUpdateUsers();
+  const { data: userData } = useFetchUsersById(userId);
 
   const onSubmit = async formData => {
-    // TODO: integration left
-    // eslint-disable-next-line no-console
-    console.log(formData);
+    const data = { ...formData };
+
+    if (data.service !== 'others') {
+      delete data.host;
+      delete data.port;
+    }
+
+    updateUser(
+      { userId, data: { smtp: data } },
+      {
+        onSuccess: () => form.reset(),
+      },
+    );
   };
+
+  useEffect(() => {
+    if (userData?.smtp) {
+      form.setValues({
+        ...form.values,
+        service: userData?.smtp?.service,
+        username: userData?.smtp?.username,
+        host: userData?.smtp?.host || '',
+        port: userData?.smtp?.port || null,
+      });
+    }
+  }, [userData?.smtp]);
 
   return (
     <article className="px-5 mt-4">
@@ -40,10 +87,10 @@ const SmtpSetup = () => {
         <form onSubmit={form.onSubmit(onSubmit)}>
           <div className="grid gap-3 grid-cols-3 mb-4">
             <NativeSelect
-              label="Type"
-              name="type"
+              label="Services"
+              name="service"
               withAsterisk
-              placeholder="Select type"
+              placeholder="Select a service"
               errors={form.errors}
               options={smtpSupportedServices}
               rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
@@ -74,7 +121,7 @@ const SmtpSetup = () => {
               classNames={{ label: 'font-bold mb-2 text-base' }}
             />
 
-            {form.values.type === 'others' ? (
+            {form.values.service === 'others' ? (
               <>
                 <TextInput
                   label="SMTP host"
@@ -86,7 +133,7 @@ const SmtpSetup = () => {
                   className="col-start-1 col-span-1"
                   classNames={{ label: 'font-bold mb-2 text-base' }}
                 />
-                <TextInput
+                <NumberInput
                   label="SMTP port"
                   name="port"
                   withAsterisk
@@ -100,7 +147,7 @@ const SmtpSetup = () => {
             ) : null}
           </div>
 
-          <Button className="primary-button" type="submit">
+          <Button className="primary-button" type="submit" loading={isUserUpdateLoading}>
             Submit
           </Button>
         </form>
