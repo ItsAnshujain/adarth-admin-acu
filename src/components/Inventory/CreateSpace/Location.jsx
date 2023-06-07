@@ -139,6 +139,11 @@ const Location = () => {
             }
             className="mb-7"
           />
+          <MapView
+            latitude={values?.location?.latitude ? +values.location.latitude : 0}
+            longitude={values?.location?.longitude ? +values.location.longitude : 0}
+            className="w-[80%]"
+          />
         </div>
         <div>
           <TextInput
@@ -189,12 +194,16 @@ const Location = () => {
             options={tierList}
             className="mb-7"
           />
+          <TextInput
+            label="Facia towards"
+            name="location.faciaTowards"
+            styles={styles}
+            errors={errors}
+            placeholder="Write..."
+            className="mb-7"
+          />
         </div>
       </div>
-      <MapView
-        latitude={values?.location?.latitude ? +values.location.latitude : 0}
-        longitude={values?.location?.longitude ? +values.location.longitude : 0}
-      />
     </div>
   );
 };
