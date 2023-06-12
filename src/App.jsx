@@ -288,7 +288,7 @@ const App = () => {
         <Route
           path="users"
           element={
-            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR]}>
+            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
                 <UsersPage />
               </Suspense>
@@ -331,7 +331,7 @@ const App = () => {
         <Route
           path="/reports"
           element={
-            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR]}>
+            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
                 <ReportsPage />
               </Suspense>
@@ -417,7 +417,7 @@ const App = () => {
         <Route
           path="/"
           element={
-            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR]}>
+            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
                 <FinancePage />
               </Suspense>

@@ -149,7 +149,7 @@ const AreaHeader = ({ text, inventoryData }) => {
         </div>
         <div className="relative">
           <RoleBased
-            acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGER, ROLES.ASSOCIATE]}
+            acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGEMENT, ROLES.ASSOCIATE]}
           >
             <Button
               onClick={toggleAddDetails}
