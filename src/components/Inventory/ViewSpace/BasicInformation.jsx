@@ -129,8 +129,8 @@ const BasicInfo = ({
   }, [inventoryDetails]);
 
   return (
-    <div className="flex gap-8 py-4">
-      <div className="flex-1 pl-5 max-w-1/2">
+    <div className="grid grid-cols-2 gap-x-8 py-4 px-5">
+      <div>
         {isInventoryDetailsLoading ? (
           <SkeletonTopWrapper />
         ) : (
@@ -233,7 +233,7 @@ const BasicInfo = ({
           )}
         </div>
       </div>
-      <div className="flex-1 pr-7 max-w-1/2">
+      <div>
         {!isInventoryDetailsLoading ? (
           <Text size="lg" weight="bolder">
             {inventoryDetails?.basicInformation?.spaceName}
@@ -367,68 +367,74 @@ const BasicInfo = ({
               ) : (
                 <Skeleton className="grid grid-cols-2 p-4 mb-4" height={196} />
               )}
-              {!isInventoryDetailsLoading ? (
-                <div className="flex gap-2 p-4 border rounded-md flex-1">
-                  <div className="flex-1 ">
-                    <Text color="gray" size="xs" weight="300">
-                      Address
-                    </Text>
-                    <Text className="mb-4">{inventoryDetails?.location?.address || 'NA '}</Text>
-                    <div className="grid grid-cols-2">
-                      <div>
-                        <Text color="gray" size="xs" weight="300">
-                          City
-                        </Text>
-                        <Text className="mb-4">{inventoryDetails?.location?.city || 'NA'}</Text>
-                      </div>
-                      <div>
-                        <Text color="gray" size="xs" weight="300">
-                          State
-                        </Text>
-                        <Text className="mb-4">{inventoryDetails?.location?.state || 'NA'}</Text>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2">
-                      <div>
-                        <Text color="gray" size="xs" weight="300">
-                          Pin Code
-                        </Text>
-                        <Text className="mb-4">{inventoryDetails?.location?.zip || 'NA'}</Text>
-                      </div>
-                      <div>
-                        <Text color="gray" size="xs" weight="300">
-                          Tier
-                        </Text>
-                        <Text className="mb-4">
-                          {tierList.map(item =>
-                            item.value === inventoryDetails?.location?.tier ? item.label : null,
-                          ) || 'NA'}
-                        </Text>
-                      </div>
-                    </div>
-                  </div>
-                  <MapView
-                    latitude={
-                      inventoryDetails?.location.latitude &&
-                      !Number.isNaN(inventoryDetails.location.latitude)
-                        ? Number(inventoryDetails.location.latitude)
-                        : 0
-                    }
-                    longitude={
-                      inventoryDetails?.location.longitude &&
-                      !Number.isNaN(inventoryDetails.location.longitude)
-                        ? Number(inventoryDetails?.location.longitude)
-                        : 0
-                    }
-                  />
-                </div>
-              ) : (
-                <Skeleton className="flex gap-2 p-4" height={292} />
-              )}
             </div>
           </div>
         </div>
       </div>
+      {!isInventoryDetailsLoading ? (
+        <div className="flex gap-2 p-4 border rounded-md flex-1 col-span-2">
+          <div className="flex-1 ">
+            <Text color="gray" size="xs" weight="300">
+              Address
+            </Text>
+            <Text className="mb-4">{inventoryDetails?.location?.address || 'NA '}</Text>
+            <div className="grid grid-cols-2">
+              <div>
+                <Text color="gray" size="xs" weight="300">
+                  City
+                </Text>
+                <Text className="mb-4">{inventoryDetails?.location?.city || 'NA'}</Text>
+              </div>
+              <div>
+                <Text color="gray" size="xs" weight="300">
+                  State
+                </Text>
+                <Text className="mb-4">{inventoryDetails?.location?.state || 'NA'}</Text>
+              </div>
+            </div>
+            <div className="grid grid-cols-2">
+              <div>
+                <Text color="gray" size="xs" weight="300">
+                  Pin Code
+                </Text>
+                <Text className="mb-4">{inventoryDetails?.location?.zip || 'NA'}</Text>
+              </div>
+              <div>
+                <Text color="gray" size="xs" weight="300">
+                  Tier
+                </Text>
+                <Text className="mb-4">
+                  {tierList.map(item =>
+                    item.value === inventoryDetails?.location?.tier ? item.label : null,
+                  ) || 'NA'}
+                </Text>
+              </div>
+            </div>
+            <div className="grid grid-cols-1">
+              <div>
+                <p className="text-lg text-slate-400 font-light">Facia towards</p>
+                <p className="mb-4">{inventoryDetails?.location?.faciaTowards || 'NA'}</p>
+              </div>
+            </div>
+          </div>
+          <MapView
+            latitude={
+              inventoryDetails?.location.latitude &&
+              !Number.isNaN(inventoryDetails.location.latitude)
+                ? Number(inventoryDetails.location.latitude)
+                : 0
+            }
+            longitude={
+              inventoryDetails?.location.longitude &&
+              !Number.isNaN(inventoryDetails.location.longitude)
+                ? Number(inventoryDetails?.location.longitude)
+                : 0
+            }
+          />
+        </div>
+      ) : (
+        <Skeleton className="flex gap-2 p-4" height={292} />
+      )}
     </div>
   );
 };

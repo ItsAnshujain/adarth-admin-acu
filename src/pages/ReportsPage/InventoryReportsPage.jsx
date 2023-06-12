@@ -542,13 +542,14 @@ const InventoryReportsPage = () => {
     },
     {
       Header: 'ROI',
-      accessor: 'roi',
+      accessor: 'roiPerDay',
       disableSortBy: true,
       Cell: ({
         row: {
-          original: { roi },
+          original: { roiPerDay },
         },
-      }) => useMemo(() => <p className="pl-2">{roi ? Number(roi) : 0}</p>, []),
+      }) =>
+        useMemo(() => <p className="pl-2">{roiPerDay ? Number(roiPerDay).toFixed(2) : 0}</p>, []),
     },
     {
       Header: 'PRICING',

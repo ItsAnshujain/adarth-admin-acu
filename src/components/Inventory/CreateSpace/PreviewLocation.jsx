@@ -33,6 +33,12 @@ const PreviewLocation = () => {
             </p>
           </div>
         </div>
+        <div className="grid grid-cols-1">
+          <div>
+            <p className="text-lg text-slate-400 font-light">Facia towards</p>
+            <p className="mb-4">{values?.location?.faciaTowards || 'NA'}</p>
+          </div>
+        </div>
       </div>
       <MapView latitude={+values.location.latitude} longitude={+values.location.longitude} />
     </div>
