@@ -100,6 +100,8 @@ const AddOperationalCostModal = ({
 
     if (data.bookingId?.value) {
       data.bookingId = data.bookingId.value;
+    } else {
+      delete data.bookingId;
     }
 
     Object.keys(data).forEach(key => {
@@ -192,9 +194,13 @@ const AddOperationalCostModal = ({
             name="bookingId"
             errors={form.errors}
             disabled={
-              isOperationalCostLoading || isAddLoading || isEditLoading || isBookingDatasLoading
+              isOperationalCostLoading ||
+              isAddLoading ||
+              isEditLoading ||
+              isBookingDatasLoading ||
+              !bookingDatas?.docs?.length
             }
-            placeholder="Select..."
+            placeholder={!bookingDatas?.docs?.length ? 'No Bookings available' : 'Select...'}
             size="md"
             options={
               isBookingDatasLoaded

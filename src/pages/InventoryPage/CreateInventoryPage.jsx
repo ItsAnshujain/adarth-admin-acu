@@ -184,6 +184,7 @@ const locationValues = yup.object({
     landmark: yup.string().trim().required('Landmark is required'),
     facing: yup.string().trim().required('Facing is required'),
     tier: yup.string().trim().required('Tier is required'),
+    faciaTowards: yup.string().trim(),
   }),
 });
 
@@ -365,6 +366,7 @@ const CreateInventoryPage = () => {
           landmark: location?.landmark || '',
           facing: location?.facing || '',
           tier: location?.tier || '',
+          faciaTowards: location?.faciaTowards || undefined,
         },
       });
     }

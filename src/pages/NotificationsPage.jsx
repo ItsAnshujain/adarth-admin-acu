@@ -58,13 +58,19 @@ const NotificationsPage = () => {
   }, [data?.docs]);
 
   const replaceUrl = details => {
-    const arr = details.split(' ').map(item => {
-      if (item.startsWith('https://')) {
-        return `<a href="${item.trim()}" target="_blank">${item.trim()}</a>`;
+    const formattedText = details.split('\n\n').map(item => {
+      if (item.includes('http')) {
+        const subText = item.split(' ').map(ele => {
+          if (ele.startsWith('http')) {
+            return `<a href="${ele.trim()}" target="_blank" class='underline font-medium'>${ele.trim()}</a>`;
+          }
+          return ele;
+        });
+        return subText.join(' ');
       }
       return item;
     });
-    return arr.join(' ');
+    return formattedText.join('\n\n');
   };
 
   const handlePagination = (key, val) => {
@@ -139,7 +145,7 @@ const NotificationsPage = () => {
                         dangerouslySetInnerHTML={{
                           __html: replaceUrl(messages?.description || ''),
                         }}
-                        className="mt-2 text-sm"
+                        className="mt-2 text-base font-semibold whitespace-pre-line"
                       />
 
                       <div className="flex justify-end mt-2">
