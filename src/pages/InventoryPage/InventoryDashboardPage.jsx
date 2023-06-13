@@ -425,7 +425,7 @@ const InventoryDashboardPage = () => {
                 count={limit}
               />
               {viewType.inventory !== 'map' && (
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGEMENT]}>
                   {isDeletedInventoryDataLoading ? (
                     <p>Inventory deleting...</p>
                   ) : (
