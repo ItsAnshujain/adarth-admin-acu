@@ -98,7 +98,7 @@ export const aadhaarFormat = aadhaarNumber => {
 };
 
 export const roleTypes = {
-  'manager': 'Manager',
+  'management': 'Management',
   'supervisor': 'Supervisor',
   'associate': 'Associate',
 };
@@ -106,7 +106,7 @@ export const roleTypes = {
 // TODO: Remove one roleType object
 export const ROLES = {
   ADMIN: 'admin',
-  MANAGER: 'manager',
+  MANAGEMENT: 'management',
   SUPERVISOR: 'supervisor',
   ASSOCIATE: 'associate',
 };

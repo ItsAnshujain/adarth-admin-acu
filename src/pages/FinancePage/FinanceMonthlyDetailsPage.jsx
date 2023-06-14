@@ -182,7 +182,7 @@ const FinanceMonthlyDetailsPage = () => {
 
             return (
               <div>
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGEMENT]}>
                   <Select
                     className="mr-2"
                     data={filteredList}
@@ -377,7 +377,7 @@ const FinanceMonthlyDetailsPage = () => {
 
             return (
               <div>
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGEMENT]}>
                   <Select
                     className="mr-2"
                     data={filteredList}
@@ -572,7 +572,7 @@ const FinanceMonthlyDetailsPage = () => {
 
             return (
               <div>
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGEMENT]}>
                   <Select
                     className="mr-2"
                     data={filteredList}

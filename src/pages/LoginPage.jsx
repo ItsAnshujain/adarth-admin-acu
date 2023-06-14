@@ -106,7 +106,7 @@ const LoginPage = () => {
               errors={form.errors}
             />
             <Button
-              disabled={isLoading}
+              loading={isLoading}
               className="mt-5 width-full bg-purple-450"
               color="primary"
               type="submit"

@@ -41,7 +41,7 @@ const BookingsMenuPopover = ({ itemId, enableView = true, enableDelete = true })
           </Link>
         ) : null}
         {enableDelete ? (
-          <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGER]}>
+          <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGEMENT]}>
             <Menu.Item
               icon={<Trash className="h-4" />}
               onClick={toggleDeleteModal}

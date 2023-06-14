@@ -109,7 +109,7 @@ const ChangePasswordPage = () => {
             />
 
             <Button
-              disabled={isLoading}
+              loading={isLoading}
               className="mt-3 width-full bg-purple-450 border-rounded-xl text-xl"
               color="primary"
               type="submit"
