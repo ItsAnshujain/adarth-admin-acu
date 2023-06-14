@@ -27,7 +27,6 @@ const initialValues = {
     mediaType: { label: '', value: '' },
     supportedMedia: '',
     description: '',
-    price: 0,
     spacePhoto: '',
     otherPhotos: [],
     footFall: null,
@@ -36,7 +35,6 @@ const initialValues = {
   },
   specifications: {
     illuminations: { label: '', value: '' },
-    unit: 0,
     resolutions: '',
     size: {
       height: 0,
@@ -44,8 +42,8 @@ const initialValues = {
     },
     health: null,
     impressions: {
-      min: 1600000,
-      max: 3200000,
+      min: 0,
+      max: 0,
     },
     previousBrands: [],
     tags: [],
@@ -132,17 +130,15 @@ const specificationsValues = yup.object({
       .typeError('Unit must be a number')
       .required('Unit is required'),
     resolutions: yup.string().trim(),
-    size: yup.object({
+    size: yup.mixed({
       height: yup
         .number()
         .positive('Height must be a positive number')
-        .typeError('Height must be a number')
-        .required('Height is required'),
+        .typeError('Height must be a number'),
       width: yup
         .number()
         .positive('Width must be a positive number')
-        .typeError('Width must be a number')
-        .required('Width is required'),
+        .typeError('Width must be a number'),
     }),
     health: yup
       .number()
@@ -150,8 +146,8 @@ const specificationsValues = yup.object({
       .max(100, 'Health Status must be less than or equal to 100')
       .nullable(true),
     impressions: yup.object({
-      min: yup.number().positive('Min must be a positive number').typeError('Min must be a number'),
-      max: yup.number().positive('Max must be a positive number').typeError('Max must be a number'),
+      min: yup.number(),
+      max: yup.number(),
     }),
     previousBrands: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
     tags: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
@@ -342,15 +338,15 @@ const CreateInventoryPage = () => {
           impressions: {
             max: specifications?.impressions?.max
               ? parseInt(specifications.impressions.max, 10)
-              : null,
+              : 0,
             min: specifications?.impressions?.min
               ? parseInt(specifications.impressions.min, 10)
-              : null,
+              : 0,
           },
           resolutions: specifications?.resolutions || '',
           size: {
-            height: specifications?.size?.height ? parseInt(specifications.size.height, 10) : null,
-            width: specifications?.size?.width ? parseInt(specifications.size.width, 10) : null,
+            height: specifications?.size?.height ? parseInt(specifications.size.height, 10) : 0,
+            width: specifications?.size?.width ? parseInt(specifications.size.width, 10) : 0,
           },
           previousBrands: arrOfPreviousBrands?.length ? arrOfPreviousBrands : [],
           tags: arrOfTags?.length ? arrOfTags : [],

@@ -173,7 +173,7 @@ const Specification = () => {
             <p className="text-slate-400">Min</p>
           </div>
           <RangeSlider
-            onChange={val => {
+            onChangeEnd={val => {
               setFieldValue('specifications.impressions.min', val[0]);
               setFieldValue('specifications.impressions.max', val[1]);
             }}
