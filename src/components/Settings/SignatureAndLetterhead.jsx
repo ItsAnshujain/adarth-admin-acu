@@ -114,6 +114,8 @@ const SignatureAndLetterhead = () => {
         letterHead: userData?.letterHead || '',
         letterFooter: userData?.letterFooter || '',
         signature: userData?.signature || '',
+        proposalHead: userData?.proposalHead || undefined,
+        proposalFooter: userData?.proposalFooter || undefined,
       });
     }
     return () => {
@@ -332,8 +334,8 @@ const SignatureAndLetterhead = () => {
             </div>
           </section>
 
-          <section className="border-b py-4 px-5 gap-x-5">
-            <div className="flex flex-wrap">
+          <section className="border-b py-4 px-5">
+            <div className="flex flex-wrap gap-x-5">
               <div>
                 <p className="font-semibold text-lg">Proposal Letter Header</p>
                 <div className="mb-3">

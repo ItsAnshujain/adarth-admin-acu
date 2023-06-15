@@ -158,8 +158,7 @@ const ShareContent = ({ searchParamQueries }) => {
     searchParamQueries.forEach((value, key) => {
       params[key] = value;
     });
-    // console.log(data, serialize(params));
-    // return;
+
     const response = await shareInventory.mutateAsync(
       { queries: serialize(params), data },
       {

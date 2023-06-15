@@ -105,8 +105,8 @@ const CreateProposalPage = () => {
       }));
 
       if (data.uploadType === 'existing') {
-        data.letterHead = userData?.letterHead;
-        data.letterFooter = userData?.letterFooter;
+        data.letterHead = userData?.proposalHead;
+        data.letterFooter = userData?.proposalFooter;
       }
 
       Object.keys(data).forEach(key => {
