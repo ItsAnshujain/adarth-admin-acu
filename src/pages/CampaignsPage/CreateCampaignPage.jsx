@@ -14,8 +14,8 @@ import {
   useCampaign,
   useCreateCampaign,
   useUpdateCampaign,
-} from '../../apis/hooks/campaigns.hooks';
-import { useFetchMasters } from '../../apis/hooks/masters.hooks';
+} from '../../apis/queries/campaigns.queries';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 import { serialize } from '../../utils';
 
 const initialValues = {

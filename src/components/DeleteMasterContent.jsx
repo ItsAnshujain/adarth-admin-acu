@@ -3,7 +3,7 @@ import { useModals } from '@mantine/modals';
 import React, { useState } from 'react';
 import CheckIcon from '../assets/check.svg';
 import TrashIcon from '../assets/trash.svg';
-import { useDeleteMaster } from '../apis/hooks/masters.hooks';
+import { useDeleteMaster } from '../apis/queries/masters.queries';
 
 const DeleteMasterContent = ({ onClickCancel = () => {}, masterId }) => {
   const modals = useModals();

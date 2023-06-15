@@ -16,9 +16,9 @@ import NoData from '../../../shared/NoData';
 import {
   useUpdateCampaignMedia,
   useUpdateCampaignStatus,
-} from '../../../../apis/hooks/campaigns.hooks';
-import { useUploadFile } from '../../../../apis/hooks/upload.hooks';
-import { useFetchMasters } from '../../../../apis/hooks/masters.hooks';
+} from '../../../../apis/queries/campaigns.queries';
+import { useUploadFile } from '../../../../apis/queries/upload.queries';
+import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import {
   checkMountingStats,
   checkPrintingStats,

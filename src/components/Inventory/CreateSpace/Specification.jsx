@@ -1,6 +1,6 @@
 import { RangeSlider } from '@mantine/core';
 import { useFormContext } from '../../../context/formContext';
-import { useFetchMasters } from '../../../apis/hooks/masters.hooks';
+import { useFetchMasters } from '../../../apis/queries/masters.queries';
 import { serialize } from '../../../utils';
 // import AsyncSelect from '../../shared/AsyncSelect';
 import TextInput from '../../shared/TextInput';

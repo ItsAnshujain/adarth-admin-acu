@@ -10,7 +10,7 @@ import { showNotification } from '@mantine/notifications';
 import whatsapp from '../../assets/whatsapp.svg';
 import { FormProvider, useForm } from '../../context/formContext';
 import TextInput from '../shared/TextInput';
-import { useShareReport } from '../../apis/hooks/report.hooks';
+import { useShareReport } from '../../apis/queries/report.queries';
 
 const placeHolders = {
   email: 'Email Address',

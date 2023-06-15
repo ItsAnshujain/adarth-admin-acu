@@ -7,12 +7,12 @@ import * as yup from 'yup';
 import { useQueryClient } from '@tanstack/react-query';
 import { showNotification } from '@mantine/notifications';
 import modalConfig from '../../utils/modalConfig';
-import { useDeleteUploadedFile, useUploadFile } from '../../apis/hooks/upload.hooks';
+import { useDeleteUploadedFile, useUploadFile } from '../../apis/queries/upload.queries';
 import image from '../../assets/image.png';
 import { validateImageResolution, supportedTypes } from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
 import trash from '../../assets/trash.svg';
-import { useUpdateUsers } from '../../apis/hooks/users.hooks';
+import { useUpdateUsers } from '../../apis/queries/users.queries';
 import useUserStore from '../../store/user.store';
 
 const initialValues = {

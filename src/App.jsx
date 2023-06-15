@@ -11,7 +11,7 @@ import ProtectedRoute from './utils/ProtectedRoute';
 import { ROLES } from './utils';
 import FileUpload from './components/Finance/Create/FileUpload';
 import useUserStore from './store/user.store';
-import { useFetchUsersById } from './apis/hooks/users.hooks';
+import { useFetchUsersById } from './apis/queries/users.queries';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));

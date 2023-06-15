@@ -12,7 +12,7 @@ import {
   useFetchAllNotifications,
   useMarkAllNotifications,
   useMarkNotificationById,
-} from '../apis/hooks/notifications.hooks';
+} from '../apis/queries/notifications.queries';
 
 dayjs.extend(relativeTime);
 

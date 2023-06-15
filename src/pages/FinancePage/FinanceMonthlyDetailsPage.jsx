@@ -11,7 +11,7 @@ import Search from '../../components/Search';
 import DateRange from '../../components/DateRange';
 import calendar from '../../assets/data-table.svg';
 import Table from '../../components/Table/Table';
-import { useFetchFinanceByYearAndMonth } from '../../apis/hooks/finance.hooks';
+import { useFetchFinanceByYearAndMonth } from '../../apis/queries/finance.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import FinanceMenuPopover from '../../components/Popovers/FinanceMenuPopover';
 import { downloadPdf, orderTitle, ROLES } from '../../utils';

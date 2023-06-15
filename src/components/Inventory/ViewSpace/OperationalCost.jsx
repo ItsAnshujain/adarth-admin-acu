@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { Edit } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useFetchOperationalCost } from '../../../apis/hooks/operationalCost.hooks';
+import { useFetchOperationalCost } from '../../../apis/queries/operationalCost.queries';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import modalConfig from '../../../utils/modalConfig';
 import AddOperationalCostModal from './AddOperationalCostModal';

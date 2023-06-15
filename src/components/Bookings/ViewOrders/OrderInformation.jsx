@@ -8,10 +8,10 @@ import completed from '../../../assets/completed.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { serialize } from '../../../utils';
 import NoData from '../../shared/NoData';
-import { useFetchUsers } from '../../../apis/hooks/users.hooks';
-import { useUpdateCampaign } from '../../../apis/hooks/campaigns.hooks';
+import { useFetchUsers } from '../../../apis/queries/users.queries';
+import { useUpdateCampaign } from '../../../apis/queries/campaigns.queries';
 import useTokenIdStore from '../../../store/user.store';
-import { useFetchMasters } from '../../../apis/hooks/masters.hooks';
+import { useFetchMasters } from '../../../apis/queries/masters.queries';
 
 const styles = {
   label: {

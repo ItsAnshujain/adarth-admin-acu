@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Accordion, Button, Drawer, NumberInput, Radio, RangeSlider } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { useFetchMasters } from '../../apis/hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 import { serialize } from '../../utils/index';
 
 const inititalFilterData = {

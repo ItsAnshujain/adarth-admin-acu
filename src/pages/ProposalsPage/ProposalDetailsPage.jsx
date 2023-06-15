@@ -10,7 +10,7 @@ import Search from '../../components/Search';
 import Header from '../../components/Proposals/ViewProposal/Header';
 import Details from '../../components/Proposals/ViewProposal/Details';
 import Table from '../../components/Table/Table';
-import { useFetchProposalById } from '../../apis/hooks/proposal.hooks';
+import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { categoryColors } from '../../utils';
 import modalConfig from '../../utils/modalConfig';

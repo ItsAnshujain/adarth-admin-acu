@@ -7,8 +7,12 @@ import { FilePlus } from 'react-feather';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { FormProvider, useForm } from '../../../context/formContext';
-import { useBookingById, useBookings, useUpdateBooking } from '../../../apis/hooks/booking.hooks';
-import { useUploadFile } from '../../../apis/hooks/upload.hooks';
+import {
+  useBookingById,
+  useBookings,
+  useUpdateBooking,
+} from '../../../apis/queries/booking.queries';
+import { useUploadFile } from '../../../apis/queries/upload.queries';
 import { onlyNumbersMatch, serialize } from '../../../utils';
 import PurchaseOrder from './FinanceUpload/PurchaseOrder';
 import ReleaseOrder from './FinanceUpload/ReleaseOrder';

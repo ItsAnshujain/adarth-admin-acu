@@ -10,7 +10,7 @@ import validator from 'validator';
 import whatsapp from '../../assets/whatsapp.svg';
 import { FormProvider, useForm } from '../../context/formContext';
 import TextInput from '../../components/shared/TextInput';
-import { useShareInventory } from '../../apis/hooks/inventory.hooks';
+import { useShareInventory } from '../../apis/queries/inventory.queries';
 import { serialize } from '../../utils';
 
 const fileType = [

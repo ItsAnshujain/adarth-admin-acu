@@ -7,7 +7,7 @@ import Credentials from '../../components/Users/Create/Credentials';
 import SuccessModal from '../../components/shared/Modal';
 import Header from '../../components/Users/Create/Header';
 import { FormProvider, useForm } from '../../context/formContext';
-import { useCreateUsers, useInvitePeers } from '../../apis/hooks/users.hooks';
+import { useCreateUsers, useInvitePeers } from '../../apis/queries/users.queries';
 import { serialize } from '../../utils';
 import useTokenIdStore from '../../store/user.store';
 

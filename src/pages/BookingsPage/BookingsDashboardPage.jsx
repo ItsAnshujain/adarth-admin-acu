@@ -14,9 +14,9 @@ import {
   useBookings,
   useBookingStats,
   useUpdateBookingStatus,
-} from '../../apis/hooks/booking.hooks';
+} from '../../apis/queries/booking.queries';
 import { checkCampaignStats, serialize } from '../../utils';
-import { useFetchMasters } from '../../apis/hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from '../../components/Bookings/BookingStatisticsView';
 import NoData from '../../components/shared/NoData';

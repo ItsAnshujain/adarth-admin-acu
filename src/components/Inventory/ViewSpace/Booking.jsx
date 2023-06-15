@@ -12,7 +12,7 @@ import Table from '../../Table/Table';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
-import { useFetchBookingsByInventoryId } from '../../../apis/hooks/inventory.hooks';
+import { useFetchBookingsByInventoryId } from '../../../apis/queries/inventory.queries';
 import NoData from '../../shared/NoData';
 import BookingsMenuPopover from '../../Popovers/BookingsMenuPopover';
 

@@ -8,7 +8,7 @@ import { useDebouncedValue } from '@mantine/hooks';
 import Search from '../Search';
 import toIndianCurrency from '../../utils/currencyFormat';
 import Table from '../Table/Table';
-import { useFetchInventory } from '../../apis/hooks/inventory.hooks';
+import { useFetchInventory } from '../../apis/queries/inventory.queries';
 import { categoryColors, getDate } from '../../utils';
 import Filter from '../Inventory/Filter';
 import { useFormContext } from '../../context/formContext';

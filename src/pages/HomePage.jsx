@@ -27,8 +27,8 @@ import VacantIcon from '../assets/vacant.svg';
 import OccupiedIcon from '../assets/occupied.svg';
 import TotalCampaignIcon from '../assets/total-campaign.svg';
 import useUserStore from '../store/user.store';
-import { useBookingStats, useFetchBookingRevenue } from '../apis/hooks/booking.hooks';
-import { useInventoryStats } from '../apis/hooks/inventory.hooks';
+import { useBookingStats, useFetchBookingRevenue } from '../apis/queries/booking.queries';
+import { useInventoryStats } from '../apis/queries/inventory.queries';
 import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../utils';
 import ViewByFilter from '../components/Reports/ViewByFilter';
 

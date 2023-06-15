@@ -3,17 +3,17 @@ import { yupResolver } from '@mantine/form';
 import React, { useEffect } from 'react';
 import * as yup from 'yup';
 import { FormProvider, useForm } from '../../../context/formContext';
-import { useFetchMasters } from '../../../apis/hooks/masters.hooks';
+import { useFetchMasters } from '../../../apis/queries/masters.queries';
 import {
   useAddOperationalCost,
   useUpdateOperationalCost,
-} from '../../../apis/hooks/operationalCost.hooks';
+} from '../../../apis/queries/operationalCost.queries';
 import { serialize } from '../../../utils';
 import NumberInput from '../../shared/NumberInput';
 import Select from '../../shared/Select';
 import TextareaInput from '../../shared/TextareaInput';
 import DatePicker from '../../shared/DatePicker';
-import { useBookings } from '../../../apis/hooks/booking.hooks';
+import { useBookings } from '../../../apis/queries/booking.queries';
 
 const bookingQueries = {
   page: 1,

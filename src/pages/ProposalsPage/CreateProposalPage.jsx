@@ -12,10 +12,10 @@ import {
   useCreateProposal,
   useUpdateProposal,
   useFetchProposalById,
-} from '../../apis/hooks/proposal.hooks';
-import { useFetchUsersById } from '../../apis/hooks/users.hooks';
+} from '../../apis/queries/proposal.queries';
+import { useFetchUsersById } from '../../apis/queries/users.queries';
 import { FormProvider, useForm } from '../../context/formContext';
-import { useFetchMasters } from '../../apis/hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 import { serialize } from '../../utils';
 import useUserStore from '../../store/user.store';
 
