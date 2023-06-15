@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { yupResolver } from '@mantine/form';
 import banner from '../assets/login.svg';
 import { useForm, FormProvider } from '../context/formContext';
-import { useLogin } from '../hooks/auth.hooks';
+import { useLogin } from '../apis/hooks/auth.hooks';
 import useUserStore from '../store/user.store';
 import TextInput from '../components/shared/TextInput';
 import PasswordInput from '../components/shared/PasswordInput';

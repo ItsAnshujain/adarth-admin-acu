@@ -5,7 +5,7 @@ import { ChevronDown } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDebouncedValue } from '@mantine/hooks';
 import classNames from 'classnames';
-import { useCampaigns, useUpdateCampaign } from '../../hooks/campaigns.hooks';
+import { useCampaigns, useUpdateCampaign } from '../../apis/hooks/campaigns.hooks';
 import AreaHeader from '../../components/Campaigns/Header';
 import GridView from '../../components/Campaigns/GridView';
 import Table from '../../components/Table/Table';
@@ -13,7 +13,7 @@ import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import { serialize } from '../../utils/index';
 import toIndianCurrency from '../../utils/currencyFormat';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/hooks/masters.hooks';
 import useLayoutView from '../../store/layout.store';
 import CampaignsMenuPopover from '../../components/Popovers/CampaignsMenuPopover';
 

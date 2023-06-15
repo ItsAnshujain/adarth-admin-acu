@@ -1,4 +1,4 @@
-import { USER_TOKEN_ID_KEY } from './config';
+import { USER_TOKEN_ID_KEY } from '../utils/config';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 /**

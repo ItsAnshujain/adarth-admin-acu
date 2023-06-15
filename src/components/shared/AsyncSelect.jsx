@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import Select from 'react-select/async';
 import { ChevronDown } from 'react-feather';
 import { useFormContext } from '../../context/formContext';
-import { useMasters } from '../../hooks/masters.hooks';
+import { useMasters } from '../../apis/hooks/masters.hooks';
 import { debounce, serialize } from '../../utils';
 
 const DropdownIndicator = () => <ChevronDown size={16} className="mt-[1px] mr-1" />;

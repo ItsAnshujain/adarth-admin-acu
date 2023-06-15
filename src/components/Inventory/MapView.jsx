@@ -5,7 +5,7 @@ import GoogleMapReact from 'google-map-react';
 import { useSearchParams } from 'react-router-dom';
 import MarkerIcon from '../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/hooks/masters.hooks';
 import { indianMapCoordinates, serialize } from '../../utils';
 
 const styles = {

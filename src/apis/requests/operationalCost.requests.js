@@ -1,4 +1,4 @@
-import http from '../utils/http';
+import http from '../http';
 
 export const fetchOperationalCost = inventoryId => http.get(`/operationalCost/${inventoryId}`);
 

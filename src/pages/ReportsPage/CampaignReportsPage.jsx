@@ -19,12 +19,12 @@ import { useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
 import Header from '../../components/Reports/Header';
-import { useCampaignReport, useCampaignStats } from '../../hooks/campaigns.hooks';
+import { useCampaignReport, useCampaignStats } from '../../apis/hooks/campaigns.hooks';
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import CampaignStatsContent from '../../components/Reports/Campaign/CampaignStatsContent';
 import CampaignPieContent from '../../components/Reports/Campaign/CampaignPieContent';
 import { dateByQuarter, daysInAWeek, downloadPdf, monthsInShort, quarters } from '../../utils';
-import { useShareReport } from '../../hooks/report.hooks';
+import { useShareReport } from '../../apis/hooks/report.hooks';
 import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/Reports/ShareContent';
 

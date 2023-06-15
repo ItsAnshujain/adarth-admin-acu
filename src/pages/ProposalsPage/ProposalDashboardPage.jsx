@@ -9,11 +9,11 @@ import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Table from '../../components/Table/Table';
 import GridView from '../../components/Proposals/Grid';
-import { useFetchProposals, useUpdateProposal } from '../../hooks/proposal.hooks';
+import { useFetchProposals, useUpdateProposal } from '../../apis/hooks/proposal.hooks';
 import useLayoutView from '../../store/layout.store';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { serialize } from '../../utils';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/hooks/masters.hooks';
 import ProposalsMenuPopover from '../../components/Popovers/ProposalsMenuPopover';
 
 const nativeSelectStyles = {

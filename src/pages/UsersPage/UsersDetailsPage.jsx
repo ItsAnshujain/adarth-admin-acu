@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Tabs } from '@mantine/core';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useFetchUsersById } from '../../hooks/users.hooks';
+import { useFetchUsersById } from '../../apis/hooks/users.hooks';
 import ManagingCampaignSubHeader from '../../components/Users/View/ManagingSubHeader';
 import OverviewUserDetails from '../../components/Users/View/OverviewUserDetails';
 import BookingTableView from '../../components/Users/View/BookingTableView';
 import ProposalTableView from '../../components/Users/View/ProposalTableView';
-import { useBookings } from '../../hooks/booking.hooks';
-import { useFetchProposals } from '../../hooks/proposal.hooks';
+import { useBookings } from '../../apis/hooks/booking.hooks';
+import { useFetchProposals } from '../../apis/hooks/proposal.hooks';
 
 const tableBookingQueries = userId => ({
   'page': 1,

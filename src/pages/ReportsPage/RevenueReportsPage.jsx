@@ -28,7 +28,7 @@ import {
   useBookingReportByRevenueGraph,
   useBookingRevenueByIndustry,
   useBookingRevenueByLocation,
-} from '../../hooks/booking.hooks';
+} from '../../apis/hooks/booking.hooks';
 import {
   dateByQuarter,
   daysInAWeek,
@@ -39,7 +39,7 @@ import {
 } from '../../utils';
 import RevenueStatsContent from '../../components/Reports/Revenue/RevenueStatsContent';
 import ViewByFilter from '../../components/Reports/ViewByFilter';
-import { useShareReport } from '../../hooks/report.hooks';
+import { useShareReport } from '../../apis/hooks/report.hooks';
 import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/Reports/ShareContent';
 

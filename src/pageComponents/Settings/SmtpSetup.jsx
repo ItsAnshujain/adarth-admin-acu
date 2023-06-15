@@ -9,7 +9,7 @@ import PasswordInput from '../../components/shared/PasswordInput';
 import NativeSelect from '../../components/shared/NativeSelect';
 import { smtpSupportedServices } from '../../utils/constants';
 import NumberInput from '../../components/shared/NumberInput';
-import { useFetchUsersById, useUpdateUsers } from '../../hooks/users.hooks';
+import { useFetchUsersById, useUpdateUsers } from '../../apis/hooks/users.hooks';
 import useUserStore from '../../store/user.store';
 
 const initialValues = {

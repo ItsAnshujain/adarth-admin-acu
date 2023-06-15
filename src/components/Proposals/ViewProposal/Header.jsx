@@ -2,7 +2,7 @@ import { Button } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { ArrowLeft } from 'react-feather';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useGenerateProposalPdf } from '../../../hooks/proposal.hooks';
+import { useGenerateProposalPdf } from '../../../apis/hooks/proposal.hooks';
 import { downloadPdf } from '../../../utils';
 import modalConfig from '../../../utils/modalConfig';
 import ShareContent from './ShareContent';

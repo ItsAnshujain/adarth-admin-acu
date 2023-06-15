@@ -3,7 +3,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import * as yup from 'yup';
 import { useState, useMemo, useEffect } from 'react';
 import { yupResolver } from '@mantine/form';
-import { useCreateMaster, useFetchMasters, useUpdateMaster } from '../../hooks/masters.hooks';
+import { useCreateMaster, useFetchMasters, useUpdateMaster } from '../../apis/hooks/masters.hooks';
 import { masterTypes, serialize } from '../../utils';
 import NativeSelect from '../shared/NativeSelect';
 import { FormProvider, useForm } from '../../context/formContext';

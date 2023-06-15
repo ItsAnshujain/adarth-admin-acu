@@ -13,9 +13,12 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 import uploadIcon from '../../../../assets/upload.svg';
 import uploadWhiteIcon from '../../../../assets/upload-white.svg';
 import NoData from '../../../shared/NoData';
-import { useUpdateCampaignMedia, useUpdateCampaignStatus } from '../../../../hooks/campaigns.hooks';
-import { useUploadFile } from '../../../../hooks/upload.hooks';
-import { useFetchMasters } from '../../../../hooks/masters.hooks';
+import {
+  useUpdateCampaignMedia,
+  useUpdateCampaignStatus,
+} from '../../../../apis/hooks/campaigns.hooks';
+import { useUploadFile } from '../../../../apis/hooks/upload.hooks';
+import { useFetchMasters } from '../../../../apis/hooks/masters.hooks';
 import {
   checkMountingStats,
   checkPrintingStats,

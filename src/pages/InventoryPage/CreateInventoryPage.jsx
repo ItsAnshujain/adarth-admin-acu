@@ -14,7 +14,7 @@ import {
   useCreateInventory,
   useFetchInventoryById,
   useUpdateInventory,
-} from '../../hooks/inventory.hooks';
+} from '../../apis/hooks/inventory.hooks';
 
 const initialValues = {
   basicInformation: {

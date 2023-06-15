@@ -18,7 +18,7 @@ import {
   useDeleteInventory,
   useFetchInventory,
   useUpdateInventories,
-} from '../../hooks/inventory.hooks';
+} from '../../apis/hooks/inventory.hooks';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
 import { categoryColors, ROLES } from '../../utils';

@@ -4,7 +4,7 @@ import { useDropzone } from 'react-dropzone';
 import { FilePlus } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 
-import { useCsvImport } from '../../hooks/inventory.hooks';
+import { useCsvImport } from '../../apis/hooks/inventory.hooks';
 
 const FileUpload = () => {
   const navigate = useNavigate();

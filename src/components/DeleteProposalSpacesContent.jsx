@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import CheckIcon from '../assets/check.svg';
 import TrashIcon from '../assets/trash.svg';
-import { useUpdateProposal } from '../hooks/proposal.hooks';
+import { useUpdateProposal } from '../apis/hooks/proposal.hooks';
 
 const DeleteProposalSpacesContent = ({
   onClickCancel = () => {},

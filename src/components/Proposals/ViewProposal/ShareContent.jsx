@@ -8,7 +8,7 @@ import { yupResolver } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
 import whatsapp from '../../../assets/whatsapp.svg';
-import { useShareProposal } from '../../../hooks/proposal.hooks';
+import { useShareProposal } from '../../../apis/hooks/proposal.hooks';
 import { FormProvider, useForm } from '../../../context/formContext';
 import TextInput from '../../shared/TextInput';
 

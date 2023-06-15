@@ -3,7 +3,7 @@ import { Button } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
-import { useForgotPassword } from '../hooks/auth.hooks';
+import { useForgotPassword } from '../apis/hooks/auth.hooks';
 import { FormProvider, useForm } from '../context/formContext';
 import TextInput from '../components/shared/TextInput';
 import banner from '../assets/login.svg';

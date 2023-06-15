@@ -1,5 +1,5 @@
 import { Checkbox, RangeSlider } from '@mantine/core';
-import { useFetchMasters } from '../../../hooks/masters.hooks';
+import { useFetchMasters } from '../../../apis/hooks/masters.hooks';
 import { serialize } from '../../../utils/index';
 import TextInput from '../../shared/TextInput';
 import TextareaInput from '../../shared/TextareaInput';

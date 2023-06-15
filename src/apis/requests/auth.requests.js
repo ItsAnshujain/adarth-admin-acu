@@ -1,4 +1,4 @@
-import http from '../utils/http';
+import http from '../http';
 
 // change the url acc to api docs
 export const login = data => http.post('/auth/signin', data);

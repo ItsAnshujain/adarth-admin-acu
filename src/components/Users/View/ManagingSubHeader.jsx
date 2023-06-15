@@ -13,7 +13,7 @@ import ProposalSentIcon from '../../../assets/proposal-sent.svg';
 import BookingsIcon from '../../../assets/total-bookings.svg';
 import ProposalFilter from '../../Proposals/Filter';
 import BookingFilter from '../../Bookings/Filter';
-import { useBookingStatByIncharge } from '../../../hooks/booking.hooks';
+import { useBookingStatByIncharge } from '../../../apis/hooks/booking.hooks';
 import { serialize } from '../../../utils';
 
 const ManagingSubHeader = ({ activeChildTab, userId }) => {

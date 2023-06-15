@@ -8,7 +8,7 @@ import AreaHeader from '../../components/Users/Header';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Card from '../../components/Users/UI/Card';
-import { useFetchUsers } from '../../hooks/users.hooks';
+import { useFetchUsers } from '../../apis/hooks/users.hooks';
 import useTokenIdStore from '../../store/user.store';
 
 const paginationStyles = {

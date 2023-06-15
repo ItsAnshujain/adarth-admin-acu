@@ -1,4 +1,4 @@
-import http from '../utils/http';
+import http from '../http';
 
 export const fetchUsers = query => http.get(`/users?${query}`);
 

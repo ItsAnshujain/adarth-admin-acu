@@ -4,7 +4,7 @@ import { Folder } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import Header from '../../components/Finance/Header';
-import { useFetchFinance } from '../../hooks/finance.hooks';
+import { useFetchFinance } from '../../apis/hooks/finance.hooks';
 
 const FinanceDashboardPage = () => {
   const navigate = useNavigate();

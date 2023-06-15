@@ -3,7 +3,7 @@ import { useModals } from '@mantine/modals';
 import React, { useState } from 'react';
 import CheckIcon from '../assets/check.svg';
 import TrashIcon from '../assets/trash.svg';
-import { useDeleteInventoryById } from '../hooks/inventory.hooks';
+import { useDeleteInventoryById } from '../apis/hooks/inventory.hooks';
 
 const DeleteSpaceContent = ({ onClickCancel = () => {}, inventoryId }) => {
   const modals = useModals();

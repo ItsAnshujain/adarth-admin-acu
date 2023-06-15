@@ -2,7 +2,7 @@ import { Accordion, Button, Drawer, NumberInput, Radio, RangeSlider } from '@man
 import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { serialize } from '../../utils';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/hooks/masters.hooks';
 
 const styles = { title: { fontWeight: 'bold' } };
 const sliderStyle = {
