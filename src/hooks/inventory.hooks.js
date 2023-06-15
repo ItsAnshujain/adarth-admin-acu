@@ -11,6 +11,7 @@ import {
   fetchInventoryReportList,
   inventoryReport,
   inventoryStats,
+  shareInventory,
   updateInventories,
   updateInventory,
 } from '../requests/inventory.requests';
@@ -237,3 +238,25 @@ export const useFetchInventoryReportList = (query, enabled = true) =>
     },
     { enabled },
   );
+
+export const useShareInventory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ({ queries, data }) => {
+      const res = await shareInventory(queries, data);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['inventory']);
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};

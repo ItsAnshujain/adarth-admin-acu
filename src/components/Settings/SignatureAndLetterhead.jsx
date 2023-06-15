@@ -25,6 +25,8 @@ const schema = yup.object({
   signature: yup.string().trim().required('Signature is required'),
   letterHead: yup.string().trim().required('Letter Head is required'),
   letterFooter: yup.string().trim().required('Letter Footer is required'),
+  proposalHead: yup.string().trim().required('Proposal Letter Head is required'),
+  proposalFooter: yup.string().trim().required('Proposal Letter Footer is required'),
 });
 
 const SignatureAndLetterhead = () => {
@@ -41,8 +43,16 @@ const SignatureAndLetterhead = () => {
   const onHandleDrop = async (params, key) => {
     const isValidResolution = await validateImageResolution(
       params?.[0],
-      key === 'letterHead' ? 1350 : key === 'letterFooter' ? 1350 : 512,
-      key === 'letterHead' ? 80 : key === 'letterFooter' ? 80 : 512,
+      key === 'letterHead' || key === 'proposalHead'
+        ? 1350
+        : key === 'letterFooter' || key === 'proposalFooter'
+        ? 1350
+        : 512,
+      key === 'letterHead' || key === 'proposalHead'
+        ? 80
+        : key === 'letterFooter' || key === 'proposalFooter'
+        ? 80
+        : 512,
     );
     if (!isValidResolution) {
       showNotification({
@@ -254,6 +264,7 @@ const SignatureAndLetterhead = () => {
               </div>
             </div>
           </section>
+
           <section className="border-b py-4 px-5">
             <p className="font-semibold text-lg mr-2">Signature</p>
             <div className="mb-3">
@@ -318,6 +329,149 @@ const SignatureAndLetterhead = () => {
                   </div>
                 ) : null}
               </Box>
+            </div>
+          </section>
+
+          <section className="border-b py-4 px-5 gap-x-5">
+            <div className="flex flex-wrap">
+              <div>
+                <p className="font-semibold text-lg">Proposal Letter Header</p>
+                <div className="mb-3">
+                  <span className="font-bold text-gray-500 mr-2">Supported types</span>
+                  {supportedTypes.map(item => (
+                    <Badge key={item} className="mr-2">
+                      {item}
+                    </Badge>
+                  ))}
+                  <p className="text-red-450">Recommended Size: Max 1350px x 80px</p>
+                </div>
+                <div className="flex items-start">
+                  {!form.values?.proposalHead ? (
+                    <div className="h-[180px] w-[350px] mr-4 mb-2">
+                      <Dropzone
+                        onDrop={imagePath => onHandleDrop(imagePath, 'proposalHead')}
+                        accept={['image/png', 'image/jpeg']}
+                        className="h-full w-full flex justify-center items-center bg-slate-100"
+                        loading={activeImage === 'proposalHead' && isUploadLoading}
+                        name="proposalHead"
+                        multiple={false}
+                        {...form.getInputProps('proposalHead')}
+                      >
+                        <div className="flex items-center justify-center">
+                          <Image src={image} alt="placeholder" height={50} width={50} />
+                        </div>
+                        <p>
+                          Drag and Drop your file here, or{' '}
+                          <span className="text-purple-450 border-none">browse</span>
+                        </p>
+                      </Dropzone>
+                      {form.errors?.proposalHead ? (
+                        <p className="mt-1 text-xs text-red-450">{form.errors?.proposalHead}</p>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  <Box
+                    className="bg-white border rounded-md cursor-zoom-in"
+                    onClick={() => toggleImagePreviewModal(form.values?.proposalHead)}
+                  >
+                    {form.values?.proposalHead ? (
+                      <div className="relative">
+                        <Image
+                          src={form.values?.proposalHead}
+                          alt="letter-head-preview"
+                          height={180}
+                          width={350}
+                          className="bg-slate-100"
+                          fit="contain"
+                          placeholder={
+                            <Text align="center">
+                              Unexpected error occured. Image cannot be loaded
+                            </Text>
+                          }
+                        />
+                        <ActionIcon
+                          className="absolute right-2 top-1 bg-white"
+                          onClick={e => handleDeleteImage(e, 'proposalHead')}
+                          loading={activeImage === 'proposalHead' && isDeleteLoading}
+                          disabled={isDeleteLoading}
+                        >
+                          <Image src={trash} alt="trash-icon" />
+                        </ActionIcon>
+                      </div>
+                    ) : null}
+                  </Box>
+                </div>
+              </div>
+
+              <div>
+                <p className="font-semibold text-lg">Proposal Letter Footer</p>
+                <div className="mb-3">
+                  <span className="font-bold text-gray-500 mr-2">Supported types</span>
+                  {supportedTypes.map(item => (
+                    <Badge key={item} className="mr-2">
+                      {item}
+                    </Badge>
+                  ))}
+                  <p className="text-red-450">Recommended Size: Max 1350px x 80px</p>
+                </div>
+                <div className="flex items-start">
+                  {!form.values?.proposalFooter ? (
+                    <div className="h-[180px] w-[350px] mr-4 mb-2">
+                      <Dropzone
+                        onDrop={imagePath => onHandleDrop(imagePath, 'proposalFooter')}
+                        accept={['image/png', 'image/jpeg']}
+                        className="h-full w-full flex justify-center items-center bg-slate-100"
+                        loading={activeImage === 'proposalFooter' && isUploadLoading}
+                        name="proposalFooter"
+                        multiple={false}
+                        {...form.getInputProps('proposalFooter')}
+                      >
+                        <div className="flex items-center justify-center">
+                          <Image src={image} alt="placeholder" height={50} width={50} />
+                        </div>
+                        <p>
+                          Drag and Drop your file here, or{' '}
+                          <span className="text-purple-450 border-none">browse</span>
+                        </p>
+                      </Dropzone>
+                      {form.errors?.proposalFooter ? (
+                        <p className="mt-1 text-xs text-red-450">{form.errors?.proposalFooter}</p>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  <Box
+                    className="bg-white border rounded-md cursor-zoom-in"
+                    onClick={() => toggleImagePreviewModal(form.values?.proposalFooter)}
+                  >
+                    {form.values?.proposalFooter ? (
+                      <div className="relative">
+                        <Image
+                          src={form.values?.proposalFooter}
+                          alt="letter-footer-preview"
+                          height={180}
+                          width={350}
+                          className="bg-slate-100"
+                          fit="contain"
+                          withPlaceholder
+                          placeholder={
+                            <Text align="center">
+                              Unexpected error occured. Image cannot be loaded
+                            </Text>
+                          }
+                        />
+                        <ActionIcon
+                          className="absolute right-2 top-1 bg-white"
+                          onClick={e => handleDeleteImage(e, 'proposalFooter')}
+                          loading={activeImage === 'proposalFooter' && isDeleteLoading}
+                          disabled={isDeleteLoading}
+                        >
+                          <Image src={trash} alt="trash-icon" />
+                        </ActionIcon>
+                      </div>
+                    ) : null}
+                  </Box>
+                </div>
+              </div>
             </div>
             <Button
               className="primary-button mt-4"
