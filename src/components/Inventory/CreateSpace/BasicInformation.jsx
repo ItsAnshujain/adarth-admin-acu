@@ -190,6 +190,14 @@ const BasicInfo = () => {
           }
           className="mb-7"
         />
+        <TextInput
+          label="Peer Media Owner"
+          name="basicInformation.peerMediaOwner"
+          styles={styles}
+          errors={errors}
+          placeholder="Write..."
+          className="mb-7"
+        />
         <Select
           label="Space Type"
           name="basicInformation.spaceType"

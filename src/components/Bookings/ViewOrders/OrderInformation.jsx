@@ -8,7 +8,7 @@ import completed from '../../../assets/completed.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import { serialize } from '../../../utils';
 import NoData from '../../shared/NoData';
-import { useFetchUsers } from '../../../hooks/users.hooks';
+import { useFetchUsers, useFetchUsersById } from '../../../hooks/users.hooks';
 import { useUpdateCampaign } from '../../../hooks/campaigns.hooks';
 import useTokenIdStore from '../../../store/user.store';
 import { useFetchMasters } from '../../../hooks/masters.hooks';
@@ -53,44 +53,53 @@ const query = {
 const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bookingId }) => {
   const queryClient = useQueryClient();
   const userId = useTokenIdStore(state => state.id);
-  const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
-  const [userQuery, setUserQuery] = useState({
-    page: 1,
-    limit: 100,
-    sortOrder: 'asc',
-    sortBy: 'createdAt',
-    filter: userCachedData?.role === 'admin' ? 'all' : 'team',
-  });
+  const { data: userDetails } = useFetchUsersById(userId);
+  const [activeOrganization, setActiveOrganization] = useState('');
+  const [activeIncharge, setActiveIncharge] = useState('');
   const {
     data: organizationData,
     isSuccess: isOrganizationDataLoaded,
     isLoading: isOrganizationDataLoading,
-  } = useFetchMasters(
-    serialize({ type: 'organization', ...query }),
-    userCachedData?.role === 'admin',
-  );
+  } = useFetchMasters(serialize({ type: 'organization', ...query }), userDetails?.role === 'admin');
 
   const {
     data: userData,
     isSuccess: isUserDataLoaded,
     isLoading: isLoadingUserData,
-  } = useFetchUsers(serialize(userQuery), userCachedData?.role !== 'associate');
+  } = useFetchUsers(
+    serialize({
+      page: 1,
+      limit: 100,
+      sortOrder: 'asc',
+      sortBy: 'createdAt',
+      filter: userDetails?.role === 'admin' ? 'all' : 'team',
+      company: activeOrganization !== '' ? activeOrganization : undefined,
+    }),
+    userDetails?.role !== 'associate',
+  );
 
   const { mutate: updateCampaign } = useUpdateCampaign();
 
-  const handleAddIncharge = inchargeId => {
-    if (inchargeId === '') {
-      return;
-    }
-    if (bookingData?.campaign) {
-      updateCampaign(
-        {
-          id: bookingData.campaign?._id,
-          data: { incharge: inchargeId },
-        },
-        { onSuccess: () => queryClient.invalidateQueries(['booking-by-id', bookingId]) },
-      );
-    }
+  const handleActiveIncharge = useCallback(
+    inchargeId => {
+      if (inchargeId === '') return;
+
+      if (bookingData?.campaign) {
+        updateCampaign(
+          {
+            id: bookingData.campaign?._id,
+            data: { incharge: inchargeId },
+          },
+          { onSuccess: () => queryClient.invalidateQueries(['booking-by-id', bookingId]) },
+        );
+      }
+    },
+    [bookingData?.campaign],
+  );
+
+  const handleActiveOrganization = e => {
+    setActiveOrganization(e);
+    setActiveIncharge('');
   };
 
   const healthStatusData = useMemo(
@@ -109,9 +118,9 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
 
   const inchargeList = useMemo(() => {
     let arr = [];
-    if (userData?.docs && bookingData?.campaign?.incharge?.[0]?._id === userCachedData?._id) {
+    if (userData?.docs && bookingData?.campaign?.incharge?.[0]?._id === userDetails?._id) {
       arr = [
-        { label: userCachedData?.name, value: userCachedData?._id },
+        { label: userDetails?.name, value: userDetails?._id },
         ...userData.docs.map(item => ({ label: item?.name, value: item?._id })),
       ];
       return arr;
@@ -120,37 +129,44 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
       arr = [...arr, ...userData.docs.map(item => ({ label: item?.name, value: item?._id }))];
     }
     return arr;
-  }, [userData?.docs]);
+  }, [userData?.docs, bookingData?.campaign]);
+
+  const getDefaultIncharge = useMemo(
+    () =>
+      inchargeList?.filter(item =>
+        item?.value?.includes(bookingData?.campaign?.incharge?.[0]?._id),
+      )[0]?.value,
+    [bookingData?.campaign, inchargeList],
+  );
 
   const organizationList = useMemo(() => {
     let arr = [];
-    if (organizationData?.docs) {
+    if (organizationData?.docs?.length) {
       arr = [...organizationData.docs.map(item => ({ label: item?.name, value: item?.name }))];
 
       return arr;
     }
 
     return [];
-  }, [organizationData?.docs]);
+  }, [organizationData?.docs?.length]);
 
   const getDefaultOrganization = useMemo(
     () =>
       organizationList?.filter(item =>
-        item?.label?.toLowerCase()?.includes(bookingData?.campaign?.incharge?.[0]?.company),
+        item?.value
+          ?.toLowerCase()
+          ?.includes(bookingData?.campaign?.incharge?.[0]?.company?.toLowerCase()),
       )[0]?.label,
-    [bookingData?.campaign],
+    [bookingData?.campaign, organizationList],
   );
 
-  const handleUserQuery = useCallback(e => {
-    setUserQuery(preState => ({
-      ...preState,
-      company: e?.toLowerCase(),
-    }));
-  }, []);
+  useEffect(() => {
+    setActiveIncharge(getDefaultIncharge);
+  }, [bookingData?.campaign]);
 
   useEffect(() => {
-    setUserQuery(prev => ({ ...prev, company: bookingData?.campaign?.incharge?.[0]?.company }));
-  }, [bookingData?.campaign]);
+    setActiveOrganization(getDefaultOrganization);
+  }, [bookingData?.campaign, organizationList]);
 
   return isLoading ? (
     <div className="flex justify-center items-center h-[400px]">
@@ -288,7 +304,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
                 {bookingData?.currentStatus?.campaignStatus || <NoData type="na" />}
               </p>
             </div>
-            {userCachedData && userCachedData?.role === 'admin' ? (
+            {userDetails && userDetails?.role === 'admin' ? (
               <div>
                 <p className="text-slate-400">Organization</p>
                 <Select
@@ -296,28 +312,28 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
                   placeholder="Select..."
                   data={isOrganizationDataLoaded ? organizationList : []}
                   disabled={isOrganizationDataLoading}
-                  onChange={e => handleUserQuery(e)}
-                  defaultValue={getDefaultOrganization}
+                  onChange={e => handleActiveOrganization(e)}
+                  value={activeOrganization}
                 />
               </div>
             ) : null}
             <div>
               <p className="text-slate-400">Campaign Incharge</p>
-              {userCachedData?.role === 'associate' ? (
-                <p className="font-bold">{userCachedData?.name}</p>
+              {userDetails?.role === 'associate' ? (
+                <p className="font-bold">{userDetails?.name}</p>
               ) : (
                 <Select
                   styles={styles}
                   disabled={
                     isLoadingUserData ||
-                    (userCachedData?.role === 'associate' &&
-                      bookingData?.campaign?.incharge?.[0]?._id !== userCachedData?._id)
+                    (userDetails?.role === 'associate' &&
+                      bookingData?.campaign?.incharge?.[0]?._id !== userDetails?._id)
                   }
                   placeholder="Select..."
                   data={isUserDataLoaded ? inchargeList : []}
-                  onChange={e => handleAddIncharge(e)}
+                  onChange={e => handleActiveIncharge(e)}
                   className="mb-7"
-                  value={bookingData ? bookingData?.campaign?.incharge?.[0]?._id : ''}
+                  value={activeIncharge}
                 />
               )}
             </div>

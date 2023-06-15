@@ -24,9 +24,11 @@ import modalConfig from '../../utils/modalConfig';
 import { categoryColors, ROLES } from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
 import TrashIcon from '../../assets/delete.png';
+import ExportIcon from '../../assets/export.png';
 import RoleBased from '../../components/RoleBased';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
 import ViewByFilter from '../../pageComponents/Inventory/ViewByFilter';
+import ShareContent from '../../pageComponents/Inventory/ShareContent';
 
 dayjs.extend(isBetween);
 
@@ -179,17 +181,9 @@ const InventoryDashboardPage = () => {
         accessor: 'peer',
         Cell: ({
           row: {
-            original: { createdBy, basicInformation },
+            original: { basicInformation },
           },
-        }) =>
-          useMemo(
-            () => (
-              <p className="w-fit">
-                {createdBy && createdBy?.isPeer ? basicInformation?.mediaOwner?.name : '-'}
-              </p>
-            ),
-            [],
-          ),
+        }) => useMemo(() => <p className="w-fit">{basicInformation?.peerMediaOwner || '-'}</p>, []),
       },
       {
         Header: 'CATEGORY',
@@ -405,6 +399,27 @@ const InventoryDashboardPage = () => {
     setSearchParams(searchParams);
   };
 
+  const handleFilterVacantInventory = () => {
+    if (!(searchParams.get('from') && searchParams.get('to'))) {
+      showNotification({
+        message: 'Please select a Date Range',
+      });
+      return;
+    }
+    searchParams.set('isUnderMaintenance', false);
+    setSearchParams(searchParams);
+  };
+
+  const toggleShareOptions = () => {
+    modals.openContextModal('basic', {
+      title: 'Share Option',
+      innerProps: {
+        modalBody: <ShareContent searchParamQueries={searchParams} />,
+      },
+      ...modalConfig,
+    });
+  };
+
   useEffect(() => {
     handleSearch();
     if (debouncedSearch === '') {
@@ -455,7 +470,7 @@ const InventoryDashboardPage = () => {
               )}
             </div>
 
-            <section className="flex gap-3">
+            <section className="flex items-center gap-3">
               {viewType.inventory !== 'map' && (
                 <Search
                   search={searchInput}
@@ -465,6 +480,19 @@ const InventoryDashboardPage = () => {
                 />
               )}
               <ViewByFilter handleViewBy={handleViewBy} />
+              <Button className="secondary-button" onClick={handleFilterVacantInventory}>
+                Vacant Inventories
+              </Button>
+              <ActionIcon
+                size={24}
+                onClick={() => (searchParams.get('isUnderMaintenance') ? toggleShareOptions() : {})}
+                disabled={!searchParams.get('isUnderMaintenance')}
+                className={classNames(
+                  !searchParams.get('isUnderMaintenance') ? 'opacity-50' : 'opacity-100',
+                )}
+              >
+                <Image src={ExportIcon} />
+              </ActionIcon>
             </section>
           </div>
           {isInventoryDataLoading && viewType.inventory === 'list' ? (

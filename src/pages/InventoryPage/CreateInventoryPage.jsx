@@ -70,6 +70,7 @@ const basicInformationSchema = yup.object({
       label: yup.string().trim(),
       value: yup.string().trim(),
     }),
+    peerMediaOwner: yup.string().trim(),
     spaceType: yup
       .object({
         label: yup.string().trim(),
@@ -300,6 +301,7 @@ const CreateInventoryPage = () => {
             label: basicInformation?.mediaOwner?.name || '',
             value: basicInformation?.mediaOwner?._id || '',
           },
+          peerMediaOwner: basicInformation?.peerMediaOwner || undefined,
           description: basicInformation?.description || '',
           footFall: basicInformation?.footFall ? parseInt(basicInformation.footFall, 10) : null,
           price: basicInformation?.price ? parseInt(basicInformation?.price, 10) : null,
