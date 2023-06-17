@@ -117,6 +117,7 @@ const DateRange = ({
                 [classes.disabled]: modifiers.disabled,
               })
             }
+            allowSingleDateInRange
             minDate={rangeCalendarMinDate}
           />
         </div>

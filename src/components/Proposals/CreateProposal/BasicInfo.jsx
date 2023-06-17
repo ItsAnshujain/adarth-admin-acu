@@ -151,12 +151,12 @@ const BasicInfo = ({ proposalId, userData }) => {
             label="Use from Settings"
             classNames={{
               label: classNames(
-                !(userData?.letterHead && userData?.letterFooter) ? '' : 'text-gray-700',
+                !(userData?.proposalHead && userData?.proposalFooter) ? '' : 'text-gray-700',
                 'text-base cursor-pointer',
               ),
               radio: 'cursor-pointer',
             }}
-            disabled={!(userData?.letterHead && userData?.letterFooter)}
+            disabled={!(userData?.proposalHead && userData?.proposalFooter)}
           />
           <Radio
             value="new"
@@ -170,11 +170,11 @@ const BasicInfo = ({ proposalId, userData }) => {
       </Radio.Group>
       {values?.uploadType === 'existing' ? (
         <section className="flex gap-x-5">
-          {userData?.letterHead ? (
+          {userData?.proposalHead ? (
             <div className="flex flex-col">
               <p className="font-semibold text-lg">Letter Header</p>
               <MantineImage
-                src={userData.letterHead || null}
+                src={userData.proposalHead || null}
                 alt="letter-head-preview"
                 height={180}
                 width={350}
@@ -186,11 +186,11 @@ const BasicInfo = ({ proposalId, userData }) => {
               />
             </div>
           ) : null}
-          {userData?.letterFooter ? (
+          {userData?.proposalFooter ? (
             <div className="flex flex-col">
               <p className="font-semibold text-lg">Letter Footer</p>
               <MantineImage
-                src={userData.letterFooter || null}
+                src={userData.proposalFooter || null}
                 alt="letter-head-preview"
                 height={180}
                 width={350}
