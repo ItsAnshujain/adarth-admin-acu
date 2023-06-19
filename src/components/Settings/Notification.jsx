@@ -6,7 +6,7 @@ import validator from 'validator';
 import { useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from '../../context/formContext';
 import TextInput from '../shared/TextInput';
-import { useUpdateNotification } from '../../hooks/settings.hooks';
+import { useUpdateNotification } from '../../apis/queries/settings.queries';
 import useUserStore from '../../store/user.store';
 
 const switchStyles = {

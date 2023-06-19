@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { showNotification } from '@mantine/notifications';
-import { useFetchSingleRecordById, useUpdateFinanceById } from '../../hooks/finance.hooks';
+import { useFetchSingleRecordById, useUpdateFinanceById } from '../../apis/queries/finance.queries';
 import { downloadPdf } from '../../utils';
 
 const DATE_FORMAT = 'DD MMM, YYYY';

@@ -10,7 +10,7 @@ import {
 } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { serialize } from '../../utils';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 
 const inititalFilterData = {
   'owner': {

@@ -2,7 +2,7 @@ import { Button } from '@mantine/core';
 import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
 import { FormProvider, useForm } from '../../context/formContext';
-import { useChangePassword } from '../../hooks/settings.hooks';
+import { useChangePassword } from '../../apis/queries/settings.queries';
 import PasswordInput from '../shared/PasswordInput';
 
 const styles = {

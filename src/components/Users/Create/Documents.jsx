@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import PreviewCard from './UI/PreviewCard';
 import DragDropCard from './UI/DragDropCard';
 import { useFormContext } from '../../../context/formContext';
-import { useDeleteUploadedFile, useUploadFile } from '../../../hooks/upload.hooks';
+import { useDeleteUploadedFile, useUploadFile } from '../../../apis/queries/upload.queries';
 import { supportedTypes } from '../../../utils';
 
 const updatedSupportedTypes = [...supportedTypes, 'pdf'];

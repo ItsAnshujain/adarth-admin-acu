@@ -8,7 +8,7 @@ import SubHeader from '../components/Masters/SubHeader';
 import MastersMenuPopover from '../components/Popovers/MastersMenuPopover';
 import Table from '../components/Table/Table';
 import { masterTypes } from '../utils';
-import { useFetchMasters } from '../hooks/masters.hooks';
+import { useFetchMasters } from '../apis/queries/masters.queries';
 import RowsPerPage from '../components/RowsPerPage';
 import Search from '../components/Search';
 

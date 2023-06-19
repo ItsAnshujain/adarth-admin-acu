@@ -3,7 +3,7 @@ import { useModals } from '@mantine/modals';
 import React, { useState } from 'react';
 import CheckIcon from '../assets/check.svg';
 import TrashIcon from '../assets/trash.svg';
-import { useDeleteCampaign } from '../hooks/campaigns.hooks';
+import { useDeleteCampaign } from '../apis/queries/campaigns.queries';
 import { serialize } from '../utils';
 
 const DeleteCampaignContent = ({ onClickCancel = () => {}, campaignId }) => {

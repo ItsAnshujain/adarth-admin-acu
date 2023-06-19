@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import randomWords from 'random-words';
 import { showNotification } from '@mantine/notifications';
-import { useDeleteAccount } from '../../hooks/settings.hooks';
+import { useDeleteAccount } from '../../apis/queries/settings.queries';
 import useUserStore from '../../store/user.store';
 import { useForm, FormProvider } from '../../context/formContext';
 import PasswordInput from '../shared/PasswordInput';

@@ -22,7 +22,7 @@ import {
   useGenerateManualInvoice,
   useGeneratePurchaseOrder,
   useGenerateReleaseOrder,
-} from '../../hooks/booking.hooks';
+} from '../../apis/queries/booking.queries';
 import {
   alertText,
   downloadPdf,

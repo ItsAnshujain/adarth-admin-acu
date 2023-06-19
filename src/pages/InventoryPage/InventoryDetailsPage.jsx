@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import Booking from '../../components/Inventory/ViewSpace/Booking';
 import BasicInfo from '../../components/Inventory/ViewSpace/BasicInformation';
 import OperationalCost from '../../components/Inventory/ViewSpace/OperationalCost';
-import { useFetchInventoryById, useUpdateInventory } from '../../hooks/inventory.hooks';
+import { useFetchInventoryById, useUpdateInventory } from '../../apis/queries/inventory.queries';
 
 const InventoryDetailsPage = () => {
   const navigate = useNavigate();

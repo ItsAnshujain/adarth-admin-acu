@@ -1,4 +1,4 @@
-import http from '../utils/http';
+import http from '../http';
 
 export const createProposal = data => http.post('/proposal', data);
 

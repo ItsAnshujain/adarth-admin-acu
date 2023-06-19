@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Accordion, Checkbox, Button, Drawer, RangeSlider, NumberInput } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { serialize } from '../../utils';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 
 const styles = {
   title: { fontWeight: 'bold' },

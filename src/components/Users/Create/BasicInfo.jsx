@@ -3,7 +3,7 @@ import { Dropzone } from '@mantine/dropzone';
 import { useEffect, useState } from 'react';
 import image from '../../../assets/image.png';
 import { useFormContext } from '../../../context/formContext';
-import { useUploadFile } from '../../../hooks/upload.hooks';
+import { useUploadFile } from '../../../apis/queries/upload.queries';
 import TextInput from '../../shared/TextInput';
 
 const styles = {

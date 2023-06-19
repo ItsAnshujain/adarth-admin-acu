@@ -4,7 +4,7 @@ import Header from '../../components/Bookings/ViewOrders/Header';
 import Overview from '../../components/Bookings/ViewOrders/Overview';
 import OrderInfo from '../../components/Bookings/ViewOrders/OrderInformation';
 import ProcessPipeline from '../../components/Bookings/ViewOrders/ProcessPipeline';
-import { useBookingById, useBookingStats } from '../../hooks/booking.hooks';
+import { useBookingById, useBookingStats } from '../../apis/queries/booking.queries';
 
 const BookingDetailsPage = () => {
   const [pageNumber, setPageNumber] = useState(0);

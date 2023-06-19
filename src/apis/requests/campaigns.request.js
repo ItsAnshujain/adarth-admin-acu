@@ -1,4 +1,4 @@
-import http from '../utils/http';
+import http from '../http';
 
 export const campaign = (id, query) => http.get(`/campaigns/${id}?${query}`);
 export const campaigns = query => http.get(`/campaigns?${query}`);

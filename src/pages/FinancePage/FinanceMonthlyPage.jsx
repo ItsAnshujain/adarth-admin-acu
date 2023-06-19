@@ -4,7 +4,7 @@ import { Box, Loader, Text } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useState } from 'react';
 import Header from '../../components/Finance/Header';
-import { useFetchFinanceByYear } from '../../hooks/finance.hooks';
+import { useFetchFinanceByYear } from '../../apis/queries/finance.queries';
 import { months } from '../../utils';
 
 const FinanceMonthlyPage = () => {

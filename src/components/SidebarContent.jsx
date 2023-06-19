@@ -16,7 +16,7 @@ import ReportIcon from '../assets/report-default.svg';
 import FinanceIcon from '../assets/finance-default.svg';
 import RoleBased from './RoleBased';
 import { masterTypes, ROLES, serialize } from '../utils';
-import { useFetchMastersTypes } from '../hooks/masters.hooks';
+import { useFetchMastersTypes } from '../apis/queries/masters.queries';
 
 const SidebarContent = ({ className }) => {
   const { pathname } = useLocation();

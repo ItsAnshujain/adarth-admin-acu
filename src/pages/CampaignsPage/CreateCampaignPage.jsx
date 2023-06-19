@@ -10,8 +10,12 @@ import Header from '../../components/Campaigns/AddCampaign/Header';
 import Spaces from '../../components/Campaigns/AddCampaign/Spaces';
 import { FormProvider, useForm } from '../../context/formContext';
 import Preview from '../../components/Campaigns/AddCampaign/Preview';
-import { useCampaign, useCreateCampaign, useUpdateCampaign } from '../../hooks/campaigns.hooks';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import {
+  useCampaign,
+  useCreateCampaign,
+  useUpdateCampaign,
+} from '../../apis/queries/campaigns.queries';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 import { serialize } from '../../utils';
 
 const initialValues = {

@@ -33,7 +33,7 @@ import {
   useFetchInventoryReportList,
   useInventoryReport,
   useInventoryStats,
-} from '../../hooks/inventory.hooks';
+} from '../../apis/queries/inventory.queries';
 import ViewByFilter from '../../components/Reports/ViewByFilter';
 import InventoryStatsContent from '../../components/Reports/Inventory/InventoryStatsContent';
 import SubHeader from '../../components/Reports/Inventory/SubHeader';
@@ -46,7 +46,7 @@ import {
   quarters,
   serialize,
 } from '../../utils';
-import { useShareReport } from '../../hooks/report.hooks';
+import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/Reports/ShareContent';
 

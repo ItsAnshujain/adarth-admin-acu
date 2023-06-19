@@ -7,7 +7,7 @@ import Filter from '../../Inventory/Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
-import { useFetchInventory } from '../../../hooks/inventory.hooks';
+import { useFetchInventory } from '../../../apis/queries/inventory.queries';
 import { useFormContext } from '../../../context/formContext';
 import { categoryColors } from '../../../utils';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';

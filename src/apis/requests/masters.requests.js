@@ -1,4 +1,4 @@
-import http from '../utils/http';
+import http from '../http';
 
 export const fetchMasterTypes = () => http.get('/masters/types');
 

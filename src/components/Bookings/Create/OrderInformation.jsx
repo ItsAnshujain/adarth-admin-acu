@@ -3,7 +3,7 @@ import TextInput from '../../shared/TextInput';
 import Textarea from '../../shared/TextareaInput';
 import NativeSelect from '../../shared/NativeSelect';
 import { serialize } from '../../../utils';
-import { useFetchMasters } from '../../../hooks/masters.hooks';
+import { useFetchMasters } from '../../../apis/queries/masters.queries';
 
 const styles = {
   label: {

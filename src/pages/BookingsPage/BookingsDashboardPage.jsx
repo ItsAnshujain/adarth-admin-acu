@@ -10,9 +10,13 @@ import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import AreaHeader from '../../components/Bookings/Header';
-import { useBookings, useBookingStats, useUpdateBookingStatus } from '../../hooks/booking.hooks';
+import {
+  useBookings,
+  useBookingStats,
+  useUpdateBookingStatus,
+} from '../../apis/queries/booking.queries';
 import { checkCampaignStats, serialize } from '../../utils';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from '../../components/Bookings/BookingStatisticsView';
 import NoData from '../../components/shared/NoData';

@@ -9,11 +9,11 @@ import TextareaInput from '../../shared/TextareaInput';
 import { useFormContext } from '../../../context/formContext';
 import TextInput from '../../shared/TextInput';
 import { validateImageResolution, serialize, supportedTypes } from '../../../utils';
-import { useFetchMasters } from '../../../hooks/masters.hooks';
+import { useFetchMasters } from '../../../apis/queries/masters.queries';
 import NativeSelect from '../../shared/NativeSelect';
 import image from '../../../assets/image.png';
 import trash from '../../../assets/trash.svg';
-import { useDeleteUploadedFile, useUploadFile } from '../../../hooks/upload.hooks';
+import { useDeleteUploadedFile, useUploadFile } from '../../../apis/queries/upload.queries';
 import modalConfig from '../../../utils/modalConfig';
 
 const nativeSelectStyles = {

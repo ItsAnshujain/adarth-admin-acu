@@ -11,7 +11,7 @@ import OrderInfo from '../../components/Bookings/Create/OrderInformation';
 import SuccessModal from '../../components/shared/Modal';
 import Header from '../../components/Bookings/Create/Header';
 import { FormProvider, useForm } from '../../context/formContext';
-import { useCreateBookings } from '../../hooks/booking.hooks';
+import { useCreateBookings } from '../../apis/queries/booking.queries';
 import { gstRegexMatch, panRegexMatch, isValidURL } from '../../utils';
 
 const initialValues = {

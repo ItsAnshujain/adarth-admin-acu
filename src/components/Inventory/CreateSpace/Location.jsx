@@ -1,7 +1,7 @@
 import { showNotification } from '@mantine/notifications';
 import { useCallback, useEffect } from 'react';
 import { useFormContext } from '../../../context/formContext';
-import { useFetchMasters } from '../../../hooks/masters.hooks';
+import { useFetchMasters } from '../../../apis/queries/masters.queries';
 import { debounce, getAddressByLatLng, serialize, tierList } from '../../../utils';
 import AutoCompleteLocationInput from '../../AutoCompleteLocationInput';
 import NativeSelect from '../../shared/NativeSelect';

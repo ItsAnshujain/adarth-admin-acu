@@ -1,4 +1,4 @@
-import http from '../utils/http';
+import http from '../http';
 
 export const fileUpload = data =>
   http.post('/file-upload', data, {

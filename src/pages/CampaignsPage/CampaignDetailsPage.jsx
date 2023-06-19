@@ -4,7 +4,7 @@ import Header from '../../components/Campaigns/ViewCampaigns/Header';
 import SpacesList from '../../components/Campaigns/ViewCampaigns/SpacesList';
 import TotalBookings from '../../components/Campaigns/ViewCampaigns/TotalBookings';
 import Overview from '../../components/Campaigns/ViewCampaigns/Overview';
-import { useCampaign } from '../../hooks/campaigns.hooks';
+import { useCampaign } from '../../apis/queries/campaigns.queries';
 
 const campaignView = {
   overview: Overview,

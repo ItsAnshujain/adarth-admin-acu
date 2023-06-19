@@ -7,8 +7,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useFormContext } from '../../../context/formContext';
 import Select from '../../shared/Select';
 import TextInput from '../../shared/TextInput';
-import { useFetchUsers } from '../../../hooks/users.hooks';
-import { useFetchMasters } from '../../../hooks/masters.hooks';
+import { useFetchUsers } from '../../../apis/queries/users.queries';
+import { useFetchMasters } from '../../../apis/queries/masters.queries';
 import { serialize } from '../../../utils';
 import useTokenIdStore from '../../../store/user.store';
 
