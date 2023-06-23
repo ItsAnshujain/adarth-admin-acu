@@ -31,12 +31,11 @@ const AreaHeader = ({ text }) => {
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
-      <div className="pl-5">
-        <Text weight="bold" size="md">
-          {text}
-        </Text>
-      </div>
-      <div className="flex justify-around mr-7">
+      <Text weight="bold" size="md">
+        {text}
+      </Text>
+
+      <div className="flex justify-around">
         <div className="mr-2 flex ">
           <Button
             className={classNames(

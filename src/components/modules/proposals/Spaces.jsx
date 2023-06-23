@@ -1,10 +1,22 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Text, Button, Progress, Image, NumberInput, Badge, Loader } from '@mantine/core';
+import {
+  Text,
+  Button,
+  Progress,
+  Image,
+  NumberInput,
+  Badge,
+  Loader,
+  Group,
+  Box,
+} from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
+import { useModals } from '@mantine/modals';
+import classNames from 'classnames';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
@@ -14,17 +26,30 @@ import Filter from '../inventory/Filter';
 import { useFormContext } from '../../../context/formContext';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../../DateRangeSelector';
+import RowsPerPage from '../../RowsPerPage';
+import modalConfig from '../../../utils/modalConfig';
 
 dayjs.extend(isBetween);
 
+const updatedModalConfig = {
+  ...modalConfig,
+  classNames: {
+    title: 'font-dmSans text-xl px-4',
+    header: 'px-4 pt-4',
+    body: '',
+    close: 'mr-4',
+  },
+};
+
 const Spaces = () => {
+  const modals = useModals();
   const { values, setFieldValue } = useFormContext();
   const [searchParams, setSearchParams] = useSearchParams({
-    'limit': 10,
-    'page': 1,
-    'sortOrder': 'desc',
-    'sortBy': 'basicInformation.spaceName',
-    'isUnderMaintenance': false,
+    limit: 20,
+    page: 1,
+    sortOrder: 'desc',
+    sortBy: 'basicInformation.spaceName',
+    isUnderMaintenance: false,
     isActive: true,
   });
   const [searchInput, setSearchInput] = useState('');
@@ -64,6 +89,15 @@ const Spaces = () => {
     }
   };
 
+  const togglePreviewModal = imgSrc =>
+    modals.openModal({
+      title: 'Preview',
+      children: (
+        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+      ),
+      ...updatedModalConfig,
+    });
+
   const COLUMNS = useMemo(
     () => [
       {
@@ -97,27 +131,35 @@ const Spaces = () => {
             );
 
             return (
-              <div className="flex items-center gap-2">
-                <div className="bg-white border rounded-md">
-                  {spacePhoto ? (
-                    <Image src={spacePhoto} alt="banner" height={32} width={32} />
-                  ) : (
-                    <Image src={null} withPlaceholder height={32} width={32} />
-                  )}
-                </div>
-                <Link
-                  to={`/inventory/view-details/${_id}`}
-                  className="font-medium px-2 underline"
-                  target="_blank"
-                >
-                  <Text
-                    className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
-                    lineClamp={1}
-                    title={spaceName}
+              <div className="flex items-center justify-between gap-2 w-96 mr-4">
+                <div className="flex justify-start items-center flex-1">
+                  <Box
+                    className={classNames(
+                      'bg-white border rounded-md',
+                      spacePhoto ? 'cursor-zoom-in' : '',
+                    )}
+                    onClick={() => (spacePhoto ? togglePreviewModal(spacePhoto) : null)}
                   >
-                    {spaceName}
-                  </Text>
-                </Link>
+                    {spacePhoto ? (
+                      <Image src={spacePhoto} alt="banner" height={32} width={32} />
+                    ) : (
+                      <Image src={null} withPlaceholder height={32} width={32} />
+                    )}
+                  </Box>
+                  <Link
+                    to={`/inventory/view-details/${_id}`}
+                    className="text-purple-450 font-medium px-2"
+                    target="_blank"
+                  >
+                    <Text
+                      className="overflow-hidden text-ellipsis underline"
+                      lineClamp={1}
+                      title={spaceName}
+                    >
+                      {spaceName}
+                    </Text>
+                  </Link>
+                </div>
                 <Badge
                   className="capitalize"
                   variant="filled"
@@ -194,7 +236,7 @@ const Spaces = () => {
           row: {
             original: { impressions },
           },
-        }) => useMemo(() => <p>{`${impressions || 0}+`}</p>, []),
+        }) => useMemo(() => <p>{impressions ? `${impressions}+` : 'NA'}</p>, []),
       },
       {
         Header: 'HEALTH STATUS',
@@ -331,8 +373,9 @@ const Spaces = () => {
     setSearchParams(searchParams);
   };
 
-  const handlePagination = currentPage => {
-    searchParams.set('page', currentPage);
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
     setSearchParams(searchParams);
   };
 
@@ -386,7 +429,7 @@ const Spaces = () => {
 
   return (
     <>
-      <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
+      <div className="flex gap-2 p-4 flex-col">
         <div className="flex justify-between items-center">
           <Text size="lg" weight="bold">
             Select Place for Proposal
@@ -410,17 +453,22 @@ const Spaces = () => {
             <Text weight="bold">{toIndianCurrency(getTotalPrice(values?.spaces))}</Text>
           </div>
         </div>
-        <div className="flex justify-between mb-4 items-center">
-          <Text size="sm" className="text-purple-450">
-            Total Places{' '}
-            {inventoryData?.totalDocs ? (
-              <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-                {inventoryData.totalDocs}
-              </span>
-            ) : null}
-          </Text>
-
-          <Search search={searchInput} setSearch={setSearchInput} />
+        <div className="flex justify-between items-center">
+          <Group>
+            <RowsPerPage
+              setCount={currentLimit => handlePagination('limit', currentLimit)}
+              count={limit}
+            />
+            <Text size="sm" className="text-purple-450">
+              Total Places{' '}
+              {inventoryData?.totalDocs ? (
+                <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
+                  {inventoryData.totalDocs}
+                </span>
+              ) : null}
+            </Text>
+          </Group>
+          <Search search={searchInput} setSearch={setSearchInput} className="min-w-[400px]" />
         </div>
       </div>
       {isLoading ? (
@@ -443,7 +491,7 @@ const Spaces = () => {
           handleSorting={handleSortByColumn}
           activePage={pagination.page}
           totalPages={pagination.totalPages}
-          setActivePage={handlePagination}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
         />
       ) : null}
     </>

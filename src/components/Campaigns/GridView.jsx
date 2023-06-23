@@ -15,7 +15,7 @@ const GridView = ({
   isLoadingList,
 }) => (
   <>
-    <div className="flex flex-wrap mx-5 gap-6 mb-8">
+    <div className="flex flex-wrap gap-6 mb-8">
       {list.map(item => (
         <Card key={item?._id} data={item} />
       ))}

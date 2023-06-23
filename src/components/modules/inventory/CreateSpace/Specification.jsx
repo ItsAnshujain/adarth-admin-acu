@@ -46,8 +46,6 @@ const sliderStyle = {
   },
 };
 
-const marks = [{ value: 1600000 }, { value: 3200000 }];
-
 const query = {
   parentId: null,
   limit: 100,
@@ -164,12 +162,7 @@ const Specification = () => {
         <p className="font-bold">Impressions</p>
         <div className="flex gap-4 items-start">
           <div>
-            <NumberInput
-              name="specifications.impressions.min"
-              errors={errors}
-              readOnly
-              className="w-24"
-            />
+            <NumberInput name="specifications.impressions.min" errors={errors} className="w-24" />
             <p className="text-slate-400">Min</p>
           </div>
           <RangeSlider
@@ -180,20 +173,14 @@ const Specification = () => {
             styles={sliderStyle}
             className="pt-4 flex-auto"
             min={0}
-            max={5000000}
+            max={1800000}
             value={[
               values?.specifications?.impressions?.min,
               values?.specifications?.impressions?.max,
             ]}
-            marks={marks}
           />
           <div>
-            <NumberInput
-              name="specifications.impressions.max"
-              errors={errors}
-              readOnly
-              className="w-24"
-            />
+            <NumberInput name="specifications.impressions.max" errors={errors} className="w-24" />
             <p className="text-right text-slate-400">Max</p>
           </div>
         </div>

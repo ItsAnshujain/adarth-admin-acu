@@ -535,18 +535,17 @@ const BookingsDashboardPage = () => {
   }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto ">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <AreaHeader text="Order" />
-      <div className="pr-7">
-        <BookingStatisticsView bookingStats={bookingStats} isLoading={isBookingStatsLoading} />
-        <div className="flex justify-between h-20 items-center">
-          <RowsPerPage
-            setCount={currentLimit => handlePagination('limit', currentLimit)}
-            count={limit}
-          />
-          <Search search={searchInput} setSearch={setSearchInput} />
-        </div>
+      <BookingStatisticsView bookingStats={bookingStats} isLoading={isBookingStatsLoading} />
+      <div className="flex justify-between h-20 items-center">
+        <RowsPerPage
+          setCount={currentLimit => handlePagination('limit', currentLimit)}
+          count={limit}
+        />
+        <Search search={searchInput} setSearch={setSearchInput} />
       </div>
+
       {isLoadingBookingData ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />

@@ -175,8 +175,8 @@ const ShareContent = ({ searchParamQueries }) => {
         },
       },
     );
-    if (activeShare === 'copy_link' && response?.link?.messageText) {
-      navigator.clipboard.writeText(response?.link?.messageText);
+    if (activeShare === 'copy_link' && response?.proposalShare?.messageText) {
+      navigator.clipboard.writeText(response?.proposalShare?.messageText);
       showNotification({
         title: 'Link Copied',
         color: 'blue',
