@@ -17,7 +17,7 @@ import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { v4 as uuidv4 } from 'uuid';
-import AreaHeader from '../components/Home/Header';
+import AreaHeader from '../components/modules/home/Header';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import OngoingCampaignIcon from '../assets/ongoing-campaign.svg';

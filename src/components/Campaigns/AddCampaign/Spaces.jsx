@@ -3,7 +3,7 @@ import { Badge, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
-import Filter from '../../Inventory/Filter';
+import Filter from '../../modules/inventory/Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';

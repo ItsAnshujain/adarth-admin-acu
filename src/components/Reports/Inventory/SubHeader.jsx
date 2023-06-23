@@ -2,7 +2,7 @@ import { Button, Image, Text } from '@mantine/core';
 import React, { useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { useClickOutside } from '@mantine/hooks';
-import Filter from '../../Inventory/Filter';
+import Filter from '../../modules/inventory/Filter';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
 

@@ -8,11 +8,11 @@ import classNames from 'classnames';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import Table from '../../components/Table/Table';
-import AreaHeader from '../../components/Inventory/AreaHeader';
+import AreaHeader from '../../components/modules/inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import GridView from '../../components/Inventory/Grid';
-import MapView from '../../components/Inventory/MapView';
+import GridView from '../../components/modules/inventory/Grid';
+import MapView from '../../components/modules/inventory/MapView';
 import useLayoutView from '../../store/layout.store';
 import {
   useDeleteInventory,

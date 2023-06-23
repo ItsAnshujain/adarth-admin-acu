@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Header from '../../components/Bookings/ViewOrders/Header';
-import Overview from '../../components/Bookings/ViewOrders/Overview';
-import OrderInfo from '../../components/Bookings/ViewOrders/OrderInformation';
-import ProcessPipeline from '../../components/Bookings/ViewOrders/ProcessPipeline';
+import Header from '../../components/modules/bookings/ViewOrders/Header';
+import Overview from '../../components/modules/bookings/ViewOrders/Overview';
+import OrderInfo from '../../components/modules/bookings/ViewOrders/OrderInformation';
+import ProcessPipeline from '../../components/modules/bookings/ViewOrders/ProcessPipeline';
 import { useBookingById, useBookingStats } from '../../apis/queries/booking.queries';
 
 const BookingDetailsPage = () => {

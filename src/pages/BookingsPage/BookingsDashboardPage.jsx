@@ -9,7 +9,7 @@ import multiDownload from 'multi-download';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import AreaHeader from '../../components/Bookings/Header';
+import AreaHeader from '../../components/modules/bookings/Header';
 import {
   useBookings,
   useBookingStats,
@@ -18,7 +18,7 @@ import {
 import { checkCampaignStats, serialize } from '../../utils';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
-import BookingStatisticsView from '../../components/Bookings/BookingStatisticsView';
+import BookingStatisticsView from '../../components/modules/bookings/BookingStatisticsView';
 import NoData from '../../components/shared/NoData';
 import BookingsMenuPopover from '../../components/Popovers/BookingsMenuPopover';
 

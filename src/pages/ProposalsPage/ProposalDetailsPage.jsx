@@ -7,14 +7,14 @@ import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import Header from '../../components/Proposals/ViewProposal/Header';
-import Details from '../../components/Proposals/ViewProposal/Details';
+import Header from '../../components/modules/proposals/ViewProposal/Header';
+import Details from '../../components/modules/proposals/ViewProposal/Details';
 import Table from '../../components/Table/Table';
 import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { categoryColors } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
-import Filter from '../../components/Inventory/Filter';
+import Filter from '../../components/modules/inventory/Filter';
 import useUserStore from '../../store/user.store';
 import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesMenuPopover';
 

@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
-import BasicInfo from '../../components/Inventory/CreateSpace/BasicInformation';
-import Specification from '../../components/Inventory/CreateSpace/Specification';
-import Location from '../../components/Inventory/CreateSpace/Location';
+import BasicInfo from '../../components/modules/inventory/CreateSpace/BasicInformation';
+import Specification from '../../components/modules/inventory/CreateSpace/Specification';
+import Location from '../../components/modules/inventory/CreateSpace/Location';
 import SuccessModal from '../../components/shared/Modal';
 import Preview from '../../components/shared/Preview';
-import PreviewLocation from '../../components/Inventory/CreateSpace/PreviewLocation';
-import Header from '../../components/Inventory/CreateSpace/Header';
+import PreviewLocation from '../../components/modules/inventory/CreateSpace/PreviewLocation';
+import Header from '../../components/modules/inventory/CreateSpace/Header';
 import { FormProvider, useForm } from '../../context/formContext';
 import {
   useCreateInventory,
