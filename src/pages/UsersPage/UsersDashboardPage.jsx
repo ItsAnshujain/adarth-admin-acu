@@ -25,11 +25,11 @@ const UsersDashboardPage = () => {
   const userId = useTokenIdStore(state => state.id);
   const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
   const [searchParams, setSearchParams] = useSearchParams({
-    'page': 1,
-    'limit': 10,
-    'sortOrder': 'desc',
-    'sortBy': 'createdAt',
-    'filter': userCachedData?.role === 'admin' ? 'all' : 'team',
+    page: 1,
+    limit: 20,
+    sortOrder: 'desc',
+    sortBy: 'createdAt',
+    filter: userCachedData?.role === 'admin' ? 'all' : 'team',
   });
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
@@ -63,9 +63,9 @@ const UsersDashboardPage = () => {
   }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <AreaHeader setFilter={handleFilter} filter={filter} userId={userId} />
-      <div className="flex justify-between h-20 items-center pr-5">
+      <div className="flex justify-between h-20 items-center">
         <RowsPerPage
           setCount={currentLimit => handlePagination('limit', currentLimit)}
           count={limit}
@@ -78,7 +78,7 @@ const UsersDashboardPage = () => {
             <p className="text-xl">No records found</p>
           </div>
         ) : null}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 md:gap-3 px-5 relative mb-20">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 md:gap-4 relative mb-20">
           {userData?.docs?.map(user => (
             <Link to={`view-details/${user?._id}`} key={user?._id}>
               <Card {...user} />

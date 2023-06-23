@@ -60,12 +60,10 @@ const AreaHeader = ({ text, inventoryData }) => {
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
-      <div className="pl-5">
-        <Text size="lg" weight="bold">
-          {!pathname.includes('reports') ? text : 'Inventory Report'}
-        </Text>
-      </div>
-      <div className="flex justify-around mr-7">
+      <Text size="lg" weight="bold">
+        {!pathname.includes('reports') ? text : 'Inventory Report'}
+      </Text>
+      <div className="flex justify-around">
         <div className="mr-2 flex ">
           {activeLayout.inventory === 'grid' ? (
             <Checkbox

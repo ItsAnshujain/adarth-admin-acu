@@ -24,7 +24,7 @@ const BookingStatisticsView = ({ bookingStats, isLoading }) => {
   );
 
   return (
-    <div className="mt-5 pl-5">
+    <div className="mt-5">
       <div className="flex justify-between gap-4 flex-wrap">
         <div className="flex gap-4 p-4 border rounded-md items-center">
           <div className="w-32">

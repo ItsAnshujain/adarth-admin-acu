@@ -1,8 +1,19 @@
-import { Pagination, Skeleton } from '@mantine/core';
-import { Link } from 'react-router-dom';
+import { Image, Pagination, Skeleton } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
+import { useModals } from '@mantine/modals';
 import { useFormContext } from '../../../context/formContext';
 import Card from './Card';
+import modalConfig from '../../../utils/modalConfig';
+
+const updatedModalConfig = {
+  ...modalConfig,
+  classNames: {
+    title: 'font-dmSans text-xl px-4',
+    header: 'px-4 pt-4',
+    body: '',
+    close: 'mr-4',
+  },
+};
 
 const skeletonList = () =>
   Array.apply('', Array(5)).map(_ => (
@@ -17,6 +28,7 @@ const GridView = ({
   isLoadingList,
 }) => {
   const { values, setFieldValue } = useFormContext();
+  const modals = useModals();
 
   const handleCardSelection = (cardId, item) => {
     if (values.spaces?.includes(item)) {
@@ -32,17 +44,30 @@ const GridView = ({
     }
   };
 
+  const togglePreviewModal = imgSrc =>
+    modals.openModal({
+      title: 'Preview',
+      children: (
+        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+      ),
+      ...updatedModalConfig,
+    });
+
   return (
     <div>
-      <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[100%] overflow-y-auto">
+      <div className="flex flex-wrap gap-6 mb-8 h-[100%] overflow-y-auto">
         {list.map(item => (
-          <Link to={`/inventory/view-details/${item?._id}`} key={item?._id}>
-            <Card
-              data={item}
-              isSelected={values?.spaces?.includes(item)}
-              onSelect={cardId => handleCardSelection(cardId, item)}
-            />
-          </Link>
+          <Card
+            key={item?._id}
+            data={item}
+            isSelected={values?.spaces?.includes(item)}
+            onSelect={cardId => handleCardSelection(cardId, item)}
+            onPreview={() =>
+              item?.basicInformation?.spacePhoto
+                ? togglePreviewModal(item?.basicInformation?.spacePhoto)
+                : null
+            }
+          />
         ))}
         {isLoadingList ? skeletonList() : null}
       </div>

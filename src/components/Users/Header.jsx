@@ -19,16 +19,15 @@ const AreaHeader = ({ setFilter = () => {}, filter, userId }) => {
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
-      <div className="pl-5">
-        <Select
-          value={filter.charAt(0).toUpperCase() + filter.slice(1)}
-          onChange={handleFilter}
-          data={userCachedData?.role === 'admin' ? ['All', 'Team', 'Peer'] : ['Team', 'Peer']}
-          styles={styles}
-          rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-        />
-      </div>
-      <div className="flex justify-around mr-7">
+      <Select
+        value={filter.charAt(0).toUpperCase() + filter.slice(1)}
+        onChange={handleFilter}
+        data={userCachedData?.role === 'admin' ? ['All', 'Team', 'Peer'] : ['Team', 'Peer']}
+        styles={styles}
+        rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+      />
+
+      <div className="flex justify-around">
         <div className="mr-2">
           <Button onClick={toggleFilter} variant="default">
             <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter

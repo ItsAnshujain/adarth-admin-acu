@@ -1,4 +1,4 @@
-import { Avatar } from '@mantine/core';
+import { Avatar, Card as MantineCard, Text } from '@mantine/core';
 import { Phone, Mail } from 'react-feather';
 import UserImage from '../../../assets/placeholders/user.png';
 import { roleTypes } from '../../../utils';
@@ -13,16 +13,13 @@ const UserCard = ({
   number = 'NA',
   image,
 }) => (
-  <div className="border rounded-md p-4 cursor-pointer">
+  <MantineCard className="p-4 cursor-pointer min-h-[" withBorder radius="md" shadow="sm">
     <div className="flex gap-4">
       <Avatar size="xl" src={image || UserImage} className="rounded-full" />
       <div className="flex flex-col justify-between overflow-hidden overflow-ellipsis">
-        <p
-          className="text-xl font-bold capitalize overflow-x-hidden overflow-ellipsis"
-          title={name}
-        >
+        <Text size="xl" weight="bold" lineClamp={2} className="w-full min-h-[62px]" title={name}>
           {name}
-        </p>
+        </Text>
         <p className="text-[#914EFB]">{updatedRoleTypes[role] || 'NA'}</p>
         <p>{company}</p>
       </div>
@@ -42,7 +39,7 @@ const UserCard = ({
         <p className="ml-2 text-sm">{number}</p>
       </div>
     </div>
-  </div>
+  </MantineCard>
 );
 
 export default UserCard;

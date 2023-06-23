@@ -19,10 +19,8 @@ const AreaHeader = ({ text }) => {
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
-      <div className="pl-5">
-        <p className="text-lg font-bold">{text}</p>
-      </div>
-      <div className="flex justify-around mr-7">
+      <p className="text-lg font-bold">{text}</p>
+      <div className="flex justify-around">
         <div ref={ref} className="mr-2 relative">
           <Button onClick={toggleDatePicker} variant="default">
             <img src={calendar} className="h-5" alt="calendar" />

@@ -32,23 +32,29 @@ import ShareContent from '../../pageComponents/Inventory/ShareContent';
 
 dayjs.extend(isBetween);
 
-const initialValues = {
-  spaces: [],
+const updatedModalConfig = {
+  ...modalConfig,
+  classNames: {
+    title: 'font-dmSans text-xl px-4',
+    header: 'px-4 pt-4',
+    body: '',
+    close: 'mr-4',
+  },
 };
 
 const InventoryDashboardPage = () => {
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const modals = useModals();
+  const form = useForm({ initialValues: { spaces: [] } });
+  const viewType = useLayoutView(state => state.activeLayout);
   const [searchParams, setSearchParams] = useSearchParams({
-    'limit': 10,
-    'page': 1,
-    'sortOrder': 'desc',
-    'sortBy': 'basicInformation.spaceName',
+    limit: 20,
+    page: 1,
+    sortOrder: 'desc',
+    sortBy: 'basicInformation.spaceName',
     isActive: true,
   });
-  const form = useForm({ initialValues });
-  const viewType = useLayoutView(state => state.activeLayout);
   const { data: inventoryData, isLoading: isInventoryDataLoading } = useFetchInventory(
     searchParams.toString(),
   );
@@ -62,21 +68,13 @@ const InventoryDashboardPage = () => {
   const limit = searchParams.get('limit');
   const isActive = searchParams.get('isActive');
 
-  const toggleImagePreviewModal = imgSrc =>
-    modals.openContextModal('basic', {
+  const togglePreviewModal = imgSrc =>
+    modals.openModal({
       title: 'Preview',
-      innerProps: {
-        modalBody: (
-          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
-            {imgSrc ? (
-              <Image src={imgSrc} height={580} width={580} alt="preview" />
-            ) : (
-              <Image src={null} height={580} width={580} withPlaceholder />
-            )}
-          </Box>
-        ),
-      },
-      ...modalConfig,
+      children: (
+        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+      ),
+      ...updatedModalConfig,
     });
 
   const COLUMNS = useMemo(
@@ -112,11 +110,18 @@ const InventoryDashboardPage = () => {
             );
 
             return (
-              <div className="flex items-center justify-between gap-2 w-[380px] mr-4">
+              <div className="flex items-center justify-between gap-2 w-96 mr-4">
                 <div className="flex justify-start items-center flex-1">
                   <Box
-                    className="bg-white border rounded-md cursor-zoom-in"
-                    onClick={() => toggleImagePreviewModal(basicInformation?.spacePhoto)}
+                    className={classNames(
+                      'bg-white border rounded-md',
+                      basicInformation?.spacePhoto ? 'cursor-zoom-in' : '',
+                    )}
+                    onClick={() =>
+                      basicInformation?.spacePhoto
+                        ? togglePreviewModal(basicInformation?.spacePhoto)
+                        : null
+                    }
                   >
                     {basicInformation?.spacePhoto ? (
                       <Image
@@ -235,7 +240,15 @@ const InventoryDashboardPage = () => {
           row: {
             original: { specifications },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.max || 0}+`}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p>
+                {specifications?.impressions?.max ? `${specifications.impressions.max}+` : 'NA'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'HEALTH STATUS',
@@ -429,11 +442,11 @@ const InventoryDashboardPage = () => {
   }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <FormProvider form={form}>
         <form className={classNames(viewType.inventory === 'grid' ? 'h-[70%]' : '')}>
           <AreaHeader text="List of spaces" inventoryData={inventoryData} />
-          <div className="flex justify-between h-20 items-center pr-7">
+          <div className="flex justify-between h-20 items-center">
             <div className="flex items-center">
               <RowsPerPage
                 setCount={currentLimit => handlePagination('limit', currentLimit)}
