@@ -1,6 +1,6 @@
 import { Pagination, Skeleton } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
-import Card from './Inventory/Card';
+import Card from './modules/inventory/Card';
 
 const skeletonList = () =>
   Array.apply('', Array(5)).map(_ => (

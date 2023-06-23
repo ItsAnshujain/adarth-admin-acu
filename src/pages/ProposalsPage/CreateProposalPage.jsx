@@ -4,10 +4,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { yupResolver } from '@mantine/form';
 import dayjs from 'dayjs';
-import BasicInfo from '../../components/Proposals/CreateProposal/BasicInfo';
-import Spaces from '../../components/Proposals/Spaces';
+import BasicInfo from '../../components/modules/proposals/CreateProposal/BasicInfo';
+import Spaces from '../../components/modules/proposals/Spaces';
 import SuccessModal from '../../components/shared/Modal';
-import Header from '../../components/Proposals/CreateProposal/Header';
+import Header from '../../components/modules/proposals/CreateProposal/Header';
 import {
   useCreateProposal,
   useUpdateProposal,

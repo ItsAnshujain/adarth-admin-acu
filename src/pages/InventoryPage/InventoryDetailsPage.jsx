@@ -3,9 +3,9 @@ import { ArrowLeft } from 'react-feather';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useToggle } from '@mantine/hooks';
 import { useEffect } from 'react';
-import Booking from '../../components/Inventory/ViewSpace/Booking';
-import BasicInfo from '../../components/Inventory/ViewSpace/BasicInformation';
-import OperationalCost from '../../components/Inventory/ViewSpace/OperationalCost';
+import Booking from '../../components/modules/inventory/ViewSpace/Booking';
+import BasicInfo from '../../components/modules/inventory/ViewSpace/BasicInformation';
+import OperationalCost from '../../components/modules/inventory/ViewSpace/OperationalCost';
 import { useFetchInventoryById, useUpdateInventory } from '../../apis/queries/inventory.queries';
 
 const InventoryDetailsPage = () => {

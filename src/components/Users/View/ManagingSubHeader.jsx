@@ -11,8 +11,8 @@ import CompletedOrdersIcon from '../../../assets/completed-orders.svg';
 import UpcomingOrdersIcon from '../../../assets/upcoming-orders.svg';
 import ProposalSentIcon from '../../../assets/proposal-sent.svg';
 import BookingsIcon from '../../../assets/total-bookings.svg';
-import ProposalFilter from '../../Proposals/Filter';
-import BookingFilter from '../../Bookings/Filter';
+import ProposalFilter from '../../modules/proposals/Filter';
+import BookingFilter from '../../modules/bookings/Filter';
 import { useBookingStatByIncharge } from '../../../apis/queries/booking.queries';
 import { serialize } from '../../../utils';
 
