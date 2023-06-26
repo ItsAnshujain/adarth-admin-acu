@@ -260,7 +260,7 @@ const ProposalDashboardPage = () => {
           setCount={currentLimit => handlePagination('limit', currentLimit)}
           count={limit}
         />
-        <Search search={searchInput} setSearch={setSearchInput} className="min-w-[400px]" />
+        <Search search={searchInput} setSearch={setSearchInput} />
       </div>
       {isLoadingProposalsData && viewType.proposal === 'list' ? (
         <div className="flex justify-center items-center h-[400px]">

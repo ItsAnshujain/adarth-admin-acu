@@ -158,8 +158,8 @@ const Overview = ({ bookingData = {}, isLoading }) => {
 
   return (
     <>
-      <div className="flex gap-4 pt-4">
-        <div className="flex-1 pl-5 max-w-1/2">
+      <div className="flex gap-4 pt-5">
+        <div className="flex-1 max-w-1/2">
           <div className="flex flex-col">
             {isLoading ? (
               <SkeletonTopWrapper />
@@ -197,7 +197,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
             )}
           </div>
         </div>
-        <div className="flex-1 pr-7 max-w-1/2 gap-2">
+        <div className="flex-1 max-w-1/2 gap-2">
           <p className="font-bold text-2xl mb-2">
             {bookingData?.campaign?.name || <NoData type="na" />}
           </p>
@@ -250,7 +250,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           </div>
         </div>
       </div>
-      <div className="pl-5 pr-7 flex flex-col mt-4 mb-8 pb-10 relative">
+      <div className="flex flex-col mt-4 mb-4 relative">
         <p className="text-lg font-bold">Location Details</p>
         <p className="text-sm font-light text-slate-400">
           All the places been covered by this campaign

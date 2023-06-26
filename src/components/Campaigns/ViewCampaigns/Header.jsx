@@ -11,7 +11,7 @@ const Header = ({ tabs, setTabs }) => {
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
-      <div className="flex pl-5 gap-6 items-center">
+      <div className="flex gap-6 items-center">
         <Button onClick={() => navigate(-1)} className="mr-4 px-0 text-black">
           <ArrowLeft />
         </Button>
@@ -49,7 +49,7 @@ const Header = ({ tabs, setTabs }) => {
         </Button>
       </div>
       <RoleBased acceptedRoles={[ROLES.ADMIN]}>
-        <div className="pr-7">
+        <div>
           <Link
             to={`/campaigns/edit-details/${id}`}
             className="bg-purple-450 flex items-center text-white rounded-md px-4 py-2 h-full font-bold text-sm"

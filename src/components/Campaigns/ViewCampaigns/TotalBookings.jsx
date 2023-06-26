@@ -283,7 +283,7 @@ const TotalBookings = ({ campaignId }) => {
 
   return (
     <>
-      <div className="mt-5 pl-5 pr-7 flex justify-between">
+      <div className="mt-5 flex justify-between">
         <Text>Booking History of the campaign</Text>
         <div className="flex">
           <div ref={ref} className="mr-2 relative">
@@ -299,7 +299,7 @@ const TotalBookings = ({ campaignId }) => {
         </div>
       </div>
       <div>
-        <div className="flex justify-between h-20 items-center pr-7">
+        <div className="flex justify-between h-20 items-center">
           <RowsPerPage
             setCount={currentLimit => handlePagination('limit', currentLimit)}
             count={limit}

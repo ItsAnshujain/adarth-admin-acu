@@ -3,11 +3,11 @@ import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
-import BasicInfo from '../../components/Campaigns/AddCampaign/BasicInformation';
+import BasicInformationForm from '../../components/Campaigns/AddCampaign/BasicInformationForm';
 import SuccessModal from '../../components/shared/Modal';
 import CoverImage from '../../components/Campaigns/AddCampaign/CoverImage';
 import Header from '../../components/Campaigns/AddCampaign/Header';
-import Spaces from '../../components/Campaigns/AddCampaign/Spaces';
+import SpaceList from '../../components/Campaigns/AddCampaign/SpaceList';
 import { FormProvider, useForm } from '../../context/formContext';
 import Preview from '../../components/Campaigns/AddCampaign/Preview';
 import {
@@ -26,8 +26,8 @@ const initialValues = {
   createStatus: '',
   isFeatured: false,
   previousBrands: [],
-  minImpression: 1600000,
-  maxImpression: 3200000,
+  minImpression: 0,
+  maxImpression: 0,
   tags: [],
   healthTag: '',
   place: [],
@@ -75,9 +75,9 @@ const CreateCampaignPage = () => {
 
   const getForm = () =>
     formStep === 1 ? (
-      <BasicInfo />
+      <BasicInformationForm />
     ) : formStep === 2 ? (
-      <Spaces />
+      <SpaceList />
     ) : formStep === 3 ? (
       <CoverImage />
     ) : (

@@ -572,7 +572,7 @@ const SelectSpace = () => {
               ) : null}
             </p>
           </Group>
-          <Search search={searchInput} setSearch={setSearchInput} className="min-w-[400px]" />
+          <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
       {isLoading ? (

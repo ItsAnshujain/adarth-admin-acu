@@ -24,7 +24,7 @@ const getHealthTag = score =>
     ? 'Bad'
     : 'Not yet selected';
 
-const SelectSpace = () => {
+const SpaceList = () => {
   const { setFieldValue, values } = useFormContext();
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
@@ -409,7 +409,7 @@ const SelectSpace = () => {
               ) : null}
             </p>
           </Group>
-          <Search search={searchInput} setSearch={setSearchInput} className="min-w-[400px]" />
+          <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
       {isLoading ? (
@@ -439,4 +439,4 @@ const SelectSpace = () => {
   );
 };
 
-export default SelectSpace;
+export default SpaceList;

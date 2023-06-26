@@ -5,6 +5,7 @@ import TextInput from '../../shared/TextInput';
 import TextareaInput from '../../shared/TextareaInput';
 import MultiSelect from '../../shared/MultiSelect';
 import { useFormContext } from '../../../context/formContext';
+import NumberInput from '../../shared/NumberInput';
 
 const styles = {
   label: {
@@ -50,9 +51,7 @@ const multiSelectStyles = {
   },
 };
 
-const marks = [{ value: 1600000 }, { value: 3200000 }];
-
-const BasicInformation = () => {
+const BasicInformationForm = () => {
   const { values, errors, setFieldValue } = useFormContext();
 
   const { data: tagData } = useFetchMasters(
@@ -101,36 +100,23 @@ const BasicInformation = () => {
       <p className="text-sm font-bolder">Impressions</p>
       <div className="flex gap-4 items-center">
         <div>
-          <input
-            className="border w-24 py-1 px-1"
-            type="text"
-            readOnly
-            value={values.minImpression || 1600000}
-          />
-          <p className="text-sm font-thin">Min</p>
+          <NumberInput name="minImpression" errors={errors} className="w-24" />
+          <p className="text-slate-400">Min</p>
         </div>
         <RangeSlider
-          onChange={val => {
+          onChangeEnd={val => {
             setFieldValue('minImpression', val[0]);
             setFieldValue('maxImpression', val[1]);
           }}
           styles={sliderStyle}
           className="mb-5 flex-auto"
           min={0}
-          max={5000000}
-          value={[values?.minImpression || 1600000, values?.maxImpression || 3200000]}
-          marks={marks}
+          max={1800000}
+          value={[values?.minImpression || 0, values?.maxImpression || 1800000]}
         />
-        <div className="text-right">
-          <input
-            className="border w-24 py-1 px-1"
-            type="text"
-            readOnly
-            value={values.maxImpression || 3200000}
-          />
-          <p className="text-sm font-thin" size="sm">
-            Max
-          </p>
+        <div>
+          <NumberInput name="maxImpression" errors={errors} className="w-24" />
+          <p className="text-right text-slate-400">Max</p>
         </div>
       </div>
       <MultiSelect
@@ -145,4 +131,4 @@ const BasicInformation = () => {
   );
 };
 
-export default BasicInformation;
+export default BasicInformationForm;

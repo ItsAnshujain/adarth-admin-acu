@@ -1,4 +1,4 @@
-import { Box, Image, Text } from '@mantine/core';
+import { Card, Image, Text } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import { useFormContext } from '../../../context/formContext';
@@ -20,15 +20,18 @@ const CoverImage = () => {
       </Text>
       <div className="grid grid-cols-4 gap-4">
         {values?.place?.map(placeItem => (
-          <Box
+          <Card
             key={uuidv4()}
             onClick={() => handleClick(placeItem.photo, placeItem._id)}
             className={classNames(
-              'p-4 flex flex-col gap-y-4 border',
+              'p-4 flex flex-col gap-y-4 hover:bg-gray-50 cursor-pointer',
               values?.thumbnailId === placeItem._id ? 'border-purple-450' : '',
             )}
+            withBorder
+            shadow="sm"
+            radius="md"
           >
-            <div>
+            <Card.Section>
               {placeItem?.photo ? (
                 <Image
                   height={200}
@@ -43,12 +46,12 @@ const CoverImage = () => {
               ) : (
                 <Image height={200} src={null} alt="poster" fit="contain" withPlaceholder />
               )}
-            </div>
+            </Card.Section>
             <Text weight="bold">{placeItem?.spaceName}</Text>
             <Text className="mb-2" weight="200">
               {placeItem?.location?.address}, {placeItem?.location?.zip}
             </Text>
-          </Box>
+          </Card>
         ))}
       </div>
     </div>

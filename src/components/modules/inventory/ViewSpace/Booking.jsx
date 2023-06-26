@@ -302,7 +302,7 @@ const Booking = ({ inventoryId }) => {
 
   return (
     <div className="flex flex-col">
-      <div className="flex justify-between py-4 pl-5 pr-7">
+      <div className="flex justify-between py-4">
         <div>
           <Text weight="bold">List of bookings / Order</Text>
         </div>
@@ -332,7 +332,7 @@ const Booking = ({ inventoryId }) => {
           </div>
         </div>
       </div>
-      <div className="flex justify-between h-20 items-center pr-7">
+      <div className="flex justify-between h-20 items-center">
         <RowsPerPage
           setCount={currentLimit => handlePagination('limit', currentLimit)}
           count={limit}

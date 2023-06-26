@@ -485,12 +485,7 @@ const InventoryDashboardPage = () => {
 
             <section className="flex items-center gap-3">
               {viewType.inventory !== 'map' && (
-                <Search
-                  search={searchInput}
-                  setSearch={setSearchInput}
-                  form="nosubmit"
-                  className="min-w-[400px]"
-                />
+                <Search search={searchInput} setSearch={setSearchInput} form="nosubmit" />
               )}
               <ViewByFilter handleViewBy={handleViewBy} />
               <Button className="secondary-button" onClick={handleFilterVacantInventory}>
