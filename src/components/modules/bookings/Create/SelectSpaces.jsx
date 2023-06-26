@@ -267,7 +267,6 @@ const SelectSpace = () => {
       {
         Header: 'INVENTORY ID',
         accessor: 'inventoryId',
-        disableSortBy: true,
         Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
       },
       {
@@ -302,7 +301,7 @@ const SelectSpace = () => {
       },
       {
         Header: 'PEER',
-        accessor: 'peer',
+        accessor: 'basicInformation.peerMediaOwner',
         Cell: ({
           row: {
             original: { peer },
@@ -496,10 +495,7 @@ const SelectSpace = () => {
         obj.inventoryId = item?.inventoryId;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.category = item.basicInformation?.category?.name;
-        obj.mediaOwner =
-          item?.createdBy && !item.createdBy?.isPeer
-            ? item?.basicInformation?.mediaOwner?.name
-            : '-';
+        obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
         obj.dimension = `${item.specifications?.size?.width || 0}ft x ${
           item.specifications?.size?.height || 0

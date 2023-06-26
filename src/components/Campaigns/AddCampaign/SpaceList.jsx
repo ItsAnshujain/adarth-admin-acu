@@ -33,11 +33,11 @@ const SpaceList = () => {
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
   const [searchParams, setSearchParams] = useSearchParams({
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'basicInformation.spaceName',
-    'sortOrder': 'desc',
-    'isUnderMaintenance': false,
+    page: 1,
+    limit: 20,
+    sortBy: 'basicInformation.spaceName',
+    sortOrder: 'desc',
+    isUnderMaintenance: false,
     isActive: true,
   });
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
@@ -120,7 +120,6 @@ const SpaceList = () => {
       {
         Header: 'INVENTORY ID',
         accessor: 'inventoryId',
-        disableSortBy: true,
         Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
       },
       {
@@ -134,7 +133,7 @@ const SpaceList = () => {
       },
       {
         Header: 'PEER',
-        accessor: 'peer',
+        accessor: 'basicInformation.peerMediaOwner',
         Cell: ({
           row: {
             original: { peer },
@@ -340,10 +339,7 @@ const SpaceList = () => {
         obj.inventoryId = item?.inventoryId;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.category = item?.basicInformation?.category?.name;
-        obj.mediaOwner =
-          item?.createdBy && !item.createdBy?.isPeer
-            ? item?.basicInformation?.mediaOwner?.name
-            : '-';
+        obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
         obj.dimension = item?.specifications?.size;
         obj.impression = item?.specifications?.impressions?.max || 0;

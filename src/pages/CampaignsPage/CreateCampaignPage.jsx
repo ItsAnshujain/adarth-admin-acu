@@ -40,14 +40,8 @@ const schema = yup.object({
   name: yup.string().trim().required('Campaign Name is required'),
   description: yup.string().trim(),
   previousBrands: yup.array().of(yup.string().trim()),
-  minImpression: yup
-    .number()
-    .positive('Min must be a positive number')
-    .typeError('Minimum Impression must be a number'),
-  maxImpression: yup
-    .number()
-    .positive('Max must be a positive number')
-    .typeError('Maximum Impression must be a number'),
+  minImpression: yup.number(),
+  maxImpression: yup.number(),
   tags: yup.array().of(yup.string().trim()),
   isFeatured: yup.boolean(),
   thumbnail: yup.string(),

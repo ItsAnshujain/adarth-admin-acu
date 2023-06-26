@@ -722,7 +722,7 @@ const FinanceMonthlyDetailsPage = () => {
           Invoices
         </Button>
       </div>
-      <div className="py-4 flex justify-end pr-7 gap-2 text-right">
+      <div className="py-4 flex justify-end gap-2 text-right">
         <Search search={searchInput} setSearch={setSearchInput} />
         <div ref={ref} className=" relative">
           <Button onClick={toggleDatePicker} variant="default">

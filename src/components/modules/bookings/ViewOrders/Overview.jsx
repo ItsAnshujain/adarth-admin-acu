@@ -3,6 +3,7 @@ import {
   BackgroundImage,
   Badge,
   Center,
+  Group,
   Image,
   Pagination,
   Skeleton,
@@ -211,7 +212,10 @@ const Overview = ({ bookingData = {}, isLoading }) => {
             {bookingData?.campaign?.description || 'NA'}
           </Spoiler>
           <div className="flex mt-4 items-center gap-2 ">
-            <span>{toIndianCurrency(bookingData?.campaign?.totalPrice || 0)}</span>
+            <Group className="gap-1">
+              <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.price)}</p>
+              <p className="text-xs italic">**inclusive of gst</p>
+            </Group>
             <Badge
               className="text-purple-450 bg-purple-100 capitalize"
               size="lg"

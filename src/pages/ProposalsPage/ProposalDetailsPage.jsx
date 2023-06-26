@@ -119,13 +119,18 @@ const ProposalDetailsPage = () => {
           ),
       },
       {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+      },
+      {
         Header: 'MEDIA OWNER NAME',
         accessor: 'mediaOwner',
         Cell: ({
           row: {
-            original: { peer, mediaOwner },
+            original: { mediaOwner },
           },
-        }) => useMemo(() => <p className="w-fit">{!peer ? mediaOwner : '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{mediaOwner || '-'}</p>, []),
       },
       {
         Header: 'PEER',
@@ -190,7 +195,7 @@ const ProposalDetailsPage = () => {
           row: {
             original: { impressions },
           },
-        }) => useMemo(() => <p>{`${impressions?.max || 0}+`}</p>, []),
+        }) => useMemo(() => <p>{impressions?.max ? `${impressions.max}+` : 'NA'}</p>, []),
       },
       {
         Header: 'HEALTH',
