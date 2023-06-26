@@ -30,7 +30,7 @@ const Header = ({ isPeer }) => {
   };
 
   return (
-    <div className="h-[60px] border-b border-gray-450 flex justify-between items-center pl-5 pr-5">
+    <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <div>
         <ArrowLeft className="cursor-pointer" onClick={handleBack} />
       </div>

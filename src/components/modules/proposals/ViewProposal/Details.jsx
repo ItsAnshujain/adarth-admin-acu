@@ -94,7 +94,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
   }, [inventoryData]);
 
   return (
-    <div className="mt-4 pl-5 pr-7">
+    <div className="mt-4">
       <Text size="xl" weight="bold">
         Proposal Details
       </Text>

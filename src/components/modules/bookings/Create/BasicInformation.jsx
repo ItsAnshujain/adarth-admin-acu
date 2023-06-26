@@ -18,7 +18,7 @@ const BasicInfo = () => {
   const { errors, setFieldValue } = useFormContext();
 
   return (
-    <div className="pl-5 pr-7 mt-4">
+    <div className="mt-4">
       <p className="text-xl font-bold">Basic Information</p>
       <div className="grid grid-cols-2 gap-8 mt-4">
         <div className="flex flex-col gap-4">

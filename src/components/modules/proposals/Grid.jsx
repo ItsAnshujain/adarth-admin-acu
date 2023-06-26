@@ -16,7 +16,7 @@ const GridView = ({
   isLoadingList,
 }) => (
   <div>
-    <div className="flex flex-wrap mx-5 gap-6 mb-8 h-[70%] overflow-y-auto">
+    <div className="flex flex-wrap gap-6 h-[70%] overflow-y-auto">
       {list.map(item => (
         <Link to={`view-details/${item?._id}`} key={item._id}>
           <Card proposalData={item} />

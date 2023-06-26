@@ -23,10 +23,10 @@ const DATE_FORMAT = 'DD MMM YYYY';
 
 const ProposalDashboardPage = () => {
   const [searchParams, setSearchParams] = useSearchParams({
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'desc',
+    page: 1,
+    limit: 20,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
   });
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
@@ -253,14 +253,14 @@ const ProposalDashboardPage = () => {
   }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <AreaHeader text="Proposals List" />
-      <div className="flex justify-between h-20 items-center pr-7">
+      <div className="flex justify-between h-20 items-center">
         <RowsPerPage
           setCount={currentLimit => handlePagination('limit', currentLimit)}
           count={limit}
         />
-        <Search search={searchInput} setSearch={setSearchInput} />
+        <Search search={searchInput} setSearch={setSearchInput} className="min-w-[400px]" />
       </div>
       {isLoadingProposalsData && viewType.proposal === 'list' ? (
         <div className="flex justify-center items-center h-[400px]">

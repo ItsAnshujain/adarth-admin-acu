@@ -303,14 +303,14 @@ const ProposalDetailsPage = () => {
   }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <Header isPeer={proposalData?.proposal?.isPeer} />
       <Details
         proposalData={proposalData?.proposal}
         isProposalDataLoading={isProposalDataLoading}
         inventoryData={proposalData?.inventories}
       />
-      <div className="pl-5 pr-7 flex justify-between mt-4">
+      <div className="flex justify-between mt-4">
         <Text size="xl" weight="bolder">
           Selected Inventory
         </Text>
@@ -324,7 +324,7 @@ const ProposalDetailsPage = () => {
         </div>
       </div>
 
-      <div className="flex justify-between h-20 items-center pr-7">
+      <div className="flex justify-between h-20 items-center">
         <RowsPerPage
           setCount={currentLimit => handlePagination('limit', currentLimit)}
           count={limit}

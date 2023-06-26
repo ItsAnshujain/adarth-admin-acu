@@ -153,7 +153,7 @@ const Table = ({
         </table>
       </div>
       {showPagination ? (
-        <div className="flex justify-end my-4 pr-7">
+        <div className="flex justify-end my-4">
           <Pagination
             styles={theme => ({
               item: {

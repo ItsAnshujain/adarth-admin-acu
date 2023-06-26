@@ -31,11 +31,11 @@ const Header = ({ text }) => {
   const toggleFilter = () => setShowFilter(!showFilter);
 
   return (
-    <div className="h-[60px] border-b border-gray-450 flex justify-between items-center pl-5 pr-5">
+    <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <Text weight="bold" size="md">
         {text}
       </Text>
-      <div className="mr-2 flex gap-2">
+      <div className="flex gap-2">
         <div className="flex">
           <Button
             className={classNames(

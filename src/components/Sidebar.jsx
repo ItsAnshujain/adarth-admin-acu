@@ -24,7 +24,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="hidden lg:block lg:col-span-2 pt-4 bg-purple-450 overflow-y-auto">
+    <div className="hidden lg:block lg:col-span-2 pt-4 bg-purple-450 overflow-y-auto valid sidebar-scroll">
       <div className="h-full flex flex-col justify-between">
         <SidebarContent className="gap-3 px-5" />
         <List className="p-5 text-white" listStyleType="disc">

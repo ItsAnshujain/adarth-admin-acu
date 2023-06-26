@@ -24,7 +24,7 @@ const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposal
 
   return (
     <div className="h-20 border-gray-450 flex justify-between items-center w-full">
-      <div className="flex gap-6 pl-5 relative">
+      <div className="flex gap-6 relative">
         {initialState.map((val, index) => (
           <Chip
             className={classNames(
@@ -60,7 +60,7 @@ const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposal
         ))}
       </div>
 
-      <div className="flex gap-4 pr-7 ">
+      <div className="flex gap-4">
         <Button onClick={handleHome} className="border-black text-black radius-md">
           Cancel
         </Button>

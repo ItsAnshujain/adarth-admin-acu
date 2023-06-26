@@ -17,7 +17,7 @@ const Header = ({ setFormStep, formStep, isLoading }) => {
   };
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
-      <div className="flex gap-6 pl-5 relative">
+      <div className="flex gap-6 relative">
         {initialState.map((val, index) => (
           <Chip
             className={classNames(
@@ -55,7 +55,7 @@ const Header = ({ setFormStep, formStep, isLoading }) => {
           </Chip>
         ))}
       </div>
-      <div className="flex gap-4 pr-7">
+      <div className="flex gap-4">
         <Button className="border-black radius-md text-black" onClick={handleBooking}>
           Cancel
         </Button>

@@ -500,10 +500,7 @@ const SelectSpace = () => {
           item?.createdBy && !item.createdBy?.isPeer
             ? item?.basicInformation?.mediaOwner?.name
             : '-';
-        obj.peer =
-          item?.createdBy && item.createdBy?.isPeer
-            ? item?.basicInformation?.mediaOwner?.name
-            : '-';
+        obj.peer = item?.basicInformation?.peerMediaOwner || '-';
         obj.dimension = `${item.specifications?.size?.width || 0}ft x ${
           item.specifications?.size?.height || 0
         }ft`;
@@ -535,7 +532,7 @@ const SelectSpace = () => {
 
   return (
     <>
-      <div className="flex gap-2 p-4 flex-col">
+      <div className="flex gap-2 py-5 flex-col">
         <div className="flex justify-between items-center">
           <div>
             <p className="text-lg font-bold">Select Place for Order</p>
