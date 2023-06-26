@@ -37,3 +37,7 @@
 .transparent-black {
   background: rgb(0 0 0 / 50%);
 }
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background-color: #4b0daf;
+}

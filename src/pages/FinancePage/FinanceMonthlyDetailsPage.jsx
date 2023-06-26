@@ -680,20 +680,21 @@ const FinanceMonthlyDetailsPage = () => {
   }, [financeRecordId]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <Header
         year={year}
         month={month}
         totalSales={financialDataByMonth?.cost?.totalSales}
         totalOperationlCost={financialDataByMonth?.cost?.totalOperationlCost}
       />
-      <div className="flex pl-5 gap-3 items-center font-medium h-20 border-b">
+      <div className="flex gap-x-5 items-center font-medium h-20 border-b">
         <Button
           onClick={() => handleTabs('purchase')}
           className={classNames(
             pageType === 'purchase'
               ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
               : 'text-black',
+            'px-0',
           )}
         >
           Purchase Orders
@@ -704,6 +705,7 @@ const FinanceMonthlyDetailsPage = () => {
             pageType === 'release'
               ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
               : 'text-black',
+            'px-0',
           )}
         >
           Release Orders
@@ -714,6 +716,7 @@ const FinanceMonthlyDetailsPage = () => {
             pageType === 'invoice'
               ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
               : 'text-black',
+            'px-0',
           )}
         >
           Invoices

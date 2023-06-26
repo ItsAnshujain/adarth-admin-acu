@@ -12,10 +12,8 @@ const SubHeader = ({ text }) => {
 
   return (
     <>
-      <div className="h-[60px] border-b border-gray-450 flex justify-between items-center pr-7">
-        <div className="pl-5">
-          <p className="text-lg font-bold">{text}</p>
-        </div>
+      <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
+        <p className="text-lg font-bold">{text}</p>
         <Button
           onClick={toggleAddModal}
           className="bg-purple-450 flex align-center py-2 text-white rounded-md px-4 text-sm"

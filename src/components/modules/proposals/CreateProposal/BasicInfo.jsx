@@ -94,7 +94,7 @@ const BasicInfo = ({ proposalId, userData }) => {
   };
 
   return (
-    <div className="flex gap-4 pt-4 flex-col px-5">
+    <div className="flex gap-4 pt-4 flex-col">
       <Text size="md" weight="bold">
         Basic Information
       </Text>

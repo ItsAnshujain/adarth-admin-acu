@@ -200,7 +200,7 @@ const CreateProposalPage = () => {
   }, [proposalData, userData]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <FormProvider form={form}>
         <form onSubmit={form.onSubmit(onSubmit)}>
           <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
