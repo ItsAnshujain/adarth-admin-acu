@@ -7,7 +7,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import AreaHeader from '../../components/Users/Header';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import Card from '../../components/Users/UI/Card';
+import Card from '../../components/Users/Card';
 import { useFetchUsers } from '../../apis/queries/users.queries';
 import useTokenIdStore from '../../store/user.store';
 

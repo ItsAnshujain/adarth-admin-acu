@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Image, Loader, Progress, Text } from '@mantine/core';
+import { Badge, Button, Group, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
@@ -11,6 +11,7 @@ import { useFetchInventory } from '../../../apis/queries/inventory.queries';
 import { useFormContext } from '../../../context/formContext';
 import { categoryColors } from '../../../utils';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
+import RowsPerPage from '../../RowsPerPage';
 
 const getHealthTag = score =>
   score >= 80
@@ -127,9 +128,18 @@ const SelectSpace = () => {
         accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
           row: {
-            original: { landlord_name },
+            original: { mediaOwner },
           },
-        }) => useMemo(() => <div className="w-fit">{landlord_name || '-'}</div>, []),
+        }) => useMemo(() => <div className="w-fit">{mediaOwner}</div>, []),
+      },
+      {
+        Header: 'PEER',
+        accessor: 'peer',
+        Cell: ({
+          row: {
+            original: { peer },
+          },
+        }) => useMemo(() => <p className="w-fit">{peer}</p>, []),
       },
       {
         Header: 'CATEGORY',
@@ -174,7 +184,7 @@ const SelectSpace = () => {
           row: {
             original: { impression },
           },
-        }) => useMemo(() => <p>{`${impression || 0}+`}</p>, []),
+        }) => useMemo(() => <p>{impression ? `${impression}+` : 'NA'}</p>, []),
       },
       {
         Header: 'HEALTH',
@@ -300,6 +310,12 @@ const SelectSpace = () => {
     setFieldValue('place', formData);
   };
 
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
+    setSearchParams(searchParams);
+  };
+
   useEffect(() => {
     if (debouncedSearch) {
       searchParams.set('search', debouncedSearch);
@@ -324,6 +340,11 @@ const SelectSpace = () => {
         obj.inventoryId = item?.inventoryId;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.category = item?.basicInformation?.category?.name;
+        obj.mediaOwner =
+          item?.createdBy && !item.createdBy?.isPeer
+            ? item?.basicInformation?.mediaOwner?.name
+            : '-';
+        obj.peer = item?.basicInformation?.peerMediaOwner || '-';
         obj.dimension = item?.specifications?.size;
         obj.impression = item?.specifications?.impressions?.max || 0;
         obj.health = item?.specifications?.health;
@@ -349,7 +370,7 @@ const SelectSpace = () => {
 
   return (
     <>
-      <div className="flex gap-2 pt-4 flex-col pl-5 pr-7">
+      <div className="flex gap-2 pt-4 flex-col">
         <div className="flex justify-between items-center">
           <p className="text-lg font-bold">Select Place for Order</p>
           <div>
@@ -374,16 +395,21 @@ const SelectSpace = () => {
           </div>
         </div>
         <div className="flex justify-between mb-4 items-center">
-          <p className="text-purple-450 text-sm">
-            Total Places{' '}
-            {inventoryData?.totalDocs ? (
-              <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-                {inventoryData.totalDocs}
-              </span>
-            ) : null}
-          </p>
-
-          <Search search={searchInput} setSearch={setSearchInput} />
+          <Group>
+            <RowsPerPage
+              setCount={currentLimit => handlePagination('limit', currentLimit)}
+              count={limit}
+            />
+            <p className="text-purple-450 text-sm">
+              Total Places{' '}
+              {inventoryData?.totalDocs ? (
+                <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
+                  {inventoryData.totalDocs}
+                </span>
+              ) : null}
+            </p>
+          </Group>
+          <Search search={searchInput} setSearch={setSearchInput} className="min-w-[400px]" />
         </div>
       </div>
       {isLoading ? (
@@ -406,7 +432,7 @@ const SelectSpace = () => {
           handleSorting={handleSortByColumn}
           activePage={pagination.page}
           totalPages={pagination.totalPages}
-          setActivePage={page => setPagination(p => ({ ...p, page }))}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
         />
       ) : null}
     </>

@@ -63,7 +63,7 @@ const BasicInformation = () => {
   );
 
   return (
-    <div className="mt-4 pl-5 pr-7 flex flex-col gap-4 pb-20">
+    <div className="my-4 flex flex-col gap-4">
       <p className="text-md font-bold">Basic Information</p>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4">
         <div className="flex flex-col gap-y-4">

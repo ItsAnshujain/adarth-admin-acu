@@ -1,6 +1,6 @@
 import { Dropzone, PDF_MIME_TYPE } from '@mantine/dropzone';
 import { FilePlus } from 'react-feather';
-import { useFormContext } from '../../../../context/formContext';
+import { useFormContext } from '../../../context/formContext';
 
 const DragDropCard = ({
   onHandleDrop = () => {},

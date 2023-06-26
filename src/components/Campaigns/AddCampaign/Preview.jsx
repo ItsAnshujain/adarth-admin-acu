@@ -7,7 +7,7 @@ import { getWord } from 'num-count';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
-import Places from './UI/Places';
+import Places from './Places';
 import { indianMapCoordinates } from '../../../utils';
 
 const defaultProps = {
@@ -70,7 +70,7 @@ const Preview = ({ data = {}, place = {} }) => {
   }, [place]);
 
   return (
-    <div className="grid grid-cols-2 gap-x-8 pl-5 pr-7 pt-4">
+    <div className="grid grid-cols-2 gap-x-8 pt-4">
       <div className="flex flex-col">
         <div className="flex flex-col">
           <div className="flex flex-1 flex-col w-full">

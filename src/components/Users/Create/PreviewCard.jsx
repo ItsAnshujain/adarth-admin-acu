@@ -1,10 +1,10 @@
 import { Box, Button, Image } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
-import trash from '../../../../assets/trash.svg';
-import pdf from '../../../../assets/pdf.svg';
-import modalConfig from '../../../../utils/modalConfig';
-import { downloadPdf } from '../../../../utils';
+import trash from '../../../assets/trash.svg';
+import pdf from '../../../assets/pdf.svg';
+import modalConfig from '../../../utils/modalConfig';
+import { downloadPdf } from '../../../utils';
 
 const docs = {
   aadhaar: 'Aadhaar',

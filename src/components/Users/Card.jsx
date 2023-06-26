@@ -1,7 +1,7 @@
 import { Avatar, Card as MantineCard, Text } from '@mantine/core';
 import { Phone, Mail } from 'react-feather';
-import UserImage from '../../../assets/placeholders/user.png';
-import { roleTypes } from '../../../utils';
+import UserImage from '../../assets/placeholders/user.png';
+import { roleTypes } from '../../utils';
 
 const updatedRoleTypes = { ...roleTypes, 'admin': 'Admin' };
 

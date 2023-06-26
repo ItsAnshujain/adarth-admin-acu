@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Badge } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
-import PreviewCard from './UI/PreviewCard';
-import DragDropCard from './UI/DragDropCard';
+import PreviewCard from './PreviewCard';
+import DragDropCard from './DragDropCard';
 import { useFormContext } from '../../../context/formContext';
 import { useDeleteUploadedFile, useUploadFile } from '../../../apis/queries/upload.queries';
 import { supportedTypes } from '../../../utils';
