@@ -1,4 +1,4 @@
-import { Button } from '@mantine/core';
+import { ActionIcon, Button } from '@mantine/core';
 import classNames from 'classnames';
 import { ArrowLeft } from 'react-feather';
 import { useMemo } from 'react';
@@ -50,10 +50,10 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center flex-wrap">
-      <div className="flex pl-5 gap-3 items-center font-medium">
-        <Button onClick={() => navigate(-1)} className="mr-4 px-0 text-black">
+      <div className="flex gap-3 items-center font-medium">
+        <ActionIcon onClick={() => navigate(-1)} className="mr-2 text-black">
           <ArrowLeft />
-        </Button>
+        </ActionIcon>
         <Button
           onClick={() => setPageNumber(0)}
           className={classNames(
@@ -87,7 +87,7 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
           Overview
         </Button>
       </div>
-      <div className="flex pr-7 gap-2 ml-4 flex-wrap">
+      <div className="flex gap-2 flex-wrap">
         {pageNumber === 0 ? (
           <div className="flex gap-2 flex-wrap">
             <Menu btnLabel="Generate Purchase Order" options={purchaseOrderList} />

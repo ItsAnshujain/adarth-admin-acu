@@ -161,7 +161,6 @@ const InventoryDashboardPage = () => {
       {
         Header: 'INVENTORY ID',
         accessor: 'inventoryId',
-        disableSortBy: true,
         Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
       },
       {
@@ -169,21 +168,14 @@ const InventoryDashboardPage = () => {
         accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
           row: {
-            original: { createdBy, basicInformation },
+            original: { basicInformation },
           },
         }) =>
-          useMemo(
-            () => (
-              <p className="w-fit">
-                {createdBy && !createdBy?.isPeer ? basicInformation?.mediaOwner?.name : '-'}
-              </p>
-            ),
-            [],
-          ),
+          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || '-'}</p>, []),
       },
       {
         Header: 'PEER',
-        accessor: 'peer',
+        accessor: 'basicInformation.peerMediaOwner',
         Cell: ({
           row: {
             original: { basicInformation },
@@ -485,12 +477,7 @@ const InventoryDashboardPage = () => {
 
             <section className="flex items-center gap-3">
               {viewType.inventory !== 'map' && (
-                <Search
-                  search={searchInput}
-                  setSearch={setSearchInput}
-                  form="nosubmit"
-                  className="min-w-[400px]"
-                />
+                <Search search={searchInput} setSearch={setSearchInput} form="nosubmit" />
               )}
               <ViewByFilter handleViewBy={handleViewBy} />
               <Button className="secondary-button" onClick={handleFilterVacantInventory}>

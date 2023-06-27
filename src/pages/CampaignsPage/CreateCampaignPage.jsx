@@ -3,11 +3,11 @@ import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
-import BasicInfo from '../../components/Campaigns/AddCampaign/BasicInformation';
+import BasicInformationForm from '../../components/Campaigns/AddCampaign/BasicInformationForm';
 import SuccessModal from '../../components/shared/Modal';
 import CoverImage from '../../components/Campaigns/AddCampaign/CoverImage';
 import Header from '../../components/Campaigns/AddCampaign/Header';
-import Spaces from '../../components/Campaigns/AddCampaign/Spaces';
+import SpaceList from '../../components/Campaigns/AddCampaign/SpaceList';
 import { FormProvider, useForm } from '../../context/formContext';
 import Preview from '../../components/Campaigns/AddCampaign/Preview';
 import {
@@ -26,8 +26,8 @@ const initialValues = {
   createStatus: '',
   isFeatured: false,
   previousBrands: [],
-  minImpression: 1600000,
-  maxImpression: 3200000,
+  minImpression: 0,
+  maxImpression: 0,
   tags: [],
   healthTag: '',
   place: [],
@@ -40,14 +40,8 @@ const schema = yup.object({
   name: yup.string().trim().required('Campaign Name is required'),
   description: yup.string().trim(),
   previousBrands: yup.array().of(yup.string().trim()),
-  minImpression: yup
-    .number()
-    .positive('Min must be a positive number')
-    .typeError('Minimum Impression must be a number'),
-  maxImpression: yup
-    .number()
-    .positive('Max must be a positive number')
-    .typeError('Maximum Impression must be a number'),
+  minImpression: yup.number(),
+  maxImpression: yup.number(),
   tags: yup.array().of(yup.string().trim()),
   isFeatured: yup.boolean(),
   thumbnail: yup.string(),
@@ -75,9 +69,9 @@ const CreateCampaignPage = () => {
 
   const getForm = () =>
     formStep === 1 ? (
-      <BasicInfo />
+      <BasicInformationForm />
     ) : formStep === 2 ? (
-      <Spaces />
+      <SpaceList />
     ) : formStep === 3 ? (
       <CoverImage />
     ) : (

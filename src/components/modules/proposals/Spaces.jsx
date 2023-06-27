@@ -174,7 +174,6 @@ const Spaces = () => {
       {
         Header: 'INVENTORY ID',
         accessor: 'inventoryId',
-        disableSortBy: true,
         Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
       },
       {
@@ -188,7 +187,7 @@ const Spaces = () => {
       },
       {
         Header: 'PEER',
-        accessor: 'peer',
+        accessor: 'basicInformation.peerMediaOwner',
         Cell: ({
           row: {
             original: { peer },
@@ -393,10 +392,7 @@ const Spaces = () => {
         obj.spacePhoto = item?.basicInformation?.spacePhoto;
         obj.inventoryId = item?.inventoryId;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
-        obj.mediaOwner =
-          item?.createdBy && !item.createdBy?.isPeer
-            ? item?.basicInformation?.mediaOwner?.name
-            : '-';
+        obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
         obj.category = item?.basicInformation?.category?.name;
         obj.height = item?.specifications?.size?.height;
@@ -465,7 +461,7 @@ const Spaces = () => {
               ) : null}
             </Text>
           </Group>
-          <Search search={searchInput} setSearch={setSearchInput} className="min-w-[400px]" />
+          <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
       {isLoading ? (

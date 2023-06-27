@@ -4,24 +4,34 @@ import { Link } from 'react-router-dom';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 
-const Card = ({ data, isSelected = false, onSelect = () => {}, onPreview }) => (
+const Card = ({
+  _id,
+  isActive,
+  basicInformation,
+  location,
+  specifications,
+  isUnderMaintenance,
+  isSelected = false,
+  onSelect = () => {},
+  onPreview,
+}) => (
   <MantineCard
     className={classNames(
       'flex flex-col bg-white w-[270px] min-h-[400px]',
-      !data?.isActive ? 'opacity-50' : '',
+      !isActive ? 'opacity-50' : '',
     )}
     withBorder
     radius="md"
     shadow="sm"
   >
     <MantineCard.Section
-      className={classNames(data?.basicInformation?.spacePhoto ? 'cursor-zoom-in' : '')}
+      className={classNames(basicInformation?.spacePhoto ? 'cursor-zoom-in' : '')}
       onClick={onPreview}
     >
-      {data?.basicInformation?.spacePhoto ? (
+      {basicInformation?.spacePhoto ? (
         <Image
           height={170}
-          src={data?.basicInformation?.spacePhoto}
+          src={basicInformation?.spacePhoto}
           alt="card"
           withPlaceholder
           placeholder={<Text align="center">Unexpected error occured. Image cannot be loaded</Text>}
@@ -30,22 +40,22 @@ const Card = ({ data, isSelected = false, onSelect = () => {}, onPreview }) => (
         <Image height={170} src={null} alt="card" fit="contain" withPlaceholder />
       )}
     </MantineCard.Section>
-    <Link to={`/inventory/view-details/${data?._id}`} key={data?._id}>
+    <Link to={`/inventory/view-details/${_id}`} key={_id}>
       <div className="flex-1 flex flex-col gap-y-2 mt-4">
         <Box className="flex justify-between items-center mb-2" onClick={e => e.stopPropagation()}>
           <Badge
             className="capitalize"
             variant="filled"
             size="lg"
-            color={data?.isUnderMaintenance ? 'yellow' : 'green'}
+            color={isUnderMaintenance ? 'yellow' : 'green'}
           >
-            {data?.isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+            {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
           </Badge>
           <Checkbox
             onChange={event => onSelect(event.target.value)}
             label="Select"
             classNames={{ root: 'flex flex-row-reverse', label: 'pr-2' }}
-            defaultValue={data?._id}
+            defaultValue={_id}
             checked={isSelected}
           />
         </Box>
@@ -54,34 +64,32 @@ const Card = ({ data, isSelected = false, onSelect = () => {}, onPreview }) => (
           weight="bold"
           lineClamp={1}
           className="w-full"
-          title={data?.basicInformation?.spaceName}
+          title={basicInformation?.spaceName}
         >
-          {data?.basicInformation?.spaceName}
+          {basicInformation?.spaceName}
         </Text>
-        <Text size="sm" weight="200" lineClamp={1} title={data?.location?.address}>
-          {data?.location?.address || 'NA'}
+        <Text size="sm" weight="200" lineClamp={1} title={location?.address}>
+          {location?.address || 'NA'}
         </Text>
         <div className="grid grid-cols-2 justify-between">
           <div>
             <p className="text-sm text-gray-400 mb-2">Category</p>
             <Text className="text-sm" lineClamp={1}>
-              {data?.basicInformation?.category?.name}
+              {basicInformation?.category?.name}
             </Text>
           </div>
           <div>
             <p className="text-sm text-gray-400 mb-2">Impressions</p>
             <p className="text-sm">
-              {data?.specifications?.impressions?.max
-                ? `${data.specifications.impressions.max}+`
-                : 'NA'}
+              {specifications?.impressions?.max ? `${specifications.impressions.max}+` : 'NA'}
             </p>
           </div>
         </div>
         <Box className="flex justify-between items-center" onClick={e => e.stopPropagation()}>
           <Text size="lg" className="font-bold" color="purple">
-            {data?.basicInformation?.price ? toIndianCurrency(data.basicInformation.price) : 'NA'}
+            {basicInformation?.price ? toIndianCurrency(basicInformation.price) : 'NA'}
           </Text>
-          <SpacesMenuPopover itemId={data?._id} />
+          <SpacesMenuPopover itemId={_id} />
         </Box>
       </div>
     </Link>

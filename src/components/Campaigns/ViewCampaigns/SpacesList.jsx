@@ -231,7 +231,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
   }, [debouncedSearch]);
   return (
     <>
-      <div className="mt-5 pl-5 pr-7 flex justify-between">
+      <div className="mt-5 flex justify-between">
         <Text>List of space for the campaign</Text>
         <div className="flex">
           <div ref={ref} className="mr-2 relative">
@@ -257,7 +257,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
         </div>
       </div>
       <div>
-        <div className="flex justify-between h-20 items-center pr-7">
+        <div className="flex justify-between h-20 items-center">
           <RowsPerPage
             setCount={pageLimit => {
               searchParams.set('limit', pageLimit);

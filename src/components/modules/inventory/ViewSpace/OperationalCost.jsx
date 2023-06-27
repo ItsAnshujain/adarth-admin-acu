@@ -45,7 +45,7 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
   }, [operationaCostData]);
 
   return (
-    <div className="px-5 py-2 bg-red-20 ">
+    <div>
       <p className="font-medium text-lg">View Operational Cost</p>
 
       {isLoading ? (

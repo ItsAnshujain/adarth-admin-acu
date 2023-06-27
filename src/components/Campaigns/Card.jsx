@@ -4,15 +4,26 @@ import classNames from 'classnames';
 import toIndianCurrency from '../../utils/currencyFormat';
 
 const Card = ({
-  data: { _id, status, thumbnail, name = 'N/A', place = [], price = 0, isFeatured, minImpression },
+  _id,
+  status,
+  thumbnail,
+  name = 'N/A',
+  place = [],
+  price = 0,
+  isFeatured,
+  maxImpression,
+  onPreview,
 }) => (
   <MantineCard className="flex flex-col drop-shadow-md bg-white w-[270px]">
-    <MantineCard.Section className={classNames(thumbnail ? 'cursor-zoom-in' : '')}>
+    <MantineCard.Section
+      className={classNames(thumbnail ? 'cursor-zoom-in' : '')}
+      onClick={onPreview}
+    >
       {thumbnail ? (
         <Image
           height={170}
           src={thumbnail}
-          alt="card"
+          alt="thumbnail"
           withPlaceholder
           placeholder={<Text align="center">Unexpected error occured. Image cannot be loaded</Text>}
         />
@@ -41,7 +52,7 @@ const Card = ({
           </div>
           <div>
             <p className="text-sm text-gray-400 mb-2">Impressions</p>
-            <p className="text-sm">{minImpression || 0}</p>
+            <p className="text-sm">{maxImpression || 0}</p>
           </div>
         </div>
         <p className="font-extrabold text-lg">{price ? toIndianCurrency(price) : 0}</p>

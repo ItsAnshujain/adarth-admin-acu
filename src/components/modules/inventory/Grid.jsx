@@ -59,14 +59,14 @@ const GridView = ({
         {list.map(item => (
           <Card
             key={item?._id}
-            data={item}
             isSelected={values?.spaces?.includes(item)}
             onSelect={cardId => handleCardSelection(cardId, item)}
             onPreview={() =>
               item?.basicInformation?.spacePhoto
-                ? togglePreviewModal(item?.basicInformation?.spacePhoto)
+                ? togglePreviewModal(item.basicInformation.spacePhoto)
                 : null
             }
+            {...item}
           />
         ))}
         {isLoadingList ? skeletonList() : null}

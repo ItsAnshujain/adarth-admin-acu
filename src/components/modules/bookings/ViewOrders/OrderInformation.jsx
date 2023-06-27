@@ -173,8 +173,8 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
       <Loader />
     </div>
   ) : (
-    <div className="px-5">
-      <p className="mt-5 font-bold text-lg">Statistics</p>
+    <div>
+      <p className="pt-5 font-bold text-lg">Statistics</p>
       <div className="mt-2 flex flex-col gap-8">
         <div className="flex flex-wrap">
           <div className="flex gap-x-4 p-4 border rounded-md items-center mr-20">

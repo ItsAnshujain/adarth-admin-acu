@@ -1,4 +1,4 @@
-import { Button, Loader, Switch, Tabs } from '@mantine/core';
+import { ActionIcon, Loader, Switch, Tabs } from '@mantine/core';
 import { ArrowLeft } from 'react-feather';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useToggle } from '@mantine/hooks';
@@ -47,16 +47,16 @@ const InventoryDetailsPage = () => {
   }, [inventoryDetails?.inventory]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       {isInventoryDetailsLoading ? (
         <Loader className="mx-auto mt-72" />
       ) : (
         <Tabs value={tabType} onTabChange={handleTabs}>
           <Tabs.List className="flex items-center justify-between">
             <div className="flex items-center">
-              <Button onClick={handleBack} className="mr-4">
+              <ActionIcon onClick={handleBack} className="mr-2">
                 <ArrowLeft color="#000" />
-              </Button>
+              </ActionIcon>
               <Tabs.Tab value="basic-info" className="px-3 text-lg h-[60px]">
                 Basic Information
               </Tabs.Tab>
@@ -70,7 +70,7 @@ const InventoryDetailsPage = () => {
               </Tabs.Tab>
             </div>
             {tabType === 'basic-info' && !inventoryDetails?.isPeer ? (
-              <div className="flex pr-7">
+              <div className="flex">
                 <div className="flex items-center pr-7">
                   <p className="text-lg mr-3">Under maintenance</p>
                   <Switch
@@ -92,7 +92,7 @@ const InventoryDetailsPage = () => {
             ) : null}
           </Tabs.List>
 
-          <Tabs.Panel value="basic-info" pt="xs">
+          <Tabs.Panel value="basic-info">
             <BasicInfo
               inventoryDetails={inventoryDetails?.inventory}
               isInventoryDetailsLoading={isInventoryDetailsLoading}

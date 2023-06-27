@@ -123,7 +123,7 @@ const ProcessPipeline = ({ bookingData }) => {
   );
 
   return (
-    <div className="p-5">
+    <div className="pt-5">
       {pipelineList.map(item => (
         <Fragment key={uuidv4()}>
           {item?.status ? (

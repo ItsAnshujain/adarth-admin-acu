@@ -41,9 +41,9 @@ const CampaignDetailsPage = () => {
   const TabView = campaignView[tabs];
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <Header tabs={tabs} setTabs={setTabs} />
-      <div className="relative pb-12 mb-16">
+      <div className="relative">
         <TabView
           campaignData={data?.campaign}
           spacesData={data?.inventory}

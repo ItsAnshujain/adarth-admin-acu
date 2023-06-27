@@ -175,8 +175,8 @@ const Specification = () => {
             min={0}
             max={1800000}
             value={[
-              values?.specifications?.impressions?.min,
-              values?.specifications?.impressions?.max,
+              values?.specifications?.impressions?.min || 0,
+              values?.specifications?.impressions?.max || 1800000,
             ]}
           />
           <div>

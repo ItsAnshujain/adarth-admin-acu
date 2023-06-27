@@ -3,6 +3,7 @@ import {
   BackgroundImage,
   Badge,
   Center,
+  Group,
   Image,
   Pagination,
   Skeleton,
@@ -158,8 +159,8 @@ const Overview = ({ bookingData = {}, isLoading }) => {
 
   return (
     <>
-      <div className="flex gap-4 pt-4">
-        <div className="flex-1 pl-5 max-w-1/2">
+      <div className="flex gap-4 pt-5">
+        <div className="flex-1 max-w-1/2">
           <div className="flex flex-col">
             {isLoading ? (
               <SkeletonTopWrapper />
@@ -197,7 +198,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
             )}
           </div>
         </div>
-        <div className="flex-1 pr-7 max-w-1/2 gap-2">
+        <div className="flex-1 max-w-1/2 gap-2">
           <p className="font-bold text-2xl mb-2">
             {bookingData?.campaign?.name || <NoData type="na" />}
           </p>
@@ -211,7 +212,10 @@ const Overview = ({ bookingData = {}, isLoading }) => {
             {bookingData?.campaign?.description || 'NA'}
           </Spoiler>
           <div className="flex mt-4 items-center gap-2 ">
-            <span>{toIndianCurrency(bookingData?.campaign?.totalPrice || 0)}</span>
+            <Group className="gap-1">
+              <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.price)}</p>
+              <p className="text-xs italic">**inclusive of gst</p>
+            </Group>
             <Badge
               className="text-purple-450 bg-purple-100 capitalize"
               size="lg"
@@ -250,7 +254,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           </div>
         </div>
       </div>
-      <div className="pl-5 pr-7 flex flex-col mt-4 mb-8 pb-10 relative">
+      <div className="flex flex-col mt-4 mb-4 relative">
         <p className="text-lg font-bold">Location Details</p>
         <p className="text-sm font-light text-slate-400">
           All the places been covered by this campaign

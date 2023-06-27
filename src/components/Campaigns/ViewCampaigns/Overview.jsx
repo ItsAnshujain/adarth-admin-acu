@@ -155,7 +155,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
   }, [spacesData]);
 
   return (
-    <div className="grid grid-cols-2 gap-x-8 pl-5 pr-7 pt-4">
+    <div className="grid grid-cols-2 gap-x-8 pt-4">
       <div className="flex flex-col">
         {isCampaignDataLoading ? (
           <SkeletonTopWrapper />

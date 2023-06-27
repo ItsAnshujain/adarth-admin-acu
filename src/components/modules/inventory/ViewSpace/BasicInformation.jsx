@@ -129,7 +129,7 @@ const BasicInfo = ({
   }, [inventoryDetails]);
 
   return (
-    <div className="grid grid-cols-2 gap-x-8 py-4 px-5">
+    <div className="grid grid-cols-2 gap-x-8 py-4">
       <div>
         {isInventoryDetailsLoading ? (
           <SkeletonTopWrapper />
