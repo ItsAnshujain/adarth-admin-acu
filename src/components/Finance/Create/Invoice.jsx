@@ -295,7 +295,7 @@ const Invoice = ({
 
   return (
     <div>
-      <div className="pl-5 pr-7 pt-4 pb-8 border-b">
+      <div className="py-4 border-b">
         <div className="grid grid-cols-2 gap-4">
           <NumberInput
             styles={styles}
@@ -307,10 +307,10 @@ const Invoice = ({
           />
         </div>
       </div>
-      <div className="flex justify-between pl-5 pr-7 items-center">
+      <div className="flex justify-between items-center">
         <p className="font-bold text-2xl pt-4">Supplier</p>
       </div>
-      <div className="pl-5 pr-7 pt-4 pb-8 border-b">
+      <div className="py-4 border-b">
         <div className="grid grid-cols-2 gap-4 pb-4">
           <TextInput
             styles={styles}
@@ -389,7 +389,7 @@ const Invoice = ({
             placeholder="Write..."
           />
         </div>
-        <div className="grid grid-cols-1 gap-4 pb-4">
+        <div className="grid grid-cols-1 gap-4">
           <TextInput
             styles={styles}
             label="Website"
@@ -398,10 +398,10 @@ const Invoice = ({
           />
         </div>
       </div>
-      <div className="flex justify-between pl-5 pr-7 items-center">
+      <div className="flex justify-between items-center">
         <p className="font-bold text-2xl pt-4">Buyer Details</p>
       </div>
-      <div className="pl-5 pr-7 pt-4 pb-8 border-b">
+      <div className="py-4 border-b">
         <div className="grid grid-cols-2 gap-4 pb-4">
           <TextInput
             styles={styles}
@@ -518,7 +518,7 @@ const Invoice = ({
           />
         </div>
       </div>
-      <div className="pl-5 pr-7 py-4 mb-2">
+      <div className="py-4">
         <Group position="apart" align="center" className="mb-4">
           <p className="font-bold text-2xl">Order Item Details</p>
           {!bookingIdFromFinance ? (
@@ -560,7 +560,7 @@ const Invoice = ({
           </div>
         )}
       </div>
-      <div className="pl-5 pr-7 flex flex-col gap-4 pb-6 border-b">
+      <div className="flex flex-col gap-4 pb-4 border-b">
         <TextInput
           styles={styles}
           label="Amount Chargeable (in words)"
@@ -571,10 +571,10 @@ const Invoice = ({
           disabled
         />
       </div>
-      <div className="flex justify-between pl-5 pr-7 items-center">
+      <div className="flex justify-between items-center">
         <p className="font-bold text-2xl pt-4">Company&apos;s Bank Details</p>
       </div>
-      <div className="pl-5 pr-7 pt-4 pb-4 border-b">
+      <div className="pt-4 pb-4 border-b">
         <div className="grid grid-cols-2 gap-4 pb-4">
           <TextInput
             styles={styles}
@@ -593,7 +593,7 @@ const Invoice = ({
             id="accountNo"
           />
         </div>
-        <div className="grid grid-cols-2 gap-4 pb-4">
+        <div className="grid grid-cols-2 gap-4">
           <TextInput
             styles={styles}
             label="Branch &amp; IFSC Code"
@@ -612,7 +612,7 @@ const Invoice = ({
           />
         </div>
       </div>
-      <div className="pl-5 pr-7 pt-4 border-b">
+      <div className="pt-4 pb-5 border-b">
         <div className="grid grid-cols-1 gap-4">
           <TextareaInput
             label="Declaration"
@@ -621,7 +621,6 @@ const Invoice = ({
             styles={styles}
             maxLength={200}
             placeholder="Maximum 200 characters"
-            className="mb-7"
             id="declaration"
           />
         </div>

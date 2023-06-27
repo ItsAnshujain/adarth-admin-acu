@@ -243,7 +243,7 @@ const CampaignReportsPage = () => {
   return (
     <div
       className={classNames(
-        'border-l border-gray-450 overflow-y-auto',
+        'overflow-y-auto px-5',
         share !== 'report' ? 'col-span-10 ' : 'col-span-12',
       )}
       id="campaign_report_pdf"
@@ -256,7 +256,7 @@ const CampaignReportsPage = () => {
         isDownloadLoading={isDownloadLoading}
       />
 
-      <div className="pr-7 pl-5 mt-5" id="campaign-pdf">
+      <div id="campaign-pdf">
         <CampaignStatsContent
           isStatsLoading={isStatsLoading}
           healthStatusData={healthStatusData}

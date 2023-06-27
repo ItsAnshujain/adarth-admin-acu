@@ -1,3 +1,4 @@
+import { Group } from '@mantine/core';
 import { months } from '../../utils';
 import Menu from './Menu';
 
@@ -33,18 +34,18 @@ const invoiceList = [
 ];
 
 const Header = ({ year, month }) => (
-  <header className="flex justify-between gap-2 h-[60px] border-b items-center flex-wrap">
+  <header className="flex justify-between gap-2 h-[60px] border-b items-center flex-wrap w-full">
     {year ? (
       <p className="font-bold text-lg">
         {!month ? `Year ${Number(year)}` : ` ${months[Number(month) - 1 || 0]} ${year}`}
       </p>
     ) : null}
 
-    <div className="flex gap-2 flex-wrap">
+    <Group className="absolute right-[20px]">
       <Menu btnLabel="Generate Purchase Order" options={purchaseOrderList} />
       <Menu btnLabel="Generate Release Order" options={releaseOrderList} />
       <Menu btnLabel=" Generate Invoice" options={invoiceList} />
-    </div>
+    </Group>
   </header>
 );
 
