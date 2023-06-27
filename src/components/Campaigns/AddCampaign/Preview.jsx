@@ -43,11 +43,6 @@ const Preview = ({ data = {}, place = {} }) => {
     return totalPrice;
   }, [place]);
 
-  const getTotalImpressions = useMemo(() => {
-    const totalImpressions = place.docs.reduce((acc, item) => acc + +(item.impression || 0), 0);
-    return totalImpressions;
-  }, [place]);
-
   useEffect(() => {
     if (mapInstance && place?.docs?.length) {
       const bounds = new mapInstance.maps.LatLngBounds();
@@ -127,11 +122,7 @@ const Preview = ({ data = {}, place = {} }) => {
                 variant="filled"
                 radius="md"
               >
-                {`${
-                  getTotalImpressions && getTotalImpressions.toString().length > 6
-                    ? getWord(getTotalImpressions)
-                    : getTotalImpressions || 0
-                } + Total Impressions`}
+                {data?.maxImpression ? `${getWord(data?.maxImpression)}+ Total Impressions` : 'NA'}
               </Badge>
             </div>
           </div>

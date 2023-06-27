@@ -17,6 +17,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
+import { getWord } from 'num-count';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
@@ -235,7 +236,15 @@ const Spaces = () => {
           row: {
             original: { impressions },
           },
-        }) => useMemo(() => <p>{impressions ? `${impressions}+` : 'NA'}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p className="capitalize font-medium w-32">
+                {impressions ? `${getWord(impressions)}+` : 'NA'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'HEALTH STATUS',

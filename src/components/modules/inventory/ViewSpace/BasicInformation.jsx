@@ -336,11 +336,9 @@ const BasicInfo = ({
                       Impressions
                     </Text>
                     <Text className="mb-4">
-                      {inventoryDetails?.specifications?.impressions?.max &&
-                      inventoryDetails.specifications.impressions.max.toString().length > 6
-                        ? getWord(inventoryDetails.specifications.impressions.max)
-                        : inventoryDetails.specifications.impressions.max || 0}
-                      +
+                      {inventoryDetails?.specifications?.impressions?.max
+                        ? `${getWord(inventoryDetails.specifications.impressions.max)}+`
+                        : 'NA'}
                     </Text>
                     <Text color="gray" size="xs" weight="300">
                       Resolution

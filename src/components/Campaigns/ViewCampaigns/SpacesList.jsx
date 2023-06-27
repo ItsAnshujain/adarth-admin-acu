@@ -4,6 +4,7 @@ import { Plus } from 'react-feather';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
+import { getWord } from 'num-count';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import calendar from '../../../assets/data-table.svg';
@@ -151,7 +152,17 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
           row: {
             original: { specifications },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.max || 0}+`}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p className="capitalize font-medium w-32">
+                {specifications?.impressions?.max
+                  ? `${getWord(specifications.impressions.max)}+`
+                  : 'NA'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'MEDIA TYPE',

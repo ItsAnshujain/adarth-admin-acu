@@ -16,6 +16,7 @@ import { Badge, Image, Loader, Progress, Tabs, Text } from '@mantine/core';
 import { Link, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
+import { getWord } from 'num-count';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { useDebouncedValue } from '@mantine/hooks';
 import classNames from 'classnames';
@@ -339,7 +340,17 @@ const InventoryReportsPage = () => {
         row: {
           original: { specifications },
         },
-      }) => useMemo(() => <p>{`${specifications?.impressions?.max || 0}+`}</p>, []),
+      }) =>
+        useMemo(
+          () => (
+            <p className="capitalize font-medium w-32">
+              {specifications?.impressions?.max
+                ? `${getWord(specifications.impressions.max)}+`
+                : 'NA'}
+            </p>
+          ),
+          [],
+        ),
     },
     {
       Header: 'HEALTH STATUS',
@@ -505,7 +516,17 @@ const InventoryReportsPage = () => {
         row: {
           original: { specifications },
         },
-      }) => useMemo(() => <p>{`${specifications?.impressions?.max || 0}+`}</p>, []),
+      }) =>
+        useMemo(
+          () => (
+            <p className="capitalize font-medium w-32">
+              {specifications?.impressions?.max
+                ? `${getWord(specifications.impressions.max)}+`
+                : 'NA'}
+            </p>
+          ),
+          [],
+        ),
     },
     {
       Header: 'HEALTH STATUS',

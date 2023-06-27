@@ -125,12 +125,9 @@ const Preview = () => {
                 variant="filled"
                 radius="md"
               >
-                {`${
-                  values?.specifications?.impressions?.max &&
-                  values.specifications.impressions?.max.toString().length > 6
-                    ? getWord(values.specifications.impressions?.max)
-                    : values.specifications.impressions?.max || 0
-                }+ Total Impressions`}
+                {values?.specifications?.impressions?.max
+                  ? `${getWord(values.specifications.impressions?.max)}+ Total Impressions`
+                  : 'NA'}
               </Badge>
             </div>
             {values?.basicInformation?.audience?.length
@@ -174,11 +171,9 @@ const Preview = () => {
                     </p>
                     <p className=" text-slate-400 text-md font-light">Impressions</p>
                     <p className="mb-4">
-                      {values?.specifications?.impressions?.max &&
-                      values.specifications.impressions?.max.toString().length > 6
-                        ? getWord(values.specifications.impressions?.max)
-                        : values.specifications.impressions?.max || 0}
-                      +
+                      {values?.specifications?.impressions?.max
+                        ? `${getWord(values.specifications.impressions?.max)}+`
+                        : 'NA'}
                     </p>
                     <p className="text-slate-400 text-md font-light">Resolution</p>
                     <p>{values?.specifications?.resolutions || 'NA'}</p>
