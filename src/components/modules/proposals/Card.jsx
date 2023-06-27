@@ -1,9 +1,14 @@
-import { Text } from '@mantine/core';
+import { Text, Card as MantineCard } from '@mantine/core';
 import ProposalsMenuPopover from '../../Popovers/ProposalsMenuPopover';
 
 const Card = ({ proposalData }) => (
-  <div className="flex flex-col drop-shadow-md bg-white w-[270px] max-h-[380px] mb-6">
-    <div className="flex-1 p-4 pt-4 pb-7 flex flex-col gap-y-1">
+  <MantineCard
+    className="flex flex-col bg-white w-[270px] max-h-[380px]"
+    withBorder
+    radius="md"
+    shadow="sm"
+  >
+    <div className="flex-1 flex flex-col gap-y-2">
       <Text size="md" weight="bold" lineClamp={1} className="w-full">
         {proposalData?.name || 'NA'}
       </Text>
@@ -25,7 +30,7 @@ const Card = ({ proposalData }) => (
         <ProposalsMenuPopover itemId={proposalData?._id} />
       </div>
     </div>
-  </div>
+  </MantineCard>
 );
 
 export default Card;

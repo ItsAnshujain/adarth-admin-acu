@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, Skeleton } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
-import PreviewCard from '../Create/UI/PreviewCard';
+import PreviewCard from '../Create/PreviewCard';
 import UserImage from '../../../assets/placeholders/user.png';
 
 const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false }) => (

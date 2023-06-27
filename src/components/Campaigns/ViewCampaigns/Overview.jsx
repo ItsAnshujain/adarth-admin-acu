@@ -19,7 +19,7 @@ import { getWord } from 'num-count';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import MarkerIcon from '../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../utils/config';
-import Places from './UI/Places';
+import Places from './Places';
 import modalConfig from '../../../utils/modalConfig';
 import { indianMapCoordinates } from '../../../utils';
 

@@ -12,7 +12,7 @@ const CoverImage = () => {
   };
 
   return (
-    <div className="pl-5 pr-7 mt-4 flex flex-col gap-y-4 relative mb-16">
+    <div className="my-4 flex flex-col gap-y-4 relative">
       <Text weight="bold">Select Thumbnail image</Text>
       <Text size="sm" className="text-gray-400 font-medium">
         Please fill the form with valid information,this specification details will help the
