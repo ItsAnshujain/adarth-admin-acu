@@ -344,7 +344,7 @@ const invoiceSchema = yup.object({
     .matches(onlyNumbersMatch, 'Must be digits only')
     .required('A/c No. is required'),
   ifscCode: yup.string().trim().required('Branch & IFSC Code is required'),
-  modeOfPayment: yup.string().trim().required('Mode/Terms of Payment is required'),
+  modeOfPayment: yup.string().trim().required('Payment Type is required'),
   declaration: yup.string().trim().required('Declaration is required'),
 });
 

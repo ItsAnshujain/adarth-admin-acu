@@ -7,6 +7,7 @@ import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
+import { getWord } from 'num-count';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/modules/inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -235,8 +236,10 @@ const InventoryDashboardPage = () => {
         }) =>
           useMemo(
             () => (
-              <p>
-                {specifications?.impressions?.max ? `${specifications.impressions.max}+` : 'NA'}
+              <p className="capitalize font-medium w-32">
+                {specifications?.impressions?.max
+                  ? `${getWord(specifications.impressions.max)}+`
+                  : 'NA'}
               </p>
             ),
             [],

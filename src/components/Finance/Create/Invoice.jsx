@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { ToWords } from 'to-words';
 import { ActionIcon, Button, Group, Menu, Text } from '@mantine/core';
-import { Edit2, Trash2 } from 'react-feather';
+import { ChevronDown, Edit2, Trash2 } from 'react-feather';
 import Table from '../../Table/Table';
 import TextareaInput from '../../shared/TextareaInput';
 import TextInput from '../../shared/TextInput';
@@ -10,6 +10,8 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import NumberInput from '../../shared/NumberInput';
 import NoData from '../../shared/NoData';
 import MenuIcon from '../../Menu';
+import NativeSelect from '../../shared/NativeSelect';
+import { MODE_OF_PAYMENT } from '../../../utils/constants';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
@@ -602,12 +604,14 @@ const Invoice = ({
             placeholder="Write..."
             id="ifscCode"
           />
-          <TextInput
+          <NativeSelect
             styles={styles}
-            label="Mode/Terms of Payment"
+            label="Payment Type"
             name="modeOfPayment"
-            withAsterisk
-            placeholder="Write..."
+            className="mr-2"
+            data={MODE_OF_PAYMENT}
+            rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+            rightSectionWidth={40}
             id="modeOfPayment"
           />
         </div>

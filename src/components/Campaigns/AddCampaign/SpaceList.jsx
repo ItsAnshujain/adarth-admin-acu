@@ -3,6 +3,7 @@ import { Badge, Button, Group, Image, Loader, Progress, Text } from '@mantine/co
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
+import { getWord } from 'num-count';
 import Filter from '../../modules/inventory/Filter';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
@@ -183,7 +184,15 @@ const SpaceList = () => {
           row: {
             original: { impression },
           },
-        }) => useMemo(() => <p>{impression ? `${impression}+` : 'NA'}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p className="capitalize font-medium w-32">
+                {impression ? `${getWord(impression)}+` : 'NA'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'HEALTH',

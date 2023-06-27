@@ -39,7 +39,7 @@ const query = {
   sortOrder: 'asc',
 };
 
-const OrderInfo = () => {
+const OrderInformationForm = () => {
   const { errors } = useFormContext();
 
   const {
@@ -95,4 +95,4 @@ const OrderInfo = () => {
   );
 };
 
-export default OrderInfo;
+export default OrderInformationForm;
