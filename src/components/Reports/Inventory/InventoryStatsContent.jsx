@@ -8,7 +8,7 @@ import UnderMaintenanceIcon from '../../../assets/under-maintenance.svg';
 import toIndianCurrency from '../../../utils/currencyFormat';
 
 const InventoryStatsContent = ({ inventoryReports, inventoryStats }) => (
-  <div className="flex justify-between gap-4 flex-wrap mb-8">
+  <div className="flex justify-between gap-4 flex-wrap mb-5">
     <div className="border rounded p-8  flex-1">
       <Image src={InventoryIcon} alt="folder" fit="contain" height={24} width={24} />
       <p className="my-2 text-sm font-light text-slate-400">Total Inventory</p>

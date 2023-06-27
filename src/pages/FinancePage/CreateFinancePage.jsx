@@ -816,42 +816,116 @@ const CreateFinancePage = () => {
   }, [bookingIdFromFinance]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
-      <div className="pb-12">
-        <FormProvider form={form}>
-          <form>
-            <FormHeader
-              type={type}
-              isGeneratePurchaseOrderLoading={isGeneratePurchaseOrderLoading}
-              isGenerateReleaseOrderLoading={isGenerateReleaseOrderLoading}
-              isGenerateInvoiceLoading={isGenerateInvoiceLoading}
-              isGenerateManualPurchaseOrderLoading={isGenerateManualPurchaseOrderLoading}
-              isGenerateManualReleaseOrderLoading={isGenerateManualReleaseOrderLoading}
-              isGenerateManualInvoiceLoading={isGenerateManualInvoiceLoading}
-              handleFormSubmit={handleSubmit}
-            />
-            <div className="pl-5 pr-7 pt-4 pb-8 border-b">
-              <div className="grid grid-cols-2 gap-4">
-                <Select
-                  label="Booking List (Please select a Booking before creating an order)"
-                  className="w-full"
-                  styles={bookingStyles}
-                  value={bookingId || bookingIdFromFinance}
-                  disabled={bookingId || isBookingDatasLoading}
-                  placeholder="Select..."
-                  onChange={e => {
-                    // eslint-disable-next-line no-alert
-                    const willChange = window.confirm(alertText);
-                    if (!willChange) {
-                      return;
-                    }
-                    setBookingIdFromFinance(e);
-                  }}
-                  data={updatedBookingsList}
-                />
-              </div>
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 overflow-y-auto px-5">
+      <FormProvider form={form}>
+        <form>
+          <FormHeader
+            type={type}
+            isGeneratePurchaseOrderLoading={isGeneratePurchaseOrderLoading}
+            isGenerateReleaseOrderLoading={isGenerateReleaseOrderLoading}
+            isGenerateInvoiceLoading={isGenerateInvoiceLoading}
+            isGenerateManualPurchaseOrderLoading={isGenerateManualPurchaseOrderLoading}
+            isGenerateManualReleaseOrderLoading={isGenerateManualReleaseOrderLoading}
+            isGenerateManualInvoiceLoading={isGenerateManualInvoiceLoading}
+            handleFormSubmit={handleSubmit}
+          />
+          <div className="py-4 border-b">
+            <div className="grid grid-cols-2 gap-4">
+              <Select
+                label="Booking List (Please select a Booking before creating an order)"
+                className="w-full"
+                styles={bookingStyles}
+                value={bookingId || bookingIdFromFinance}
+                disabled={bookingId || isBookingDatasLoading}
+                placeholder="Select..."
+                onChange={e => {
+                  // eslint-disable-next-line no-alert
+                  const willChange = window.confirm(alertText);
+                  if (!willChange) {
+                    return;
+                  }
+                  setBookingIdFromFinance(e);
+                }}
+                data={updatedBookingsList}
+              />
             </div>
-            <ManualEntryView
+          </div>
+          <ManualEntryView
+            totalPrice={
+              bookingIdFromFinance
+                ? type === 'purchase'
+                  ? calcutatePurchaseOrderTotalPrice
+                  : calcutateTotalPrice
+                : calculateManualTotalPrice
+            }
+            onClickAddItems={data => {
+              if (
+                type === 'release' &&
+                (form.values.printingSqftCost === 0 || form.values.printingSqftCost === 0)
+              ) {
+                showNotification({
+                  title:
+                    'Please select printing ft² cost and mounting ft² cost before adding items',
+                  color: 'blue',
+                });
+                return;
+              }
+
+              toggleAddItemModal(data);
+            }}
+            bookingIdFromFinance={bookingIdFromFinance}
+            addSpaceItem={addSpaceItem}
+            setAddSpaceItem={setAddSpaceItem}
+            updatedForm={updatedForm}
+            setUpdatedForm={setUpdatedForm}
+          />
+          <Modal
+            opened={opened}
+            onClose={close}
+            title="Preview"
+            centered
+            size="xl"
+            overlayBlur={3}
+            overlayOpacity={0.55}
+            radius={0}
+            padding={0}
+            classNames={{
+              title: 'font-dmSans text-xl px-4',
+              header: 'px-4 pt-4',
+              body: 'pb-4',
+              close: 'mr-4',
+            }}
+          >
+            <Group position="apart" px="md" pb="md">
+              <h2 className="font-medium capitalize text-lg underline">{type} order:</h2>
+              <Button
+                className="primary-button"
+                type="submit"
+                onClick={form.onSubmit(e => handleSubmit(e, 'save'))}
+                disabled={
+                  isGeneratePurchaseOrderLoading ||
+                  isGenerateReleaseOrderLoading ||
+                  isGenerateInvoiceLoading ||
+                  isGenerateManualPurchaseOrderLoading ||
+                  isGenerateManualReleaseOrderLoading ||
+                  isGenerateManualInvoiceLoading
+                }
+                loading={
+                  isGeneratePurchaseOrderLoading ||
+                  isGenerateReleaseOrderLoading ||
+                  isGenerateInvoiceLoading ||
+                  isGenerateManualPurchaseOrderLoading ||
+                  isGenerateManualReleaseOrderLoading ||
+                  isGenerateManualInvoiceLoading
+                }
+              >
+                Save
+              </Button>
+            </Group>
+            <Preview
+              previewData={previewData}
+              previewSpaces={addSpaceItem}
+              hasBookingId={!!bookingIdFromFinance}
               totalPrice={
                 bookingIdFromFinance
                   ? type === 'purchase'
@@ -859,87 +933,11 @@ const CreateFinancePage = () => {
                     : calcutateTotalPrice
                   : calculateManualTotalPrice
               }
-              onClickAddItems={data => {
-                if (
-                  type === 'release' &&
-                  (form.values.printingSqftCost === 0 || form.values.printingSqftCost === 0)
-                ) {
-                  showNotification({
-                    title:
-                      'Please select printing ft² cost and mounting ft² cost before adding items',
-                    color: 'blue',
-                  });
-                  return;
-                }
-
-                toggleAddItemModal(data);
-              }}
-              bookingIdFromFinance={bookingIdFromFinance}
-              addSpaceItem={addSpaceItem}
-              setAddSpaceItem={setAddSpaceItem}
-              updatedForm={updatedForm}
-              setUpdatedForm={setUpdatedForm}
+              type={type}
             />
-            <Modal
-              opened={opened}
-              onClose={close}
-              title="Preview"
-              centered
-              size="xl"
-              overlayBlur={3}
-              overlayOpacity={0.55}
-              radius={0}
-              padding={0}
-              classNames={{
-                title: 'font-dmSans text-xl px-4',
-                header: 'px-4 pt-4',
-                body: 'pb-4',
-                close: 'mr-4',
-              }}
-            >
-              <Group position="apart" px="md" pb="md">
-                <h2 className="font-medium capitalize text-lg underline">{type} order:</h2>
-                <Button
-                  className="primary-button"
-                  type="submit"
-                  onClick={form.onSubmit(e => handleSubmit(e, 'save'))}
-                  disabled={
-                    isGeneratePurchaseOrderLoading ||
-                    isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceLoading ||
-                    isGenerateManualPurchaseOrderLoading ||
-                    isGenerateManualReleaseOrderLoading ||
-                    isGenerateManualInvoiceLoading
-                  }
-                  loading={
-                    isGeneratePurchaseOrderLoading ||
-                    isGenerateReleaseOrderLoading ||
-                    isGenerateInvoiceLoading ||
-                    isGenerateManualPurchaseOrderLoading ||
-                    isGenerateManualReleaseOrderLoading ||
-                    isGenerateManualInvoiceLoading
-                  }
-                >
-                  Save
-                </Button>
-              </Group>
-              <Preview
-                previewData={previewData}
-                previewSpaces={addSpaceItem}
-                hasBookingId={!!bookingIdFromFinance}
-                totalPrice={
-                  bookingIdFromFinance
-                    ? type === 'purchase'
-                      ? calcutatePurchaseOrderTotalPrice
-                      : calcutateTotalPrice
-                    : calculateManualTotalPrice
-                }
-                type={type}
-              />
-            </Modal>
-          </form>
-        </FormProvider>
-      </div>
+          </Modal>
+        </form>
+      </FormProvider>
     </div>
   );
 };

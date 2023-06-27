@@ -8,7 +8,7 @@ const Header = ({
   onClickSharePdf = () => {},
   isDownloadLoading,
 }) => (
-  <div className="h-[60px] border-b border-gray-450 flex justify-between items-center pl-5 pr-7">
+  <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
     <Text size="lg" weight="bold">
       {text}
     </Text>

@@ -29,7 +29,7 @@ const FormHeader = ({
   };
 
   return (
-    <header className="h-[60px] border-b flex items-center justify-between pl-5 pr-7 sticky top-0 z-50 bg-white">
+    <header className="h-[60px] border-b flex items-center justify-between sticky top-0 z-50 bg-white">
       <p className="font-bold text-lg">{`Create ${orderTitle[type]}`}</p>
       <div className="flex gap-3">
         <Button
@@ -52,7 +52,7 @@ const FormHeader = ({
             e => handleFormSubmit(e, 'preview'),
             error => handleError(error),
           )}
-          className="primary-button mr-2"
+          className="primary-button"
           variant="filled"
           disabled={
             isGeneratePurchaseOrderLoading ||
