@@ -179,7 +179,7 @@ const Booking = ({ inventoryId }) => {
           ),
       },
       {
-        Header: 'PAYMENT STATUS',
+        Header: 'BOOKING CONFIRMATION STATUS',
         accessor: 'currentStatus.paymentStatus',
         Cell: ({
           row: {
@@ -198,7 +198,11 @@ const Booking = ({ inventoryId }) => {
                   'font-medium',
                 )}
               >
-                {currentStatus?.paymentStatus || '-'}
+                {currentStatus?.paymentStatus?.toLowerCase() === 'unpaid'
+                  ? 'No'
+                  : currentStatus?.paymentStatus?.toLowerCase() === 'paid'
+                  ? 'Yes'
+                  : currentStatus?.paymentStatus || '-'}
               </p>
             ),
             [],

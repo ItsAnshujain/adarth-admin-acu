@@ -150,7 +150,7 @@ const TotalBookings = ({ campaignId }) => {
           ),
       },
       {
-        Header: 'PAYMENT STATUS',
+        Header: 'BOOKING CONFIRMATION STATUS',
         accessor: 'currentStatus.paymentStatus',
         Cell: ({
           row: {
@@ -169,7 +169,11 @@ const TotalBookings = ({ campaignId }) => {
                   'font-medium',
                 )}
               >
-                {currentStatus?.paymentStatus || '-'}
+                {currentStatus?.paymentStatus?.toLowerCase() === 'unpaid'
+                  ? 'No'
+                  : currentStatus?.paymentStatus?.toLowerCase() === 'paid'
+                  ? 'Yes'
+                  : currentStatus?.paymentStatus || '-'}
               </p>
             ),
             [],

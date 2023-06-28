@@ -75,7 +75,16 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
   };
 
   const paymentList = useMemo(
-    () => paymentStatus?.docs?.map(item => ({ label: item.name, value: item.name })) || [],
+    () =>
+      paymentStatus?.docs?.map(item => ({
+        label:
+          item.name?.toLowerCase() === 'unpaid'
+            ? 'No'
+            : item.name?.toLowerCase() === 'paid'
+            ? 'Yes'
+            : item.name,
+        value: item.name,
+      })) || [],
     [paymentStatus],
   );
   const campaignList = useMemo(
@@ -193,7 +202,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           }, []),
       },
       {
-        Header: 'PAYMENT STATUS',
+        Header: 'BOOKING CONFIRMATION STATUS',
         accessor: 'currentStatus.paymentStatus',
         Cell: ({
           row: {
