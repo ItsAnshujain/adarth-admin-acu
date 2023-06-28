@@ -5,9 +5,9 @@ import dayjs from 'dayjs';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
 import { useNavigate } from 'react-router-dom';
-import BasicInfo from '../../components/modules/bookings/Create/BasicInformation';
+import BasicInformationForm from '../../components/modules/bookings/Create/BasicInformationForm';
 import SelectSpaces from '../../components/modules/bookings/Create/SelectSpaces';
-import OrderInfo from '../../components/modules/bookings/Create/OrderInformation';
+import OrderInformationForm from '../../components/modules/bookings/Create/OrderInformationForm';
 import SuccessModal from '../../components/shared/Modal';
 import Header from '../../components/modules/bookings/Create/Header';
 import { FormProvider, useForm } from '../../context/formContext';
@@ -23,8 +23,6 @@ const initialValues = {
     panNumber: '',
     gstNumber: '',
   },
-  paymentReference: '',
-  paymentType: 'neft',
   campaignName: '',
   description: '',
   place: [],
@@ -177,7 +175,13 @@ const CreateBookingPage = () => {
   };
 
   const getForm = () =>
-    formStep === 1 ? <BasicInfo /> : formStep === 2 ? <OrderInfo /> : <SelectSpaces />;
+    formStep === 1 ? (
+      <BasicInformationForm />
+    ) : formStep === 2 ? (
+      <OrderInformationForm />
+    ) : (
+      <SelectSpaces />
+    );
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">

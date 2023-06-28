@@ -1,5 +1,3 @@
-import { NativeSelect } from '@mantine/core';
-import { ChevronDown } from 'react-feather';
 import TextInput from '../../../shared/TextInput';
 import { useFormContext } from '../../../../context/formContext';
 
@@ -14,8 +12,8 @@ const styles = {
     borderRadius: 0,
   },
 };
-const BasicInfo = () => {
-  const { errors, setFieldValue } = useFormContext();
+const BasicInformationForm = () => {
+  const { errors } = useFormContext();
 
   return (
     <div className="mt-4">
@@ -44,21 +42,12 @@ const BasicInfo = () => {
             placeholder="Write..."
             errors={errors}
           />
-          <NativeSelect
+          <TextInput
             styles={styles}
-            label="Payment Type"
-            name="paymentType"
+            label="Brand Display Name "
+            name="brandDisplayName "
+            placeholder="Write..."
             errors={errors}
-            className="mr-2"
-            data={[
-              { label: 'NA', value: 'na' },
-              { label: 'NEFT', value: 'neft' },
-              { label: 'RTGS', value: 'rtgs' },
-              { label: 'CHEQUE', value: 'cheque' },
-            ]}
-            rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-            rightSectionWidth={40}
-            onChange={e => setFieldValue('paymentType', e.target.value)}
           />
         </div>
         <div className="flex flex-col gap-4">
@@ -84,17 +73,10 @@ const BasicInfo = () => {
             placeholder="Write..."
             errors={errors}
           />
-          <TextInput
-            styles={styles}
-            label="Payment Reference Number"
-            name="paymentReference"
-            placeholder="Write..."
-            errors={errors}
-          />
         </div>
       </div>
     </div>
   );
 };
 
-export default BasicInfo;
+export default BasicInformationForm;

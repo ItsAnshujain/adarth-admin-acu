@@ -96,14 +96,6 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
     return totalPrice;
   }, [spacesData]);
 
-  const getTotalImpressions = useMemo(() => {
-    const totalImpressions = spacesData?.docs?.reduce(
-      (acc, item) => acc + +(item?.specifications?.impressions?.max || 0),
-      0,
-    );
-    return totalImpressions;
-  }, [spacesData]);
-
   const getAllSpacePhotos = useCallback(() => {
     const tempPics = [];
     const tempArr = spacesData;
@@ -223,11 +215,9 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
                 variant="filled"
                 radius="md"
               >
-                {`${
-                  getTotalImpressions && getTotalImpressions.toString().length > 6
-                    ? getWord(getTotalImpressions)
-                    : getTotalImpressions || 0
-                } + Total Impressions`}
+                {campaignData?.maxImpression
+                  ? `${getWord(campaignData?.maxImpression)}+ Total Impressions`
+                  : 'NA'}
               </Badge>
             </div>
           </div>

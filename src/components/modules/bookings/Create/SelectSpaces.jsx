@@ -21,6 +21,7 @@ import { v4 as uuidv4 } from 'uuid';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { useModals } from '@mantine/modals';
+import { getWord } from 'num-count';
 import Search from '../../../Search';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
@@ -350,7 +351,15 @@ const SelectSpace = () => {
           row: {
             original: { impressionMax },
           },
-        }) => useMemo(() => <p>{impressionMax ? `${impressionMax}+` : 'NA'}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p className="capitalize font-medium w-32">
+                {impressionMax ? `${getWord(impressionMax)}+` : 'NA'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'HEALTH',

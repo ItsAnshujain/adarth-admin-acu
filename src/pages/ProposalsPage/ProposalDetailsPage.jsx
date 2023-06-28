@@ -5,6 +5,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
+import { getWord } from 'num-count';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Header from '../../components/modules/proposals/ViewProposal/Header';
@@ -195,7 +196,15 @@ const ProposalDetailsPage = () => {
           row: {
             original: { impressions },
           },
-        }) => useMemo(() => <p>{impressions?.max ? `${impressions.max}+` : 'NA'}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p className="capitalize font-medium w-32">
+                {impressions?.max ? `${getWord(impressions.max)}+` : 'NA'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'HEALTH',

@@ -360,7 +360,7 @@ const RevenueReportsPage = () => {
   return (
     <div
       className={classNames(
-        'border-l border-gray-450 overflow-y-auto',
+        'overflow-y-auto px-5',
         share !== 'report' ? 'col-span-10 ' : 'col-span-12',
       )}
     >
@@ -372,7 +372,7 @@ const RevenueReportsPage = () => {
         isDownloadLoading={isDownloadLoading}
       />
 
-      <div className="mr-7 pl-5 mt-5 mb-10" id="revenue-pdf">
+      <div className="my-5" id="revenue-pdf">
         <RevenueStatsContent revenueData={revenueData} />
         {share !== 'report' ? (
           <div className="h-[60px] border-b border-t my-5 border-gray-450 flex justify-end items-center">
@@ -423,7 +423,7 @@ const RevenueReportsPage = () => {
           </div>
         </div>
 
-        <div className="my-10">
+        <div className="mt-10">
           <div className="flex justify-between items-center">
             <p className="font-bold">City Or State</p>
             <div className="flex justify-around">

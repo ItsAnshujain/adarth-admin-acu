@@ -223,11 +223,8 @@ const Overview = ({ bookingData = {}, isLoading }) => {
               radius="md"
             >
               {calcutateTotalImpressions && !Number.isNaN(calcutateTotalImpressions)
-                ? calcutateTotalImpressions.toString().length > 6
-                  ? getWord(calcutateTotalImpressions)
-                  : calcutateTotalImpressions
-                : 0}
-              + Total Impressions
+                ? `${getWord(calcutateTotalImpressions)}+ Total Impressions`
+                : 'NA'}
             </Badge>
           </div>
           <div className="mt-8">
@@ -242,8 +239,8 @@ const Overview = ({ bookingData = {}, isLoading }) => {
                 <p className="text-slate-400 text-sm">Impressions</p>
                 <p>
                   {calcutateTotalImpressions && !Number.isNaN(calcutateTotalImpressions)
-                    ? calcutateTotalImpressions
-                    : 0}{' '}
+                    ? `${getWord(calcutateTotalImpressions)}+`
+                    : 'NA'}{' '}
                 </p>
               </div>
               <div>

@@ -7,7 +7,7 @@ import { FormProvider, useForm } from '../../context/formContext';
 import TextInput from '../../components/shared/TextInput';
 import PasswordInput from '../../components/shared/PasswordInput';
 import NativeSelect from '../../components/shared/NativeSelect';
-import { smtpSupportedServices } from '../../utils/constants';
+import { SMTP_SERVICES } from '../../utils/constants';
 import NumberInput from '../../components/shared/NumberInput';
 import { useFetchUsersById, useUpdateUsers } from '../../apis/queries/users.queries';
 import useUserStore from '../../store/user.store';
@@ -92,7 +92,7 @@ const SmtpSetup = () => {
               withAsterisk
               placeholder="Select a service"
               errors={form.errors}
-              options={smtpSupportedServices}
+              options={SMTP_SERVICES}
               rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
               rightSectionWidth={40}
               size="md"

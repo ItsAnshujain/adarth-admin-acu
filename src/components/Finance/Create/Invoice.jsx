@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { ToWords } from 'to-words';
 import { ActionIcon, Button, Group, Menu, Text } from '@mantine/core';
-import { Edit2, Trash2 } from 'react-feather';
+import { ChevronDown, Edit2, Trash2 } from 'react-feather';
 import Table from '../../Table/Table';
 import TextareaInput from '../../shared/TextareaInput';
 import TextInput from '../../shared/TextInput';
@@ -10,6 +10,8 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import NumberInput from '../../shared/NumberInput';
 import NoData from '../../shared/NoData';
 import MenuIcon from '../../Menu';
+import NativeSelect from '../../shared/NativeSelect';
+import { MODE_OF_PAYMENT } from '../../../utils/constants';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
@@ -295,7 +297,7 @@ const Invoice = ({
 
   return (
     <div>
-      <div className="pl-5 pr-7 pt-4 pb-8 border-b">
+      <div className="py-4 border-b">
         <div className="grid grid-cols-2 gap-4">
           <NumberInput
             styles={styles}
@@ -307,10 +309,10 @@ const Invoice = ({
           />
         </div>
       </div>
-      <div className="flex justify-between pl-5 pr-7 items-center">
+      <div className="flex justify-between items-center">
         <p className="font-bold text-2xl pt-4">Supplier</p>
       </div>
-      <div className="pl-5 pr-7 pt-4 pb-8 border-b">
+      <div className="py-4 border-b">
         <div className="grid grid-cols-2 gap-4 pb-4">
           <TextInput
             styles={styles}
@@ -389,7 +391,7 @@ const Invoice = ({
             placeholder="Write..."
           />
         </div>
-        <div className="grid grid-cols-1 gap-4 pb-4">
+        <div className="grid grid-cols-1 gap-4">
           <TextInput
             styles={styles}
             label="Website"
@@ -398,10 +400,10 @@ const Invoice = ({
           />
         </div>
       </div>
-      <div className="flex justify-between pl-5 pr-7 items-center">
+      <div className="flex justify-between items-center">
         <p className="font-bold text-2xl pt-4">Buyer Details</p>
       </div>
-      <div className="pl-5 pr-7 pt-4 pb-8 border-b">
+      <div className="py-4 border-b">
         <div className="grid grid-cols-2 gap-4 pb-4">
           <TextInput
             styles={styles}
@@ -518,7 +520,7 @@ const Invoice = ({
           />
         </div>
       </div>
-      <div className="pl-5 pr-7 py-4 mb-2">
+      <div className="py-4">
         <Group position="apart" align="center" className="mb-4">
           <p className="font-bold text-2xl">Order Item Details</p>
           {!bookingIdFromFinance ? (
@@ -560,7 +562,7 @@ const Invoice = ({
           </div>
         )}
       </div>
-      <div className="pl-5 pr-7 flex flex-col gap-4 pb-6 border-b">
+      <div className="flex flex-col gap-4 pb-4 border-b">
         <TextInput
           styles={styles}
           label="Amount Chargeable (in words)"
@@ -571,10 +573,10 @@ const Invoice = ({
           disabled
         />
       </div>
-      <div className="flex justify-between pl-5 pr-7 items-center">
+      <div className="flex justify-between items-center">
         <p className="font-bold text-2xl pt-4">Company&apos;s Bank Details</p>
       </div>
-      <div className="pl-5 pr-7 pt-4 pb-4 border-b">
+      <div className="pt-4 pb-4 border-b">
         <div className="grid grid-cols-2 gap-4 pb-4">
           <TextInput
             styles={styles}
@@ -593,7 +595,7 @@ const Invoice = ({
             id="accountNo"
           />
         </div>
-        <div className="grid grid-cols-2 gap-4 pb-4">
+        <div className="grid grid-cols-2 gap-4">
           <TextInput
             styles={styles}
             label="Branch &amp; IFSC Code"
@@ -602,17 +604,19 @@ const Invoice = ({
             placeholder="Write..."
             id="ifscCode"
           />
-          <TextInput
+          <NativeSelect
             styles={styles}
-            label="Mode/Terms of Payment"
+            label="Payment Type"
             name="modeOfPayment"
-            withAsterisk
-            placeholder="Write..."
+            className="mr-2"
+            data={MODE_OF_PAYMENT}
+            rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+            rightSectionWidth={40}
             id="modeOfPayment"
           />
         </div>
       </div>
-      <div className="pl-5 pr-7 pt-4 border-b">
+      <div className="pt-4 pb-5 border-b">
         <div className="grid grid-cols-1 gap-4">
           <TextareaInput
             label="Declaration"
@@ -621,7 +625,6 @@ const Invoice = ({
             styles={styles}
             maxLength={200}
             placeholder="Maximum 200 characters"
-            className="mb-7"
             id="declaration"
           />
         </div>

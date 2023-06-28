@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { ChevronLeft, ChevronRight } from 'react-feather';
+import { getWord } from 'num-count';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import modalConfig from '../../../../utils/modalConfig';
 
@@ -175,7 +176,11 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                   <Text color="grey" weight="400">
                     Expected Impressions
                   </Text>
-                  <Text weight="bolder">{proposalData?.totalImpression || 0}</Text>
+                  <Text weight="bolder">
+                    {proposalData?.totalImpression
+                      ? `${getWord(proposalData?.totalImpression)}+`
+                      : 'NA'}
+                  </Text>
                 </div>
               </div>
               <div className="grid grid-cols-2 mb-3">

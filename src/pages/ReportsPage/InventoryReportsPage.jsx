@@ -16,6 +16,7 @@ import { Badge, Image, Loader, Progress, Tabs, Text } from '@mantine/core';
 import { Link, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
+import { getWord } from 'num-count';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { useDebouncedValue } from '@mantine/hooks';
 import classNames from 'classnames';
@@ -339,7 +340,17 @@ const InventoryReportsPage = () => {
         row: {
           original: { specifications },
         },
-      }) => useMemo(() => <p>{`${specifications?.impressions?.max || 0}+`}</p>, []),
+      }) =>
+        useMemo(
+          () => (
+            <p className="capitalize font-medium w-32">
+              {specifications?.impressions?.max
+                ? `${getWord(specifications.impressions.max)}+`
+                : 'NA'}
+            </p>
+          ),
+          [],
+        ),
     },
     {
       Header: 'HEALTH STATUS',
@@ -505,7 +516,17 @@ const InventoryReportsPage = () => {
         row: {
           original: { specifications },
         },
-      }) => useMemo(() => <p>{`${specifications?.impressions?.max || 0}+`}</p>, []),
+      }) =>
+        useMemo(
+          () => (
+            <p className="capitalize font-medium w-32">
+              {specifications?.impressions?.max
+                ? `${getWord(specifications.impressions.max)}+`
+                : 'NA'}
+            </p>
+          ),
+          [],
+        ),
     },
     {
       Header: 'HEALTH STATUS',
@@ -701,7 +722,7 @@ const InventoryReportsPage = () => {
   return (
     <div
       className={classNames(
-        'border-l border-gray-450 overflow-y-auto',
+        'overflow-y-auto px-5',
         share !== 'report' ? 'col-span-10 ' : 'col-span-12',
       )}
     >
@@ -713,7 +734,7 @@ const InventoryReportsPage = () => {
         isDownloadLoading={isDownloadLoading}
       />
 
-      <div className="pr-7 pl-5 mt-5 mb-10" id="inventory-pdf">
+      <div className="my-5" id="inventory-pdf">
         <InventoryStatsContent
           inventoryReports={inventoryReports}
           inventoryStats={inventoryStats}
@@ -770,8 +791,8 @@ const InventoryReportsPage = () => {
             </div>
           </div>
         </div>
-        <div className="flex justify-between gap-4 flex-wrap my-8">
-          <div className="border rounded p-8  flex-1">
+        <div className="flex justify-between gap-4 flex-wrap my-5">
+          <div className="border rounded p-8 flex-1">
             <Image src={BestIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Best Performing Inventory</p>
             <p className="font-bold">

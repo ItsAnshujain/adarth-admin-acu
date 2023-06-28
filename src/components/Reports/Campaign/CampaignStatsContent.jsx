@@ -14,7 +14,7 @@ const config = {
 };
 
 const CampaignStatsContent = ({ isStatsLoading, healthStatusData, stats }) => (
-  <div className="flex justify-between gap-4 flex-wrap mb-8">
+  <div className="flex justify-between gap-4 flex-wrap my-5">
     <div className="flex gap-2 w-2/3 flex-wrap">
       <div className="border rounded p-8 flex-1">
         <Image src={TotalCampaignIcon} alt="folder" fit="contain" height={24} width={24} />
@@ -43,7 +43,7 @@ const CampaignStatsContent = ({ isStatsLoading, healthStatusData, stats }) => (
           className="font-bold overflow-x-hidden overflow-ellipsis w-[80px] capitalize"
           title={stats?.impression}
         >
-          {stats?.impression && stats.impression?.toString()?.length > 6
+          {stats?.impression
             ? `${getWord(stats?.impression)}+`
             : stats?.impression?.toLocaleString()}
         </p>
