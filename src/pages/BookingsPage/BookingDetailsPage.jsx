@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../../components/modules/bookings/ViewOrders/Header';
 import Overview from '../../components/modules/bookings/ViewOrders/Overview';
-import OrderInfo from '../../components/modules/bookings/ViewOrders/OrderInformation';
+import OrderInformation from '../../components/modules/bookings/ViewOrders/OrderInformation';
 import ProcessPipeline from '../../components/modules/bookings/ViewOrders/ProcessPipeline';
 import { useBookingById, useBookingStats } from '../../apis/queries/booking.queries';
 
@@ -27,7 +27,7 @@ const BookingDetailsPage = () => {
         bookingData={bookingData}
       />
       {pageNumber === 0 ? (
-        <OrderInfo
+        <OrderInformation
           bookingData={bookingData}
           isLoading={isLoading}
           bookingStats={bookingStats}
