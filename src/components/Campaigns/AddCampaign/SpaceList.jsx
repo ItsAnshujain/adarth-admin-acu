@@ -174,8 +174,17 @@ const SpaceList = () => {
           row: {
             original: { dimension },
           },
-        }) =>
-          useMemo(() => <p>{`${dimension?.width || 0}ft x ${dimension?.height || 0}ft`}</p>, []),
+        }) => useMemo(() => <p>{dimension}</p>, []),
+      },
+      {
+        Header: 'UNIT',
+        accessor: 'specifications.unit',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { unit },
+          },
+        }) => useMemo(() => <p>{unit}</p>, []),
       },
       {
         Header: 'IMPRESSION',
@@ -350,7 +359,10 @@ const SpaceList = () => {
         obj.category = item?.basicInformation?.category?.name;
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
-        obj.dimension = item?.specifications?.size;
+        obj.dimension = `${item.specifications?.size?.width || 0}ft x ${
+          item.specifications?.size?.height || 0
+        }ft`;
+        obj.unit = item?.specifications?.unit || '-';
         obj.impression = item?.specifications?.impressions?.max || 0;
         obj.health = item?.specifications?.health;
         obj.location = item?.location;
@@ -359,7 +371,6 @@ const SpaceList = () => {
         obj.price = item?.basicInformation?.price;
         obj.landlord_name = item?.basicInformation?.mediaOwner?.name;
         obj.illuminations = item?.specifications?.illuminations?.name;
-        obj.unit = item?.specifications?.unit;
         obj.resolutions = item?.specifications?.resolutions;
         finalData.push(obj);
       }

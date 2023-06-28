@@ -334,6 +334,16 @@ const InventoryReportsPage = () => {
         ),
     },
     {
+      Header: 'UNIT',
+      accessor: 'specifications.unit',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { specifications },
+        },
+      }) => useMemo(() => <p>{specifications?.unit || '-'}</p>, []),
+    },
+    {
       Header: 'IMPRESSION',
       accessor: 'specifications.impressions.max',
       Cell: ({
@@ -507,6 +517,16 @@ const InventoryReportsPage = () => {
           ),
           [],
         ),
+    },
+    {
+      Header: 'UNIT',
+      accessor: 'specifications.unit',
+      disableSortBy: true,
+      Cell: ({
+        row: {
+          original: { specifications },
+        },
+      }) => useMemo(() => <p>{specifications?.unit || '-'}</p>, []),
     },
     {
       Header: 'IMPRESSION',

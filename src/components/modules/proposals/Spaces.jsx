@@ -225,9 +225,19 @@ const Spaces = () => {
         accessor: 'specifications.size.min',
         Cell: ({
           row: {
-            original: { height, width },
+            original: { dimension },
           },
-        }) => useMemo(() => <p>{`${width || 0}ft x ${height || 0}ft`}</p>, []),
+        }) => useMemo(() => <p>{dimension}</p>, []),
+      },
+      {
+        Header: 'UNIT',
+        accessor: 'specifications.unit',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { unit },
+          },
+        }) => useMemo(() => <p>{unit}</p>, []),
       },
       {
         Header: 'IMPRESSION',
@@ -403,9 +413,11 @@ const Spaces = () => {
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
+        obj.unit = item?.specifications?.unit || '-';
         obj.category = item?.basicInformation?.category?.name;
-        obj.height = item?.specifications?.size?.height;
-        obj.width = item?.specifications?.size?.width;
+        obj.dimension = `${item.specifications?.size?.width || 0}ft x ${
+          item.specifications?.size?.height || 0
+        }ft`;
         obj.impressions = item?.specifications?.impressions?.max;
         obj.health = item?.specifications?.health;
         obj.location = item?.location?.city;

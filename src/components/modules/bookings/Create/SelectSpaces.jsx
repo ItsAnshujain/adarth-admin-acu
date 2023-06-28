@@ -345,6 +345,16 @@ const SelectSpace = () => {
         }) => useMemo(() => <p>{dimension}</p>, []),
       },
       {
+        Header: 'UNIT',
+        accessor: 'specifications.unit',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { unit },
+          },
+        }) => useMemo(() => <p>{unit}</p>, []),
+      },
+      {
         Header: 'IMPRESSION',
         accessor: 'specifications.impressions.max',
         Cell: ({
@@ -509,6 +519,7 @@ const SelectSpace = () => {
         obj.dimension = `${item.specifications?.size?.width || 0}ft x ${
           item.specifications?.size?.height || 0
         }ft`;
+        obj.unit = item?.specifications?.unit || '-';
         obj.impressionMax = item.specifications?.impressions?.max || 0;
         obj.impressionMin = item.specifications?.impressions?.min || 0;
         obj.health = item?.specifications?.health ?? 0;

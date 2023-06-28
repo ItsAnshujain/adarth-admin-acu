@@ -52,20 +52,20 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
         <Loader className="mx-auto mt-20" />
       ) : (
         <div className="border border-gray-300 mt-4 rounded-md">
-          <Group className="p-3 mb-3 border-b border-black  bg-slate-200 ">
+          <Group className="p-3 border-b border-black  bg-slate-200">
             <p className="font-medium">
               Space Name: {inventoryDetails?.basicInformation?.spaceName}
             </p>
           </Group>
-          <div className="p-5">
-            <div className="min-h-[400px] max-h-[400px] overflow-y-auto ">
+          <div className="">
+            <div className="min-h-[400px] max-h-[400px] overflow-y-auto px-3">
               {operationaCostData?.length ? (
                 operationaCostData.map(item => (
                   <Box
                     key={item?._id}
                     className="py-3 border-b border-black flex justify-between pl-5 pr-10"
                   >
-                    <Group align="flex-start">
+                    <div className="flex">
                       {!isPeer ? (
                         <ActionIcon
                           onClick={e =>
@@ -83,14 +83,19 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
                           <Edit className="text-black" />
                         </ActionIcon>
                       ) : null}
-                      <div>
+
+                      <div className="ml-3">
                         <p className="font-medium">{item?.type?.name}</p>
-                        <p className="text-xs">Created at:</p>
+                        <p className="font-light text-sm w-[80%] mb-1 text-gray-500">
+                          {item?.description}
+                          {item?.description}
+                        </p>
+                        <p className="text-xs mb-1">Created at:</p>
                         <p className="text-xs text-gray-500 font-medium">
                           {item?.date ? dayjs(item.date).format(DATE_FORMAT) : null}
                         </p>
                       </div>
-                    </Group>
+                    </div>
                     <p>{toIndianCurrency(item?.amount)}</p>
                   </Box>
                 ))
@@ -98,9 +103,9 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
                 <p className="text-center text-lg">No records found</p>
               )}
             </div>
-            <p className="py-3 font-medium">Total: {toIndianCurrency(totalAmount ?? 0)}</p>
+            <p className="p-3 font-medium text-end">Total: {toIndianCurrency(totalAmount ?? 0)}</p>
             {!isPeer ? (
-              <Group position="right">
+              <Group position="right" className="px-3 pb-3">
                 <Button className="primary-button" onClick={handleOperationalCost}>
                   Add Operational Cost
                 </Button>
