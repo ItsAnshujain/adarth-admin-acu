@@ -336,7 +336,6 @@ const InventoryReportsPage = () => {
     {
       Header: 'UNIT',
       accessor: 'specifications.unit',
-      disableSortBy: true,
       Cell: ({
         row: {
           original: { specifications },
@@ -521,7 +520,7 @@ const InventoryReportsPage = () => {
     {
       Header: 'UNIT',
       accessor: 'specifications.unit',
-      disableSortBy: true,
+
       Cell: ({
         row: {
           original: { specifications },

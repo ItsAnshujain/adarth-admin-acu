@@ -34,6 +34,7 @@ const NestedSidebarContent = ({ list, path, toggleNestedTab }) => {
             className={classNames(
               checkActive(item?.label, item?.subPath) ? 'text-black' : 'text-white',
               pathname.includes('masters') ? 'mb-2' : pathname.includes('reports') ? 'mb-2' : '',
+              item?.label === 'Payment Status' ? 'hidden' : '',
               'font-medium text-base pl-[28px]',
             )}
           >

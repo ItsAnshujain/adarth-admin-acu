@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
-import BasicInfo from '../../components/modules/inventory/CreateSpace/BasicInformation';
-import Specification from '../../components/modules/inventory/CreateSpace/Specification';
-import Location from '../../components/modules/inventory/CreateSpace/Location';
+import BasicInformationForm from '../../components/modules/inventory/CreateSpace/BasicInformationForm';
+import SpecificationForm from '../../components/modules/inventory/CreateSpace/SpecificationForm';
+import LocationForm from '../../components/modules/inventory/CreateSpace/LocationForm';
 import SuccessModal from '../../components/shared/Modal';
 import Preview from '../../components/shared/Preview';
 import PreviewLocation from '../../components/modules/inventory/CreateSpace/PreviewLocation';
@@ -47,6 +47,7 @@ const initialValues = {
     },
     previousBrands: [],
     tags: [],
+    additionalTags: [],
   },
   location: {
     latitude: null,
@@ -152,6 +153,7 @@ const specificationsValues = yup.object({
     }),
     previousBrands: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
     tags: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
+    additionalTags: yup.array(),
   }),
 });
 
@@ -211,11 +213,11 @@ const CreateInventoryPage = () => {
 
   const getForm = () =>
     formStep === 1 ? (
-      <BasicInfo basicInformation={inventoryDetails?.inventory?.basicInformation} />
+      <BasicInformationForm basicInformation={inventoryDetails?.inventory?.basicInformation} />
     ) : formStep === 2 ? (
-      <Specification />
+      <SpecificationForm />
     ) : formStep === 3 ? (
-      <Location />
+      <LocationForm />
     ) : formStep === 4 ? (
       <>
         <Preview />

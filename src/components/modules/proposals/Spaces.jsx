@@ -232,7 +232,6 @@ const Spaces = () => {
       {
         Header: 'UNIT',
         accessor: 'specifications.unit',
-        disableSortBy: true,
         Cell: ({
           row: {
             original: { unit },

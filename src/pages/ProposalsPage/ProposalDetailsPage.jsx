@@ -192,7 +192,6 @@ const ProposalDetailsPage = () => {
       {
         Header: 'UNIT',
         accessor: 'unit',
-        disableSortBy: true,
         Cell: ({
           row: {
             original: { unit },

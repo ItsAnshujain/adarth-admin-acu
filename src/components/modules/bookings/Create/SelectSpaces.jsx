@@ -347,7 +347,6 @@ const SelectSpace = () => {
       {
         Header: 'UNIT',
         accessor: 'specifications.unit',
-        disableSortBy: true,
         Cell: ({
           row: {
             original: { unit },
@@ -406,6 +405,27 @@ const SelectSpace = () => {
             original: { mediaType },
           },
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
+      },
+      {
+        Header: 'TRADED AMOUNT',
+        accessor: 'tradedAmount',
+        Cell: ({
+          row: {
+            original: { tradedAmount, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <NumberInput
+                hideControls
+                defaultValue={+(tradedAmount || 0)}
+                onBlur={e => updateData('tradedAmount', e.target.value, _id)}
+                // TODO: api dependent
+                disabled
+              />
+            ),
+            [],
+          ),
       },
       {
         Header: 'PRICING',

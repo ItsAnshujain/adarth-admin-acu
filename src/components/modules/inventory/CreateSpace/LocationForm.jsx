@@ -26,7 +26,7 @@ const query = {
   sortOrder: 'asc',
 };
 
-const Location = () => {
+const LocationForm = () => {
   const { errors, values } = useFormContext();
   const {
     data: zoneData,
@@ -208,4 +208,4 @@ const Location = () => {
   );
 };
 
-export default Location;
+export default LocationForm;
