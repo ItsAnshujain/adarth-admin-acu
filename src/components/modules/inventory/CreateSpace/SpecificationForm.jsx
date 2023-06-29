@@ -1,4 +1,5 @@
 import { RangeSlider } from '@mantine/core';
+import { useCallback } from 'react';
 import { useFormContext } from '../../../../context/formContext';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import { serialize } from '../../../../utils';
@@ -7,6 +8,7 @@ import TextInput from '../../../shared/TextInput';
 import Select from '../../../shared/Select';
 import NumberInput from '../../../shared/NumberInput';
 import AsyncMultiSelect from '../../../shared/AsyncMultiSelect';
+import MultiSelect from '../../../shared/MultiSelect';
 
 const styles = {
   label: {
@@ -54,7 +56,7 @@ const query = {
   sortOrder: 'asc',
 };
 
-const Specification = () => {
+const SpecificationForm = () => {
   const { values, errors, setFieldValue } = useFormContext();
 
   const {
@@ -72,6 +74,11 @@ const Specification = () => {
     isLoading: isTagLoading,
     isSuccess: isTagLoaded,
   } = useFetchMasters(serialize({ type: 'tag', ...query }));
+
+  const createAdditionalTag = useCallback(val => {
+    setFieldValue('specifications.additionalTags', current => [...current, val]);
+    return { value: val, label: val };
+  }, []);
 
   return (
     <div className="flex flex-col pl-5 pr-7 pt-4 mb-44">
@@ -158,6 +165,17 @@ const Specification = () => {
             placeholder="Write..."
             className="mb-7"
           />
+          <MultiSelect
+            label="Additional Tags"
+            name="specifications.additionalTags"
+            placeholder="Add Tags here..."
+            data={values.specifications.additionalTags || []}
+            searchable
+            creatable
+            getCreateLabel={tag => `+ Create ${tag}`}
+            onCreate={createAdditionalTag}
+            styles={multiSelectStyles}
+          />
         </div>
         <p className="font-bold">Impressions</p>
         <div className="flex gap-4 items-start">
@@ -223,6 +241,7 @@ const Specification = () => {
           clearable
           maxDropdownHeight={160}
         />
+
         {/* TODO: update select component  */}
         {/* <AsyncSelect
           name="specifications.previousBrands"
@@ -236,4 +255,4 @@ const Specification = () => {
   );
 };
 
-export default Specification;
+export default SpecificationForm;

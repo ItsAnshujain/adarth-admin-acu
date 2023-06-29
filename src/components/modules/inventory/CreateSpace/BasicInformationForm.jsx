@@ -53,7 +53,7 @@ const query = {
   sortOrder: 'asc',
 };
 
-const BasicInfo = () => {
+const BasicInformationForm = () => {
   const queryClient = useQueryClient();
   const userId = useTokenIdStore(state => state.id);
   const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
@@ -432,4 +432,4 @@ const BasicInfo = () => {
   );
 };
 
-export default BasicInfo;
+export default BasicInformationForm;
