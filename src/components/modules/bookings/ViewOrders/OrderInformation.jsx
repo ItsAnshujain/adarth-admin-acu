@@ -162,7 +162,7 @@ const OrderInformation = ({ bookingData = {}, isLoading = true, bookingStats, bo
 
   useEffect(() => {
     setActiveIncharge(getDefaultIncharge);
-  }, [bookingData?.campaign]);
+  }, [bookingData?.campaign, inchargeList]);
 
   useEffect(() => {
     setActiveOrganization(getDefaultOrganization);

@@ -190,6 +190,16 @@ const ProposalDetailsPage = () => {
         }) => useMemo(() => <p>{`${size?.width || 0}ft x ${size?.height || 0}ft`}</p>, []),
       },
       {
+        Header: 'UNIT',
+        accessor: 'unit',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { unit },
+          },
+        }) => useMemo(() => <p>{unit || '-'}</p>, []),
+      },
+      {
         Header: 'IMPRESSION',
         accessor: 'impressions.max',
         Cell: ({
