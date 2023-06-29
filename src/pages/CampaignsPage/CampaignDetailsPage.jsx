@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import Header from '../../components/Campaigns/ViewCampaigns/Header';
-import SpacesList from '../../components/Campaigns/ViewCampaigns/SpacesList';
-import TotalBookings from '../../components/Campaigns/ViewCampaigns/TotalBookings';
-import Overview from '../../components/Campaigns/ViewCampaigns/Overview';
+import Header from '../../components/modules/campaigns/ViewCampaigns/Header';
+import SpacesList from '../../components/modules/campaigns/ViewCampaigns/SpacesList';
+import TotalBookings from '../../components/modules/campaigns/ViewCampaigns/TotalBookings';
+import Overview from '../../components/modules/campaigns/ViewCampaigns/Overview';
 import { useCampaign } from '../../apis/queries/campaigns.queries';
 
 const campaignView = {

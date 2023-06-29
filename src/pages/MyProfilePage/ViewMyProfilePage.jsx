@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import pdf from '../../assets/pdf.svg';
 import useUserStore from '../../store/user.store';
 import modalConfig from '../../utils/modalConfig';
-import UserDetailsContent from '../../components/Profile/UserDetailsContent';
+import UserDetailsContent from '../../components/modules/profile/UserDetailsContent';
 import { downloadPdf } from '../../utils';
 
 const ViewMyProfilePage = () => {

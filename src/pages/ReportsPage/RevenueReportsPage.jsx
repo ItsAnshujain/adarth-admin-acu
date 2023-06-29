@@ -21,8 +21,8 @@ import { useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
 import { useModals } from '@mantine/modals';
-import Header from '../../components/Reports/Header';
-import RevenueFilter from '../../components/Reports/RevenueFilter';
+import Header from '../../components/modules/reports/Header';
+import RevenueFilter from '../../components/modules/reports/RevenueFilter';
 import {
   useBookingReportByRevenueStats,
   useBookingReportByRevenueGraph,
@@ -37,11 +37,11 @@ import {
   quarters,
   serialize,
 } from '../../utils';
-import RevenueStatsContent from '../../components/Reports/Revenue/RevenueStatsContent';
-import ViewByFilter from '../../components/Reports/ViewByFilter';
+import RevenueStatsContent from '../../components/modules/reports/Revenue/RevenueStatsContent';
+import ViewByFilter from '../../components/modules/reports/ViewByFilter';
 import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
-import ShareContent from '../../components/Reports/ShareContent';
+import ShareContent from '../../components/modules/reports/ShareContent';
 
 dayjs.extend(quarterOfYear);
 

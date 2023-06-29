@@ -22,7 +22,7 @@ import { useDebouncedValue } from '@mantine/hooks';
 import classNames from 'classnames';
 import { showNotification } from '@mantine/notifications';
 import { useModals } from '@mantine/modals';
-import Header from '../../components/Reports/Header';
+import Header from '../../components/modules/reports/Header';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
@@ -35,9 +35,9 @@ import {
   useInventoryReport,
   useInventoryStats,
 } from '../../apis/queries/inventory.queries';
-import ViewByFilter from '../../components/Reports/ViewByFilter';
-import InventoryStatsContent from '../../components/Reports/Inventory/InventoryStatsContent';
-import SubHeader from '../../components/Reports/Inventory/SubHeader';
+import ViewByFilter from '../../components/modules/reports/ViewByFilter';
+import InventoryStatsContent from '../../components/modules/reports/Inventory/InventoryStatsContent';
+import SubHeader from '../../components/modules/reports/Inventory/SubHeader';
 import {
   categoryColors,
   dateByQuarter,
@@ -49,7 +49,7 @@ import {
 } from '../../utils';
 import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
-import ShareContent from '../../components/Reports/ShareContent';
+import ShareContent from '../../components/modules/reports/ShareContent';
 
 dayjs.extend(quarterOfYear);
 

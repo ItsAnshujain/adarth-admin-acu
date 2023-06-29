@@ -3,13 +3,13 @@ import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
-import BasicInformationForm from '../../components/Campaigns/AddCampaign/BasicInformationForm';
+import BasicInformationForm from '../../components/modules/campaigns/AddCampaign/BasicInformationForm';
 import SuccessModal from '../../components/shared/Modal';
-import CoverImage from '../../components/Campaigns/AddCampaign/CoverImage';
-import Header from '../../components/Campaigns/AddCampaign/Header';
-import SpaceList from '../../components/Campaigns/AddCampaign/SpaceList';
+import CoverImage from '../../components/modules/campaigns/AddCampaign/CoverImage';
+import Header from '../../components/modules/campaigns/AddCampaign/Header';
+import SpaceList from '../../components/modules/campaigns/AddCampaign/SpaceList';
 import { FormProvider, useForm } from '../../context/formContext';
-import Preview from '../../components/Campaigns/AddCampaign/Preview';
+import Preview from '../../components/modules/campaigns/AddCampaign/Preview';
 import {
   useCampaign,
   useCreateCampaign,

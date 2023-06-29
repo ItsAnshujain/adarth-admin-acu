@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Folder } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import Header from '../../components/Finance/Header';
+import Header from '../../components/modules/finance/Header';
 import { useFetchFinance } from '../../apis/queries/finance.queries';
 
 const FinanceDashboardPage = () => {

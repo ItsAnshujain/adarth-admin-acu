@@ -7,7 +7,7 @@ import { FormProvider, useForm } from '../context/formContext';
 import { useUpdateUsers } from '../apis/queries/users.queries';
 import useUserStore from '../store/user.store';
 import banner from '../assets/login.svg';
-import TermsAndConditionsContent from '../components/DocAndPolicies/TermsAndConditionsContent';
+import TermsAndConditionsContent from '../components/modules/policies/TermsAndConditionsContent';
 
 const TermsAndConditionsPage = () => {
   const navigate = useNavigate();

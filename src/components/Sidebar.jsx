@@ -1,9 +1,9 @@
 import { Button, List, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import React, { useState } from 'react';
-import CookiePolicyContent from './DocAndPolicies/CookiePolicyContent';
-import DisclaimerPolicyContent from './DocAndPolicies/DisclaimerPolicyContent';
-import PrivacyPolicyContent from './DocAndPolicies/PrivacyPolicyContent';
+import CookiePolicyContent from './modules/policies/CookiePolicyContent';
+import DisclaimerPolicyContent from './modules/policies/DisclaimerPolicyContent';
+import PrivacyPolicyContent from './modules/policies/PrivacyPolicyContent';
 import SidebarContent from './SidebarContent';
 
 const docTypes = {

@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { Tabs } from '@mantine/core';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useFetchUsersById } from '../../apis/queries/users.queries';
-import ManagingCampaignSubHeader from '../../components/Users/View/ManagingSubHeader';
-import OverviewUserDetails from '../../components/Users/View/OverviewUserDetails';
-import BookingTableView from '../../components/Users/View/BookingTableView';
-import ProposalTableView from '../../components/Users/View/ProposalTableView';
+import ManagingCampaignSubHeader from '../../components/modules/users/View/ManagingSubHeader';
+import OverviewUserDetails from '../../components/modules/users/View/OverviewUserDetails';
+import BookingTableView from '../../components/modules/users/View/BookingTableView';
+import ProposalTableView from '../../components/modules/users/View/ProposalTableView';
 import { useBookings } from '../../apis/queries/booking.queries';
 import { useFetchProposals } from '../../apis/queries/proposal.queries';
 

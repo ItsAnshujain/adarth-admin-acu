@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { ArrowLeft } from 'react-feather';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Menu from '../../../Finance/Menu';
+import Menu from '../../finance/Menu';
 
 const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
   const navigate = useNavigate();
