@@ -32,10 +32,12 @@ export const SMTP_SERVICES = [
 ];
 
 export const MODE_OF_PAYMENT = [
-  { label: 'NA', value: 'na' },
   { label: 'CASH', value: 'cash' },
-  { label: 'NEFT', value: 'neft' },
+  { label: 'CARD', value: 'card' },
+  { label: 'CREDIT', value: 'credit' },
+  { label: 'DEBIT', value: 'debit' },
   { label: 'RTGS', value: 'rtgs' },
+  { label: 'NEFT', value: 'neft' },
   { label: 'CHEQUE', value: 'cheque' },
 ];
 

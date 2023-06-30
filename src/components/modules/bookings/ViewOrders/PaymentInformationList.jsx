@@ -1,17 +1,25 @@
 import React, { useMemo } from 'react';
 import { Button, Group } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
+import dayjs from 'dayjs';
 import Table from '../../../Table/Table';
 import modalConfig from '../../../../utils/modalConfig';
 import AddPaymentInformationForm from './AddPaymentInformationForm';
 import toIndianCurrency from '../../../../utils/currencyFormat';
+import { usePayment } from '../../../../apis/queries/payment.queries';
+import { DATE_FORMAT } from '../../../../utils/constants';
 
-const PaymentInformationCard = () => {
+const PaymentInformationList = () => {
   const modals = useModals();
+  const { id: bookingId } = useParams();
   const [searchParams] = useSearchParams();
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
+  const paymentQuery = usePayment(
+    { bookingId, limit: 10, page: 1, sortBy: 'name', sortOrder: 'asc' },
+    !!bookingId,
+  );
 
   const COLUMNS = useMemo(
     () => [
@@ -28,8 +36,8 @@ const PaymentInformationCard = () => {
       },
       {
         Header: 'PAYMENT TYPE',
-        accessor: 'paymentType',
-        Cell: info => useMemo(() => <p>{info.row.original.paymentType}</p>, []),
+        accessor: 'type',
+        Cell: info => useMemo(() => <p className="uppercase">{info.row.original.type}</p>, []),
       },
       {
         Header: 'AMOUNT',
@@ -40,22 +48,32 @@ const PaymentInformationCard = () => {
       {
         Header: 'CARD NO',
         accessor: 'cardNumber',
-        Cell: info => useMemo(() => <p>{info.row.original.cardNumber}</p>, []),
+        Cell: info => useMemo(() => <p>{info.row.original.cardNumber || '-'}</p>, []),
       },
       {
         Header: 'PAYMENT DATE',
         accessor: 'paymentDate',
-        Cell: info => useMemo(() => <p>{info.row.original.paymentDate}</p>, []),
+        Cell: info =>
+          useMemo(
+            () => (
+              <p>
+                {info.row.original.paymentDate
+                  ? dayjs(info.row.original.paymentDate).format(DATE_FORMAT)
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT REFERENCE ID',
-        accessor: 'referenceId',
-        Cell: info => useMemo(() => <p>{info.row.original.referenceId || 0}</p>, []),
+        accessor: 'referenceNumber',
+        Cell: info => useMemo(() => <p>{info.row.original.referenceNumber || '-'}</p>, []),
       },
       {
         Header: 'REMARKS',
         accessor: 'remarks',
-        Cell: info => useMemo(() => <p>{info.row.original.remarks}</p>, []),
+        Cell: info => useMemo(() => <p>{info.row.original.remarks || '-'}</p>, []),
       },
       {
         Header: 'ACTION',
@@ -69,8 +87,14 @@ const PaymentInformationCard = () => {
 
   const handleAddPayment = () =>
     modals.openModal({
+      modalId: 'addPaymentInformation',
       title: 'Add Payment Information',
-      children: <AddPaymentInformationForm />,
+      children: (
+        <AddPaymentInformationForm
+          bookingId={bookingId}
+          onClose={() => modals.closeModal('addPaymentInformation')}
+        />
+      ),
       ...modalConfig,
     });
 
@@ -83,14 +107,20 @@ const PaymentInformationCard = () => {
         </Button>
       </Group>
 
-      {/* //TODO: uncomment after integration */}
-      {/* <div className="w-full min-h-[150px] flex justify-center items-center">
-        <p className="text-xl">No records found</p>
-      </div> */}
-
-      <Table COLUMNS={COLUMNS} data={[]} activePage={page} classNameWrapper="min-h-[150px]" />
+      {paymentQuery.data?.docs.length ? (
+        <Table
+          COLUMNS={COLUMNS}
+          data={paymentQuery.data?.docs || []}
+          activePage={page}
+          classNameWrapper="min-h-[150px]"
+        />
+      ) : (
+        <div className="w-full min-h-[150px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
+        </div>
+      )}
     </div>
   );
 };
 
-export default PaymentInformationCard;
+export default PaymentInformationList;
