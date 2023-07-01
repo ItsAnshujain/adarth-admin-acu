@@ -28,8 +28,8 @@ import TrashIcon from '../../assets/delete.png';
 import ExportIcon from '../../assets/export.png';
 import RoleBased from '../../components/RoleBased';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
-import ViewByFilter from '../../pageComponents/Inventory/ViewByFilter';
-import ShareContent from '../../pageComponents/Inventory/ShareContent';
+import ViewByFilter from '../../components/modules/inventory/ViewByFilter';
+import ShareContent from '../../components/modules/inventory/ShareContent';
 
 dayjs.extend(isBetween);
 

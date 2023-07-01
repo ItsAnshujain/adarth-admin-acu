@@ -38,3 +38,7 @@ export const MODE_OF_PAYMENT = [
   { label: 'RTGS', value: 'rtgs' },
   { label: 'CHEQUE', value: 'cheque' },
 ];
+
+export const DATE_FORMAT = 'YYYY-MM-DD';
+
+export const DATE_SECOND_FORMAT = 'DD MMM YYYY';

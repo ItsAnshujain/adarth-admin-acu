@@ -7,11 +7,11 @@ import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
-import whatsapp from '../../assets/whatsapp.svg';
-import { FormProvider, useForm } from '../../context/formContext';
-import TextInput from '../../components/shared/TextInput';
-import { useShareInventory } from '../../apis/queries/inventory.queries';
-import { serialize } from '../../utils';
+import whatsapp from '../../../assets/whatsapp.svg';
+import { FormProvider, useForm } from '../../../context/formContext';
+import TextInput from '../../shared/TextInput';
+import { useShareInventory } from '../../../apis/queries/inventory.queries';
+import { serialize } from '../../../utils';
 
 const fileType = [
   { name: 'PPT', _id: 'ppt' },

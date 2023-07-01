@@ -2,11 +2,13 @@ import { ActionIcon, Button } from '@mantine/core';
 import classNames from 'classnames';
 import { ArrowLeft } from 'react-feather';
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Menu from '../../finance/Menu';
 
-const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
+const Header = ({ bookingId, bookingData }) => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams({ tab: 'order-information' });
+  const tab = searchParams.get('tab');
 
   const purchaseOrderList = useMemo(
     () => [
@@ -48,6 +50,11 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
     [bookingId],
   );
 
+  const handleTabs = type => {
+    searchParams.set('tab', type);
+    setSearchParams(searchParams);
+  };
+
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center flex-wrap">
       <div className="flex gap-3 items-center font-medium">
@@ -55,9 +62,9 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
           <ArrowLeft />
         </ActionIcon>
         <Button
-          onClick={() => setPageNumber(0)}
+          onClick={() => handleTabs('order-information')}
           className={classNames(
-            pageNumber === 0
+            tab === 'order-information'
               ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3 after:bg-purple-450'
               : 'text-black',
             'px-0',
@@ -66,9 +73,9 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
           Order Information
         </Button>
         <Button
-          onClick={() => setPageNumber(1)}
+          onClick={() => handleTabs('process-pipeline')}
           className={classNames(
-            pageNumber === 1
+            tab === 'process-pipeline'
               ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3 after:bg-purple-450'
               : 'text-black',
           )}
@@ -76,9 +83,9 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
           Process Pipeline
         </Button>
         <Button
-          onClick={() => setPageNumber(2)}
+          onClick={() => handleTabs('overview')}
           className={classNames(
-            pageNumber === 2
+            tab === 'overview'
               ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-3 after:bg-purple-450'
               : 'text-black',
             'px-0',
@@ -88,7 +95,7 @@ const Header = ({ pageNumber, setPageNumber, bookingId, bookingData }) => {
         </Button>
       </div>
       <div className="flex gap-2 flex-wrap">
-        {pageNumber === 0 ? (
+        {tab === 'order-information' ? (
           <div className="flex gap-2 flex-wrap">
             <Menu btnLabel="Generate Purchase Order" options={purchaseOrderList} />
             <Menu btnLabel="Generate Release Order" options={releaseOrderList} />
