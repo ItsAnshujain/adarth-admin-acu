@@ -4,7 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Loader, Text } from '@mantine/core';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import SubHeader from '../components/Masters/SubHeader';
+import SubHeader from '../components/modules/masters/SubHeader';
 import MastersMenuPopover from '../components/Popovers/MastersMenuPopover';
 import Table from '../components/Table/Table';
 import { masterTypes } from '../utils';

@@ -9,7 +9,7 @@ import NoMatchFoundPage from './pages/NoMatchFoundPage';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import ProtectedRoute from './utils/ProtectedRoute';
 import { ROLES } from './utils';
-import FileUpload from './components/Finance/Create/FileUpload';
+import FileUpload from './components/modules/finance/Create/FileUpload';
 import useUserStore from './store/user.store';
 import { useFetchUsersById } from './apis/queries/users.queries';
 

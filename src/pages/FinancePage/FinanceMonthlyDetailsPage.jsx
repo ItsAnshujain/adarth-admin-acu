@@ -6,7 +6,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
 import { useModals } from '@mantine/modals';
-import Header from '../../components/Finance/Header';
+import Header from '../../components/modules/finance/Header';
 import Search from '../../components/Search';
 import DateRange from '../../components/DateRange';
 import calendar from '../../assets/data-table.svg';
@@ -17,7 +17,7 @@ import FinanceMenuPopover from '../../components/Popovers/FinanceMenuPopover';
 import { downloadPdf, orderTitle, ROLES } from '../../utils';
 import RoleBased from '../../components/RoleBased';
 import modalConfig from '../../utils/modalConfig';
-import PreviewContent from '../../components/Finance/PreviewContent';
+import PreviewContent from '../../components/modules/finance/PreviewContent';
 import VerifyApprovalContent from '../../components/VerifyApprovalContent';
 
 const updatedModalConfig = { ...modalConfig, size: 'xl' };

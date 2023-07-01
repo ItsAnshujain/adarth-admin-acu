@@ -5,7 +5,7 @@ import { useModals } from '@mantine/modals';
 import MenuIcon from '../Menu';
 import modalConfig from '../../utils/modalConfig';
 import DeleteFinanceContent from '../DeleteFinanceContent';
-import ShareContent from '../Finance/ShareContent';
+import ShareContent from '../modules/finance/ShareContent';
 
 const MenuPopover = ({ itemId, onClickDownloadPdf = () => {}, type }) => {
   const modals = useModals();

@@ -9,9 +9,9 @@ import { showNotification } from '@mantine/notifications';
 import { useDisclosure } from '@mantine/hooks';
 import { ToWords } from 'to-words';
 import dayjs from 'dayjs';
-import PurchaseOrder from '../../components/Finance/Create/PurchaseOrder';
-import ReleaseOrder from '../../components/Finance/Create/ReleaseOrder';
-import Invoice from '../../components/Finance/Create/Invoice';
+import PurchaseOrder from '../../components/modules/finance/Create/PurchaseOrder';
+import ReleaseOrder from '../../components/modules/finance/Create/ReleaseOrder';
+import Invoice from '../../components/modules/finance/Create/Invoice';
 import { FormProvider, useForm } from '../../context/formContext';
 import {
   useBookingById,
@@ -32,11 +32,11 @@ import {
   serialize,
 } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
-import PurchaseOrderPreview from '../../components/Finance/Create/PurchaseOrderPreview';
-import ReleaseOrderPreview from '../../components/Finance/Create/ReleaseOrderPreview';
-import InvoicePreview from '../../components/Finance/Create/InvoicePreview';
-import ManualEntryContent from '../../pageComponents/Finance/ManualEntryContent';
-import FormHeader from '../../components/Finance/Create/FormHeader';
+import PurchaseOrderPreview from '../../components/modules/finance/Create/PurchaseOrderPreview';
+import ReleaseOrderPreview from '../../components/modules/finance/Create/ReleaseOrderPreview';
+import InvoicePreview from '../../components/modules/finance/Create/InvoicePreview';
+import ManualEntryContent from '../../components/modules/finance/ManualEntryContent';
+import FormHeader from '../../components/modules/finance/Create/FormHeader';
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 

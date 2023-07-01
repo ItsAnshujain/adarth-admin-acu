@@ -2,7 +2,7 @@ import { Button, Menu } from '@mantine/core';
 import React, { useState } from 'react';
 import { Edit2, Trash } from 'react-feather';
 import { useModals } from '@mantine/modals';
-import InputModal from '../Masters/InputModal';
+import InputModal from '../modules/masters/InputModal';
 import MenuIcon from '../Menu';
 import modalConfig from '../../utils/modalConfig';
 import DeleteMasterContent from '../DeleteMasterContent';

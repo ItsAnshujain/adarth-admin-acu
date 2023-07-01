@@ -30,7 +30,7 @@ import useUserStore from '../store/user.store';
 import { useBookingStats, useFetchBookingRevenue } from '../apis/queries/booking.queries';
 import { useInventoryStats } from '../apis/queries/inventory.queries';
 import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../utils';
-import ViewByFilter from '../components/Reports/ViewByFilter';
+import ViewByFilter from '../components/modules/reports/ViewByFilter';
 
 dayjs.extend(quarterOfYear);
 

@@ -4,10 +4,10 @@ import { Pagination, Skeleton } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { v4 as uuidv4 } from 'uuid';
 import { useQueryClient } from '@tanstack/react-query';
-import AreaHeader from '../../components/Users/Header';
+import AreaHeader from '../../components/modules/users/Header';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import Card from '../../components/Users/Card';
+import Card from '../../components/modules/users/Card';
 import { useFetchUsers } from '../../apis/queries/users.queries';
 import useTokenIdStore from '../../store/user.store';
 
