@@ -3,7 +3,7 @@ import { Loader } from '@mantine/core';
 import CampaignInformationCard from './CampaignInformationCard';
 import OrderInformationCard from './OrderInformationCard';
 import StatisticsCard from './StatisticsCard';
-import PaymentInformationCard from './PaymentInformationCard';
+import PaymentInformationList from './PaymentInformationList';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -17,7 +17,7 @@ const OrderInformation = ({ isLoading = true }) =>
       <StatisticsCard />
       <OrderInformationCard />
       <CampaignInformationCard />
-      <PaymentInformationCard />
+      <PaymentInformationList />
     </div>
   );
 

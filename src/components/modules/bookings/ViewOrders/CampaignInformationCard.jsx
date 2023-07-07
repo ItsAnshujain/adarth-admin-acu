@@ -180,7 +180,6 @@ const CampaignInformationCard = () => {
               placeholder="Select..."
               data={isUserDataLoaded ? inchargeList : []}
               onChange={e => handleActiveIncharge(e)}
-              className="mb-7"
               value={activeIncharge}
             />
           )}

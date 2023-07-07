@@ -1,116 +1,125 @@
-import { Box, Button, Group } from '@mantine/core';
-import { yupResolver } from '@mantine/form';
+import { Box, Button, Group, Text } from '@mantine/core';
+import { yupResolver } from '@hookform/resolvers/yup';
 import React from 'react';
 import * as yup from 'yup';
-import { FormProvider, useForm } from '../../../../context/formContext';
-import DatePicker from '../../../shared/DatePicker';
-import TextInput from '../../../shared/TextInput';
-import NumberInput from '../../../shared/NumberInput';
-import Select from '../../../shared/Select';
-import { MODE_OF_PAYMENT } from '../../../../utils/constants';
-
-const styles = {
-  label: {
-    marginBottom: 8,
-    fontWeight: 700,
-    fontSize: 16,
-  },
-  input: {
-    borderRadius: 0,
-    padding: 8,
-  },
-};
-
-const initialValues = {
-  paymentType: { label: '', value: '' },
-};
+import dayjs from 'dayjs';
+import { showNotification } from '@mantine/notifications';
+import { FormProvider, useForm } from 'react-hook-form';
+import { ChevronDown } from 'react-feather';
+import { useQueryClient } from '@tanstack/react-query';
+import { DATE_FORMAT, MODE_OF_PAYMENT } from '../../../../utils/constants';
+import { useCreatePayment } from '../../../../apis/queries/payment.queries';
+import { useUploadFile } from '../../../../apis/queries/upload.queries';
+import ControlledDropzone from '../../../shared/FormInputs/Controlled/ControlledDropzone';
+import ControlledTextInput from '../../../shared/FormInputs/Controlled/ControlledTextInput';
+import ControlledNumberInput from '../../../shared/FormInputs/Controlled/ControlledNumberInput';
+import ControlledSelect from '../../../shared/FormInputs/Controlled/ControlledSelect';
+import ControlledDatePicker from '../../../shared/FormInputs/Controlled/ControlledDatePicker';
 
 const schema = yup.object({
-  paymentType: yup.mixed().test('type', 'Payment Type is required', obj => obj.value !== ''),
+  type: yup.string().required('Payment Type is required'),
   amount: yup
     .number()
     .positive('Must be a positive number')
     .typeError('Must be a number')
     .nullable()
     .required('Amount is required'),
-  cardNumber: yup.string().trim(),
-  referenceId: yup.string().trim(),
-  remarks: yup.string().trim(),
 });
 
-const AddPaymentInformationForm = () => {
-  const form = useForm({ validate: yupResolver(schema), initialValues });
+const AddPaymentInformationForm = ({ bookingId, onClose }) => {
+  const queryClient = useQueryClient();
+  const form = useForm({ resolver: yupResolver(schema) });
+  const createPayment = useCreatePayment();
+  const upload = useUploadFile();
 
-  const onSubmit = async formData => {
-    const data = { ...formData };
-    // eslint-disable-next-line no-console
-    console.log(data);
+  const handleInvoiceUpload = async params => {
+    const formData = new FormData();
+    formData.append('files', params);
+    const res = await upload.mutateAsync(formData);
+    return res?.Location;
   };
+
+  const onSubmit = form.handleSubmit(async formData => {
+    const data = { ...formData, bookingId };
+
+    data.paymentDate = data.paymentDate && dayjs(data.paymentDate).format(DATE_FORMAT);
+
+    if (data?.invoice) {
+      const uploaded = handleInvoiceUpload(data.invoice);
+      data.invoice = uploaded;
+    }
+
+    createPayment.mutate(data, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['payment']);
+        form.reset();
+        onClose();
+        showNotification({
+          title: 'Payment added successfully',
+          color: 'green',
+        });
+      },
+    });
+  });
 
   return (
     <Box className="border-t">
-      <FormProvider form={form}>
-        <form className="px-5 pt-3" onSubmit={form.onSubmit(onSubmit)}>
-          <Select
+      <FormProvider {...form}>
+        <form className="px-3 pt-3" onSubmit={onSubmit}>
+          <ControlledSelect
             label="Payment Type"
-            name="paymentType"
-            withAsterisk
-            errors={form.errors}
+            name="type"
+            data={MODE_OF_PAYMENT}
             placeholder="Select..."
-            size="md"
-            options={MODE_OF_PAYMENT}
+            rightSection={<ChevronDown size={16} />}
             className="mb-4"
           />
-          <NumberInput
+          <ControlledNumberInput
             label="Amount ₹"
             name="amount"
             withAsterisk
-            errors={form.errors}
             placeholder="Write..."
-            size="md"
             className="mb-4"
-            styles={styles}
-            hideControls
           />
-
-          <TextInput
-            styles={styles}
+          <ControlledTextInput
             label="Card Number"
             name="cardNumber"
             placeholder="Write..."
             maxLength={200}
             className="mb-4"
           />
-
-          <DatePicker
+          <ControlledDatePicker
             label="Payment Date"
             name="paymentDate"
-            withAsterisk
-            placeholder="DD/MM/YYYY"
+            placeholder="Select date..."
             minDate={new Date()}
-            size="md"
-            styles={styles}
+            clearable={false}
             className="mb-4"
           />
-          <TextInput
-            styles={styles}
+          <ControlledTextInput
             label="Payment Reference ID"
-            name="referenceId"
+            name="referenceNumber"
             placeholder="Write..."
             maxLength={200}
             className="mb-4"
           />
-          <TextInput
-            styles={styles}
+          <ControlledTextInput
             label="Remarks"
             name="remarks"
             placeholder="Write..."
             maxLength={200}
             className="mb-4"
           />
-
+          <Group position="center">
+            <ControlledDropzone name="invoice" />
+            <Text>Upload Invoice</Text>
+          </Group>
           <Group position="right">
-            <Button type="submit" className="primary-button">
+            <Button
+              type="submit"
+              className="primary-button"
+              loading={createPayment.isLoading || upload.isLoading}
+            >
               Add
             </Button>
           </Group>

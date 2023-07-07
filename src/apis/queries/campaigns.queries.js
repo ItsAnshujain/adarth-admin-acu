@@ -10,7 +10,7 @@ import {
   updateCampaign,
   updateCampaignMedia,
   updateCampaignStatus,
-} from '../requests/campaigns.request';
+} from '../requests/campaigns.requests';
 
 export const useCampaigns = (query, enabled = true) =>
   useQuery(

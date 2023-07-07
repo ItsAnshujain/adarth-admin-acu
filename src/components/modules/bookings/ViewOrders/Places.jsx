@@ -1,4 +1,14 @@
-import { ActionIcon, Badge, Box, Button, Chip, HoverCard, Image, Select } from '@mantine/core';
+import {
+  ActionIcon,
+  Badge,
+  Box,
+  Button,
+  Chip,
+  HoverCard,
+  Image,
+  Select,
+  Card,
+} from '@mantine/core';
 import { useMemo, useRef } from 'react';
 import { Calendar, ChevronDown, Eye } from 'react-feather';
 import { Dropzone } from '@mantine/dropzone';
@@ -145,7 +155,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
     });
 
   return (
-    <div className="flex gap-4 p-4 shadow-md bg-white mb-2">
+    <Card className="flex gap-4 p-4" withBorder radius="md" shadow="sm">
       <div className="flex items-center">
         {data?.basicInformation?.spacePhoto ? (
           <Image src={data?.basicInformation?.spacePhoto} alt="banner" height={140} width={140} />
@@ -280,7 +290,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
                 }
               />
             </div>
-            <div className="mb-4">
+            <div>
               <p className="mb-2 text-sm font-light text-slate-400">Health Update</p>
               <p>{`${data?.health || 0}%` || <NoData type="na" />}</p>
             </div>
@@ -329,7 +339,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

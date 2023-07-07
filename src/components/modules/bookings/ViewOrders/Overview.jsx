@@ -159,7 +159,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
 
   return (
     <>
-      <div className="flex gap-4 pt-5">
+      <div className="flex gap-4 mt-5">
         <div className="flex-1 max-w-1/2">
           <div className="flex flex-col">
             {isLoading ? (
@@ -256,7 +256,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
         <p className="text-sm font-light text-slate-400">
           All the places been covered by this campaign
         </p>
-        <div className="mt-1 mb-8 h-[40vh]">
+        <div className="mt-1 mb-4 h-[40vh]">
           <GoogleMapReact
             bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY, libraries: 'places' }}
             defaultCenter={defaultProps.center}
@@ -277,7 +277,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
         <p className="text-sm font-light text-slate-400 mb-2">
           All the places been cover by this campaign
         </p>
-        <div>
+        <div className="grid gap-4">
           {bookingData?.campaign?.spaces?.length ? (
             bookingData?.campaign?.spaces
               ?.map(item => (
