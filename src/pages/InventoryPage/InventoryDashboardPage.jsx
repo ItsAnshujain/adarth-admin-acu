@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { getWord } from 'num-count';
+import { v4 as uuidv4 } from 'uuid';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/modules/inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -234,6 +235,26 @@ const InventoryDashboardPage = () => {
             original: { specifications },
           },
         }) => useMemo(() => <p>{specifications?.unit || '-'}</p>, []),
+      },
+      {
+        Header: 'ADDITIONAL TAGS',
+        accessor: 'specifications.additionalTags',
+        disableSortBy: true,
+        Cell: info =>
+          useMemo(
+            () => (
+              <div>
+                {info.row.original.specifications?.additionalTags?.length
+                  ? info.row.original.specifications.additionalTags.map(item => (
+                      <Badge key={uuidv4()} size="lg" className="capitalize" mr="xs">
+                        {item}
+                      </Badge>
+                    ))
+                  : '-'}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'IMPRESSION',
