@@ -1,3 +1,4 @@
+import urlcat from 'urlcat';
 import http from '../http';
 
 export const createInventory = data => http.post('/inventory', data);
@@ -27,3 +28,6 @@ export const fetchInventoryReportList = query => http.get(`/inventory/report-lis
 
 export const shareInventory = (queries, data) =>
   http.post(`/inventory/share-inventory?${queries}`, data);
+
+export const fetchDistinctAdditionalTags = () =>
+  http.get(urlcat('/inventory/distinct-additional-tags'));

@@ -198,7 +198,7 @@ const SelectSpace = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
+        Cell: info =>
           useMemo(() => {
             let currentPage = pages;
             let rowCount = 0;
@@ -206,7 +206,7 @@ const SelectSpace = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+            return <div className="pl-2">{rowCount + info.row.index + 1}</div>;
           }, []),
       },
       {
@@ -266,48 +266,33 @@ const SelectSpace = () => {
           }, [isUnderMaintenance]),
       },
       {
-        Header: 'INVENTORY ID',
-        accessor: 'inventoryId',
-        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
-      },
-      {
-        Header: 'MEDIA OWNER NAME',
-        accessor: 'basicInformation.mediaOwner.name',
+        Header: 'CITY',
+        accessor: 'location.city',
         Cell: ({
           row: {
-            original: { mediaOwner },
+            original: { location },
           },
-        }) => useMemo(() => <p className="w-fit">{mediaOwner}</p>, []),
+        }) => useMemo(() => <p>{location || '-'}</p>, []),
       },
       {
-        Header: 'UPLOAD MEDIA',
-        accessor: '',
+        Header: 'ADDITIONAL FEATURE',
+        accessor: 'specifications.additionalTags',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id },
-          },
-        }) =>
+        Cell: info =>
           useMemo(
             () => (
-              <UploadButton
-                updateData={updateData}
-                isActive={values?.place?.find(item => item._id === _id)}
-                hasMedia={values?.place?.find(item => (item._id === _id ? !!item?.media : false))}
-                id={_id}
-              />
+              <div>
+                {info.row.original.additionalTags?.length
+                  ? info.row.original.additionalTags.map(item => (
+                      <Badge key={uuidv4()} size="lg" className="capitalize" mr="xs">
+                        {item}
+                      </Badge>
+                    ))
+                  : '-'}
+              </div>
             ),
             [],
           ),
-      },
-      {
-        Header: 'PEER',
-        accessor: 'basicInformation.peerMediaOwner',
-        Cell: ({
-          row: {
-            original: { peer },
-          },
-        }) => useMemo(() => <p className="w-fit">{peer}</p>, []),
       },
       {
         Header: 'CATEGORY',
@@ -336,6 +321,32 @@ const SelectSpace = () => {
           }, []),
       },
       {
+        Header: 'SUB CATEGORY',
+        accessor: 'basicInformation.subCategory.name',
+        Cell: ({
+          row: {
+            original: { subCategory },
+          },
+        }) =>
+          useMemo(() => {
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === subCategory,
+            );
+
+            return (
+              <div>
+                {subCategory ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {subCategory}
+                  </Badge>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
+            );
+          }, []),
+      },
+      {
         Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
         Cell: ({
@@ -345,13 +356,73 @@ const SelectSpace = () => {
         }) => useMemo(() => <p>{dimension}</p>, []),
       },
       {
-        Header: 'UNIT',
-        accessor: 'specifications.unit',
+        Header: 'PRICING',
+        accessor: 'basicInformation.price',
         Cell: ({
           row: {
-            original: { unit },
+            original: { price, _id },
           },
-        }) => useMemo(() => <p>{unit}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <NumberInput
+                hideControls
+                defaultValue={+(price || 0)}
+                onBlur={e => updateData('price', e.target.value, _id)}
+              />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+      },
+      {
+        Header: 'MEDIA OWNER NAME',
+        accessor: 'basicInformation.mediaOwner.name',
+        Cell: ({
+          row: {
+            original: { mediaOwner },
+          },
+        }) => useMemo(() => <p className="w-fit">{mediaOwner}</p>, []),
+      },
+      {
+        Header: 'PEER',
+        accessor: 'basicInformation.peerMediaOwner',
+        Cell: ({
+          row: {
+            original: { peer },
+          },
+        }) => useMemo(() => <p className="w-fit">{peer}</p>, []),
+      },
+      {
+        Header: 'MEDIA TYPE',
+        accessor: 'basicInformation.mediaType.name',
+        Cell: ({
+          row: {
+            original: { mediaType },
+          },
+        }) => useMemo(() => <p>{mediaType || '-'}</p>),
+      },
+      {
+        Header: 'HEALTH STATUS',
+        accessor: 'specifications.health',
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="w-24">
+                <Progress
+                  sections={[
+                    { value: original.health, color: 'green' },
+                    { value: 100 - original.health, color: 'red' },
+                  ]}
+                />
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'IMPRESSION',
@@ -371,76 +442,46 @@ const SelectSpace = () => {
           ),
       },
       {
-        Header: 'HEALTH',
-        accessor: 'specifications.health',
-        Cell: ({ row: { original } }) =>
-          useMemo(
-            () => (
-              <div className="w-24">
-                <Progress
-                  sections={[
-                    { value: original.health, color: 'green' },
-                    { value: 100 - original.health, color: 'red' },
-                  ]}
-                />
-              </div>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'LOCATION',
-        accessor: 'location.city',
+        Header: 'UNIT',
+        accessor: 'specifications.unit',
         Cell: ({
           row: {
-            original: { location },
+            original: { unit },
           },
-        }) => useMemo(() => <p>{location || '-'}</p>, []),
+        }) => useMemo(() => <p>{unit}</p>, []),
       },
       {
-        Header: 'MEDIA TYPE',
-        accessor: 'basicInformation.mediaType.name',
+        Header: 'UPLOAD MEDIA',
+        accessor: '',
+        disableSortBy: true,
         Cell: ({
           row: {
-            original: { mediaType },
-          },
-        }) => useMemo(() => <p>{mediaType || '-'}</p>),
-      },
-      {
-        Header: 'TRADED AMOUNT',
-        accessor: 'tradedAmount',
-        Cell: ({
-          row: {
-            original: { tradedAmount, _id },
+            original: { _id },
           },
         }) =>
           useMemo(
             () => (
-              <NumberInput
-                hideControls
-                defaultValue={+(tradedAmount || 0)}
-                onBlur={e => updateData('tradedAmount', e.target.value, _id)}
-                // TODO: api dependent
-                disabled
+              <UploadButton
+                updateData={updateData}
+                isActive={values?.place?.find(item => item._id === _id)}
+                hasMedia={values?.place?.find(item => (item._id === _id ? !!item?.media : false))}
+                id={_id}
               />
             ),
             [],
           ),
       },
       {
-        Header: 'PRICING',
-        accessor: 'basicInformation.price',
-        Cell: ({
-          row: {
-            original: { price, _id },
-          },
-        }) =>
+        Header: 'TRADED AMOUNT',
+        accessor: 'tradedAmount',
+        Cell: info =>
           useMemo(
             () => (
               <NumberInput
                 hideControls
-                defaultValue={+(price || 0)}
-                onBlur={e => updateData('price', e.target.value, _id)}
+                defaultValue={+(info.row.original.tradedAmount || 0)}
+                onBlur={e => updateData('tradedAmount', e.target.value, info.row.original._id)}
+                disabled={info.row.original.peer === '-'}
               />
             ),
             [],
@@ -533,7 +574,9 @@ const SelectSpace = () => {
         obj.spaceName = item.basicInformation?.spaceName;
         obj.inventoryId = item?.inventoryId;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
-        obj.category = item.basicInformation?.category?.name;
+        obj.additionalTags = item?.specifications?.additionalTags;
+        obj.category = item?.basicInformation?.category?.name;
+        obj.subCategory = item?.basicInformation?.subCategory?.name;
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
         obj.dimension = `${item.specifications?.size?.width || 0}ft x ${

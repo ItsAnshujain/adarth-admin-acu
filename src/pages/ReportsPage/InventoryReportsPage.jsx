@@ -384,7 +384,7 @@ const InventoryReportsPage = () => {
         ),
     },
     {
-      Header: 'LOCATION',
+      Header: 'CITY',
       accessor: 'location.city',
       Cell: ({
         row: {
@@ -571,7 +571,7 @@ const InventoryReportsPage = () => {
         ),
     },
     {
-      Header: 'LOCATION',
+      Header: 'CITY',
       accessor: 'location.city',
       disableSortBy: true,
       Cell: ({

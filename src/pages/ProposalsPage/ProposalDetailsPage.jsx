@@ -238,7 +238,7 @@ const ProposalDetailsPage = () => {
           ),
       },
       {
-        Header: 'LOCATION',
+        Header: 'CITY',
         accessor: 'location',
         Cell: ({
           row: {

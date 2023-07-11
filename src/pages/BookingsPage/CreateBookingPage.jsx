@@ -118,6 +118,7 @@ const CreateBookingPage = () => {
         media: isValidURL(item.media) ? item.media : undefined,
         startDate: item.startDate ? dayjs(item.startDate).startOf('day') : dayjs().startOf('day'),
         endDate: item.startDate ? dayjs(item.endDate).endOf('day') : dayjs().endOf('day'),
+        tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
       }));
 
       data.place.forEach(item => {
@@ -136,6 +137,9 @@ const CreateBookingPage = () => {
       }
       if (data?.client?.gstNumber) {
         data.client.gstNumber = data.client.gstNumber?.toUpperCase();
+      }
+      if (data?.displayBrands) {
+        data.displayBrands = [data.displayBrands];
       }
 
       const totalPrice = form.values?.place?.reduce((acc, item) => acc + +(item.price || 0), 0);
