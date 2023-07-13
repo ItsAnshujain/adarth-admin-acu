@@ -40,7 +40,7 @@ const PaymentInformationList = () => {
   const handleAddPayment = id =>
     modals.openModal({
       modalId: 'addPaymentInformation',
-      title: 'Add Payment Information',
+      title: `${id ? 'Edit' : 'Add'} Payment Information`,
       children: (
         <AddPaymentInformationForm
           bookingId={bookingId}
@@ -103,12 +103,6 @@ const PaymentInformationList = () => {
         accessor: 'amount',
         disableSortBy: true,
         Cell: info => useMemo(() => <p>{toIndianCurrency(info.row.original.amount || 0)}</p>, []),
-      },
-      {
-        Header: 'CARD NO',
-        accessor: 'cardNumber',
-        disableSortBy: true,
-        Cell: info => useMemo(() => <p>{info.row.original.cardNumber || '-'}</p>, []),
       },
       {
         Header: 'BILL DATE',

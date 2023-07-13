@@ -1,7 +1,6 @@
 import { Badge, Box, Checkbox, Image, Text, Card as MantineCard } from '@mantine/core';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
-import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
@@ -113,12 +112,8 @@ const Card = ({
             }ft`}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-400 mb-2">Impressions</p>
-            <p className="text-sm font-medium">
-              {specifications?.impressions?.max
-                ? `${getWord(specifications.impressions.max)}+`
-                : '--'}
-            </p>
+            <p className="text-sm text-gray-400 mb-2">Unit</p>
+            <p className="text-sm font-medium">{specifications?.unit || '--'}</p>
           </div>
         </div>
         <Box className="flex justify-between items-center" onClick={e => e.stopPropagation()}>
