@@ -26,7 +26,6 @@ const initialValues = {
     subCategory: { label: '', value: '' },
     spaceType: { label: '', value: '' },
     mediaType: { label: '', value: '' },
-    supportedMedia: '',
     description: '',
     spacePhoto: '',
     otherPhotos: [],
@@ -98,7 +97,6 @@ const basicInformationSchema = yup.object({
         value: yup.string().trim(),
       })
       .test('mediaType', 'Media Type is required', obj => obj.value !== ''),
-    supportedMedia: yup.string().trim(),
     description: yup.string().trim(),
     price: yup
       .number()
@@ -322,7 +320,6 @@ const CreateInventoryPage = () => {
             label: basicInformation?.mediaType?.name || '',
             value: basicInformation?.mediaType?._id || '',
           },
-          supportedMedia: basicInformation?.supportedMedia || '',
           demographic: {
             label: basicInformation?.demographic?.name || '',
             value: basicInformation?.demographic?._id || '',

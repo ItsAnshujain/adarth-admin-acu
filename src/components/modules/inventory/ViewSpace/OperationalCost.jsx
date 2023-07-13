@@ -100,7 +100,7 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
                   </Box>
                 ))
               ) : (
-                <p className="text-center text-lg">No records found</p>
+                <p className="text-center text-lg py-5">No records found</p>
               )}
             </div>
             <p className="p-3 font-medium text-end">Total: {toIndianCurrency(totalAmount ?? 0)}</p>

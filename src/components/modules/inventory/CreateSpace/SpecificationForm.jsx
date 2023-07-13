@@ -11,7 +11,6 @@ import NumberInput from '../../../shared/NumberInput';
 import AsyncMultiSelect from '../../../shared/AsyncMultiSelect';
 import MultiSelect from '../../../shared/MultiSelect';
 import TrashIcon from '../../../../assets/trash.svg';
-// import FormNumberInput from '../../../shared/FormInputs/NumberInput';
 
 const styles = {
   label: {
@@ -128,7 +127,7 @@ const SpecificationForm = () => {
             placeholder="Write..."
             className="mb-7"
           />
-          <div className="max-h-[240px] overflow-y-scroll">
+          <div className="max-h-[240px] overflow-y-scroll mb-5">
             {values.specifications?.size?.map((item, index) => (
               <div key={item?.key} className="grid grid-cols-2 gap-4 relative">
                 {index !== 0 ? (
@@ -141,7 +140,7 @@ const SpecificationForm = () => {
                 ) : null}
                 <div>
                   <p className="mt-[9px] font-bold text-[15px]">
-                    Width <span className="font-medium text-xs text-gray-500">(in sqft)</span>
+                    Width <span className="font-medium text-xs text-gray-500">(in ft)</span>
                   </p>
                   <NumberInput
                     name={`specifications.size.${index}.width`}
@@ -154,7 +153,7 @@ const SpecificationForm = () => {
                 </div>
                 <div>
                   <p className="mt-[9px] font-bold text-[15px]">
-                    Height <span className="font-medium text-xs text-gray-500">(in sqft)</span>
+                    Height <span className="font-medium text-xs text-gray-500">(in ft)</span>
                   </p>
                   <NumberInput
                     name={`specifications.size.${index}.height`}
