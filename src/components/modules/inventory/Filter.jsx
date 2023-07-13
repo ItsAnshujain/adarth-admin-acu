@@ -11,6 +11,7 @@ import {
 import { useSearchParams } from 'react-router-dom';
 import { serialize } from '../../../utils';
 import { useFetchMasters } from '../../../apis/queries/masters.queries';
+import { useDistinctAdditionalTags } from '../../../apis/queries/inventory.queries';
 
 const inititalFilterData = {
   'owner': {
@@ -54,6 +55,7 @@ const defaultValue = {
   tags: [],
   demographic: [],
   audience: [],
+  additionalTags: [],
 };
 
 const Filter = ({ isOpened, setShowFilter }) => {
@@ -85,6 +87,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const tags = searchParams.get('tags');
   const demographic = searchParams.get('demographic');
   const audience = searchParams.get('audience');
+  const additionalTags = searchParams.get('additionalTags');
 
   const { data: categoryData, isLoading: isCategoryLoading } = useFetchMasters(
     serialize({ type: 'category', parentId: null, limit: 100, page: 1 }),
@@ -111,6 +114,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const { data: audienceData, isLoading: isAudienceLoading } = useFetchMasters(
     serialize({ type: 'audience', parentId: null, limit: 100, page: 1 }),
   );
+  const additionalTagsQuery = useDistinctAdditionalTags();
 
   const handleCheckedValues = (filterValues, filterKey) => {
     setFilterOptions(prevState => ({ ...prevState, [filterKey]: filterValues }));
@@ -167,6 +171,21 @@ const Filter = ({ isOpened, setShowFilter }) => {
       filterOptions.demographic,
       filterOptions.audience,
     ],
+  );
+
+  const renderAdditionalTags = useCallback(
+    (data, filterKey) =>
+      data?.map(item => (
+        <div className="flex gap-2 mb-2" key={item}>
+          <Checkbox
+            onChange={event => handleStatusArr(event.target.value, filterKey)}
+            label={item}
+            defaultValue={item}
+            checked={filterOptions[filterKey].includes(item)}
+          />
+        </div>
+      )),
+    [filterOptions.additionalTags],
   );
 
   const handleNavigationByFilter = () => {
@@ -282,6 +301,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       tags: tags?.split(',') || [],
       demographic: demographic?.split(',') || [],
       audience: audience?.split(',') || [],
+      additionalTags: additionalTags?.split(',') || [],
     }));
   }, [searchParams]);
 
@@ -619,6 +639,17 @@ const Filter = ({ isOpened, setShowFilter }) => {
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">{renderDynamicOptionsArr(audienceData?.docs, 'audience')}</div>
+            </Accordion.Panel>
+          </Accordion.Item>
+
+          <Accordion.Item value="additionalTags" className="mb-4 rounded-xl border">
+            <Accordion.Control disabled={isAudienceLoading}>
+              <p className="text-lg">Additonal Feature</p>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <div className="mt-2">
+                {renderAdditionalTags(additionalTagsQuery.data, 'additionalTags')}
+              </div>
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>

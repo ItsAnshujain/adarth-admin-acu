@@ -2,6 +2,7 @@ import { Badge, Box, Checkbox, Image, Text, Card as MantineCard } from '@mantine
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import { getWord } from 'num-count';
+import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 
@@ -69,22 +70,44 @@ const Card = ({
         >
           {basicInformation?.spaceName}
         </Text>
-        <Text size="sm" weight="200" lineClamp={1} title={location?.address}>
-          {location?.address || 'NA'}
+        <Text size="sm" weight="200" lineClamp={1} title={location?.city}>
+          {location?.city || 'NA'}
         </Text>
-        <div className="grid grid-cols-2 justify-between">
+        <div>
+          <p className="text-sm text-gray-400 mb-2">Additional Feature</p>
+          {specifications?.additionalTags?.length
+            ? specifications.additionalTags.map(item => (
+                <Badge key={uuidv4()} size="md" className="capitalize" mr="xs">
+                  {item}
+                </Badge>
+              ))
+            : '--'}
+        </div>
+        <div className="grid grid-cols-2 justify-between gap-y-2">
           <div>
             <p className="text-sm text-gray-400 mb-2">Category</p>
             <Text className="text-sm" lineClamp={1}>
-              {basicInformation?.category?.name}
+              {basicInformation?.category?.name || '--'}
             </Text>
+          </div>
+          <div>
+            <p className="text-sm text-gray-400 mb-2">Sub Category</p>
+            <Text className="text-sm" lineClamp={1}>
+              {basicInformation?.subCategory?.name || '--'}
+            </Text>
+          </div>
+          <div>
+            <p className="text-sm text-gray-400 mb-2">Dimension (wxh)</p>
+            <p>{`${specifications?.size?.width || 0}ft x ${
+              specifications?.size?.height || 0
+            }ft`}</p>
           </div>
           <div>
             <p className="text-sm text-gray-400 mb-2">Impressions</p>
             <p className="text-sm font-medium">
               {specifications?.impressions?.max
                 ? `${getWord(specifications.impressions.max)}+`
-                : 'NA'}
+                : '--'}
             </p>
           </div>
         </div>

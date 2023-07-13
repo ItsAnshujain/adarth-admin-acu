@@ -6,6 +6,7 @@ import {
   deleteInventory,
   deleteInventoryById,
   fetchBookingsByInventoryId,
+  fetchDistinctAdditionalTags,
   fetchInventory,
   fetchInventoryById,
   fetchInventoryReportList,
@@ -15,6 +16,7 @@ import {
   updateInventories,
   updateInventory,
 } from '../requests/inventory.requests';
+import { onApiError } from '../../utils';
 
 export const useCreateInventory = () => {
   const queryClient = useQueryClient();
@@ -260,3 +262,14 @@ export const useShareInventory = () => {
     },
   );
 };
+
+export const useDistinctAdditionalTags = (enabled = true) =>
+  useQuery({
+    queryKey: ['distinct-tags'],
+    queryFn: async () => {
+      const res = await fetchDistinctAdditionalTags();
+      return res?.data;
+    },
+    enabled,
+    onError: onApiError,
+  });

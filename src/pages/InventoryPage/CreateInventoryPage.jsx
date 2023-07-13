@@ -354,6 +354,7 @@ const CreateInventoryPage = () => {
           },
           previousBrands: arrOfPreviousBrands?.length ? arrOfPreviousBrands : [],
           tags: arrOfTags?.length ? arrOfTags : [],
+          additionalTags: specifications?.additionalTags || [],
         },
         location: {
           latitude: location?.latitude ? parseFloat(location.latitude, 10) : null,

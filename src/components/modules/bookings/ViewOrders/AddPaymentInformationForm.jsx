@@ -92,7 +92,6 @@ const AddPaymentInformationForm = ({ bookingId, onClose }) => {
             label="Payment Date"
             name="paymentDate"
             placeholder="Select date..."
-            minDate={new Date()}
             clearable={false}
             className="mb-4"
           />

@@ -177,7 +177,7 @@ const ReleaseOrder = ({
           ),
       },
       {
-        Header: 'Location',
+        Header: 'City',
         accessor: 'location',
         disableSortBy: true,
         Cell: ({

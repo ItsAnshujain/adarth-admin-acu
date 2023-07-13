@@ -45,7 +45,7 @@ const BasicInformationForm = () => {
           <TextInput
             styles={styles}
             label="Brand Display Name "
-            name="brandDisplayName "
+            name="displayBrands"
             placeholder="Write..."
             errors={errors}
           />

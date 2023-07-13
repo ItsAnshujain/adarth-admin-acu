@@ -18,6 +18,7 @@ import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import { getWord } from 'num-count';
+import { v4 as uuidv4 } from 'uuid';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
@@ -105,7 +106,7 @@ const Spaces = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
+        Cell: info =>
           useMemo(() => {
             let currentPage = pages;
             let rowCount = 0;
@@ -113,7 +114,7 @@ const Spaces = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+            return <div className="pl-2">{rowCount + info.row.index + 1}</div>;
           }, []),
       },
       {
@@ -173,27 +174,33 @@ const Spaces = () => {
           }, []),
       },
       {
-        Header: 'INVENTORY ID',
-        accessor: 'inventoryId',
-        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
-      },
-      {
-        Header: 'MEDIA OWNER NAME',
-        accessor: 'basicInformation.mediaOwner.name',
+        Header: 'CITY',
+        accessor: 'location.city',
         Cell: ({
           row: {
-            original: { mediaOwner },
+            original: { location },
           },
-        }) => useMemo(() => <p className="w-fit">{mediaOwner}</p>, []),
+        }) => useMemo(() => <p>{location || '-'}</p>, []),
       },
       {
-        Header: 'PEER',
-        accessor: 'basicInformation.peerMediaOwner',
-        Cell: ({
-          row: {
-            original: { peer },
-          },
-        }) => useMemo(() => <p className="w-fit">{peer}</p>, []),
+        Header: 'ADDITIONAL FEATURE',
+        accessor: 'specifications.additionalTags',
+        disableSortBy: true,
+        Cell: info =>
+          useMemo(
+            () => (
+              <div>
+                {info.row.original.additionalTags?.length
+                  ? info.row.original.additionalTags.map(item => (
+                      <Badge key={uuidv4()} size="lg" className="capitalize" mr="xs">
+                        {item}
+                      </Badge>
+                    ))
+                  : '-'}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'CATEGORY',
@@ -221,6 +228,32 @@ const Spaces = () => {
           }, []),
       },
       {
+        Header: 'SUB CATEGORY',
+        accessor: 'basicInformation.subCategory.name',
+        Cell: ({
+          row: {
+            original: { subCategory },
+          },
+        }) =>
+          useMemo(() => {
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === subCategory,
+            );
+
+            return (
+              <div>
+                {subCategory ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {subCategory}
+                  </Badge>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
+            );
+          }, []),
+      },
+      {
         Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
         Cell: ({
@@ -230,30 +263,56 @@ const Spaces = () => {
         }) => useMemo(() => <p>{dimension}</p>, []),
       },
       {
-        Header: 'UNIT',
-        accessor: 'specifications.unit',
+        Header: 'PRICING',
+        accessor: 'basicInformation.price',
         Cell: ({
           row: {
-            original: { unit },
-          },
-        }) => useMemo(() => <p>{unit}</p>, []),
-      },
-      {
-        Header: 'IMPRESSION',
-        accessor: 'specifications.impressions.max',
-        Cell: ({
-          row: {
-            original: { impressions },
+            original: { _id, price },
           },
         }) =>
           useMemo(
             () => (
-              <p className="capitalize font-medium w-32">
-                {impressions ? `${getWord(impressions)}+` : 'NA'}
-              </p>
+              <NumberInput
+                defaultValue={+(price || 0)}
+                className="w-40"
+                hideControls
+                onBlur={e => updateData('price', e.target.value, _id)}
+              />
             ),
             [],
           ),
+      },
+      {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+      },
+      {
+        Header: 'MEDIA OWNER NAME',
+        accessor: 'basicInformation.mediaOwner.name',
+        Cell: ({
+          row: {
+            original: { mediaOwner },
+          },
+        }) => useMemo(() => <p className="w-fit">{mediaOwner}</p>, []),
+      },
+      {
+        Header: 'PEER',
+        accessor: 'basicInformation.peerMediaOwner',
+        Cell: ({
+          row: {
+            original: { peer },
+          },
+        }) => useMemo(() => <p className="w-fit">{peer}</p>, []),
+      },
+      {
+        Header: 'MEDIA TYPE',
+        accessor: 'mediaType',
+        Cell: ({
+          row: {
+            original: { mediaType },
+          },
+        }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
         Header: 'HEALTH STATUS',
@@ -278,42 +337,30 @@ const Spaces = () => {
           ),
       },
       {
-        Header: 'LOCATION',
-        accessor: 'location.city',
+        Header: 'IMPRESSION',
+        accessor: 'specifications.impressions.max',
         Cell: ({
           row: {
-            original: { location },
-          },
-        }) => useMemo(() => <p>{location || '-'}</p>, []),
-      },
-      {
-        Header: 'MEDIA TYPE',
-        accessor: 'mediaType',
-        Cell: ({
-          row: {
-            original: { mediaType },
-          },
-        }) => useMemo(() => <p>{mediaType || '-'}</p>),
-      },
-      {
-        Header: 'PRICING',
-        accessor: 'basicInformation.price',
-        Cell: ({
-          row: {
-            original: { _id, price },
+            original: { impressions },
           },
         }) =>
           useMemo(
             () => (
-              <NumberInput
-                defaultValue={+(price || 0)}
-                className="w-40"
-                hideControls
-                onBlur={e => updateData('price', e.target.value, _id)}
-              />
+              <p className="capitalize font-medium w-32">
+                {impressions ? `${getWord(impressions)}+` : 'NA'}
+              </p>
             ),
             [],
           ),
+      },
+      {
+        Header: 'UNIT',
+        accessor: 'specifications.unit',
+        Cell: ({
+          row: {
+            original: { unit },
+          },
+        }) => useMemo(() => <p>{unit}</p>, []),
       },
       {
         Header: 'PROPOSAL DATE',
@@ -413,7 +460,9 @@ const Spaces = () => {
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
         obj.unit = item?.specifications?.unit || '-';
+        obj.additionalTags = item?.specifications?.additionalTags;
         obj.category = item?.basicInformation?.category?.name;
+        obj.subCategory = item?.basicInformation?.subCategory?.name;
         obj.dimension = `${item.specifications?.size?.width || 0}ft x ${
           item.specifications?.size?.height || 0
         }ft`;

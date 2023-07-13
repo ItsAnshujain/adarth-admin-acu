@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { getWord } from 'num-count';
+import { v4 as uuidv4 } from 'uuid';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/modules/inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -84,7 +85,7 @@ const InventoryDashboardPage = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
+        Cell: info =>
           useMemo(() => {
             let currentPage = page;
             let rowCount = 0;
@@ -92,19 +93,15 @@ const InventoryDashboardPage = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+            return <div className="pl-2">{rowCount + info.row.index + 1}</div>;
           }, []),
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'basicInformation.spaceName',
-        Cell: ({
-          row: {
-            original: { _id, basicInformation, isUnderMaintenance, bookingRange },
-          },
-        }) =>
+        Cell: info =>
           useMemo(() => {
-            const isOccupied = bookingRange?.some(
+            const isOccupied = info.row.original.bookingRange?.some(
               item =>
                 dayjs().isBetween(item?.startDate, item?.endDate) ||
                 dayjs().isSame(dayjs(item?.endDate), 'day'),
@@ -116,17 +113,17 @@ const InventoryDashboardPage = () => {
                   <Box
                     className={classNames(
                       'bg-white border rounded-md',
-                      basicInformation?.spacePhoto ? 'cursor-zoom-in' : '',
+                      info.row.original.basicInformation?.spacePhoto ? 'cursor-zoom-in' : '',
                     )}
                     onClick={() =>
-                      basicInformation?.spacePhoto
-                        ? togglePreviewModal(basicInformation?.spacePhoto)
+                      info.row.original.basicInformation?.spacePhoto
+                        ? togglePreviewModal(info.row.original.basicInformation?.spacePhoto)
                         : null
                     }
                   >
-                    {basicInformation?.spacePhoto ? (
+                    {info.row.original.basicInformation?.spacePhoto ? (
                       <Image
-                        src={basicInformation?.spacePhoto}
+                        src={info.row.original.basicInformation?.spacePhoto}
                         alt="banner"
                         height={32}
                         width={32}
@@ -136,28 +133,129 @@ const InventoryDashboardPage = () => {
                     )}
                   </Box>
                   <Link
-                    to={`/inventory/view-details/${_id}`}
+                    to={`/inventory/view-details/${info.row.original._id}`}
                     className="text-purple-450 font-medium px-2"
                   >
                     <Text
                       className="overflow-hidden text-ellipsis underline"
                       lineClamp={1}
-                      title={basicInformation?.spaceName}
+                      title={info.row.original.basicInformation?.spaceName}
                     >
-                      {basicInformation?.spaceName}
+                      {info.row.original.basicInformation?.spaceName}
                     </Text>
                   </Link>
                 </div>
                 <Badge
                   className="capitalize"
                   variant="filled"
-                  color={isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'}
+                  color={
+                    info.row.original.isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'
+                  }
                 >
-                  {isUnderMaintenance ? 'Under Maintenance' : isOccupied ? 'Occupied' : 'Available'}
+                  {info.row.original.isUnderMaintenance
+                    ? 'Under Maintenance'
+                    : isOccupied
+                    ? 'Occupied'
+                    : 'Available'}
                 </Badge>
               </div>
             );
           }, []),
+      },
+      {
+        Header: 'CITY',
+        accessor: 'location.city',
+        Cell: info => useMemo(() => <p>{info.row.original.location?.city || '-'}</p>, []),
+      },
+      {
+        Header: 'ADDITIONAL FEATURE',
+        accessor: 'specifications.additionalTags',
+        disableSortBy: true,
+        Cell: info =>
+          useMemo(
+            () => (
+              <div>
+                {info.row.original.specifications?.additionalTags?.length
+                  ? info.row.original.specifications.additionalTags.map(item => (
+                      <Badge key={uuidv4()} size="lg" className="capitalize" mr="xs">
+                        {item}
+                      </Badge>
+                    ))
+                  : '-'}
+              </div>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'CATEGORY',
+        accessor: 'basicInformation.category.name',
+        Cell: info =>
+          useMemo(() => {
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === info.row.original.basicInformation?.category?.name,
+            );
+            return (
+              <div>
+                {info.row.original.basicInformation?.category?.name ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {info.row.original.basicInformation.category.name}
+                  </Badge>
+                ) : (
+                  '-'
+                )}
+              </div>
+            );
+          }, []),
+      },
+      {
+        Header: 'SUB CATEGORY',
+        accessor: 'basicInformation.subCategory.name',
+        Cell: info =>
+          useMemo(() => {
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === info.row.original.basicInformation?.subCategory?.name,
+            );
+            return (
+              <div>
+                {info.row.original.basicInformation?.subCategory?.name ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {info.row.original.basicInformation.subCategory.name}
+                  </Badge>
+                ) : (
+                  '-'
+                )}
+              </div>
+            );
+          }, []),
+      },
+      {
+        Header: 'DIMENSION (WxH)',
+        accessor: 'specifications.size.min',
+        Cell: info =>
+          useMemo(
+            () => (
+              <p>{`${info.row.original.specifications?.size?.width || 0}ft x ${
+                info.row.original.specifications?.size?.height || 0
+              }ft`}</p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'PRICING',
+        accessor: 'basicInformation.price',
+        Cell: info =>
+          useMemo(
+            () => (
+              <p className="pl-2">
+                {info.row.original.basicInformation?.price
+                  ? toIndianCurrency(Number.parseInt(info.row.original.basicInformation?.price, 10))
+                  : 0}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'INVENTORY ID',
@@ -177,98 +275,31 @@ const InventoryDashboardPage = () => {
       {
         Header: 'PEER',
         accessor: 'basicInformation.peerMediaOwner',
-        Cell: ({
-          row: {
-            original: { basicInformation },
-          },
-        }) => useMemo(() => <p className="w-fit">{basicInformation?.peerMediaOwner || '-'}</p>, []),
-      },
-      {
-        Header: 'CATEGORY',
-        accessor: 'basicInformation.category.name',
-        Cell: ({
-          row: {
-            original: { basicInformation },
-          },
-        }) =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === basicInformation?.category?.name,
-            );
-
-            return (
-              <div>
-                {basicInformation?.category?.name ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
-                    {basicInformation.category.name}
-                  </Badge>
-                ) : (
-                  '-'
-                )}
-              </div>
-            );
-          }, []),
-      },
-      {
-        Header: 'DIMENSION (WxH)',
-        accessor: 'specifications.size.min',
-        Cell: ({
-          row: {
-            original: { specifications },
-          },
-        }) =>
+        Cell: info =>
           useMemo(
             () => (
-              <p>{`${specifications?.size?.width || 0}ft x ${
-                specifications?.size?.height || 0
-              }ft`}</p>
+              <p className="w-fit">{info.row.original.basicInformation?.peerMediaOwner || '-'}</p>
             ),
             [],
           ),
       },
       {
-        Header: 'UNIT',
-        accessor: 'specifications.unit',
-        Cell: ({
-          row: {
-            original: { specifications },
-          },
-        }) => useMemo(() => <p>{specifications?.unit || '-'}</p>, []),
-      },
-      {
-        Header: 'IMPRESSION',
-        accessor: 'specifications.impressions.max',
-        Cell: ({
-          row: {
-            original: { specifications },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <p className="capitalize font-medium w-32">
-                {specifications?.impressions?.max
-                  ? `${getWord(specifications.impressions.max)}+`
-                  : 'NA'}
-              </p>
-            ),
-            [],
-          ),
+        Header: 'MEDIA TYPE',
+        accessor: 'basicInformation.mediaType.name',
+        Cell: info =>
+          useMemo(() => <p>{info.row.original.basicInformation?.mediaType?.name || '-'}</p>),
       },
       {
         Header: 'HEALTH STATUS',
         accessor: 'specifications.health',
-        Cell: ({
-          row: {
-            original: { specifications },
-          },
-        }) =>
+        Cell: info =>
           useMemo(
             () => (
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: specifications?.health, color: 'green' },
-                    { value: 100 - (specifications?.health || 0), color: 'red' },
+                    { value: info.row.original.specifications?.health, color: 'green' },
+                    { value: 100 - (info.row.original.specifications?.health || 0), color: 'red' },
                   ]}
                 />
               </div>
@@ -277,57 +308,36 @@ const InventoryDashboardPage = () => {
           ),
       },
       {
-        Header: 'LOCATION',
-        accessor: 'location.city',
-        Cell: ({
-          row: {
-            original: { location },
-          },
-        }) => useMemo(() => <p>{location?.city || '-'}</p>, []),
-      },
-      {
-        Header: 'MEDIA TYPE',
-        accessor: 'basicInformation.mediaType.name',
-        Cell: ({
-          row: {
-            original: { basicInformation },
-          },
-        }) => useMemo(() => <p>{basicInformation?.mediaType?.name || '-'}</p>),
-      },
-      {
-        Header: 'PRICING',
-        accessor: 'basicInformation.price',
-        Cell: ({
-          row: {
-            original: { basicInformation },
-          },
-        }) =>
+        Header: 'IMPRESSION',
+        accessor: 'specifications.impressions.max',
+        Cell: info =>
           useMemo(
             () => (
-              <p className="pl-2">
-                {basicInformation?.price
-                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
-                  : 0}
+              <p className="capitalize font-medium w-32">
+                {info.row.original.specifications?.impressions?.max
+                  ? `${getWord(info.row.original.specifications.impressions.max)}+`
+                  : 'NA'}
               </p>
             ),
             [],
           ),
       },
       {
+        Header: 'UNIT',
+        accessor: 'specifications.unit',
+        Cell: info => useMemo(() => <p>{info.row.original.specifications?.unit || '-'}</p>, []),
+      },
+      {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id, createdBy },
-          },
-        }) =>
+        Cell: info =>
           useMemo(
             () => (
               <SpacesMenuPopover
-                itemId={_id}
-                enableDelete={createdBy && !createdBy?.isPeer}
-                enableEdit={createdBy && !createdBy?.isPeer}
+                itemId={info.row.original_id}
+                enableDelete={info.row.originalcreatedBy && !info.row.originalcreatedBy?.isPeer}
+                enableEdit={info.row.originalcreatedBy && !info.row.originalcreatedBy?.isPeer}
               />
             ),
             [],
