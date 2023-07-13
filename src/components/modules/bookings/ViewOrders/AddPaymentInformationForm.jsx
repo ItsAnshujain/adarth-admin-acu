@@ -1,6 +1,6 @@
 import { Box, Button, Group, Text } from '@mantine/core';
 import { yupResolver } from '@hookform/resolvers/yup';
-import React from 'react';
+import React, { useEffect } from 'react';
 import * as yup from 'yup';
 import dayjs from 'dayjs';
 import { showNotification } from '@mantine/notifications';
@@ -8,7 +8,11 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { ChevronDown } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
 import { DATE_FORMAT, MODE_OF_PAYMENT } from '../../../../utils/constants';
-import { useCreatePayment } from '../../../../apis/queries/payment.queries';
+import {
+  useCreatePayment,
+  usePaymentById,
+  useUpdatePayment,
+} from '../../../../apis/queries/payment.queries';
 import { useUploadFile } from '../../../../apis/queries/upload.queries';
 import ControlledDropzone from '../../../shared/FormInputs/Controlled/ControlledDropzone';
 import ControlledTextInput from '../../../shared/FormInputs/Controlled/ControlledTextInput';
@@ -24,43 +28,91 @@ const schema = yup.object({
     .typeError('Must be a number')
     .nullable()
     .required('Amount is required'),
+  paymentDate: yup.string().trim().required('Payment Date is required'),
 });
 
-const AddPaymentInformationForm = ({ bookingId, onClose }) => {
+const AddPaymentInformationForm = ({ bookingId, onClose, id }) => {
   const queryClient = useQueryClient();
   const form = useForm({ resolver: yupResolver(schema) });
   const createPayment = useCreatePayment();
+  const paymentById = usePaymentById(id, !!id);
+  const updatePayment = useUpdatePayment();
   const upload = useUploadFile();
 
   const handleInvoiceUpload = async params => {
     const formData = new FormData();
     formData.append('files', params);
     const res = await upload.mutateAsync(formData);
-    return res?.Location;
+    return res?.[0]?.Location;
   };
 
   const onSubmit = form.handleSubmit(async formData => {
     const data = { ...formData, bookingId };
+    let file;
 
     data.paymentDate = data.paymentDate && dayjs(data.paymentDate).format(DATE_FORMAT);
 
-    if (data?.invoice) {
-      const uploaded = handleInvoiceUpload(data.invoice);
-      data.invoice = uploaded;
+    if (typeof data.image === 'object') {
+      file = await handleInvoiceUpload(data.image);
     }
 
-    createPayment.mutate(data, {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['payment']);
-        form.reset();
-        onClose();
-        showNotification({
-          title: 'Payment added successfully',
-          color: 'green',
-        });
-      },
-    });
+    if (file) {
+      data.invoice = file;
+    }
+
+    delete data.image;
+
+    if (id) {
+      updatePayment.mutate(
+        { id, payload: data },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(['payment']);
+            queryClient.invalidateQueries(['payment-by-id', id]);
+            queryClient.invalidateQueries(['booking-stats-by-id', bookingId]);
+            showNotification({
+              title: 'Payment updated successfully',
+              color: 'green',
+            });
+            form.reset();
+            onClose();
+          },
+        },
+      );
+    } else {
+      createPayment.mutate(data, {
+        onSuccess: () => {
+          queryClient.invalidateQueries(['payment']);
+          queryClient.invalidateQueries(['booking-stats-by-id', bookingId]);
+          showNotification({
+            title: 'Payment added successfully',
+            color: 'green',
+          });
+          form.reset();
+          onClose();
+        },
+      });
+    }
   });
+
+  useEffect(() => {
+    if (paymentById.data) {
+      form.reset({
+        type: paymentById.data?.type,
+        amount: paymentById.data?.amount,
+        referenceNumber: paymentById.data?.referenceNumber,
+        cardNumber: paymentById.data?.cardNumber,
+        paymentDate: paymentById.data?.paymentDate
+          ? new Date(paymentById.data?.paymentDate)
+          : undefined,
+        billNumber: paymentById.data?.billNumber,
+        paymentFor: paymentById.data?.paymentFor || undefined,
+        remarks: paymentById.data?.remarks || undefined,
+        invoice: paymentById.data?.invoice || undefined,
+        image: paymentById.data?.invoice || '',
+      });
+    }
+  }, [paymentById.data]);
 
   return (
     <Box className="border-t">
@@ -72,6 +124,13 @@ const AddPaymentInformationForm = ({ bookingId, onClose }) => {
             data={MODE_OF_PAYMENT}
             placeholder="Select..."
             rightSection={<ChevronDown size={16} />}
+            className="mb-4"
+          />
+          <ControlledTextInput
+            label="Reference Number"
+            name="referenceNumber"
+            placeholder="Write..."
+            maxLength={200}
             className="mb-4"
           />
           <ControlledNumberInput
@@ -89,37 +148,44 @@ const AddPaymentInformationForm = ({ bookingId, onClose }) => {
             className="mb-4"
           />
           <ControlledDatePicker
-            label="Payment Date"
+            label="Bill Date"
             name="paymentDate"
             placeholder="Select date..."
             clearable={false}
             className="mb-4"
           />
           <ControlledTextInput
-            label="Payment Reference ID"
-            name="referenceNumber"
+            label="Bill Number"
+            name="billNumber"
             placeholder="Write..."
             maxLength={200}
             className="mb-4"
           />
           <ControlledTextInput
-            label="Remarks"
+            label="Payment For"
+            name="paymentFor"
+            placeholder="Write..."
+            maxLength={200}
+            className="mb-4"
+          />
+          <ControlledTextInput
+            label="Description"
             name="remarks"
             placeholder="Write..."
             maxLength={200}
             className="mb-4"
           />
           <Group position="center">
-            <ControlledDropzone name="invoice" />
+            <ControlledDropzone name="image" />
             <Text>Upload Invoice</Text>
           </Group>
           <Group position="right">
             <Button
               type="submit"
               className="primary-button"
-              loading={createPayment.isLoading || upload.isLoading}
+              loading={createPayment.isLoading || updatePayment.isLoading || upload.isLoading}
             >
-              Add
+              {id ? 'Edit' : 'Add'}
             </Button>
           </Group>
         </form>

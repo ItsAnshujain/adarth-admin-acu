@@ -1,3 +1,4 @@
+import urlcat from 'urlcat';
 import http from '../http';
 
 export const bookings = filter => http.get(`/booking?${filter}`);
@@ -44,3 +45,5 @@ export const generateManualReleaseReceipt = data =>
 
 export const generateManualInvoiceReceipt = data =>
   http.post('/booking/generate-receipt/manual/invoice', data);
+
+export const fetchBookingStatsById = id => http.get(urlcat('/booking/:id/stats', { id }));

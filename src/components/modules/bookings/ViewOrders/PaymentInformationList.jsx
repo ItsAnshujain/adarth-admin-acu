@@ -1,25 +1,77 @@
-import React, { useMemo } from 'react';
-import { Button, Group } from '@mantine/core';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ActionIcon, Button, Group, Menu, Modal } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { useParams, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { useQueryClient } from '@tanstack/react-query';
+import { showNotification } from '@mantine/notifications';
 import Table from '../../../Table/Table';
 import modalConfig from '../../../../utils/modalConfig';
 import AddPaymentInformationForm from './AddPaymentInformationForm';
 import toIndianCurrency from '../../../../utils/currencyFormat';
-import { usePayment } from '../../../../apis/queries/payment.queries';
+import { usePayment, useDeletePayment } from '../../../../apis/queries/payment.queries';
 import { DATE_FORMAT } from '../../../../utils/constants';
+import MenuIcon from '../../../Menu';
+import ConfirmContent from '../../../shared/ConfirmContent';
+
+const updatedModalConfig = {
+  ...modalConfig,
+  classNames: {
+    header: 'px-4 pt-4',
+    body: 'p-4',
+  },
+};
 
 const PaymentInformationList = () => {
+  const queryClient = useQueryClient();
   const modals = useModals();
   const { id: bookingId } = useParams();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [openDeletePayment, setOpenDeletePayment] = useState('');
+
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
   const paymentQuery = usePayment(
-    { bookingId, limit: 10, page: 1, sortBy: 'name', sortOrder: 'asc' },
+    { bookingId, limit: 10, page, sortBy: 'name', sortOrder: 'asc' },
     !!bookingId,
   );
+  const deletePayment = useDeletePayment();
+
+  const handleAddPayment = id =>
+    modals.openModal({
+      modalId: 'addPaymentInformation',
+      title: 'Add Payment Information',
+      children: (
+        <AddPaymentInformationForm
+          bookingId={bookingId}
+          onClose={() => modals.closeModal('addPaymentInformation')}
+          id={id}
+        />
+      ),
+      ...modalConfig,
+    });
+
+  const handleDeletePayment = useCallback(() => {
+    if (typeof openDeletePayment === 'string') {
+      deletePayment.mutate(openDeletePayment, {
+        onSuccess: () => {
+          queryClient.invalidateQueries(['payment']);
+          queryClient.invalidateQueries(['booking-stats-by-id', bookingId]);
+          showNotification({
+            message: 'Payment deleted successfully',
+            color: 'green',
+          });
+          setOpenDeletePayment('');
+        },
+      });
+    }
+  }, [openDeletePayment, deletePayment]);
+
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
+    setSearchParams(searchParams);
+  };
 
   const COLUMNS = useMemo(
     () => [
@@ -37,22 +89,31 @@ const PaymentInformationList = () => {
       {
         Header: 'PAYMENT TYPE',
         accessor: 'type',
+        disableSortBy: true,
         Cell: info => useMemo(() => <p className="uppercase">{info.row.original.type}</p>, []),
+      },
+      {
+        Header: 'REFERENCE NUMBER',
+        accessor: 'referenceNumber',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.referenceNumber || '-'}</p>, []),
       },
       {
         Header: 'AMOUNT',
         accessor: 'amount',
+        disableSortBy: true,
         Cell: info => useMemo(() => <p>{toIndianCurrency(info.row.original.amount || 0)}</p>, []),
       },
-
       {
         Header: 'CARD NO',
         accessor: 'cardNumber',
+        disableSortBy: true,
         Cell: info => useMemo(() => <p>{info.row.original.cardNumber || '-'}</p>, []),
       },
       {
-        Header: 'PAYMENT DATE',
+        Header: 'BILL DATE',
         accessor: 'paymentDate',
+        disableSortBy: true,
         Cell: info =>
           useMemo(
             () => (
@@ -66,43 +127,59 @@ const PaymentInformationList = () => {
           ),
       },
       {
-        Header: 'PAYMENT REFERENCE ID',
-        accessor: 'referenceNumber',
-        Cell: info => useMemo(() => <p>{info.row.original.referenceNumber || '-'}</p>, []),
+        Header: 'BILL NUMBER',
+        accessor: 'billNumber',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.billNumber || '-'}</p>, []),
       },
       {
-        Header: 'REMARKS',
+        Header: 'PAYMENT FOR',
+        accessor: 'paymentFor',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.paymentFor || '-'}</p>, []),
+      },
+      {
+        Header: 'DESCRIPTION',
         accessor: 'remarks',
+        disableSortBy: true,
         Cell: info => useMemo(() => <p>{info.row.original.remarks || '-'}</p>, []),
       },
       {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
-        Cell: () => useMemo(() => <p />, []),
+        Cell: info =>
+          useMemo(
+            () => (
+              <Menu shadow="md" classNames={{ item: 'cursor-pointer' }}>
+                <Menu.Target>
+                  <ActionIcon>
+                    <MenuIcon />
+                  </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item>Download</Menu.Item>
+                  <Menu.Item onClick={() => handleAddPayment(info.row.original._id)}>
+                    Edit
+                  </Menu.Item>
+                  <Menu.Item onClick={() => setOpenDeletePayment(info.row.original._id)}>
+                    Delete
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            ),
+            [],
+          ),
       },
     ],
-    [],
+    [paymentQuery.data?.docs],
   );
-
-  const handleAddPayment = () =>
-    modals.openModal({
-      modalId: 'addPaymentInformation',
-      title: 'Add Payment Information',
-      children: (
-        <AddPaymentInformationForm
-          bookingId={bookingId}
-          onClose={() => modals.closeModal('addPaymentInformation')}
-        />
-      ),
-      ...modalConfig,
-    });
 
   return (
     <div className="mb-5">
       <Group position="apart" className="pb-3">
         <p className="font-bold text-lg">Payment Info</p>
-        <Button className="primary-button" onClick={handleAddPayment}>
+        <Button className="primary-button" onClick={() => handleAddPayment()}>
           Add Payment Information
         </Button>
       </Group>
@@ -111,14 +188,31 @@ const PaymentInformationList = () => {
         <Table
           COLUMNS={COLUMNS}
           data={paymentQuery.data?.docs || []}
-          activePage={page}
           classNameWrapper="min-h-[150px]"
+          activePage={paymentQuery.data?.page || 1}
+          totalPages={paymentQuery.data?.totalPages || 1}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
         />
       ) : (
         <div className="w-full min-h-[150px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>
       )}
+
+      <Modal
+        title="Delete Payment Record?"
+        opened={!!openDeletePayment}
+        onClose={() => setOpenDeletePayment('')}
+        closeOnClickOutside={!deletePayment.isLoading}
+        closeOnEscape={!deletePayment.isLoading}
+        {...updatedModalConfig}
+      >
+        <ConfirmContent
+          onConfirm={() => handleDeletePayment()}
+          onCancel={() => setOpenDeletePayment('')}
+          loading={deletePayment.isLoading}
+        />
+      </Modal>
     </div>
   );
 };

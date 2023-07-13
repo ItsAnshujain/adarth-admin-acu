@@ -281,13 +281,21 @@ const SelectSpace = () => {
         Cell: info =>
           useMemo(
             () => (
-              <div>
+              <div className="flex gap-x-2">
                 {info.row.original.additionalTags?.length
-                  ? info.row.original.additionalTags.map(item => (
-                      <Badge key={uuidv4()} size="lg" className="capitalize" mr="xs">
-                        {item}
-                      </Badge>
-                    ))
+                  ? info.row.original.additionalTags.map(
+                      (item, index) =>
+                        index < 2 && (
+                          <Badge
+                            key={uuidv4()}
+                            size="lg"
+                            className="capitalize max-w-[100px]"
+                            title={item}
+                          >
+                            {item}
+                          </Badge>
+                        ),
+                    )
                   : '-'}
               </div>
             ),
@@ -349,6 +357,7 @@ const SelectSpace = () => {
       {
         Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { dimension },

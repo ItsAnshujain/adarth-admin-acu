@@ -174,13 +174,21 @@ const InventoryDashboardPage = () => {
         Cell: info =>
           useMemo(
             () => (
-              <div>
+              <div className="flex gap-x-2">
                 {info.row.original.specifications?.additionalTags?.length
-                  ? info.row.original.specifications.additionalTags.map(item => (
-                      <Badge key={uuidv4()} size="lg" className="capitalize" mr="xs">
-                        {item}
-                      </Badge>
-                    ))
+                  ? info.row.original.specifications.additionalTags.map(
+                      (item, index) =>
+                        index < 2 && (
+                          <Badge
+                            key={uuidv4()}
+                            size="lg"
+                            className="capitalize max-w-[100px]"
+                            title={item}
+                          >
+                            {item}
+                          </Badge>
+                        ),
+                    )
                   : '-'}
               </div>
             ),
@@ -232,13 +240,16 @@ const InventoryDashboardPage = () => {
       {
         Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
+        disableSortBy: true,
         Cell: info =>
           useMemo(
-            () => (
-              <p>{`${info.row.original.specifications?.size?.width || 0}ft x ${
-                info.row.original.specifications?.size?.height || 0
-              }ft`}</p>
-            ),
+            () =>
+              info.row.original.specifications?.size.length
+                ? info.row.original.specifications.size.map(
+                    (item, index) =>
+                      index < 2 && <p>{`${item?.width || 0}ft x ${item?.height || 0}ft`}</p>,
+                  )
+                : '-',
             [],
           ),
       },

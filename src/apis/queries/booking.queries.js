@@ -20,7 +20,9 @@ import {
   generateManualPurchaseReceipt,
   generateManualReleaseReceipt,
   generateManualInvoiceReceipt,
+  fetchBookingStatsById,
 } from '../requests/booking.requests';
+import { onApiError } from '../../utils';
 
 export const useBookings = (filter, enabled = true) =>
   useQuery(
@@ -381,3 +383,14 @@ export const useGenerateManualInvoice = () => {
     },
   );
 };
+
+export const useBookingStatsById = (bookingId, enabled = true) =>
+  useQuery({
+    queryKey: ['booking-stats-by-id', bookingId],
+    queryFn: async () => {
+      const res = await fetchBookingStatsById(bookingId);
+      return res?.data;
+    },
+    enabled,
+    onError: onApiError,
+  });

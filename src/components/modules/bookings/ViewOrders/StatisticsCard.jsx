@@ -27,6 +27,7 @@ const StatisticsCard = () => {
   const { id: bookingId } = useParams();
   const bookingData = queryClient.getQueryData(['booking-by-id', bookingId]);
   const bookingStats = queryClient.getQueryData(['booking-stats', '']);
+  const bookingStatsById = queryClient.getQueryData(['booking-stats-by-id', bookingId]);
 
   const healthStatusData = useMemo(
     () => ({
@@ -97,15 +98,15 @@ const StatisticsCard = () => {
               <div className="flex gap-2 items-center">
                 <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                 <div>
-                  <p className="text-xs font-lighter mb-1">Total Paid</p>
-                  <p className="font-bold text-md">{bookingStats?.online ?? 0}</p>
+                  <p className="text-xs font-lighter mb-1">Total Payment</p>
+                  <p className="font-bold text-md">{bookingStatsById?.[0]?.totalPayment ?? 0}</p>
                 </div>
               </div>
               <div className="flex gap-2 items-center">
                 <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                 <div>
-                  <p className="font-lighter text-xs mb-1">Outstanding</p>
-                  <p className="font-bold text-md">{bookingStats?.offline ?? 0}</p>
+                  <p className="font-lighter text-xs mb-1">Outstanding Payment</p>
+                  <p className="font-bold text-md">{bookingStatsById?.[0]?.unpaidAmount ?? 0}</p>
                 </div>
               </div>
             </div>

@@ -183,6 +183,7 @@ const ProposalDetailsPage = () => {
       {
         Header: 'DIMENSION (WxH)',
         accessor: 'size.height',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { size },
