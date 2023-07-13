@@ -6,6 +6,7 @@ import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import { getWord } from 'num-count';
+import { v4 as uuidv4 } from 'uuid';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Header from '../../components/modules/proposals/ViewProposal/Header';
@@ -120,6 +121,121 @@ const ProposalDetailsPage = () => {
           ),
       },
       {
+        Header: 'CITY',
+        accessor: 'location',
+        Cell: ({
+          row: {
+            original: { location },
+          },
+        }) => useMemo(() => <p>{location || '-'}</p>),
+      },
+      {
+        Header: 'ADDITIONAL FEATURE',
+        accessor: 'additionalTags',
+        disableSortBy: true,
+        Cell: info =>
+          useMemo(
+            () => (
+              <div className="flex gap-x-2">
+                {info.row.original.additionalTags?.length
+                  ? info.row.original.additionalTags.map(
+                      (item, index) =>
+                        index < 2 && (
+                          <Badge
+                            key={uuidv4()}
+                            size="lg"
+                            className="capitalize max-w-[100px]"
+                            title={item}
+                          >
+                            {item}
+                          </Badge>
+                        ),
+                    )
+                  : '-'}
+              </div>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'CATEGORY',
+        accessor: 'category',
+        Cell: ({
+          row: {
+            original: { category },
+          },
+        }) =>
+          useMemo(() => {
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === category,
+            );
+            return (
+              <div>
+                {category ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {category}
+                  </Badge>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
+            );
+          }, []),
+      },
+      {
+        Header: 'SUB CATEGORY',
+        accessor: 'subCategory',
+        Cell: ({
+          row: {
+            original: { subCategory },
+          },
+        }) =>
+          useMemo(() => {
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === subCategory,
+            );
+            return (
+              <div>
+                {subCategory ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {subCategory}
+                  </Badge>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
+            );
+          }, []),
+      },
+      {
+        Header: 'DIMENSION (WxH)',
+        accessor: 'size.height',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { size },
+          },
+        }) => useMemo(() => <p>{`${size?.width || 0}ft x ${size?.height || 0}ft`}</p>, []),
+      },
+      {
+        Header: 'PRICING',
+        accessor: 'price',
+        Cell: ({
+          row: {
+            original: { price },
+          },
+        }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
+      },
+      {
+        Header: 'UNIT',
+        accessor: 'unit',
+        Cell: ({
+          row: {
+            original: { unit },
+          },
+        }) => useMemo(() => <p>{unit || '-'}</p>, []),
+      },
+      {
         Header: 'INVENTORY ID',
         accessor: 'inventoryId',
         Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
@@ -156,68 +272,16 @@ const ProposalDetailsPage = () => {
           ),
       },
       {
-        Header: 'CATEGORY',
-        accessor: 'category',
+        Header: 'MEDIA TYPE',
+        accessor: 'mediaType',
         Cell: ({
           row: {
-            original: { category },
+            original: { mediaType },
           },
-        }) =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === category,
-            );
-            return (
-              <div>
-                {category ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
-                    {category}
-                  </Badge>
-                ) : (
-                  <span>-</span>
-                )}
-              </div>
-            );
-          }, []),
+        }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
-        Header: 'DIMENSION (WxH)',
-        accessor: 'size.height',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { size },
-          },
-        }) => useMemo(() => <p>{`${size?.width || 0}ft x ${size?.height || 0}ft`}</p>, []),
-      },
-      {
-        Header: 'UNIT',
-        accessor: 'unit',
-        Cell: ({
-          row: {
-            original: { unit },
-          },
-        }) => useMemo(() => <p>{unit || '-'}</p>, []),
-      },
-      {
-        Header: 'IMPRESSION',
-        accessor: 'impressions.max',
-        Cell: ({
-          row: {
-            original: { impressions },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <p className="capitalize font-medium w-32">
-                {impressions?.max ? `${getWord(impressions.max)}+` : 'NA'}
-              </p>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'HEALTH',
+        Header: 'HEALTH STATUS',
         accessor: 'health',
         Cell: ({
           row: {
@@ -239,31 +303,21 @@ const ProposalDetailsPage = () => {
           ),
       },
       {
-        Header: 'CITY',
-        accessor: 'location',
+        Header: 'IMPRESSION',
+        accessor: 'impressions.max',
         Cell: ({
           row: {
-            original: { location },
+            original: { impressions },
           },
-        }) => useMemo(() => <p>{location || '-'}</p>),
-      },
-      {
-        Header: 'MEDIA TYPE',
-        accessor: 'mediaType',
-        Cell: ({
-          row: {
-            original: { mediaType },
-          },
-        }) => useMemo(() => <p>{mediaType || '-'}</p>),
-      },
-      {
-        Header: 'PRICING',
-        accessor: 'price',
-        Cell: ({
-          row: {
-            original: { price },
-          },
-        }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p className="capitalize font-medium w-32">
+                {impressions?.max ? `${getWord(impressions.max)}+` : 'NA'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'ACTION',

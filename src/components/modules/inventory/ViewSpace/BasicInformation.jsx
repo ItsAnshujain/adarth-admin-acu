@@ -328,9 +328,15 @@ const BasicInfo = ({
                     <Text color="gray" size="xs" weight="300">
                       Size (WxH)
                     </Text>
-                    <Text className="mb-4">
-                      {inventoryDetails?.specifications?.size?.width || 0}ft X{' '}
-                      {inventoryDetails?.specifications?.size?.height || 0}ft
+                    <Text className="mb-4 flex gap-x-2">
+                      {inventoryDetails?.specifications?.size.length
+                        ? inventoryDetails.specifications.size.map(
+                            (item, index) =>
+                              index < 2 && (
+                                <p>{`${item?.width || 0}ft x ${item?.height || 0}ft`}, </p>
+                              ),
+                          )
+                        : '-'}
                     </Text>
                     <Text color="gray" size="xs" weight="300">
                       Impressions

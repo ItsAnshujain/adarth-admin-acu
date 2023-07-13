@@ -261,14 +261,6 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
               {data?.location?.address || <NoData type="na" />}
             </p>
             <Group className="gap-y-1 mb-1">
-              <p className="text-sm font-light text-slate-400">Main Amount</p>
-              <p className="font-bold">
-                {data?.basicInformation?.price
-                  ? toIndianCurrency(Number.parseInt(data.basicInformation.price, 10))
-                  : 0}
-              </p>
-            </Group>
-            <Group className="gap-y-1 mb-1">
               <p className="text-sm font-light text-slate-400">Booked Amount</p>
               <p className="font-bold">
                 {data?.campaignPrice
@@ -338,8 +330,8 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
               />
             </div>
             <div>
-              <p className="mb-2 text-sm font-light text-slate-400">Format Support</p>
-              <p>{data?.basicInformation?.supportedMedia || <NoData type="na" />}</p>
+              <p className="mb-2 text-sm font-light text-slate-400">Media Type</p>
+              <p>{data?.basicInformation?.mediaType?.name || <NoData type="na" />}</p>
             </div>
           </div>
           <div className="flex flex-col">
