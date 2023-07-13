@@ -334,7 +334,23 @@ const BookingsDashboardPage = () => {
           row: {
             original: { paymentType },
           },
-        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
+        }) => useMemo(() => <p className="uppercase">{paymentType || '-'}</p>, []),
+      },
+      {
+        Header: 'OUTSTANDING AMOUNT',
+        accessor: 'outstandingAmount',
+        disableSortBy: true,
+        Cell: info =>
+          useMemo(
+            () => (
+              <p>
+                {info.row.original.unpaidAmount
+                  ? toIndianCurrency(info.row.original.unpaidAmount)
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'SCHEDULE',

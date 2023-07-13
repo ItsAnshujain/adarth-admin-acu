@@ -8,6 +8,7 @@ import {
   Image,
   Select,
   Card,
+  Group,
 } from '@mantine/core';
 import { useMemo, useRef } from 'react';
 import { Calendar, ChevronDown, Eye } from 'react-feather';
@@ -156,7 +157,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
 
   return (
     <Card className="flex gap-4 p-4" withBorder radius="md" shadow="sm">
-      <div className="flex items-center">
+      <div className="flex items-start">
         {data?.basicInformation?.spacePhoto ? (
           <Image src={data?.basicInformation?.spacePhoto} alt="banner" height={140} width={140} />
         ) : (
@@ -164,7 +165,8 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
         )}
       </div>
       <div className="flex flex-col w-full">
-        <div className="flex justify-end items-center w-full mb-2">
+        <div className="flex justify-between items-center w-full mb-2">
+          <p className="font-bold">{data?.basicInformation?.spaceName || <NoData type="na" />}</p>
           <div className="flex gap-2 items-center">
             <Dropzone
               openRef={openRef}
@@ -255,17 +257,33 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
         </div>
         <div className="grid grid-cols-4">
           <div>
-            <p className="mb-2 font-bold">
-              {data?.basicInformation?.spaceName || <NoData type="na" />}
-            </p>
             <p className="mb-2 text-sm font-light text-slate-400">
               {data?.location?.address || <NoData type="na" />}
             </p>
-            <p className="font-bold">
-              {data?.basicInformation?.price
-                ? toIndianCurrency(Number.parseInt(data.basicInformation.price, 10))
-                : 0}
-            </p>
+            <Group className="gap-y-1 mb-1">
+              <p className="text-sm font-light text-slate-400">Main Amount</p>
+              <p className="font-bold">
+                {data?.basicInformation?.price
+                  ? toIndianCurrency(Number.parseInt(data.basicInformation.price, 10))
+                  : 0}
+              </p>
+            </Group>
+            <Group className="gap-y-1 mb-1">
+              <p className="text-sm font-light text-slate-400">Booked Amount</p>
+              <p className="font-bold">
+                {data?.campaignPrice
+                  ? toIndianCurrency(Number.parseInt(data.campaignPrice, 10))
+                  : 0}
+              </p>
+            </Group>
+            {data?.tradedAmount ? (
+              <Group>
+                <p className="text-sm font-light text-slate-400">Traded Amount</p>
+                <p className="font-bold">
+                  {toIndianCurrency(Number.parseInt(data.tradedAmount, 10)) || 0}
+                </p>
+              </Group>
+            ) : null}
           </div>
           <div>
             <div className="mb-4">

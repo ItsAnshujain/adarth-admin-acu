@@ -75,13 +75,23 @@ const Card = ({
         </Text>
         <div>
           <p className="text-sm text-gray-400 mb-2">Additional Feature</p>
-          {specifications?.additionalTags?.length
-            ? specifications.additionalTags.map(item => (
-                <Badge key={uuidv4()} size="md" className="capitalize" mr="xs">
-                  {item}
-                </Badge>
-              ))
-            : '--'}
+          <div className="flex gap-x-2 flex-wrap">
+            {specifications?.additionalTags?.length
+              ? specifications.additionalTags.map(
+                  (item, index) =>
+                    index < 2 && (
+                      <Badge
+                        key={uuidv4()}
+                        size="md"
+                        className="capitalize max-w-[100px]"
+                        title={item}
+                      >
+                        {item}
+                      </Badge>
+                    ),
+                )
+              : '--'}
+          </div>
         </div>
         <div className="grid grid-cols-2 justify-between gap-y-2">
           <div>

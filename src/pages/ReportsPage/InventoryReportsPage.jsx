@@ -319,6 +319,7 @@ const InventoryReportsPage = () => {
     {
       Header: 'DIMENSION (WxH)',
       accessor: 'specifications.size.min',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { specifications },
