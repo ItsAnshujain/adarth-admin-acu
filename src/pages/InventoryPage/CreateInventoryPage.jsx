@@ -2,19 +2,19 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
-import BasicInfo from '../../components/Inventory/CreateSpace/BasicInformation';
-import Specification from '../../components/Inventory/CreateSpace/Specification';
-import Location from '../../components/Inventory/CreateSpace/Location';
+import BasicInformationForm from '../../components/modules/inventory/CreateSpace/BasicInformationForm';
+import SpecificationForm from '../../components/modules/inventory/CreateSpace/SpecificationForm';
+import LocationForm from '../../components/modules/inventory/CreateSpace/LocationForm';
 import SuccessModal from '../../components/shared/Modal';
 import Preview from '../../components/shared/Preview';
-import PreviewLocation from '../../components/Inventory/CreateSpace/PreviewLocation';
-import Header from '../../components/Inventory/CreateSpace/Header';
+import PreviewLocation from '../../components/modules/inventory/CreateSpace/PreviewLocation';
+import Header from '../../components/modules/inventory/CreateSpace/Header';
 import { FormProvider, useForm } from '../../context/formContext';
 import {
   useCreateInventory,
   useFetchInventoryById,
   useUpdateInventory,
-} from '../../hooks/inventory.hooks';
+} from '../../apis/queries/inventory.queries';
 
 const initialValues = {
   basicInformation: {
@@ -47,6 +47,7 @@ const initialValues = {
     },
     previousBrands: [],
     tags: [],
+    additionalTags: [],
   },
   location: {
     latitude: null,
@@ -70,6 +71,7 @@ const basicInformationSchema = yup.object({
       label: yup.string().trim(),
       value: yup.string().trim(),
     }),
+    peerMediaOwner: yup.string().trim(),
     spaceType: yup
       .object({
         label: yup.string().trim(),
@@ -151,6 +153,7 @@ const specificationsValues = yup.object({
     }),
     previousBrands: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
     tags: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
+    additionalTags: yup.array(),
   }),
 });
 
@@ -210,11 +213,11 @@ const CreateInventoryPage = () => {
 
   const getForm = () =>
     formStep === 1 ? (
-      <BasicInfo basicInformation={inventoryDetails?.inventory?.basicInformation} />
+      <BasicInformationForm basicInformation={inventoryDetails?.inventory?.basicInformation} />
     ) : formStep === 2 ? (
-      <Specification />
+      <SpecificationForm />
     ) : formStep === 3 ? (
-      <Location />
+      <LocationForm />
     ) : formStep === 4 ? (
       <>
         <Preview />
@@ -300,6 +303,7 @@ const CreateInventoryPage = () => {
             label: basicInformation?.mediaOwner?.name || '',
             value: basicInformation?.mediaOwner?._id || '',
           },
+          peerMediaOwner: basicInformation?.peerMediaOwner || undefined,
           description: basicInformation?.description || '',
           footFall: basicInformation?.footFall ? parseInt(basicInformation.footFall, 10) : null,
           price: basicInformation?.price ? parseInt(basicInformation?.price, 10) : null,
@@ -350,6 +354,7 @@ const CreateInventoryPage = () => {
           },
           previousBrands: arrOfPreviousBrands?.length ? arrOfPreviousBrands : [],
           tags: arrOfTags?.length ? arrOfTags : [],
+          additionalTags: specifications?.additionalTags || [],
         },
         location: {
           latitude: location?.latitude ? parseFloat(location.latitude, 10) : null,

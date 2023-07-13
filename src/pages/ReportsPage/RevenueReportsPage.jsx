@@ -21,14 +21,14 @@ import { useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
 import { useModals } from '@mantine/modals';
-import Header from '../../components/Reports/Header';
-import RevenueFilter from '../../components/Reports/RevenueFilter';
+import Header from '../../components/modules/reports/Header';
+import RevenueFilter from '../../components/modules/reports/RevenueFilter';
 import {
   useBookingReportByRevenueStats,
   useBookingReportByRevenueGraph,
   useBookingRevenueByIndustry,
   useBookingRevenueByLocation,
-} from '../../hooks/booking.hooks';
+} from '../../apis/queries/booking.queries';
 import {
   dateByQuarter,
   daysInAWeek,
@@ -37,11 +37,11 @@ import {
   quarters,
   serialize,
 } from '../../utils';
-import RevenueStatsContent from '../../components/Reports/Revenue/RevenueStatsContent';
-import ViewByFilter from '../../components/Reports/ViewByFilter';
-import { useShareReport } from '../../hooks/report.hooks';
+import RevenueStatsContent from '../../components/modules/reports/Revenue/RevenueStatsContent';
+import ViewByFilter from '../../components/modules/reports/ViewByFilter';
+import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
-import ShareContent from '../../components/Reports/ShareContent';
+import ShareContent from '../../components/modules/reports/ShareContent';
 
 dayjs.extend(quarterOfYear);
 
@@ -360,7 +360,7 @@ const RevenueReportsPage = () => {
   return (
     <div
       className={classNames(
-        'border-l border-gray-450 overflow-y-auto',
+        'overflow-y-auto px-5',
         share !== 'report' ? 'col-span-10 ' : 'col-span-12',
       )}
     >
@@ -372,7 +372,7 @@ const RevenueReportsPage = () => {
         isDownloadLoading={isDownloadLoading}
       />
 
-      <div className="mr-7 pl-5 mt-5 mb-10" id="revenue-pdf">
+      <div className="my-5" id="revenue-pdf">
         <RevenueStatsContent revenueData={revenueData} />
         {share !== 'report' ? (
           <div className="h-[60px] border-b border-t my-5 border-gray-450 flex justify-end items-center">
@@ -423,7 +423,7 @@ const RevenueReportsPage = () => {
           </div>
         </div>
 
-        <div className="my-10">
+        <div className="mt-10">
           <div className="flex justify-between items-center">
             <p className="font-bold">City Or State</p>
             <div className="flex justify-around">

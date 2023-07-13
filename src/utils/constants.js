@@ -1,6 +1,4 @@
-// TODO: remove eslint after adding more
-// eslint-disable-next-line import/prefer-default-export
-export const smtpSupportedServices = [
+export const SMTP_SERVICES = [
   { label: '1und1', value: '1und1' },
   { label: 'AOL', value: 'AOL' },
   { label: 'DebugMail.io', value: 'DebugMail.io' },
@@ -32,3 +30,17 @@ export const smtpSupportedServices = [
   { label: 'Zoho', value: 'Zoho' },
   { label: 'Others', value: 'others' },
 ];
+
+export const MODE_OF_PAYMENT = [
+  { label: 'CASH', value: 'cash' },
+  { label: 'CARD', value: 'card' },
+  { label: 'CREDIT', value: 'credit' },
+  { label: 'DEBIT', value: 'debit' },
+  { label: 'RTGS', value: 'rtgs' },
+  { label: 'NEFT', value: 'neft' },
+  { label: 'CHEQUE', value: 'cheque' },
+];
+
+export const DATE_FORMAT = 'YYYY-MM-DD';
+
+export const DATE_SECOND_FORMAT = 'DD MMM YYYY';

@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import CheckIcon from '../assets/check.svg';
 import TrashIcon from '../assets/trash.svg';
-import { useDeleteBooking } from '../hooks/booking.hooks';
+import { useDeleteBooking } from '../apis/queries/booking.queries';
 
 const DeleteBookingContent = ({ onClickCancel = () => {}, bookingId }) => {
   const queryClient = useQueryClient();

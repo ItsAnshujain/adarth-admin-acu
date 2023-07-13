@@ -9,12 +9,16 @@ import multiDownload from 'multi-download';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import AreaHeader from '../../components/Bookings/Header';
-import { useBookings, useBookingStats, useUpdateBookingStatus } from '../../hooks/booking.hooks';
+import AreaHeader from '../../components/modules/bookings/Header';
+import {
+  useBookings,
+  useBookingStats,
+  useUpdateBookingStatus,
+} from '../../apis/queries/booking.queries';
 import { checkCampaignStats, serialize } from '../../utils';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
-import BookingStatisticsView from '../../components/Bookings/BookingStatisticsView';
+import BookingStatisticsView from '../../components/modules/bookings/BookingStatisticsView';
 import NoData from '../../components/shared/NoData';
 import BookingsMenuPopover from '../../components/Popovers/BookingsMenuPopover';
 
@@ -76,7 +80,16 @@ const BookingsDashboardPage = () => {
   };
 
   const paymentList = useMemo(
-    () => paymentStatus?.docs?.map(item => ({ label: item.name, value: item.name })) || [],
+    () =>
+      paymentStatus?.docs?.map(item => ({
+        label:
+          item.name?.toLowerCase() === 'unpaid'
+            ? 'No'
+            : item.name?.toLowerCase() === 'paid'
+            ? 'Yes'
+            : item.name,
+        value: item.name,
+      })) || [],
     [paymentStatus],
   );
   const campaignList = useMemo(
@@ -205,7 +218,7 @@ const BookingsDashboardPage = () => {
           }, []),
       },
       {
-        Header: 'PAYMENT STATUS',
+        Header: 'BOOKING CONFIRMATION STATUS',
         accessor: 'currentStatus.paymentStatus',
         Cell: ({
           row: {
@@ -321,7 +334,23 @@ const BookingsDashboardPage = () => {
           row: {
             original: { paymentType },
           },
-        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
+        }) => useMemo(() => <p className="uppercase">{paymentType || '-'}</p>, []),
+      },
+      {
+        Header: 'OUTSTANDING AMOUNT',
+        accessor: 'outstandingAmount',
+        disableSortBy: true,
+        Cell: info =>
+          useMemo(
+            () => (
+              <p>
+                {info.row.original.unpaidAmount
+                  ? toIndianCurrency(info.row.original.unpaidAmount)
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'SCHEDULE',
@@ -531,18 +560,17 @@ const BookingsDashboardPage = () => {
   }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto ">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <AreaHeader text="Order" />
-      <div className="pr-7">
-        <BookingStatisticsView bookingStats={bookingStats} isLoading={isBookingStatsLoading} />
-        <div className="flex justify-between h-20 items-center">
-          <RowsPerPage
-            setCount={currentLimit => handlePagination('limit', currentLimit)}
-            count={limit}
-          />
-          <Search search={searchInput} setSearch={setSearchInput} />
-        </div>
+      <BookingStatisticsView bookingStats={bookingStats} isLoading={isBookingStatsLoading} />
+      <div className="flex justify-between h-20 items-center">
+        <RowsPerPage
+          setCount={currentLimit => handlePagination('limit', currentLimit)}
+          count={limit}
+        />
+        <Search search={searchInput} setSearch={setSearchInput} />
       </div>
+
       {isLoadingBookingData ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />

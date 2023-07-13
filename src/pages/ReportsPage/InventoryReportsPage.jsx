@@ -16,12 +16,13 @@ import { Badge, Image, Loader, Progress, Tabs, Text } from '@mantine/core';
 import { Link, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
+import { getWord } from 'num-count';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { useDebouncedValue } from '@mantine/hooks';
 import classNames from 'classnames';
 import { showNotification } from '@mantine/notifications';
 import { useModals } from '@mantine/modals';
-import Header from '../../components/Reports/Header';
+import Header from '../../components/modules/reports/Header';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
@@ -33,10 +34,10 @@ import {
   useFetchInventoryReportList,
   useInventoryReport,
   useInventoryStats,
-} from '../../hooks/inventory.hooks';
-import ViewByFilter from '../../components/Reports/ViewByFilter';
-import InventoryStatsContent from '../../components/Reports/Inventory/InventoryStatsContent';
-import SubHeader from '../../components/Reports/Inventory/SubHeader';
+} from '../../apis/queries/inventory.queries';
+import ViewByFilter from '../../components/modules/reports/ViewByFilter';
+import InventoryStatsContent from '../../components/modules/reports/Inventory/InventoryStatsContent';
+import SubHeader from '../../components/modules/reports/Inventory/SubHeader';
 import {
   categoryColors,
   dateByQuarter,
@@ -46,9 +47,9 @@ import {
   quarters,
   serialize,
 } from '../../utils';
-import { useShareReport } from '../../hooks/report.hooks';
+import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
-import ShareContent from '../../components/Reports/ShareContent';
+import ShareContent from '../../components/modules/reports/ShareContent';
 
 dayjs.extend(quarterOfYear);
 
@@ -318,6 +319,7 @@ const InventoryReportsPage = () => {
     {
       Header: 'DIMENSION (WxH)',
       accessor: 'specifications.size.min',
+      disableSortBy: true,
       Cell: ({
         row: {
           original: { specifications },
@@ -333,13 +335,32 @@ const InventoryReportsPage = () => {
         ),
     },
     {
+      Header: 'UNIT',
+      accessor: 'specifications.unit',
+      Cell: ({
+        row: {
+          original: { specifications },
+        },
+      }) => useMemo(() => <p>{specifications?.unit || '-'}</p>, []),
+    },
+    {
       Header: 'IMPRESSION',
       accessor: 'specifications.impressions.max',
       Cell: ({
         row: {
           original: { specifications },
         },
-      }) => useMemo(() => <p>{`${specifications?.impressions?.max || 0}+`}</p>, []),
+      }) =>
+        useMemo(
+          () => (
+            <p className="capitalize font-medium w-32">
+              {specifications?.impressions?.max
+                ? `${getWord(specifications.impressions.max)}+`
+                : 'NA'}
+            </p>
+          ),
+          [],
+        ),
     },
     {
       Header: 'HEALTH STATUS',
@@ -364,7 +385,7 @@ const InventoryReportsPage = () => {
         ),
     },
     {
-      Header: 'LOCATION',
+      Header: 'CITY',
       accessor: 'location.city',
       Cell: ({
         row: {
@@ -498,6 +519,16 @@ const InventoryReportsPage = () => {
         ),
     },
     {
+      Header: 'UNIT',
+      accessor: 'specifications.unit',
+
+      Cell: ({
+        row: {
+          original: { specifications },
+        },
+      }) => useMemo(() => <p>{specifications?.unit || '-'}</p>, []),
+    },
+    {
       Header: 'IMPRESSION',
       accessor: 'specifications.impressions.max',
       disableSortBy: true,
@@ -505,7 +536,17 @@ const InventoryReportsPage = () => {
         row: {
           original: { specifications },
         },
-      }) => useMemo(() => <p>{`${specifications?.impressions?.max || 0}+`}</p>, []),
+      }) =>
+        useMemo(
+          () => (
+            <p className="capitalize font-medium w-32">
+              {specifications?.impressions?.max
+                ? `${getWord(specifications.impressions.max)}+`
+                : 'NA'}
+            </p>
+          ),
+          [],
+        ),
     },
     {
       Header: 'HEALTH STATUS',
@@ -531,7 +572,7 @@ const InventoryReportsPage = () => {
         ),
     },
     {
-      Header: 'LOCATION',
+      Header: 'CITY',
       accessor: 'location.city',
       disableSortBy: true,
       Cell: ({
@@ -701,7 +742,7 @@ const InventoryReportsPage = () => {
   return (
     <div
       className={classNames(
-        'border-l border-gray-450 overflow-y-auto',
+        'overflow-y-auto px-5',
         share !== 'report' ? 'col-span-10 ' : 'col-span-12',
       )}
     >
@@ -713,7 +754,7 @@ const InventoryReportsPage = () => {
         isDownloadLoading={isDownloadLoading}
       />
 
-      <div className="pr-7 pl-5 mt-5 mb-10" id="inventory-pdf">
+      <div className="my-5" id="inventory-pdf">
         <InventoryStatsContent
           inventoryReports={inventoryReports}
           inventoryStats={inventoryStats}
@@ -770,8 +811,8 @@ const InventoryReportsPage = () => {
             </div>
           </div>
         </div>
-        <div className="flex justify-between gap-4 flex-wrap my-8">
-          <div className="border rounded p-8  flex-1">
+        <div className="flex justify-between gap-4 flex-wrap my-5">
+          <div className="border rounded p-8 flex-1">
             <Image src={BestIcon} alt="folder" fit="contain" height={24} width={24} />
             <p className="my-2 text-sm font-light text-slate-400">Best Performing Inventory</p>
             <p className="font-bold">

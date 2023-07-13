@@ -4,16 +4,16 @@ import { useDebouncedValue } from '@mantine/hooks';
 import { Loader, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
-import AreaHeader from '../../components/Proposals/Header';
+import AreaHeader from '../../components/modules/proposals/Header';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Table from '../../components/Table/Table';
-import GridView from '../../components/Proposals/Grid';
-import { useFetchProposals, useUpdateProposal } from '../../hooks/proposal.hooks';
+import GridView from '../../components/modules/proposals/Grid';
+import { useFetchProposals, useUpdateProposal } from '../../apis/queries/proposal.queries';
 import useLayoutView from '../../store/layout.store';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { serialize } from '../../utils';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 import ProposalsMenuPopover from '../../components/Popovers/ProposalsMenuPopover';
 
 const nativeSelectStyles = {
@@ -23,10 +23,10 @@ const DATE_FORMAT = 'DD MMM YYYY';
 
 const ProposalDashboardPage = () => {
   const [searchParams, setSearchParams] = useSearchParams({
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'desc',
+    page: 1,
+    limit: 20,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
   });
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
@@ -253,9 +253,9 @@ const ProposalDashboardPage = () => {
   }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <AreaHeader text="Proposals List" />
-      <div className="flex justify-between h-20 items-center pr-7">
+      <div className="flex justify-between h-20 items-center">
         <RowsPerPage
           setCount={currentLimit => handlePagination('limit', currentLimit)}
           count={limit}

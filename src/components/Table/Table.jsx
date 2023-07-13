@@ -142,7 +142,7 @@ const Table = ({
                     </th>
                   )}
                   {row.cells.map(cell => (
-                    <td className="pl-2 py-2" {...cell.getCellProps()}>
+                    <td className="px-2 py-2" {...cell.getCellProps()}>
                       <div className="w-max">{cell.render('Cell')}</div>
                     </td>
                   ))}
@@ -153,7 +153,7 @@ const Table = ({
         </table>
       </div>
       {showPagination ? (
-        <div className="flex justify-end my-4 pr-7">
+        <div className="flex justify-end my-4">
           <Pagination
             styles={theme => ({
               item: {

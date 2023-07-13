@@ -1,24 +1,32 @@
 import { useMemo, useEffect, useState } from 'react';
-import { NativeSelect, Progress, Image, Loader, Text } from '@mantine/core';
+import { NativeSelect, Progress, Image, Loader, Text, Box } from '@mantine/core';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ChevronDown } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDebouncedValue } from '@mantine/hooks';
 import classNames from 'classnames';
-import { useCampaigns, useUpdateCampaign } from '../../hooks/campaigns.hooks';
-import AreaHeader from '../../components/Campaigns/Header';
-import GridView from '../../components/Campaigns/GridView';
+import { useModals } from '@mantine/modals';
+import { useCampaigns, useUpdateCampaign } from '../../apis/queries/campaigns.queries';
+import AreaHeader from '../../components/modules/campaigns/Header';
+import GridView from '../../components/modules/campaigns/GridView';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import { serialize } from '../../utils/index';
 import toIndianCurrency from '../../utils/currencyFormat';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 import useLayoutView from '../../store/layout.store';
 import CampaignsMenuPopover from '../../components/Popovers/CampaignsMenuPopover';
+import modalConfig from '../../utils/modalConfig';
 
-const statusSelectStyle = {
-  rightSection: { pointerEvents: 'none' },
+const updatedModalConfig = {
+  ...modalConfig,
+  classNames: {
+    title: 'font-dmSans text-xl px-4',
+    header: 'px-4 pt-4',
+    body: '',
+    close: 'mr-4',
+  },
 };
 
 const initialState = {
@@ -31,6 +39,7 @@ const initialState = {
 
 const CampaignsDashboardPage = () => {
   const queryClient = useQueryClient();
+  const modals = useModals();
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const viewType = useLayoutView(state => state.activeLayout);
@@ -59,6 +68,15 @@ const CampaignsDashboardPage = () => {
     [campaignStatus],
   );
 
+  const togglePreviewModal = imgSrc =>
+    modals.openModal({
+      title: 'Preview',
+      children: (
+        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+      ),
+      ...updatedModalConfig,
+    });
+
   const COLUMNS = useMemo(
     () => [
       {
@@ -82,20 +100,24 @@ const CampaignsDashboardPage = () => {
         }) =>
           useMemo(
             () => (
-              <Link
-                to={`/campaigns/view-details/${_id}`}
-                className="flex items-center cursor-pointer underline"
-              >
-                <div className="flex flex-1 gap-2 items-center">
-                  <Image
-                    height={30}
-                    width={32}
-                    alt={name}
-                    fit="cover"
-                    withPlaceholder
-                    src={thumbnail}
-                    className="rounded-md overflow-hidden"
-                  />
+              <div className="flex flex-1 gap-2 items-center">
+                <Box
+                  className={classNames(
+                    'bg-white border rounded-md',
+                    thumbnail ? 'cursor-zoom-in' : '',
+                  )}
+                  onClick={() => (thumbnail ? togglePreviewModal(thumbnail) : null)}
+                >
+                  {thumbnail ? (
+                    <Image src={thumbnail} alt="thumbnail" height={32} width={32} />
+                  ) : (
+                    <Image src={null} withPlaceholder height={32} width={32} alt="card" />
+                  )}
+                </Box>
+                <Link
+                  to={`/campaigns/view-details/${_id}`}
+                  className="flex items-center cursor-pointer underline"
+                >
                   <Text
                     className="w-[200px] text-purple-450 font-medium"
                     title={name}
@@ -103,8 +125,8 @@ const CampaignsDashboardPage = () => {
                   >
                     {name}
                   </Text>
-                </div>
-              </Link>
+                </Link>
+              </div>
             ),
             [_id, thumbnail, name],
           ),
@@ -172,7 +194,7 @@ const CampaignsDashboardPage = () => {
                 defaultValue={createStatus?._id || ''}
                 onChange={e => updateCampaign(_id, { createStatus: e.target.value })}
                 data={updatedCampaignList}
-                styles={statusSelectStyle}
+                classNames={{ rightSection: 'pointer-events-none' }}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
               />
@@ -260,9 +282,9 @@ const CampaignsDashboardPage = () => {
   }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <AreaHeader text="Campaign List" />
-      <div className="flex justify-between h-20 items-center pr-7">
+      <div className="flex justify-between h-20 items-center">
         <RowsPerPage setCount={data => setQuery('limit', data)} count={limit} />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>

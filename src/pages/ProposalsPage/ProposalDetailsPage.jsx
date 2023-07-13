@@ -5,16 +5,17 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
+import { getWord } from 'num-count';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import Header from '../../components/Proposals/ViewProposal/Header';
-import Details from '../../components/Proposals/ViewProposal/Details';
+import Header from '../../components/modules/proposals/ViewProposal/Header';
+import Details from '../../components/modules/proposals/ViewProposal/Details';
 import Table from '../../components/Table/Table';
-import { useFetchProposalById } from '../../hooks/proposal.hooks';
+import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { categoryColors } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
-import Filter from '../../components/Inventory/Filter';
+import Filter from '../../components/modules/inventory/Filter';
 import useUserStore from '../../store/user.store';
 import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesMenuPopover';
 
@@ -119,13 +120,18 @@ const ProposalDetailsPage = () => {
           ),
       },
       {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+      },
+      {
         Header: 'MEDIA OWNER NAME',
         accessor: 'mediaOwner',
         Cell: ({
           row: {
-            original: { peer, mediaOwner },
+            original: { mediaOwner },
           },
-        }) => useMemo(() => <p className="w-fit">{!peer ? mediaOwner : '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{mediaOwner || '-'}</p>, []),
       },
       {
         Header: 'PEER',
@@ -177,11 +183,21 @@ const ProposalDetailsPage = () => {
       {
         Header: 'DIMENSION (WxH)',
         accessor: 'size.height',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { size },
           },
         }) => useMemo(() => <p>{`${size?.width || 0}ft x ${size?.height || 0}ft`}</p>, []),
+      },
+      {
+        Header: 'UNIT',
+        accessor: 'unit',
+        Cell: ({
+          row: {
+            original: { unit },
+          },
+        }) => useMemo(() => <p>{unit || '-'}</p>, []),
       },
       {
         Header: 'IMPRESSION',
@@ -190,7 +206,15 @@ const ProposalDetailsPage = () => {
           row: {
             original: { impressions },
           },
-        }) => useMemo(() => <p>{`${impressions?.max || 0}+`}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p className="capitalize font-medium w-32">
+                {impressions?.max ? `${getWord(impressions.max)}+` : 'NA'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'HEALTH',
@@ -215,7 +239,7 @@ const ProposalDetailsPage = () => {
           ),
       },
       {
-        Header: 'LOCATION',
+        Header: 'CITY',
         accessor: 'location',
         Cell: ({
           row: {
@@ -303,14 +327,14 @@ const ProposalDetailsPage = () => {
   }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <Header isPeer={proposalData?.proposal?.isPeer} />
       <Details
         proposalData={proposalData?.proposal}
         isProposalDataLoading={isProposalDataLoading}
         inventoryData={proposalData?.inventories}
       />
-      <div className="pl-5 pr-7 flex justify-between mt-4">
+      <div className="flex justify-between mt-4">
         <Text size="xl" weight="bolder">
           Selected Inventory
         </Text>
@@ -324,7 +348,7 @@ const ProposalDetailsPage = () => {
         </div>
       </div>
 
-      <div className="flex justify-between h-20 items-center pr-7">
+      <div className="flex justify-between h-20 items-center">
         <RowsPerPage
           setCount={currentLimit => handlePagination('limit', currentLimit)}
           count={limit}

@@ -4,11 +4,11 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Loader, Text } from '@mantine/core';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import SubHeader from '../components/Masters/SubHeader';
+import SubHeader from '../components/modules/masters/SubHeader';
 import MastersMenuPopover from '../components/Popovers/MastersMenuPopover';
 import Table from '../components/Table/Table';
 import { masterTypes } from '../utils';
-import { useFetchMasters } from '../hooks/masters.hooks';
+import { useFetchMasters } from '../apis/queries/masters.queries';
 import RowsPerPage from '../components/RowsPerPage';
 import Search from '../components/Search';
 
@@ -140,9 +140,9 @@ const MastersPage = () => {
       <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
         <Sidebar />
         <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
-          <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+          <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
             <SubHeader text={masterTypes[type]} />
-            <div className="flex justify-between h-20 items-center pr-7">
+            <div className="flex justify-between h-20 items-center">
               <RowsPerPage
                 setCount={currentLimit => handlePagination('limit', currentLimit)}
                 count={limit}

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import Header from '../../components/Campaigns/ViewCampaigns/Header';
-import SpacesList from '../../components/Campaigns/ViewCampaigns/SpacesList';
-import TotalBookings from '../../components/Campaigns/ViewCampaigns/TotalBookings';
-import Overview from '../../components/Campaigns/ViewCampaigns/Overview';
-import { useCampaign } from '../../hooks/campaigns.hooks';
+import Header from '../../components/modules/campaigns/ViewCampaigns/Header';
+import SpacesList from '../../components/modules/campaigns/ViewCampaigns/SpacesList';
+import TotalBookings from '../../components/modules/campaigns/ViewCampaigns/TotalBookings';
+import Overview from '../../components/modules/campaigns/ViewCampaigns/Overview';
+import { useCampaign } from '../../apis/queries/campaigns.queries';
 
 const campaignView = {
   overview: Overview,
@@ -41,9 +41,9 @@ const CampaignDetailsPage = () => {
   const TabView = campaignView[tabs];
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <Header tabs={tabs} setTabs={setTabs} />
-      <div className="relative pb-12 mb-16">
+      <div className="relative">
         <TabView
           campaignData={data?.campaign}
           spacesData={data?.inventory}

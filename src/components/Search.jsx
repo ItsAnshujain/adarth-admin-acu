@@ -7,6 +7,7 @@ const Search = ({ search, setSearch = () => {}, ...props }) => (
     onChange={e => setSearch(e.currentTarget.value)}
     placeholder="Search"
     icon={<img src={icon} alt="search-icon" className="h-4" />}
+    className="min-w-[400px]"
     {...props}
   />
 );

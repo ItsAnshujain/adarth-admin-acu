@@ -1,3 +1,4 @@
+import { showNotification } from '@mantine/notifications';
 import dayjs from 'dayjs';
 import { geocodeByAddress, getLatLng, geocodeByLatLng } from 'react-google-places-autocomplete';
 
@@ -334,3 +335,9 @@ export const getDate = (selectionItem, item, key) => {
 
   return null;
 };
+
+export const onApiError = err =>
+  showNotification({
+    message: err.message,
+    color: 'red',
+  });

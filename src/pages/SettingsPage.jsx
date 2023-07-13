@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import SubHeader from '../components/Settings/SubHeader';
-import NotificationSettings from '../components/Settings/Notification';
-import ChangePassword from '../components/Settings/ChangePassword';
-import DeleteAccount from '../components/Settings/DeleteAccount';
-import SignatureAndLetterhead from '../components/Settings/SignatureAndLetterhead';
-import SmtpSetup from '../pageComponents/Settings/SmtpSetup';
+import SubHeader from '../components/modules/settings/SubHeader';
+import NotificationSettings from '../components/modules/settings/Notification';
+import ChangePassword from '../components/modules/settings/ChangePassword';
+import DeleteAccount from '../components/modules/settings/DeleteAccount';
+import SignatureAndLetterhead from '../components/modules/settings/SignatureAndLetterhead';
+import SmtpSetup from '../components/modules/settings/SmtpSetup';
 
 const SettingsPage = () => {
   const [tabs, setTabs] = useState(0);

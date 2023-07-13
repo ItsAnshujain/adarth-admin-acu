@@ -4,11 +4,11 @@ import { yupResolver } from '@mantine/form';
 import { useQueryClient } from '@tanstack/react-query';
 import * as yup from 'yup';
 import { showNotification } from '@mantine/notifications';
-import BasicInfo from '../../components/Users/Create/BasicInfo';
-import Documents from '../../components/Users/Create/Documents';
+import BasicInfo from '../../components/modules/users/Create/BasicInfo';
+import Documents from '../../components/modules/users/Create/Documents';
 import useUserStore from '../../store/user.store';
 import { FormProvider, useForm } from '../../context/formContext';
-import { useUpdateUsers } from '../../hooks/users.hooks';
+import { useUpdateUsers } from '../../apis/queries/users.queries';
 import { aadhaarRegexMatch, panRegexMatch } from '../../utils';
 
 const initialValues = {
