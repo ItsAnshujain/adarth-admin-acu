@@ -312,7 +312,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           ),
       },
       {
-        Header: 'PAYMENT TYPE',
+        Header: 'PAYMENT STATUS',
         accessor: 'paymentType',
         Cell: ({
           row: {

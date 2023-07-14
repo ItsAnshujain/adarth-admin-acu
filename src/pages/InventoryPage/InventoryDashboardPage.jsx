@@ -184,6 +184,9 @@ const InventoryDashboardPage = () => {
                             size="lg"
                             className="capitalize max-w-[100px]"
                             title={item}
+                            variant="gradient"
+                            radius="xs"
+                            gradient={{ from: '#ed6ea0', to: '#ec8c69', deg: 35 }}
                           >
                             {item}
                           </Badge>
@@ -206,7 +209,7 @@ const InventoryDashboardPage = () => {
             return (
               <div>
                 {info.row.original.basicInformation?.category?.name ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
+                  <Badge color={colorType || 'gray'} size="lg" className="capitalize">
                     {info.row.original.basicInformation.category.name}
                   </Badge>
                 ) : (
@@ -332,7 +335,7 @@ const InventoryDashboardPage = () => {
         Cell: info =>
           useMemo(
             () => (
-              <p className="capitalize font-medium w-32">
+              <p className="capitalize w-32">
                 {info.row.original.specifications?.impressions?.max
                   ? `${getWord(info.row.original.specifications.impressions.max)}+`
                   : 'NA'}

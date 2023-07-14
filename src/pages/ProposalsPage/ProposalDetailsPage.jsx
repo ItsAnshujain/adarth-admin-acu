@@ -146,6 +146,9 @@ const ProposalDetailsPage = () => {
                             size="lg"
                             className="capitalize max-w-[100px]"
                             title={item}
+                            variant="gradient"
+                            radius="xs"
+                            gradient={{ from: '#ed6ea0', to: '#ec8c69', deg: 35 }}
                           >
                             {item}
                           </Badge>
@@ -172,7 +175,7 @@ const ProposalDetailsPage = () => {
             return (
               <div>
                 {category ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
+                  <Badge color={colorType || 'gray'} size="lg" className="capitalize">
                     {category}
                   </Badge>
                 ) : (
@@ -312,7 +315,7 @@ const ProposalDetailsPage = () => {
         }) =>
           useMemo(
             () => (
-              <p className="capitalize font-medium w-32">
+              <p className="capitalize w-32">
                 {impressions?.max ? `${getWord(impressions.max)}+` : 'NA'}
               </p>
             ),

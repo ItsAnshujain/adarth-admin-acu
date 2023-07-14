@@ -104,6 +104,29 @@ const Filter = ({
     [filterOptions],
   );
 
+  const renderBookingConfirmationStatus = useCallback(
+    (data, filterKey) =>
+      data?.map(item => (
+        <div className="flex gap-2 mb-2" key={item?._id}>
+          <Radio
+            onChange={event => handleCheckedValues(event.target.value, filterKey)}
+            label={
+              item?.name
+                ? item.name.toLowerCase() === 'paid'
+                  ? 'Yes'
+                  : item.name.toLowerCase() === 'unpaid'
+                  ? 'No'
+                  : item.name
+                : ''
+            }
+            defaultValue={item?.name}
+            checked={filterOptions[filterKey] === item?.name}
+          />
+        </div>
+      )),
+    [filterOptions],
+  );
+
   const handleNavigationByFilter = () => {
     searchParams.set('page', 1);
     setSearchParams(searchParams);
@@ -291,10 +314,12 @@ const Filter = ({
             className="border-solid border-2 rounded-xl mb-2 p-1"
             value="paymentStatus"
           >
-            <Accordion.Control className="hover:bg-white">Payment Status</Accordion.Control>
+            <Accordion.Control className="hover:bg-white">
+              Booking Confirmation Status
+            </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderDynamicOptions(paymentStatusData?.docs, 'paymentStatus')}
+                {renderBookingConfirmationStatus(paymentStatusData?.docs, 'paymentStatus')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>

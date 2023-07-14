@@ -209,6 +209,7 @@ const BookingsDashboardPage = () => {
                   currentStatus?.campaignStatus?.toLowerCase() === 'completed'
                 }
                 styles={statusSelectStyle}
+                classNames={{ rightSection: 'pointer-events-none' }}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
                 onChange={e => handleCampaignUpdate(_id, e)}
