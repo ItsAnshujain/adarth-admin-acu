@@ -11,7 +11,7 @@ import whatsapp from '../../../assets/whatsapp.svg';
 import { FormProvider, useForm } from '../../../context/formContext';
 import TextInput from '../../shared/TextInput';
 import { useShareInventory } from '../../../apis/queries/inventory.queries';
-import { serialize } from '../../../utils';
+import { downloadPdf, serialize } from '../../../utils';
 
 const fileType = [
   { name: 'PPT', _id: 'ppt' },
@@ -47,6 +47,11 @@ const sendVia = [
   {
     name: 'Copy Link',
     _id: 'copy_link',
+    icon: <LinkIcon className="h-4" color="#000" />,
+  },
+  {
+    name: 'Download',
+    _id: 'download',
     icon: <LinkIcon className="h-4" color="#000" />,
   },
 ];
@@ -105,6 +110,10 @@ const copyLinkSchema = yup.object({
   name: yup.string().trim().required('Name is required'),
 });
 
+const downloadLinkSchema = yup.object({
+  name: yup.string().trim(),
+});
+
 const initialValues = {
   email: initialEmailValues,
   whatsapp: initialWhatsAppValues,
@@ -117,6 +126,7 @@ const schemas = {
   whatsapp: whatsAppSchema,
   message: messageSchema,
   copy_link: copyLinkSchema,
+  download: downloadLinkSchema,
 };
 
 const ShareContent = ({ searchParamQueries }) => {
@@ -153,7 +163,7 @@ const ShareContent = ({ searchParamQueries }) => {
     }
 
     data.format = activeFileType.join(',');
-    data.shareVia = activeShare;
+    data.shareVia = activeShare === 'download' ? 'copy_link' : activeShare;
     const params = {};
     searchParamQueries.forEach((value, key) => {
       params[key] = value;
@@ -181,6 +191,12 @@ const ShareContent = ({ searchParamQueries }) => {
         title: 'Link Copied',
         color: 'blue',
       });
+    }
+
+    if (activeShare === 'download') {
+      if (response?.proposalShare?.[data.format]) {
+        downloadPdf(response.proposalShare[data.format]);
+      }
     }
   };
 
@@ -235,8 +251,15 @@ const ShareContent = ({ searchParamQueries }) => {
               </div>
               {activeShare !== '' && (
                 <div>
-                  <TextInput name="name" placeholder="Name" className="mb-2" errors={form.errors} />
-                  {activeShare !== 'copy_link' ? (
+                  {activeShare !== 'download' ? (
+                    <TextInput
+                      name="name"
+                      placeholder="Name"
+                      className="mb-2"
+                      errors={form.errors}
+                    />
+                  ) : null}
+                  {activeShare !== 'copy_link' && activeShare !== 'download' ? (
                     <TextInput
                       name="to"
                       placeholder={placeHolders[activeShare]}
@@ -247,9 +270,19 @@ const ShareContent = ({ searchParamQueries }) => {
                     className="secondary-button font-medium text-base mt-2 w-full"
                     type="submit"
                     loading={shareInventory.isLoading}
+                    disabled={activeFileType.length !== 1 && activeShare === 'download'}
                   >
-                    {activeShare === 'copy_link' ? 'Copy' : 'Send'}
+                    {activeShare === 'copy_link'
+                      ? 'Copy'
+                      : activeShare === 'download'
+                      ? 'Download'
+                      : 'Send'}
                   </Button>
+                  {activeFileType.length !== 1 && activeShare === 'download' ? (
+                    <p className="text-red-450 text-center">
+                      Kindly select one option at a time to download
+                    </p>
+                  ) : null}
                 </div>
               )}
             </Group>

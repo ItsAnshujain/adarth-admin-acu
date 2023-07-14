@@ -171,14 +171,18 @@ const Preview = () => {
 
                     <p className="text-slate-400 text-md font-light">Size (WxH)</p>
                     <div className="mb-4 flex gap-x-2">
-                      {values?.specifications?.size.length
-                        ? values.specifications.size.map(
-                            (item, index) =>
-                              index < 2 && (
-                                <p>{`${item?.width || 0}ft x ${item?.height || 0}ft`}, </p>
-                              ),
-                          )
-                        : '-'}
+                      {values?.specifications?.size.length ? (
+                        <p>
+                          {values.specifications.size
+                            .map(
+                              (item, index) =>
+                                index < 2 && `${item?.width || 0}ft x ${item?.height || 0}ft`,
+                            )
+                            .join(', ')}
+                        </p>
+                      ) : (
+                        '-'
+                      )}
                     </div>
                     <p className=" text-slate-400 text-md font-light">Impressions</p>
                     <p className="mb-4">

@@ -248,12 +248,18 @@ const InventoryDashboardPage = () => {
           useMemo(
             () => (
               <div className="flex gap-x-2">
-                {info.row.original.specifications?.size.length
-                  ? info.row.original.specifications.size.map(
-                      (item, index) =>
-                        index < 2 && <p>{`${item?.width || 0}ft x ${item?.height || 0}ft`} ,</p>,
-                    )
-                  : '-'}
+                {info.row.original.specifications?.size.length ? (
+                  <p>
+                    {info.row.original.specifications.size
+                      .map(
+                        (item, index) =>
+                          index < 2 && `${item?.width || 0}ft x ${item?.height || 0}ft`,
+                      )
+                      .join(', ')}
+                  </p>
+                ) : (
+                  '-'
+                )}
               </div>
             ),
             [],
