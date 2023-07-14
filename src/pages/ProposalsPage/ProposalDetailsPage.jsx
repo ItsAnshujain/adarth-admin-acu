@@ -218,7 +218,20 @@ const ProposalDetailsPage = () => {
           row: {
             original: { size },
           },
-        }) => useMemo(() => <p>{`${size?.width || 0}ft x ${size?.height || 0}ft`}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p>
+                {size
+                  .map((item, index) =>
+                    index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
+                  )
+                  .filter(item => item !== null)
+                  .join(', ')}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PRICING',
