@@ -332,14 +332,18 @@ const BasicInfo = ({
                       Size (WxH)
                     </Text>
                     <div className="mb-4 flex gap-x-2">
-                      {inventoryDetails?.specifications?.size.length
-                        ? inventoryDetails.specifications.size.map(
-                            (item, index) =>
-                              index < 2 && (
-                                <p>{`${item?.width || 0}ft x ${item?.height || 0}ft`}, </p>
-                              ),
-                          )
-                        : '-'}
+                      {inventoryDetails?.specifications?.size.length ? (
+                        <p>
+                          {inventoryDetails.specifications.size
+                            .map(
+                              (item, index) =>
+                                index < 2 && `${item?.width || 0}ft x ${item?.height || 0}ft`,
+                            )
+                            .join(', ')}
+                        </p>
+                      ) : (
+                        '-'
+                      )}
                     </div>
                     <Text color="gray" size="xs" weight="300">
                       Impressions
