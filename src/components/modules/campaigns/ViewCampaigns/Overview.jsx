@@ -266,7 +266,6 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
                   dimensions: `${item?.specifications?.size?.width || 0}ft x ${
                     item?.specifications?.size?.height || 0
                   }ft`,
-                  supportedMedia: item?.basicInformation?.supportedMedia,
                   mediaType: item?.mediaType?.name,
                   resolution: item?.specifications?.resolutions,
                   illumination: item.illuminations?.name,

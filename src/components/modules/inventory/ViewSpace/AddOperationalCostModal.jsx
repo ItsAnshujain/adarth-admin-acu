@@ -145,7 +145,6 @@ const AddOperationalCostModal = ({
             name="date"
             withAsterisk
             placeholder="DD/MM/YYYY"
-            minDate={new Date()}
             size="md"
             styles={styles}
             className="mb-4"

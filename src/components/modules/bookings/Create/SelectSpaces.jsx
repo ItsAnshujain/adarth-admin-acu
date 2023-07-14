@@ -365,22 +365,6 @@ const SelectSpace = () => {
         }) => useMemo(() => <p>{dimension}</p>, []),
       },
       {
-        Header: 'TRADED AMOUNT',
-        accessor: 'tradedAmount',
-        Cell: info =>
-          useMemo(
-            () => (
-              <NumberInput
-                hideControls
-                defaultValue={+(info.row.original.tradedAmount || 0)}
-                onBlur={e => updateData('tradedAmount', e.target.value, info.row.original._id)}
-                disabled={info.row.original.peer === '-'}
-              />
-            ),
-            [],
-          ),
-      },
-      {
         Header: 'PRICING',
         accessor: 'basicInformation.price',
         Cell: ({
@@ -394,6 +378,22 @@ const SelectSpace = () => {
                 hideControls
                 defaultValue={+(price || 0)}
                 onBlur={e => updateData('price', e.target.value, _id)}
+              />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'TRADED AMOUNT',
+        accessor: 'tradedAmount',
+        Cell: info =>
+          useMemo(
+            () => (
+              <NumberInput
+                hideControls
+                defaultValue={+(info.row.original.tradedAmount || 0)}
+                onBlur={e => updateData('tradedAmount', e.target.value, info.row.original._id)}
+                disabled={info.row.original.peer === '-'}
               />
             ),
             [],

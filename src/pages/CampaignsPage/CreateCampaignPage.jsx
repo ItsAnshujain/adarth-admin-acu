@@ -167,7 +167,6 @@ const CreateCampaignPage = () => {
           photo: inventoryObj?.basicInformation?.spacePhoto,
           spaceName: inventoryObj?.basicInformation?.spaceName,
           lighting: inventoryObj?.basicInformation?.mediaType,
-          supportedMedia: inventoryObj?.basicInformation?.supportedMedia,
           mediaType: inventoryObj?.basicInformation?.mediaType,
           location: {
             address: inventoryObj?.location?.address,
