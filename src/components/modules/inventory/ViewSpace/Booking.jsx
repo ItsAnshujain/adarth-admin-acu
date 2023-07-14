@@ -209,13 +209,13 @@ const Booking = ({ inventoryId }) => {
           ),
       },
       {
-        Header: 'PAYMENT TYPE',
+        Header: 'PAYMENT STATUS',
         accessor: 'paymentType',
         Cell: ({
           row: {
             original: { paymentType },
           },
-        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
+        }) => useMemo(() => <p className="uppercase">{paymentType || '-'}</p>, []),
       },
       {
         Header: 'SCHEDULE',

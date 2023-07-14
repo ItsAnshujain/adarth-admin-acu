@@ -344,10 +344,12 @@ const CreateInventoryPage = () => {
               : 0,
           },
           resolutions: specifications?.resolutions || '',
-          size: specifications?.size?.map(item => ({
-            height: item?.height ? parseInt(item.height, 10) : 0,
-            width: item?.width ? parseInt(item.width, 10) : 0,
-          })) || [{ height: 0, width: 0, key: uuidv4() }],
+          size: Array.isArray(specifications?.size)
+            ? specifications?.size?.map(item => ({
+                height: item?.height ? parseInt(item.height, 10) : 0,
+                width: item?.width ? parseInt(item.width, 10) : 0,
+              }))
+            : [{ height: 0, width: 0, key: uuidv4() }],
           previousBrands: arrOfPreviousBrands?.length ? arrOfPreviousBrands : [],
           tags: arrOfTags?.length ? arrOfTags : [],
           additionalTags: specifications?.additionalTags || [],

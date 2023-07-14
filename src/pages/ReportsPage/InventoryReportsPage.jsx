@@ -278,7 +278,7 @@ const InventoryReportsPage = () => {
           return (
             <div>
               {basicInformation?.category?.name ? (
-                <Badge color={colorType} size="lg" className="capitalize">
+                <Badge color={colorType || 'gray'} size="lg" className="capitalize">
                   {basicInformation.category.name}
                 </Badge>
               ) : (
@@ -353,7 +353,7 @@ const InventoryReportsPage = () => {
       }) =>
         useMemo(
           () => (
-            <p className="capitalize font-medium w-32">
+            <p className="capitalize w-32">
               {specifications?.impressions?.max
                 ? `${getWord(specifications.impressions.max)}+`
                 : 'NA'}
@@ -498,7 +498,25 @@ const InventoryReportsPage = () => {
         row: {
           original: { basicInformation },
         },
-      }) => useMemo(() => <p className="w-fit">{basicInformation?.category?.name}</p>, []),
+        // }) => useMemo(() => <p className="w-fit">{basicInformation?.category?.name}</p>, []),
+      }) =>
+        useMemo(() => {
+          const colorType = Object.keys(categoryColors).find(
+            key => categoryColors[key] === basicInformation?.category?.name,
+          );
+
+          return (
+            <div>
+              {basicInformation?.category?.name ? (
+                <Badge color={colorType || 'gray'} size="lg" className="capitalize">
+                  {basicInformation.category.name}
+                </Badge>
+              ) : (
+                '-'
+              )}
+            </div>
+          );
+        }, []),
     },
     {
       Header: 'DIMENSION (WxH)',
@@ -539,7 +557,7 @@ const InventoryReportsPage = () => {
       }) =>
         useMemo(
           () => (
-            <p className="capitalize font-medium w-32">
+            <p className="capitalize w-32">
               {specifications?.impressions?.max
                 ? `${getWord(specifications.impressions.max)}+`
                 : 'NA'}

@@ -170,10 +170,16 @@ const Preview = () => {
                     <p className="mb-4">{values?.basicInformation?.mediaType?.label}</p>
 
                     <p className="text-slate-400 text-md font-light">Size (WxH)</p>
-                    <p className="mb-4">
-                      {values?.specifications?.size?.width || 0}ft X{' '}
-                      {values?.specifications?.size?.height || 0}ft
-                    </p>
+                    <div className="mb-4 flex gap-x-2">
+                      {values?.specifications?.size.length
+                        ? values.specifications.size.map(
+                            (item, index) =>
+                              index < 2 && (
+                                <p>{`${item?.width || 0}ft x ${item?.height || 0}ft`}, </p>
+                              ),
+                          )
+                        : '-'}
+                    </div>
                     <p className=" text-slate-400 text-md font-light">Impressions</p>
                     <p className="mb-4">
                       {values?.specifications?.impressions?.max
