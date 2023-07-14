@@ -92,7 +92,7 @@ const Card = ({
               : '--'}
           </div>
         </div>
-        <div className="grid grid-cols-2 justify-between gap-y-2">
+        <div className="grid grid-cols-2 justify-between gap-y-2 gap-x-3">
           <div>
             <p className="text-sm text-gray-400 mb-2">Category</p>
             <Text className="text-sm" lineClamp={1}>
@@ -107,9 +107,18 @@ const Card = ({
           </div>
           <div>
             <p className="text-sm text-gray-400 mb-2">Dimension (wxh)</p>
-            <p>{`${specifications?.size?.width || 0}ft x ${
-              specifications?.size?.height || 0
-            }ft`}</p>
+            {specifications?.size.length ? (
+              <p className="text-sm">
+                {specifications.size
+                  .map((item, index) =>
+                    index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
+                  )
+                  .filter(item => item !== null)
+                  .join(', ')}
+              </p>
+            ) : (
+              '-'
+            )}
           </div>
           <div>
             <p className="text-sm text-gray-400 mb-2">Unit</p>

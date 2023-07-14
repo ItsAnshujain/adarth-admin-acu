@@ -341,3 +341,19 @@ export const onApiError = err =>
     message: err.message,
     color: 'red',
   });
+
+export const getFormattedDimensions = list => {
+  const updatedList = [...list];
+
+  updatedList
+    .map((item, index) => {
+      if (index < 2) {
+        return `${item?.width || 0}ft x ${item?.height || 0}ft`;
+      }
+      return null;
+    })
+    .filter(item => item !== null)
+    .join(', ');
+
+  return updatedList;
+};

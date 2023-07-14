@@ -418,7 +418,10 @@ const SpaceList = () => {
         obj.dimension = item.specifications?.size?.length ? (
           <p>
             {item.specifications.size
-              .map((ele, index) => index < 2 && `${ele?.width || 0}ft x ${ele?.height || 0}ft`)
+              .map((ele, index) =>
+                index < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
+              )
+              .filter(ele => ele !== null)
               .join(', ')}
           </p>
         ) : (
