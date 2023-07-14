@@ -365,7 +365,7 @@ const SelectSpace = () => {
           row: {
             original: { dimension },
           },
-        }) => useMemo(() => <p>{dimension}</p>, []),
+        }) => useMemo(() => <div className="flex gap-x-2">{dimension}</div>, []),
       },
       {
         Header: 'PRICING',
@@ -591,9 +591,15 @@ const SelectSpace = () => {
         obj.subCategory = item?.basicInformation?.subCategory?.name;
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
-        obj.dimension = `${item.specifications?.size?.width || 0}ft x ${
-          item.specifications?.size?.height || 0
-        }ft`;
+        obj.dimension = item.specifications?.size?.length ? (
+          <p>
+            {item.specifications.size
+              .map((ele, index) => index < 2 && `${ele?.width || 0}ft x ${ele?.height || 0}ft`)
+              .join(', ')}
+          </p>
+        ) : (
+          '-'
+        );
         obj.unit = item?.specifications?.unit || '-';
         obj.impressionMax = item.specifications?.impressions?.max || 0;
         obj.impressionMin = item.specifications?.impressions?.min || 0;

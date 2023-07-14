@@ -272,7 +272,7 @@ const Spaces = () => {
           row: {
             original: { dimension },
           },
-        }) => useMemo(() => <p>{dimension}</p>, []),
+        }) => useMemo(() => <div className="flex gap-x-2">{dimension}</div>, []),
       },
       {
         Header: 'PRICING',
@@ -473,9 +473,15 @@ const Spaces = () => {
         obj.additionalTags = item?.specifications?.additionalTags;
         obj.category = item?.basicInformation?.category?.name;
         obj.subCategory = item?.basicInformation?.subCategory?.name;
-        obj.dimension = `${item.specifications?.size?.width || 0}ft x ${
-          item.specifications?.size?.height || 0
-        }ft`;
+        obj.dimension = item.specifications?.size?.length ? (
+          <p>
+            {item.specifications.size
+              .map((ele, index) => index < 2 && `${ele?.width || 0}ft x ${ele?.height || 0}ft`)
+              .join(', ')}
+          </p>
+        ) : (
+          '-'
+        );
         obj.impressions = item?.specifications?.impressions?.max;
         obj.health = item?.specifications?.health;
         obj.location = item?.location?.city;
