@@ -260,15 +260,15 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
             <p className="mb-2 text-sm font-light text-slate-400">
               {data?.location?.address || <NoData type="na" />}
             </p>
-            <Group className="gap-y-1 mb-1">
-              <p className="text-sm font-light text-slate-400">Main Amount</p>
-              <p className="font-bold">
-                {data?.basicInformation?.price
-                  ? toIndianCurrency(Number.parseInt(data.basicInformation.price, 10))
-                  : 0}
-              </p>
-            </Group>
-            <Group className="gap-y-1 mb-1">
+            {data?.tradedAmount ? (
+              <Group className="gap-y-1 mb-1">
+                <p className="text-sm font-light text-slate-400">Traded Amount</p>
+                <p className="font-bold">
+                  {toIndianCurrency(Number.parseInt(data.tradedAmount, 10)) || 0}
+                </p>
+              </Group>
+            ) : null}
+            <Group>
               <p className="text-sm font-light text-slate-400">Booked Amount</p>
               <p className="font-bold">
                 {data?.campaignPrice
@@ -276,14 +276,6 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
                   : 0}
               </p>
             </Group>
-            {data?.tradedAmount ? (
-              <Group>
-                <p className="text-sm font-light text-slate-400">Traded Amount</p>
-                <p className="font-bold">
-                  {toIndianCurrency(Number.parseInt(data.tradedAmount, 10)) || 0}
-                </p>
-              </Group>
-            ) : null}
           </div>
           <div>
             <div className="mb-4">
@@ -338,8 +330,8 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
               />
             </div>
             <div>
-              <p className="mb-2 text-sm font-light text-slate-400">Format Support</p>
-              <p>{data?.basicInformation?.supportedMedia || <NoData type="na" />}</p>
+              <p className="mb-2 text-sm font-light text-slate-400">Media Type</p>
+              <p>{data?.basicInformation?.mediaType?.name || <NoData type="na" />}</p>
             </div>
           </div>
           <div className="flex flex-col">

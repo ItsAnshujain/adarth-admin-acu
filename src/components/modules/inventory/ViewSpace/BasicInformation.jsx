@@ -68,17 +68,20 @@ const BasicInfo = ({
 
   const renderColoredBadges = useCallback(
     list =>
-      list?.map(item => (
-        <Badge
-          key={item?._id}
-          className="text-purple-450 bg-purple-100 capitalize mr-1 my-2"
-          size="lg"
-          variant="filled"
-          radius="sm"
-        >
-          {item?.name}
-        </Badge>
-      )),
+      list?.map(
+        (item, index) =>
+          index < 10 && (
+            <Badge
+              key={item?._id}
+              className="text-purple-450 bg-purple-100 capitalize"
+              size="lg"
+              variant="filled"
+              radius="sm"
+            >
+              {item?.name}
+            </Badge>
+          ),
+      ),
     [inventoryDetails],
   );
 
@@ -279,7 +282,7 @@ const BasicInfo = ({
               <Text weight="bold" className="my-2">
                 {toIndianCurrency(inventoryDetails?.basicInformation?.price || 0)}
               </Text>
-              <div className="flex gap-2 mb-3">
+              <div className="flex gap-2 flex-wrap mb-2">
                 {inventoryDetails?.basicInformation?.audience?.length
                   ? renderColoredBadges(inventoryDetails?.basicInformation?.audience)
                   : null}
@@ -295,8 +298,8 @@ const BasicInfo = ({
               <div className="mb-2">
                 <p className="text-slate-400">Advertising tags</p>
                 <div className="flex w-full flex-wrap">
-                  {inventoryDetails?.specifications?.tags.length
-                    ? renderBadges(inventoryDetails?.specifications?.tags)
+                  {inventoryDetails?.specifications?.tags?.length
+                    ? renderBadges(inventoryDetails?.specifications.tags)
                     : 'None'}
                 </div>
               </div>
@@ -328,9 +331,15 @@ const BasicInfo = ({
                     <Text color="gray" size="xs" weight="300">
                       Size (WxH)
                     </Text>
-                    <Text className="mb-4">
-                      {inventoryDetails?.specifications?.size?.width || 0}ft X{' '}
-                      {inventoryDetails?.specifications?.size?.height || 0}ft
+                    <Text className="mb-4 flex gap-x-2">
+                      {inventoryDetails?.specifications?.size.length
+                        ? inventoryDetails.specifications.size.map(
+                            (item, index) =>
+                              index < 2 && (
+                                <p>{`${item?.width || 0}ft x ${item?.height || 0}ft`}, </p>
+                              ),
+                          )
+                        : '-'}
                     </Text>
                     <Text color="gray" size="xs" weight="300">
                       Impressions
@@ -351,10 +360,10 @@ const BasicInfo = ({
                     </Text>
                     <Text className="mb-4">{inventoryDetails?.specifications?.unit}</Text>
                     <Text color="gray" size="xs" weight="300">
-                      Supported Media
+                      Media Type
                     </Text>
                     <Text className="mb-4">
-                      {inventoryDetails?.basicInformation?.supportedMedia || 'NA'}
+                      {inventoryDetails?.basicInformation?.mediaType?.name || 'NA'}
                     </Text>
                     <Text color="gray" size="xs" weight="300">
                       Illumination

@@ -32,17 +32,20 @@ const Preview = () => {
 
   const renderColoredBadges = useCallback(
     list =>
-      list?.map(item => (
-        <Badge
-          key={item?.value}
-          className="text-purple-450 bg-purple-100 capitalize mr-3 my-2"
-          size="lg"
-          variant="filled"
-          radius="sm"
-        >
-          {item?.label}
-        </Badge>
-      )),
+      list?.map(
+        (item, index) =>
+          index < 10 && (
+            <Badge
+              key={item?.value}
+              className="text-purple-450 bg-purple-100 capitalize"
+              size="lg"
+              variant="filled"
+              radius="sm"
+            >
+              {item?.label}
+            </Badge>
+          ),
+      ),
     [values?.basicInformation?.audience],
   );
 
@@ -130,9 +133,11 @@ const Preview = () => {
                   : 'NA'}
               </Badge>
             </div>
-            {values?.basicInformation?.audience?.length
-              ? renderColoredBadges(values?.basicInformation?.audience)
-              : null}
+            <div className="flex gap-2 flex-wrap mb-2">
+              {values?.basicInformation?.audience?.length
+                ? renderColoredBadges(values?.basicInformation?.audience)
+                : null}
+            </div>
             <div className="mb-2">
               <p className="text-slate-400">Advertising brands</p>
               <div className="flex w-full flex-wrap">
@@ -183,8 +188,8 @@ const Preview = () => {
                     <p className="mb-4">{values?.specifications?.illuminations?.label}</p>
                     <p className="text-slate-400 text-md font-light">Unit</p>
                     <p className="mb-4">{values?.specifications?.unit}</p>
-                    <p className="text-slate-400 text-md font-light">Supported Media</p>
-                    <p>{values?.basicInformation?.supportedMedia || 'NA'}</p>
+                    <p className="text-slate-400 text-md font-light">Media Type</p>
+                    <p>{values?.basicInformation?.mediaType?.label || 'NA'}</p>
                   </div>
                 </div>
               </div>

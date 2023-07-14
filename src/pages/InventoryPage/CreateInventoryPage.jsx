@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
+import { v4 as uuidv4 } from 'uuid';
 import BasicInformationForm from '../../components/modules/inventory/CreateSpace/BasicInformationForm';
 import SpecificationForm from '../../components/modules/inventory/CreateSpace/SpecificationForm';
 import LocationForm from '../../components/modules/inventory/CreateSpace/LocationForm';
@@ -25,7 +26,6 @@ const initialValues = {
     subCategory: { label: '', value: '' },
     spaceType: { label: '', value: '' },
     mediaType: { label: '', value: '' },
-    supportedMedia: '',
     description: '',
     spacePhoto: '',
     otherPhotos: [],
@@ -36,10 +36,13 @@ const initialValues = {
   specifications: {
     illuminations: { label: '', value: '' },
     resolutions: '',
-    size: {
-      height: 0,
-      width: 0,
-    },
+    size: [
+      {
+        height: 0,
+        width: 0,
+        key: uuidv4(),
+      },
+    ],
     health: null,
     impressions: {
       min: 0,
@@ -94,7 +97,6 @@ const basicInformationSchema = yup.object({
         value: yup.string().trim(),
       })
       .test('mediaType', 'Media Type is required', obj => obj.value !== ''),
-    supportedMedia: yup.string().trim(),
     description: yup.string().trim(),
     price: yup
       .number()
@@ -132,16 +134,7 @@ const specificationsValues = yup.object({
       .typeError('Unit must be a number')
       .required('Unit is required'),
     resolutions: yup.string().trim(),
-    size: yup.mixed({
-      height: yup
-        .number()
-        .positive('Height must be a positive number')
-        .typeError('Height must be a number'),
-      width: yup
-        .number()
-        .positive('Width must be a positive number')
-        .typeError('Width must be a number'),
-    }),
+    size: yup.array(),
     health: yup
       .number()
       .min(0, 'Health Status must be greater than or equal to 0')
@@ -244,6 +237,10 @@ const CreateInventoryPage = () => {
         illuminations: formData?.specifications?.illuminations?.value,
         previousBrands: formData?.specifications?.previousBrands?.map(item => item?.value),
         tags: formData?.specifications?.tags?.map(item => item?.value),
+        size: formData?.specifications?.size?.map(item => ({
+          height: item?.height,
+          width: item?.width,
+        })),
       },
       company: formData?.basicInformation?.mediaOwner?.label,
     };
@@ -323,7 +320,6 @@ const CreateInventoryPage = () => {
             label: basicInformation?.mediaType?.name || '',
             value: basicInformation?.mediaType?._id || '',
           },
-          supportedMedia: basicInformation?.supportedMedia || '',
           demographic: {
             label: basicInformation?.demographic?.name || '',
             value: basicInformation?.demographic?._id || '',
@@ -348,10 +344,10 @@ const CreateInventoryPage = () => {
               : 0,
           },
           resolutions: specifications?.resolutions || '',
-          size: {
-            height: specifications?.size?.height ? parseInt(specifications.size.height, 10) : 0,
-            width: specifications?.size?.width ? parseInt(specifications.size.width, 10) : 0,
-          },
+          size: specifications?.size?.map(item => ({
+            height: item?.height ? parseInt(item.height, 10) : 0,
+            width: item?.width ? parseInt(item.width, 10) : 0,
+          })) || [{ height: 0, width: 0, key: uuidv4() }],
           previousBrands: arrOfPreviousBrands?.length ? arrOfPreviousBrands : [],
           tags: arrOfTags?.length ? arrOfTags : [],
           additionalTags: specifications?.additionalTags || [],

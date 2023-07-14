@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Doughnut } from 'react-chartjs-2';
 import { Loader } from '@mantine/core';
 import completed from '../../../../assets/completed.svg';
+import toIndianCurrency from '../../../../utils/currencyFormat';
 
 export const data = {
   datasets: [
@@ -43,6 +44,23 @@ const StatisticsCard = () => {
     [bookingStats],
   );
 
+  const outstandingBalanceData = useMemo(
+    () => ({
+      datasets: [
+        {
+          data: [
+            bookingStatsById?.[0]?.unpaidAmount ?? 0,
+            bookingStatsById?.[0]?.totalPayment ?? 0,
+          ],
+          backgroundColor: ['#FF900E', '#914EFB'],
+          borderColor: ['#FF900E', '#914EFB'],
+          borderWidth: 1,
+        },
+      ],
+    }),
+    [bookingStatsById],
+  );
+
   return (
     <div>
       <p className="pt-5 font-bold text-lg mb-2">Statistics</p>
@@ -58,7 +76,7 @@ const StatisticsCard = () => {
             )}
           </div>
           <div>
-            <p className="font-medium">Health Status</p>
+            <p className="font-medium">Booking Type</p>
             <div className="flex gap-8 mt-6">
               <div className="flex gap-2 items-center">
                 <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
@@ -84,12 +102,12 @@ const StatisticsCard = () => {
         </div>
         <div className="flex gap-x-4 p-4 border rounded-md items-center">
           <div className="w-32">
-            {!bookingStats ? (
+            {!bookingStatsById ? (
               <Loader className="mx-auto" />
-            ) : bookingStats?.online === 0 && bookingStats?.offline === 0 ? (
+            ) : !bookingStatsById?.length ? (
               <p className="text-center">NA</p>
             ) : (
-              <Doughnut options={config.options} data={healthStatusData} />
+              <Doughnut options={config.options} data={outstandingBalanceData} />
             )}
           </div>
           <div>
@@ -99,14 +117,22 @@ const StatisticsCard = () => {
                 <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                 <div>
                   <p className="text-xs font-lighter mb-1">Total Payment</p>
-                  <p className="font-bold text-md">{bookingStatsById?.[0]?.totalPayment ?? 0}</p>
+                  <p className="font-bold text-md">
+                    {bookingStatsById?.[0]?.totalPayment
+                      ? toIndianCurrency(bookingStatsById[0].totalPayment)
+                      : 0}
+                  </p>
                 </div>
               </div>
               <div className="flex gap-2 items-center">
                 <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                 <div>
                   <p className="font-lighter text-xs mb-1">Outstanding Payment</p>
-                  <p className="font-bold text-md">{bookingStatsById?.[0]?.unpaidAmount ?? 0}</p>
+                  <p className="font-bold text-md">
+                    {bookingStatsById?.[0]?.unpaidAmount
+                      ? toIndianCurrency(bookingStatsById[0].unpaidAmount)
+                      : 0}
+                  </p>
                 </div>
               </div>
             </div>

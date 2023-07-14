@@ -269,15 +269,6 @@ const BasicInformationForm = () => {
           }
           className="mb-7"
         />
-
-        <TextInput
-          label="Supported Media"
-          name="basicInformation.supportedMedia"
-          styles={styles}
-          errors={errors}
-          placeholder="Write..."
-          className="mb-7"
-        />
         <NumberInput
           label="Price"
           name="basicInformation.price"

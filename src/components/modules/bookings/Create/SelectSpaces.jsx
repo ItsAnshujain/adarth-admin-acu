@@ -384,6 +384,31 @@ const SelectSpace = () => {
           ),
       },
       {
+        Header: 'TRADED AMOUNT',
+        accessor: 'tradedAmount',
+        Cell: info =>
+          useMemo(
+            () => (
+              <NumberInput
+                hideControls
+                defaultValue={+(info.row.original.tradedAmount || 0)}
+                onBlur={e => updateData('tradedAmount', e.target.value, info.row.original._id)}
+                disabled={info.row.original.peer === '-'}
+              />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'UNIT',
+        accessor: 'specifications.unit',
+        Cell: ({
+          row: {
+            original: { unit },
+          },
+        }) => useMemo(() => <p>{unit}</p>, []),
+      },
+      {
         Header: 'INVENTORY ID',
         accessor: 'inventoryId',
         Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
@@ -451,15 +476,6 @@ const SelectSpace = () => {
           ),
       },
       {
-        Header: 'UNIT',
-        accessor: 'specifications.unit',
-        Cell: ({
-          row: {
-            original: { unit },
-          },
-        }) => useMemo(() => <p>{unit}</p>, []),
-      },
-      {
         Header: 'UPLOAD MEDIA',
         accessor: '',
         disableSortBy: true,
@@ -475,22 +491,6 @@ const SelectSpace = () => {
                 isActive={values?.place?.find(item => item._id === _id)}
                 hasMedia={values?.place?.find(item => (item._id === _id ? !!item?.media : false))}
                 id={_id}
-              />
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'TRADED AMOUNT',
-        accessor: 'tradedAmount',
-        Cell: info =>
-          useMemo(
-            () => (
-              <NumberInput
-                hideControls
-                defaultValue={+(info.row.original.tradedAmount || 0)}
-                onBlur={e => updateData('tradedAmount', e.target.value, info.row.original._id)}
-                disabled={info.row.original.peer === '-'}
               />
             ),
             [],

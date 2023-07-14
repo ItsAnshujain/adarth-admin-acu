@@ -40,18 +40,14 @@ const Places = ({ data }) => (
             <p className="font-normal">{data.illumination}</p>
           </div>
           <div>
-            <p className="text-slate-400 text-sm tracking-wide">Supported Media</p>
-            <p className="font-normal">{data.supportedMedia}</p>
+            <p className="text-slate-400 text-sm tracking-wide">Resolution</p>
+            <p className="font-normal">{data.resolution}</p>
           </div>
         </div>
         <div>
           <div className="mb-4">
             <p className="text-slate-400 text-sm tracking-wide">Size (WxH)</p>
             <p className="font-normal">{data.dimensions}</p>
-          </div>
-          <div>
-            <p className="text-slate-400 text-sm tracking-wide">Resolution</p>
-            <p className="font-normal">{data.resolution}</p>
           </div>
         </div>
       </div>

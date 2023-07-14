@@ -292,6 +292,15 @@ const Spaces = () => {
           ),
       },
       {
+        Header: 'UNIT',
+        accessor: 'specifications.unit',
+        Cell: ({
+          row: {
+            original: { unit },
+          },
+        }) => useMemo(() => <p>{unit}</p>, []),
+      },
+      {
         Header: 'INVENTORY ID',
         accessor: 'inventoryId',
         Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
@@ -361,15 +370,6 @@ const Spaces = () => {
             ),
             [],
           ),
-      },
-      {
-        Header: 'UNIT',
-        accessor: 'specifications.unit',
-        Cell: ({
-          row: {
-            original: { unit },
-          },
-        }) => useMemo(() => <p>{unit}</p>, []),
       },
       {
         Header: 'PROPOSAL DATE',

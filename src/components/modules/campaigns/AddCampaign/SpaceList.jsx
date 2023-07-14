@@ -228,6 +228,15 @@ const SpaceList = () => {
         }) => toIndianCurrency(Number.parseInt(price, 10) || 0),
       },
       {
+        Header: 'UNIT',
+        accessor: 'specifications.unit',
+        Cell: ({
+          row: {
+            original: { unit },
+          },
+        }) => useMemo(() => <p>{unit}</p>, []),
+      },
+      {
         Header: 'INVENTORY ID',
         accessor: 'inventoryId',
         Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
@@ -295,15 +304,6 @@ const SpaceList = () => {
           ),
       },
       {
-        Header: 'UNIT',
-        accessor: 'specifications.unit',
-        Cell: ({
-          row: {
-            original: { unit },
-          },
-        }) => useMemo(() => <p>{unit}</p>, []),
-      },
-      {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
@@ -358,7 +358,6 @@ const SpaceList = () => {
         health,
         unit,
         resolutions,
-        supportedMedia,
       }) => ({
         _id,
         spaceName,
@@ -373,7 +372,6 @@ const SpaceList = () => {
         health,
         unit,
         resolutions,
-        supportedMedia,
       }),
     );
 
@@ -424,7 +422,6 @@ const SpaceList = () => {
         obj.health = item?.specifications?.health;
         obj.location = item?.location;
         obj.mediaType = item?.basicInformation?.mediaType?.name;
-        obj.supportedMedia = item?.basicInformation?.supportedMedia;
         obj.price = item?.basicInformation?.price;
         obj.landlord_name = item?.basicInformation?.mediaOwner?.name;
         obj.illuminations = item?.specifications?.illuminations?.name;

@@ -1,5 +1,6 @@
-import { RangeSlider } from '@mantine/core';
+import { ActionIcon, Button, Image, RangeSlider } from '@mantine/core';
 import { useCallback } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { useFormContext } from '../../../../context/formContext';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import { serialize } from '../../../../utils';
@@ -9,6 +10,7 @@ import Select from '../../../shared/Select';
 import NumberInput from '../../../shared/NumberInput';
 import AsyncMultiSelect from '../../../shared/AsyncMultiSelect';
 import MultiSelect from '../../../shared/MultiSelect';
+import TrashIcon from '../../../../assets/trash.svg';
 
 const styles = {
   label: {
@@ -57,7 +59,7 @@ const query = {
 };
 
 const SpecificationForm = () => {
-  const { values, errors, setFieldValue } = useFormContext();
+  const { values, errors, setFieldValue, insertListItem, removeListItem } = useFormContext();
 
   const {
     data: illuminationData,
@@ -125,33 +127,54 @@ const SpecificationForm = () => {
             placeholder="Write..."
             className="mb-7"
           />
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="mt-[9px] font-bold text-[15px]">
-                Width <span className="font-medium text-xs text-gray-500">(in sqft)</span>
-              </p>
-              <NumberInput
-                name="specifications.size.width"
-                withAsterisk
-                styles={styles}
-                errors={errors}
-                placeholder="Write..."
-                className="mb-7"
-              />
-            </div>
-            <div>
-              <p className="mt-[9px] font-bold text-[15px]">
-                Height <span className="font-medium text-xs text-gray-500">(in sqft)</span>
-              </p>
-              <NumberInput
-                name="specifications.size.height"
-                withAsterisk
-                styles={styles}
-                errors={errors}
-                placeholder="Write..."
-                className="mb-7"
-              />
-            </div>
+          <div className="max-h-[240px] overflow-y-scroll mb-5">
+            {values.specifications?.size?.map((item, index) => (
+              <div key={item?.key} className="grid grid-cols-2 gap-4 relative">
+                {index !== 0 ? (
+                  <ActionIcon
+                    className="absolute right-0"
+                    onClick={() => removeListItem('specifications.size', index)}
+                  >
+                    <Image src={TrashIcon} height={15} width={15} />
+                  </ActionIcon>
+                ) : null}
+                <div>
+                  <p className="mt-[9px] font-bold text-[15px]">
+                    Width <span className="font-medium text-xs text-gray-500">(in ft)</span>
+                  </p>
+                  <NumberInput
+                    name={`specifications.size.${index}.width`}
+                    withAsterisk
+                    styles={styles}
+                    errors={errors}
+                    placeholder="Write..."
+                    className="mb-7"
+                  />
+                </div>
+                <div>
+                  <p className="mt-[9px] font-bold text-[15px]">
+                    Height <span className="font-medium text-xs text-gray-500">(in ft)</span>
+                  </p>
+                  <NumberInput
+                    name={`specifications.size.${index}.height`}
+                    withAsterisk
+                    styles={styles}
+                    errors={errors}
+                    placeholder="Write..."
+                    className="mb-7"
+                  />
+                </div>
+              </div>
+            ))}
+
+            <Button
+              className="secondary-button mb-2"
+              onClick={() =>
+                insertListItem('specifications.size', { height: '', width: '', key: uuidv4() })
+              }
+            >
+              Add More
+            </Button>
           </div>
         </div>
       </div>

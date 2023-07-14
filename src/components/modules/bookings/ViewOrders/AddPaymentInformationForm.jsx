@@ -101,7 +101,6 @@ const AddPaymentInformationForm = ({ bookingId, onClose, id }) => {
         type: paymentById.data?.type,
         amount: paymentById.data?.amount,
         referenceNumber: paymentById.data?.referenceNumber,
-        cardNumber: paymentById.data?.cardNumber,
         paymentDate: paymentById.data?.paymentDate
           ? new Date(paymentById.data?.paymentDate)
           : undefined,
@@ -133,25 +132,18 @@ const AddPaymentInformationForm = ({ bookingId, onClose, id }) => {
             maxLength={200}
             className="mb-4"
           />
-          <ControlledNumberInput
-            label="Amount ₹"
-            name="amount"
-            withAsterisk
-            placeholder="Write..."
-            className="mb-4"
-          />
-          <ControlledTextInput
-            label="Card Number"
-            name="cardNumber"
-            placeholder="Write..."
-            maxLength={200}
-            className="mb-4"
-          />
           <ControlledDatePicker
             label="Bill Date"
             name="paymentDate"
             placeholder="Select date..."
             clearable={false}
+            className="mb-4"
+          />
+          <ControlledNumberInput
+            label="Amount ₹"
+            name="amount"
+            withAsterisk
+            placeholder="Write..."
             className="mb-4"
           />
           <ControlledTextInput

@@ -243,13 +243,16 @@ const InventoryDashboardPage = () => {
         disableSortBy: true,
         Cell: info =>
           useMemo(
-            () =>
-              info.row.original.specifications?.size.length
-                ? info.row.original.specifications.size.map(
-                    (item, index) =>
-                      index < 2 && <p>{`${item?.width || 0}ft x ${item?.height || 0}ft`}</p>,
-                  )
-                : '-',
+            () => (
+              <div className="flex gap-x-2">
+                {info.row.original.specifications?.size.length
+                  ? info.row.original.specifications.size.map(
+                      (item, index) =>
+                        index < 2 && <p>{`${item?.width || 0}ft x ${item?.height || 0}ft`} ,</p>,
+                    )
+                  : '-'}
+              </div>
+            ),
             [],
           ),
       },
@@ -267,6 +270,11 @@ const InventoryDashboardPage = () => {
             ),
             [],
           ),
+      },
+      {
+        Header: 'UNIT',
+        accessor: 'specifications.unit',
+        Cell: info => useMemo(() => <p>{info.row.original.specifications?.unit || '-'}</p>, []),
       },
       {
         Header: 'INVENTORY ID',
@@ -334,11 +342,6 @@ const InventoryDashboardPage = () => {
           ),
       },
       {
-        Header: 'UNIT',
-        accessor: 'specifications.unit',
-        Cell: info => useMemo(() => <p>{info.row.original.specifications?.unit || '-'}</p>, []),
-      },
-      {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
@@ -346,9 +349,9 @@ const InventoryDashboardPage = () => {
           useMemo(
             () => (
               <SpacesMenuPopover
-                itemId={info.row.original_id}
-                enableDelete={info.row.originalcreatedBy && !info.row.originalcreatedBy?.isPeer}
-                enableEdit={info.row.originalcreatedBy && !info.row.originalcreatedBy?.isPeer}
+                itemId={info.row.original._id}
+                enableDelete={info.row.original.createdBy && !info.row.original.createdBy?.isPeer}
+                enableEdit={info.row.original.createdBy && !info.row.original.createdBy?.isPeer}
               />
             ),
             [],
