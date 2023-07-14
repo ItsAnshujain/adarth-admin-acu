@@ -174,10 +174,10 @@ const Preview = () => {
                       {values?.specifications?.size.length ? (
                         <p>
                           {values.specifications.size
-                            .map(
-                              (item, index) =>
-                                index < 2 && `${item?.width || 0}ft x ${item?.height || 0}ft`,
+                            .map((item, index) =>
+                              index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
                             )
+                            .filter(item => item !== null)
                             .join(', ')}
                         </p>
                       ) : (
