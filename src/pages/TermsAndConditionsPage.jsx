@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import shallow from 'zustand/shallow';
 import { useDisclosure } from '@mantine/hooks';
 import { FormProvider, useForm } from '../context/formContext';
-import { useUpdateUsers } from '../hooks/users.hooks';
+import { useUpdateUsers } from '../apis/queries/users.queries';
 import useUserStore from '../store/user.store';
 import banner from '../assets/login.svg';
-import TermsAndConditionsContent from '../components/DocAndPolicies/TermsAndConditionsContent';
+import TermsAndConditionsContent from '../components/modules/policies/TermsAndConditionsContent';
 
 const TermsAndConditionsPage = () => {
   const navigate = useNavigate();

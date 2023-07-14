@@ -6,18 +6,18 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
 import { useModals } from '@mantine/modals';
-import Header from '../../components/Finance/Header';
+import Header from '../../components/modules/finance/Header';
 import Search from '../../components/Search';
 import DateRange from '../../components/DateRange';
 import calendar from '../../assets/data-table.svg';
 import Table from '../../components/Table/Table';
-import { useFetchFinanceByYearAndMonth } from '../../hooks/finance.hooks';
+import { useFetchFinanceByYearAndMonth } from '../../apis/queries/finance.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import FinanceMenuPopover from '../../components/Popovers/FinanceMenuPopover';
 import { downloadPdf, orderTitle, ROLES } from '../../utils';
 import RoleBased from '../../components/RoleBased';
 import modalConfig from '../../utils/modalConfig';
-import PreviewContent from '../../components/Finance/PreviewContent';
+import PreviewContent from '../../components/modules/finance/PreviewContent';
 import VerifyApprovalContent from '../../components/VerifyApprovalContent';
 
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
@@ -182,7 +182,7 @@ const FinanceMonthlyDetailsPage = () => {
 
             return (
               <div>
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGEMENT]}>
                   <Select
                     className="mr-2"
                     data={filteredList}
@@ -377,7 +377,7 @@ const FinanceMonthlyDetailsPage = () => {
 
             return (
               <div>
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGEMENT]}>
                   <Select
                     className="mr-2"
                     data={filteredList}
@@ -572,7 +572,7 @@ const FinanceMonthlyDetailsPage = () => {
 
             return (
               <div>
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.MANAGEMENT]}>
                   <Select
                     className="mr-2"
                     data={filteredList}
@@ -680,20 +680,21 @@ const FinanceMonthlyDetailsPage = () => {
   }, [financeRecordId]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <Header
         year={year}
         month={month}
         totalSales={financialDataByMonth?.cost?.totalSales}
         totalOperationlCost={financialDataByMonth?.cost?.totalOperationlCost}
       />
-      <div className="flex pl-5 gap-3 items-center font-medium h-20 border-b">
+      <div className="flex gap-x-5 items-center font-medium h-20 border-b">
         <Button
           onClick={() => handleTabs('purchase')}
           className={classNames(
             pageType === 'purchase'
               ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
               : 'text-black',
+            'px-0',
           )}
         >
           Purchase Orders
@@ -704,6 +705,7 @@ const FinanceMonthlyDetailsPage = () => {
             pageType === 'release'
               ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
               : 'text-black',
+            'px-0',
           )}
         >
           Release Orders
@@ -714,12 +716,13 @@ const FinanceMonthlyDetailsPage = () => {
             pageType === 'invoice'
               ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
               : 'text-black',
+            'px-0',
           )}
         >
           Invoices
         </Button>
       </div>
-      <div className="py-4 flex justify-end pr-7 gap-2 text-right">
+      <div className="py-4 flex justify-end gap-2 text-right">
         <Search search={searchInput} setSearch={setSearchInput} />
         <div ref={ref} className=" relative">
           <Button onClick={toggleDatePicker} variant="default">

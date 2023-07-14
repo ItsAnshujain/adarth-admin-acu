@@ -4,18 +4,18 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { yupResolver } from '@mantine/form';
 import dayjs from 'dayjs';
-import BasicInfo from '../../components/Proposals/CreateProposal/BasicInfo';
-import Spaces from '../../components/Proposals/Spaces';
+import BasicInfo from '../../components/modules/proposals/CreateProposal/BasicInfo';
+import Spaces from '../../components/modules/proposals/Spaces';
 import SuccessModal from '../../components/shared/Modal';
-import Header from '../../components/Proposals/CreateProposal/Header';
+import Header from '../../components/modules/proposals/CreateProposal/Header';
 import {
   useCreateProposal,
   useUpdateProposal,
   useFetchProposalById,
-} from '../../hooks/proposal.hooks';
-import { useFetchUsersById } from '../../hooks/users.hooks';
+} from '../../apis/queries/proposal.queries';
+import { useFetchUsersById } from '../../apis/queries/users.queries';
 import { FormProvider, useForm } from '../../context/formContext';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 import { serialize } from '../../utils';
 import useUserStore from '../../store/user.store';
 
@@ -105,8 +105,8 @@ const CreateProposalPage = () => {
       }));
 
       if (data.uploadType === 'existing') {
-        data.letterHead = userData?.letterHead;
-        data.letterFooter = userData?.letterFooter;
+        data.letterHead = userData?.proposalHead;
+        data.letterFooter = userData?.proposalFooter;
       }
 
       Object.keys(data).forEach(key => {
@@ -200,7 +200,7 @@ const CreateProposalPage = () => {
   }, [proposalData, userData]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <FormProvider form={form}>
         <form onSubmit={form.onSubmit(onSubmit)}>
           <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">

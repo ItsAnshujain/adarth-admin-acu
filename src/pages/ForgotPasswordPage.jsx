@@ -3,7 +3,7 @@ import { Button } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
-import { useForgotPassword } from '../hooks/auth.hooks';
+import { useForgotPassword } from '../apis/queries/auth.queries';
 import { FormProvider, useForm } from '../context/formContext';
 import TextInput from '../components/shared/TextInput';
 import banner from '../assets/login.svg';
@@ -54,7 +54,7 @@ const ForgotPasswordPage = () => {
               errors={form.errors}
             />
             <Button
-              disabled={isLoading}
+              loading={isLoading}
               className="mt-4 width-full bg-purple-450"
               color="primary"
               type="submit"

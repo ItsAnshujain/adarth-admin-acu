@@ -1,6 +1,13 @@
 import { DatePicker as MantineDatePicker } from '@mantine/dates';
+import { createStyles } from '@mantine/core';
 import { useFormContext } from '../../context/formContext';
-import { useStyles } from '../DateRange';
+
+export const useStyles = createStyles({
+  outside: { opacity: 0 },
+  disabled: { color: '#ced4da !important' },
+  weekend: { color: '#495057 !important' },
+  selected: { color: '#FFF !important' },
+});
 
 const DatePicker = ({ name = '', styles, errors, ...props }) => {
   const form = useFormContext();

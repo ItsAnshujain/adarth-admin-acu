@@ -5,13 +5,13 @@ import dayjs from 'dayjs';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
 import { useNavigate } from 'react-router-dom';
-import BasicInfo from '../../components/Bookings/Create/BasicInformation';
-import SelectSpaces from '../../components/Bookings/Create/SelectSpaces';
-import OrderInfo from '../../components/Bookings/Create/OrderInformation';
+import BasicInformationForm from '../../components/modules/bookings/Create/BasicInformationForm';
+import SelectSpaces from '../../components/modules/bookings/Create/SelectSpaces';
+import OrderInformationForm from '../../components/modules/bookings/Create/OrderInformationForm';
 import SuccessModal from '../../components/shared/Modal';
-import Header from '../../components/Bookings/Create/Header';
+import Header from '../../components/modules/bookings/Create/Header';
 import { FormProvider, useForm } from '../../context/formContext';
-import { useCreateBookings } from '../../hooks/booking.hooks';
+import { useCreateBookings } from '../../apis/queries/booking.queries';
 import { gstRegexMatch, panRegexMatch, isValidURL } from '../../utils';
 
 const initialValues = {
@@ -23,8 +23,6 @@ const initialValues = {
     panNumber: '',
     gstNumber: '',
   },
-  paymentReference: '',
-  paymentType: 'neft',
   campaignName: '',
   description: '',
   place: [],
@@ -120,6 +118,7 @@ const CreateBookingPage = () => {
         media: isValidURL(item.media) ? item.media : undefined,
         startDate: item.startDate ? dayjs(item.startDate).startOf('day') : dayjs().startOf('day'),
         endDate: item.startDate ? dayjs(item.endDate).endOf('day') : dayjs().endOf('day'),
+        tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
       }));
 
       data.place.forEach(item => {
@@ -138,6 +137,9 @@ const CreateBookingPage = () => {
       }
       if (data?.client?.gstNumber) {
         data.client.gstNumber = data.client.gstNumber?.toUpperCase();
+      }
+      if (data?.displayBrands) {
+        data.displayBrands = [data.displayBrands];
       }
 
       const totalPrice = form.values?.place?.reduce((acc, item) => acc + +(item.price || 0), 0);
@@ -177,10 +179,16 @@ const CreateBookingPage = () => {
   };
 
   const getForm = () =>
-    formStep === 1 ? <BasicInfo /> : formStep === 2 ? <OrderInfo /> : <SelectSpaces />;
+    formStep === 1 ? (
+      <BasicInformationForm />
+    ) : formStep === 2 ? (
+      <OrderInformationForm />
+    ) : (
+      <SelectSpaces />
+    );
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <FormProvider form={form}>
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Header setFormStep={setFormStep} formStep={formStep} isLoading={isLoading} />

@@ -3,15 +3,19 @@ import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
-import BasicInfo from '../../components/Campaigns/AddCampaign/BasicInformation';
+import BasicInformationForm from '../../components/modules/campaigns/AddCampaign/BasicInformationForm';
 import SuccessModal from '../../components/shared/Modal';
-import CoverImage from '../../components/Campaigns/AddCampaign/CoverImage';
-import Header from '../../components/Campaigns/AddCampaign/Header';
-import Spaces from '../../components/Campaigns/AddCampaign/Spaces';
+import CoverImage from '../../components/modules/campaigns/AddCampaign/CoverImage';
+import Header from '../../components/modules/campaigns/AddCampaign/Header';
+import SpaceList from '../../components/modules/campaigns/AddCampaign/SpaceList';
 import { FormProvider, useForm } from '../../context/formContext';
-import Preview from '../../components/Campaigns/AddCampaign/Preview';
-import { useCampaign, useCreateCampaign, useUpdateCampaign } from '../../hooks/campaigns.hooks';
-import { useFetchMasters } from '../../hooks/masters.hooks';
+import Preview from '../../components/modules/campaigns/AddCampaign/Preview';
+import {
+  useCampaign,
+  useCreateCampaign,
+  useUpdateCampaign,
+} from '../../apis/queries/campaigns.queries';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 import { serialize } from '../../utils';
 
 const initialValues = {
@@ -22,8 +26,8 @@ const initialValues = {
   createStatus: '',
   isFeatured: false,
   previousBrands: [],
-  minImpression: 1600000,
-  maxImpression: 3200000,
+  minImpression: 0,
+  maxImpression: 0,
   tags: [],
   healthTag: '',
   place: [],
@@ -36,14 +40,8 @@ const schema = yup.object({
   name: yup.string().trim().required('Campaign Name is required'),
   description: yup.string().trim(),
   previousBrands: yup.array().of(yup.string().trim()),
-  minImpression: yup
-    .number()
-    .positive('Min must be a positive number')
-    .typeError('Minimum Impression must be a number'),
-  maxImpression: yup
-    .number()
-    .positive('Max must be a positive number')
-    .typeError('Maximum Impression must be a number'),
+  minImpression: yup.number(),
+  maxImpression: yup.number(),
   tags: yup.array().of(yup.string().trim()),
   isFeatured: yup.boolean(),
   thumbnail: yup.string(),
@@ -71,9 +69,9 @@ const CreateCampaignPage = () => {
 
   const getForm = () =>
     formStep === 1 ? (
-      <BasicInfo />
+      <BasicInformationForm />
     ) : formStep === 2 ? (
-      <Spaces />
+      <SpaceList />
     ) : formStep === 3 ? (
       <CoverImage />
     ) : (
@@ -169,7 +167,6 @@ const CreateCampaignPage = () => {
           photo: inventoryObj?.basicInformation?.spacePhoto,
           spaceName: inventoryObj?.basicInformation?.spaceName,
           lighting: inventoryObj?.basicInformation?.mediaType,
-          supportedMedia: inventoryObj?.basicInformation?.supportedMedia,
           mediaType: inventoryObj?.basicInformation?.mediaType,
           location: {
             address: inventoryObj?.location?.address,
@@ -193,7 +190,7 @@ const CreateCampaignPage = () => {
   }, [campaignData, form.isTouched]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <div>
         <FormProvider form={form}>
           <form>

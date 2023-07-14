@@ -32,17 +32,20 @@ const Preview = () => {
 
   const renderColoredBadges = useCallback(
     list =>
-      list?.map(item => (
-        <Badge
-          key={item?.value}
-          className="text-purple-450 bg-purple-100 capitalize mr-3 my-2"
-          size="lg"
-          variant="filled"
-          radius="sm"
-        >
-          {item?.label}
-        </Badge>
-      )),
+      list?.map(
+        (item, index) =>
+          index < 10 && (
+            <Badge
+              key={item?.value}
+              className="text-purple-450 bg-purple-100 capitalize"
+              size="lg"
+              variant="filled"
+              radius="sm"
+            >
+              {item?.label}
+            </Badge>
+          ),
+      ),
     [values?.basicInformation?.audience],
   );
 
@@ -125,17 +128,16 @@ const Preview = () => {
                 variant="filled"
                 radius="md"
               >
-                {`${
-                  values?.specifications?.impressions?.max &&
-                  values.specifications.impressions.max.toString().length > 6
-                    ? getWord(values.specifications.impressions.max)
-                    : values.specifications.impressions.max || 0
-                }+ Total Impressions`}
+                {values?.specifications?.impressions?.max
+                  ? `${getWord(values.specifications.impressions?.max)}+ Total Impressions`
+                  : 'NA'}
               </Badge>
             </div>
-            {values?.basicInformation?.audience?.length
-              ? renderColoredBadges(values?.basicInformation?.audience)
-              : null}
+            <div className="flex gap-2 flex-wrap mb-2">
+              {values?.basicInformation?.audience?.length
+                ? renderColoredBadges(values?.basicInformation?.audience)
+                : null}
+            </div>
             <div className="mb-2">
               <p className="text-slate-400">Advertising brands</p>
               <div className="flex w-full flex-wrap">
@@ -168,17 +170,25 @@ const Preview = () => {
                     <p className="mb-4">{values?.basicInformation?.mediaType?.label}</p>
 
                     <p className="text-slate-400 text-md font-light">Size (WxH)</p>
-                    <p className="mb-4">
-                      {values?.specifications?.size?.width || 0}ft X{' '}
-                      {values?.specifications?.size?.height || 0}ft
-                    </p>
+                    <div className="mb-4 flex gap-x-2">
+                      {values?.specifications?.size.length ? (
+                        <p>
+                          {values.specifications.size
+                            .map((item, index) =>
+                              index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
+                            )
+                            .filter(item => item !== null)
+                            .join(', ')}
+                        </p>
+                      ) : (
+                        '-'
+                      )}
+                    </div>
                     <p className=" text-slate-400 text-md font-light">Impressions</p>
                     <p className="mb-4">
-                      {values?.specifications?.impressions?.max &&
-                      values.specifications.impressions.max.toString().length > 6
-                        ? getWord(values.specifications.impressions.max)
-                        : values.specifications.impressions.max || 0}
-                      +
+                      {values?.specifications?.impressions?.max
+                        ? `${getWord(values.specifications.impressions?.max)}+`
+                        : 'NA'}
                     </p>
                     <p className="text-slate-400 text-md font-light">Resolution</p>
                     <p>{values?.specifications?.resolutions || 'NA'}</p>
@@ -188,8 +198,8 @@ const Preview = () => {
                     <p className="mb-4">{values?.specifications?.illuminations?.label}</p>
                     <p className="text-slate-400 text-md font-light">Unit</p>
                     <p className="mb-4">{values?.specifications?.unit}</p>
-                    <p className="text-slate-400 text-md font-light">Supported Media</p>
-                    <p>{values?.basicInformation?.supportedMedia || 'NA'}</p>
+                    <p className="text-slate-400 text-md font-light">Media Type</p>
+                    <p>{values?.basicInformation?.mediaType?.label || 'NA'}</p>
                   </div>
                 </div>
               </div>

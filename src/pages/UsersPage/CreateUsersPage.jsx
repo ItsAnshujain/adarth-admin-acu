@@ -3,11 +3,11 @@ import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
-import Credentials from '../../components/Users/Create/Credentials';
+import Credentials from '../../components/modules/users/Create/Credentials';
 import SuccessModal from '../../components/shared/Modal';
-import Header from '../../components/Users/Create/Header';
+import Header from '../../components/modules/users/Create/Header';
 import { FormProvider, useForm } from '../../context/formContext';
-import { useCreateUsers, useInvitePeers } from '../../hooks/users.hooks';
+import { useCreateUsers, useInvitePeers } from '../../apis/queries/users.queries';
 import { serialize } from '../../utils';
 import useTokenIdStore from '../../store/user.store';
 

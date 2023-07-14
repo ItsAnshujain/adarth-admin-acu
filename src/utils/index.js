@@ -1,3 +1,4 @@
+import { showNotification } from '@mantine/notifications';
 import dayjs from 'dayjs';
 import { geocodeByAddress, getLatLng, geocodeByLatLng } from 'react-google-places-autocomplete';
 
@@ -98,7 +99,7 @@ export const aadhaarFormat = aadhaarNumber => {
 };
 
 export const roleTypes = {
-  'manager': 'Manager',
+  'management': 'Management',
   'supervisor': 'Supervisor',
   'associate': 'Associate',
 };
@@ -106,7 +107,7 @@ export const roleTypes = {
 // TODO: Remove one roleType object
 export const ROLES = {
   ADMIN: 'admin',
-  MANAGER: 'manager',
+  MANAGEMENT: 'management',
   SUPERVISOR: 'supervisor',
   ASSOCIATE: 'associate',
 };
@@ -333,4 +334,26 @@ export const getDate = (selectionItem, item, key) => {
   if (item && item[key]) return new Date(item[key]);
 
   return null;
+};
+
+export const onApiError = err =>
+  showNotification({
+    message: err.message,
+    color: 'red',
+  });
+
+export const getFormattedDimensions = list => {
+  const updatedList = [...list];
+
+  updatedList
+    .map((item, index) => {
+      if (index < 2) {
+        return `${item?.width || 0}ft x ${item?.height || 0}ft`;
+      }
+      return null;
+    })
+    .filter(item => item !== null)
+    .join(', ');
+
+  return updatedList;
 };

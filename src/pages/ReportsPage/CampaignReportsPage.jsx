@@ -18,15 +18,15 @@ import { useModals } from '@mantine/modals';
 import { useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
-import Header from '../../components/Reports/Header';
-import { useCampaignReport, useCampaignStats } from '../../hooks/campaigns.hooks';
-import ViewByFilter from '../../components/Reports/ViewByFilter';
-import CampaignStatsContent from '../../components/Reports/Campaign/CampaignStatsContent';
-import CampaignPieContent from '../../components/Reports/Campaign/CampaignPieContent';
+import Header from '../../components/modules/reports/Header';
+import { useCampaignReport, useCampaignStats } from '../../apis/queries/campaigns.queries';
+import ViewByFilter from '../../components/modules/reports/ViewByFilter';
+import CampaignStatsContent from '../../components/modules/reports/Campaign/CampaignStatsContent';
+import CampaignPieContent from '../../components/modules/reports/Campaign/CampaignPieContent';
 import { dateByQuarter, daysInAWeek, downloadPdf, monthsInShort, quarters } from '../../utils';
-import { useShareReport } from '../../hooks/report.hooks';
+import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
-import ShareContent from '../../components/Reports/ShareContent';
+import ShareContent from '../../components/modules/reports/ShareContent';
 
 dayjs.extend(quarterOfYear);
 
@@ -243,7 +243,7 @@ const CampaignReportsPage = () => {
   return (
     <div
       className={classNames(
-        'border-l border-gray-450 overflow-y-auto',
+        'overflow-y-auto px-5',
         share !== 'report' ? 'col-span-10 ' : 'col-span-12',
       )}
       id="campaign_report_pdf"
@@ -256,7 +256,7 @@ const CampaignReportsPage = () => {
         isDownloadLoading={isDownloadLoading}
       />
 
-      <div className="pr-7 pl-5 mt-5" id="campaign-pdf">
+      <div id="campaign-pdf">
         <CampaignStatsContent
           isStatsLoading={isStatsLoading}
           healthStatusData={healthStatusData}

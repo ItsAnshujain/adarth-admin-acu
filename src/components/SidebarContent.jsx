@@ -16,7 +16,7 @@ import ReportIcon from '../assets/report-default.svg';
 import FinanceIcon from '../assets/finance-default.svg';
 import RoleBased from './RoleBased';
 import { masterTypes, ROLES, serialize } from '../utils';
-import { useFetchMastersTypes } from '../hooks/masters.hooks';
+import { useFetchMastersTypes } from '../apis/queries/masters.queries';
 
 const SidebarContent = ({ className }) => {
   const { pathname } = useLocation();
@@ -54,31 +54,31 @@ const SidebarContent = ({ className }) => {
         label: 'Home',
         path: '/home',
         icon: HomeIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
       {
         label: 'Inventory',
         path: '/inventory',
         icon: InventoryIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
       {
         label: 'Bookings',
         path: '/bookings',
         icon: BookingIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
       {
         label: 'Proposals',
         path: '/proposals',
         icon: ProposalIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
       {
         label: 'Users',
         path: '/users',
         icon: UsersIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR],
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR],
       },
       {
         label: 'Masters',
@@ -102,13 +102,13 @@ const SidebarContent = ({ className }) => {
           { label: 'Inventory Reports', subPath: '/inventories' },
         ],
         icon: ReportIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR],
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR],
       },
       {
         label: 'Finance',
         path: '/finance',
         icon: FinanceIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR],
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR],
       },
     ],
     [isMasterLoaded],

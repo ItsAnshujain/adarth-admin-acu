@@ -1,5 +1,5 @@
 import { useModals } from '@mantine/modals';
-import { Button, Menu } from '@mantine/core';
+import { ActionIcon, Menu } from '@mantine/core';
 import { Edit2, Eye, Trash } from 'react-feather';
 import { Link } from 'react-router-dom';
 import modalConfig from '../../utils/modalConfig';
@@ -28,11 +28,11 @@ const SpacesMenuPopover = ({
     });
 
   return (
-    <Menu shadow="md" width={180} withinPortal>
+    <Menu shadow="md" withinPortal position="left">
       <Menu.Target>
-        <Button className="py-0" onClick={e => e.preventDefault()}>
+        <ActionIcon className="py-0" onClick={e => e.preventDefault()}>
           <MenuIcon />
-        </Button>
+        </ActionIcon>
       </Menu.Target>
 
       <Menu.Dropdown>
@@ -45,7 +45,7 @@ const SpacesMenuPopover = ({
               className="cursor-pointer flex items-center gap-1"
               icon={<Eye className="h-4" />}
             >
-              <span className="ml-1">View Details</span>
+              View Details
             </Menu.Item>
           </Link>
         ) : null}
@@ -55,7 +55,7 @@ const SpacesMenuPopover = ({
               className="cursor-pointer flex items-center gap-1"
               icon={<Edit2 className="h-4" />}
             >
-              <span className="ml-1">Edit</span>
+              Edit
             </Menu.Item>
           </Link>
         ) : null}
@@ -65,7 +65,7 @@ const SpacesMenuPopover = ({
             icon={<Trash className="h-4" />}
             onClick={e => handleStopPropagation(e, toggleDeleteModal)}
           >
-            <span className="ml-1">Delete</span>
+            Delete
           </Menu.Item>
         ) : null}
       </Menu.Dropdown>

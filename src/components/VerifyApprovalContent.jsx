@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { showNotification } from '@mantine/notifications';
 import CheckIcon from '../assets/check.svg';
 import TrashIcon from '../assets/trash.svg';
-import { useUpdateFinanceById } from '../hooks/finance.hooks';
+import { useUpdateFinanceById } from '../apis/queries/finance.queries';
 
 const label = {
   approved: 'Approve',

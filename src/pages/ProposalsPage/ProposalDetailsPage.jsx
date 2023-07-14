@@ -5,16 +5,18 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
+import { getWord } from 'num-count';
+import { v4 as uuidv4 } from 'uuid';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import Header from '../../components/Proposals/ViewProposal/Header';
-import Details from '../../components/Proposals/ViewProposal/Details';
+import Header from '../../components/modules/proposals/ViewProposal/Header';
+import Details from '../../components/modules/proposals/ViewProposal/Details';
 import Table from '../../components/Table/Table';
-import { useFetchProposalById } from '../../hooks/proposal.hooks';
+import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { categoryColors } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
-import Filter from '../../components/Inventory/Filter';
+import Filter from '../../components/modules/inventory/Filter';
 import useUserStore from '../../store/user.store';
 import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesMenuPopover';
 
@@ -119,13 +121,149 @@ const ProposalDetailsPage = () => {
           ),
       },
       {
+        Header: 'CITY',
+        accessor: 'location',
+        Cell: ({
+          row: {
+            original: { location },
+          },
+        }) => useMemo(() => <p>{location || '-'}</p>),
+      },
+      {
+        Header: 'ADDITIONAL FEATURE',
+        accessor: 'additionalTags',
+        disableSortBy: true,
+        Cell: info =>
+          useMemo(
+            () => (
+              <div className="flex gap-x-2">
+                {info.row.original.additionalTags?.length
+                  ? info.row.original.additionalTags.map(
+                      (item, index) =>
+                        index < 2 && (
+                          <Badge
+                            key={uuidv4()}
+                            size="lg"
+                            className="capitalize max-w-[100px]"
+                            title={item}
+                            variant="gradient"
+                            radius="xs"
+                            gradient={{ from: '#ed6ea0', to: '#ec8c69', deg: 35 }}
+                          >
+                            {item}
+                          </Badge>
+                        ),
+                    )
+                  : '-'}
+              </div>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'CATEGORY',
+        accessor: 'category',
+        Cell: ({
+          row: {
+            original: { category },
+          },
+        }) =>
+          useMemo(() => {
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === category,
+            );
+            return (
+              <div>
+                {category ? (
+                  <Badge color={colorType || 'gray'} size="lg" className="capitalize">
+                    {category}
+                  </Badge>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
+            );
+          }, []),
+      },
+      {
+        Header: 'SUB CATEGORY',
+        accessor: 'subCategory',
+        Cell: ({
+          row: {
+            original: { subCategory },
+          },
+        }) =>
+          useMemo(() => {
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === subCategory,
+            );
+            return (
+              <div>
+                {subCategory ? (
+                  <Badge color={colorType} size="lg" className="capitalize">
+                    {subCategory}
+                  </Badge>
+                ) : (
+                  <span>-</span>
+                )}
+              </div>
+            );
+          }, []),
+      },
+      {
+        Header: 'DIMENSION (WxH)',
+        accessor: 'size.height',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { size },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p>
+                {size
+                  .map((item, index) =>
+                    index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
+                  )
+                  .filter(item => item !== null)
+                  .join(', ')}
+              </p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'PRICING',
+        accessor: 'price',
+        Cell: ({
+          row: {
+            original: { price },
+          },
+        }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
+      },
+      {
+        Header: 'UNIT',
+        accessor: 'unit',
+        Cell: ({
+          row: {
+            original: { unit },
+          },
+        }) => useMemo(() => <p>{unit || '-'}</p>, []),
+      },
+      {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+      },
+      {
         Header: 'MEDIA OWNER NAME',
         accessor: 'mediaOwner',
         Cell: ({
           row: {
-            original: { peer, mediaOwner },
+            original: { mediaOwner },
           },
-        }) => useMemo(() => <p className="w-fit">{!peer ? mediaOwner : '-'}</p>, []),
+        }) => useMemo(() => <p className="w-fit">{mediaOwner || '-'}</p>, []),
       },
       {
         Header: 'PEER',
@@ -150,50 +288,16 @@ const ProposalDetailsPage = () => {
           ),
       },
       {
-        Header: 'CATEGORY',
-        accessor: 'category',
+        Header: 'MEDIA TYPE',
+        accessor: 'mediaType',
         Cell: ({
           row: {
-            original: { category },
+            original: { mediaType },
           },
-        }) =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === category,
-            );
-            return (
-              <div>
-                {category ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
-                    {category}
-                  </Badge>
-                ) : (
-                  <span>-</span>
-                )}
-              </div>
-            );
-          }, []),
+        }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
-        Header: 'DIMENSION (WxH)',
-        accessor: 'size.height',
-        Cell: ({
-          row: {
-            original: { size },
-          },
-        }) => useMemo(() => <p>{`${size?.width || 0}ft x ${size?.height || 0}ft`}</p>, []),
-      },
-      {
-        Header: 'IMPRESSION',
-        accessor: 'impressions.max',
-        Cell: ({
-          row: {
-            original: { impressions },
-          },
-        }) => useMemo(() => <p>{`${impressions?.max || 0}+`}</p>, []),
-      },
-      {
-        Header: 'HEALTH',
+        Header: 'HEALTH STATUS',
         accessor: 'health',
         Cell: ({
           row: {
@@ -215,31 +319,21 @@ const ProposalDetailsPage = () => {
           ),
       },
       {
-        Header: 'LOCATION',
-        accessor: 'location',
+        Header: 'IMPRESSION',
+        accessor: 'impressions.max',
         Cell: ({
           row: {
-            original: { location },
+            original: { impressions },
           },
-        }) => useMemo(() => <p>{location || '-'}</p>),
-      },
-      {
-        Header: 'MEDIA TYPE',
-        accessor: 'mediaType',
-        Cell: ({
-          row: {
-            original: { mediaType },
-          },
-        }) => useMemo(() => <p>{mediaType || '-'}</p>),
-      },
-      {
-        Header: 'PRICING',
-        accessor: 'price',
-        Cell: ({
-          row: {
-            original: { price },
-          },
-        }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p className="capitalize w-32">
+                {impressions?.max ? `${getWord(impressions.max)}+` : 'NA'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'ACTION',
@@ -303,14 +397,14 @@ const ProposalDetailsPage = () => {
   }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <Header isPeer={proposalData?.proposal?.isPeer} />
       <Details
         proposalData={proposalData?.proposal}
         isProposalDataLoading={isProposalDataLoading}
         inventoryData={proposalData?.inventories}
       />
-      <div className="pl-5 pr-7 flex justify-between mt-4">
+      <div className="flex justify-between mt-4">
         <Text size="xl" weight="bolder">
           Selected Inventory
         </Text>
@@ -324,7 +418,7 @@ const ProposalDetailsPage = () => {
         </div>
       </div>
 
-      <div className="flex justify-between h-20 items-center pr-7">
+      <div className="flex justify-between h-20 items-center">
         <RowsPerPage
           setCount={currentLimit => handlePagination('limit', currentLimit)}
           count={limit}

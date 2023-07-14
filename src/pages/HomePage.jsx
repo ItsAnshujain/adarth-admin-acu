@@ -17,7 +17,7 @@ import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { v4 as uuidv4 } from 'uuid';
-import AreaHeader from '../components/Home/Header';
+import AreaHeader from '../components/modules/home/Header';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import OngoingCampaignIcon from '../assets/ongoing-campaign.svg';
@@ -27,10 +27,10 @@ import VacantIcon from '../assets/vacant.svg';
 import OccupiedIcon from '../assets/occupied.svg';
 import TotalCampaignIcon from '../assets/total-campaign.svg';
 import useUserStore from '../store/user.store';
-import { useBookingStats, useFetchBookingRevenue } from '../hooks/booking.hooks';
-import { useInventoryStats } from '../hooks/inventory.hooks';
+import { useBookingStats, useFetchBookingRevenue } from '../apis/queries/booking.queries';
+import { useInventoryStats } from '../apis/queries/inventory.queries';
 import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../utils';
-import ViewByFilter from '../components/Reports/ViewByFilter';
+import ViewByFilter from '../components/modules/reports/ViewByFilter';
 
 dayjs.extend(quarterOfYear);
 
@@ -180,9 +180,9 @@ const HomePage = () => {
       <Header title="" />
       <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
         <Sidebar />
-        <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+        <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
           <AreaHeader text={`Hello, ${userCachedData?.name || 'User'}`} />
-          <div className="pr-7 pl-5 mt-5 mb-10">
+          <div className="my-5">
             <div className="grid grid-rows-2 mb-8 gap-y-4">
               <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                 <div className="border rounded p-8 flex-1">

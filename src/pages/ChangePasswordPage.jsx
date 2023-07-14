@@ -5,7 +5,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { useForm, yupResolver } from '@mantine/form';
 import SuccessModal from '../components/shared/Modal';
-import { useResetPassword } from '../hooks/auth.hooks';
+import { useResetPassword } from '../apis/queries/auth.queries';
 import PasswordInput from '../components/shared/PasswordInput';
 import { FormProvider } from '../context/formContext';
 import banner from '../assets/login.svg';
@@ -109,7 +109,7 @@ const ChangePasswordPage = () => {
             />
 
             <Button
-              disabled={isLoading}
+              loading={isLoading}
               className="mt-3 width-full bg-purple-450 border-rounded-xl text-xl"
               color="primary"
               type="submit"

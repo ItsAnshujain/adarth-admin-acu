@@ -3,7 +3,7 @@ import { useModals } from '@mantine/modals';
 import React, { useState } from 'react';
 import CheckIcon from '../assets/check.svg';
 import TrashIcon from '../assets/trash.svg';
-import { useDeleteProposal } from '../hooks/proposal.hooks';
+import { useDeleteProposal } from '../apis/queries/proposal.queries';
 
 const DeleteProposalContent = ({ onClickCancel = () => {}, proposalId }) => {
   const modals = useModals();

@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { Folder } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import Header from '../../components/Finance/Header';
-import { useFetchFinance } from '../../hooks/finance.hooks';
+import Header from '../../components/modules/finance/Header';
+import { useFetchFinance } from '../../apis/queries/finance.queries';
 
 const FinanceDashboardPage = () => {
   const navigate = useNavigate();
@@ -41,9 +41,9 @@ const FinanceDashboardPage = () => {
   }, [financialData]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <Header />
-      <div className="flex flex-wrap gap-4 pl-5 pr-7">
+      <div className="flex flex-wrap gap-4">
         {!updatedFinanceData?.length && !isLoading ? (
           <div className="w-full mt-20">
             <Text size="lg" className="text-center">

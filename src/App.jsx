@@ -2,16 +2,16 @@ import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import shallow from 'zustand/shallow';
 import { v4 as uuidv4 } from 'uuid';
-import Header from './Loader/Header';
-import CustomLoader from './Loader/Loader';
-import Sidebar from './Loader/Sidebar';
+import Header from './components/Loader/Header';
+import CustomLoader from './components/Loader/Loader';
+import Sidebar from './components/Loader/Sidebar';
 import NoMatchFoundPage from './pages/NoMatchFoundPage';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import ProtectedRoute from './utils/ProtectedRoute';
 import { ROLES } from './utils';
-import FileUpload from './components/Finance/Create/FileUpload';
+import FileUpload from './components/modules/finance/Create/FileUpload';
 import useUserStore from './store/user.store';
-import { useFetchUsersById } from './hooks/users.hooks';
+import { useFetchUsersById } from './apis/queries/users.queries';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -288,7 +288,7 @@ const App = () => {
         <Route
           path="users"
           element={
-            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR]}>
+            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
                 <UsersPage />
               </Suspense>
@@ -331,7 +331,7 @@ const App = () => {
         <Route
           path="/reports"
           element={
-            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR]}>
+            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
                 <ReportsPage />
               </Suspense>
@@ -417,7 +417,7 @@ const App = () => {
         <Route
           path="/"
           element={
-            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGER, ROLES.SUPERVISOR]}>
+            <ProtectedRoute accepted={[ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR]}>
               <Suspense fallback={<HeaderSidebarLoader />}>
                 <FinancePage />
               </Suspense>

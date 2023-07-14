@@ -2,19 +2,20 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
-import BasicInfo from '../../components/Inventory/CreateSpace/BasicInformation';
-import Specification from '../../components/Inventory/CreateSpace/Specification';
-import Location from '../../components/Inventory/CreateSpace/Location';
+import { v4 as uuidv4 } from 'uuid';
+import BasicInformationForm from '../../components/modules/inventory/CreateSpace/BasicInformationForm';
+import SpecificationForm from '../../components/modules/inventory/CreateSpace/SpecificationForm';
+import LocationForm from '../../components/modules/inventory/CreateSpace/LocationForm';
 import SuccessModal from '../../components/shared/Modal';
 import Preview from '../../components/shared/Preview';
-import PreviewLocation from '../../components/Inventory/CreateSpace/PreviewLocation';
-import Header from '../../components/Inventory/CreateSpace/Header';
+import PreviewLocation from '../../components/modules/inventory/CreateSpace/PreviewLocation';
+import Header from '../../components/modules/inventory/CreateSpace/Header';
 import { FormProvider, useForm } from '../../context/formContext';
 import {
   useCreateInventory,
   useFetchInventoryById,
   useUpdateInventory,
-} from '../../hooks/inventory.hooks';
+} from '../../apis/queries/inventory.queries';
 
 const initialValues = {
   basicInformation: {
@@ -25,9 +26,7 @@ const initialValues = {
     subCategory: { label: '', value: '' },
     spaceType: { label: '', value: '' },
     mediaType: { label: '', value: '' },
-    supportedMedia: '',
     description: '',
-    price: 0,
     spacePhoto: '',
     otherPhotos: [],
     footFall: null,
@@ -36,19 +35,22 @@ const initialValues = {
   },
   specifications: {
     illuminations: { label: '', value: '' },
-    unit: 0,
     resolutions: '',
-    size: {
-      height: 0,
-      width: 0,
-    },
+    size: [
+      {
+        height: 0,
+        width: 0,
+        key: uuidv4(),
+      },
+    ],
     health: null,
     impressions: {
-      min: 1600000,
-      max: 3200000,
+      min: 0,
+      max: 0,
     },
     previousBrands: [],
     tags: [],
+    additionalTags: [],
   },
   location: {
     latitude: null,
@@ -72,6 +74,7 @@ const basicInformationSchema = yup.object({
       label: yup.string().trim(),
       value: yup.string().trim(),
     }),
+    peerMediaOwner: yup.string().trim(),
     spaceType: yup
       .object({
         label: yup.string().trim(),
@@ -94,7 +97,6 @@ const basicInformationSchema = yup.object({
         value: yup.string().trim(),
       })
       .test('mediaType', 'Media Type is required', obj => obj.value !== ''),
-    supportedMedia: yup.string().trim(),
     description: yup.string().trim(),
     price: yup
       .number()
@@ -132,29 +134,19 @@ const specificationsValues = yup.object({
       .typeError('Unit must be a number')
       .required('Unit is required'),
     resolutions: yup.string().trim(),
-    size: yup.object({
-      height: yup
-        .number()
-        .positive('Height must be a positive number')
-        .typeError('Height must be a number')
-        .required('Height is required'),
-      width: yup
-        .number()
-        .positive('Width must be a positive number')
-        .typeError('Width must be a number')
-        .required('Width is required'),
-    }),
+    size: yup.array(),
     health: yup
       .number()
       .min(0, 'Health Status must be greater than or equal to 0')
       .max(100, 'Health Status must be less than or equal to 100')
       .nullable(true),
     impressions: yup.object({
-      min: yup.number().positive('Min must be a positive number').typeError('Min must be a number'),
-      max: yup.number().positive('Max must be a positive number').typeError('Max must be a number'),
+      min: yup.number(),
+      max: yup.number(),
     }),
     previousBrands: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
     tags: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
+    additionalTags: yup.array(),
   }),
 });
 
@@ -214,11 +206,11 @@ const CreateInventoryPage = () => {
 
   const getForm = () =>
     formStep === 1 ? (
-      <BasicInfo basicInformation={inventoryDetails?.inventory?.basicInformation} />
+      <BasicInformationForm basicInformation={inventoryDetails?.inventory?.basicInformation} />
     ) : formStep === 2 ? (
-      <Specification />
+      <SpecificationForm />
     ) : formStep === 3 ? (
-      <Location />
+      <LocationForm />
     ) : formStep === 4 ? (
       <>
         <Preview />
@@ -245,6 +237,10 @@ const CreateInventoryPage = () => {
         illuminations: formData?.specifications?.illuminations?.value,
         previousBrands: formData?.specifications?.previousBrands?.map(item => item?.value),
         tags: formData?.specifications?.tags?.map(item => item?.value),
+        size: formData?.specifications?.size?.map(item => ({
+          height: item?.height,
+          width: item?.width,
+        })),
       },
       company: formData?.basicInformation?.mediaOwner?.label,
     };
@@ -304,6 +300,7 @@ const CreateInventoryPage = () => {
             label: basicInformation?.mediaOwner?.name || '',
             value: basicInformation?.mediaOwner?._id || '',
           },
+          peerMediaOwner: basicInformation?.peerMediaOwner || undefined,
           description: basicInformation?.description || '',
           footFall: basicInformation?.footFall ? parseInt(basicInformation.footFall, 10) : null,
           price: basicInformation?.price ? parseInt(basicInformation?.price, 10) : null,
@@ -323,7 +320,6 @@ const CreateInventoryPage = () => {
             label: basicInformation?.mediaType?.name || '',
             value: basicInformation?.mediaType?._id || '',
           },
-          supportedMedia: basicInformation?.supportedMedia || '',
           demographic: {
             label: basicInformation?.demographic?.name || '',
             value: basicInformation?.demographic?._id || '',
@@ -342,18 +338,21 @@ const CreateInventoryPage = () => {
           impressions: {
             max: specifications?.impressions?.max
               ? parseInt(specifications.impressions.max, 10)
-              : null,
+              : 0,
             min: specifications?.impressions?.min
               ? parseInt(specifications.impressions.min, 10)
-              : null,
+              : 0,
           },
           resolutions: specifications?.resolutions || '',
-          size: {
-            height: specifications?.size?.height ? parseInt(specifications.size.height, 10) : null,
-            width: specifications?.size?.width ? parseInt(specifications.size.width, 10) : null,
-          },
+          size: Array.isArray(specifications?.size)
+            ? specifications?.size?.map(item => ({
+                height: item?.height ? parseInt(item.height, 10) : 0,
+                width: item?.width ? parseInt(item.width, 10) : 0,
+              }))
+            : [{ height: 0, width: 0, key: uuidv4() }],
           previousBrands: arrOfPreviousBrands?.length ? arrOfPreviousBrands : [],
           tags: arrOfTags?.length ? arrOfTags : [],
+          additionalTags: specifications?.additionalTags || [],
         },
         location: {
           latitude: location?.latitude ? parseFloat(location.latitude, 10) : null,

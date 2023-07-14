@@ -7,46 +7,56 @@ import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
+import { getWord } from 'num-count';
+import { v4 as uuidv4 } from 'uuid';
 import Table from '../../components/Table/Table';
-import AreaHeader from '../../components/Inventory/AreaHeader';
+import AreaHeader from '../../components/modules/inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import GridView from '../../components/Inventory/Grid';
-import MapView from '../../components/Inventory/MapView';
+import GridView from '../../components/modules/inventory/Grid';
+import MapView from '../../components/modules/inventory/MapView';
 import useLayoutView from '../../store/layout.store';
 import {
   useDeleteInventory,
   useFetchInventory,
   useUpdateInventories,
-} from '../../hooks/inventory.hooks';
+} from '../../apis/queries/inventory.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
 import { categoryColors, ROLES } from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
 import TrashIcon from '../../assets/delete.png';
+import ExportIcon from '../../assets/export.png';
 import RoleBased from '../../components/RoleBased';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
-import ViewByFilter from '../../pageComponents/Inventory/ViewByFilter';
+import ViewByFilter from '../../components/modules/inventory/ViewByFilter';
+import ShareContent from '../../components/modules/inventory/ShareContent';
 
 dayjs.extend(isBetween);
 
-const initialValues = {
-  spaces: [],
+const updatedModalConfig = {
+  ...modalConfig,
+  classNames: {
+    title: 'font-dmSans text-xl px-4',
+    header: 'px-4 pt-4',
+    body: '',
+    close: 'mr-4',
+  },
 };
 
 const InventoryDashboardPage = () => {
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const modals = useModals();
+  const form = useForm({ initialValues: { spaces: [] } });
+  const viewType = useLayoutView(state => state.activeLayout);
   const [searchParams, setSearchParams] = useSearchParams({
-    'limit': 10,
-    'page': 1,
-    'sortOrder': 'desc',
-    'sortBy': 'basicInformation.spaceName',
+    limit: 20,
+    page: 1,
+    sortOrder: 'desc',
+    sortBy: 'basicInformation.spaceName',
     isActive: true,
   });
-  const form = useForm({ initialValues });
-  const viewType = useLayoutView(state => state.activeLayout);
   const { data: inventoryData, isLoading: isInventoryDataLoading } = useFetchInventory(
     searchParams.toString(),
   );
@@ -60,21 +70,13 @@ const InventoryDashboardPage = () => {
   const limit = searchParams.get('limit');
   const isActive = searchParams.get('isActive');
 
-  const toggleImagePreviewModal = imgSrc =>
-    modals.openContextModal('basic', {
+  const togglePreviewModal = imgSrc =>
+    modals.openModal({
       title: 'Preview',
-      innerProps: {
-        modalBody: (
-          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
-            {imgSrc ? (
-              <Image src={imgSrc} height={580} width={580} alt="preview" />
-            ) : (
-              <Image src={null} height={580} width={580} withPlaceholder />
-            )}
-          </Box>
-        ),
-      },
-      ...modalConfig,
+      children: (
+        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+      ),
+      ...updatedModalConfig,
     });
 
   const COLUMNS = useMemo(
@@ -83,7 +85,7 @@ const InventoryDashboardPage = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
+        Cell: info =>
           useMemo(() => {
             let currentPage = page;
             let rowCount = 0;
@@ -91,34 +93,37 @@ const InventoryDashboardPage = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+            return <div className="pl-2">{rowCount + info.row.index + 1}</div>;
           }, []),
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'basicInformation.spaceName',
-        Cell: ({
-          row: {
-            original: { _id, basicInformation, isUnderMaintenance, bookingRange },
-          },
-        }) =>
+        Cell: info =>
           useMemo(() => {
-            const isOccupied = bookingRange?.some(
+            const isOccupied = info.row.original.bookingRange?.some(
               item =>
                 dayjs().isBetween(item?.startDate, item?.endDate) ||
                 dayjs().isSame(dayjs(item?.endDate), 'day'),
             );
 
             return (
-              <div className="flex items-center justify-between gap-2 w-[380px] mr-4">
+              <div className="flex items-center justify-between gap-2 w-96 mr-4">
                 <div className="flex justify-start items-center flex-1">
                   <Box
-                    className="bg-white border rounded-md cursor-zoom-in"
-                    onClick={() => toggleImagePreviewModal(basicInformation?.spacePhoto)}
+                    className={classNames(
+                      'bg-white border rounded-md',
+                      info.row.original.basicInformation?.spacePhoto ? 'cursor-zoom-in' : '',
+                    )}
+                    onClick={() =>
+                      info.row.original.basicInformation?.spacePhoto
+                        ? togglePreviewModal(info.row.original.basicInformation?.spacePhoto)
+                        : null
+                    }
                   >
-                    {basicInformation?.spacePhoto ? (
+                    {info.row.original.basicInformation?.spacePhoto ? (
                       <Image
-                        src={basicInformation?.spacePhoto}
+                        src={info.row.original.basicInformation?.spacePhoto}
                         alt="banner"
                         height={32}
                         width={32}
@@ -128,65 +133,67 @@ const InventoryDashboardPage = () => {
                     )}
                   </Box>
                   <Link
-                    to={`/inventory/view-details/${_id}`}
+                    to={`/inventory/view-details/${info.row.original._id}`}
                     className="text-purple-450 font-medium px-2"
                   >
                     <Text
                       className="overflow-hidden text-ellipsis underline"
                       lineClamp={1}
-                      title={basicInformation?.spaceName}
+                      title={info.row.original.basicInformation?.spaceName}
                     >
-                      {basicInformation?.spaceName}
+                      {info.row.original.basicInformation?.spaceName}
                     </Text>
                   </Link>
                 </div>
                 <Badge
                   className="capitalize"
                   variant="filled"
-                  color={isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'}
+                  color={
+                    info.row.original.isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'
+                  }
                 >
-                  {isUnderMaintenance ? 'Under Maintenance' : isOccupied ? 'Occupied' : 'Available'}
+                  {info.row.original.isUnderMaintenance
+                    ? 'Under Maintenance'
+                    : isOccupied
+                    ? 'Occupied'
+                    : 'Available'}
                 </Badge>
               </div>
             );
           }, []),
       },
       {
-        Header: 'INVENTORY ID',
-        accessor: 'inventoryId',
+        Header: 'CITY',
+        accessor: 'location.city',
+        Cell: info => useMemo(() => <p>{info.row.original.location?.city || '-'}</p>, []),
+      },
+      {
+        Header: 'ADDITIONAL FEATURE',
+        accessor: 'specifications.additionalTags',
         disableSortBy: true,
-        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
-      },
-      {
-        Header: 'MEDIA OWNER NAME',
-        accessor: 'basicInformation.mediaOwner.name',
-        Cell: ({
-          row: {
-            original: { createdBy, basicInformation },
-          },
-        }) =>
+        Cell: info =>
           useMemo(
             () => (
-              <p className="w-fit">
-                {createdBy && !createdBy?.isPeer ? basicInformation?.mediaOwner?.name : '-'}
-              </p>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'PEER',
-        accessor: 'peer',
-        Cell: ({
-          row: {
-            original: { createdBy, basicInformation },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <p className="w-fit">
-                {createdBy && createdBy?.isPeer ? basicInformation?.mediaOwner?.name : '-'}
-              </p>
+              <div className="flex gap-x-2">
+                {info.row.original.specifications?.additionalTags?.length
+                  ? info.row.original.specifications.additionalTags.map(
+                      (item, index) =>
+                        index < 2 && (
+                          <Badge
+                            key={uuidv4()}
+                            size="lg"
+                            className="capitalize max-w-[100px]"
+                            title={item}
+                            variant="gradient"
+                            radius="xs"
+                            gradient={{ from: '#ed6ea0', to: '#ec8c69', deg: 35 }}
+                          >
+                            {item}
+                          </Badge>
+                        ),
+                    )
+                  : '-'}
+              </div>
             ),
             [],
           ),
@@ -194,21 +201,37 @@ const InventoryDashboardPage = () => {
       {
         Header: 'CATEGORY',
         accessor: 'basicInformation.category.name',
-        Cell: ({
-          row: {
-            original: { basicInformation },
-          },
-        }) =>
+        Cell: info =>
           useMemo(() => {
             const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === basicInformation?.category?.name,
+              key => categoryColors[key] === info.row.original.basicInformation?.category?.name,
             );
-
             return (
               <div>
-                {basicInformation?.category?.name ? (
+                {info.row.original.basicInformation?.category?.name ? (
+                  <Badge color={colorType || 'gray'} size="lg" className="capitalize">
+                    {info.row.original.basicInformation.category.name}
+                  </Badge>
+                ) : (
+                  '-'
+                )}
+              </div>
+            );
+          }, []),
+      },
+      {
+        Header: 'SUB CATEGORY',
+        accessor: 'basicInformation.subCategory.name',
+        Cell: info =>
+          useMemo(() => {
+            const colorType = Object.keys(categoryColors).find(
+              key => categoryColors[key] === info.row.original.basicInformation?.subCategory?.name,
+            );
+            return (
+              <div>
+                {info.row.original.basicInformation?.subCategory?.name ? (
                   <Badge color={colorType} size="lg" className="capitalize">
-                    {basicInformation.category.name}
+                    {info.row.original.basicInformation.subCategory.name}
                   </Badge>
                 ) : (
                   '-'
@@ -220,44 +243,91 @@ const InventoryDashboardPage = () => {
       {
         Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
-        Cell: ({
-          row: {
-            original: { specifications },
-          },
-        }) =>
+        disableSortBy: true,
+        Cell: info =>
           useMemo(
             () => (
-              <p>{`${specifications?.size?.width || 0}ft x ${
-                specifications?.size?.height || 0
-              }ft`}</p>
+              <div className="flex gap-x-2">
+                {info.row.original.specifications?.size.length ? (
+                  <p>
+                    {info.row.original.specifications.size
+                      .map((item, index) =>
+                        index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
+                      )
+                      .filter(item => item !== null)
+                      .join(', ')}
+                  </p>
+                ) : (
+                  '-'
+                )}
+              </div>
             ),
             [],
           ),
       },
       {
-        Header: 'IMPRESSION',
-        accessor: 'specifications.impressions.max',
+        Header: 'PRICING',
+        accessor: 'basicInformation.price',
+        Cell: info =>
+          useMemo(
+            () => (
+              <p className="pl-2">
+                {info.row.original.basicInformation?.price
+                  ? toIndianCurrency(Number.parseInt(info.row.original.basicInformation?.price, 10))
+                  : 0}
+              </p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'UNIT',
+        accessor: 'specifications.unit',
+        Cell: info => useMemo(() => <p>{info.row.original.specifications?.unit || '-'}</p>, []),
+      },
+      {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+      },
+      {
+        Header: 'MEDIA OWNER NAME',
+        accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
           row: {
-            original: { specifications },
+            original: { basicInformation },
           },
-        }) => useMemo(() => <p>{`${specifications?.impressions?.max || 0}+`}</p>, []),
+        }) =>
+          useMemo(() => <p className="w-fit">{basicInformation?.mediaOwner?.name || '-'}</p>, []),
+      },
+      {
+        Header: 'PEER',
+        accessor: 'basicInformation.peerMediaOwner',
+        Cell: info =>
+          useMemo(
+            () => (
+              <p className="w-fit">{info.row.original.basicInformation?.peerMediaOwner || '-'}</p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'MEDIA TYPE',
+        accessor: 'basicInformation.mediaType.name',
+        Cell: info =>
+          useMemo(() => <p>{info.row.original.basicInformation?.mediaType?.name || '-'}</p>),
       },
       {
         Header: 'HEALTH STATUS',
         accessor: 'specifications.health',
-        Cell: ({
-          row: {
-            original: { specifications },
-          },
-        }) =>
+        Cell: info =>
           useMemo(
             () => (
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: specifications?.health, color: 'green' },
-                    { value: 100 - (specifications?.health || 0), color: 'red' },
+                    { value: info.row.original.specifications?.health, color: 'green' },
+                    { value: 100 - (info.row.original.specifications?.health || 0), color: 'red' },
                   ]}
                 />
               </div>
@@ -266,37 +336,15 @@ const InventoryDashboardPage = () => {
           ),
       },
       {
-        Header: 'LOCATION',
-        accessor: 'location.city',
-        Cell: ({
-          row: {
-            original: { location },
-          },
-        }) => useMemo(() => <p>{location?.city || '-'}</p>, []),
-      },
-      {
-        Header: 'MEDIA TYPE',
-        accessor: 'basicInformation.mediaType.name',
-        Cell: ({
-          row: {
-            original: { basicInformation },
-          },
-        }) => useMemo(() => <p>{basicInformation?.mediaType?.name || '-'}</p>),
-      },
-      {
-        Header: 'PRICING',
-        accessor: 'basicInformation.price',
-        Cell: ({
-          row: {
-            original: { basicInformation },
-          },
-        }) =>
+        Header: 'IMPRESSION',
+        accessor: 'specifications.impressions.max',
+        Cell: info =>
           useMemo(
             () => (
-              <p className="pl-2">
-                {basicInformation?.price
-                  ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
-                  : 0}
+              <p className="capitalize w-32">
+                {info.row.original.specifications?.impressions?.max
+                  ? `${getWord(info.row.original.specifications.impressions.max)}+`
+                  : 'NA'}
               </p>
             ),
             [],
@@ -306,17 +354,13 @@ const InventoryDashboardPage = () => {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id, createdBy },
-          },
-        }) =>
+        Cell: info =>
           useMemo(
             () => (
               <SpacesMenuPopover
-                itemId={_id}
-                enableDelete={createdBy && !createdBy?.isPeer}
-                enableEdit={createdBy && !createdBy?.isPeer}
+                itemId={info.row.original._id}
+                enableDelete={info.row.original.createdBy && !info.row.original.createdBy?.isPeer}
+                enableEdit={info.row.original.createdBy && !info.row.original.createdBy?.isPeer}
               />
             ),
             [],
@@ -405,6 +449,27 @@ const InventoryDashboardPage = () => {
     setSearchParams(searchParams);
   };
 
+  const handleFilterVacantInventory = () => {
+    if (!(searchParams.get('from') && searchParams.get('to'))) {
+      showNotification({
+        message: 'Please select a Date Range',
+      });
+      return;
+    }
+    searchParams.set('isUnderMaintenance', false);
+    setSearchParams(searchParams);
+  };
+
+  const toggleShareOptions = () => {
+    modals.openContextModal('basic', {
+      title: 'Share Option',
+      innerProps: {
+        modalBody: <ShareContent searchParamQueries={searchParams} />,
+      },
+      ...modalConfig,
+    });
+  };
+
   useEffect(() => {
     handleSearch();
     if (debouncedSearch === '') {
@@ -414,18 +479,18 @@ const InventoryDashboardPage = () => {
   }, [debouncedSearch]);
 
   return (
-    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
+    <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <FormProvider form={form}>
         <form className={classNames(viewType.inventory === 'grid' ? 'h-[70%]' : '')}>
           <AreaHeader text="List of spaces" inventoryData={inventoryData} />
-          <div className="flex justify-between h-20 items-center pr-7">
+          <div className="flex justify-between h-20 items-center">
             <div className="flex items-center">
               <RowsPerPage
                 setCount={currentLimit => handlePagination('limit', currentLimit)}
                 count={limit}
               />
               {viewType.inventory !== 'map' && (
-                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGER]}>
+                <RoleBased acceptedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR, ROLES.MANAGEMENT]}>
                   {isDeletedInventoryDataLoading ? (
                     <p>Inventory deleting...</p>
                   ) : (
@@ -455,16 +520,24 @@ const InventoryDashboardPage = () => {
               )}
             </div>
 
-            <section className="flex gap-3">
+            <section className="flex items-center gap-3">
               {viewType.inventory !== 'map' && (
-                <Search
-                  search={searchInput}
-                  setSearch={setSearchInput}
-                  form="nosubmit"
-                  className="min-w-[400px]"
-                />
+                <Search search={searchInput} setSearch={setSearchInput} form="nosubmit" />
               )}
               <ViewByFilter handleViewBy={handleViewBy} />
+              <Button className="secondary-button" onClick={handleFilterVacantInventory}>
+                Vacant Inventories
+              </Button>
+              <ActionIcon
+                size={24}
+                onClick={() => (searchParams.get('isUnderMaintenance') ? toggleShareOptions() : {})}
+                disabled={!searchParams.get('isUnderMaintenance')}
+                className={classNames(
+                  !searchParams.get('isUnderMaintenance') ? 'opacity-50' : 'opacity-100',
+                )}
+              >
+                <Image src={ExportIcon} />
+              </ActionIcon>
             </section>
           </div>
           {isInventoryDataLoading && viewType.inventory === 'list' ? (
