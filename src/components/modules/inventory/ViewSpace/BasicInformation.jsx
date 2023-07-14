@@ -331,7 +331,7 @@ const BasicInfo = ({
                     <Text color="gray" size="xs" weight="300">
                       Size (WxH)
                     </Text>
-                    <Text className="mb-4 flex gap-x-2">
+                    <div className="mb-4 flex gap-x-2">
                       {inventoryDetails?.specifications?.size.length
                         ? inventoryDetails.specifications.size.map(
                             (item, index) =>
@@ -340,7 +340,7 @@ const BasicInfo = ({
                               ),
                           )
                         : '-'}
-                    </Text>
+                    </div>
                     <Text color="gray" size="xs" weight="300">
                       Impressions
                     </Text>

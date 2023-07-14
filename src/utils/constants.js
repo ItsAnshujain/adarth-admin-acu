@@ -32,13 +32,14 @@ export const SMTP_SERVICES = [
 ];
 
 export const MODE_OF_PAYMENT = [
-  { label: 'CASH', value: 'cash' },
-  { label: 'CARD', value: 'card' },
-  { label: 'CREDIT', value: 'credit' },
-  { label: 'DEBIT', value: 'debit' },
   { label: 'RTGS', value: 'rtgs' },
   { label: 'NEFT', value: 'neft' },
+  { label: 'IMPS', value: 'imps' },
   { label: 'CHEQUE', value: 'cheque' },
+  { label: 'CREDIT CARD', value: 'credit_card' },
+  { label: 'DEBIT CARD', value: 'debit_card' },
+  { label: 'UPI', value: 'upi' },
+  { label: 'CASH', value: 'cash' },
 ];
 
 export const DATE_FORMAT = 'YYYY-MM-DD';

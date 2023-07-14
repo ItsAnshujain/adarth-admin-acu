@@ -180,7 +180,7 @@ const TotalBookings = ({ campaignId }) => {
           ),
       },
       {
-        Header: 'PAYMENT TYPE',
+        Header: 'PAYMENT STATUS',
         accessor: 'paymentType',
         Cell: ({
           row: {

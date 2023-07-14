@@ -126,7 +126,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
             return (
               <div>
                 {category?.name ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
+                  <Badge color={colorType || 'gray'} size="lg" className="capitalize">
                     {category.name}
                   </Badge>
                 ) : (
@@ -155,7 +155,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
         }) =>
           useMemo(
             () => (
-              <p className="capitalize font-medium w-32">
+              <p className="capitalize w-32">
                 {specifications?.impressions?.max
                   ? `${getWord(specifications.impressions.max)}+`
                   : 'NA'}
