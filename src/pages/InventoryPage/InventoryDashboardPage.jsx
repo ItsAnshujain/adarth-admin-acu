@@ -93,7 +93,7 @@ const InventoryDashboardPage = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + info.row.index + 1}</div>;
+            return <p>{rowCount + info.row.index + 1}</p>;
           }, []),
       },
       {
@@ -279,7 +279,7 @@ const InventoryDashboardPage = () => {
         Cell: info =>
           useMemo(
             () => (
-              <p className="pl-2">
+              <p>
                 {info.row.original.basicInformation?.price
                   ? toIndianCurrency(Number.parseInt(info.row.original.basicInformation?.price, 10))
                   : 0}

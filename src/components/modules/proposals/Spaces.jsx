@@ -114,7 +114,7 @@ const Spaces = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + info.row.index + 1}</div>;
+            return <p>{rowCount + info.row.index + 1}</p>;
           }, []),
       },
       {

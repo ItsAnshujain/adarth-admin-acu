@@ -225,7 +225,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
             Location Details
           </Text>
           <Text size="sm" weight="lighter">
-            All the places been covered by this campaign
+            All the places being covered in this campaign
           </Text>
         </div>
         <div className="mt-1 mb-8 h-[40vh]">
@@ -247,7 +247,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
             Places In The Campaign
           </Text>
           <Text text="sm" weight="lighter">
-            All the places been cover by this campaign
+            All the places being covered in this campaign
           </Text>
           <div>
             {updatedPlace?.map(item => (

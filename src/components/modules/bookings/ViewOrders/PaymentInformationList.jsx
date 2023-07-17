@@ -84,7 +84,7 @@ const PaymentInformationList = () => {
           useMemo(() => {
             const currentPage = Math.max(page, 1);
             const rowCount = (currentPage - 1) * +(limit || 0);
-            return <p className="pl-2">{rowCount + info.row.index + 1}</p>;
+            return <p>{rowCount + info.row.index + 1}</p>;
           }, [page, limit]),
       },
       {

@@ -117,11 +117,7 @@ const Invoice = ({
           row: {
             original: { campaignPrice },
           },
-        }) =>
-          useMemo(
-            () => <p className="pl-2">{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>,
-            [],
-          ),
+        }) => useMemo(() => <p>{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>, []),
       },
       {
         Header: 'TOTAL AMOUNT',
@@ -131,11 +127,7 @@ const Invoice = ({
           row: {
             original: { campaignPrice },
           },
-        }) =>
-          useMemo(
-            () => <p className="pl-2">{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>,
-            [],
-          ),
+        }) => useMemo(() => <p>{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>, []),
       },
     ],
     [addSpaceItem],
@@ -217,11 +209,7 @@ const Invoice = ({
           row: {
             original: { rate },
           },
-        }) =>
-          useMemo(
-            () => <p className="pl-2">{rate ? toIndianCurrency(Number.parseInt(rate, 10)) : 0}</p>,
-            [],
-          ),
+        }) => useMemo(() => <p>{rate ? toIndianCurrency(Number.parseInt(rate, 10)) : 0}</p>, []),
       },
       {
         Header: 'TOTAL AMOUNT',
@@ -231,13 +219,7 @@ const Invoice = ({
           row: {
             original: { price },
           },
-        }) =>
-          useMemo(
-            () => (
-              <p className="pl-2">{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>
-            ),
-            [],
-          ),
+        }) => useMemo(() => <p>{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>, []),
       },
       {
         Header: 'ACTION',

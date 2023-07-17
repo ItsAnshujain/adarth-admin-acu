@@ -121,7 +121,7 @@ const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
                 </Badge>
               ))}
             </div>
-            <p className="mt-1 font-bold text-gray-500">Video size cannot be more than 5MB</p>
+            <p className="mt-1 font-bold text-gray-500">Media size cannot be more than 5MB</p>
           </div>
         </HoverCard.Dropdown>
       </HoverCard>
@@ -206,7 +206,7 @@ const SelectSpace = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + info.row.index + 1}</div>;
+            return <p>{rowCount + info.row.index + 1}</p>;
           }, []),
       },
       {
