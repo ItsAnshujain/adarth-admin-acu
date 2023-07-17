@@ -23,7 +23,7 @@ import {
 } from '../../apis/queries/inventory.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
-import { categoryColors, ROLES } from '../../utils';
+import { categoryColors, ROLES, stringToColour } from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
 import TrashIcon from '../../assets/delete.png';
 import ExportIcon from '../../assets/export.png';
@@ -163,6 +163,12 @@ const InventoryDashboardPage = () => {
           }, []),
       },
       {
+        Header: 'FACIA TOWARDS',
+        accessor: 'location.faciaTowards',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.location?.faciaTowards || '-'}</p>, []),
+      },
+      {
         Header: 'CITY',
         accessor: 'location.city',
         Cell: info => useMemo(() => <p>{info.row.original.location?.city || '-'}</p>, []),
@@ -223,22 +229,24 @@ const InventoryDashboardPage = () => {
         Header: 'SUB CATEGORY',
         accessor: 'basicInformation.subCategory.name',
         Cell: info =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === info.row.original.basicInformation?.subCategory?.name,
-            );
-            return (
-              <div>
-                {info.row.original.basicInformation?.subCategory?.name ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
-                    {info.row.original.basicInformation.subCategory.name}
-                  </Badge>
-                ) : (
-                  '-'
-                )}
-              </div>
-            );
-          }, []),
+          useMemo(
+            () =>
+              info.row.original.basicInformation?.subCategory?.name ? (
+                <p
+                  className="h-6 px-3 flex items-center rounded-xl text-white font-medium text-[13px] capitalize"
+                  style={{
+                    background: stringToColour(
+                      info.row.original.basicInformation?.subCategory?.name,
+                    ),
+                  }}
+                >
+                  {info.row.original.basicInformation.subCategory.name}
+                </p>
+              ) : (
+                '-'
+              ),
+            [],
+          ),
       },
       {
         Header: 'DIMENSION (WxH)',
@@ -461,11 +469,15 @@ const InventoryDashboardPage = () => {
   };
 
   const toggleShareOptions = () => {
-    modals.openContextModal('basic', {
+    modals.openModal({
+      modalId: 'shareInventoryOption',
       title: 'Share Option',
-      innerProps: {
-        modalBody: <ShareContent searchParamQueries={searchParams} />,
-      },
+      children: (
+        <ShareContent
+          searchParamQueries={searchParams}
+          onClose={() => modals.closeModal('shareInventoryOption')}
+        />
+      ),
       ...modalConfig,
     });
   };

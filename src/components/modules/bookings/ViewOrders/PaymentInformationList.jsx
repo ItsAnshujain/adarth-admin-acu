@@ -13,6 +13,7 @@ import { usePayment, useDeletePayment } from '../../../../apis/queries/payment.q
 import { DATE_FORMAT } from '../../../../utils/constants';
 import MenuIcon from '../../../Menu';
 import ConfirmContent from '../../../shared/ConfirmContent';
+import { downloadPdf } from '../../../../utils';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -90,7 +91,17 @@ const PaymentInformationList = () => {
         Header: 'PAYMENT TYPE',
         accessor: 'type',
         disableSortBy: true,
-        Cell: info => useMemo(() => <p className="uppercase">{info.row.original.type}</p>, []),
+        Cell: info =>
+          useMemo(
+            () => (
+              <p className="uppercase">
+                {info.row.original?.type && info.row.original.type.includes('_')
+                  ? info.row.original.type.split('_').join(' ')
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'REFERENCE NUMBER',
@@ -152,7 +163,13 @@ const PaymentInformationList = () => {
                   </ActionIcon>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Menu.Item>Download</Menu.Item>
+                  <Menu.Item
+                    onClick={() =>
+                      info.row.original?.invoice ? downloadPdf(info.row.original.invoice) : null
+                    }
+                  >
+                    Download
+                  </Menu.Item>
                   <Menu.Item onClick={() => handleAddPayment(info.row.original._id)}>
                     Edit
                   </Menu.Item>

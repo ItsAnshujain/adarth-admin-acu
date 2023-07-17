@@ -216,12 +216,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
               <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.price)}</p>
               <p className="text-xs italic">**inclusive of gst</p>
             </Group>
-            <Badge
-              className="text-purple-450 bg-purple-100 capitalize"
-              size="lg"
-              variant="filled"
-              radius="md"
-            >
+            <Badge className="capitalize" size="lg" variant="light" radius="md" color="orange">
               {calcutateTotalImpressions && !Number.isNaN(calcutateTotalImpressions)
                 ? `${getWord(calcutateTotalImpressions)}+ Total Impressions`
                 : 'NA'}

@@ -28,7 +28,7 @@ import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import upload from '../../../../assets/upload.svg';
 import { useFormContext } from '../../../../context/formContext';
-import { categoryColors, getDate, supportedTypes } from '../../../../utils';
+import { categoryColors, getDate, stringToColour, supportedTypes } from '../../../../utils';
 import { useUploadFile } from '../../../../apis/queries/upload.queries';
 import Filter from '../../inventory/Filter';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
@@ -266,6 +266,12 @@ const SelectSpace = () => {
           }, [isUnderMaintenance]),
       },
       {
+        Header: 'FACIA TOWARDS',
+        accessor: 'location.faciaTowards',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.faciaTowards || '-'}</p>, []),
+      },
+      {
         Header: 'CITY',
         accessor: 'location.city',
         Cell: ({
@@ -334,28 +340,23 @@ const SelectSpace = () => {
       {
         Header: 'SUB CATEGORY',
         accessor: 'basicInformation.subCategory.name',
-        Cell: ({
-          row: {
-            original: { subCategory },
-          },
-        }) =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === subCategory,
-            );
-
-            return (
-              <div>
-                {subCategory ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
-                    {subCategory}
-                  </Badge>
-                ) : (
-                  <span>-</span>
-                )}
-              </div>
-            );
-          }, []),
+        Cell: info =>
+          useMemo(
+            () =>
+              info.row.original.subCategory ? (
+                <p
+                  className="h-6 px-3 flex items-center rounded-xl text-white font-medium text-[13px] capitalize"
+                  style={{
+                    background: stringToColour(info.row.original.subCategory),
+                  }}
+                >
+                  {info.row.original.subCategory}
+                </p>
+              ) : (
+                '-'
+              ),
+            [],
+          ),
       },
       {
         Header: 'DIMENSION (WxH)',
@@ -607,6 +608,7 @@ const SelectSpace = () => {
         obj.impressionMax = item.specifications?.impressions?.max || 0;
         obj.impressionMin = item.specifications?.impressions?.min || 0;
         obj.health = item?.specifications?.health ?? 0;
+        obj.faciaTowards = item?.location?.faciaTowards;
         obj.location = item?.location?.city;
         obj.mediaType = item.basicInformation?.mediaType?.name;
         obj.price = item.basicInformation?.price || 0;

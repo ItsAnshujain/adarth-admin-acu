@@ -11,7 +11,7 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import { useFormContext } from '../../../../context/formContext';
-import { categoryColors } from '../../../../utils';
+import { categoryColors, stringToColour } from '../../../../utils';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
 import RowsPerPage from '../../../RowsPerPage';
 
@@ -120,6 +120,12 @@ const SpaceList = () => {
           ),
       },
       {
+        Header: 'FACIA TOWARDS',
+        accessor: 'location.faciaTowards',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.faciaTowards || '-'}</p>, []),
+      },
+      {
         Header: 'CITY',
         accessor: 'location.city',
         Cell: ({
@@ -188,28 +194,23 @@ const SpaceList = () => {
       {
         Header: 'SUB CATEGORY',
         accessor: 'basicInformation.subCategory.name',
-        Cell: ({
-          row: {
-            original: { subCategory },
-          },
-        }) =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === subCategory,
-            );
-
-            return (
-              <div>
-                {subCategory ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
-                    {subCategory}
-                  </Badge>
-                ) : (
-                  <span>-</span>
-                )}
-              </div>
-            );
-          }, []),
+        Cell: info =>
+          useMemo(
+            () =>
+              info.row.original.subCategory ? (
+                <p
+                  className="h-6 px-3 flex items-center rounded-xl text-white font-medium text-[13px] capitalize"
+                  style={{
+                    background: stringToColour(info.row.original.subCategory),
+                  }}
+                >
+                  {info.row.original.subCategory}
+                </p>
+              ) : (
+                '-'
+              ),
+            [],
+          ),
       },
       {
         Header: 'DIMENSION (WxH)',
@@ -430,6 +431,7 @@ const SpaceList = () => {
         obj.unit = item?.specifications?.unit || '-';
         obj.impression = item?.specifications?.impressions?.max || 0;
         obj.health = item?.specifications?.health;
+        obj.faciaTowards = item?.location?.faciaTowards;
         obj.location = item?.location;
         obj.mediaType = item?.basicInformation?.mediaType?.name;
         obj.price = item?.basicInformation?.price;

@@ -105,7 +105,16 @@ const Card = ({
               {basicInformation?.subCategory?.name || '--'}
             </Text>
           </div>
+
           <div>
+            <p className="text-sm text-gray-400 mb-2">Unit</p>
+            <p className="text-sm font-medium">{specifications?.unit || '--'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-400 mb-2">Facia Towards</p>
+            <p className="text-sm font-medium">{location?.faciaTowards || '--'}</p>
+          </div>
+          <div className="col-span-2">
             <p className="text-sm text-gray-400 mb-2">Dimension (wxh)</p>
             {specifications?.size.length ? (
               <p className="text-sm">
@@ -120,11 +129,8 @@ const Card = ({
               '-'
             )}
           </div>
-          <div>
-            <p className="text-sm text-gray-400 mb-2">Unit</p>
-            <p className="text-sm font-medium">{specifications?.unit || '--'}</p>
-          </div>
         </div>
+
         <Box className="flex justify-between items-center" onClick={e => e.stopPropagation()}>
           <Text size="lg" className="font-bold" color="purple">
             {basicInformation?.price ? toIndianCurrency(basicInformation.price) : 'NA'}
