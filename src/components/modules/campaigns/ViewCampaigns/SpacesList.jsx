@@ -156,9 +156,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
           useMemo(
             () => (
               <p className="capitalize w-32">
-                {specifications?.impressions?.max
-                  ? `${getWord(specifications.impressions.max)}+`
-                  : 'NA'}
+                {specifications?.impressions?.max ? getWord(specifications.impressions.max) : 'NA'}
               </p>
             ),
             [],

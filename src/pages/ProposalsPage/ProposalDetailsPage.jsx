@@ -7,6 +7,7 @@ import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
+import shallow from 'zustand/shallow';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Header from '../../components/modules/proposals/ViewProposal/Header';
@@ -19,6 +20,7 @@ import modalConfig from '../../utils/modalConfig';
 import Filter from '../../components/modules/inventory/Filter';
 import useUserStore from '../../store/user.store';
 import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesMenuPopover';
+import useLayoutView from '../../store/layout.store';
 
 const ProposalDetailsPage = () => {
   const modals = useModals();
@@ -26,12 +28,19 @@ const ProposalDetailsPage = () => {
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [showFilter, setShowFilter] = useState(false);
+  const { activeLayout, setActiveLayout } = useLayoutView(
+    state => ({
+      activeLayout: state.activeLayout,
+      setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
   const [searchParams, setSearchParams] = useSearchParams({
-    'owner': 'all',
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'desc',
+    owner: 'all',
+    page: 1,
+    limit: activeLayout.inventoryLimit || 20,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
   });
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -331,7 +340,7 @@ const ProposalDetailsPage = () => {
           useMemo(
             () => (
               <p className="capitalize w-32">
-                {impressions?.max ? `${getWord(impressions.max)}+` : 'NA'}
+                {impressions?.max ? getWord(impressions.max) : 'NA'}
               </p>
             ),
             [],
@@ -422,7 +431,10 @@ const ProposalDetailsPage = () => {
 
       <div className="flex justify-between h-20 items-center">
         <RowsPerPage
-          setCount={currentLimit => handlePagination('limit', currentLimit)}
+          setCount={currentLimit => {
+            handlePagination('limit', currentLimit);
+            setActiveLayout({ ...activeLayout, inventoryLimit: currentLimit });
+          }}
           count={limit}
         />
         <Search search={searchInput} setSearch={setSearchInput} />

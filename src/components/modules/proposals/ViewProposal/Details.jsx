@@ -177,9 +177,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                     Expected Impressions
                   </Text>
                   <Text weight="bolder">
-                    {proposalData?.totalImpression
-                      ? `${getWord(proposalData?.totalImpression)}+`
-                      : 'NA'}
+                    {proposalData?.totalImpression ? getWord(proposalData?.totalImpression) : 'NA'}
                   </Text>
                 </div>
               </div>

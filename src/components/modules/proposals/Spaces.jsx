@@ -19,6 +19,7 @@ import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
+import shallow from 'zustand/shallow';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
@@ -30,6 +31,7 @@ import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../../DateRangeSelector';
 import RowsPerPage from '../../RowsPerPage';
 import modalConfig from '../../../utils/modalConfig';
+import useLayoutView from '../../../store/layout.store';
 
 dayjs.extend(isBetween);
 
@@ -46,8 +48,15 @@ const updatedModalConfig = {
 const Spaces = () => {
   const modals = useModals();
   const { values, setFieldValue } = useFormContext();
+  const { activeLayout, setActiveLayout } = useLayoutView(
+    state => ({
+      activeLayout: state.activeLayout,
+      setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
   const [searchParams, setSearchParams] = useSearchParams({
-    limit: 20,
+    limit: activeLayout.inventoryLimit || 20,
     page: 1,
     sortOrder: 'desc',
     sortBy: 'basicInformation.spaceName',
@@ -367,9 +376,7 @@ const Spaces = () => {
           },
         }) =>
           useMemo(
-            () => (
-              <p className="capitalize w-32">{impressions ? `${getWord(impressions)}+` : 'NA'}</p>
-            ),
+            () => <p className="capitalize w-32">{impressions ? getWord(impressions) : 'NA'}</p>,
             [],
           ),
       },
@@ -539,7 +546,10 @@ const Spaces = () => {
         <div className="flex justify-between items-center">
           <Group>
             <RowsPerPage
-              setCount={currentLimit => handlePagination('limit', currentLimit)}
+              setCount={currentLimit => {
+                handlePagination('limit', currentLimit);
+                setActiveLayout({ ...activeLayout, inventoryLimit: currentLimit });
+              }}
               count={limit}
             />
             <Text size="sm" className="text-purple-450">

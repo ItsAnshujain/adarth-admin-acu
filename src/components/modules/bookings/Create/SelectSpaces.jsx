@@ -22,6 +22,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { useModals } from '@mantine/modals';
 import { getWord } from 'num-count';
+import shallow from 'zustand/shallow';
 import Search from '../../../Search';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
@@ -35,6 +36,7 @@ import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../../../DateRangeSelector';
 import modalConfig from '../../../../utils/modalConfig';
 import RowsPerPage from '../../../RowsPerPage';
+import useLayoutView from '../../../../store/layout.store';
 
 dayjs.extend(isBetween);
 
@@ -136,8 +138,15 @@ const SelectSpace = () => {
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
+  const { activeLayout, setActiveLayout } = useLayoutView(
+    state => ({
+      activeLayout: state.activeLayout,
+      setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
   const [searchParams, setSearchParams] = useSearchParams({
-    limit: 20,
+    limit: activeLayout.inventoryLimit || 20,
     page: 1,
     sortOrder: 'desc',
     sortBy: 'basicInformation.spaceName',
@@ -472,9 +481,7 @@ const SelectSpace = () => {
         }) =>
           useMemo(
             () => (
-              <p className="capitalize w-32">
-                {impressionMax ? `${getWord(impressionMax)}+` : 'NA'}
-              </p>
+              <p className="capitalize w-32">{impressionMax ? getWord(impressionMax) : 'NA'}</p>
             ),
             [],
           ),
@@ -662,7 +669,10 @@ const SelectSpace = () => {
         <div className="flex justify-between items-center">
           <Group>
             <RowsPerPage
-              setCount={currentLimit => handlePagination('limit', currentLimit)}
+              setCount={currentLimit => {
+                handlePagination('limit', currentLimit);
+                setActiveLayout({ ...activeLayout, inventoryLimit: currentLimit });
+              }}
               count={limit}
             />
             <p className="text-purple-450 text-sm">

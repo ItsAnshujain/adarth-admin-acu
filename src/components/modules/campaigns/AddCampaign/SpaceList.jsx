@@ -299,9 +299,7 @@ const SpaceList = () => {
           },
         }) =>
           useMemo(
-            () => (
-              <p className="capitalize w-32">{impression ? `${getWord(impression)}+` : 'NA'}</p>
-            ),
+            () => <p className="capitalize w-32">{impression ? getWord(impression) : 'NA'}</p>,
             [],
           ),
       },

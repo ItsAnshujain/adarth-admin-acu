@@ -12,6 +12,7 @@ import DrawerSidebar from './DrawerSidebar';
 import NotificationsIcon from '../assets/notifications.svg';
 import SettingsIcon from '../assets/settings.svg';
 import UserImage from '../assets/placeholders/user.png';
+import useLayoutView from '../store/layout.store';
 
 const Header = ({ title }) => {
   const { pathname } = useLocation();
@@ -30,10 +31,27 @@ const Header = ({ title }) => {
     shallow,
   );
 
+  const { setActiveLayout } = useLayoutView(
+    state => ({
+      setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
+
   const handleLogout = () => {
     setToken(null);
     setId(null);
     setHasAcceptedTerms(null);
+    setHasAcceptedTerms(null);
+    setActiveLayout({
+      inventory: 'list',
+      proposal: 'list',
+      campaign: 'list',
+      inventoryLimit: 20,
+      bookingLimit: 20,
+      proposalLimit: 20,
+      campaignLimit: 20,
+    });
     navigate('/login');
     showNotification({
       title: 'Logged out successfully',
