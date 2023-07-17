@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   BackgroundImage,
-  Badge,
   Center,
   Group,
   Image,
@@ -216,30 +215,20 @@ const Overview = ({ bookingData = {}, isLoading }) => {
               <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.price)}</p>
               <p className="text-xs italic">**inclusive of gst</p>
             </Group>
-            <Badge
-              className="text-purple-450 bg-purple-100 capitalize"
-              size="lg"
-              variant="filled"
-              radius="md"
-            >
-              {calcutateTotalImpressions && !Number.isNaN(calcutateTotalImpressions)
-                ? `${getWord(calcutateTotalImpressions)}+ Total Impressions`
-                : 'NA'}
-            </Badge>
           </div>
           <div className="mt-8">
             <p>Specifications</p>
             <p className="text-slate-400 text-sm">All the details regarding the campaign</p>
             <div className="p-4 py-6 grid grid-cols-2 grid-rows-2 border rounded-md gap-y-4 mt-2">
               <div>
-                <p className="text-slate-400 text-sm">Total Media</p>
+                <p className="text-slate-400 text-sm">Total Uploaded Media</p>
                 <p>{bookingData?.campaign?.medias?.length ?? <NoData type="na" />}</p>
               </div>
               <div>
                 <p className="text-slate-400 text-sm">Impressions</p>
                 <p>
                   {calcutateTotalImpressions && !Number.isNaN(calcutateTotalImpressions)
-                    ? `${getWord(calcutateTotalImpressions)}+`
+                    ? getWord(calcutateTotalImpressions)
                     : 'NA'}{' '}
                 </p>
               </div>
@@ -254,7 +243,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
       <div className="flex flex-col mt-4 mb-4 relative">
         <p className="text-lg font-bold">Location Details</p>
         <p className="text-sm font-light text-slate-400">
-          All the places been covered by this campaign
+          All the places being covered in this campaign
         </p>
         <div className="mt-1 mb-4 h-[40vh]">
           <GoogleMapReact
@@ -275,7 +264,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
         </div>
         <p className="text-lg font-bold">Places in the campaign</p>
         <p className="text-sm font-light text-slate-400 mb-2">
-          All the places been cover by this campaign
+          All the places being covered in this campaign
         </p>
         <div className="grid gap-4">
           {bookingData?.campaign?.spaces?.length ? (

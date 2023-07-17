@@ -209,14 +209,9 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
             </Spoiler>
             <div className="flex gap-3 items-center">
               <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
-              <Badge
-                className="text-purple-450 bg-purple-100 capitalize"
-                size="lg"
-                variant="filled"
-                radius="md"
-              >
+              <Badge className="capitalize" size="lg" variant="light" radius="md" color="orange">
                 {campaignData?.maxImpression
-                  ? `${getWord(campaignData?.maxImpression)}+ Total Impressions`
+                  ? `${getWord(campaignData?.maxImpression)} Total Impressions`
                   : 'NA'}
               </Badge>
             </div>
@@ -230,7 +225,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
             Location Details
           </Text>
           <Text size="sm" weight="lighter">
-            All the places been covered by this campaign
+            All the places being covered in this campaign
           </Text>
         </div>
         <div className="mt-1 mb-8 h-[40vh]">
@@ -252,7 +247,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
             Places In The Campaign
           </Text>
           <Text text="sm" weight="lighter">
-            All the places been cover by this campaign
+            All the places being covered in this campaign
           </Text>
           <div>
             {updatedPlace?.map(item => (

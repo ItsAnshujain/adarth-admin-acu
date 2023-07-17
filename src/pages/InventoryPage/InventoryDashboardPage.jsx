@@ -9,6 +9,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
+import shallow from 'zustand/shallow';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/modules/inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -23,7 +24,7 @@ import {
 } from '../../apis/queries/inventory.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
-import { categoryColors, ROLES } from '../../utils';
+import { categoryColors, ROLES, stringToColour } from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
 import TrashIcon from '../../assets/delete.png';
 import ExportIcon from '../../assets/export.png';
@@ -50,8 +51,15 @@ const InventoryDashboardPage = () => {
   const modals = useModals();
   const form = useForm({ initialValues: { spaces: [] } });
   const viewType = useLayoutView(state => state.activeLayout);
+  const { activeLayout, setActiveLayout } = useLayoutView(
+    state => ({
+      activeLayout: state.activeLayout,
+      setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
   const [searchParams, setSearchParams] = useSearchParams({
-    limit: 20,
+    limit: activeLayout.inventoryLimit || 20,
     page: 1,
     sortOrder: 'desc',
     sortBy: 'basicInformation.spaceName',
@@ -93,7 +101,7 @@ const InventoryDashboardPage = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + info.row.index + 1}</div>;
+            return <p>{rowCount + info.row.index + 1}</p>;
           }, []),
       },
       {
@@ -163,6 +171,12 @@ const InventoryDashboardPage = () => {
           }, []),
       },
       {
+        Header: 'FACIA TOWARDS',
+        accessor: 'location.faciaTowards',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.location?.faciaTowards || '-'}</p>, []),
+      },
+      {
         Header: 'CITY',
         accessor: 'location.city',
         Cell: info => useMemo(() => <p>{info.row.original.location?.city || '-'}</p>, []),
@@ -223,22 +237,24 @@ const InventoryDashboardPage = () => {
         Header: 'SUB CATEGORY',
         accessor: 'basicInformation.subCategory.name',
         Cell: info =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === info.row.original.basicInformation?.subCategory?.name,
-            );
-            return (
-              <div>
-                {info.row.original.basicInformation?.subCategory?.name ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
-                    {info.row.original.basicInformation.subCategory.name}
-                  </Badge>
-                ) : (
-                  '-'
-                )}
-              </div>
-            );
-          }, []),
+          useMemo(
+            () =>
+              info.row.original.basicInformation?.subCategory?.name ? (
+                <p
+                  className="h-6 px-3 flex items-center rounded-xl text-white font-medium text-[13px] capitalize"
+                  style={{
+                    background: stringToColour(
+                      info.row.original.basicInformation?.subCategory?.name,
+                    ),
+                  }}
+                >
+                  {info.row.original.basicInformation.subCategory.name}
+                </p>
+              ) : (
+                '-'
+              ),
+            [],
+          ),
       },
       {
         Header: 'DIMENSION (WxH)',
@@ -271,7 +287,7 @@ const InventoryDashboardPage = () => {
         Cell: info =>
           useMemo(
             () => (
-              <p className="pl-2">
+              <p>
                 {info.row.original.basicInformation?.price
                   ? toIndianCurrency(Number.parseInt(info.row.original.basicInformation?.price, 10))
                   : 0}
@@ -343,7 +359,7 @@ const InventoryDashboardPage = () => {
             () => (
               <p className="capitalize w-32">
                 {info.row.original.specifications?.impressions?.max
-                  ? `${getWord(info.row.original.specifications.impressions.max)}+`
+                  ? getWord(info.row.original.specifications.impressions.max)
                   : 'NA'}
               </p>
             ),
@@ -461,11 +477,15 @@ const InventoryDashboardPage = () => {
   };
 
   const toggleShareOptions = () => {
-    modals.openContextModal('basic', {
+    modals.openModal({
+      modalId: 'shareInventoryOption',
       title: 'Share Option',
-      innerProps: {
-        modalBody: <ShareContent searchParamQueries={searchParams} />,
-      },
+      children: (
+        <ShareContent
+          searchParamQueries={searchParams}
+          onClose={() => modals.closeModal('shareInventoryOption')}
+        />
+      ),
       ...modalConfig,
     });
   };
@@ -486,7 +506,10 @@ const InventoryDashboardPage = () => {
           <div className="flex justify-between h-20 items-center">
             <div className="flex items-center">
               <RowsPerPage
-                setCount={currentLimit => handlePagination('limit', currentLimit)}
+                setCount={currentLimit => {
+                  handlePagination('limit', currentLimit);
+                  setActiveLayout({ ...activeLayout, inventoryLimit: currentLimit });
+                }}
                 count={limit}
               />
               {viewType.inventory !== 'map' && (

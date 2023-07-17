@@ -87,7 +87,7 @@ const CampaignsDashboardPage = () => {
           useMemo(() => {
             const currentPage = Math.max(searchParams.get('page'), 1);
             const rowCount = (currentPage - 1) * +(searchParams.get('limit') || 0);
-            return <div className="pl-2">{rowCount + index + 1}</div>;
+            return <p>{rowCount + index + 1}</p>;
           }, []),
       },
       {
@@ -154,7 +154,7 @@ const CampaignsDashboardPage = () => {
           ),
       },
       {
-        Header: 'HEALTH',
+        Header: 'HEALTH STATUS',
         accessor: 'healthStatus',
         Cell: ({
           row: {

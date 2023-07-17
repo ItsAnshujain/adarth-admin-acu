@@ -56,7 +56,7 @@ const Booking = ({ inventoryId }) => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+            return <p>{rowCount + row.index + 1}</p>;
           }, []),
       },
       {
@@ -248,11 +248,7 @@ const Booking = ({ inventoryId }) => {
           row: {
             original: { totalPrice },
           },
-        }) =>
-          useMemo(
-            () => <p className="pl-2">{totalPrice ? toIndianCurrency(totalPrice) : 0}</p>,
-            [],
-          ),
+        }) => useMemo(() => <p>{totalPrice ? toIndianCurrency(totalPrice) : 0}</p>, []),
       },
       {
         Header: 'ACTION',

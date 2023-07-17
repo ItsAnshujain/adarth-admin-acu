@@ -63,7 +63,7 @@ const Dropzone = ({ multiple = false, value, onChange, error, imgUrl, ...props }
   return (
     <MantineDropzone
       onDrop={handleFileDrop}
-      className="min-h-[100px] min-w-[100px]"
+      className="min-h-[120px] min-w-[120px]"
       maxSize={5 * 1024 ** 2} // 5 MB
       multiple={false}
       {...props}

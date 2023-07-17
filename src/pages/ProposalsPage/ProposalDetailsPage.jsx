@@ -7,6 +7,7 @@ import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
+import shallow from 'zustand/shallow';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Header from '../../components/modules/proposals/ViewProposal/Header';
@@ -14,11 +15,12 @@ import Details from '../../components/modules/proposals/ViewProposal/Details';
 import Table from '../../components/Table/Table';
 import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
-import { categoryColors } from '../../utils';
+import { categoryColors, stringToColour } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
 import Filter from '../../components/modules/inventory/Filter';
 import useUserStore from '../../store/user.store';
 import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesMenuPopover';
+import useLayoutView from '../../store/layout.store';
 
 const ProposalDetailsPage = () => {
   const modals = useModals();
@@ -26,12 +28,19 @@ const ProposalDetailsPage = () => {
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [showFilter, setShowFilter] = useState(false);
+  const { activeLayout, setActiveLayout } = useLayoutView(
+    state => ({
+      activeLayout: state.activeLayout,
+      setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
   const [searchParams, setSearchParams] = useSearchParams({
-    'owner': 'all',
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'desc',
+    owner: 'all',
+    page: 1,
+    limit: activeLayout.inventoryLimit || 20,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
   });
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -75,7 +84,7 @@ const ProposalDetailsPage = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+            return <p>{rowCount + row.index + 1}</p>;
           }, []),
       },
       {
@@ -119,6 +128,12 @@ const ProposalDetailsPage = () => {
             ),
             [],
           ),
+      },
+      {
+        Header: 'FACIA TOWARDS',
+        accessor: 'faciaTowards',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.faciaTowards || '-'}</p>, []),
       },
       {
         Header: 'CITY',
@@ -188,27 +203,23 @@ const ProposalDetailsPage = () => {
       {
         Header: 'SUB CATEGORY',
         accessor: 'subCategory',
-        Cell: ({
-          row: {
-            original: { subCategory },
-          },
-        }) =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === subCategory,
-            );
-            return (
-              <div>
-                {subCategory ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
-                    {subCategory}
-                  </Badge>
-                ) : (
-                  <span>-</span>
-                )}
-              </div>
-            );
-          }, []),
+        Cell: info =>
+          useMemo(
+            () =>
+              info.row.original.subCategory ? (
+                <p
+                  className="h-6 px-3 flex items-center rounded-xl text-white font-medium text-[13px] capitalize"
+                  style={{
+                    background: stringToColour(info.row.original.subCategory),
+                  }}
+                >
+                  {info.row.original.subCategory}
+                </p>
+              ) : (
+                '-'
+              ),
+            [],
+          ),
       },
       {
         Header: 'DIMENSION (WxH)',
@@ -240,7 +251,7 @@ const ProposalDetailsPage = () => {
           row: {
             original: { price },
           },
-        }) => useMemo(() => <p className="pl-2">{price ? toIndianCurrency(price) : 0}</p>, []),
+        }) => useMemo(() => <p>{price ? toIndianCurrency(price) : 0}</p>, []),
       },
       {
         Header: 'UNIT',
@@ -329,7 +340,7 @@ const ProposalDetailsPage = () => {
           useMemo(
             () => (
               <p className="capitalize w-32">
-                {impressions?.max ? `${getWord(impressions.max)}+` : 'NA'}
+                {impressions?.max ? getWord(impressions.max) : 'NA'}
               </p>
             ),
             [],
@@ -420,7 +431,10 @@ const ProposalDetailsPage = () => {
 
       <div className="flex justify-between h-20 items-center">
         <RowsPerPage
-          setCount={currentLimit => handlePagination('limit', currentLimit)}
+          setCount={currentLimit => {
+            handlePagination('limit', currentLimit);
+            setActiveLayout({ ...activeLayout, inventoryLimit: currentLimit });
+          }}
           count={limit}
         />
         <Search search={searchInput} setSearch={setSearchInput} />

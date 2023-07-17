@@ -122,11 +122,7 @@ const ReleaseOrder = ({
           row: {
             original: { campaignPrice },
           },
-        }) =>
-          useMemo(
-            () => <p className="pl-2">{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>,
-            [],
-          ),
+        }) => useMemo(() => <p>{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>, []),
       },
       {
         Header: 'TOTAL AMOUNT',
@@ -136,11 +132,7 @@ const ReleaseOrder = ({
           row: {
             original: { campaignPrice },
           },
-        }) =>
-          useMemo(
-            () => <p className="pl-2">{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>,
-            [],
-          ),
+        }) => useMemo(() => <p>{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>, []),
       },
     ],
     [addSpaceItem],
