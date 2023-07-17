@@ -122,12 +122,7 @@ const Preview = () => {
                   ? toIndianCurrency(parseInt(values.basicInformation.price, 10))
                   : 0}
               </p>
-              <Badge
-                className="text-purple-450 bg-purple-100 capitalize"
-                size="lg"
-                variant="filled"
-                radius="md"
-              >
+              <Badge className="capitalize" size="lg" variant="light" radius="md" color="orange">
                 {values?.specifications?.impressions?.max
                   ? `${getWord(values.specifications.impressions?.max)}+ Total Impressions`
                   : 'NA'}

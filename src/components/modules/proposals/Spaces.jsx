@@ -23,7 +23,7 @@ import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 import { useFetchInventory } from '../../../apis/queries/inventory.queries';
-import { categoryColors, getDate } from '../../../utils';
+import { categoryColors, getDate, stringToColour } from '../../../utils';
 import Filter from '../inventory/Filter';
 import { useFormContext } from '../../../context/formContext';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
@@ -174,6 +174,12 @@ const Spaces = () => {
           }, []),
       },
       {
+        Header: 'FACIA TOWARDS',
+        accessor: 'location.faciaTowards',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.faciaTowards || '-'}</p>, []),
+      },
+      {
         Header: 'CITY',
         accessor: 'location.city',
         Cell: ({
@@ -241,28 +247,23 @@ const Spaces = () => {
       {
         Header: 'SUB CATEGORY',
         accessor: 'basicInformation.subCategory.name',
-        Cell: ({
-          row: {
-            original: { subCategory },
-          },
-        }) =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === subCategory,
-            );
-
-            return (
-              <div>
-                {subCategory ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
-                    {subCategory}
-                  </Badge>
-                ) : (
-                  <span>-</span>
-                )}
-              </div>
-            );
-          }, []),
+        Cell: info =>
+          useMemo(
+            () =>
+              info.row.original.subCategory ? (
+                <p
+                  className="h-6 px-3 flex items-center rounded-xl text-white font-medium text-[13px] capitalize"
+                  style={{
+                    background: stringToColour(info.row.original.subCategory),
+                  }}
+                >
+                  {info.row.original.subCategory}
+                </p>
+              ) : (
+                '-'
+              ),
+            [],
+          ),
       },
       {
         Header: 'DIMENSION (WxH)',
@@ -488,6 +489,7 @@ const Spaces = () => {
         obj.impressions = item?.specifications?.impressions?.max;
         obj.health = item?.specifications?.health;
         obj.location = item?.location?.city;
+        obj.faciaTowards = item?.location?.faciaTowards;
         obj.mediaType = item?.basicInformation?.mediaType?.name;
         obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];

@@ -14,7 +14,7 @@ import Details from '../../components/modules/proposals/ViewProposal/Details';
 import Table from '../../components/Table/Table';
 import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
-import { categoryColors } from '../../utils';
+import { categoryColors, stringToColour } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
 import Filter from '../../components/modules/inventory/Filter';
 import useUserStore from '../../store/user.store';
@@ -121,6 +121,12 @@ const ProposalDetailsPage = () => {
           ),
       },
       {
+        Header: 'FACIA TOWARDS',
+        accessor: 'faciaTowards',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.faciaTowards || '-'}</p>, []),
+      },
+      {
         Header: 'CITY',
         accessor: 'location',
         Cell: ({
@@ -188,27 +194,23 @@ const ProposalDetailsPage = () => {
       {
         Header: 'SUB CATEGORY',
         accessor: 'subCategory',
-        Cell: ({
-          row: {
-            original: { subCategory },
-          },
-        }) =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === subCategory,
-            );
-            return (
-              <div>
-                {subCategory ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
-                    {subCategory}
-                  </Badge>
-                ) : (
-                  <span>-</span>
-                )}
-              </div>
-            );
-          }, []),
+        Cell: info =>
+          useMemo(
+            () =>
+              info.row.original.subCategory ? (
+                <p
+                  className="h-6 px-3 flex items-center rounded-xl text-white font-medium text-[13px] capitalize"
+                  style={{
+                    background: stringToColour(info.row.original.subCategory),
+                  }}
+                >
+                  {info.row.original.subCategory}
+                </p>
+              ) : (
+                '-'
+              ),
+            [],
+          ),
       },
       {
         Header: 'DIMENSION (WxH)',

@@ -209,12 +209,7 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
             </Spoiler>
             <div className="flex gap-3 items-center">
               <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
-              <Badge
-                className="text-purple-450 bg-purple-100 capitalize"
-                size="lg"
-                variant="filled"
-                radius="md"
-              >
+              <Badge className="capitalize" size="lg" variant="light" radius="md" color="orange">
                 {campaignData?.maxImpression
                   ? `${getWord(campaignData?.maxImpression)}+ Total Impressions`
                   : 'NA'}
