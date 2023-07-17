@@ -65,7 +65,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+            return <p>{rowCount + row.index + 1}</p>;
           }, []),
       },
       {
@@ -156,9 +156,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
           useMemo(
             () => (
               <p className="capitalize w-32">
-                {specifications?.impressions?.max
-                  ? `${getWord(specifications.impressions.max)}+`
-                  : 'NA'}
+                {specifications?.impressions?.max ? getWord(specifications.impressions.max) : 'NA'}
               </p>
             ),
             [],
@@ -183,7 +181,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
         }) =>
           useMemo(
             () => (
-              <p className="pl-2">
+              <p>
                 {basicInformation?.price
                   ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
                   : 0}

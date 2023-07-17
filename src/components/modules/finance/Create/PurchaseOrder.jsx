@@ -159,11 +159,7 @@ const PurchaseOrder = ({
           row: {
             original: { campaignPrice },
           },
-        }) =>
-          useMemo(
-            () => <p className="pl-2">{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>,
-            [],
-          ),
+        }) => useMemo(() => <p>{campaignPrice ? toIndianCurrency(+campaignPrice) : 0}</p>, []),
       },
       {
         Header: 'TOTAL AMOUNT',
@@ -175,11 +171,7 @@ const PurchaseOrder = ({
           },
         }) =>
           useMemo(
-            () => (
-              <p className="pl-2">
-                {campaignPrice ? toIndianCurrency(+campaignPrice * (+quantity || 1)) : 0}
-              </p>
-            ),
+            () => <p>{campaignPrice ? toIndianCurrency(+campaignPrice * (+quantity || 1)) : 0}</p>,
             [],
           ),
       },
@@ -263,11 +255,7 @@ const PurchaseOrder = ({
           row: {
             original: { rate },
           },
-        }) =>
-          useMemo(
-            () => <p className="pl-2">{rate ? toIndianCurrency(Number.parseInt(rate, 10)) : 0}</p>,
-            [],
-          ),
+        }) => useMemo(() => <p>{rate ? toIndianCurrency(Number.parseInt(rate, 10)) : 0}</p>, []),
       },
       {
         Header: 'TOTAL AMOUNT',
@@ -277,13 +265,7 @@ const PurchaseOrder = ({
           row: {
             original: { price },
           },
-        }) =>
-          useMemo(
-            () => (
-              <p className="pl-2">{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>
-            ),
-            [],
-          ),
+        }) => useMemo(() => <p>{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>, []),
       },
       {
         Header: 'ACTION',

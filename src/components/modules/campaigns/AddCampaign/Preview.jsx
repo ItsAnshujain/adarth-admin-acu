@@ -116,13 +116,8 @@ const Preview = ({ data = {}, place = {} }) => {
             <div className="flex gap-3 items-center">
               <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
 
-              <Badge
-                className="text-purple-450 bg-purple-100 capitalize"
-                size="lg"
-                variant="filled"
-                radius="md"
-              >
-                {data?.maxImpression ? `${getWord(data?.maxImpression)}+ Total Impressions` : 'NA'}
+              <Badge className="capitalize" size="lg" variant="light" radius="md" color="orange">
+                {data?.maxImpression ? `${getWord(data?.maxImpression)} Total Impressions` : 'NA'}
               </Badge>
             </div>
           </div>
@@ -135,7 +130,7 @@ const Preview = ({ data = {}, place = {} }) => {
             Location Details
           </Text>
           <Text size="sm" weight="lighter">
-            All the places been covered by this campaign
+            All the places being covered in this campaign
           </Text>
         </div>
         <div className="mt-1 mb-8 h-[40vh]">
@@ -157,7 +152,7 @@ const Preview = ({ data = {}, place = {} }) => {
             Places In The Campaign
           </Text>
           <Text text="sm" weight="lighter">
-            All the places been cover by this campaign
+            All the places being covered in this campaign
           </Text>
           <div>
             {place?.docs?.map(item => (

@@ -63,10 +63,13 @@ const MinMaxField = ({ minKey, maxKey, setQuery, state, label }) => {
                 }}
                 min={0}
                 step={1000}
-                max={label === 'Health' ? 100 : label === 'Price' ? 3000000 : 10000}
+                max={label === 'Health Status' ? 100 : label === 'Price' ? 3000000 : 10000}
                 styles={sliderStyle}
                 value={[min, max]}
-                defaultValue={[0, label === 'Health' ? 100 : label === 'Price' ? 3000000 : 10000]}
+                defaultValue={[
+                  0,
+                  label === 'Health Status' ? 100 : label === 'Price' ? 3000000 : 10000,
+                ]}
               />
             </div>
           </div>
@@ -203,7 +206,7 @@ const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
             state={state}
           />
           <MinMaxField
-            label="Health"
+            label="Health Status"
             minKey="healthMin"
             maxKey="healthMax"
             setQuery={setQuery}

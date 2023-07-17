@@ -43,9 +43,7 @@ const CampaignStatsContent = ({ isStatsLoading, healthStatusData, stats }) => (
           className="font-bold overflow-x-hidden overflow-ellipsis w-[80px] capitalize"
           title={stats?.impression}
         >
-          {stats?.impression
-            ? `${getWord(stats?.impression)}+`
-            : stats?.impression?.toLocaleString()}
+          {stats?.impression ? getWord(stats?.impression) : stats?.impression?.toLocaleString()}
         </p>
       </div>
     </div>

@@ -88,7 +88,6 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
                         <p className="font-medium">{item?.type?.name}</p>
                         <p className="font-light text-sm w-[80%] mb-1 text-gray-500">
                           {item?.description}
-                          {item?.description}
                         </p>
                         <p className="text-xs mb-1">Created at:</p>
                         <p className="text-xs text-gray-500 font-medium">

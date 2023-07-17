@@ -6,6 +6,7 @@ import { Progress, Loader, Button, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import multiDownload from 'multi-download';
+import shallow from 'zustand/shallow';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
@@ -21,6 +22,7 @@ import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from '../../components/modules/bookings/BookingStatisticsView';
 import NoData from '../../components/shared/NoData';
 import BookingsMenuPopover from '../../components/Popovers/BookingsMenuPopover';
+import useLayoutView from '../../store/layout.store';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -31,11 +33,18 @@ const DATE_FORMAT = 'DD MMM YYYY';
 const BookingsDashboardPage = () => {
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
+  const { activeLayout, setActiveLayout } = useLayoutView(
+    state => ({
+      activeLayout: state.activeLayout,
+      setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
   const [searchParams, setSearchParams] = useSearchParams({
-    'page': 1,
-    'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'desc',
+    page: 1,
+    limit: activeLayout.bookingLimit || 20,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
   });
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
@@ -111,7 +120,7 @@ const BookingsDashboardPage = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+            return <p>{rowCount + row.index + 1}</p>;
           }, []),
       },
       {
@@ -354,6 +363,15 @@ const BookingsDashboardPage = () => {
           ),
       },
       {
+        Header: 'PRICING',
+        accessor: 'campaign.price',
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) => useMemo(() => toIndianCurrency(campaign?.price || 0), []),
+      },
+      {
         Header: 'SCHEDULE',
         accessor: 'schedule',
         disableSortBy: true,
@@ -415,15 +433,6 @@ const BookingsDashboardPage = () => {
       {
         Header: 'TOTAL SPACES',
         accessor: 'totalSpaces',
-      },
-      {
-        Header: 'PRICING',
-        accessor: 'campaign.price',
-        Cell: ({
-          row: {
-            original: { campaign },
-          },
-        }) => useMemo(() => toIndianCurrency(campaign?.price || 0), []),
       },
       {
         Header: 'PURCHASE ORDER',
@@ -566,7 +575,10 @@ const BookingsDashboardPage = () => {
       <BookingStatisticsView bookingStats={bookingStats} isLoading={isBookingStatsLoading} />
       <div className="flex justify-between h-20 items-center">
         <RowsPerPage
-          setCount={currentLimit => handlePagination('limit', currentLimit)}
+          setCount={currentLimit => {
+            handlePagination('limit', currentLimit);
+            setActiveLayout({ ...activeLayout, bookingLimit: currentLimit });
+          }}
           count={limit}
         />
         <Search search={searchInput} setSearch={setSearchInput} />

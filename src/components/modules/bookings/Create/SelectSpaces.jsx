@@ -22,19 +22,21 @@ import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { useModals } from '@mantine/modals';
 import { getWord } from 'num-count';
+import shallow from 'zustand/shallow';
 import Search from '../../../Search';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import upload from '../../../../assets/upload.svg';
 import { useFormContext } from '../../../../context/formContext';
-import { categoryColors, getDate, supportedTypes } from '../../../../utils';
+import { categoryColors, getDate, stringToColour, supportedTypes } from '../../../../utils';
 import { useUploadFile } from '../../../../apis/queries/upload.queries';
 import Filter from '../../inventory/Filter';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../../../DateRangeSelector';
 import modalConfig from '../../../../utils/modalConfig';
 import RowsPerPage from '../../../RowsPerPage';
+import useLayoutView from '../../../../store/layout.store';
 
 dayjs.extend(isBetween);
 
@@ -121,7 +123,7 @@ const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
                 </Badge>
               ))}
             </div>
-            <p className="mt-1 font-bold text-gray-500">Video size cannot be more than 5MB</p>
+            <p className="mt-1 font-bold text-gray-500">Media size cannot be more than 5MB</p>
           </div>
         </HoverCard.Dropdown>
       </HoverCard>
@@ -136,8 +138,15 @@ const SelectSpace = () => {
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
+  const { activeLayout, setActiveLayout } = useLayoutView(
+    state => ({
+      activeLayout: state.activeLayout,
+      setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
   const [searchParams, setSearchParams] = useSearchParams({
-    limit: 20,
+    limit: activeLayout.inventoryLimit || 20,
     page: 1,
     sortOrder: 'desc',
     sortBy: 'basicInformation.spaceName',
@@ -206,7 +215,7 @@ const SelectSpace = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + info.row.index + 1}</div>;
+            return <p>{rowCount + info.row.index + 1}</p>;
           }, []),
       },
       {
@@ -264,6 +273,12 @@ const SelectSpace = () => {
               </div>
             );
           }, [isUnderMaintenance]),
+      },
+      {
+        Header: 'FACIA TOWARDS',
+        accessor: 'location.faciaTowards',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.faciaTowards || '-'}</p>, []),
       },
       {
         Header: 'CITY',
@@ -334,28 +349,23 @@ const SelectSpace = () => {
       {
         Header: 'SUB CATEGORY',
         accessor: 'basicInformation.subCategory.name',
-        Cell: ({
-          row: {
-            original: { subCategory },
-          },
-        }) =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === subCategory,
-            );
-
-            return (
-              <div>
-                {subCategory ? (
-                  <Badge color={colorType} size="lg" className="capitalize">
-                    {subCategory}
-                  </Badge>
-                ) : (
-                  <span>-</span>
-                )}
-              </div>
-            );
-          }, []),
+        Cell: info =>
+          useMemo(
+            () =>
+              info.row.original.subCategory ? (
+                <p
+                  className="h-6 px-3 flex items-center rounded-xl text-white font-medium text-[13px] capitalize"
+                  style={{
+                    background: stringToColour(info.row.original.subCategory),
+                  }}
+                >
+                  {info.row.original.subCategory}
+                </p>
+              ) : (
+                '-'
+              ),
+            [],
+          ),
       },
       {
         Header: 'DIMENSION (WxH)',
@@ -471,9 +481,7 @@ const SelectSpace = () => {
         }) =>
           useMemo(
             () => (
-              <p className="capitalize w-32">
-                {impressionMax ? `${getWord(impressionMax)}+` : 'NA'}
-              </p>
+              <p className="capitalize w-32">{impressionMax ? getWord(impressionMax) : 'NA'}</p>
             ),
             [],
           ),
@@ -607,6 +615,7 @@ const SelectSpace = () => {
         obj.impressionMax = item.specifications?.impressions?.max || 0;
         obj.impressionMin = item.specifications?.impressions?.min || 0;
         obj.health = item?.specifications?.health ?? 0;
+        obj.faciaTowards = item?.location?.faciaTowards;
         obj.location = item?.location?.city;
         obj.mediaType = item.basicInformation?.mediaType?.name;
         obj.price = item.basicInformation?.price || 0;
@@ -660,7 +669,10 @@ const SelectSpace = () => {
         <div className="flex justify-between items-center">
           <Group>
             <RowsPerPage
-              setCount={currentLimit => handlePagination('limit', currentLimit)}
+              setCount={currentLimit => {
+                handlePagination('limit', currentLimit);
+                setActiveLayout({ ...activeLayout, inventoryLimit: currentLimit });
+              }}
               count={limit}
             />
             <p className="text-purple-450 text-sm">

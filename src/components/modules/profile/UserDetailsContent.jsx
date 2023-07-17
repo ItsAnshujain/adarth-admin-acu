@@ -11,7 +11,7 @@ const UserDetailsContent = ({ data }) => (
       </div>
       <div className="flex flex-col">
         <p className="text-xl font-bold">{data?.name || 'N/A'}</p>
-        <p className="text-[#914EFB]">{data?.role || 'N/A'}</p>
+        <p className="text-[#914EFB] capitalize">{data?.role || 'N/A'}</p>
         <p>{data?.company}</p>
       </div>
     </div>

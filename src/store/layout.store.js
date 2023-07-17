@@ -5,6 +5,10 @@ const initialValue = {
   inventory: 'list',
   proposal: 'list',
   campaign: 'list',
+  inventoryLimit: 20,
+  bookingLimit: 20,
+  proposalLimit: 20,
+  campaignLimit: 20,
 };
 
 const useLayoutView = create(

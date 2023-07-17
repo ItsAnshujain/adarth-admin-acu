@@ -54,7 +54,7 @@ const Card = ({
           <div>
             <p className="text-sm text-gray-400 mb-2">Impressions</p>
             <p className="capitalize font-medium">
-              {maxImpression ? `${getWord(maxImpression)}+` : 'NA'}
+              {maxImpression ? getWord(maxImpression) : 'NA'}
             </p>
           </div>
         </div>
