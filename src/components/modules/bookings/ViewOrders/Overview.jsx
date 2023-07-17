@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   BackgroundImage,
-  Badge,
   Center,
   Group,
   Image,
@@ -216,11 +215,6 @@ const Overview = ({ bookingData = {}, isLoading }) => {
               <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.price)}</p>
               <p className="text-xs italic">**inclusive of gst</p>
             </Group>
-            <Badge className="capitalize" size="lg" variant="light" radius="md" color="orange">
-              {calcutateTotalImpressions && !Number.isNaN(calcutateTotalImpressions)
-                ? `${getWord(calcutateTotalImpressions)}+ Total Impressions`
-                : 'NA'}
-            </Badge>
           </div>
           <div className="mt-8">
             <p>Specifications</p>
@@ -234,7 +228,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
                 <p className="text-slate-400 text-sm">Impressions</p>
                 <p>
                   {calcutateTotalImpressions && !Number.isNaN(calcutateTotalImpressions)
-                    ? `${getWord(calcutateTotalImpressions)}+`
+                    ? getWord(calcutateTotalImpressions)
                     : 'NA'}{' '}
                 </p>
               </div>

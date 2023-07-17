@@ -4,6 +4,7 @@ import { useDebouncedValue } from '@mantine/hooks';
 import { Loader, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
+import shallow from 'zustand/shallow';
 import AreaHeader from '../../components/modules/proposals/Header';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
@@ -22,9 +23,16 @@ const nativeSelectStyles = {
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const ProposalDashboardPage = () => {
+  const { activeLayout, setActiveLayout } = useLayoutView(
+    state => ({
+      activeLayout: state.activeLayout,
+      setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
-    limit: 20,
+    limit: activeLayout.proposalLimit || 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });
@@ -251,7 +259,10 @@ const ProposalDashboardPage = () => {
       <AreaHeader text="Proposals List" />
       <div className="flex justify-between h-20 items-center">
         <RowsPerPage
-          setCount={currentLimit => handlePagination('limit', currentLimit)}
+          setCount={currentLimit => {
+            handlePagination('limit', currentLimit);
+            setActiveLayout({ ...activeLayout, proposalLimit: currentLimit });
+          }}
           count={limit}
         />
         <Search search={searchInput} setSearch={setSearchInput} />

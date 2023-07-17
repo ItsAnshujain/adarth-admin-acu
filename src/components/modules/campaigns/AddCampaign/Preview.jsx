@@ -117,7 +117,7 @@ const Preview = ({ data = {}, place = {} }) => {
               <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
 
               <Badge className="capitalize" size="lg" variant="light" radius="md" color="orange">
-                {data?.maxImpression ? `${getWord(data?.maxImpression)}+ Total Impressions` : 'NA'}
+                {data?.maxImpression ? `${getWord(data?.maxImpression)} Total Impressions` : 'NA'}
               </Badge>
             </div>
           </div>

@@ -9,6 +9,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
+import shallow from 'zustand/shallow';
 import Table from '../../components/Table/Table';
 import AreaHeader from '../../components/modules/inventory/AreaHeader';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -50,8 +51,15 @@ const InventoryDashboardPage = () => {
   const modals = useModals();
   const form = useForm({ initialValues: { spaces: [] } });
   const viewType = useLayoutView(state => state.activeLayout);
+  const { activeLayout, setActiveLayout } = useLayoutView(
+    state => ({
+      activeLayout: state.activeLayout,
+      setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
   const [searchParams, setSearchParams] = useSearchParams({
-    limit: 20,
+    limit: activeLayout.inventoryLimit || 20,
     page: 1,
     sortOrder: 'desc',
     sortBy: 'basicInformation.spaceName',
@@ -351,7 +359,7 @@ const InventoryDashboardPage = () => {
             () => (
               <p className="capitalize w-32">
                 {info.row.original.specifications?.impressions?.max
-                  ? `${getWord(info.row.original.specifications.impressions.max)}+`
+                  ? getWord(info.row.original.specifications.impressions.max)
                   : 'NA'}
               </p>
             ),
@@ -498,7 +506,10 @@ const InventoryDashboardPage = () => {
           <div className="flex justify-between h-20 items-center">
             <div className="flex items-center">
               <RowsPerPage
-                setCount={currentLimit => handlePagination('limit', currentLimit)}
+                setCount={currentLimit => {
+                  handlePagination('limit', currentLimit);
+                  setActiveLayout({ ...activeLayout, inventoryLimit: currentLimit });
+                }}
                 count={limit}
               />
               {viewType.inventory !== 'map' && (
