@@ -106,7 +106,7 @@ const FinanceMonthlyDetailsPage = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <p className="pl-2">{rowCount + row.index + 1}</p>;
+            return <p>{rowCount + row.index + 1}</p>;
           }, []),
       },
       {
@@ -281,7 +281,7 @@ const FinanceMonthlyDetailsPage = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <p className="pl-2">{rowCount + row.index + 1}</p>;
+            return <p>{rowCount + row.index + 1}</p>;
           }, []),
       },
       {
@@ -466,7 +466,7 @@ const FinanceMonthlyDetailsPage = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <p className="pl-2">{rowCount + row.index + 1}</p>;
+            return <p>{rowCount + row.index + 1}</p>;
           }, []),
       },
       {

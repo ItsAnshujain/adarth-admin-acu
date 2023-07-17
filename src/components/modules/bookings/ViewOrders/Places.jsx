@@ -228,7 +228,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
                       </Badge>
                     ))}
                   </div>
-                  <p className="mt-1 font-bold text-gray-500">Video size cannot be more than 5MB</p>
+                  <p className="mt-1 font-bold text-gray-500">Media size cannot be more than 5MB</p>
                 </div>
               </HoverCard.Dropdown>
             </HoverCard>
@@ -301,7 +301,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
               />
             </div>
             <div>
-              <p className="mb-2 text-sm font-light text-slate-400">Health Update</p>
+              <p className="mb-2 text-sm font-light text-slate-400">Health Status</p>
               <p>{`${data?.health || 0}%` || <NoData type="na" />}</p>
             </div>
           </div>

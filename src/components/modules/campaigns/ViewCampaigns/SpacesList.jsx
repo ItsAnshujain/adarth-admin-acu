@@ -65,7 +65,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+            return <p>{rowCount + row.index + 1}</p>;
           }, []),
       },
       {
@@ -183,7 +183,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
         }) =>
           useMemo(
             () => (
-              <p className="pl-2">
+              <p>
                 {basicInformation?.price
                   ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
                   : 0}

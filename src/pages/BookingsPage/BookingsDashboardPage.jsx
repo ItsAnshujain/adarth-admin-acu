@@ -111,7 +111,7 @@ const BookingsDashboardPage = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+            return <p>{rowCount + row.index + 1}</p>;
           }, []),
       },
       {
@@ -354,6 +354,15 @@ const BookingsDashboardPage = () => {
           ),
       },
       {
+        Header: 'PRICING',
+        accessor: 'campaign.price',
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) => useMemo(() => toIndianCurrency(campaign?.price || 0), []),
+      },
+      {
         Header: 'SCHEDULE',
         accessor: 'schedule',
         disableSortBy: true,
@@ -415,15 +424,6 @@ const BookingsDashboardPage = () => {
       {
         Header: 'TOTAL SPACES',
         accessor: 'totalSpaces',
-      },
-      {
-        Header: 'PRICING',
-        accessor: 'campaign.price',
-        Cell: ({
-          row: {
-            original: { campaign },
-          },
-        }) => useMemo(() => toIndianCurrency(campaign?.price || 0), []),
       },
       {
         Header: 'PURCHASE ORDER',

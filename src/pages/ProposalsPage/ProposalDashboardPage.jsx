@@ -74,7 +74,7 @@ const ProposalDashboardPage = () => {
               currentPage = 1;
             }
             rowCount = (currentPage - 1) * limit;
-            return <div className="pl-2">{rowCount + row.index + 1}</div>;
+            return <p>{rowCount + row.index + 1}</p>;
           }, []),
       },
       {
@@ -183,7 +183,7 @@ const ProposalDashboardPage = () => {
           row: {
             original: { client },
           },
-        }) => useMemo(() => <p className="pl-2">{client?.company || '-'}</p>, []),
+        }) => useMemo(() => <p>{client?.company || '-'}</p>, []),
       },
       {
         Header: 'TOTAL PLACES',
@@ -196,13 +196,7 @@ const ProposalDashboardPage = () => {
           row: {
             original: { price },
           },
-        }) =>
-          useMemo(
-            () => (
-              <p className="pl-2">{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>
-            ),
-            [],
-          ),
+        }) => useMemo(() => <p>{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>, []),
       },
       {
         Header: 'ACTION',

@@ -215,7 +215,7 @@ const InventoryReportsPage = () => {
             currentPage = 1;
           }
           rowCount = (currentPage - 1) * limit;
-          return <div className="pl-2">{rowCount + row.index + 1}</div>;
+          return <p>{rowCount + row.index + 1}</p>;
         }, []),
     },
     {
@@ -403,7 +403,7 @@ const InventoryReportsPage = () => {
       }) =>
         useMemo(
           () => (
-            <p className="pl-2">
+            <p>
               {basicInformation?.price
                 ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
                 : 0}
@@ -441,7 +441,7 @@ const InventoryReportsPage = () => {
             currentPage = 1;
           }
           rowCount = (currentPage - 1) * limit;
-          return <div className="pl-2">{rowCount + row.index + 1}</div>;
+          return <p>{rowCount + row.index + 1}</p>;
         }, []),
     },
     {
@@ -607,8 +607,7 @@ const InventoryReportsPage = () => {
         row: {
           original: { roiPerDay },
         },
-      }) =>
-        useMemo(() => <p className="pl-2">{roiPerDay ? Number(roiPerDay).toFixed(2) : 0}</p>, []),
+      }) => useMemo(() => <p>{roiPerDay ? Number(roiPerDay).toFixed(2) : 0}</p>, []),
     },
     {
       Header: 'PRICING',
@@ -621,7 +620,7 @@ const InventoryReportsPage = () => {
       }) =>
         useMemo(
           () => (
-            <p className="pl-2">
+            <p>
               {basicInformation?.price
                 ? toIndianCurrency(Number.parseInt(basicInformation?.price, 10))
                 : 0}

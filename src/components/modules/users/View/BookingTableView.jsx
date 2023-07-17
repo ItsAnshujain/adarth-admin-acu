@@ -103,7 +103,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
             const currentPage = bookingData?.page < 1 ? 1 : bookingData.page;
             const rowCount = (currentPage - 1) * bookingData.limit;
 
-            return <p className="pl-2">{rowCount + row.index + 1}</p>;
+            return <p>{rowCount + row.index + 1}</p>;
           }, []),
       },
       {

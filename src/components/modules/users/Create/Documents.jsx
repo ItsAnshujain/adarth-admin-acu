@@ -80,7 +80,7 @@ const Documents = ({ documents }) => {
 
   return (
     <div className="pl-5 pr-7 mt-4">
-      <p className="text-xl font-bold">Documents of the associates</p>
+      <p className="text-xl font-bold">Documents of the user</p>
       <div className="text-sm mb-8">
         <span className="font-bold text-gray-500 mr-2">Supported types</span>
         {updatedSupportedTypes.map(item => (
