@@ -149,7 +149,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         Cell: ({ row: { original } }) =>
           useMemo(
             () => (
-              <p className="font-medium bg-gray-450 px-2 rounded-sm">
+              <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                 {dayjs(original.createdAt).format(DATE_FORMAT)}
               </p>
             ),
@@ -332,7 +332,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           useMemo(
             () => (
               <div className="flex items-center w-max">
-                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                   {campaign?.startDate ? (
                     dayjs(campaign?.startDate).format(DATE_FORMAT)
                   ) : (

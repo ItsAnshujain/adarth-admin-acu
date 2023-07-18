@@ -200,7 +200,7 @@ const TotalBookings = ({ campaignId }) => {
           useMemo(
             () => (
               <div className="flex items-center w-max">
-                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                   {campaign?.startDate ? (
                     dayjs(campaign?.startDate).format(DATE_FORMAT)
                   ) : (
@@ -208,7 +208,7 @@ const TotalBookings = ({ campaignId }) => {
                   )}
                 </p>
                 <span className="px-2">&gt;</span>
-                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                   {campaign?.endDate ? (
                     dayjs(campaign?.endDate).format(DATE_FORMAT)
                   ) : (

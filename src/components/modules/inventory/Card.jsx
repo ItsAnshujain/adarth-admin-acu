@@ -73,7 +73,7 @@ const Card = ({
           {location?.city || 'NA'}
         </Text>
         <div>
-          <p className="text-sm text-gray-400 mb-2">Additional Feature</p>
+          <p className="text-sm text-gray-400 mb-2">Additional Tags</p>
           <div className="flex gap-x-2 flex-wrap">
             {specifications?.additionalTags?.length
               ? specifications.additionalTags.map(
