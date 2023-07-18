@@ -227,7 +227,10 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
                 <span className="font-bold">Branch & IFSC Code:</span> {previewData?.ifscCode}
               </p>
               <p className="text-lg mb-1 uppercase">
-                <span className="font-bold">Payment Type:</span> {previewData?.modeOfPayment}
+                <span className="font-bold">Payment Type:</span>{' '}
+                {previewData?.modeOfPayment && previewData.modeOfPayment.includes('_')
+                  ? previewData.modeOfPayment.split('_').join(' ')
+                  : previewData?.modeOfPayment}
               </p>
             </div>
             <p className="text-lg mb-1">

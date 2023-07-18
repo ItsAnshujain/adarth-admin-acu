@@ -154,7 +154,7 @@ const AddPaymentInformationForm = ({ bookingId, onClose, id }) => {
             className="mb-4"
           />
           <ControlledTextInput
-            label="Payment For"
+            label="Payment Expense"
             name="paymentFor"
             placeholder="Write..."
             maxLength={200}
