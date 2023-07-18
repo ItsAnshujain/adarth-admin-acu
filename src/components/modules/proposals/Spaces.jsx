@@ -399,6 +399,7 @@ const Spaces = () => {
                   dateValue={[startDate || null, endDate || null]}
                   onChange={val => updateData('dateRange', val, _id)}
                   dateRange={bookingRange}
+                  minDate={new Date()}
                 />
               </div>
             ),
