@@ -378,6 +378,22 @@ const SelectSpace = () => {
         }) => useMemo(() => <div className="flex gap-x-2">{dimension}</div>, []),
       },
       {
+        Header: 'TRADED AMOUNT',
+        accessor: 'tradedAmount',
+        Cell: info =>
+          useMemo(
+            () => (
+              <NumberInput
+                hideControls
+                defaultValue={+(info.row.original.tradedAmount || 0)}
+                onBlur={e => updateData('tradedAmount', e.target.value, info.row.original._id)}
+                disabled={info.row.original.peer === '-'}
+              />
+            ),
+            [],
+          ),
+      },
+      {
         Header: 'PRICING',
         accessor: 'basicInformation.price',
         Cell: ({
@@ -397,17 +413,26 @@ const SelectSpace = () => {
           ),
       },
       {
-        Header: 'TRADED AMOUNT',
-        accessor: 'tradedAmount',
-        Cell: info =>
+        Header: 'OCCUPANCY DATE',
+        accessor: 'scheduledDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { bookingRange, startDate, endDate, _id },
+          },
+        }) =>
           useMemo(
             () => (
-              <NumberInput
-                hideControls
-                defaultValue={+(info.row.original.tradedAmount || 0)}
-                onBlur={e => updateData('tradedAmount', e.target.value, info.row.original._id)}
-                disabled={info.row.original.peer === '-'}
-              />
+              <div className="min-w-[300px]">
+                <DateRangeSelector
+                  error={
+                    !!values?.place?.find(item => item._id === _id) && (!startDate || !endDate)
+                  }
+                  dateValue={[startDate || null, endDate || null]}
+                  onChange={val => updateData('dateRange', val, _id)}
+                  dateRange={bookingRange}
+                />
+              </div>
             ),
             [],
           ),
@@ -503,31 +528,6 @@ const SelectSpace = () => {
                 hasMedia={values?.place?.find(item => (item._id === _id ? !!item?.media : false))}
                 id={_id}
               />
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'OCCUPANCY DATE',
-        accessor: 'scheduledDate',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { bookingRange, startDate, endDate, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div className="min-w-[300px]">
-                <DateRangeSelector
-                  error={
-                    !!values?.place?.find(item => item._id === _id) && (!startDate || !endDate)
-                  }
-                  dateValue={[startDate || null, endDate || null]}
-                  onChange={val => updateData('dateRange', val, _id)}
-                  dateRange={bookingRange}
-                />
-              </div>
             ),
             [],
           ),
