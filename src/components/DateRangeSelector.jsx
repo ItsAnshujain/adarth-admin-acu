@@ -67,7 +67,6 @@ const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
       placeholder="Pick dates range"
       onChange={handleChange}
       excludeDate={excludeBookedDates}
-      minDate={new Date()}
       disableOutsideEvents
       allowSingleDateInRange
       defaultValue={dateValue}

@@ -34,6 +34,12 @@ const OrderInformationCard = () => {
           </Group>
         </div>
         <div>
+          <p className="text-slate-400">Traded Amount</p>
+          <Group className="gap-1">
+            <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.tradedAmount)}</p>
+          </Group>
+        </div>
+        <div>
           <p className="text-slate-400">Start Date</p>
           <p className="font-bold">
             {bookingData?.campaign?.startDate ? (

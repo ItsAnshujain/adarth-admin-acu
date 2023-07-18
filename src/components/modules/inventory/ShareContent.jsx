@@ -85,7 +85,7 @@ const initialCopyLinkValues = {
 
 const emailSchema = yup.object({
   name: yup.string().trim().required('Name is required'),
-  to: yup.string().trim().required('Email is required').email('Email must be valid'),
+  to: yup.string().trim().required('Required'),
 });
 
 const whatsAppSchema = yup.object({
@@ -168,6 +168,27 @@ const ShareContent = ({ searchParamQueries }) => {
     searchParamQueries.forEach((value, key) => {
       params[key] = value;
     });
+
+    if (activeShare === 'email' && data.to.includes(',')) {
+      let emails = data.to.split(',');
+      emails = emails.map(email =>
+        email.trim() && validator.isEmail(email.trim()) ? email.trim() : false,
+      );
+      if (emails.includes(false)) {
+        showNotification({
+          title: 'Please enter valid email addresses',
+          message: 'One of your email address is invalid',
+        });
+        return;
+      }
+      data.to = emails.join(',');
+    } else if (!validator.isEmail(data.to)) {
+      showNotification({
+        title: 'Invalid Email',
+      });
+
+      return;
+    }
 
     const response = await shareInventory.mutateAsync(
       { queries: serialize(params), data },
@@ -265,6 +286,11 @@ const ShareContent = ({ searchParamQueries }) => {
                       placeholder={placeHolders[activeShare]}
                       errors={form.errors}
                     />
+                  ) : null}
+                  {activeShare === 'email' ? (
+                    <p className="mt-2 text-sm">
+                      Note: For multiple emails, please separate with a comma
+                    </p>
                   ) : null}
                   <Button
                     className="secondary-button font-medium text-base mt-2 w-full"
