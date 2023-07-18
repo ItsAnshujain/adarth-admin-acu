@@ -13,7 +13,7 @@ const UserCard = ({
   number = 'NA',
   image,
 }) => (
-  <MantineCard className="p-4 cursor-pointer min-h-[" withBorder radius="md" shadow="sm">
+  <MantineCard className="p-4 cursor-pointer min-h-[232px]" withBorder radius="md" shadow="sm">
     <div className="flex gap-4">
       <Avatar size="xl" src={image || UserImage} className="rounded-full" />
       <div className="flex flex-col justify-between overflow-hidden overflow-ellipsis">
@@ -21,10 +21,12 @@ const UserCard = ({
           {name}
         </Text>
         <p className="text-[#914EFB]">{updatedRoleTypes[role] || 'NA'}</p>
-        <p>{company}</p>
+        <Text size="md" lineClamp={2} className="w-full" title={name}>
+          {company}
+        </Text>
       </div>
     </div>
-    <div className="flex flex-col gap-1 mt-4">
+    <div className="flex flex-col gap-1 mt-3">
       <div className="flex items-center">
         <Mail size={18} />
         <p

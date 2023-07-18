@@ -135,7 +135,7 @@ const SpaceList = () => {
         }) => useMemo(() => <p>{location?.city || '-'}</p>),
       },
       {
-        Header: 'ADDITIONAL FEATURE',
+        Header: 'ADDITIONAL TAGS',
         accessor: 'specifications.additionalTags',
         disableSortBy: true,
         Cell: info =>
@@ -149,11 +149,11 @@ const SpaceList = () => {
                           <Badge
                             key={uuidv4()}
                             size="lg"
-                            className="capitalize max-w-[100px]"
+                            className="capitalize w-fit"
                             title={item}
-                            variant="gradient"
+                            variant="outline"
+                            color="cyan"
                             radius="xs"
-                            gradient={{ from: '#ed6ea0', to: '#ec8c69', deg: 35 }}
                           >
                             {item}
                           </Badge>

@@ -229,11 +229,11 @@ const Booking = ({ inventoryId }) => {
           useMemo(
             () => (
               <div className="flex items-center w-max">
-                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                   {startDate ? dayjs(startDate).format(DATE_FORMAT) : <NoData type="na" />}
                 </p>
                 <span className="px-2">&gt;</span>
-                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                   {endDate ? dayjs(endDate).format(DATE_FORMAT) : <NoData type="na" />}
                 </p>
               </div>

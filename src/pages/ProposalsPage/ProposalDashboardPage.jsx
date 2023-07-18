@@ -117,7 +117,15 @@ const ProposalDashboardPage = () => {
           },
         }) =>
           useMemo(
-            () => <p className="text-black font-medium max-w-[250px]">{creator?.name || '-'}</p>,
+            () => (
+              <Text
+                className="text-black font-medium max-w-[250px] text-ellipsis"
+                lineClamp={1}
+                title={creator?.name}
+              >
+                {creator?.name || '-'}
+              </Text>
+            ),
             [],
           ),
       },
@@ -160,7 +168,7 @@ const ProposalDashboardPage = () => {
         }) =>
           useMemo(
             () => (
-              <p className="font-medium bg-gray-450 px-2 rounded-sm">
+              <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                 {dayjs(startDate).format(DATE_FORMAT)}
               </p>
             ),
@@ -177,7 +185,7 @@ const ProposalDashboardPage = () => {
         }) =>
           useMemo(
             () => (
-              <p className="font-medium bg-gray-450 px-2 rounded-sm">
+              <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                 {dayjs(endDate).format(DATE_FORMAT)}
               </p>
             ),

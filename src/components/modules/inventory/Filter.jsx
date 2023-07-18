@@ -644,7 +644,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
           <Accordion.Item value="additionalTags" className="mb-4 rounded-xl border">
             <Accordion.Control disabled={isAudienceLoading}>
-              <p className="text-lg">Additional Feature</p>
+              <p className="text-lg">Additional Tags</p>
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
