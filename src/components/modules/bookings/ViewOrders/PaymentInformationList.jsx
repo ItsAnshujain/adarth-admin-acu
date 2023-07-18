@@ -138,7 +138,7 @@ const PaymentInformationList = () => {
         Cell: info => useMemo(() => <p>{info.row.original.billNumber || '-'}</p>, []),
       },
       {
-        Header: 'PAYMENT FOR',
+        Header: 'PAYMENT EXPENSE',
         accessor: 'paymentFor',
         disableSortBy: true,
         Cell: info => useMemo(() => <p>{info.row.original.paymentFor || '-'}</p>, []),

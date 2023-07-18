@@ -76,3 +76,16 @@ index 0e68cd5..620f75b 100644
      }
  ]
 \ No newline at end of file
+diff --git a/node_modules/num-count/index.js b/node_modules/num-count/index.js
+index 0ceb14e..7108ff3 100644
+--- a/node_modules/num-count/index.js
++++ b/node_modules/num-count/index.js
+@@ -6,7 +6,7 @@ const getWord = (number) =>{
+     const numberString = number.toString();
+     const floorString 	= selectedSet.floor.toString();
+     const lengthDiff = numberString.length - floorString.length +1;
+-    const finalNumber = `${numberString.substr(0, lengthDiff)} ${selectedSet.word}`;
++    const finalNumber = `${numberString.substr(0, lengthDiff)}${selectedSet.word}`;
+     return finalNumber
+ }
+ 

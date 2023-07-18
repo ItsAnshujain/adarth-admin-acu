@@ -83,6 +83,7 @@ const ProposalTableView = ({ data, isLoading }) => {
                 <Text
                   className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
                   lineClamp={1}
+                  title={name}
                 >
                   {name || '-'}
                 </Text>
@@ -100,7 +101,15 @@ const ProposalTableView = ({ data, isLoading }) => {
           },
         }) =>
           useMemo(
-            () => <p className="text-black font-medium max-w-[250px]">{creator?.name}</p>,
+            () => (
+              <Text
+                className="text-black font-medium max-w-[250px] text-ellipsis"
+                lineClamp={1}
+                title={creator?.name}
+              >
+                {creator?.name || '-'}
+              </Text>
+            ),
             [],
           ),
       },
@@ -174,7 +183,7 @@ const ProposalTableView = ({ data, isLoading }) => {
           row: {
             original: { client },
           },
-        }) => useMemo(() => <p>{client?.company}</p>, []),
+        }) => useMemo(() => <p>{client?.company || '-'}</p>, []),
       },
       {
         Header: 'TOTAL PLACES',

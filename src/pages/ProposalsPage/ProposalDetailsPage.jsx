@@ -145,7 +145,7 @@ const ProposalDetailsPage = () => {
         }) => useMemo(() => <p>{location || '-'}</p>),
       },
       {
-        Header: 'ADDITIONAL FEATURE',
+        Header: 'ADDITIONAL TAGS',
         accessor: 'additionalTags',
         disableSortBy: true,
         Cell: info =>
@@ -159,11 +159,11 @@ const ProposalDetailsPage = () => {
                           <Badge
                             key={uuidv4()}
                             size="lg"
-                            className="capitalize max-w-[100px]"
+                            className="capitalize w-fit"
                             title={item}
-                            variant="gradient"
+                            variant="outline"
+                            color="cyan"
                             radius="xs"
-                            gradient={{ from: '#ed6ea0', to: '#ec8c69', deg: 35 }}
                           >
                             {item}
                           </Badge>

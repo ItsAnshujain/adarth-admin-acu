@@ -175,7 +175,7 @@ const BookingsDashboardPage = () => {
         Cell: ({ row: { original } }) =>
           useMemo(
             () => (
-              <p className="font-medium bg-gray-450 px-2 rounded-sm">
+              <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                 {dayjs(original.createdAt).format(DATE_FORMAT)}
               </p>
             ),
@@ -383,7 +383,7 @@ const BookingsDashboardPage = () => {
           useMemo(
             () => (
               <div className="flex items-center w-max">
-                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                   {campaign?.startDate ? (
                     dayjs(campaign?.startDate).format(DATE_FORMAT)
                   ) : (
@@ -391,7 +391,7 @@ const BookingsDashboardPage = () => {
                   )}
                 </p>
                 <span className="px-2">&gt;</span>
-                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                   {campaign?.endDate ? (
                     dayjs(campaign?.endDate).format(DATE_FORMAT)
                   ) : (
