@@ -18,7 +18,7 @@ const styles = {
   },
 };
 
-const BasicInfo = ({ setUploadingFile }) => {
+const BasicInformationForm = ({ setUploadingFile }) => {
   const { errors, getInputProps, setFieldValue, values } = useFormContext();
   const { mutateAsync: upload, isLoading } = useUploadFile();
   const [uploadImage, setUploadImage] = useState([]);
@@ -102,7 +102,6 @@ const BasicInfo = ({ setUploadingFile }) => {
           label="State"
           name="state"
           styles={styles}
-          withAsterisk
           errors={errors}
           placeholder="State"
           className="mb-3 md:mb-0"
@@ -111,7 +110,6 @@ const BasicInfo = ({ setUploadingFile }) => {
           label="Address"
           name="address"
           styles={styles}
-          withAsterisk
           errors={errors}
           placeholder="Address"
           className="col-span-2 mb-3 md:mb-0"
@@ -120,7 +118,6 @@ const BasicInfo = ({ setUploadingFile }) => {
           label="City"
           name="city"
           styles={styles}
-          withAsterisk
           errors={errors}
           placeholder="City"
           className="mb-3 md:mb-0"
@@ -129,7 +126,6 @@ const BasicInfo = ({ setUploadingFile }) => {
           label="Pin"
           name="pincode"
           styles={styles}
-          withAsterisk
           errors={errors}
           placeholder="Pin"
           className="mb-3 md:mb-0"
@@ -138,7 +134,6 @@ const BasicInfo = ({ setUploadingFile }) => {
           label="Aadhaar"
           name="aadhaar"
           styles={styles}
-          withAsterisk
           errors={errors}
           placeholder="Aadhaar"
           className="mb-3 md:mb-0"
@@ -147,7 +142,6 @@ const BasicInfo = ({ setUploadingFile }) => {
           label="Pan"
           name="pan"
           styles={styles}
-          withAsterisk
           errors={errors}
           placeholder="Pan"
           className="mb-3 md:mb-0"
@@ -156,7 +150,6 @@ const BasicInfo = ({ setUploadingFile }) => {
           label="About you"
           name="about"
           styles={styles}
-          withAsterisk
           errors={errors}
           placeholder="Write"
           className="col-span-2 mb-3 md:mb-0"
@@ -166,4 +159,4 @@ const BasicInfo = ({ setUploadingFile }) => {
   );
 };
 
-export default BasicInfo;
+export default BasicInformationForm;
