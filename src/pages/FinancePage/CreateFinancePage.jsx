@@ -378,6 +378,7 @@ const initialInvoiceValues = {
   ifscCode: '',
   modeOfPayment: '',
   declaration: '',
+  spaces: [],
 };
 
 const schema = (type, bookingId) => {
@@ -714,6 +715,13 @@ const CreateFinancePage = () => {
         data.buyerGst = data.buyerGst?.toUpperCase();
       }
 
+      if (addSpaceItem?.length) {
+        data.spaces = addSpaceItem?.map(item => ({
+          id: item._id,
+          hsn: item.hsn || '',
+        }));
+      }
+
       if (bookingIdFromFinance) {
         if (submitType === 'preview') {
           open();
@@ -746,6 +754,7 @@ const CreateFinancePage = () => {
           rate: item.rate,
           price: item.price,
           index: index + 1,
+          hsn: item.hsn,
         }));
 
         if (!data.spaces.length) {
@@ -756,7 +765,7 @@ const CreateFinancePage = () => {
         }
         data.subTotal = calculateManualTotalPrice;
         data.gst = +(data.subTotal * 0.18).toFixed(2);
-        data.total = data.subTotal + data.gst;
+        data.total = Math.round(data.subTotal + data.gst);
         data.taxInWords = toWords.convert(data.gst);
         data.totalInWords = toWords.convert(data.total);
         if (submitType === 'preview') {
@@ -884,7 +893,7 @@ const CreateFinancePage = () => {
             onClose={close}
             title="Preview"
             centered
-            size="xl"
+            size="2xl"
             overlayBlur={3}
             overlayOpacity={0.55}
             radius={0}

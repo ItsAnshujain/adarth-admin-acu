@@ -12,6 +12,7 @@ import NoData from '../../../shared/NoData';
 import MenuIcon from '../../../Menu';
 import NativeSelect from '../../../shared/NativeSelect';
 import { MODE_OF_PAYMENT } from '../../../../utils/constants';
+import { useFormContext } from '../../../../context/formContext';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
@@ -32,6 +33,16 @@ const Invoice = ({
   setAddSpaceItem = () => {},
 }) => {
   const toWords = new ToWords();
+  const { setFieldValue, values } = useFormContext();
+
+  const updateData = (key, val, id) => {
+    setAddSpaceItem(prev => prev.map(item => (item._id === id ? { ...item, [key]: val } : item)));
+
+    setFieldValue(
+      'spaces',
+      values.spaces.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+    );
+  };
 
   const handleDeleteSpaceItem = spaceId => {
     setAddSpaceItem(addSpaceItem?.filter(item => item.itemId !== spaceId));
@@ -101,6 +112,26 @@ const Invoice = ({
               </div>
             ),
             [],
+          ),
+      },
+      {
+        Header: 'HSN',
+        accessor: 'hsn',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { hsn, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <TextInput
+                placeholder="Enter HSN"
+                defaultValue={hsn || ''}
+                onBlur={e => updateData('hsn', e.target.value, _id)}
+              />
+            ),
+            [hsn],
           ),
       },
       {
@@ -192,6 +223,16 @@ const Invoice = ({
           ),
       },
       {
+        Header: 'HSN',
+        accessor: 'hsn',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { hsn },
+          },
+        }) => useMemo(() => <p>{hsn || <NoData type="na" />}</p>, []),
+      },
+      {
         Header: 'QUANTITY',
         accessor: 'quantity',
         disableSortBy: true,
@@ -227,7 +268,7 @@ const Invoice = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { itemId, name, location, titleDate, dueOn, quantity, rate, per, price },
+            original: { itemId, name, location, titleDate, dueOn, quantity, rate, per, price, hsn },
           },
         }) =>
           useMemo(
@@ -254,6 +295,7 @@ const Invoice = ({
                         per,
                         price,
                         itemId,
+                        hsn,
                       })
                     }
                   >
@@ -550,7 +592,7 @@ const Invoice = ({
           label="Amount Chargeable (in words)"
           name="amountChargeable"
           placeholder="Write..."
-          value={toWords.convert(totalPrice + totalPrice * 0.18)}
+          value={toWords.convert(Math.round(totalPrice + totalPrice * 0.18))}
           readOnly
           disabled
         />

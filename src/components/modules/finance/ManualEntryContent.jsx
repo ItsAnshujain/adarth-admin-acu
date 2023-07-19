@@ -125,6 +125,7 @@ const invoiceSchema = yup.object({
     .typeError('Must be a number')
     .nullable()
     .required('Pricing is required'),
+  hsn: yup.string().trim().required('HSN is required'),
 });
 
 const initialValues = {
@@ -168,7 +169,7 @@ const PurchaseAndInvoiceContent = () => {
           className="mb-4"
         />
       </div>
-      <div className="grid grid-cols-2 gap-x-4">
+      <div className="grid grid-cols-3 gap-x-4">
         <DatePicker
           label="Date"
           name="titleDate"
@@ -186,6 +187,15 @@ const PurchaseAndInvoiceContent = () => {
           placeholder="DD/MM/YYYY"
           minDate={new Date()}
           errors={errors}
+          size="md"
+          className="mb-4"
+        />
+        <TextInput
+          label="HSN"
+          name="hsn"
+          withAsterisk
+          errors={errors}
+          placeholder="Write..."
           size="md"
           className="mb-4"
         />
@@ -411,6 +421,7 @@ const ManualEntryContent = ({
         mountingCost: item?.mountingCost,
         printingCost: item?.printingCost,
         width: item?.width,
+        hsn: item?.hsn,
       });
     }
   }, [item]);
