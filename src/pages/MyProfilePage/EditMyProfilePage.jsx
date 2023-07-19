@@ -3,13 +3,12 @@ import { Button, Tabs } from '@mantine/core';
 import { yupResolver } from '@mantine/form';
 import { useQueryClient } from '@tanstack/react-query';
 import * as yup from 'yup';
-import { showNotification } from '@mantine/notifications';
 import BasicInfo from '../../components/modules/users/Create/BasicInfo';
 import Documents from '../../components/modules/users/Create/Documents';
 import useUserStore from '../../store/user.store';
 import { FormProvider, useForm } from '../../context/formContext';
 import { useUpdateUsers } from '../../apis/queries/users.queries';
-import { aadhaarRegexMatch, panRegexMatch } from '../../utils';
+import { aadhaarRegexMatch, panRegexMatch, pinCodeMatch } from '../../utils';
 
 const initialValues = {
   name: '',
@@ -30,28 +29,37 @@ const initialValues = {
 const basicInformationSchema = yup.object({
   name: yup.string().trim().required('Name is required'),
   email: yup.string().trim().required('Email is required').email('Email must be valid'),
-  company: yup.string().trim().required('Company is required'),
-  about: yup.string().trim().required('About is required'),
-  city: yup.string().trim().required('City is required'),
-  address: yup.string().trim().required('Address is required'),
-  number: yup.string().trim().required('Number is required'),
-  state: yup.string().trim().required('State is required'),
+  company: yup.string().trim(),
+  about: yup.string().trim(),
+  city: yup.string().trim(),
+  address: yup.string().trim(),
+  number: yup.string().trim().required('Phone Number is required'),
+  state: yup.string().trim(),
   pincode: yup
     .string()
     .trim()
-    .matches(/^(\d{4}|\d{6})$/, 'Pin code must be valid')
-    .required('Pin code is required'),
+    .matches(pinCodeMatch, {
+      message: 'Pin code must be valid',
+      excludeEmptyString: true,
+    })
+    .notRequired(),
   pan: yup
     .string()
     .trim()
-    .matches(panRegexMatch, 'Pan number must be valid and must be of 10 characters')
-    .required('Pan is required'),
+    .matches(panRegexMatch, {
+      message: 'Pan number must be valid and must be of 10 characters',
+      excludeEmptyString: true,
+    })
+    .notRequired(),
   aadhaar: yup
     .string()
     .trim()
-    .matches(aadhaarRegexMatch, 'Aadhaar number must be valid and must be of 12 digits')
-    .required('Aadhaar number is required'),
-  image: yup.string().trim().required('Profile Image is required'),
+    .matches(aadhaarRegexMatch, {
+      message: 'Aadhaar number must be valid and must be of 12 digits',
+      excludeEmptyString: true,
+    })
+    .notRequired(),
+  image: yup.string().trim(),
 });
 
 const docSchema = yup.object({
@@ -78,17 +86,15 @@ const EditMyProfilePage = () => {
 
   const handleSubmit = formData => {
     const dataObj = { ...formData };
-    const hasFieldEmpty = Object.keys(form.values).find(key => form?.values[key] === '');
-    if (hasFieldEmpty) {
-      showNotification({
-        title: 'Please fill all the required fields in Basic Information first',
-        color: 'blue',
-      });
-      return;
-    }
     if (dataObj?.pan) {
       dataObj.pan = dataObj.pan?.toUpperCase();
     }
+
+    Object.keys(dataObj).forEach(key => {
+      if (dataObj[key] === '') {
+        delete dataObj[key];
+      }
+    });
     mutateAsync({ userId, data: dataObj });
   };
 
