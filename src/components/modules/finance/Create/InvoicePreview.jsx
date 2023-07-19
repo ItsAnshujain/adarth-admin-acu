@@ -134,7 +134,11 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
                         {item?.basicInformation?.spaceName}
                       </Text>
                     </Group>
-                    <Group className="grid grid-cols-3">
+                    <Group className="grid grid-cols-4">
+                      <div>
+                        <p>HSN:</p>
+                        <p>{item?.hsn || '-'}</p>
+                      </div>
                       <div>
                         <p>Quantity:</p>
                         <p>1</p>
@@ -151,7 +155,7 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
                   </div>
                 ))
               : previewData?.spaces?.map((item, index) => (
-                  <div className="flex justify-between items-center" key={uuidv4()}>
+                  <div className="grid grid-cols-2" key={uuidv4()}>
                     <Group>
                       <p className="text-lg">{index + 1}</p>
                       <div>
@@ -171,7 +175,11 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
                         </Text>
                       </div>
                     </Group>
-                    <Group className="grid grid-cols-3">
+                    <Group className="grid grid-cols-4">
+                      <div>
+                        <p>HSN:</p>
+                        <p>{item?.hsn || '-'}</p>
+                      </div>
                       <div>
                         <p>Quantity:</p>
                         <p>{item?.quantity}</p>
@@ -207,7 +215,7 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
         <article className="my-3 p-5 bg-gray-100 flex mb-1">
           <p className="text-lg font-bold">Amount Chargeable (in words):</p>
           <p className="text-lg ml-2">
-            {(totalPrice && toWords.convert(totalPrice + totalPrice * 0.18)) || 0}
+            {(totalPrice && toWords.convert(Math.round(totalPrice + totalPrice * 0.18))) || 0}
           </p>
         </article>
 
