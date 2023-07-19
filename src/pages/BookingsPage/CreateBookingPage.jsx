@@ -30,6 +30,8 @@ const initialValues = {
   industry: '',
 };
 
+const DATE_FORMAT = 'YYYY-MM-DD';
+
 const basicInformationSchema = yup.object({
   client: yup.object({
     companyName: yup.string().trim().required('Company name is required'),
@@ -112,13 +114,30 @@ const CreateBookingPage = () => {
         return;
       }
 
+      const unitsBetweenRange = data.place.filter(
+        item => item?.unit && Number(item.unit) > item?.lowUnit,
+      );
+
+      if (unitsBetweenRange.length) {
+        showNotification({
+          title: 'Units must be less than or equal to available units',
+          color: 'blue',
+        });
+        return;
+      }
+
       data.place = form.values?.place?.map(item => ({
         id: item._id,
         price: +item.price,
         media: isValidURL(item.media) ? item.media : undefined,
-        startDate: item.startDate ? dayjs(item.startDate).startOf('day') : dayjs().startOf('day'),
-        endDate: item.startDate ? dayjs(item.endDate).endOf('day') : dayjs().endOf('day'),
+        startDate: item.startDate
+          ? dayjs(item.startDate).startOf('day').format(DATE_FORMAT)
+          : dayjs().startOf('day'),
+        endDate: item.startDate
+          ? dayjs(item.endDate).endOf('day').format(DATE_FORMAT)
+          : dayjs().endOf('day'),
         tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
+        unit: item?.unit ? +item.unit : 1,
       }));
 
       data.place.forEach(item => {

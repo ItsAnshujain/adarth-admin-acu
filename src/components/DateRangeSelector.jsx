@@ -30,7 +30,8 @@ const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
       if (
         value[0] &&
         dayjs(value[0]).isBefore(dayjs(item?.startDate).format(DATE_FORMAT)) &&
-        dayjs(date).isAfter(dayjs(item?.startDate).format(DATE_FORMAT))
+        dayjs(date).isAfter(dayjs(item?.startDate).format(DATE_FORMAT)) &&
+        item?.remainingUnit === 0
       ) {
         return true;
       }
@@ -38,7 +39,8 @@ const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
       if (
         value[0] &&
         dayjs(value[0]).isAfter(dayjs(item?.endDate).format(DATE_FORMAT)) &&
-        dayjs(date).isBefore(dayjs(item?.endDate).format(DATE_FORMAT))
+        dayjs(date).isBefore(dayjs(item?.endDate).format(DATE_FORMAT)) &&
+        item?.remainingUnit === 0
       ) {
         return true;
       }
@@ -49,7 +51,8 @@ const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
         ) &&
         dayjs(dayjs(date).format(DATE_FORMAT)).isSameOrBefore(
           dayjs(item?.endDate).format(DATE_FORMAT),
-        )
+        ) &&
+        item?.remainingUnit === 0
       ) {
         return true;
       }

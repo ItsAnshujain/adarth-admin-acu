@@ -120,15 +120,16 @@ const Invoice = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { hsn, _id },
+            original: { hsn = 0, _id },
           },
         }) =>
           useMemo(
             () => (
-              <TextInput
-                placeholder="Enter HSN"
-                defaultValue={hsn || ''}
+              <NumberInput
+                hideControls
+                defaultValue={+hsn || 0}
                 onBlur={e => updateData('hsn', e.target.value, _id)}
+                min={0}
               />
             ),
             [hsn],
