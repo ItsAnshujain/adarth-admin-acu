@@ -182,7 +182,7 @@ const ShareContent = ({ searchParamQueries }) => {
         return;
       }
       data.to = emails.join(',');
-    } else if (!validator.isEmail(data.to)) {
+    } else if (activeShare === 'email' && !validator.isEmail(data.to)) {
       showNotification({
         title: 'Invalid Email',
       });
