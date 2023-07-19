@@ -1,51 +1,22 @@
 diff --git a/node_modules/num-count/dataset.json b/node_modules/num-count/dataset.json
-index 0e68cd5..620f75b 100644
+index 0e68cd5..f529f35 100644
 --- a/node_modules/num-count/dataset.json
 +++ b/node_modules/num-count/dataset.json
-@@ -1,37 +1,62 @@
+@@ -1,37 +1,32 @@
  [
-     {
+-    {
 -        "floor": 100,
 -        "celi": 999,
 -        "word": "hundreds"
-+        "floor": 1000,
-+        "celi": 4999,
-+        "word": "K+"
-     },
+-    },
      {
--        "floor": 1000,
-+        "floor": 5000,
-+        "celi": 9999,
-+        "word": "K+"
-+    },
-+    {
-+        "floor": 10000,
-+        "celi": 19999,
-+        "word": "K+"
-+    },
-+    {
-+        "floor": 20000,
-+        "celi": 49999,
-+        "word": "K+"
-+    },
-+    {
-+        "floor": 50000,
+         "floor": 1000,
          "celi": 99999,
 -        "word": "thousands"
 +        "word": "K+"
      },
      {
          "floor": 100000,
-+        "celi": 499999,
-+        "word": "L+"
-+    },
-+    {
-+        "floor": 500000,
-+        "celi": 999999,
-+        "word": "L+"
-+    },
-+    {
-+        "floor": 1000000,
          "celi": 9999999,
 -        "word": "lakhs"
 +        "word": "L+"
