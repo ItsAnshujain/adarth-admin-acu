@@ -49,6 +49,27 @@ const Preview = () => {
     [values?.basicInformation?.audience],
   );
 
+  const renderAdditionalTagsBadges = useCallback(
+    list =>
+      list?.map(
+        (item, index) =>
+          index < 10 && (
+            <Badge
+              key={uuidv4()}
+              size="lg"
+              className="capitalize w-fit"
+              title={item}
+              variant="outline"
+              color="cyan"
+              radius="xs"
+            >
+              {item}
+            </Badge>
+          ),
+      ),
+    [values.specifications.additionalTags],
+  );
+
   useEffect(() => {
     const result = getAllSpacePhotos();
     setPreviewSpacesPhotos(result);
@@ -144,10 +165,18 @@ const Preview = () => {
                   : 'None'}
               </div>
             </div>
-            <div>
+            <div className="mb-2">
               <p className="text-slate-400">Demographics</p>
               <div className="flex w-full flex-wrap">
                 {values?.basicInformation?.demographic?.label || 'NA'}
+              </div>
+            </div>
+            <div className="flex flex-col mb-2">
+              <p className="text-slate-400 mb-1">Additional Tags</p>
+              <div className="flex gap-x-2">
+                {values?.specifications?.additionalTags?.length
+                  ? renderAdditionalTagsBadges(values.specifications.additionalTags)
+                  : '-'}
               </div>
             </div>
             <div className="mt-3">

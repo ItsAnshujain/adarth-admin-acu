@@ -85,6 +85,27 @@ const BasicInfo = ({
     [inventoryDetails],
   );
 
+  const renderAdditionalTagsBadges = useCallback(
+    list =>
+      list?.map(
+        (item, index) =>
+          index < 10 && (
+            <Badge
+              key={uuidv4()}
+              size="lg"
+              className="capitalize w-fit"
+              title={item}
+              variant="outline"
+              color="cyan"
+              radius="xs"
+            >
+              {item}
+            </Badge>
+          ),
+      ),
+    [inventoryDetails.specifications?.additionalTags],
+  );
+
   const toggleImagePreviewModal = imgIndex =>
     modals.openContextModal('basic', {
       title: 'Preview',
@@ -307,6 +328,14 @@ const BasicInfo = ({
                 <p className="text-slate-400">Demographics</p>
                 <div className="flex w-full flex-wrap">
                   {inventoryDetails?.basicInformation?.demographic?.name || 'NA'}
+                </div>
+              </div>
+              <div className="flex flex-col mb-2">
+                <p className="text-slate-400 mb-1">Additional Tags</p>
+                <div className="flex gap-x-2">
+                  {inventoryDetails.specifications?.additionalTags?.length
+                    ? renderAdditionalTagsBadges(inventoryDetails.specifications.additionalTags)
+                    : '-'}
                 </div>
               </div>
             </>

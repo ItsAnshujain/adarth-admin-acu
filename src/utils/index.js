@@ -155,6 +155,8 @@ export const mobileRegexMatch = /^[6-9]\d{9}$/;
 
 export const onlyNumbersMatch = /^[0-9]*$/;
 
+export const pinCodeMatch = /^(\d{4}|\d{6})$/;
+
 export const isValidURL = urlString => {
   if (typeof urlString === typeof '') {
     try {

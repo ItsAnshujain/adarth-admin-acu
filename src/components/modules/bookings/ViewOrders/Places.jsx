@@ -173,7 +173,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
               style={styles}
               onDrop={handleUpload}
               multiple={false}
-              maxSize={5000000}
+              maxSize={100000000}
             >
               {/* children */}
             </Dropzone>
@@ -228,7 +228,9 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
                       </Badge>
                     ))}
                   </div>
-                  <p className="mt-1 font-bold text-gray-500">Media size cannot be more than 5MB</p>
+                  <p className="mt-1 font-bold text-gray-500">
+                    Media size cannot be more than 100MB
+                  </p>
                 </div>
               </HoverCard.Dropdown>
             </HoverCard>
