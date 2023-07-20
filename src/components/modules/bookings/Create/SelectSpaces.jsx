@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Button,
   Image,
@@ -37,6 +37,8 @@ import DateRangeSelector from '../../../DateRangeSelector';
 import modalConfig from '../../../../utils/modalConfig';
 import RowsPerPage from '../../../RowsPerPage';
 import useLayoutView from '../../../../store/layout.store';
+
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 dayjs.extend(isBetween);
 
@@ -164,18 +166,73 @@ const SelectSpace = () => {
     return totalPrice;
   };
 
+  const validateFilterRange = useCallback((bookingRange, fromDate, toDate) => {
+    let filterRange;
+    if (bookingRange.length) {
+      filterRange = bookingRange.filter(
+        item =>
+          (dayjs(dayjs(fromDate).format(DATE_FORMAT)).isSameOrAfter(
+            dayjs(item?.startDate).format(DATE_FORMAT),
+          ) &&
+            dayjs(dayjs(fromDate).format(DATE_FORMAT)).isSameOrBefore(
+              dayjs(item?.endDate).format(DATE_FORMAT),
+            )) ||
+          (dayjs(dayjs(toDate).format(DATE_FORMAT)).isSameOrAfter(
+            dayjs(item?.startDate).format(DATE_FORMAT),
+          ) &&
+            dayjs(dayjs(toDate).format(DATE_FORMAT)).isSameOrBefore(
+              dayjs(item?.endDate).format(DATE_FORMAT),
+            )) ||
+          (dayjs(dayjs(item?.startDate).format(DATE_FORMAT)).isSameOrAfter(
+            dayjs(fromDate).format(DATE_FORMAT),
+          ) &&
+            dayjs(dayjs(item?.startDate).format(DATE_FORMAT)).isSameOrBefore(
+              dayjs(toDate).format(DATE_FORMAT),
+            )) ||
+          (dayjs(dayjs(item?.endDate).format(DATE_FORMAT)).isSameOrAfter(
+            dayjs(fromDate).format(DATE_FORMAT),
+          ) &&
+            dayjs(dayjs(item?.endDate).format(DATE_FORMAT)).isSameOrBefore(
+              dayjs(toDate).format(DATE_FORMAT),
+            )),
+      );
+
+      return filterRange;
+    }
+
+    return [];
+  }, []);
+
+  const getAvailableUnits = useCallback((filterRange, units, _id) => {
+    let lowUnit = units;
+    filterRange?.forEach(i => {
+      const remUnit = i?.remainingUnit ? i.remainingUnit : i?.bookableUnit ? i.bookableUnit : 0;
+
+      if (lowUnit === 0 || remUnit < lowUnit) lowUnit = remUnit;
+    });
+
+    return lowUnit;
+  }, []);
+
   const updateData = (key, val, id) => {
     if (key === 'dateRange') {
-      setUpdatedInventoryData(prev =>
-        prev.map(item =>
-          item._id === id ? { ...item, startDate: val[0], endDate: val[1] } : item,
-        ),
-      );
+      let lowUnit = 0;
+      setUpdatedInventoryData(prev => {
+        const newList = [...prev];
+        const index = newList.findIndex(item => item._id === id);
+        newList[index] = { ...newList[index], startDate: val[0], endDate: val[1] };
+        const filterRange = validateFilterRange(newList[index].bookingRange, val[0], val[1]);
+        lowUnit = getAvailableUnits(filterRange, newList[index].unit, id);
+
+        return newList;
+      });
 
       setFieldValue(
         'place',
         values.place.map(item =>
-          item._id === id ? { ...item, startDate: val[0], endDate: val[1] } : item,
+          item._id === id
+            ? { ...item, startDate: val[0], endDate: val[1], unit: lowUnit, lowUnit }
+            : item,
         ),
       );
     } else {
@@ -378,6 +435,35 @@ const SelectSpace = () => {
         }) => useMemo(() => <div className="flex gap-x-2">{dimension}</div>, []),
       },
       {
+        Header: 'UNIT',
+        accessor: 'specifications.unit',
+        Cell: ({
+          row: {
+            original: { unit, bookingRange, startDate, endDate, _id },
+          },
+        }) =>
+          useMemo(() => {
+            const filterRange = validateFilterRange(bookingRange, startDate, endDate);
+            const lowUnit = getAvailableUnits(filterRange, unit, _id);
+
+            return (
+              <NumberInput
+                hideControls
+                defaultValue={Number(lowUnit) || 0}
+                max={Number(lowUnit)}
+                min={1}
+                onBlur={e => updateData('unit', e.target.value, _id)}
+                className="w-[100px]"
+                disabled={
+                  !values?.place?.find(
+                    item => item._id === _id && item.startDate !== null && item.endDate !== null,
+                  )
+                }
+              />
+            );
+          }, [startDate, endDate]),
+      },
+      {
         Header: 'TRADED AMOUNT',
         accessor: 'tradedAmount',
         Cell: info =>
@@ -438,20 +524,6 @@ const SelectSpace = () => {
           ),
       },
       {
-        Header: 'UNIT',
-        accessor: 'specifications.unit',
-        Cell: ({
-          row: {
-            original: { unit },
-          },
-        }) => useMemo(() => <p>{unit}</p>, []),
-      },
-      {
-        Header: 'INVENTORY ID',
-        accessor: 'inventoryId',
-        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
-      },
-      {
         Header: 'MEDIA OWNER NAME',
         accessor: 'basicInformation.mediaOwner.name',
         Cell: ({
@@ -468,6 +540,11 @@ const SelectSpace = () => {
             original: { peer },
           },
         }) => useMemo(() => <p className="w-fit">{peer}</p>, []),
+      },
+      {
+        Header: 'INVENTORY ID',
+        accessor: 'inventoryId',
+        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
       },
       {
         Header: 'MEDIA TYPE',

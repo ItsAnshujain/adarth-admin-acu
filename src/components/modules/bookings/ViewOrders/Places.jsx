@@ -20,6 +20,7 @@ import classNames from 'classnames';
 import ReactPlayer from 'react-player';
 import { useModals } from '@mantine/modals';
 import { Link } from 'react-router-dom';
+import { showNotification } from '@mantine/notifications';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import uploadIcon from '../../../../assets/upload.svg';
 import uploadWhiteIcon from '../../../../assets/upload-white.svg';
@@ -90,6 +91,22 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
   };
 
   const handleUpload = async params => {
+    const defaultFileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'video/mp4'];
+    if (!defaultFileTypes.includes(params?.[0]?.type)) {
+      showNotification({
+        title: 'File type not supported',
+        color: 'red',
+      });
+      return;
+    }
+
+    if (params?.[0]?.size > 100000000) {
+      showNotification({
+        title: 'File size cannot be more than 100MB',
+        color: 'red',
+      });
+      return;
+    }
     const formData = new FormData();
     formData.append('files', params?.[0]);
     const res = await upload(formData);
@@ -168,13 +185,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
         <div className="flex justify-between items-center w-full mb-2">
           <p className="font-bold">{data?.basicInformation?.spaceName || <NoData type="na" />}</p>
           <div className="flex gap-2 items-center">
-            <Dropzone
-              openRef={openRef}
-              style={styles}
-              onDrop={handleUpload}
-              multiple={false}
-              maxSize={100000000}
-            >
+            <Dropzone openRef={openRef} style={styles} onDrop={handleUpload} multiple={false}>
               {/* children */}
             </Dropzone>
             <HoverCard>

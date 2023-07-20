@@ -125,7 +125,7 @@ const invoiceSchema = yup.object({
     .typeError('Must be a number')
     .nullable()
     .required('Pricing is required'),
-  hsn: yup.string().trim().required('HSN is required'),
+  hsn: yup.number(),
 });
 
 const initialValues = {
@@ -190,7 +190,7 @@ const PurchaseAndInvoiceContent = () => {
           size="md"
           className="mb-4"
         />
-        <TextInput
+        <NumberInput
           label="HSN"
           name="hsn"
           withAsterisk
@@ -198,6 +198,8 @@ const PurchaseAndInvoiceContent = () => {
           placeholder="Write..."
           size="md"
           className="mb-4"
+          min={0}
+          hideControls
         />
       </div>
       <div className="grid grid-cols-3 gap-x-4">
