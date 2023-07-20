@@ -754,7 +754,7 @@ const CreateFinancePage = () => {
           rate: item.rate,
           price: item.price,
           index: index + 1,
-          hsn: item.hsn,
+          hsn: item?.hsn ? item.hsn.toString() : '',
         }));
 
         if (!data.spaces.length) {
