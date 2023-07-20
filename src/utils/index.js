@@ -55,15 +55,15 @@ export const debounce = (func, delay) => {
 };
 
 export const spaceTypes = {
-  billboards: 'Billboards',
-  digital_screens: 'Digital Screens',
+  billboard: 'Billboard',
+  digital_screen: 'Digital Screen',
   transit_media: 'Transit Media',
   street_furniture: 'Street Furniture',
 };
 
 export const categoryColors = {
-  grape: 'Billboards',
-  green: 'Digital Screens',
+  grape: 'Billboard',
+  green: 'Digital Screen',
   blue: 'Transit Media',
   yellow: 'Street Furnitures',
 };
