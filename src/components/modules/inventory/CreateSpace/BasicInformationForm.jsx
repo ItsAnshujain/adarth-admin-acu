@@ -81,7 +81,7 @@ const BasicInformationForm = () => {
     isLoading: isSubCategoryLoading,
   } = useFetchMasters(
     serialize({ ...query, parentId: values?.basicInformation?.category?.value }),
-    !!values?.basicInformation?.category,
+    !!values?.basicInformation?.category?.value,
   );
   const {
     data: mediaType,
