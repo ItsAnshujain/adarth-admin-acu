@@ -152,7 +152,7 @@ const ProposalTableView = ({ data, isLoading }) => {
         }) =>
           useMemo(
             () => (
-              <p className="font-medium bg-gray-450 px-2 rounded-sm">
+              <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                 {dayjs(startDate).format(DATE_FORMAT)}
               </p>
             ),
@@ -169,7 +169,7 @@ const ProposalTableView = ({ data, isLoading }) => {
         }) =>
           useMemo(
             () => (
-              <p className="font-medium bg-gray-450 px-2 rounded-sm">
+              <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                 {dayjs(endDate).format(DATE_FORMAT)}
               </p>
             ),
