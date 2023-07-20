@@ -312,13 +312,38 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           ),
       },
       {
-        Header: 'PAYMENT STATUS',
+        Header: 'PAYMENT TYPE',
         accessor: 'paymentType',
         Cell: ({
           row: {
             original: { paymentType },
           },
         }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
+      },
+      {
+        Header: 'OUTSTANDING AMOUNT',
+        accessor: 'outstandingAmount',
+        disableSortBy: true,
+        Cell: info =>
+          useMemo(
+            () => (
+              <p>
+                {info.row.original.unpaidAmount
+                  ? toIndianCurrency(info.row.original.unpaidAmount)
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'PRICING',
+        accessor: 'campaign.totalPrice',
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
       },
       {
         Header: 'SCHEDULE',
@@ -340,7 +365,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
                   )}
                 </p>
                 <span className="px-2">&gt;</span>
-                <p className="font-medium bg-gray-450 px-2 rounded-sm">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
                   {campaign?.endDate ? (
                     dayjs(campaign?.endDate).format(DATE_FORMAT)
                   ) : (
@@ -382,15 +407,6 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
       {
         Header: 'TOTAL SPACES',
         accessor: 'totalSpaces',
-      },
-      {
-        Header: 'PRICING',
-        accessor: 'campaign.totalPrice',
-        Cell: ({
-          row: {
-            original: { campaign },
-          },
-        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
       },
       {
         Header: 'PURCHASE ORDER',

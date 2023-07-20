@@ -167,6 +167,7 @@ const PaymentInformationList = () => {
                     onClick={() =>
                       info.row.original?.invoice ? downloadPdf(info.row.original.invoice) : null
                     }
+                    disabled={!info.row.original?.invoice}
                   >
                     Download
                   </Menu.Item>
