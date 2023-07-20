@@ -317,7 +317,7 @@ const BookingsDashboardPage = () => {
       },
       {
         Header: 'HEALTH STATUS',
-        accessor: 'campaign.healthStatus',
+        accessor: 'campaign.avgHealth',
         Cell: ({
           row: {
             original: { campaign },
@@ -328,8 +328,8 @@ const BookingsDashboardPage = () => {
               <div className="w-24">
                 <Progress
                   sections={[
-                    { value: campaign?.healthStatus, color: 'green' },
-                    { value: 100 - (campaign?.healthStatus || 0), color: 'red' },
+                    { value: campaign?.avgHealth, color: 'green' },
+                    { value: 100 - (campaign?.avgHealth || 0), color: 'red' },
                   ]}
                 />
               </div>
