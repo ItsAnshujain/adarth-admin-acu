@@ -193,7 +193,6 @@ const PurchaseAndInvoiceContent = () => {
         <NumberInput
           label="HSN"
           name="hsn"
-          withAsterisk
           errors={errors}
           placeholder="Write..."
           size="md"
