@@ -1,13 +1,10 @@
 import { showNotification } from '@mantine/notifications';
 import dayjs from 'dayjs';
-// import { useCallback } from 'react';
 import { geocodeByAddress, getLatLng, geocodeByLatLng } from 'react-google-places-autocomplete';
-// import isBetween from 'dayjs/plugin/isBetween';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import { DATE_FORMAT } from './constants';
 
-// dayjs.extend(isBetween);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
