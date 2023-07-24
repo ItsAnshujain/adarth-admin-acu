@@ -38,6 +38,7 @@ import {
   getAvailableUnits,
   getDate,
   getOccupiedState,
+  getOccupiedStateColor,
   stringToColour,
   supportedTypes,
   validateFilterRange,
@@ -290,17 +291,7 @@ const SelectSpace = () => {
                 <Badge
                   className="capitalize"
                   variant="filled"
-                  color={
-                    isUnderMaintenance
-                      ? 'yellow'
-                      : occupiedState === 'Occupied'
-                      ? 'blue'
-                      : occupiedState === 'Partially Booked'
-                      ? 'grape'
-                      : occupiedState === 'Available'
-                      ? 'green'
-                      : 'dark'
-                  }
+                  color={getOccupiedStateColor(isUnderMaintenance, occupiedState)}
                 >
                   {isUnderMaintenance ? 'Under Maintenance' : occupiedState}
                 </Badge>

@@ -451,6 +451,17 @@ export const getOccupiedState = (leftUnit, bookableUnit) => {
   return occupiedState;
 };
 
+export const getOccupiedStateColor = (isUnderMaintenance, occupiedState) =>
+  isUnderMaintenance
+    ? 'yellow'
+    : occupiedState === 'Occupied'
+    ? 'blue'
+    : occupiedState === 'Partially Booked'
+    ? 'grape'
+    : occupiedState === 'Available'
+    ? 'green'
+    : 'dark';
+
 export const generateSlNo = (index, page, limit) => {
   let currentPage = page;
   let rowCount = 0;

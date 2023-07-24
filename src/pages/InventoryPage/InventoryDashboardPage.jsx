@@ -30,6 +30,7 @@ import {
   generateSlNo,
   getAvailableUnits,
   getOccupiedState,
+  getOccupiedStateColor,
   ROLES,
   stringToColour,
   validateFilterRange,
@@ -175,17 +176,7 @@ const InventoryDashboardPage = () => {
                 <Badge
                   className="capitalize"
                   variant="filled"
-                  color={
-                    info.row.original.isUnderMaintenance
-                      ? 'yellow'
-                      : occupiedState === 'Occupied'
-                      ? 'blue'
-                      : occupiedState === 'Partially Booked'
-                      ? 'grape'
-                      : occupiedState === 'Available'
-                      ? 'green'
-                      : 'dark'
-                  }
+                  color={getOccupiedStateColor(info.row.original.isUnderMaintenance, occupiedState)}
                 >
                   {info.row.original.isUnderMaintenance ? 'Under Maintenance' : occupiedState}
                 </Badge>
