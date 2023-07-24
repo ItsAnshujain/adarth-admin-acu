@@ -8,6 +8,7 @@ import {
   currentDate,
   getAvailableUnits,
   getOccupiedState,
+  getOccupiedStateColor,
   validateFilterRange,
 } from '../../../utils';
 
@@ -67,17 +68,7 @@ const Card = ({
               className="capitalize"
               variant="filled"
               size="lg"
-              color={
-                isUnderMaintenance
-                  ? 'yellow'
-                  : occupiedState === 'Occupied'
-                  ? 'blue'
-                  : occupiedState === 'Partially Booked'
-                  ? 'grape'
-                  : occupiedState === 'Available'
-                  ? 'green'
-                  : 'dark'
-              }
+              color={getOccupiedStateColor(isUnderMaintenance, occupiedState)}
             >
               {isUnderMaintenance ? 'Under Maintenance' : occupiedState}
             </Badge>

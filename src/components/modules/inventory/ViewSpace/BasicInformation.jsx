@@ -14,6 +14,7 @@ import {
   currentDate,
   getAvailableUnits,
   getOccupiedState,
+  getOccupiedStateColor,
   tierList,
   validateFilterRange,
 } from '../../../../utils';
@@ -294,17 +295,7 @@ const BasicInfo = ({
               <Badge
                 className="capitalize"
                 variant="filled"
-                color={
-                  inventoryDetails?.isUnderMaintenance
-                    ? 'yellow'
-                    : occupiedState === 'Occupied'
-                    ? 'blue'
-                    : occupiedState === 'Partially Booked'
-                    ? 'grape'
-                    : occupiedState === 'Available'
-                    ? 'green'
-                    : 'dark'
-                }
+                color={getOccupiedStateColor(inventoryDetails?.isUnderMaintenance, occupiedState)}
               >
                 {inventoryDetails?.isUnderMaintenance ? 'Under Maintenance' : occupiedState}
               </Badge>
