@@ -15,6 +15,7 @@ import RowsPerPage from '../../../RowsPerPage';
 import Search from '../../../Search';
 import NoData from '../../../shared/NoData';
 import BookingsMenuPopover from '../../../Popovers/BookingsMenuPopover';
+import { BOOKING_PAID_STATUS } from '../../../../utils/constants';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -312,13 +313,25 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           ),
       },
       {
-        Header: 'PAYMENT TYPE',
-        accessor: 'paymentType',
-        Cell: ({
-          row: {
-            original: { paymentType },
-          },
-        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
+        Header: 'PAYMENT STATUS',
+        accessor: 'hasPaid',
+        Cell: info =>
+          useMemo(() => {
+            const updatedBookingPaid = [...BOOKING_PAID_STATUS];
+            updatedBookingPaid.unshift({ label: 'Select', value: '' });
+
+            return (
+              <Select
+                className="mr-2"
+                data={updatedBookingPaid}
+                styles={statusSelectStyle}
+                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                rightSectionWidth={40}
+                // onChange={e => handlePaymentUpdate(_id, e)}
+                defaultValue={info.row.original?.hasPaid || ''}
+              />
+            );
+          }, []),
       },
       {
         Header: 'OUTSTANDING AMOUNT',
