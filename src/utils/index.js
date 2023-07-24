@@ -1,6 +1,12 @@
 import { showNotification } from '@mantine/notifications';
 import dayjs from 'dayjs';
 import { geocodeByAddress, getLatLng, geocodeByLatLng } from 'react-google-places-autocomplete';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import { DATE_FORMAT } from './constants';
+
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 export const serialize = object => {
   const str = [];
@@ -377,4 +383,91 @@ export const stringToColour = str => {
     colour += `00${value.toString(16)}`.substr(-2);
   }
   return colour;
+};
+
+export const currentDate = new Date().toISOString();
+
+export const validateFilterRange = (bookingRange, fromDate, toDate) => {
+  let filterRange;
+  if (bookingRange.length) {
+    filterRange = bookingRange.filter(
+      item =>
+        (dayjs(dayjs(fromDate).format(DATE_FORMAT)).isSameOrAfter(
+          dayjs(item?.startDate).format(DATE_FORMAT),
+        ) &&
+          dayjs(dayjs(fromDate).format(DATE_FORMAT)).isSameOrBefore(
+            dayjs(item?.endDate).format(DATE_FORMAT),
+          )) ||
+        (dayjs(dayjs(toDate).format(DATE_FORMAT)).isSameOrAfter(
+          dayjs(item?.startDate).format(DATE_FORMAT),
+        ) &&
+          dayjs(dayjs(toDate).format(DATE_FORMAT)).isSameOrBefore(
+            dayjs(item?.endDate).format(DATE_FORMAT),
+          )) ||
+        (dayjs(dayjs(item?.startDate).format(DATE_FORMAT)).isSameOrAfter(
+          dayjs(fromDate).format(DATE_FORMAT),
+        ) &&
+          dayjs(dayjs(item?.startDate).format(DATE_FORMAT)).isSameOrBefore(
+            dayjs(toDate).format(DATE_FORMAT),
+          )) ||
+        (dayjs(dayjs(item?.endDate).format(DATE_FORMAT)).isSameOrAfter(
+          dayjs(fromDate).format(DATE_FORMAT),
+        ) &&
+          dayjs(dayjs(item?.endDate).format(DATE_FORMAT)).isSameOrBefore(
+            dayjs(toDate).format(DATE_FORMAT),
+          )),
+    );
+
+    return filterRange;
+  }
+
+  return [];
+};
+
+export const getAvailableUnits = (filterRange, units, _id) => {
+  let availableUnit = units;
+  filterRange?.forEach(i => {
+    const remUnit =
+      i?.remainingUnit || i.remainingUnit === 0
+        ? i.remainingUnit
+        : i?.bookableUnit
+        ? i.bookableUnit
+        : 0;
+
+    if (availableUnit === 0 || remUnit < availableUnit) availableUnit = remUnit;
+  });
+
+  return availableUnit;
+};
+
+export const getOccupiedState = (leftUnit, bookableUnit) => {
+  const occupiedState =
+    leftUnit === bookableUnit
+      ? 'Available'
+      : leftUnit !== bookableUnit && leftUnit !== 0
+      ? 'Partially Booked'
+      : 'Occupied';
+
+  return occupiedState;
+};
+
+export const getOccupiedStateColor = (isUnderMaintenance, occupiedState) =>
+  isUnderMaintenance
+    ? 'yellow'
+    : occupiedState === 'Occupied'
+    ? 'blue'
+    : occupiedState === 'Partially Booked'
+    ? 'grape'
+    : occupiedState === 'Available'
+    ? 'green'
+    : 'dark';
+
+export const generateSlNo = (index, page, limit) => {
+  let currentPage = page;
+  let rowCount = 0;
+  if (page < 1) {
+    currentPage = 1;
+  }
+  rowCount = (currentPage - 1) * limit;
+  return rowCount + index + 1;
 };

@@ -42,10 +42,9 @@ import ViewByFilter from '../../components/modules/reports/ViewByFilter';
 import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/modules/reports/ShareContent';
+import { DATE_FORMAT } from '../../utils/constants';
 
 dayjs.extend(quarterOfYear);
-
-const DATE_FORMAT = 'YYYY-MM-DD';
 
 ChartJS.register(
   ArcElement,

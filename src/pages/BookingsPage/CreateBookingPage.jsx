@@ -30,8 +30,6 @@ const initialValues = {
   industry: '',
 };
 
-const DATE_FORMAT = 'YYYY-MM-DD';
-
 const basicInformationSchema = yup.object({
   client: yup.object({
     companyName: yup.string().trim().required('Company name is required'),
@@ -114,8 +112,16 @@ const CreateBookingPage = () => {
         return;
       }
 
+      if (data.place?.some(item => item.unit > item.availableUnit)) {
+        showNotification({
+          title: 'Exceeded maximum units available for selected date range for one or more places',
+          color: 'blue',
+        });
+        return;
+      }
+
       const unitsBetweenRange = data.place.filter(
-        item => item?.unit && Number(item.unit) > item?.lowUnit,
+        item => item?.unit && Number(item.unit) > item?.availableUnit,
       );
 
       if (unitsBetweenRange.length) {
@@ -131,11 +137,11 @@ const CreateBookingPage = () => {
         price: +item.price,
         media: isValidURL(item.media) ? item.media : undefined,
         startDate: item.startDate
-          ? dayjs(item.startDate).startOf('day').format(DATE_FORMAT)
-          : dayjs().startOf('day'),
+          ? dayjs(item.startDate).startOf('day').toISOString()
+          : dayjs().startOf('day').toISOString(),
         endDate: item.startDate
-          ? dayjs(item.endDate).endOf('day').format(DATE_FORMAT)
-          : dayjs().endOf('day'),
+          ? dayjs(item.endDate).endOf('day').toISOString()
+          : dayjs().endOf('day').toISOString(),
         tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
         unit: item?.unit ? +item.unit : 1,
       }));
@@ -176,6 +182,10 @@ const CreateBookingPage = () => {
           delete data.client[k];
         }
       });
+
+      // TODO: remove after unit works with no issues
+      // console.log(data);
+      // return;
 
       await createBooking(
         {

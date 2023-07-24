@@ -31,10 +31,9 @@ import { useBookingStats, useFetchBookingRevenue } from '../apis/queries/booking
 import { useInventoryStats } from '../apis/queries/inventory.queries';
 import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../utils';
 import ViewByFilter from '../components/modules/reports/ViewByFilter';
+import { DATE_FORMAT } from '../utils/constants';
 
 dayjs.extend(quarterOfYear);
-
-const DATE_FORMAT = 'YYYY-MM-DD';
 
 const timeLegend = {
   dayOfWeek: 'Days',

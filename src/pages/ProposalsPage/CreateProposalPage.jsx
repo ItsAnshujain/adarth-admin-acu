@@ -100,8 +100,13 @@ const CreateProposalPage = () => {
       data.spaces = form.values?.spaces?.map(item => ({
         id: item._id,
         price: +item.price,
-        startDate: item.startDate,
-        endDate: item.endDate,
+        startDate: item.startDate
+          ? dayjs(item.startDate).startOf('day').toISOString()
+          : dayjs().startOf('day').toISOString(),
+        endDate: item.startDate
+          ? dayjs(item.endDate).endOf('day').toISOString()
+          : dayjs().endOf('day').toISOString(),
+        unit: item?.unit ? +item.unit : 1,
       }));
 
       if (data.uploadType === 'existing') {
@@ -127,8 +132,8 @@ const CreateProposalPage = () => {
       let maxDate = null;
 
       data.spaces.forEach(item => {
-        const start = item.startDate.setHours(0, 0, 0, 0);
-        const end = item.endDate.setHours(0, 0, 0, 0);
+        const start = item.startDate;
+        const end = item.endDate;
 
         if (!minDate) minDate = start;
         if (!maxDate) maxDate = end;
@@ -158,9 +163,14 @@ const CreateProposalPage = () => {
         data = {
           ...data,
           status,
-          startDate: dayjs(minDate).format('YYYY-MM-DD'),
-          endDate: dayjs(maxDate).format('YYYY-MM-DD'),
+          startDate: dayjs(minDate).startOf('day').toISOString(),
+          endDate: dayjs(maxDate).endOf('day').toISOString(),
         };
+
+        // TODO: remove after unit works with no issues
+        // console.log(data);
+        // return;
+
         create(data, {
           onSuccess: () => {
             setTimeout(() => {
@@ -192,6 +202,7 @@ const CreateProposalPage = () => {
             price: item.price,
             startDate: new Date(item.startDate),
             endDate: new Date(item.endDate),
+            unit: item?.bookedUnits ? item.bookedUnits : item?.unit,
           })) || [],
         letterHead: proposalData?.proposal?.letterHead,
         letterFooter: proposalData?.proposal?.letterFooter,

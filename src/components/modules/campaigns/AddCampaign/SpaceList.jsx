@@ -11,7 +11,16 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import { useFormContext } from '../../../../context/formContext';
-import { categoryColors, stringToColour } from '../../../../utils';
+import {
+  categoryColors,
+  currentDate,
+  generateSlNo,
+  getAvailableUnits,
+  getOccupiedState,
+  getOccupiedStateColor,
+  stringToColour,
+  validateFilterRange,
+} from '../../../../utils';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
 import RowsPerPage from '../../../RowsPerPage';
 
@@ -62,27 +71,22 @@ const SpaceList = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: info =>
-          useMemo(() => {
-            let currentPage = pages;
-            let rowCount = 0;
-            if (pages < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + info.row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, pages, limit)}</p>, []),
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'basicInformation.spaceName',
-        Cell: ({
-          row: {
-            original: { isUnderMaintenance, photo, spaceName, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
+        Cell: info =>
+          useMemo(() => {
+            const { photo, spaceName, isUnderMaintenance, bookingRange, unit, _id } =
+              info.row.original;
+            const filterRange = validateFilterRange(bookingRange, currentDate, currentDate);
+
+            const leftUnit = getAvailableUnits(filterRange, unit, _id);
+
+            const occupiedState = getOccupiedState(leftUnit, unit);
+
+            return (
               <div className="grid grid-cols-2 gap-2 items-center">
                 <div className="flex flex-1 gap-2 items-center w-44">
                   <Image
@@ -109,15 +113,14 @@ const SpaceList = () => {
                   <Badge
                     className="capitalize"
                     variant="filled"
-                    color={isUnderMaintenance ? 'yellow' : 'green'}
+                    color={getOccupiedStateColor(isUnderMaintenance, occupiedState)}
                   >
-                    {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                    {isUnderMaintenance ? 'Under Maintenance' : occupiedState}
                   </Badge>
                 </div>
               </div>
-            ),
-            [],
-          ),
+            );
+          }, []),
       },
       {
         Header: 'FACIA TOWARDS',
@@ -436,6 +439,8 @@ const SpaceList = () => {
         obj.landlord_name = item?.basicInformation?.mediaOwner?.name;
         obj.illuminations = item?.specifications?.illuminations?.name;
         obj.resolutions = item?.specifications?.resolutions;
+        obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
+
         finalData.push(obj);
       }
       setUpdatedInventoryData(finalData);

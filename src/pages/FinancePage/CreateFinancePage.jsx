@@ -37,8 +37,7 @@ import ReleaseOrderPreview from '../../components/modules/finance/Create/Release
 import InvoicePreview from '../../components/modules/finance/Create/InvoicePreview';
 import ManualEntryContent from '../../components/modules/finance/ManualEntryContent';
 import FormHeader from '../../components/modules/finance/Create/FormHeader';
-
-const DATE_FORMAT = 'YYYY-MM-DD';
+import { DATE_FORMAT } from '../../utils/constants';
 
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
