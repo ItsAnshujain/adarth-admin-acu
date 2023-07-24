@@ -10,6 +10,7 @@ export const updateProposal = (proposalId, data) => http.patch(`/proposal/${prop
 
 export const deleteProposal = proposalId => http.delete(`/proposal/${proposalId}`);
 
-export const shareProposal = (id, data) => http.post(`/proposal/${id}/share`, data);
+export const shareProposal = (id, queries, data) =>
+  http.post(`/proposal/${id}/share?${queries}`, data);
 
-export const generateProposalPdf = id => http.get(`/proposal/${id}/gen-pdf`);
+export const generateProposalPdf = (id, queries) => http.get(`/proposal/${id}/gen-pdf?${queries}`);

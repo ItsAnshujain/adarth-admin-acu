@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import { Link, useSearchParams } from 'react-router-dom';
 import multiDownload from 'multi-download';
 import { checkCampaignStats, serialize } from '../../../../utils';
-import { useUpdateBookingStatus } from '../../../../apis/queries/booking.queries';
+import { useUpdateBooking, useUpdateBookingStatus } from '../../../../apis/queries/booking.queries';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
@@ -60,18 +60,24 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
       sortOrder: 'desc',
     }),
   );
-
-  const { mutateAsync: updateBooking } = useUpdateBookingStatus();
+  const { mutate: update } = useUpdateBooking();
+  const { mutateAsync: updateBookingStatus } = useUpdateBookingStatus();
 
   const handlePaymentUpdate = (bookingId, data) => {
     if (data) {
-      updateBooking({ id: bookingId, query: serialize({ paymentStatus: data }) });
+      updateBookingStatus({ id: bookingId, query: serialize({ paymentStatus: data }) });
     }
   };
 
   const handleCampaignUpdate = (bookingId, data) => {
     if (data) {
-      updateBooking({ id: bookingId, query: serialize({ campaignStatus: data }) });
+      updateBookingStatus({ id: bookingId, query: serialize({ campaignStatus: data }) });
+    }
+  };
+
+  const handlePaymentStatusUpdate = (bookingId, data) => {
+    if (data !== '') {
+      update({ id: bookingId, data: { hasPaid: data } });
     }
   };
 
@@ -327,8 +333,8 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
                 styles={statusSelectStyle}
                 rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                 rightSectionWidth={40}
-                // onChange={e => handlePaymentUpdate(_id, e)}
-                defaultValue={info.row.original?.hasPaid || ''}
+                onChange={e => handlePaymentStatusUpdate(info.row.original?._id, e)}
+                defaultValue={info.row.original?.hasPaid ?? ''}
               />
             );
           }, []),

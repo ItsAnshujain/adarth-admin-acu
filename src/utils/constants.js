@@ -47,6 +47,6 @@ export const DATE_FORMAT = 'YYYY-MM-DD';
 export const DATE_SECOND_FORMAT = 'DD MMM YYYY';
 
 export const BOOKING_PAID_STATUS = [
-  { label: 'Paid', value: 'true' },
-  { label: 'Unpaid', value: 'false' },
+  { label: 'Paid', value: true },
+  { label: 'Unpaid', value: false },
 ];
