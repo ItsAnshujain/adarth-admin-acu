@@ -120,14 +120,14 @@ const Invoice = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { hsn = 0, _id },
+            original: { hsn, _id },
           },
         }) =>
           useMemo(
             () => (
               <NumberInput
                 hideControls
-                defaultValue={+hsn || 0}
+                defaultValue={hsn ? +hsn : null}
                 onBlur={e => updateData('hsn', e.target.value, _id)}
                 min={0}
               />
@@ -231,7 +231,7 @@ const Invoice = ({
           row: {
             original: { hsn },
           },
-        }) => useMemo(() => <p>{hsn || <NoData type="na" />}</p>, []),
+        }) => useMemo(() => <p>{hsn || '-'}</p>, []),
       },
       {
         Header: 'QUANTITY',

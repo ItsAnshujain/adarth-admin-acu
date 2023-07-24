@@ -50,6 +50,7 @@ import {
 import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/modules/reports/ShareContent';
+import { DATE_FORMAT } from '../../utils/constants';
 
 dayjs.extend(quarterOfYear);
 
@@ -64,8 +65,6 @@ ChartJS.register(
   Tooltip,
   Legend,
 );
-
-const DATE_FORMAT = 'YYYY-MM-DD';
 
 const options = {
   responsive: true,

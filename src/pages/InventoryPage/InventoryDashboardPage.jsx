@@ -24,7 +24,16 @@ import {
 } from '../../apis/queries/inventory.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
-import { categoryColors, ROLES, stringToColour } from '../../utils';
+import {
+  categoryColors,
+  currentDate,
+  generateSlNo,
+  getAvailableUnits,
+  getOccupiedState,
+  ROLES,
+  stringToColour,
+  validateFilterRange,
+} from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
 import TrashIcon from '../../assets/delete.png';
 import ExportIcon from '../../assets/export.png';
@@ -77,6 +86,14 @@ const InventoryDashboardPage = () => {
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
   const isActive = searchParams.get('isActive');
+  const from = searchParams.get('from');
+  const to = searchParams.get('to');
+
+  const convertToISOString = dateString => {
+    const dateObject = new Date(dateString);
+    const isoString = dateObject.toISOString();
+    return isoString;
+  };
 
   const togglePreviewModal = imgSrc =>
     modals.openModal({
@@ -93,26 +110,28 @@ const InventoryDashboardPage = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: info =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + info.row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'basicInformation.spaceName',
         Cell: info =>
           useMemo(() => {
-            const isOccupied = info.row.original.bookingRange?.some(
-              item =>
-                dayjs().isBetween(item?.startDate, item?.endDate) ||
-                dayjs().isSame(dayjs(item?.endDate), 'day'),
+            const filterRange = validateFilterRange(
+              info.row.original?.bookingRange,
+              from ? convertToISOString(from) : currentDate,
+              to ? convertToISOString(to) : currentDate,
+            );
+
+            const leftUnit = getAvailableUnits(
+              filterRange,
+              info.row.original.specifications?.unit,
+              info.row.original._id,
+            );
+
+            const occupiedState = getOccupiedState(
+              leftUnit,
+              info.row.original.specifications?.unit,
             );
 
             return (
@@ -157,14 +176,18 @@ const InventoryDashboardPage = () => {
                   className="capitalize"
                   variant="filled"
                   color={
-                    info.row.original.isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'
+                    info.row.original.isUnderMaintenance
+                      ? 'yellow'
+                      : occupiedState === 'Occupied'
+                      ? 'blue'
+                      : occupiedState === 'Partially Booked'
+                      ? 'grape'
+                      : occupiedState === 'Available'
+                      ? 'green'
+                      : 'dark'
                   }
                 >
-                  {info.row.original.isUnderMaintenance
-                    ? 'Under Maintenance'
-                    : isOccupied
-                    ? 'Occupied'
-                    : 'Available'}
+                  {info.row.original.isUnderMaintenance ? 'Under Maintenance' : occupiedState}
                 </Badge>
               </div>
             );

@@ -4,11 +4,10 @@ import { DateRangePicker } from '@mantine/dates';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import { createStyles } from '@mantine/core';
+import { DATE_FORMAT } from '../utils/constants';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
-
-const DATE_FORMAT = 'YYYY-MM-DD';
 
 const useStyles = createStyles({
   outside: { opacity: 0 },
