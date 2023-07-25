@@ -12,7 +12,6 @@ import { calculateDaysListByMonth, serialize } from '../../../../utils';
 import NumberInput from '../../../shared/NumberInput';
 import Select from '../../../shared/Select';
 import TextareaInput from '../../../shared/TextareaInput';
-import DatePicker from '../../../shared/DatePicker';
 import { useBookings } from '../../../../apis/queries/booking.queries';
 import { MONTH_LIST, YEAR_LIST } from '../../../../utils/constants';
 
@@ -39,7 +38,6 @@ const initialValues = {
   type: { label: '', value: '' },
   amount: null,
   description: '',
-  date: '',
   inventoryId: '',
   bookingId: '',
   year: { label: '', value: -1 },
@@ -73,7 +71,6 @@ const AddOperationalCostModal = ({
   type,
   amount,
   description,
-  date,
   bookingId,
   bookingIdFromUrl,
   year,
@@ -143,7 +140,6 @@ const AddOperationalCostModal = ({
         year: { value: year },
         month: { value: month },
         day: { value: day },
-        date: new Date(date) || new Date(),
         description,
         bookingId: { value: bookingId },
       });
@@ -156,15 +152,6 @@ const AddOperationalCostModal = ({
     <Box className="border-t">
       <FormProvider form={form}>
         <form className="px-5 pt-3" onSubmit={form.onSubmit(onSubmit)}>
-          <DatePicker
-            label="Date"
-            name="date"
-            withAsterisk
-            placeholder="DD/MM/YYYY"
-            size="md"
-            styles={styles}
-            className="mb-4"
-          />
           <Select
             label="Type"
             name="type"

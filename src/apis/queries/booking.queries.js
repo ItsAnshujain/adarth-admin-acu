@@ -1,7 +1,6 @@
 import { showNotification } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  bookingById,
   bookingRevenue,
   bookingReportByRevenueGraph,
   bookingReportByRevenueStats,
@@ -21,6 +20,7 @@ import {
   generateManualReleaseReceipt,
   generateManualInvoiceReceipt,
   fetchBookingStatsById,
+  fetchbookingById,
 } from '../requests/booking.requests';
 import { onApiError } from '../../utils';
 
@@ -40,7 +40,7 @@ export const useBookingById = (id, enabled = true) =>
   useQuery(
     ['booking-by-id', id],
     async () => {
-      const res = await bookingById(id);
+      const res = await fetchbookingById(id);
       return res.data[0] || {};
     },
     {

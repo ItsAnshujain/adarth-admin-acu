@@ -476,7 +476,7 @@ const SelectSpace = () => {
               <NumberInput
                 hideControls
                 defaultValue={+(info.row.original.tradedAmount || 0)}
-                onBlur={e => updateData('tradedAmount', e.target.value, info.row.original._id)}
+                onChange={e => updateData('tradedAmount', e, info.row.original._id)}
                 disabled={info.row.original.peer === '-'}
               />
             ),
@@ -496,7 +496,7 @@ const SelectSpace = () => {
               <NumberInput
                 hideControls
                 defaultValue={+(price || 0)}
-                onBlur={e => updateData('price', e.target.value, _id)}
+                onChange={e => updateData('price', e, _id)}
               />
             ),
             [],
@@ -675,7 +675,8 @@ const SelectSpace = () => {
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.location = item?.location?.city;
         obj.mediaType = item.basicInformation?.mediaType?.name;
-        obj.price = item.basicInformation?.price || 0;
+        obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
+        obj.tradedAmount = selectionItem?.tradedAmount ?? 0;
         obj.campaigns = item?.campaigns;
         obj.startDate = getDate(selectionItem, item, 'startDate');
         obj.endDate = getDate(selectionItem, item, 'endDate');
