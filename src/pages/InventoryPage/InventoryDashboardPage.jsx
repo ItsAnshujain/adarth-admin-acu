@@ -33,7 +33,6 @@ import {
   getOccupiedStateColor,
   ROLES,
   stringToColour,
-  validateFilterRange,
 } from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
 import TrashIcon from '../../assets/delete.png';
@@ -87,14 +86,14 @@ const InventoryDashboardPage = () => {
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
   const isActive = searchParams.get('isActive');
-  const from = searchParams.get('from');
-  const to = searchParams.get('to');
+  // const from = searchParams.get('from');
+  // const to = searchParams.get('to');
 
-  const convertToISOString = dateString => {
-    const dateObject = new Date(dateString);
-    const isoString = dateObject.toISOString();
-    return isoString;
-  };
+  // const convertToISOString = dateString => {
+  //   const dateObject = new Date(dateString);
+  //   const isoString = dateObject.toISOString();
+  //   return isoString;
+  // };
 
   const togglePreviewModal = imgSrc =>
     modals.openModal({
@@ -118,20 +117,15 @@ const InventoryDashboardPage = () => {
         accessor: 'basicInformation.spaceName',
         Cell: info =>
           useMemo(() => {
-            const filterRange = validateFilterRange(
-              info.row.original?.bookingRange,
-              from ? convertToISOString(from) : currentDate,
-              to ? convertToISOString(to) : currentDate,
-            );
-
-            const leftUnit = getAvailableUnits(
-              filterRange,
+            const unitLeft = getAvailableUnits(
+              info.row.original.bookingRange,
+              currentDate,
+              currentDate,
               info.row.original.specifications?.unit,
-              info.row.original._id,
             );
 
             const occupiedState = getOccupiedState(
-              leftUnit,
+              unitLeft,
               info.row.original.specifications?.unit,
             );
 

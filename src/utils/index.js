@@ -392,30 +392,14 @@ export const validateFilterRange = (bookingRange, fromDate, toDate) => {
   if (bookingRange.length) {
     filterRange = bookingRange.filter(
       item =>
-        (dayjs(dayjs(fromDate).format(DATE_FORMAT)).isSameOrAfter(
-          dayjs(item?.startDate).format(DATE_FORMAT),
-        ) &&
-          dayjs(dayjs(fromDate).format(DATE_FORMAT)).isSameOrBefore(
-            dayjs(item?.endDate).format(DATE_FORMAT),
-          )) ||
-        (dayjs(dayjs(toDate).format(DATE_FORMAT)).isSameOrAfter(
-          dayjs(item?.startDate).format(DATE_FORMAT),
-        ) &&
-          dayjs(dayjs(toDate).format(DATE_FORMAT)).isSameOrBefore(
-            dayjs(item?.endDate).format(DATE_FORMAT),
-          )) ||
-        (dayjs(dayjs(item?.startDate).format(DATE_FORMAT)).isSameOrAfter(
-          dayjs(fromDate).format(DATE_FORMAT),
-        ) &&
-          dayjs(dayjs(item?.startDate).format(DATE_FORMAT)).isSameOrBefore(
-            dayjs(toDate).format(DATE_FORMAT),
-          )) ||
-        (dayjs(dayjs(item?.endDate).format(DATE_FORMAT)).isSameOrAfter(
-          dayjs(fromDate).format(DATE_FORMAT),
-        ) &&
-          dayjs(dayjs(item?.endDate).format(DATE_FORMAT)).isSameOrBefore(
-            dayjs(toDate).format(DATE_FORMAT),
-          )),
+        (dayjs(dayjs(fromDate)).isSameOrAfter(dayjs(item?.startDate)) &&
+          dayjs(dayjs(fromDate)).isSameOrBefore(dayjs(item?.endDate))) ||
+        (dayjs(dayjs(toDate)).isSameOrAfter(dayjs(item?.startDate)) &&
+          dayjs(dayjs(toDate)).isSameOrBefore(dayjs(item?.endDate))) ||
+        (dayjs(dayjs(item?.startDate)).isSameOrAfter(dayjs(fromDate)) &&
+          dayjs(dayjs(item?.startDate)).isSameOrBefore(dayjs(toDate))) ||
+        (dayjs(dayjs(item?.endDate)).isSameOrAfter(dayjs(fromDate)) &&
+          dayjs(dayjs(item?.endDate)).isSameOrBefore(dayjs(toDate))),
     );
 
     return filterRange;
@@ -424,20 +408,46 @@ export const validateFilterRange = (bookingRange, fromDate, toDate) => {
   return [];
 };
 
-export const getAvailableUnits = (filterRange, units, _id) => {
-  let availableUnit = units;
-  filterRange?.forEach(i => {
-    const remUnit =
-      i?.remainingUnit || i.remainingUnit === 0
-        ? i.remainingUnit
-        : i?.bookableUnit
-        ? i.bookableUnit
-        : 0;
+export const getAvailableUnits = (filterRange, fromDate, toDate, units) => {
+  const filteredRange = validateFilterRange(filterRange, fromDate, toDate);
+  // console.log(filteredRange);
+  let bookedUnit = 0;
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < filteredRange.length; i++) {
+    bookedUnit += filteredRange[i].bookedUnit;
+  }
+  const availableUnit = units - bookedUnit;
+  return availableUnit < 0 ? 0 : availableUnit;
+};
 
-    if (availableUnit === 0 || remUnit < availableUnit) availableUnit = remUnit;
-  });
+export const getEveryDayUnits = (bookingRange = [], units = 1) => {
+  const day = {};
 
-  return availableUnit;
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < bookingRange.length; i++) {
+    let sDate = dayjs(bookingRange[i].startDate);
+    const eDate = dayjs(bookingRange[i].endDate);
+
+    while (sDate.isSameOrBefore(eDate)) {
+      const key = sDate.format(DATE_FORMAT);
+      if (day[key]) {
+        day[key] = {
+          bookedUnit: day[key].bookedUnit + bookingRange[i].bookedUnit,
+          remUnit:
+            units - (day[key].bookedUnit + bookingRange[i].bookedUnit) < 0
+              ? 0
+              : units - (day[key].bookedUnit + bookingRange[i].bookedUnit),
+        };
+      } else {
+        day[key] = {
+          bookedUnit: bookingRange[i].bookedUnit,
+          remUnit: units - bookingRange[i].bookedUnit < 0 ? 0 : units - bookingRange[i].bookedUnit,
+        };
+      }
+      sDate = sDate.add(1, 'day');
+    }
+  }
+  return day;
 };
 
 export const getOccupiedState = (leftUnit, bookableUnit) => {

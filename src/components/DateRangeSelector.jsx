@@ -16,47 +16,20 @@ const useStyles = createStyles({
   selectedRange: { color: '#FFF !important' },
 });
 
-const DateRangeSelector = ({ dateValue, dateRange, onChange, ...props }) => {
+const DateRangeSelector = ({ dateValue, onChange, everyDayUnitsData = {}, ...props }) => {
   const { classes, cx } = useStyles();
-  const [value, setValue] = useState([null, null]);
+  const [, setValue] = useState([null, null]);
 
   /**
    *
    * @param {Date} date
    */
-  const excludeBookedDates = date =>
-    dateRange.some(item => {
-      if (
-        value[0] &&
-        dayjs(value[0]).isBefore(dayjs(item?.startDate).format(DATE_FORMAT)) &&
-        dayjs(date).isAfter(dayjs(item?.startDate).format(DATE_FORMAT)) &&
-        item?.remainingUnit === 0
-      ) {
-        return true;
-      }
-
-      if (
-        value[0] &&
-        dayjs(value[0]).isAfter(dayjs(item?.endDate).format(DATE_FORMAT)) &&
-        dayjs(date).isBefore(dayjs(item?.endDate).format(DATE_FORMAT)) &&
-        item?.remainingUnit === 0
-      ) {
-        return true;
-      }
-
-      if (
-        dayjs(dayjs(date).format(DATE_FORMAT)).isSameOrAfter(
-          dayjs(item?.startDate).format(DATE_FORMAT),
-        ) &&
-        dayjs(dayjs(date).format(DATE_FORMAT)).isSameOrBefore(
-          dayjs(item?.endDate).format(DATE_FORMAT),
-        ) &&
-        item?.remainingUnit === 0
-      ) {
-        return true;
-      }
-      return false;
-    });
+  const excludeBookedDates = date => {
+    const formattedDate = dayjs(date).format(DATE_FORMAT);
+    const selectedDate = everyDayUnitsData[formattedDate];
+    if (!selectedDate) return false;
+    return selectedDate.remUnit === 0;
+  };
 
   const handleChange = val => {
     setValue(val);

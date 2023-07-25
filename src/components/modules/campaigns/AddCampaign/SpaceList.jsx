@@ -19,7 +19,6 @@ import {
   getOccupiedState,
   getOccupiedStateColor,
   stringToColour,
-  validateFilterRange,
 } from '../../../../utils';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
 import RowsPerPage from '../../../RowsPerPage';
@@ -80,11 +79,9 @@ const SpaceList = () => {
           useMemo(() => {
             const { photo, spaceName, isUnderMaintenance, bookingRange, unit, _id } =
               info.row.original;
-            const filterRange = validateFilterRange(bookingRange, currentDate, currentDate);
 
-            const leftUnit = getAvailableUnits(filterRange, unit, _id);
-
-            const occupiedState = getOccupiedState(leftUnit, unit);
+            const unitLeft = getAvailableUnits(bookingRange, currentDate, currentDate, unit);
+            const occupiedState = getOccupiedState(unitLeft, unit);
 
             return (
               <div className="grid grid-cols-2 gap-2 items-center">
