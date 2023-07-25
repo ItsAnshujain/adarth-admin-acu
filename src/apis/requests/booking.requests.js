@@ -3,7 +3,7 @@ import http from '../http';
 
 export const bookings = filter => http.get(`/booking?${filter}`);
 
-export const bookingById = id => http.get(`/booking/${id}`);
+export const fetchbookingById = id => http.get(`/booking/${id}`);
 
 export const updateBooking = (id, data) => http.patch(`/booking/${id}`, data);
 

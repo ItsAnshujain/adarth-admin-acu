@@ -1,6 +1,5 @@
 import { ActionIcon, Box, Button, Group, Loader } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { Edit } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
@@ -8,8 +7,6 @@ import { useFetchOperationalCost } from '../../../../apis/queries/operationalCos
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import modalConfig from '../../../../utils/modalConfig';
 import AddOperationalCostModal from './AddOperationalCostModal';
-
-const DATE_FORMAT = 'DD-MM-YYYY';
 
 const OperationalCost = ({ inventoryDetails, isPeer }) => {
   const modals = useModals();
@@ -24,7 +21,6 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
     type,
     amount,
     description,
-    date,
     year,
     month,
     day,
@@ -41,7 +37,6 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
             type={type}
             amount={amount}
             description={description}
-            date={date}
             bookingId={bookingId}
             bookingIdFromUrl={bookingIdFromUrl}
             year={year}
@@ -89,7 +84,6 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
                               item?.type,
                               item?.amount,
                               item?.description,
-                              item?.date,
                               item?.year,
                               item?.month,
                               item?.day,
@@ -108,7 +102,7 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
                         </p>
                         <p className="text-xs mb-1">Created at:</p>
                         <p className="text-xs text-gray-500 font-medium">
-                          {item?.date ? dayjs(item.date).format(DATE_FORMAT) : null}
+                          {item?.day || 'NA'}/{item?.month || 'NA'}/{item?.year}
                         </p>
                       </div>
                     </div>

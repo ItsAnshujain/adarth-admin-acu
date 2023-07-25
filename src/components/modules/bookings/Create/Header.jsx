@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Basic Information', 'Order Information', 'Select Spaces'];
 
-const Header = ({ setFormStep, formStep, isLoading }) => {
+const Header = ({ setFormStep, formStep, isLoading, isEditable }) => {
   const navigate = useNavigate();
   const handleBooking = () => navigate('/bookings');
   const handleBack = () => {
@@ -76,7 +76,7 @@ const Header = ({ setFormStep, formStep, isLoading }) => {
             loading={isLoading}
             className="bg-purple-450 order-3"
           >
-            {isLoading ? 'Saving...' : 'Create Order'}
+            {isLoading ? 'Saving...' : isEditable ? 'Save' : 'Create Order'}
           </Button>
         ) : null}
       </div>

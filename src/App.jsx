@@ -284,6 +284,14 @@ const App = () => {
               </Suspense>
             }
           />
+          <Route
+            path="edit-details/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <CreateBookingPage />
+              </Suspense>
+            }
+          />
         </Route>
         <Route
           path="users"
