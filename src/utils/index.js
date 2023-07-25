@@ -471,3 +471,13 @@ export const generateSlNo = (index, page, limit) => {
   rowCount = (currentPage - 1) * limit;
   return rowCount + index + 1;
 };
+
+export const calculateDaysListByMonth = (month, year) => {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const daysList = [];
+  // eslint-disable-next-line no-plusplus
+  for (let i = 1; i <= daysInMonth; i++) {
+    daysList.push(i);
+  }
+  return daysList;
+};

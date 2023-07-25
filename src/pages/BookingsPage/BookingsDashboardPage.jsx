@@ -14,6 +14,7 @@ import AreaHeader from '../../components/modules/bookings/Header';
 import {
   useBookings,
   useBookingStats,
+  useUpdateBooking,
   useUpdateBookingStatus,
 } from '../../apis/queries/booking.queries';
 import { checkCampaignStats, serialize } from '../../utils';
@@ -23,6 +24,7 @@ import BookingStatisticsView from '../../components/modules/bookings/BookingStat
 import NoData from '../../components/shared/NoData';
 import BookingsMenuPopover from '../../components/Popovers/BookingsMenuPopover';
 import useLayoutView from '../../store/layout.store';
+import { BOOKING_PAID_STATUS } from '../../utils/constants';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -73,18 +75,24 @@ const BookingsDashboardPage = () => {
       sortOrder: 'desc',
     }),
   );
-
-  const { mutateAsync: updateBooking } = useUpdateBookingStatus();
+  const { mutate: update } = useUpdateBooking();
+  const { mutateAsync: updateBookingStatus } = useUpdateBookingStatus();
 
   const handlePaymentUpdate = (bookingId, data) => {
     if (data) {
-      updateBooking({ id: bookingId, query: serialize({ paymentStatus: data }) });
+      updateBookingStatus({ id: bookingId, query: serialize({ paymentStatus: data }) });
     }
   };
 
   const handleCampaignUpdate = (bookingId, data) => {
     if (data) {
-      updateBooking({ id: bookingId, query: serialize({ campaignStatus: data }) });
+      updateBookingStatus({ id: bookingId, query: serialize({ campaignStatus: data }) });
+    }
+  };
+
+  const handlePaymentStatusUpdate = (bookingId, data) => {
+    if (data !== '') {
+      update({ id: bookingId, data: { hasPaid: data } });
     }
   };
 
@@ -338,13 +346,25 @@ const BookingsDashboardPage = () => {
           ),
       },
       {
-        Header: 'PAYMENT TYPE',
-        accessor: 'paymentType',
-        Cell: ({
-          row: {
-            original: { paymentType },
-          },
-        }) => useMemo(() => <p className="uppercase">{paymentType || '-'}</p>, []),
+        Header: 'PAYMENT STATUS',
+        accessor: 'hasPaid',
+        Cell: info =>
+          useMemo(() => {
+            const updatedBookingPaid = [...BOOKING_PAID_STATUS];
+            updatedBookingPaid.unshift({ label: 'Select', value: '' });
+
+            return (
+              <Select
+                className="mr-2"
+                data={updatedBookingPaid}
+                styles={statusSelectStyle}
+                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                rightSectionWidth={40}
+                onChange={e => handlePaymentStatusUpdate(info.row.original?._id, e)}
+                defaultValue={info.row.original?.hasPaid ?? ''}
+              />
+            );
+          }, []),
       },
       {
         Header: 'OUTSTANDING AMOUNT',

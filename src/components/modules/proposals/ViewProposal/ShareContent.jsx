@@ -7,10 +7,12 @@ import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
+import dayjs from 'dayjs';
 import whatsapp from '../../../../assets/whatsapp.svg';
 import { useShareProposal } from '../../../../apis/queries/proposal.queries';
 import { FormProvider, useForm } from '../../../../context/formContext';
 import TextInput from '../../../shared/TextInput';
+import { serialize } from '../../../../utils';
 
 const fileType = [
   { name: 'PPT', _id: 'ppt' },
@@ -155,7 +157,7 @@ const ShareContent = ({ id }) => {
     data.shareVia = activeShare;
 
     const res = await shareProposal(
-      { id, data },
+      { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
       {
         onSuccess: () => {
           setActiveFileType([]);
