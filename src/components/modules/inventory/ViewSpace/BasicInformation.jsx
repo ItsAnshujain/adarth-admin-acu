@@ -16,7 +16,6 @@ import {
   getOccupiedState,
   getOccupiedStateColor,
   tierList,
-  validateFilterRange,
 } from '../../../../utils';
 import modalConfig from '../../../../utils/modalConfig';
 
@@ -144,15 +143,13 @@ const BasicInfo = ({
       ...updatedModalConfig,
     });
 
-  const filterRange = validateFilterRange(bookingRange, currentDate, currentDate);
-
-  const leftUnit = getAvailableUnits(
-    filterRange,
+  const unitLeft = getAvailableUnits(
+    bookingRange,
+    currentDate,
+    currentDate,
     inventoryDetails?.specifications?.unit,
-    inventoryDetails._id,
   );
-
-  const occupiedState = getOccupiedState(leftUnit, inventoryDetails?.specifications?.unit);
+  const occupiedState = getOccupiedState(unitLeft, inventoryDetails?.specifications?.unit);
 
   useEffect(() => {
     const result = getAllSpacePhotos();

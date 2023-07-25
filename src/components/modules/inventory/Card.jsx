@@ -9,7 +9,6 @@ import {
   getAvailableUnits,
   getOccupiedState,
   getOccupiedStateColor,
-  validateFilterRange,
 } from '../../../utils';
 
 const Card = ({
@@ -24,11 +23,8 @@ const Card = ({
   onSelect = () => {},
   onPreview,
 }) => {
-  const filterRange = validateFilterRange(bookingRange, currentDate, currentDate);
-
-  const leftUnit = getAvailableUnits(filterRange, specifications?.unit, _id);
-
-  const occupiedState = getOccupiedState(leftUnit, specifications?.unit);
+  const unitLeft = getAvailableUnits(bookingRange, currentDate, currentDate, specifications?.unit);
+  const occupiedState = getOccupiedState(unitLeft, specifications?.unit);
 
   return (
     <MantineCard

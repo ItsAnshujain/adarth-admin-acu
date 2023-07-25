@@ -32,10 +32,10 @@ import {
   generateSlNo,
   getAvailableUnits,
   getDate,
+  getEveryDayUnits,
   getOccupiedState,
   getOccupiedStateColor,
   stringToColour,
-  validateFilterRange,
 } from '../../../utils';
 import Filter from '../inventory/Filter';
 import { useFormContext } from '../../../context/formContext';
@@ -94,8 +94,12 @@ const Spaces = () => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
         newList[index] = { ...newList[index], startDate: val[0], endDate: val[1] };
-        const filterRange = validateFilterRange(newList[index].bookingRange, val[0], val[1]);
-        availableUnit = getAvailableUnits(filterRange, newList[index].originalUnit, id);
+        availableUnit = getAvailableUnits(
+          newList[index].bookingRange,
+          newList[index].startDate,
+          newList[index].endDate,
+          newList[index].originalUnit,
+        );
         newList[index] = { ...newList[index], availableUnit };
 
         return newList;
@@ -157,15 +161,24 @@ const Spaces = () => {
         accessor: 'basicInformation.spaceName',
         Cell: ({
           row: {
-            original: { _id, spaceName, spacePhoto, isUnderMaintenance, bookingRange, unit },
+            original: {
+              _id,
+              spaceName,
+              spacePhoto,
+              isUnderMaintenance,
+              bookingRange,
+              originalUnit,
+            },
           },
         }) =>
           useMemo(() => {
-            const filterRange = validateFilterRange(bookingRange, currentDate, currentDate);
-
-            const leftUnit = getAvailableUnits(filterRange, unit, _id);
-
-            const occupiedState = getOccupiedState(leftUnit, unit);
+            const unitLeft = getAvailableUnits(
+              bookingRange,
+              currentDate,
+              currentDate,
+              originalUnit,
+            );
+            const occupiedState = getOccupiedState(unitLeft, originalUnit);
 
             return (
               <div className="flex items-center justify-between gap-2 w-96 mr-4">
@@ -336,12 +349,13 @@ const Spaces = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { bookingRange, startDate, endDate, _id },
+            original: { bookingRange, startDate, endDate, unit, _id },
           },
         }) =>
           useMemo(() => {
             const isDisabled =
               values?.spaces?.some(item => item._id === _id) && (!startDate || !endDate);
+            const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
 
             return (
               <div className="min-w-[300px]">
@@ -349,7 +363,7 @@ const Spaces = () => {
                   error={isDisabled}
                   dateValue={[startDate || null, endDate || null]}
                   onChange={val => updateData('dateRange', val, _id)}
-                  dateRange={bookingRange}
+                  everyDayUnitsData={everyDayUnitsData}
                 />
               </div>
             );
