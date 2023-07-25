@@ -392,14 +392,14 @@ export const validateFilterRange = (bookingRange, fromDate, toDate) => {
   if (bookingRange.length) {
     filterRange = bookingRange.filter(
       item =>
-        (dayjs(dayjs(fromDate)).isSameOrAfter(dayjs(item?.startDate)) &&
-          dayjs(dayjs(fromDate)).isSameOrBefore(dayjs(item?.endDate))) ||
-        (dayjs(dayjs(toDate)).isSameOrAfter(dayjs(item?.startDate)) &&
-          dayjs(dayjs(toDate)).isSameOrBefore(dayjs(item?.endDate))) ||
-        (dayjs(dayjs(item?.startDate)).isSameOrAfter(dayjs(fromDate)) &&
-          dayjs(dayjs(item?.startDate)).isSameOrBefore(dayjs(toDate))) ||
-        (dayjs(dayjs(item?.endDate)).isSameOrAfter(dayjs(fromDate)) &&
-          dayjs(dayjs(item?.endDate)).isSameOrBefore(dayjs(toDate))),
+        (dayjs(dayjs(fromDate)).isSameOrAfter(dayjs(item?.startDate).format(DATE_FORMAT)) &&
+          dayjs(dayjs(fromDate)).isSameOrBefore(dayjs(item?.endDate).format(DATE_FORMAT))) ||
+        (dayjs(dayjs(toDate)).isSameOrAfter(dayjs(item?.startDate).format(DATE_FORMAT)) &&
+          dayjs(dayjs(toDate)).isSameOrBefore(dayjs(item?.endDate).format(DATE_FORMAT))) ||
+        (dayjs(dayjs(item?.startDate).format(DATE_FORMAT)).isSameOrAfter(dayjs(fromDate)) &&
+          dayjs(dayjs(item?.startDate).format(DATE_FORMAT)).isSameOrBefore(dayjs(toDate))) ||
+        (dayjs(dayjs(item?.endDate).format(DATE_FORMAT)).isSameOrAfter(dayjs(fromDate)) &&
+          dayjs(dayjs(item?.endDate).format(DATE_FORMAT)).isSameOrBefore(dayjs(toDate))),
     );
 
     return filterRange;
@@ -409,8 +409,12 @@ export const validateFilterRange = (bookingRange, fromDate, toDate) => {
 };
 
 export const getAvailableUnits = (filterRange, fromDate, toDate, units) => {
-  const filteredRange = validateFilterRange(filterRange, fromDate, toDate);
-  // console.log(filteredRange);
+  const filteredRange = validateFilterRange(
+    filterRange,
+    dayjs(fromDate).format(DATE_FORMAT),
+    dayjs(toDate).format(DATE_FORMAT),
+  );
+
   let bookedUnit = 0;
   // eslint-disable-next-line no-plusplus
   for (let i = 0; i < filteredRange.length; i++) {
@@ -432,16 +436,19 @@ export const getEveryDayUnits = (bookingRange = [], units = 1) => {
       const key = sDate.format(DATE_FORMAT);
       if (day[key]) {
         day[key] = {
-          bookedUnit: day[key].bookedUnit + bookingRange[i].bookedUnit,
+          bookedUnit: day[key].bookedUnit + bookingRange[i].bookedUnit || bookingRange[i].unit,
           remUnit:
-            units - (day[key].bookedUnit + bookingRange[i].bookedUnit) < 0
+            units - (day[key].bookedUnit + bookingRange[i].bookedUnit || bookingRange[i].unit) < 0
               ? 0
-              : units - (day[key].bookedUnit + bookingRange[i].bookedUnit),
+              : units - (day[key].bookedUnit + bookingRange[i].bookedUnit || bookingRange[i].unit),
         };
       } else {
         day[key] = {
-          bookedUnit: bookingRange[i].bookedUnit,
-          remUnit: units - bookingRange[i].bookedUnit < 0 ? 0 : units - bookingRange[i].bookedUnit,
+          bookedUnit: bookingRange[i].bookedUnit || bookingRange[i].unit,
+          remUnit:
+            units - (bookingRange[i].bookedUnit || bookingRange[i].unit) < 0
+              ? 0
+              : units - (bookingRange[i].bookedUnit || bookingRange[i].unit),
         };
       }
       sDate = sDate.add(1, 'day');
@@ -451,12 +458,20 @@ export const getEveryDayUnits = (bookingRange = [], units = 1) => {
 };
 
 export const getOccupiedState = (leftUnit, bookableUnit) => {
-  const occupiedState =
-    leftUnit === bookableUnit
-      ? 'Available'
-      : leftUnit !== bookableUnit && leftUnit !== 0
-      ? 'Partially Booked'
-      : 'Occupied';
+  // eslint-disable-next-line no-restricted-globals
+  const occupiedState = isNaN(leftUnit)
+    ? 0
+    : leftUnit === bookableUnit
+    ? 'Available'
+    : // eslint-disable-next-line no-restricted-globals
+    isNaN(leftUnit)
+    ? 0
+    : // eslint-disable-next-line no-restricted-globals
+    leftUnit !== bookableUnit && isNaN(leftUnit)
+    ? 0
+    : leftUnit !== 0
+    ? 'Partially Booked'
+    : 'Occupied';
 
   return occupiedState;
 };

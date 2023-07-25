@@ -11,13 +11,13 @@ import layers from '../../../../assets/layers.svg';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import MapView from '../CreateSpace/MapView';
 import {
-  currentDate,
-  getAvailableUnits,
+  getEveryDayUnits,
   getOccupiedState,
   getOccupiedStateColor,
   tierList,
 } from '../../../../utils';
 import modalConfig from '../../../../utils/modalConfig';
+import { DATE_FORMAT } from '../../../../utils/constants';
 
 dayjs.extend(isBetween);
 
@@ -143,13 +143,12 @@ const BasicInfo = ({
       ...updatedModalConfig,
     });
 
-  const unitLeft = getAvailableUnits(
-    bookingRange,
-    currentDate,
-    currentDate,
+  const res = getEveryDayUnits(bookingRange, inventoryDetails?.specifications?.unit);
+
+  const occupiedState = getOccupiedState(
+    res[dayjs().format(DATE_FORMAT)]?.remUnit ?? 0,
     inventoryDetails?.specifications?.unit,
   );
-  const occupiedState = getOccupiedState(unitLeft, inventoryDetails?.specifications?.unit);
 
   useEffect(() => {
     const result = getAllSpacePhotos();

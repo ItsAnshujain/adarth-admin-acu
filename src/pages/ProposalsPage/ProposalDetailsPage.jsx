@@ -15,7 +15,14 @@ import Details from '../../components/modules/proposals/ViewProposal/Details';
 import Table from '../../components/Table/Table';
 import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
-import { categoryColors, stringToColour } from '../../utils';
+import {
+  categoryColors,
+  currentDate,
+  getAvailableUnits,
+  getOccupiedState,
+  getOccupiedStateColor,
+  stringToColour,
+} from '../../utils';
 import modalConfig from '../../utils/modalConfig';
 import Filter from '../../components/modules/inventory/Filter';
 import useUserStore from '../../store/user.store';
@@ -92,11 +99,15 @@ const ProposalDetailsPage = () => {
         accessor: 'spaceName',
         Cell: ({
           row: {
-            original: { _id, spaceName, spacePhoto, isUnderMaintenance },
+            original: { _id, spaceName, spacePhoto, isUnderMaintenance, bookingRange, unit },
           },
         }) =>
-          useMemo(
-            () => (
+          useMemo(() => {
+            const unitLeft = getAvailableUnits(bookingRange, currentDate, currentDate, unit);
+
+            const occupiedState = getOccupiedState(unitLeft, unit);
+
+            return (
               <div className="flex items-center gap-2">
                 <Box
                   className="bg-white border rounded-md cursor-zoom-in"
@@ -120,14 +131,13 @@ const ProposalDetailsPage = () => {
                 <Badge
                   className="capitalize"
                   variant="filled"
-                  color={isUnderMaintenance ? 'yellow' : 'green'}
+                  color={getOccupiedStateColor(isUnderMaintenance, occupiedState)}
                 >
-                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
+                  {isUnderMaintenance ? 'Under Maintenance' : occupiedState}
                 </Badge>
               </div>
-            ),
-            [],
-          ),
+            );
+          }, []),
       },
       {
         Header: 'FACIA TOWARDS',
