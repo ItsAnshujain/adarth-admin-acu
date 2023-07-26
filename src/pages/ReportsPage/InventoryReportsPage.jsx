@@ -40,9 +40,10 @@ import InventoryStatsContent from '../../components/modules/reports/Inventory/In
 import SubHeader from '../../components/modules/reports/Inventory/SubHeader';
 import {
   categoryColors,
-  dateByQuarter,
   daysInAWeek,
   downloadPdf,
+  financialEndDate,
+  financialStartDate,
   monthsInShort,
   quarters,
   serialize,
@@ -109,8 +110,8 @@ const InventoryReportsPage = () => {
     page: 1,
     sortOrder: 'desc',
     sortBy: 'basicInformation.spaceName',
-    startDate: `${dayjs().year()}-04-01`,
-    endDate: `${dayjs().year() + 1}-03-31`,
+    startDate: financialStartDate,
+    endDate: financialEndDate,
     groupBy: 'month',
   });
   const chartRef = useRef(null);
@@ -154,8 +155,8 @@ const InventoryReportsPage = () => {
 
   const handleViewBy = viewType => {
     if (viewType === 'reset' || viewType === 'year') {
-      const startDate = `${dayjs().year()}-04-01`;
-      const endDate = `${dayjs().year() + 1}-03-31`;
+      const startDate = financialStartDate;
+      const endDate = financialEndDate;
       searchParams.set('startDate', startDate);
       searchParams.set('endDate', endDate);
       searchParams.set('groupBy', 'month');
@@ -174,8 +175,8 @@ const InventoryReportsPage = () => {
       setSearchParams(searchParams);
     }
     if (viewType === 'quarter') {
-      searchParams.set('startDate', dateByQuarter[dayjs().quarter()].startDate);
-      searchParams.set('endDate', dateByQuarter[dayjs().quarter()].endDate);
+      searchParams.set('startDate', financialStartDate);
+      searchParams.set('endDate', financialEndDate);
       searchParams.set('groupBy', 'quarter');
       setSearchParams(searchParams);
     }
@@ -664,7 +665,25 @@ const InventoryReportsPage = () => {
 
       inventoryReports.revenue?.forEach(item => {
         if (item._id) {
-          tempAreaData.datasets[0].data[item._id] = item?.total;
+          tempAreaData.datasets[0].data[item._id - 1] = item?.total;
+
+          if (item._id) {
+            if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
+              tempAreaData.datasets[0].data[item._id - 1] = item?.total;
+            } else if (groupBy === 'quarter') {
+              if (dayjs().quarter() === 1) {
+                tempAreaData.datasets[0].data[item._id + 3] = item.total;
+              } else if (dayjs().quarter() === 4) {
+                tempAreaData.datasets[0].data[item._id - 3] = item.total;
+              } else {
+                tempAreaData.datasets[0].data[item._id - 1] = item.total;
+              }
+            } else if (item._id < 4) {
+              tempAreaData.datasets[0].data[item._id + 8] = item.total;
+            } else {
+              tempAreaData.datasets[0].data[item._id - 4] = item.total;
+            }
+          }
         }
       });
 

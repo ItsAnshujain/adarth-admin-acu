@@ -265,12 +265,12 @@ const ProposalDetailsPage = () => {
       },
       {
         Header: 'UNIT',
-        accessor: 'unit',
+        accessor: 'bookedUnits',
         Cell: ({
           row: {
-            original: { unit },
+            original: { bookedUnits },
           },
-        }) => useMemo(() => <p>{unit || '-'}</p>, []),
+        }) => useMemo(() => <p>{bookedUnits || '-'}</p>, []),
       },
       {
         Header: 'INVENTORY ID',
