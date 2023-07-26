@@ -29,7 +29,14 @@ import TotalCampaignIcon from '../assets/total-campaign.svg';
 import useUserStore from '../store/user.store';
 import { useBookingStats, useFetchBookingRevenue } from '../apis/queries/booking.queries';
 import { useInventoryStats } from '../apis/queries/inventory.queries';
-import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../utils';
+import {
+  daysInAWeek,
+  financialEndDate,
+  financialStartDate,
+  monthsInShort,
+  quarters,
+  serialize,
+} from '../utils';
 import ViewByFilter from '../components/modules/reports/ViewByFilter';
 import { DATE_FORMAT } from '../utils/constants';
 
@@ -70,9 +77,9 @@ const HomePage = () => {
   const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
 
   const [queryByTime, setQueryByTime] = useState({
-    'groupBy': 'month',
-    'startDate': `${dayjs().year()}-04-01`,
-    'endDate': `${dayjs().year() + 1}-03-31`,
+    groupBy: 'month',
+    startDate: financialStartDate,
+    endDate: financialEndDate,
   });
 
   const [updatedLineData, setUpdatedLineData] = useState({
@@ -111,24 +118,24 @@ const HomePage = () => {
   const handleViewBy = viewType => {
     if (viewType === 'reset' || viewType === 'year') {
       setQueryByTime({
-        'groupBy': 'month',
-        'startDate': `${dayjs().year()}-04-01`,
-        'endDate': `${dayjs().year() + 1}-03-31`,
+        groupBy: 'month',
+        startDate: financialStartDate,
+        endDate: financialEndDate,
       });
     }
     if (viewType === 'week' || viewType === 'month') {
       setQueryByTime(prevState => ({
         ...prevState,
-        'groupBy':
-          viewType === 'month' ? 'dayOfMonth' : viewType === 'week' ? 'dayOfWeek' : 'month',
-        'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
-        'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
+        groupBy: viewType === 'month' ? 'dayOfMonth' : viewType === 'week' ? 'dayOfWeek' : 'month',
+        startDate: dayjs().startOf(viewType).format(DATE_FORMAT),
+        endDate: dayjs().endOf(viewType).format(DATE_FORMAT),
       }));
     }
     if (viewType === 'quarter') {
       setQueryByTime({
-        'groupBy': 'quarter',
-        ...dateByQuarter[dayjs().quarter()],
+        groupBy: 'quarter',
+        startDate: financialStartDate,
+        endDate: financialEndDate,
       });
     }
   };
@@ -184,7 +191,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <Header title="" />
+      <Header />
       <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
         <Sidebar />
         <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">

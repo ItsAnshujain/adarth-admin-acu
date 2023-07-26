@@ -30,9 +30,10 @@ import {
   useBookingRevenueByLocation,
 } from '../../apis/queries/booking.queries';
 import {
-  dateByQuarter,
   daysInAWeek,
   downloadPdf,
+  financialEndDate,
+  financialStartDate,
   monthsInShort,
   quarters,
   serialize,
@@ -129,8 +130,8 @@ export const pieData = {
 const RevenueReportsPage = () => {
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
-    startDate: `${dayjs().year()}-04-01`,
-    endDate: `${dayjs().year() + 1}-03-31`,
+    startDate: financialStartDate,
+    endDate: financialEndDate,
     by: 'city',
     groupBy: 'month',
   });
@@ -202,8 +203,8 @@ const RevenueReportsPage = () => {
 
   const handleRevenueGraphViewBy = viewType => {
     if (viewType === 'reset' || viewType === 'year') {
-      const startDate = `${dayjs().year()}-04-01`;
-      const endDate = `${dayjs().year() + 1}-03-31`;
+      const startDate = financialStartDate;
+      const endDate = financialEndDate;
       searchParams.set('startDate', startDate);
       searchParams.set('endDate', endDate);
       searchParams.set('by', by);
@@ -225,8 +226,8 @@ const RevenueReportsPage = () => {
       setSearchParams(searchParams);
     }
     if (viewType === 'quarter') {
-      searchParams.set('startDate', dateByQuarter[dayjs().quarter()].startDate);
-      searchParams.set('endDate', dateByQuarter[dayjs().quarter()].endDate);
+      searchParams.set('startDate', financialStartDate);
+      searchParams.set('endDate', financialEndDate);
       searchParams.set('by', by);
       searchParams.set('groupBy', 'quarter');
       setSearchParams(searchParams);

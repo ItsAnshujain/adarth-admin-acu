@@ -23,7 +23,14 @@ import { useCampaignReport, useCampaignStats } from '../../apis/queries/campaign
 import ViewByFilter from '../../components/modules/reports/ViewByFilter';
 import CampaignStatsContent from '../../components/modules/reports/Campaign/CampaignStatsContent';
 import CampaignPieContent from '../../components/modules/reports/Campaign/CampaignPieContent';
-import { dateByQuarter, daysInAWeek, downloadPdf, monthsInShort, quarters } from '../../utils';
+import {
+  daysInAWeek,
+  downloadPdf,
+  financialEndDate,
+  financialStartDate,
+  monthsInShort,
+  quarters,
+} from '../../utils';
 import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/modules/reports/ShareContent';
@@ -41,8 +48,8 @@ const CampaignReportsPage = () => {
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
     groupBy: 'month',
-    startDate: `${dayjs().year()}-04-01`,
-    endDate: `${dayjs().year() + 1}-03-31`,
+    startDate: financialStartDate,
+    endDate: financialEndDate,
   });
 
   const share = searchParams.get('share');
@@ -81,8 +88,8 @@ const CampaignReportsPage = () => {
 
   const handleViewBy = viewType => {
     if (viewType === 'reset' || viewType === 'year') {
-      const startDate = `${dayjs().year()}-04-01`;
-      const endDate = `${dayjs().year() + 1}-03-31`;
+      const startDate = financialStartDate;
+      const endDate = financialEndDate;
       searchParams.set('startDate', startDate);
       searchParams.set('endDate', endDate);
       searchParams.set('groupBy', 'month');
@@ -101,8 +108,8 @@ const CampaignReportsPage = () => {
       setSearchParams(searchParams);
     }
     if (viewType === 'quarter') {
-      searchParams.set('startDate', dateByQuarter[dayjs().quarter()].startDate);
-      searchParams.set('endDate', dateByQuarter[dayjs().quarter()].endDate);
+      searchParams.set('startDate', financialStartDate);
+      searchParams.set('endDate', financialEndDate);
       searchParams.set('groupBy', 'quarter');
       setSearchParams(searchParams);
     }
