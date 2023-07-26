@@ -337,7 +337,7 @@ const Spaces = () => {
                 defaultValue={+(price || 0)}
                 className="w-40"
                 hideControls
-                onBlur={e => updateData('price', e.target.value, _id)}
+                onChange={e => updateData('price', e, _id)}
               />
             ),
             [],
