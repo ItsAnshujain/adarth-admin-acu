@@ -420,7 +420,7 @@ export const getAvailableUnits = (filterRange, fromDate, toDate, units) => {
   for (let i = 0; i < filteredRange.length; i++) {
     bookedUnit += filteredRange[i].bookedUnit;
   }
-  const availableUnit = units - bookedUnit;
+  const availableUnit = units - (bookedUnit || 0);
   return availableUnit < 0 ? 0 : availableUnit;
 };
 
@@ -458,20 +458,12 @@ export const getEveryDayUnits = (bookingRange = [], units = 1) => {
 };
 
 export const getOccupiedState = (leftUnit, bookableUnit) => {
-  // eslint-disable-next-line no-restricted-globals
-  const occupiedState = isNaN(leftUnit)
-    ? 0
-    : leftUnit === bookableUnit
-    ? 'Available'
-    : // eslint-disable-next-line no-restricted-globals
-    isNaN(leftUnit)
-    ? 0
-    : // eslint-disable-next-line no-restricted-globals
-    leftUnit !== bookableUnit && isNaN(leftUnit)
-    ? 0
-    : leftUnit !== 0
-    ? 'Partially Booked'
-    : 'Occupied';
+  const occupiedState =
+    leftUnit === bookableUnit
+      ? 'Available'
+      : leftUnit !== bookableUnit && leftUnit !== 0
+      ? 'Partially Booked'
+      : 'Occupied';
 
   return occupiedState;
 };

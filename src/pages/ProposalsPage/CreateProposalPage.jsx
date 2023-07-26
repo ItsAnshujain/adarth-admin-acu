@@ -143,7 +143,14 @@ const CreateProposalPage = () => {
       });
 
       delete data.uploadType;
+
       if (proposalId) {
+        data = {
+          ...data,
+          startDate: dayjs(minDate).startOf('day').toISOString(),
+          endDate: dayjs(maxDate).endOf('day').toISOString(),
+        };
+
         update(
           { proposalId, data },
           {
