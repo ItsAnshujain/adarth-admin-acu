@@ -71,8 +71,8 @@ const HomePage = () => {
 
   const [queryByTime, setQueryByTime] = useState({
     'groupBy': 'month',
-    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+    'startDate': `${dayjs().year()}-04-01`,
+    'endDate': `${dayjs().year() + 1}-03-31`,
   });
 
   const [updatedLineData, setUpdatedLineData] = useState({
@@ -109,24 +109,18 @@ const HomePage = () => {
   );
 
   const handleViewBy = viewType => {
-    if (viewType === 'reset') {
+    if (viewType === 'reset' || viewType === 'year') {
       setQueryByTime({
         'groupBy': 'month',
-        'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-        'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+        'startDate': `${dayjs().year()}-04-01`,
+        'endDate': `${dayjs().year() + 1}-03-31`,
       });
     }
-    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
+    if (viewType === 'week' || viewType === 'month') {
       setQueryByTime(prevState => ({
         ...prevState,
         'groupBy':
-          viewType === 'year'
-            ? 'month'
-            : viewType === 'month'
-            ? 'dayOfMonth'
-            : viewType === 'week'
-            ? 'dayOfWeek'
-            : 'month',
+          viewType === 'month' ? 'dayOfMonth' : viewType === 'week' ? 'dayOfWeek' : 'month',
         'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
         'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
       }));
@@ -166,7 +160,21 @@ const HomePage = () => {
 
       bookingRevenue?.forEach(item => {
         if (item._id) {
-          tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+          if (queryByTime.groupBy === 'dayOfMonth' || queryByTime.groupBy === 'dayOfWeek') {
+            tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+          } else if (queryByTime.groupBy === 'quarter') {
+            if (dayjs().quarter() === 1) {
+              tempData.datasets[0].data[item._id + 3] = item.total / 100000 || 0;
+            } else if (dayjs().quarter() === 4) {
+              tempData.datasets[0].data[item._id - 3] = item.total / 100000 || 0;
+            } else {
+              tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+            }
+          } else if (item._id < 4) {
+            tempData.datasets[0].data[item._id + 8] = item.total / 100000 || 0;
+          } else {
+            tempData.datasets[0].data[item._id - 4] = item.total / 100000 || 0;
+          }
         }
       });
 

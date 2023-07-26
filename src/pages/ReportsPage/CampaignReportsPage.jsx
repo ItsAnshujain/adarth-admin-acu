@@ -40,9 +40,9 @@ const options = {
 const CampaignReportsPage = () => {
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
-    startDate: dayjs().startOf('year').format(DATE_FORMAT),
-    endDate: dayjs().endOf('year').format(DATE_FORMAT),
     groupBy: 'month',
+    startDate: `${dayjs().year()}-04-01`,
+    endDate: `${dayjs().year() + 1}-03-31`,
   });
 
   const share = searchParams.get('share');
@@ -80,15 +80,15 @@ const CampaignReportsPage = () => {
   } = useCampaignReport(searchParams.toString());
 
   const handleViewBy = viewType => {
-    if (viewType === 'reset') {
-      const startDate = dayjs().startOf('year').format(DATE_FORMAT);
-      const endDate = dayjs().endOf('year').format(DATE_FORMAT);
+    if (viewType === 'reset' || viewType === 'year') {
+      const startDate = `${dayjs().year()}-04-01`;
+      const endDate = `${dayjs().year() + 1}-03-31`;
       searchParams.set('startDate', startDate);
       searchParams.set('endDate', endDate);
-      searchParams.set('groupBy', 'year');
+      searchParams.set('groupBy', 'month');
       setSearchParams(searchParams);
     }
-    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
+    if (viewType === 'week' || viewType === 'month') {
       const startDate = dayjs().startOf(viewType).format(DATE_FORMAT);
       const endDate = dayjs().endOf(viewType).format(DATE_FORMAT);
 
@@ -96,13 +96,7 @@ const CampaignReportsPage = () => {
       searchParams.set('endDate', endDate);
       searchParams.set(
         'groupBy',
-        viewType === 'year'
-          ? 'month'
-          : viewType === 'month'
-          ? 'dayOfMonth'
-          : viewType === 'week'
-          ? 'dayOfWeek'
-          : 'month',
+        viewType === 'month' ? 'dayOfMonth' : viewType === 'week' ? 'dayOfWeek' : 'month',
       );
       setSearchParams(searchParams);
     }
@@ -189,14 +183,70 @@ const CampaignReportsPage = () => {
 
       report?.revenue?.forEach(item => {
         if (item?._id) {
-          if (item.upcoming) {
-            tempBarData.datasets[0].data[item._id - 1] = item.upcoming;
-          }
-          if (item.ongoing) {
-            tempBarData.datasets[1].data[item._id - 1] = item.ongoing;
-          }
-          if (item.completed) {
-            tempBarData.datasets[2].data[item._id - 1] = item.completed;
+          if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
+            if (item.upcoming) {
+              tempBarData.datasets[0].data[item._id - 1] = item.upcoming;
+            }
+            if (item.ongoing) {
+              tempBarData.datasets[1].data[item._id - 1] = item.ongoing;
+            }
+            if (item.completed) {
+              tempBarData.datasets[2].data[item._id - 1] = item.completed;
+            }
+          } else if (groupBy === 'quarter') {
+            if (dayjs().quarter() === 1) {
+              if (item.upcoming) {
+                tempBarData.datasets[0].data[item._id + 3] = item.upcoming;
+              }
+              if (item.ongoing) {
+                tempBarData.datasets[1].data[item._id + 3] = item.ongoing;
+              }
+              if (item.completed) {
+                tempBarData.datasets[2].data[item._id + 3] = item.completed;
+              }
+            } else if (dayjs().quarter() === 4) {
+              if (item.upcoming) {
+                tempBarData.datasets[0].data[item._id - 3] = item.upcoming;
+              }
+              if (item.ongoing) {
+                tempBarData.datasets[1].data[item._id - 3] = item.ongoing;
+              }
+              if (item.completed) {
+                tempBarData.datasets[2].data[item._id - 3] = item.completed;
+              }
+            } else {
+              console.log('inside');
+              if (item.upcoming) {
+                tempBarData.datasets[0].data[item._id - 1] = item.upcoming;
+              }
+              if (item.ongoing) {
+                tempBarData.datasets[1].data[item._id - 1] = item.ongoing;
+              }
+              if (item.completed) {
+                tempBarData.datasets[2].data[item._id - 1] = item.completed;
+              }
+              console.log(tempBarData);
+            }
+          } else if (item._id < 4) {
+            if (item.upcoming) {
+              tempBarData.datasets[0].data[item._id + 8] = item.upcoming;
+            }
+            if (item.ongoing) {
+              tempBarData.datasets[1].data[item._id + 8] = item.ongoing;
+            }
+            if (item.completed) {
+              tempBarData.datasets[2].data[item._id + 8] = item.completed;
+            }
+          } else {
+            if (item.upcoming) {
+              tempBarData.datasets[0].data[item._id - 4] = item.upcoming;
+            }
+            if (item.ongoing) {
+              tempBarData.datasets[1].data[item._id - 4] = item.ongoing;
+            }
+            if (item.completed) {
+              tempBarData.datasets[2].data[item._id - 4] = item.completed;
+            }
           }
         }
       });

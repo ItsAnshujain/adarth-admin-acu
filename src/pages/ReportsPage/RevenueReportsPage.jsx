@@ -129,8 +129,8 @@ export const pieData = {
 const RevenueReportsPage = () => {
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
-    startDate: dayjs().startOf('year').format(DATE_FORMAT),
-    endDate: dayjs().endOf('year').format(DATE_FORMAT),
+    startDate: `${dayjs().year()}-04-01`,
+    endDate: `${dayjs().year() + 1}-03-31`,
     by: 'city',
     groupBy: 'month',
   });
@@ -201,17 +201,17 @@ const RevenueReportsPage = () => {
     useBookingRevenueByIndustry(removeUnwantedQueries(['groupBy', 'by']));
 
   const handleRevenueGraphViewBy = viewType => {
-    if (viewType === 'reset') {
-      const startDate = dayjs().startOf('year').format(DATE_FORMAT);
-      const endDate = dayjs().endOf('year').format(DATE_FORMAT);
+    if (viewType === 'reset' || viewType === 'year') {
+      const startDate = `${dayjs().year()}-04-01`;
+      const endDate = `${dayjs().year() + 1}-03-31`;
       searchParams.set('startDate', startDate);
       searchParams.set('endDate', endDate);
       searchParams.set('by', by);
-      searchParams.set('groupBy', 'year');
+      searchParams.set('groupBy', 'month');
       setSearchParams(searchParams);
     }
 
-    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
+    if (viewType === 'week' || viewType === 'month') {
       const startDate = dayjs().startOf(viewType).format(DATE_FORMAT);
       const endDate = dayjs().endOf(viewType).format(DATE_FORMAT);
 
@@ -220,13 +220,7 @@ const RevenueReportsPage = () => {
       searchParams.set('by', by);
       searchParams.set(
         'groupBy',
-        viewType === 'year'
-          ? 'month'
-          : viewType === 'month'
-          ? 'dayOfMonth'
-          : viewType === 'week'
-          ? 'dayOfWeek'
-          : 'month',
+        viewType === 'month' ? 'dayOfMonth' : viewType === 'week' ? 'dayOfWeek' : 'month',
       );
       setSearchParams(searchParams);
     }
@@ -297,6 +291,21 @@ const RevenueReportsPage = () => {
       revenueGraphData?.forEach(item => {
         if (item._id) {
           tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+          if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
+            tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+          } else if (groupBy === 'quarter') {
+            if (dayjs().quarter() === 1) {
+              tempData.datasets[0].data[item._id + 3] = item.total / 100000 || 0;
+            } else if (dayjs().quarter() === 4) {
+              tempData.datasets[0].data[item._id - 3] = item.total / 100000 || 0;
+            } else {
+              tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+            }
+          } else if (item._id < 4) {
+            tempData.datasets[0].data[item._id + 8] = item.total / 100000 || 0;
+          } else {
+            tempData.datasets[0].data[item._id - 4] = item.total / 100000 || 0;
+          }
         }
       });
 

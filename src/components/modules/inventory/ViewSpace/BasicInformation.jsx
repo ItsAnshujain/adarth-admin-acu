@@ -144,12 +144,16 @@ const BasicInfo = ({
     });
 
   const res = getEveryDayUnits(bookingRange, inventoryDetails?.specifications?.unit);
-
+  console.log(bookingRange);
   const occupiedState = getOccupiedState(
     res[dayjs().format(DATE_FORMAT)]?.remUnit ?? 0,
     inventoryDetails?.specifications?.unit,
   );
-
+  // console.log(
+  //   res[dayjs().format(DATE_FORMAT)]?.remUnit ?? 0,
+  //   inventoryDetails?.specifications?.unit,
+  //   occupiedState,
+  // );
   useEffect(() => {
     const result = getAllSpacePhotos();
     setPreviewSpacesPhotos(result);

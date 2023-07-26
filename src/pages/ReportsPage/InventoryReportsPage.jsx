@@ -109,8 +109,8 @@ const InventoryReportsPage = () => {
     page: 1,
     sortOrder: 'desc',
     sortBy: 'basicInformation.spaceName',
-    startDate: dayjs().startOf('year').format(DATE_FORMAT),
-    endDate: dayjs().endOf('year').format(DATE_FORMAT),
+    startDate: `${dayjs().year()}-04-01`,
+    endDate: `${dayjs().year() + 1}-03-31`,
     groupBy: 'month',
   });
   const chartRef = useRef(null);
@@ -153,15 +153,15 @@ const InventoryReportsPage = () => {
   const groupBy = searchParams.get('groupBy');
 
   const handleViewBy = viewType => {
-    if (viewType === 'reset') {
-      const startDate = dayjs().startOf('year').format(DATE_FORMAT);
-      const endDate = dayjs().endOf('year').format(DATE_FORMAT);
+    if (viewType === 'reset' || viewType === 'year') {
+      const startDate = `${dayjs().year()}-04-01`;
+      const endDate = `${dayjs().year() + 1}-03-31`;
       searchParams.set('startDate', startDate);
       searchParams.set('endDate', endDate);
-      searchParams.set('groupBy', 'year');
+      searchParams.set('groupBy', 'month');
       setSearchParams(searchParams);
     }
-    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
+    if (viewType === 'week' || viewType === 'month') {
       const startDate = dayjs().startOf(viewType).format(DATE_FORMAT);
       const endDate = dayjs().endOf(viewType).format(DATE_FORMAT);
 
@@ -169,13 +169,7 @@ const InventoryReportsPage = () => {
       searchParams.set('endDate', endDate);
       searchParams.set(
         'groupBy',
-        viewType === 'year'
-          ? 'month'
-          : viewType === 'month'
-          ? 'dayOfMonth'
-          : viewType === 'week'
-          ? 'dayOfWeek'
-          : 'month',
+        viewType === 'month' ? 'dayOfMonth' : viewType === 'week' ? 'dayOfWeek' : 'month',
       );
       setSearchParams(searchParams);
     }
@@ -673,6 +667,7 @@ const InventoryReportsPage = () => {
           tempAreaData.datasets[0].data[item._id] = item?.total;
         }
       });
+      console.log(tempAreaData);
       setAreaData(tempAreaData);
     }
   }, [inventoryReports]);

@@ -388,8 +388,14 @@ const Spaces = () => {
 
             return (
               <Tooltip
-                label="Exceeded maximum units available for selected date range"
-                opened={isExceeded}
+                label={
+                  isExceeded
+                    ? 'Exceeded maximum units available for selected date range'
+                    : !unit
+                    ? 'Field cannot be empty'
+                    : null
+                }
+                opened={isExceeded || !unit}
                 transition="slide-left"
                 position="right"
                 color="red"
@@ -403,7 +409,7 @@ const Spaces = () => {
                   onChange={e => updateData('unit', e, _id)}
                   className="w-[100px]"
                   disabled={isDisabled}
-                  error={isExceeded}
+                  error={isExceeded || !unit}
                 />
               </Tooltip>
             );
@@ -548,8 +554,8 @@ const Spaces = () => {
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
-        obj.originalUnit = item?.specifications?.unit || '-';
-        obj.unit = item?.specifications?.unit || '-';
+        obj.originalUnit = item?.specifications?.unit || 1;
+        obj.unit = selectionItem?.unit ?? (item?.specifications?.unit || 1);
         obj.additionalTags = item?.specifications?.additionalTags;
         obj.category = item?.basicInformation?.category?.name;
         obj.subCategory = item?.basicInformation?.subCategory?.name;
