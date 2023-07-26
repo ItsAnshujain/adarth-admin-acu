@@ -221,7 +221,7 @@ const CreateProposalPage = () => {
             price: item.price,
             startDate: new Date(item.startDate),
             endDate: new Date(item.endDate),
-            unit: item?.remainingUnits,
+            unit: item?.bookedUnits,
             availableUnit: item?.remainingUnits,
           })) || [],
         letterHead: proposalData?.proposal?.letterHead,

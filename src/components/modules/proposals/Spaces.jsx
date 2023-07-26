@@ -555,7 +555,7 @@ const Spaces = () => {
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
         obj.originalUnit = item?.specifications?.unit || 1;
-        obj.unit = selectionItem?.unit ?? (item?.specifications?.unit || 1);
+        obj.unit = item?.specifications?.unit || 1;
         obj.additionalTags = item?.specifications?.additionalTags;
         obj.category = item?.basicInformation?.category?.name;
         obj.subCategory = item?.basicInformation?.subCategory?.name;

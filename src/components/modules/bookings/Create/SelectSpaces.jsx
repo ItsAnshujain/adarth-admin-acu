@@ -682,7 +682,7 @@ const SelectSpace = () => {
           '-'
         );
         obj.originalUnit = item?.specifications?.unit || 1;
-        obj.unit = selectionItem?.unit ?? (item?.specifications?.unit || 1);
+        obj.unit = item?.specifications?.unit || 1;
         obj.impressionMax = item.specifications?.impressions?.max || 0;
         obj.impressionMin = item.specifications?.impressions?.min || 0;
         obj.health = item?.specifications?.health ?? 0;
