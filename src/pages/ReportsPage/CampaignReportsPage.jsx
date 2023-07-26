@@ -215,7 +215,6 @@ const CampaignReportsPage = () => {
                 tempBarData.datasets[2].data[item._id - 3] = item.completed;
               }
             } else {
-              console.log('inside');
               if (item.upcoming) {
                 tempBarData.datasets[0].data[item._id - 1] = item.upcoming;
               }
@@ -225,7 +224,6 @@ const CampaignReportsPage = () => {
               if (item.completed) {
                 tempBarData.datasets[2].data[item._id - 1] = item.completed;
               }
-              console.log(tempBarData);
             }
           } else if (item._id < 4) {
             if (item.upcoming) {

@@ -667,7 +667,7 @@ const InventoryReportsPage = () => {
           tempAreaData.datasets[0].data[item._id] = item?.total;
         }
       });
-      console.log(tempAreaData);
+
       setAreaData(tempAreaData);
     }
   }, [inventoryReports]);
