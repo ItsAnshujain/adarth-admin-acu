@@ -220,9 +220,9 @@ export const months = [
 ];
 
 export const monthsInShort = [
-  'Jan',
-  'Feb',
-  'Mar',
+  // 'Jan',
+  // 'Feb',
+  // 'Mar',
   'Apr',
   'May',
   'June',
@@ -232,6 +232,9 @@ export const monthsInShort = [
   'Oct',
   'Nov',
   'Dec',
+  'Jan', // 9
+  'Feb', // 10
+  'Mar', // 11
 ];
 
 export const quarters = ['First quarter', 'Second quarter', 'Third quarter', 'Fourth quarter'];
@@ -258,6 +261,25 @@ export const indianCurrencyInDecimals = amount => {
     currency: 'INR',
   }).format(amount);
 };
+
+// export const dateByQuarter = {
+//   1: {
+//     startDate: `${dayjs().year()}-04-01`,
+//     endDate: `${dayjs().year()}-06-30`,
+//   },
+//   2: {
+//     startDate: `${dayjs().year()}-07-01`,
+//     endDate: `${dayjs().year()}-09-30`,
+//   },
+//   3: {
+//     startDate: `${dayjs().year()}-10-01`,
+//     endDate: `${dayjs().year()}-12-31`,
+//   },
+//   4: {
+//     startDate: `${dayjs().year() + 1}-01-01`,
+//     endDate: `${dayjs().year() + 1}-03-31`,
+//   },
+// };
 
 export const dateByQuarter = {
   1: {

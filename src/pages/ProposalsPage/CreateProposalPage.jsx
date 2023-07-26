@@ -97,6 +97,18 @@ const CreateProposalPage = () => {
         return;
       }
 
+      const unitsBetweenRange = data.spaces.filter(
+        item => item?.unit && Number(item.unit) > item?.availableUnit,
+      );
+
+      if (unitsBetweenRange.length) {
+        showNotification({
+          title: 'Units must be less than or equal to available units',
+          color: 'blue',
+        });
+        return;
+      }
+
       data.spaces = form.values?.spaces?.map(item => ({
         id: item._id,
         price: +item.price,
@@ -209,7 +221,8 @@ const CreateProposalPage = () => {
             price: item.price,
             startDate: new Date(item.startDate),
             endDate: new Date(item.endDate),
-            unit: item?.bookedUnits ? item.bookedUnits : item?.unit,
+            unit: item?.remainingUnits,
+            availableUnit: item?.remainingUnits,
           })) || [],
         letterHead: proposalData?.proposal?.letterHead,
         letterFooter: proposalData?.proposal?.letterFooter,

@@ -454,8 +454,14 @@ const SelectSpace = () => {
 
             return (
               <Tooltip
-                label="Exceeded maximum units available for selected date range"
-                opened={isExceeded}
+                label={
+                  isExceeded
+                    ? 'Exceeded maximum units available for selected date range'
+                    : !unit
+                    ? 'Field cannot be empty'
+                    : null
+                }
+                opened={isExceeded || !unit}
                 transition="slide-left"
                 position="right"
                 color="red"
@@ -469,7 +475,7 @@ const SelectSpace = () => {
                   onChange={e => updateData('unit', e, _id)}
                   className="w-[100px]"
                   disabled={isDisabled}
-                  error={isExceeded}
+                  error={isExceeded || !unit}
                 />
               </Tooltip>
             );
@@ -675,8 +681,8 @@ const SelectSpace = () => {
         ) : (
           '-'
         );
-        obj.originalUnit = item?.specifications?.unit || '-';
-        obj.unit = item?.specifications?.unit || '-';
+        obj.originalUnit = item?.specifications?.unit || 1;
+        obj.unit = selectionItem?.unit ?? (item?.specifications?.unit || 1);
         obj.impressionMax = item.specifications?.impressions?.max || 0;
         obj.impressionMin = item.specifications?.impressions?.min || 0;
         obj.health = item?.specifications?.health ?? 0;

@@ -2,10 +2,12 @@ import { Chip, Button } from '@mantine/core';
 import classNames from 'classnames';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
+import { useFormContext } from '../../../../context/formContext';
 
 const initialState = ['Basic Information', 'Order Information', 'Select Spaces'];
 
 const Header = ({ setFormStep, formStep, isLoading, isEditable }) => {
+  const { values } = useFormContext();
   const navigate = useNavigate();
   const handleBooking = () => navigate('/bookings');
   const handleBack = () => {
@@ -59,7 +61,11 @@ const Header = ({ setFormStep, formStep, isLoading, isEditable }) => {
         <Button className="border-black radius-md text-black" onClick={handleBooking}>
           Cancel
         </Button>
-        <Button onClick={handleBack} className="bg-black">
+        <Button
+          onClick={handleBack}
+          className="bg-black"
+          disabled={isLoading || (formStep === 3 && values?.place.find(item => !item.unit))}
+        >
           <ChevronLeft className="mr-2 h-4" />
           Back
         </Button>
@@ -72,7 +78,7 @@ const Header = ({ setFormStep, formStep, isLoading, isEditable }) => {
         {formStep === 3 ? (
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || values?.place.find(item => !item.unit)}
             loading={isLoading}
             className="bg-purple-450 order-3"
           >

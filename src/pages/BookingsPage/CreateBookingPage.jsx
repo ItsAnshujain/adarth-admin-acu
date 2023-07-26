@@ -272,7 +272,17 @@ const CreateBookingPage = () => {
             startDate: item.startDate,
             endDate: item.endDate,
             tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
-            unit: item?.bookedUnits ? item.bookedUnits : item?.unit,
+            // unit: item?.bookedUnits ? item.bookedUnits : item?.unit,
+            unit:
+              item?.specifications?.unit && item.unit
+                ? item.specifications.unit - item.unit
+                : item?.unit,
+            // unit:
+            //   item?.specifications?.unit && item.unit ? item.specifications.unit - item.unit : item.unit,
+            availableUnit:
+              item?.specifications?.unit && item.unit
+                ? item.specifications.unit - item.unit
+                : item.unit,
             impressionMax: item?.specifications?.impressions?.max || 0,
             impressionMin: item?.specifications?.impressions?.min,
             health: item?.specifications?.health || 0,
