@@ -273,10 +273,10 @@ const CreateBookingPage = () => {
             endDate: item.endDate,
             tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
             // unit: item?.bookedUnits ? item.bookedUnits : item?.unit,
-            unit:
-              item?.specifications?.unit && item.unit
-                ? item.specifications.unit - item.unit
-                : item?.unit,
+            unit: item?.unit,
+            // item?.specifications?.unit && item.unit
+            //   ? item.specifications.unit - item.unit
+            //   : item?.unit,
             // unit:
             //   item?.specifications?.unit && item.unit ? item.specifications.unit - item.unit : item.unit,
             availableUnit:
