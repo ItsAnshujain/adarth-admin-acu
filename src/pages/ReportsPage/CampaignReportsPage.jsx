@@ -233,6 +233,7 @@ const CampaignReportsPage = () => {
               }
             }
           } else if (item._id < 4) {
+            // For financial year. if the month is less than 4 then it will be in the next year
             if (item.upcoming) {
               tempBarData.datasets[0].data[item._id + 8] = item.upcoming;
             }
@@ -243,6 +244,7 @@ const CampaignReportsPage = () => {
               tempBarData.datasets[2].data[item._id + 8] = item.completed;
             }
           } else {
+            // For financial year. if the month is greater than 4 then it will be in the same year
             if (item.upcoming) {
               tempBarData.datasets[0].data[item._id - 4] = item.upcoming;
             }

@@ -14,7 +14,7 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 import { Dropzone } from '@mantine/dropzone';
 import { useDebouncedValue } from '@mantine/hooks';
@@ -146,6 +146,7 @@ const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
 
 const SelectSpace = () => {
   const modals = useModals();
+  const { id: bookingId } = useParams();
   const { setFieldValue, values } = useFormContext();
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
@@ -447,21 +448,22 @@ const SelectSpace = () => {
             const isDisabled = !values?.place?.some(
               item => item._id === _id && item.startDate !== null && item.endDate !== null,
             );
+            const initialUnit = values?.place?.find(item => item._id === _id)?.initialUnit;
             const available = values?.place?.find(item => item._id === _id)?.availableUnit;
             const bookable = values?.place?.find(item => item._id === _id)?.unit;
             const hasChangedUnit = values?.place?.find(item => item._id === _id)?.hasChangedUnit;
-            const isExceeded = bookable > available;
+            const isExceeded = bookable > (bookingId ? available + initialUnit : available);
 
             return (
               <Tooltip
                 label={
-                  isExceeded
+                  hasChangedUnit && isExceeded
                     ? 'Exceeded maximum units available for selected date range'
                     : !unit
                     ? 'Field cannot be empty'
                     : null
                 }
-                opened={isExceeded || !unit}
+                opened={(hasChangedUnit && isExceeded) || !unit}
                 transition="slide-left"
                 position="right"
                 color="red"
@@ -475,7 +477,7 @@ const SelectSpace = () => {
                   onChange={e => updateData('unit', e, _id)}
                   className="w-[100px]"
                   disabled={isDisabled}
-                  error={isExceeded || !unit}
+                  error={(hasChangedUnit && isExceeded) || !unit}
                 />
               </Tooltip>
             );

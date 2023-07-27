@@ -36,18 +36,12 @@ import {
   monthsInShort,
   quarters,
   serialize,
+  timeLegend,
 } from '../utils';
 import ViewByFilter from '../components/modules/reports/ViewByFilter';
 import { DATE_FORMAT } from '../utils/constants';
 
 dayjs.extend(quarterOfYear);
-
-const timeLegend = {
-  dayOfWeek: 'Days',
-  dayOfMonth: 'Days',
-  quarter: 'Months',
-  month: 'Months',
-};
 
 ChartJS.register(
   CategoryScale,
@@ -178,8 +172,10 @@ const HomePage = () => {
               tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
             }
           } else if (item._id < 4) {
+            // For financial year. if the month is less than 4 then it will be in the next year
             tempData.datasets[0].data[item._id + 8] = item.total / 100000 || 0;
           } else {
+            // For financial year. if the month is greater than 4 then it will be in the same year
             tempData.datasets[0].data[item._id - 4] = item.total / 100000 || 0;
           }
         }

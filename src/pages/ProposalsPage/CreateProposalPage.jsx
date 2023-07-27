@@ -97,13 +97,15 @@ const CreateProposalPage = () => {
         return;
       }
 
-      const unitsBetweenRange = data.spaces.filter(
-        item => item?.unit && Number(item.unit) > item?.availableUnit,
-      );
-
-      if (unitsBetweenRange.length) {
+      if (
+        data.spaces?.some(item =>
+          proposalId
+            ? item.unit > item.initialUnit + item.availableUnit
+            : item.unit > item.availableUnit,
+        )
+      ) {
         showNotification({
-          title: 'Units must be less than or equal to available units',
+          title: 'Exceeded maximum units available for selected date range for one or more places',
           color: 'blue',
         });
         return;
@@ -186,10 +188,6 @@ const CreateProposalPage = () => {
           endDate: dayjs(maxDate).endOf('day').toISOString(),
         };
 
-        // TODO: remove after unit works with no issues
-        // console.log(data);
-        // return;
-
         create(data, {
           onSuccess: () => {
             setTimeout(() => {
@@ -223,6 +221,7 @@ const CreateProposalPage = () => {
             endDate: new Date(item.endDate),
             unit: item?.bookedUnits,
             availableUnit: item?.remainingUnits,
+            initialUnit: item?.bookedUnits,
           })) || [],
         letterHead: proposalData?.proposal?.letterHead,
         letterFooter: proposalData?.proposal?.letterFooter,

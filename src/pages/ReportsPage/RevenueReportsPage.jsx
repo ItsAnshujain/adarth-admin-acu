@@ -37,6 +37,7 @@ import {
   monthsInShort,
   quarters,
   serialize,
+  timeLegend,
 } from '../../utils';
 import RevenueStatsContent from '../../components/modules/reports/Revenue/RevenueStatsContent';
 import ViewByFilter from '../../components/modules/reports/ViewByFilter';
@@ -291,7 +292,6 @@ const RevenueReportsPage = () => {
 
       revenueGraphData?.forEach(item => {
         if (item._id) {
-          tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
           if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
             tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
           } else if (groupBy === 'quarter') {
@@ -303,8 +303,10 @@ const RevenueReportsPage = () => {
               tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
             }
           } else if (item._id < 4) {
+            // For financial year. if the month is less than 4 then it will be in the next year
             tempData.datasets[0].data[item._id + 8] = item.total / 100000 || 0;
           } else {
+            // For financial year. if the month is greater than 4 then it will be in the same year
             tempData.datasets[0].data[item._id - 4] = item.total / 100000 || 0;
           }
         }
@@ -408,7 +410,7 @@ const RevenueReportsPage = () => {
                     className="w-full"
                   />
                 </div>
-                <p className="text-center">Months &gt;</p>
+                <p className="text-center">{timeLegend[groupBy]} &gt;</p>
               </div>
             )}
           </div>
