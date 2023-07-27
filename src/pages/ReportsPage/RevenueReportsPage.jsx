@@ -37,6 +37,7 @@ import {
   monthsInShort,
   quarters,
   serialize,
+  timeLegend,
 } from '../../utils';
 import RevenueStatsContent from '../../components/modules/reports/Revenue/RevenueStatsContent';
 import ViewByFilter from '../../components/modules/reports/ViewByFilter';
@@ -409,7 +410,7 @@ const RevenueReportsPage = () => {
                     className="w-full"
                   />
                 </div>
-                <p className="text-center">Months &gt;</p>
+                <p className="text-center">{timeLegend[groupBy]} &gt;</p>
               </div>
             )}
           </div>

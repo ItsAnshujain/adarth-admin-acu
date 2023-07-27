@@ -503,3 +503,10 @@ export const calculateDaysListByMonth = (month, year) => {
   }
   return daysList;
 };
+
+export const timeLegend = {
+  dayOfWeek: 'Days',
+  dayOfMonth: 'Days',
+  quarter: 'Months',
+  month: 'Months',
+};

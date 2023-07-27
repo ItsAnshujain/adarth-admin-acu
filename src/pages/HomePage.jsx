@@ -36,18 +36,12 @@ import {
   monthsInShort,
   quarters,
   serialize,
+  timeLegend,
 } from '../utils';
 import ViewByFilter from '../components/modules/reports/ViewByFilter';
 import { DATE_FORMAT } from '../utils/constants';
 
 dayjs.extend(quarterOfYear);
-
-const timeLegend = {
-  dayOfWeek: 'Days',
-  dayOfMonth: 'Days',
-  quarter: 'Months',
-  month: 'Months',
-};
 
 ChartJS.register(
   CategoryScale,
