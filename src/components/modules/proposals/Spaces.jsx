@@ -14,7 +14,7 @@ import {
 import { ChevronDown } from 'react-feather';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
@@ -59,6 +59,7 @@ const updatedModalConfig = {
 
 const Spaces = () => {
   const modals = useModals();
+  const { id: proposalId } = useParams();
   const { values, setFieldValue } = useFormContext();
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
@@ -381,21 +382,22 @@ const Spaces = () => {
             const isDisabled = !values?.spaces?.some(
               item => item._id === _id && item.startDate !== null && item.endDate !== null,
             );
+            const initialUnit = values?.spaces?.find(item => item._id === _id)?.initialUnit;
             const available = values?.spaces?.find(item => item._id === _id)?.availableUnit;
             const bookable = values?.spaces?.find(item => item._id === _id)?.unit;
             const hasChangedUnit = values?.spaces?.find(item => item._id === _id)?.hasChangedUnit;
-            const isExceeded = bookable > available;
+            const isExceeded = bookable > (proposalId ? available + initialUnit : available);
 
             return (
               <Tooltip
                 label={
-                  isExceeded
+                  hasChangedUnit && isExceeded
                     ? 'Exceeded maximum units available for selected date range'
                     : !unit
                     ? 'Field cannot be empty'
                     : null
                 }
-                opened={isExceeded || !unit}
+                opened={(hasChangedUnit && isExceeded) || !unit}
                 transition="slide-left"
                 position="right"
                 color="red"
@@ -409,7 +411,7 @@ const Spaces = () => {
                   onChange={e => updateData('unit', e, _id)}
                   className="w-[100px]"
                   disabled={isDisabled}
-                  error={isExceeded || !unit}
+                  error={(hasChangedUnit && isExceeded) || !unit}
                 />
               </Tooltip>
             );

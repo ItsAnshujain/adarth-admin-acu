@@ -145,7 +145,7 @@ const BasicInfo = ({
 
   const res = getEveryDayUnits(bookingRange, inventoryDetails?.specifications?.unit);
   const occupiedState = getOccupiedState(
-    res[dayjs().format(DATE_FORMAT)]?.remUnit ?? 0,
+    res[dayjs().format(DATE_FORMAT)]?.remUnit ?? inventoryDetails?.specifications?.unit,
     inventoryDetails?.specifications?.unit,
   );
 

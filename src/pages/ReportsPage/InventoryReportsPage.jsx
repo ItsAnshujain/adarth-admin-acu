@@ -665,24 +665,22 @@ const InventoryReportsPage = () => {
 
       inventoryReports.revenue?.forEach(item => {
         if (item._id) {
-          tempAreaData.datasets[0].data[item._id - 1] = item?.total;
-
-          if (item._id) {
-            if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
-              tempAreaData.datasets[0].data[item._id - 1] = item?.total;
-            } else if (groupBy === 'quarter') {
-              if (dayjs().quarter() === 1) {
-                tempAreaData.datasets[0].data[item._id + 3] = item.total;
-              } else if (dayjs().quarter() === 4) {
-                tempAreaData.datasets[0].data[item._id - 3] = item.total;
-              } else {
-                tempAreaData.datasets[0].data[item._id - 1] = item.total;
-              }
-            } else if (item._id < 4) {
-              tempAreaData.datasets[0].data[item._id + 8] = item.total;
+          if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
+            tempAreaData.datasets[0].data[item._id - 1] = item?.total;
+          } else if (groupBy === 'quarter') {
+            if (dayjs().quarter() === 1) {
+              tempAreaData.datasets[0].data[item._id + 3] = item.total;
+            } else if (dayjs().quarter() === 4) {
+              tempAreaData.datasets[0].data[item._id - 3] = item.total;
             } else {
-              tempAreaData.datasets[0].data[item._id - 4] = item.total;
+              tempAreaData.datasets[0].data[item._id - 1] = item.total;
             }
+          } else if (item._id < 4) {
+            // For financial year. if the month is less than 4 then it will be in the next year
+            tempAreaData.datasets[0].data[item._id + 8] = item.total;
+          } else {
+            // For financial year. if the month is greater than 4 then it will be in the same year
+            tempAreaData.datasets[0].data[item._id - 4] = item.total;
           }
         }
       });

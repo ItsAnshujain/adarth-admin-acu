@@ -440,11 +440,12 @@ export const getEveryDayUnits = (bookingRange = [], units = 1) => {
       const key = sDate.format(DATE_FORMAT);
       if (day[key]) {
         day[key] = {
-          bookedUnit: day[key].bookedUnit + bookingRange[i].bookedUnit || bookingRange[i].unit,
+          bookedUnit: day[key].bookedUnit + (bookingRange[i].bookedUnit || bookingRange[i].unit),
           remUnit:
-            units - (day[key].bookedUnit + bookingRange[i].bookedUnit || bookingRange[i].unit) < 0
+            units - (day[key].bookedUnit + (bookingRange[i].bookedUnit || bookingRange[i].unit)) < 0
               ? 0
-              : units - (day[key].bookedUnit + bookingRange[i].bookedUnit || bookingRange[i].unit),
+              : units -
+                (day[key].bookedUnit + (bookingRange[i].bookedUnit || bookingRange[i].unit)),
         };
       } else {
         day[key] = {

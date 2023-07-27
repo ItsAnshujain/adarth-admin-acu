@@ -122,21 +122,15 @@ const CreateBookingPage = () => {
         return;
       }
 
-      if (data.place?.some(item => item.unit > item.availableUnit)) {
+      if (
+        data.place?.some(item =>
+          bookingId
+            ? item.unit > item.initialUnit + item.availableUnit
+            : item.unit > item.availableUnit,
+        )
+      ) {
         showNotification({
           title: 'Exceeded maximum units available for selected date range for one or more places',
-          color: 'blue',
-        });
-        return;
-      }
-
-      const unitsBetweenRange = data.place.filter(
-        item => item?.unit && Number(item.unit) > item?.availableUnit,
-      );
-
-      if (unitsBetweenRange.length) {
-        showNotification({
-          title: 'Units must be less than or equal to available units',
           color: 'blue',
         });
         return;
@@ -193,9 +187,6 @@ const CreateBookingPage = () => {
         }
       });
 
-      // TODO: remove after unit works with no issues
-      // console.log(data);
-      // return;
       if (bookingId) {
         update.mutate(
           {
@@ -272,17 +263,12 @@ const CreateBookingPage = () => {
             startDate: item.startDate,
             endDate: item.endDate,
             tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
-            // unit: item?.bookedUnits ? item.bookedUnits : item?.unit,
             unit: item?.unit,
-            // item?.specifications?.unit && item.unit
-            //   ? item.specifications.unit - item.unit
-            //   : item?.unit,
-            // unit:
-            //   item?.specifications?.unit && item.unit ? item.specifications.unit - item.unit : item.unit,
             availableUnit:
               item?.specifications?.unit && item.unit
                 ? item.specifications.unit - item.unit
                 : item.unit,
+            initialUnit: item?.unit,
             impressionMax: item?.specifications?.impressions?.max || 0,
             impressionMin: item?.specifications?.impressions?.min,
             health: item?.specifications?.health || 0,
