@@ -8,13 +8,11 @@ import {
   Loader,
   Chip,
   HoverCard,
-  Text,
   Group,
-  Box,
   Tooltip,
 } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 import { Dropzone } from '@mantine/dropzone';
 import { useDebouncedValue } from '@mantine/hooks';
@@ -39,7 +37,6 @@ import {
   getDate,
   getEveryDayUnits,
   getOccupiedState,
-  getOccupiedStateColor,
   stringToColour,
   supportedTypes,
 } from '../../../../utils';
@@ -50,6 +47,7 @@ import DateRangeSelector from '../../../DateRangeSelector';
 import modalConfig from '../../../../utils/modalConfig';
 import RowsPerPage from '../../../RowsPerPage';
 import useLayoutView from '../../../../store/layout.store';
+import SpaceNamePhotoContent from '../../inventory/SpaceNamePhotoContent';
 
 dayjs.extend(isBetween);
 
@@ -267,43 +265,15 @@ const SelectSpace = () => {
             const occupiedState = getOccupiedState(unitLeft, originalUnit);
 
             return (
-              <div className="flex items-center justify-between gap-2 w-96 mr-4">
-                <div className="flex justify-start items-center flex-1">
-                  <Box
-                    className={classNames(
-                      'bg-white border rounded-md',
-                      photo ? 'cursor-zoom-in' : '',
-                    )}
-                    onClick={() => (photo ? togglePreviewModal(photo) : null)}
-                  >
-                    {photo ? (
-                      <Image src={photo} alt="banner" height={32} width={32} />
-                    ) : (
-                      <Image src={null} withPlaceholder height={32} width={32} />
-                    )}
-                  </Box>
-                  <Link
-                    to={`/inventory/view-details/${_id}`}
-                    className="text-purple-450 font-medium px-2"
-                    target="_blank"
-                  >
-                    <Text
-                      className="overflow-hidden text-ellipsis underline"
-                      lineClamp={1}
-                      title={spaceName}
-                    >
-                      {spaceName}
-                    </Text>
-                  </Link>
-                </div>
-                <Badge
-                  className="capitalize"
-                  variant="filled"
-                  color={getOccupiedStateColor(isUnderMaintenance, occupiedState)}
-                >
-                  {isUnderMaintenance ? 'Under Maintenance' : occupiedState}
-                </Badge>
-              </div>
+              <SpaceNamePhotoContent
+                id={_id}
+                spaceName={spaceName}
+                spacePhoto={photo}
+                occupiedStateLabel={occupiedState}
+                isUnderMaintenance={isUnderMaintenance}
+                togglePreviewModal={togglePreviewModal}
+                isTargetBlank
+              />
             );
           }, [info.row.original.isUnderMaintenance]),
       },

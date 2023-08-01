@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { Link, useSearchParams } from 'react-router-dom';
 import multiDownload from 'multi-download';
-import { checkCampaignStats, serialize } from '../../../../utils';
+import { checkCampaignStats, generateSlNo, serialize } from '../../../../utils';
 import { useUpdateBooking, useUpdateBookingStatus } from '../../../../apis/queries/booking.queries';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import toIndianCurrency from '../../../../utils/currencyFormat';
@@ -63,6 +63,14 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
   const { mutate: update } = useUpdateBooking();
   const { mutateAsync: updateBookingStatus } = useUpdateBookingStatus();
 
+  const { limit, page } = useMemo(
+    () => ({
+      limit: searchParams.get('limit'),
+      page: Number(searchParams.get('page')),
+    }),
+    [searchParams],
+  );
+
   const handlePaymentUpdate = (bookingId, data) => {
     if (data) {
       updateBookingStatus({ id: bookingId, query: serialize({ paymentStatus: data }) });
@@ -105,13 +113,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            const currentPage = bookingData?.page < 1 ? 1 : bookingData.page;
-            const rowCount = (currentPage - 1) * bookingData.limit;
-
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'CAMPAIGN NAME',
@@ -561,7 +563,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
       <div className="pr-7">
         <div className="flex justify-between h-20 items-center">
           <RowsPerPage
-            setCount={limit => handlePagination('limit', limit)}
+            setCount={currentLimit => handlePagination('limit', currentLimit)}
             count={bookingData.limit?.toString()}
           />
           <Search search={searchInput} setSearch={setSearchInput} />
@@ -583,7 +585,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           COLUMNS={column}
           activePage={bookingData?.page || 1}
           totalPages={bookingData?.totalPages || 1}
-          setActivePage={page => handlePagination('page', page)}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={bookingData?.limit || 10}
           handleSorting={handleSortByColumn}
         />

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedValue } from '@mantine/hooks';
-import { Link, useSearchParams } from 'react-router-dom';
-import { ActionIcon, Badge, Box, Button, Image, Loader, Progress, Text } from '@mantine/core';
+import { useSearchParams } from 'react-router-dom';
+import { ActionIcon, Badge, Button, Image, Loader, Progress } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
@@ -30,7 +30,6 @@ import {
   generateSlNo,
   getAvailableUnits,
   getOccupiedState,
-  getOccupiedStateColor,
   ROLES,
   stringToColour,
 } from '../../utils';
@@ -41,6 +40,7 @@ import RoleBased from '../../components/RoleBased';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
 import ViewByFilter from '../../components/modules/inventory/ViewByFilter';
 import ShareContent from '../../components/modules/inventory/ShareContent';
+import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
 
 dayjs.extend(isBetween);
 
@@ -86,14 +86,6 @@ const InventoryDashboardPage = () => {
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
   const isActive = searchParams.get('isActive');
-  // const from = searchParams.get('from');
-  // const to = searchParams.get('to');
-
-  // const convertToISOString = dateString => {
-  //   const dateObject = new Date(dateString);
-  //   const isoString = dateObject.toISOString();
-  //   return isoString;
-  // };
 
   const togglePreviewModal = imgSrc =>
     modals.openModal({
@@ -130,51 +122,14 @@ const InventoryDashboardPage = () => {
             );
 
             return (
-              <div className="flex items-center justify-between gap-2 w-96 mr-4">
-                <div className="flex justify-start items-center flex-1">
-                  <Box
-                    className={classNames(
-                      'bg-white border rounded-md',
-                      info.row.original.basicInformation?.spacePhoto ? 'cursor-zoom-in' : '',
-                    )}
-                    onClick={() =>
-                      info.row.original.basicInformation?.spacePhoto
-                        ? togglePreviewModal(info.row.original.basicInformation?.spacePhoto)
-                        : null
-                    }
-                  >
-                    {info.row.original.basicInformation?.spacePhoto ? (
-                      <Image
-                        src={info.row.original.basicInformation?.spacePhoto}
-                        alt="banner"
-                        height={32}
-                        width={32}
-                      />
-                    ) : (
-                      <Image src={null} withPlaceholder height={32} width={32} />
-                    )}
-                  </Box>
-                  <Link
-                    to={`/inventory/view-details/${info.row.original._id}`}
-                    className="text-purple-450 font-medium px-2"
-                  >
-                    <Text
-                      className="overflow-hidden text-ellipsis underline"
-                      lineClamp={1}
-                      title={info.row.original.basicInformation?.spaceName}
-                    >
-                      {info.row.original.basicInformation?.spaceName}
-                    </Text>
-                  </Link>
-                </div>
-                <Badge
-                  className="capitalize"
-                  variant="filled"
-                  color={getOccupiedStateColor(info.row.original.isUnderMaintenance, occupiedState)}
-                >
-                  {info.row.original.isUnderMaintenance ? 'Under Maintenance' : occupiedState}
-                </Badge>
-              </div>
+              <SpaceNamePhotoContent
+                id={info.row.original._id}
+                spaceName={info.row.original.basicInformation?.spaceName}
+                spacePhoto={info.row.original.basicInformation?.spacePhoto}
+                occupiedStateLabel={occupiedState}
+                isUnderMaintenance={info.row.original.isUnderMaintenance}
+                togglePreviewModal={togglePreviewModal}
+              />
             );
           }, []),
       },

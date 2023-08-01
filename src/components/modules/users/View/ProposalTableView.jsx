@@ -5,7 +5,7 @@ import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import { useUpdateProposal } from '../../../../apis/queries/proposal.queries';
-import { serialize } from '../../../../utils';
+import { generateSlNo, serialize } from '../../../../utils';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import ProposalsMenuPopover from '../../../Popovers/ProposalsMenuPopover';
 import Table from '../../../Table/Table';
@@ -35,6 +35,14 @@ const ProposalTableView = ({ data, isLoading }) => {
     serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
   );
 
+  const { limit, page } = useMemo(
+    () => ({
+      limit: searchParams.get('limit'),
+      page: Number(searchParams.get('page')),
+    }),
+    [searchParams],
+  );
+
   const handleSortByColumn = colId => {
     searchParams.set('sortBy', colId);
     searchParams.set(
@@ -61,13 +69,7 @@ const ProposalTableView = ({ data, isLoading }) => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            const currentPage = data?.page < 1 ? 1 : data.page;
-            const rowCount = (currentPage - 1) * data.limit;
-
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'PROPOSAL NAME',
@@ -230,7 +232,7 @@ const ProposalTableView = ({ data, isLoading }) => {
           COLUMNS={COLUMNS}
           activePage={data?.page || 1}
           totalPages={data?.totalPages || 1}
-          setActivePage={page => handlePagination('page', page)}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={data.limit || 10}
           handleSorting={handleSortByColumn}
         />

@@ -15,6 +15,7 @@ import Search from '../../../Search';
 import { useFetchBookingsByInventoryId } from '../../../../apis/queries/inventory.queries';
 import NoData from '../../../shared/NoData';
 import BookingsMenuPopover from '../../../Popovers/BookingsMenuPopover';
+import { generateSlNo } from '../../../../utils';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
@@ -48,16 +49,7 @@ const Booking = ({ inventoryId }) => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'CLIENT',
