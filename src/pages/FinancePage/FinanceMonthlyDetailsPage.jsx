@@ -91,7 +91,6 @@ const FinanceMonthlyDetailsPage = () => {
       ...modalConfig,
     });
 
-  // TODO: disable SortBy in all col for now
   const purchaseOrderColumn = useMemo(
     () => [
       {
@@ -257,7 +256,6 @@ const FinanceMonthlyDetailsPage = () => {
     [financialDataByMonth?.finances?.docs],
   );
 
-  // TODO: disable SortBy in all col for now
   const releaseOrderColumn = useMemo(
     () => [
       {
@@ -433,7 +431,6 @@ const FinanceMonthlyDetailsPage = () => {
     [financialDataByMonth?.finances?.docs],
   );
 
-  // TODO: disable SortBy in all col for now
   const invoiceColumn = useMemo(
     () => [
       {

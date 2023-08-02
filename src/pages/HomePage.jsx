@@ -193,8 +193,8 @@ const HomePage = () => {
         <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
           <AreaHeader text={`Hello, ${userCachedData?.name || 'User'}`} />
           <div className="my-5">
-            <div className="grid grid-rows-2 mb-8 gap-y-4">
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="grid grid-rows-2 mb-5 gap-5">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
                 <div className="border rounded p-8 flex-1">
                   <Image
                     src={TotalCampaignIcon}
@@ -229,7 +229,7 @@ const HomePage = () => {
                   <p className="font-bold">{bookingStats?.Upcoming || 0}</p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
                 <div className="border rounded p-8 flex-1">
                   <Image
                     src={CompletedCampaignIcon}
