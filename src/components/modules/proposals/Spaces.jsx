@@ -8,15 +8,14 @@ import {
   Badge,
   Loader,
   Group,
-  Box,
+  Tooltip,
 } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import classNames from 'classnames';
 import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
@@ -24,7 +23,17 @@ import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 import { useFetchInventory } from '../../../apis/queries/inventory.queries';
-import { categoryColors, getDate, stringToColour } from '../../../utils';
+import {
+  categoryColors,
+  currentDate,
+  debounce,
+  generateSlNo,
+  getAvailableUnits,
+  getDate,
+  getEveryDayUnits,
+  getOccupiedState,
+  stringToColour,
+} from '../../../utils';
 import Filter from '../inventory/Filter';
 import { useFormContext } from '../../../context/formContext';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
@@ -32,6 +41,7 @@ import DateRangeSelector from '../../DateRangeSelector';
 import RowsPerPage from '../../RowsPerPage';
 import modalConfig from '../../../utils/modalConfig';
 import useLayoutView from '../../../store/layout.store';
+import SpaceNamePhotoContent from '../inventory/SpaceNamePhotoContent';
 
 dayjs.extend(isBetween);
 
@@ -47,6 +57,7 @@ const updatedModalConfig = {
 
 const Spaces = () => {
   const modals = useModals();
+  const { id: proposalId } = useParams();
   const { values, setFieldValue } = useFormContext();
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
@@ -74,31 +85,58 @@ const Spaces = () => {
 
   const toggleFilter = () => setShowFilter(!showFilter);
 
-  const updateData = (key, val, id) => {
+  const updateData = debounce((key, val, id) => {
     if (key === 'dateRange') {
+      let availableUnit = 0;
+      const hasChangedUnit = values.spaces.find(item => item._id === id)?.hasChangedUnit;
+      setUpdatedInventoryData(prev => {
+        const newList = [...prev];
+        const index = newList.findIndex(item => item._id === id);
+        newList[index] = { ...newList[index], startDate: val[0], endDate: val[1] };
+        availableUnit = getAvailableUnits(
+          newList[index].bookingRange,
+          newList[index].startDate,
+          newList[index].endDate,
+          newList[index].originalUnit,
+        );
+        newList[index] = { ...newList[index], availableUnit };
+
+        return newList;
+      });
+
+      setFieldValue(
+        'spaces',
+        values.spaces.map(item =>
+          item._id === id
+            ? {
+                ...item,
+                startDate: val[0],
+                endDate: val[1],
+                ...(!hasChangedUnit ? { unit: availableUnit } : {}),
+                availableUnit,
+              }
+            : item,
+        ),
+      );
+    } else {
       setUpdatedInventoryData(prev =>
         prev.map(item =>
-          item._id === id ? { ...item, startDate: val[0], endDate: val[1] } : item,
+          item._id === id
+            ? { ...item, [key]: val, ...(key === 'unit' ? { hasChangedUnit: true } : {}) }
+            : item,
         ),
       );
 
       setFieldValue(
         'spaces',
         values.spaces.map(item =>
-          item._id === id ? { ...item, startDate: val[0], endDate: val[1] } : item,
+          item._id === id
+            ? { ...item, [key]: val, ...(key === 'unit' ? { hasChangedUnit: true } : {}) }
+            : item,
         ),
       );
-    } else {
-      setUpdatedInventoryData(prev =>
-        prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
-      );
-
-      setFieldValue(
-        'spaces',
-        values.spaces.map(item => (item._id === id ? { ...item, [key]: val } : item)),
-      );
     }
-  };
+  }, 500);
 
   const togglePreviewModal = imgSrc =>
     modals.openModal({
@@ -115,70 +153,42 @@ const Spaces = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: info =>
-          useMemo(() => {
-            let currentPage = pages;
-            let rowCount = 0;
-            if (pages < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + info.row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, pages, limit)}</p>, []),
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'basicInformation.spaceName',
         Cell: ({
           row: {
-            original: { _id, spaceName, spacePhoto, isUnderMaintenance, bookingRange },
+            original: {
+              _id,
+              spaceName,
+              spacePhoto,
+              isUnderMaintenance,
+              bookingRange,
+              originalUnit,
+            },
           },
         }) =>
           useMemo(() => {
-            const isOccupied = bookingRange?.some(
-              item =>
-                dayjs().isBetween(item?.startDate, item?.endDate) ||
-                dayjs().isSame(dayjs(item?.endDate), 'day'),
+            const unitLeft = getAvailableUnits(
+              bookingRange,
+              currentDate,
+              currentDate,
+              originalUnit,
             );
+            const occupiedState = getOccupiedState(unitLeft, originalUnit);
 
             return (
-              <div className="flex items-center justify-between gap-2 w-96 mr-4">
-                <div className="flex justify-start items-center flex-1">
-                  <Box
-                    className={classNames(
-                      'bg-white border rounded-md',
-                      spacePhoto ? 'cursor-zoom-in' : '',
-                    )}
-                    onClick={() => (spacePhoto ? togglePreviewModal(spacePhoto) : null)}
-                  >
-                    {spacePhoto ? (
-                      <Image src={spacePhoto} alt="banner" height={32} width={32} />
-                    ) : (
-                      <Image src={null} withPlaceholder height={32} width={32} />
-                    )}
-                  </Box>
-                  <Link
-                    to={`/inventory/view-details/${_id}`}
-                    className="text-purple-450 font-medium px-2"
-                    target="_blank"
-                  >
-                    <Text
-                      className="overflow-hidden text-ellipsis underline"
-                      lineClamp={1}
-                      title={spaceName}
-                    >
-                      {spaceName}
-                    </Text>
-                  </Link>
-                </div>
-                <Badge
-                  className="capitalize"
-                  variant="filled"
-                  color={isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'}
-                >
-                  {isUnderMaintenance ? 'Under Maintenance' : isOccupied ? 'Occupied' : 'Available'}
-                </Badge>
-              </div>
+              <SpaceNamePhotoContent
+                id={_id}
+                spaceName={spaceName}
+                spacePhoto={spacePhoto}
+                occupiedStateLabel={occupiedState}
+                isUnderMaintenance={isUnderMaintenance}
+                togglePreviewModal={togglePreviewModal}
+                isTargetBlank
+              />
             );
           }, []),
       },
@@ -298,20 +308,84 @@ const Spaces = () => {
                 defaultValue={+(price || 0)}
                 className="w-40"
                 hideControls
-                onBlur={e => updateData('price', e.target.value, _id)}
+                onChange={e => updateData('price', e, _id)}
               />
             ),
             [],
           ),
       },
       {
+        Header: 'PROPOSAL DATE',
+        accessor: 'scheduledDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { bookingRange, startDate, endDate, unit, _id },
+          },
+        }) =>
+          useMemo(() => {
+            const isDisabled =
+              values?.spaces?.some(item => item._id === _id) && (!startDate || !endDate);
+            const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
+
+            return (
+              <div className="min-w-[300px]">
+                <DateRangeSelector
+                  error={isDisabled}
+                  dateValue={[startDate || null, endDate || null]}
+                  onChange={val => updateData('dateRange', val, _id)}
+                  everyDayUnitsData={everyDayUnitsData}
+                />
+              </div>
+            );
+          }, []),
+      },
+      {
         Header: 'UNIT',
         accessor: 'specifications.unit',
         Cell: ({
           row: {
-            original: { unit },
+            original: { unit, startDate, endDate, _id, availableUnit },
           },
-        }) => useMemo(() => <p>{unit}</p>, []),
+        }) =>
+          useMemo(() => {
+            const isDisabled = !values?.spaces?.some(
+              item => item._id === _id && item.startDate !== null && item.endDate !== null,
+            );
+            const initialUnit = values?.spaces?.find(item => item._id === _id)?.initialUnit;
+            const available = values?.spaces?.find(item => item._id === _id)?.availableUnit;
+            const bookable = values?.spaces?.find(item => item._id === _id)?.unit;
+            const hasChangedUnit = values?.spaces?.find(item => item._id === _id)?.hasChangedUnit;
+            const isExceeded = bookable > (proposalId ? available + initialUnit : available);
+
+            return (
+              <Tooltip
+                label={
+                  hasChangedUnit && isExceeded
+                    ? 'Exceeded maximum units available for selected date range'
+                    : !unit
+                    ? 'Field cannot be empty'
+                    : null
+                }
+                opened={(hasChangedUnit && isExceeded) || !unit}
+                transition="slide-left"
+                position="right"
+                color="red"
+                radius="sm"
+                withArrow
+              >
+                <NumberInput
+                  hideControls
+                  defaultValue={!hasChangedUnit ? Number(bookable || 0) : unit}
+                  min={1}
+                  onChange={e => updateData('unit', e, _id)}
+                  className="w-[100px]"
+                  disabled={isDisabled}
+                  error={(hasChangedUnit && isExceeded) || !unit}
+                />
+              </Tooltip>
+            );
+          }, [startDate, endDate, unit, availableUnit]),
       },
       {
         Header: 'INVENTORY ID',
@@ -377,32 +451,6 @@ const Spaces = () => {
         }) =>
           useMemo(
             () => <p className="capitalize w-32">{impressions ? getWord(impressions) : 'NA'}</p>,
-            [],
-          ),
-      },
-      {
-        Header: 'PROPOSAL DATE',
-        accessor: 'scheduledDate',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { bookingRange, startDate, endDate, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div className="min-w-[300px]">
-                <DateRangeSelector
-                  error={
-                    !!values?.spaces?.find(item => item._id === _id) && (!startDate || !endDate)
-                  }
-                  dateValue={[startDate || null, endDate || null]}
-                  onChange={val => updateData('dateRange', val, _id)}
-                  dateRange={bookingRange}
-                  minDate={new Date()}
-                />
-              </div>
-            ),
             [],
           ),
       },
@@ -478,7 +526,8 @@ const Spaces = () => {
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
-        obj.unit = item?.specifications?.unit || '-';
+        obj.originalUnit = item?.specifications?.unit || 1;
+        obj.unit = item?.specifications?.unit || 1;
         obj.additionalTags = item?.specifications?.additionalTags;
         obj.category = item?.basicInformation?.category?.name;
         obj.subCategory = item?.basicInformation?.subCategory?.name;

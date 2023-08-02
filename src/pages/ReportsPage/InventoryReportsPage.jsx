@@ -13,7 +13,7 @@ import {
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
 import { Badge, Image, Loader, Progress, Tabs, Text } from '@mantine/core';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { getWord } from 'num-count';
@@ -40,9 +40,11 @@ import InventoryStatsContent from '../../components/modules/reports/Inventory/In
 import SubHeader from '../../components/modules/reports/Inventory/SubHeader';
 import {
   categoryColors,
-  dateByQuarter,
   daysInAWeek,
   downloadPdf,
+  financialEndDate,
+  financialStartDate,
+  generateSlNo,
   monthsInShort,
   quarters,
   serialize,
@@ -50,6 +52,8 @@ import {
 import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/modules/reports/ShareContent';
+import { DATE_FORMAT } from '../../utils/constants';
+import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
 
 dayjs.extend(quarterOfYear);
 
@@ -65,7 +69,15 @@ ChartJS.register(
   Legend,
 );
 
-const DATE_FORMAT = 'YYYY-MM-DD';
+const updatedModalConfig = {
+  ...modalConfig,
+  classNames: {
+    title: 'font-dmSans text-xl px-4',
+    header: 'px-4 pt-4',
+    body: '',
+    close: 'mr-4',
+  },
+};
 
 const options = {
   responsive: true,
@@ -110,8 +122,8 @@ const InventoryReportsPage = () => {
     page: 1,
     sortOrder: 'desc',
     sortBy: 'basicInformation.spaceName',
-    startDate: dayjs().startOf('year').format(DATE_FORMAT),
-    endDate: dayjs().endOf('year').format(DATE_FORMAT),
+    startDate: financialStartDate,
+    endDate: financialEndDate,
     groupBy: 'month',
   });
   const chartRef = useRef(null);
@@ -154,15 +166,15 @@ const InventoryReportsPage = () => {
   const groupBy = searchParams.get('groupBy');
 
   const handleViewBy = viewType => {
-    if (viewType === 'reset') {
-      const startDate = dayjs().startOf('year').format(DATE_FORMAT);
-      const endDate = dayjs().endOf('year').format(DATE_FORMAT);
+    if (viewType === 'reset' || viewType === 'year') {
+      const startDate = financialStartDate;
+      const endDate = financialEndDate;
       searchParams.set('startDate', startDate);
       searchParams.set('endDate', endDate);
-      searchParams.set('groupBy', 'year');
+      searchParams.set('groupBy', 'month');
       setSearchParams(searchParams);
     }
-    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
+    if (viewType === 'week' || viewType === 'month') {
       const startDate = dayjs().startOf(viewType).format(DATE_FORMAT);
       const endDate = dayjs().endOf(viewType).format(DATE_FORMAT);
 
@@ -170,23 +182,26 @@ const InventoryReportsPage = () => {
       searchParams.set('endDate', endDate);
       searchParams.set(
         'groupBy',
-        viewType === 'year'
-          ? 'month'
-          : viewType === 'month'
-          ? 'dayOfMonth'
-          : viewType === 'week'
-          ? 'dayOfWeek'
-          : 'month',
+        viewType === 'month' ? 'dayOfMonth' : viewType === 'week' ? 'dayOfWeek' : 'month',
       );
       setSearchParams(searchParams);
     }
     if (viewType === 'quarter') {
-      searchParams.set('startDate', dateByQuarter[dayjs().quarter()].startDate);
-      searchParams.set('endDate', dateByQuarter[dayjs().quarter()].endDate);
+      searchParams.set('startDate', financialStartDate);
+      searchParams.set('endDate', financialEndDate);
       searchParams.set('groupBy', 'quarter');
       setSearchParams(searchParams);
     }
   };
+
+  const togglePreviewModal = imgSrc =>
+    modals.openModal({
+      title: 'Preview',
+      children: (
+        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+      ),
+      ...updatedModalConfig,
+    });
 
   const inventoryHealthStatus = useMemo(
     () => ({
@@ -207,48 +222,21 @@ const InventoryReportsPage = () => {
       Header: '#',
       accessor: 'id',
       disableSortBy: true,
-      Cell: ({ row }) =>
-        useMemo(() => {
-          let currentPage = page;
-          let rowCount = 0;
-          if (page < 1) {
-            currentPage = 1;
-          }
-          rowCount = (currentPage - 1) * limit;
-          return <p>{rowCount + row.index + 1}</p>;
-        }, []),
+      Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
     },
     {
       Header: 'SPACE NAME & PHOTO',
       accessor: 'basicInformation.spaceName',
-      Cell: ({
-        row: {
-          original: { _id, basicInformation },
-        },
-      }) =>
+      Cell: info =>
         useMemo(
           () => (
-            <div className="flex items-center gap-2">
-              <div className="bg-white border rounded-md">
-                {basicInformation?.spacePhoto ? (
-                  <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
-                ) : (
-                  <Image src={null} withPlaceholder height={32} width={32} />
-                )}
-              </div>
-              <Link
-                to={`/inventory/view-details/${_id}`}
-                className="font-medium px-2 max-w-[180px] underline"
-              >
-                <Text
-                  className="overflow-hidden text-ellipsis text-purple-450"
-                  lineClamp={1}
-                  title={basicInformation?.spaceName}
-                >
-                  {basicInformation?.spaceName}
-                </Text>
-              </Link>
-            </div>
+            <SpaceNamePhotoContent
+              id={info.row.original._id}
+              spaceName={info.row.original.basicInformation?.spaceName}
+              spacePhoto={info.row.original.basicInformation?.spacePhoto}
+              togglePreviewModal={togglePreviewModal}
+              isTargetBlank
+            />
           ),
           [],
         ),
@@ -431,49 +419,22 @@ const InventoryReportsPage = () => {
       Header: '#',
       accessor: 'id',
       disableSortBy: true,
-      Cell: ({ row }) =>
-        useMemo(() => {
-          let currentPage = page;
-          let rowCount = 0;
-          if (page < 1) {
-            currentPage = 1;
-          }
-          rowCount = (currentPage - 1) * limit;
-          return <p>{rowCount + row.index + 1}</p>;
-        }, []),
+      Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
     },
     {
       Header: 'SPACE NAME & PHOTO',
       accessor: 'basicInformation.spaceName',
       disableSortBy: true,
-      Cell: ({
-        row: {
-          original: { _id, basicInformation },
-        },
-      }) =>
+      Cell: info =>
         useMemo(
           () => (
-            <div className="flex items-center gap-2">
-              <div className="bg-white border rounded-md">
-                {basicInformation?.spacePhoto ? (
-                  <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
-                ) : (
-                  <Image src={null} withPlaceholder height={32} width={32} />
-                )}
-              </div>
-              <Link
-                to={`/inventory/view-details/${_id}`}
-                className="font-medium px-2 max-w-[180px] underline"
-              >
-                <Text
-                  className="overflow-hidden text-ellipsis text-purple-450"
-                  lineClamp={1}
-                  title={basicInformation?.spaceName}
-                >
-                  {basicInformation?.spaceName}
-                </Text>
-              </Link>
-            </div>
+            <SpaceNamePhotoContent
+              id={info.row.original._id}
+              spaceName={info.row.original.basicInformation?.spaceName}
+              spacePhoto={info.row.original.basicInformation?.spacePhoto}
+              togglePreviewModal={togglePreviewModal}
+              isTargetBlank
+            />
           ),
           [],
         ),
@@ -496,7 +457,6 @@ const InventoryReportsPage = () => {
         row: {
           original: { basicInformation },
         },
-        // }) => useMemo(() => <p className="w-fit">{basicInformation?.category?.name}</p>, []),
       }) =>
         useMemo(() => {
           const colorType = Object.keys(categoryColors).find(
@@ -671,9 +631,26 @@ const InventoryReportsPage = () => {
 
       inventoryReports.revenue?.forEach(item => {
         if (item._id) {
-          tempAreaData.datasets[0].data[item._id] = item?.total;
+          if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
+            tempAreaData.datasets[0].data[item._id - 1] = item?.total;
+          } else if (groupBy === 'quarter') {
+            if (dayjs().quarter() === 1) {
+              tempAreaData.datasets[0].data[item._id + 3] = item.total;
+            } else if (dayjs().quarter() === 4) {
+              tempAreaData.datasets[0].data[item._id - 3] = item.total;
+            } else {
+              tempAreaData.datasets[0].data[item._id - 1] = item.total;
+            }
+          } else if (item._id < 4) {
+            // For financial year. if the month is less than 4 then it will be in the next year
+            tempAreaData.datasets[0].data[item._id + 8] = item.total;
+          } else {
+            // For financial year. if the month is greater than 4 then it will be in the same year
+            tempAreaData.datasets[0].data[item._id - 4] = item.total;
+          }
         }
       });
+
       setAreaData(tempAreaData);
     }
   }, [inventoryReports]);

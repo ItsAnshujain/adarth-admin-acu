@@ -1,19 +1,39 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Group, Image, Loader, Progress, Text } from '@mantine/core';
+import { Badge, Button, Group, Image, Loader, Progress } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { v4 as uuidv4 } from 'uuid';
 import { getWord } from 'num-count';
+import { useModals } from '@mantine/modals';
 import Filter from '../../inventory/Filter';
 import Search from '../../../Search';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import { useFormContext } from '../../../../context/formContext';
-import { categoryColors, stringToColour } from '../../../../utils';
+import {
+  categoryColors,
+  currentDate,
+  generateSlNo,
+  getAvailableUnits,
+  getOccupiedState,
+  stringToColour,
+} from '../../../../utils';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
 import RowsPerPage from '../../../RowsPerPage';
+import SpaceNamePhotoContent from '../../inventory/SpaceNamePhotoContent';
+import modalConfig from '../../../../utils/modalConfig';
+
+const updatedModalConfig = {
+  ...modalConfig,
+  classNames: {
+    title: 'font-dmSans text-xl px-4',
+    header: 'px-4 pt-4',
+    body: '',
+    close: 'mr-4',
+  },
+};
 
 const getHealthTag = score =>
   score >= 80
@@ -45,6 +65,7 @@ const SpaceList = () => {
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
+  const modals = useModals();
 
   const getTotalPrice = useCallback(
     (places = []) => {
@@ -56,68 +77,46 @@ const SpaceList = () => {
 
   const toggleFilter = () => setShowFilter(!showFilter);
 
+  const togglePreviewModal = imgSrc =>
+    modals.openModal({
+      title: 'Preview',
+      children: (
+        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+      ),
+      ...updatedModalConfig,
+    });
+
   const COLUMNS = useMemo(
     () => [
       {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: info =>
-          useMemo(() => {
-            let currentPage = pages;
-            let rowCount = 0;
-            if (pages < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + info.row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, pages, limit)}</p>, []),
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'basicInformation.spaceName',
-        Cell: ({
-          row: {
-            original: { isUnderMaintenance, photo, spaceName, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div className="grid grid-cols-2 gap-2 items-center">
-                <div className="flex flex-1 gap-2 items-center w-44">
-                  <Image
-                    height={30}
-                    width={30}
-                    withPlaceholder
-                    className="rounded-md"
-                    src={photo}
-                  />
-                  <Link
-                    to={`/inventory/view-details/${_id}`}
-                    className="font-medium underline"
-                    target="_blank"
-                  >
-                    <Text
-                      className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
-                      lineClamp={1}
-                    >
-                      {spaceName}
-                    </Text>
-                  </Link>
-                </div>
-                <div className="w-fit">
-                  <Badge
-                    className="capitalize"
-                    variant="filled"
-                    color={isUnderMaintenance ? 'yellow' : 'green'}
-                  >
-                    {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
-                  </Badge>
-                </div>
-              </div>
-            ),
-            [],
-          ),
+        Cell: info =>
+          useMemo(() => {
+            const { photo, spaceName, isUnderMaintenance, bookingRange, unit, _id } =
+              info.row.original;
+
+            const unitLeft = getAvailableUnits(bookingRange, currentDate, currentDate, unit);
+            const occupiedState = getOccupiedState(unitLeft, unit);
+
+            return (
+              <SpaceNamePhotoContent
+                id={_id}
+                spaceName={spaceName}
+                spacePhoto={photo}
+                occupiedStateLabel={occupiedState}
+                isUnderMaintenance={isUnderMaintenance}
+                togglePreviewModal={togglePreviewModal}
+                isTargetBlank
+              />
+            );
+          }, []),
       },
       {
         Header: 'FACIA TOWARDS',
@@ -436,6 +435,8 @@ const SpaceList = () => {
         obj.landlord_name = item?.basicInformation?.mediaOwner?.name;
         obj.illuminations = item?.specifications?.illuminations?.name;
         obj.resolutions = item?.specifications?.resolutions;
+        obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
+
         finalData.push(obj);
       }
       setUpdatedInventoryData(finalData);

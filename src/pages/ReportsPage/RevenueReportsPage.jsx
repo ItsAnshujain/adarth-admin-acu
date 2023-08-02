@@ -30,22 +30,23 @@ import {
   useBookingRevenueByLocation,
 } from '../../apis/queries/booking.queries';
 import {
-  dateByQuarter,
   daysInAWeek,
   downloadPdf,
+  financialEndDate,
+  financialStartDate,
   monthsInShort,
   quarters,
   serialize,
+  timeLegend,
 } from '../../utils';
 import RevenueStatsContent from '../../components/modules/reports/Revenue/RevenueStatsContent';
 import ViewByFilter from '../../components/modules/reports/ViewByFilter';
 import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/modules/reports/ShareContent';
+import { DATE_FORMAT } from '../../utils/constants';
 
 dayjs.extend(quarterOfYear);
-
-const DATE_FORMAT = 'YYYY-MM-DD';
 
 ChartJS.register(
   ArcElement,
@@ -130,8 +131,8 @@ export const pieData = {
 const RevenueReportsPage = () => {
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
-    startDate: dayjs().startOf('year').format(DATE_FORMAT),
-    endDate: dayjs().endOf('year').format(DATE_FORMAT),
+    startDate: financialStartDate,
+    endDate: financialEndDate,
     by: 'city',
     groupBy: 'month',
   });
@@ -202,17 +203,17 @@ const RevenueReportsPage = () => {
     useBookingRevenueByIndustry(removeUnwantedQueries(['groupBy', 'by']));
 
   const handleRevenueGraphViewBy = viewType => {
-    if (viewType === 'reset') {
-      const startDate = dayjs().startOf('year').format(DATE_FORMAT);
-      const endDate = dayjs().endOf('year').format(DATE_FORMAT);
+    if (viewType === 'reset' || viewType === 'year') {
+      const startDate = financialStartDate;
+      const endDate = financialEndDate;
       searchParams.set('startDate', startDate);
       searchParams.set('endDate', endDate);
       searchParams.set('by', by);
-      searchParams.set('groupBy', 'year');
+      searchParams.set('groupBy', 'month');
       setSearchParams(searchParams);
     }
 
-    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
+    if (viewType === 'week' || viewType === 'month') {
       const startDate = dayjs().startOf(viewType).format(DATE_FORMAT);
       const endDate = dayjs().endOf(viewType).format(DATE_FORMAT);
 
@@ -221,19 +222,13 @@ const RevenueReportsPage = () => {
       searchParams.set('by', by);
       searchParams.set(
         'groupBy',
-        viewType === 'year'
-          ? 'month'
-          : viewType === 'month'
-          ? 'dayOfMonth'
-          : viewType === 'week'
-          ? 'dayOfWeek'
-          : 'month',
+        viewType === 'month' ? 'dayOfMonth' : viewType === 'week' ? 'dayOfWeek' : 'month',
       );
       setSearchParams(searchParams);
     }
     if (viewType === 'quarter') {
-      searchParams.set('startDate', dateByQuarter[dayjs().quarter()].startDate);
-      searchParams.set('endDate', dateByQuarter[dayjs().quarter()].endDate);
+      searchParams.set('startDate', financialStartDate);
+      searchParams.set('endDate', financialEndDate);
       searchParams.set('by', by);
       searchParams.set('groupBy', 'quarter');
       setSearchParams(searchParams);
@@ -297,7 +292,23 @@ const RevenueReportsPage = () => {
 
       revenueGraphData?.forEach(item => {
         if (item._id) {
-          tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+          if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
+            tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+          } else if (groupBy === 'quarter') {
+            if (dayjs().quarter() === 1) {
+              tempData.datasets[0].data[item._id + 3] = item.total / 100000 || 0;
+            } else if (dayjs().quarter() === 4) {
+              tempData.datasets[0].data[item._id - 3] = item.total / 100000 || 0;
+            } else {
+              tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+            }
+          } else if (item._id < 4) {
+            // For financial year. if the month is less than 4 then it will be in the next year
+            tempData.datasets[0].data[item._id + 8] = item.total / 100000 || 0;
+          } else {
+            // For financial year. if the month is greater than 4 then it will be in the same year
+            tempData.datasets[0].data[item._id - 4] = item.total / 100000 || 0;
+          }
         }
       });
 
@@ -399,7 +410,7 @@ const RevenueReportsPage = () => {
                     className="w-full"
                   />
                 </div>
-                <p className="text-center">Months &gt;</p>
+                <p className="text-center">{timeLegend[groupBy]} &gt;</p>
               </div>
             )}
           </div>

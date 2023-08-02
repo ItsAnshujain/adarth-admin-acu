@@ -1,17 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { yupResolver } from '@mantine/form';
 import * as yup from 'yup';
 import dayjs from 'dayjs';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import BasicInformationForm from '../../components/modules/bookings/Create/BasicInformationForm';
 import SelectSpaces from '../../components/modules/bookings/Create/SelectSpaces';
 import OrderInformationForm from '../../components/modules/bookings/Create/OrderInformationForm';
 import SuccessModal from '../../components/shared/Modal';
 import Header from '../../components/modules/bookings/Create/Header';
 import { FormProvider, useForm } from '../../context/formContext';
-import { useCreateBookings } from '../../apis/queries/booking.queries';
+import {
+  useBookingById,
+  useCreateBookings,
+  useUpdateBooking,
+} from '../../apis/queries/booking.queries';
 import { gstRegexMatch, panRegexMatch, isValidURL } from '../../utils';
 
 const initialValues = {
@@ -28,9 +33,8 @@ const initialValues = {
   place: [],
   price: 0,
   industry: '',
+  displayBrands: '',
 };
-
-const DATE_FORMAT = 'YYYY-MM-DD';
 
 const basicInformationSchema = yup.object({
   client: yup.object({
@@ -70,10 +74,14 @@ const schemas = [basicInformationSchema, campaignInformationSchema, yup.object()
 
 const CreateBookingPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { id: bookingId } = useParams();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ validate: yupResolver(schemas[formStep - 1]), initialValues });
   const { mutateAsync: createBooking, isLoading } = useCreateBookings();
+  const update = useUpdateBooking();
+  const bookingById = useBookingById(bookingId, !!bookingId);
 
   const handleSubmit = async formData => {
     setFormStep(prevState => prevState + 1);
@@ -114,13 +122,15 @@ const CreateBookingPage = () => {
         return;
       }
 
-      const unitsBetweenRange = data.place.filter(
-        item => item?.unit && Number(item.unit) > item?.lowUnit,
-      );
-
-      if (unitsBetweenRange.length) {
+      if (
+        data.place?.some(item =>
+          bookingId
+            ? item.unit > item.initialUnit + item.availableUnit
+            : item.unit > item.availableUnit,
+        )
+      ) {
         showNotification({
-          title: 'Units must be less than or equal to available units',
+          title: 'Exceeded maximum units available for selected date range for one or more places',
           color: 'blue',
         });
         return;
@@ -131,11 +141,11 @@ const CreateBookingPage = () => {
         price: +item.price,
         media: isValidURL(item.media) ? item.media : undefined,
         startDate: item.startDate
-          ? dayjs(item.startDate).startOf('day').format(DATE_FORMAT)
-          : dayjs().startOf('day'),
+          ? dayjs(item.startDate).startOf('day').toISOString()
+          : dayjs().startOf('day').toISOString(),
         endDate: item.startDate
-          ? dayjs(item.endDate).endOf('day').format(DATE_FORMAT)
-          : dayjs().endOf('day'),
+          ? dayjs(item.endDate).endOf('day').toISOString()
+          : dayjs().endOf('day').toISOString(),
         tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
         unit: item?.unit ? +item.unit : 1,
       }));
@@ -177,23 +187,46 @@ const CreateBookingPage = () => {
         }
       });
 
-      await createBooking(
-        {
-          ...data,
-          ...totalImpressionAndHealth,
-          startDate: minDate,
-          endDate: maxDate,
-        },
-        {
-          onSuccess: () => {
-            setOpenSuccessModal(true);
-            setTimeout(() => {
-              navigate('/bookings');
-              form.reset();
-            }, 2000);
+      if (bookingId) {
+        update.mutate(
+          {
+            id: bookingId,
+            data: {
+              ...data,
+              ...totalImpressionAndHealth,
+              startDate: minDate,
+              endDate: maxDate,
+            },
           },
-        },
-      );
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries(['bookings']);
+              form.reset();
+              setTimeout(() => {
+                navigate('/bookings');
+              }, 1000);
+            },
+          },
+        );
+      } else {
+        await createBooking(
+          {
+            ...data,
+            ...totalImpressionAndHealth,
+            startDate: minDate,
+            endDate: maxDate,
+          },
+          {
+            onSuccess: () => {
+              setOpenSuccessModal(true);
+              setTimeout(() => {
+                navigate('/bookings');
+                form.reset();
+              }, 2000);
+            },
+          },
+        );
+      }
     }
   };
 
@@ -206,11 +239,57 @@ const CreateBookingPage = () => {
       <SelectSpaces />
     );
 
+  useEffect(() => {
+    if (bookingById.data) {
+      const { client, displayBrands, campaign } = bookingById.data;
+
+      form.setValues({
+        ...form.values,
+        client: {
+          companyName: client?.companyName || '',
+          name: client?.name || '',
+          email: client?.email || '',
+          contactNumber: client?.contactNumber || '',
+          panNumber: client?.panNumber || '',
+          gstNumber: client?.gstNumber || '',
+        },
+        campaignName: campaign?.name || '',
+        description: campaign?.description || '',
+        place:
+          campaign?.spaces?.map(item => ({
+            _id: item._id,
+            price: +item.campaignPrice,
+            media: isValidURL(item.media) ? item.media : undefined,
+            startDate: item.startDate,
+            endDate: item.endDate,
+            tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
+            unit: item?.unit,
+            availableUnit:
+              item?.specifications?.unit && item.unit
+                ? item.specifications.unit - item.unit
+                : item.unit,
+            initialUnit: item?.unit,
+            impressionMax: item?.specifications?.impressions?.max || 0,
+            impressionMin: item?.specifications?.impressions?.min,
+            health: item?.specifications?.health || 0,
+          })) || [],
+        industry: campaign?.industry?._id || '',
+        displayBrands: displayBrands?.[0] || '',
+        price: campaign?.price || 0,
+      });
+    }
+  }, [bookingById.data]);
+
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <FormProvider form={form}>
         <form onSubmit={form.onSubmit(handleSubmit)}>
-          <Header setFormStep={setFormStep} formStep={formStep} isLoading={isLoading} />
+          <Header
+            setFormStep={setFormStep}
+            formStep={formStep}
+            isLoading={isLoading || update.isLoading}
+            isEditable={!!bookingId}
+          />
           {getForm()}
         </form>
       </FormProvider>

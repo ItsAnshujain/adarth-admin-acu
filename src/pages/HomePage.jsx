@@ -29,19 +29,19 @@ import TotalCampaignIcon from '../assets/total-campaign.svg';
 import useUserStore from '../store/user.store';
 import { useBookingStats, useFetchBookingRevenue } from '../apis/queries/booking.queries';
 import { useInventoryStats } from '../apis/queries/inventory.queries';
-import { dateByQuarter, daysInAWeek, monthsInShort, quarters, serialize } from '../utils';
+import {
+  daysInAWeek,
+  financialEndDate,
+  financialStartDate,
+  monthsInShort,
+  quarters,
+  serialize,
+  timeLegend,
+} from '../utils';
 import ViewByFilter from '../components/modules/reports/ViewByFilter';
+import { DATE_FORMAT } from '../utils/constants';
 
 dayjs.extend(quarterOfYear);
-
-const DATE_FORMAT = 'YYYY-MM-DD';
-
-const timeLegend = {
-  dayOfWeek: 'Days',
-  dayOfMonth: 'Days',
-  quarter: 'Months',
-  month: 'Months',
-};
 
 ChartJS.register(
   CategoryScale,
@@ -71,9 +71,9 @@ const HomePage = () => {
   const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
 
   const [queryByTime, setQueryByTime] = useState({
-    'groupBy': 'month',
-    'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-    'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+    groupBy: 'month',
+    startDate: financialStartDate,
+    endDate: financialEndDate,
   });
 
   const [updatedLineData, setUpdatedLineData] = useState({
@@ -110,32 +110,26 @@ const HomePage = () => {
   );
 
   const handleViewBy = viewType => {
-    if (viewType === 'reset') {
+    if (viewType === 'reset' || viewType === 'year') {
       setQueryByTime({
-        'groupBy': 'month',
-        'startDate': dayjs().startOf('year').format(DATE_FORMAT),
-        'endDate': dayjs().endOf('year').format(DATE_FORMAT),
+        groupBy: 'month',
+        startDate: financialStartDate,
+        endDate: financialEndDate,
       });
     }
-    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
+    if (viewType === 'week' || viewType === 'month') {
       setQueryByTime(prevState => ({
         ...prevState,
-        'groupBy':
-          viewType === 'year'
-            ? 'month'
-            : viewType === 'month'
-            ? 'dayOfMonth'
-            : viewType === 'week'
-            ? 'dayOfWeek'
-            : 'month',
-        'startDate': dayjs().startOf(viewType).format(DATE_FORMAT),
-        'endDate': dayjs().endOf(viewType).format(DATE_FORMAT),
+        groupBy: viewType === 'month' ? 'dayOfMonth' : viewType === 'week' ? 'dayOfWeek' : 'month',
+        startDate: dayjs().startOf(viewType).format(DATE_FORMAT),
+        endDate: dayjs().endOf(viewType).format(DATE_FORMAT),
       }));
     }
     if (viewType === 'quarter') {
       setQueryByTime({
-        'groupBy': 'quarter',
-        ...dateByQuarter[dayjs().quarter()],
+        groupBy: 'quarter',
+        startDate: financialStartDate,
+        endDate: financialEndDate,
       });
     }
   };
@@ -167,7 +161,23 @@ const HomePage = () => {
 
       bookingRevenue?.forEach(item => {
         if (item._id) {
-          tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+          if (queryByTime.groupBy === 'dayOfMonth' || queryByTime.groupBy === 'dayOfWeek') {
+            tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+          } else if (queryByTime.groupBy === 'quarter') {
+            if (dayjs().quarter() === 1) {
+              tempData.datasets[0].data[item._id + 3] = item.total / 100000 || 0;
+            } else if (dayjs().quarter() === 4) {
+              tempData.datasets[0].data[item._id - 3] = item.total / 100000 || 0;
+            } else {
+              tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+            }
+          } else if (item._id < 4) {
+            // For financial year. if the month is less than 4 then it will be in the next year
+            tempData.datasets[0].data[item._id + 8] = item.total / 100000 || 0;
+          } else {
+            // For financial year. if the month is greater than 4 then it will be in the same year
+            tempData.datasets[0].data[item._id - 4] = item.total / 100000 || 0;
+          }
         }
       });
 
@@ -177,7 +187,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <Header title="" />
+      <Header />
       <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
         <Sidebar />
         <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">

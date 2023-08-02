@@ -12,7 +12,7 @@ import GridView from '../../components/modules/campaigns/GridView';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
-import { serialize } from '../../utils/index';
+import { generateSlNo, serialize } from '../../utils/index';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
 import useLayoutView from '../../store/layout.store';
@@ -52,6 +52,14 @@ const CampaignsDashboardPage = () => {
     serialize({ type: 'campaign_status', parentId: null, limit: 100, page: 1 }),
   );
 
+  const { limit, page } = useMemo(
+    () => ({
+      limit: searchParams.get('limit'),
+      page: Number(searchParams.get('page')),
+    }),
+    [searchParams],
+  );
+
   const invalidate = () => queryClient.invalidateQueries(['campaigns', searchParams.toString()]);
 
   const updateCampaign = (id, data) => {
@@ -83,12 +91,7 @@ const CampaignsDashboardPage = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row: { index } }) =>
-          useMemo(() => {
-            const currentPage = Math.max(searchParams.get('page'), 1);
-            const rowCount = (currentPage - 1) * +(searchParams.get('limit') || 0);
-            return <p>{rowCount + index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'CAMPAIGN NAME',
@@ -247,14 +250,6 @@ const CampaignsDashboardPage = () => {
     else searchParams.delete(key);
     setSearchParams(searchParams);
   };
-
-  const { limit, page } = useMemo(
-    () => ({
-      limit: searchParams.get('limit'),
-      page: Number(searchParams.get('page')),
-    }),
-    [searchParams],
-  );
 
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {

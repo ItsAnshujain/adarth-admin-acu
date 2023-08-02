@@ -2,18 +2,12 @@ import * as yup from 'yup';
 import { useState } from 'react';
 import { Text, Button } from '@mantine/core';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { showNotification } from '@mantine/notifications';
-import { useForm, yupResolver } from '@mantine/form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { FormProvider, useForm } from 'react-hook-form';
 import SuccessModal from '../components/shared/Modal';
 import { useResetPassword } from '../apis/queries/auth.queries';
-import PasswordInput from '../components/shared/PasswordInput';
-import { FormProvider } from '../context/formContext';
 import banner from '../assets/login.svg';
-
-const initialValues = {
-  confirmPassword: '',
-  password: '',
-};
+import ControlledPasswordInput from '../components/shared/FormInputs/Controlled/ControlledPasswordInput';
 
 const schema = yup.object({
   password: yup
@@ -31,54 +25,28 @@ const schema = yup.object({
 
 const ChangePasswordPage = () => {
   const [open, setOpenSuccessModal] = useState(false);
-  const { mutate: changePassword, isLoading } = useResetPassword();
+  const changePassword = useResetPassword();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const token = searchParams.get('token');
 
-  const form = useForm({ validate: yupResolver(schema), initialValues });
+  const form = useForm({ resolver: yupResolver(schema) });
 
-  const onSubmitHandler = formData => {
-    if (formData.password !== formData.confirmPassword) {
-      showNotification({
-        title: 'Password does not match',
-        color: 'red',
-      });
-    } else {
-      changePassword(
-        {
-          password: formData.password,
-          token,
+  const onSubmit = form.handleSubmit(async formData => {
+    changePassword.mutate(
+      {
+        password: formData.confirmPassword,
+        token,
+      },
+      {
+        onSuccess: () => {
+          form.reset();
+          navigate('/login');
         },
-        {
-          onError: err => {
-            showNotification({
-              title: 'Something went wrong',
-              message: err.message,
-              color: 'red',
-            });
-          },
-          onSuccess: () => {
-            navigate('/login');
-          },
-        },
-      );
-    }
-
-    return null;
-  };
-
-  const styles = {
-    label: {
-      color: 'grey',
-      opacity: '0.5',
-      marginBottom: '16px',
-      marginTop: '24px',
-      fontWeight: '100',
-      fontSize: '16px',
-    },
-  };
+      },
+    );
+  });
 
   return (
     <div className="flex">
@@ -86,42 +54,25 @@ const ChangePasswordPage = () => {
         <img src={banner} alt="login" className="h-screen" />
       </div>
       <div className="flex h-screen w-full flex-col justify-center px-5 md:w-[31%] md:px-0">
-        <p className="text-2xl font-bold">Change Password</p>
-        <FormProvider form={form}>
-          <form onSubmit={form.onSubmit(onSubmitHandler)}>
-            <PasswordInput
+        <p className="mb-5 text-2xl font-bold">Change Password</p>
+        <FormProvider {...form}>
+          <form onSubmit={onSubmit}>
+            <ControlledPasswordInput
               label="New Password"
               name="password"
-              disabled={isLoading}
-              size="lg"
               placeholder="Your New Password"
-              styles={styles}
-              errors={form.errors}
+              className="mb-4"
             />
-            <PasswordInput
+            <ControlledPasswordInput
               label="Confirm Password"
               name="confirmPassword"
-              disabled={isLoading}
-              size="lg"
               placeholder="Confirm New Password"
-              styles={styles}
-              errors={form.errors}
+              className="mb-4"
             />
-
             <Button
-              loading={isLoading}
-              className="mt-3 width-full bg-purple-450 border-rounded-xl text-xl"
-              color="primary"
               type="submit"
-              styles={() => ({
-                root: {
-                  width: '100%',
-                  height: '44px',
-                  '&:hover': {
-                    backgroundColor: '#4B0DAF',
-                  },
-                },
-              })}
+              className="primary-button w-full text-base"
+              loading={changePassword.isLoading}
             >
               Save
             </Button>

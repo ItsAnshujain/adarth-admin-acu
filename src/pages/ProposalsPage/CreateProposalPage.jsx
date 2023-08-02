@@ -97,11 +97,30 @@ const CreateProposalPage = () => {
         return;
       }
 
+      if (
+        data.spaces?.some(item =>
+          proposalId
+            ? item.unit > item.initialUnit + item.availableUnit
+            : item.unit > item.availableUnit,
+        )
+      ) {
+        showNotification({
+          title: 'Exceeded maximum units available for selected date range for one or more places',
+          color: 'blue',
+        });
+        return;
+      }
+
       data.spaces = form.values?.spaces?.map(item => ({
         id: item._id,
         price: +item.price,
-        startDate: item.startDate,
-        endDate: item.endDate,
+        startDate: item.startDate
+          ? dayjs(item.startDate).startOf('day').toISOString()
+          : dayjs().startOf('day').toISOString(),
+        endDate: item.startDate
+          ? dayjs(item.endDate).endOf('day').toISOString()
+          : dayjs().endOf('day').toISOString(),
+        unit: item?.unit ? +item.unit : 1,
       }));
 
       if (data.uploadType === 'existing') {
@@ -127,8 +146,8 @@ const CreateProposalPage = () => {
       let maxDate = null;
 
       data.spaces.forEach(item => {
-        const start = item.startDate.setHours(0, 0, 0, 0);
-        const end = item.endDate.setHours(0, 0, 0, 0);
+        const start = item.startDate;
+        const end = item.endDate;
 
         if (!minDate) minDate = start;
         if (!maxDate) maxDate = end;
@@ -138,7 +157,14 @@ const CreateProposalPage = () => {
       });
 
       delete data.uploadType;
+
       if (proposalId) {
+        data = {
+          ...data,
+          startDate: dayjs(minDate).startOf('day').toISOString(),
+          endDate: dayjs(maxDate).endOf('day').toISOString(),
+        };
+
         update(
           { proposalId, data },
           {
@@ -158,9 +184,10 @@ const CreateProposalPage = () => {
         data = {
           ...data,
           status,
-          startDate: dayjs(minDate).format('YYYY-MM-DD'),
-          endDate: dayjs(maxDate).format('YYYY-MM-DD'),
+          startDate: dayjs(minDate).startOf('day').toISOString(),
+          endDate: dayjs(maxDate).endOf('day').toISOString(),
         };
+
         create(data, {
           onSuccess: () => {
             setTimeout(() => {
@@ -192,6 +219,9 @@ const CreateProposalPage = () => {
             price: item.price,
             startDate: new Date(item.startDate),
             endDate: new Date(item.endDate),
+            unit: item?.bookedUnits,
+            availableUnit: item?.remainingUnits,
+            initialUnit: item?.bookedUnits,
           })) || [],
         letterHead: proposalData?.proposal?.letterHead,
         letterFooter: proposalData?.proposal?.letterFooter,

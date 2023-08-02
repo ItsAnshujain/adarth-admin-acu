@@ -1,6 +1,12 @@
 import { showNotification } from '@mantine/notifications';
 import dayjs from 'dayjs';
 import { geocodeByAddress, getLatLng, geocodeByLatLng } from 'react-google-places-autocomplete';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import { DATE_FORMAT } from './constants';
+
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 export const serialize = object => {
   const str = [];
@@ -214,9 +220,6 @@ export const months = [
 ];
 
 export const monthsInShort = [
-  'Jan',
-  'Feb',
-  'Mar',
   'Apr',
   'May',
   'June',
@@ -226,6 +229,9 @@ export const monthsInShort = [
   'Oct',
   'Nov',
   'Dec',
+  'Jan',
+  'Feb',
+  'Mar',
 ];
 
 export const quarters = ['First quarter', 'Second quarter', 'Third quarter', 'Fourth quarter'];
@@ -271,6 +277,10 @@ export const dateByQuarter = {
     endDate: `${dayjs().year()}-12-31`,
   },
 };
+
+// financial year
+export const financialStartDate = `${dayjs().year()}-04-01`;
+export const financialEndDate = `${dayjs().year() + 1}-03-31`;
 
 export const checkCampaignStats = (currentStatus, item) => {
   const campaignStats = {
@@ -377,4 +387,126 @@ export const stringToColour = str => {
     colour += `00${value.toString(16)}`.substr(-2);
   }
   return colour;
+};
+
+export const currentDate = new Date().toISOString();
+
+export const validateFilterRange = (bookingRange, fromDate, toDate) => {
+  let filterRange;
+  if (bookingRange.length) {
+    filterRange = bookingRange.filter(
+      item =>
+        (dayjs(dayjs(fromDate)).isSameOrAfter(dayjs(item?.startDate).format(DATE_FORMAT)) &&
+          dayjs(dayjs(fromDate)).isSameOrBefore(dayjs(item?.endDate).format(DATE_FORMAT))) ||
+        (dayjs(dayjs(toDate)).isSameOrAfter(dayjs(item?.startDate).format(DATE_FORMAT)) &&
+          dayjs(dayjs(toDate)).isSameOrBefore(dayjs(item?.endDate).format(DATE_FORMAT))) ||
+        (dayjs(dayjs(item?.startDate).format(DATE_FORMAT)).isSameOrAfter(dayjs(fromDate)) &&
+          dayjs(dayjs(item?.startDate).format(DATE_FORMAT)).isSameOrBefore(dayjs(toDate))) ||
+        (dayjs(dayjs(item?.endDate).format(DATE_FORMAT)).isSameOrAfter(dayjs(fromDate)) &&
+          dayjs(dayjs(item?.endDate).format(DATE_FORMAT)).isSameOrBefore(dayjs(toDate))),
+    );
+
+    return filterRange;
+  }
+
+  return [];
+};
+
+export const getAvailableUnits = (filterRange, fromDate, toDate, units) => {
+  const filteredRange = validateFilterRange(
+    filterRange,
+    dayjs(fromDate).format(DATE_FORMAT),
+    dayjs(toDate).format(DATE_FORMAT),
+  );
+
+  let bookedUnit = 0;
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < filteredRange.length; i++) {
+    bookedUnit += filteredRange[i].bookedUnit;
+  }
+  const availableUnit = units - (bookedUnit || 0);
+  return availableUnit < 0 ? 0 : availableUnit;
+};
+
+export const getEveryDayUnits = (bookingRange = [], units = 1) => {
+  const day = {};
+
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < bookingRange.length; i++) {
+    let sDate = dayjs(bookingRange[i].startDate);
+    const eDate = dayjs(bookingRange[i].endDate);
+
+    while (sDate.isSameOrBefore(eDate)) {
+      const key = sDate.format(DATE_FORMAT);
+      if (day[key]) {
+        day[key] = {
+          bookedUnit: day[key].bookedUnit + (bookingRange[i].bookedUnit || bookingRange[i].unit),
+          remUnit:
+            units - (day[key].bookedUnit + (bookingRange[i].bookedUnit || bookingRange[i].unit)) < 0
+              ? 0
+              : units -
+                (day[key].bookedUnit + (bookingRange[i].bookedUnit || bookingRange[i].unit)),
+        };
+      } else {
+        day[key] = {
+          bookedUnit: bookingRange[i].bookedUnit || bookingRange[i].unit,
+          remUnit:
+            units - (bookingRange[i].bookedUnit || bookingRange[i].unit) < 0
+              ? 0
+              : units - (bookingRange[i].bookedUnit || bookingRange[i].unit),
+        };
+      }
+      sDate = sDate.add(1, 'day');
+    }
+  }
+  return day;
+};
+
+export const getOccupiedState = (leftUnit, bookableUnit) => {
+  const occupiedState =
+    leftUnit === bookableUnit
+      ? 'Available'
+      : leftUnit !== bookableUnit && leftUnit !== 0
+      ? 'Partially Booked'
+      : 'Occupied';
+
+  return occupiedState;
+};
+
+export const getOccupiedStateColor = (isUnderMaintenance, occupiedState) =>
+  isUnderMaintenance
+    ? 'yellow'
+    : occupiedState === 'Occupied'
+    ? 'blue'
+    : occupiedState === 'Partially Booked'
+    ? 'grape'
+    : occupiedState === 'Available'
+    ? 'green'
+    : 'dark';
+
+export const generateSlNo = (index, page, limit) => {
+  let currentPage = page;
+  let rowCount = 0;
+  if (page < 1) {
+    currentPage = 1;
+  }
+  rowCount = (currentPage - 1) * limit;
+  return rowCount + index + 1;
+};
+
+export const calculateDaysListByMonth = (month, year) => {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const daysList = [];
+  // eslint-disable-next-line no-plusplus
+  for (let i = 1; i <= daysInMonth; i++) {
+    daysList.push(i);
+  }
+  return daysList;
+};
+
+export const timeLegend = {
+  dayOfWeek: 'Days',
+  dayOfMonth: 'Days',
+  quarter: 'Months',
+  month: 'Months',
 };

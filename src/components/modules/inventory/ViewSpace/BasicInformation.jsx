@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Text, Image, Skeleton, Badge, BackgroundImage, Center, Spoiler } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import { useModals } from '@mantine/modals';
@@ -10,8 +10,14 @@ import { getWord } from 'num-count';
 import layers from '../../../../assets/layers.svg';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import MapView from '../CreateSpace/MapView';
-import { tierList } from '../../../../utils';
+import {
+  getEveryDayUnits,
+  getOccupiedState,
+  getOccupiedStateColor,
+  tierList,
+} from '../../../../utils';
 import modalConfig from '../../../../utils/modalConfig';
+import { DATE_FORMAT } from '../../../../utils/constants';
 
 dayjs.extend(isBetween);
 
@@ -137,14 +143,10 @@ const BasicInfo = ({
       ...updatedModalConfig,
     });
 
-  const isOccupied = useMemo(
-    () =>
-      bookingRange?.some(
-        item =>
-          dayjs().isBetween(item?.startDate, item?.endDate) ||
-          dayjs().isSame(dayjs(item?.endDate), 'day'),
-      ),
-    [bookingRange],
+  const res = getEveryDayUnits(bookingRange, inventoryDetails?.specifications?.unit);
+  const occupiedState = getOccupiedState(
+    res[dayjs().format(DATE_FORMAT)]?.remUnit ?? inventoryDetails?.specifications?.unit,
+    inventoryDetails?.specifications?.unit,
   );
 
   useEffect(() => {
@@ -288,17 +290,9 @@ const BasicInfo = ({
               <Badge
                 className="capitalize"
                 variant="filled"
-                color={
-                  inventoryDetails?.isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'
-                }
-                size="lg"
-                mt="xs"
+                color={getOccupiedStateColor(inventoryDetails?.isUnderMaintenance, occupiedState)}
               >
-                {inventoryDetails?.isUnderMaintenance
-                  ? 'Under Maintenance'
-                  : isOccupied
-                  ? 'Occupied'
-                  : 'Available'}
+                {inventoryDetails?.isUnderMaintenance ? 'Under Maintenance' : occupiedState}
               </Badge>
               <Text weight="bold" className="my-2">
                 {toIndianCurrency(inventoryDetails?.basicInformation?.price || 0)}

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Text, Button, Image, Box, Badge, Loader } from '@mantine/core';
+import { Text, Button, Image, Badge, Loader } from '@mantine/core';
 import { Plus } from 'react-feather';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { getWord } from 'num-count';
@@ -11,10 +11,21 @@ import calendar from '../../../../assets/data-table.svg';
 import DateRange from '../../../DateRange';
 import Table from '../../../Table/Table';
 import RoleBased from '../../../RoleBased';
-import { categoryColors, ROLES } from '../../../../utils';
+import { categoryColors, generateSlNo, ROLES } from '../../../../utils';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import modalConfig from '../../../../utils/modalConfig';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
+import SpaceNamePhotoContent from '../../inventory/SpaceNamePhotoContent';
+
+const updatedModalConfig = {
+  ...modalConfig,
+  classNames: {
+    title: 'font-dmSans text-xl px-4',
+    header: 'px-4 pt-4',
+    body: '',
+    close: 'mr-4',
+  },
+};
 
 const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -34,21 +45,13 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
-  const toggleImagePreviewModal = imgSrc =>
-    modals.openContextModal('basic', {
+  const togglePreviewModal = imgSrc =>
+    modals.openModal({
       title: 'Preview',
-      innerProps: {
-        modalBody: (
-          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
-            {imgSrc ? (
-              <Image src={imgSrc} height={580} width={580} alt="preview" />
-            ) : (
-              <Image src={null} height={580} width={580} withPlaceholder />
-            )}
-          </Box>
-        ),
-      },
-      ...modalConfig,
+      children: (
+        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+      ),
+      ...updatedModalConfig,
     });
 
   const COLUMNS = useMemo(
@@ -57,16 +60,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'SPACE NAME & PHOTO',
@@ -78,34 +72,14 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
         }) =>
           useMemo(
             () => (
-              <div className="flex items-center gap-2 ">
-                <Box
-                  className="bg-white border rounded-md cursor-zoom-in"
-                  onClick={() => toggleImagePreviewModal(basicInformation?.spacePhoto)}
-                >
-                  {basicInformation?.spacePhoto ? (
-                    <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
-                  ) : (
-                    <Image src={null} withPlaceholder height={32} width={32} />
-                  )}
-                </Box>
-                <Link to={`/inventory/view-details/${_id}`} className="font-medium px-2 underline">
-                  <Text
-                    className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
-                    lineClamp={1}
-                    title={basicInformation?.spaceName}
-                  >
-                    {basicInformation?.spaceName}
-                  </Text>
-                </Link>
-                <Badge
-                  className="capitalize"
-                  variant="filled"
-                  color={isUnderMaintenance ? 'yellow' : 'green'}
-                >
-                  {isUnderMaintenance ? 'Under Maintenance' : 'Available'}
-                </Badge>
-              </div>
+              <SpaceNamePhotoContent
+                id={_id}
+                spaceName={basicInformation?.spaceName}
+                spacePhoto={basicInformation?.spacePhoto}
+                occupiedStateLabel="Available"
+                isUnderMaintenance={isUnderMaintenance}
+                togglePreviewModal={togglePreviewModal}
+              />
             ),
             [],
           ),

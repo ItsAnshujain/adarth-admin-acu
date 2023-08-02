@@ -6,8 +6,8 @@ import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { Link, useSearchParams } from 'react-router-dom';
 import multiDownload from 'multi-download';
-import { checkCampaignStats, serialize } from '../../../../utils';
-import { useUpdateBookingStatus } from '../../../../apis/queries/booking.queries';
+import { checkCampaignStats, generateSlNo, serialize } from '../../../../utils';
+import { useUpdateBooking, useUpdateBookingStatus } from '../../../../apis/queries/booking.queries';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
@@ -15,6 +15,7 @@ import RowsPerPage from '../../../RowsPerPage';
 import Search from '../../../Search';
 import NoData from '../../../shared/NoData';
 import BookingsMenuPopover from '../../../Popovers/BookingsMenuPopover';
+import { BOOKING_PAID_STATUS } from '../../../../utils/constants';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -59,18 +60,32 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
       sortOrder: 'desc',
     }),
   );
+  const { mutate: update } = useUpdateBooking();
+  const { mutateAsync: updateBookingStatus } = useUpdateBookingStatus();
 
-  const { mutateAsync: updateBooking } = useUpdateBookingStatus();
+  const { limit, page } = useMemo(
+    () => ({
+      limit: searchParams.get('limit'),
+      page: Number(searchParams.get('page')),
+    }),
+    [searchParams],
+  );
 
   const handlePaymentUpdate = (bookingId, data) => {
     if (data) {
-      updateBooking({ id: bookingId, query: serialize({ paymentStatus: data }) });
+      updateBookingStatus({ id: bookingId, query: serialize({ paymentStatus: data }) });
     }
   };
 
   const handleCampaignUpdate = (bookingId, data) => {
     if (data) {
-      updateBooking({ id: bookingId, query: serialize({ campaignStatus: data }) });
+      updateBookingStatus({ id: bookingId, query: serialize({ campaignStatus: data }) });
+    }
+  };
+
+  const handlePaymentStatusUpdate = (bookingId, data) => {
+    if (data !== '') {
+      update({ id: bookingId, data: { hasPaid: data } });
     }
   };
 
@@ -98,13 +113,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            const currentPage = bookingData?.page < 1 ? 1 : bookingData.page;
-            const rowCount = (currentPage - 1) * bookingData.limit;
-
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'CAMPAIGN NAME',
@@ -312,13 +321,25 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           ),
       },
       {
-        Header: 'PAYMENT TYPE',
-        accessor: 'paymentType',
-        Cell: ({
-          row: {
-            original: { paymentType },
-          },
-        }) => useMemo(() => <p className="uppercase">{paymentType}</p>, []),
+        Header: 'PAYMENT STATUS',
+        accessor: 'hasPaid',
+        Cell: info =>
+          useMemo(() => {
+            const updatedBookingPaid = [...BOOKING_PAID_STATUS];
+            updatedBookingPaid.unshift({ label: 'Select', value: '' });
+
+            return (
+              <Select
+                className="mr-2"
+                data={updatedBookingPaid}
+                styles={statusSelectStyle}
+                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                rightSectionWidth={40}
+                onChange={e => handlePaymentStatusUpdate(info.row.original?._id, e)}
+                defaultValue={info.row.original?.hasPaid ?? ''}
+              />
+            );
+          }, []),
       },
       {
         Header: 'OUTSTANDING AMOUNT',
@@ -542,7 +563,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
       <div className="pr-7">
         <div className="flex justify-between h-20 items-center">
           <RowsPerPage
-            setCount={limit => handlePagination('limit', limit)}
+            setCount={currentLimit => handlePagination('limit', currentLimit)}
             count={bookingData.limit?.toString()}
           />
           <Search search={searchInput} setSearch={setSearchInput} />
@@ -564,7 +585,7 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           COLUMNS={column}
           activePage={bookingData?.page || 1}
           totalPages={bookingData?.totalPages || 1}
-          setActivePage={page => handlePagination('page', page)}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={bookingData?.limit || 10}
           handleSorting={handleSortByColumn}
         />

@@ -13,7 +13,7 @@ import { usePayment, useDeletePayment } from '../../../../apis/queries/payment.q
 import { DATE_FORMAT } from '../../../../utils/constants';
 import MenuIcon from '../../../Menu';
 import ConfirmContent from '../../../shared/ConfirmContent';
-import { downloadPdf } from '../../../../utils';
+import { downloadPdf, generateSlNo } from '../../../../utils';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -80,12 +80,7 @@ const PaymentInformationList = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: info =>
-          useMemo(() => {
-            const currentPage = Math.max(page, 1);
-            const rowCount = (currentPage - 1) * +(limit || 0);
-            return <p>{rowCount + info.row.index + 1}</p>;
-          }, [page, limit]),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'PAYMENT TYPE',

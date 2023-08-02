@@ -117,8 +117,8 @@ export const useShareProposal = () => {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async ({ id, data }) => {
-      const res = await shareProposal(id, data);
+    async ({ id, queries, data }) => {
+      const res = await shareProposal(id, queries, data);
       return res?.data;
     },
     {
@@ -136,7 +136,7 @@ export const useShareProposal = () => {
 };
 
 export const useGenerateProposalPdf = () =>
-  useMutation(async id => {
-    const res = await generateProposalPdf(id);
+  useMutation(async ({ id, queries }) => {
+    const res = await generateProposalPdf(id, queries);
     return res?.data;
   });

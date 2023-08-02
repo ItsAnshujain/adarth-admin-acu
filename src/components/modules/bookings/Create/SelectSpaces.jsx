@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Button,
   Image,
@@ -8,12 +8,11 @@ import {
   Loader,
   Chip,
   HoverCard,
-  Text,
   Group,
-  Box,
+  Tooltip,
 } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 import { Dropzone } from '@mantine/dropzone';
 import { useDebouncedValue } from '@mantine/hooks';
@@ -29,7 +28,18 @@ import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import upload from '../../../../assets/upload.svg';
 import { useFormContext } from '../../../../context/formContext';
-import { categoryColors, getDate, stringToColour, supportedTypes } from '../../../../utils';
+import {
+  categoryColors,
+  currentDate,
+  debounce,
+  generateSlNo,
+  getAvailableUnits,
+  getDate,
+  getEveryDayUnits,
+  getOccupiedState,
+  stringToColour,
+  supportedTypes,
+} from '../../../../utils';
 import { useUploadFile } from '../../../../apis/queries/upload.queries';
 import Filter from '../../inventory/Filter';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
@@ -37,8 +47,7 @@ import DateRangeSelector from '../../../DateRangeSelector';
 import modalConfig from '../../../../utils/modalConfig';
 import RowsPerPage from '../../../RowsPerPage';
 import useLayoutView from '../../../../store/layout.store';
-
-const DATE_FORMAT = 'YYYY-MM-DD';
+import SpaceNamePhotoContent from '../../inventory/SpaceNamePhotoContent';
 
 dayjs.extend(isBetween);
 
@@ -135,6 +144,7 @@ const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
 
 const SelectSpace = () => {
   const modals = useModals();
+  const { id: bookingId } = useParams();
   const { setFieldValue, values } = useFormContext();
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
@@ -166,63 +176,21 @@ const SelectSpace = () => {
     return totalPrice;
   };
 
-  const validateFilterRange = useCallback((bookingRange, fromDate, toDate) => {
-    let filterRange;
-    if (bookingRange.length) {
-      filterRange = bookingRange.filter(
-        item =>
-          (dayjs(dayjs(fromDate).format(DATE_FORMAT)).isSameOrAfter(
-            dayjs(item?.startDate).format(DATE_FORMAT),
-          ) &&
-            dayjs(dayjs(fromDate).format(DATE_FORMAT)).isSameOrBefore(
-              dayjs(item?.endDate).format(DATE_FORMAT),
-            )) ||
-          (dayjs(dayjs(toDate).format(DATE_FORMAT)).isSameOrAfter(
-            dayjs(item?.startDate).format(DATE_FORMAT),
-          ) &&
-            dayjs(dayjs(toDate).format(DATE_FORMAT)).isSameOrBefore(
-              dayjs(item?.endDate).format(DATE_FORMAT),
-            )) ||
-          (dayjs(dayjs(item?.startDate).format(DATE_FORMAT)).isSameOrAfter(
-            dayjs(fromDate).format(DATE_FORMAT),
-          ) &&
-            dayjs(dayjs(item?.startDate).format(DATE_FORMAT)).isSameOrBefore(
-              dayjs(toDate).format(DATE_FORMAT),
-            )) ||
-          (dayjs(dayjs(item?.endDate).format(DATE_FORMAT)).isSameOrAfter(
-            dayjs(fromDate).format(DATE_FORMAT),
-          ) &&
-            dayjs(dayjs(item?.endDate).format(DATE_FORMAT)).isSameOrBefore(
-              dayjs(toDate).format(DATE_FORMAT),
-            )),
-      );
-
-      return filterRange;
-    }
-
-    return [];
-  }, []);
-
-  const getAvailableUnits = useCallback((filterRange, units, _id) => {
-    let lowUnit = units;
-    filterRange?.forEach(i => {
-      const remUnit = i?.remainingUnit ? i.remainingUnit : i?.bookableUnit ? i.bookableUnit : 0;
-
-      if (lowUnit === 0 || remUnit < lowUnit) lowUnit = remUnit;
-    });
-
-    return lowUnit;
-  }, []);
-
-  const updateData = (key, val, id) => {
+  const updateData = debounce((key, val, id) => {
     if (key === 'dateRange') {
-      let lowUnit = 0;
+      let availableUnit = 0;
+      const hasChangedUnit = values.place.find(item => item._id === id)?.hasChangedUnit;
       setUpdatedInventoryData(prev => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
         newList[index] = { ...newList[index], startDate: val[0], endDate: val[1] };
-        const filterRange = validateFilterRange(newList[index].bookingRange, val[0], val[1]);
-        lowUnit = getAvailableUnits(filterRange, newList[index].unit, id);
+        availableUnit = getAvailableUnits(
+          newList[index].bookingRange,
+          newList[index].startDate,
+          newList[index].endDate,
+          newList[index].originalUnit,
+        );
+        newList[index] = { ...newList[index], availableUnit };
 
         return newList;
       });
@@ -231,21 +199,35 @@ const SelectSpace = () => {
         'place',
         values.place.map(item =>
           item._id === id
-            ? { ...item, startDate: val[0], endDate: val[1], unit: lowUnit, lowUnit }
+            ? {
+                ...item,
+                startDate: val[0],
+                endDate: val[1],
+                ...(!hasChangedUnit ? { unit: availableUnit } : {}),
+                availableUnit,
+              }
             : item,
         ),
       );
     } else {
       setUpdatedInventoryData(prev =>
-        prev.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+        prev.map(item =>
+          item._id === id
+            ? { ...item, [key]: val, ...(key === 'unit' ? { hasChangedUnit: true } : {}) }
+            : item,
+        ),
       );
 
       setFieldValue(
         'place',
-        values.place.map(item => (item._id === id ? { ...item, [key]: val } : item)),
+        values.place.map(item =>
+          item._id === id
+            ? { ...item, [key]: val, ...(key === 'unit' ? { hasChangedUnit: true } : {}) }
+            : item,
+        ),
       );
     }
-  };
+  }, 500);
 
   const handleSelection = selectedRows => setFieldValue('place', selectedRows);
 
@@ -264,72 +246,36 @@ const SelectSpace = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: info =>
-          useMemo(() => {
-            let currentPage = pages;
-            let rowCount = 0;
-            if (pages < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + info.row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, pages, limit)}</p>, []),
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'basicInformation.spaceName',
-        Cell: ({
-          row: {
-            original: { photo, spaceName, isUnderMaintenance, bookingRange, _id },
-          },
-        }) =>
+        Cell: info =>
           useMemo(() => {
-            const isOccupied = bookingRange?.some(
-              item =>
-                dayjs().isBetween(item?.startDate, item?.endDate) ||
-                dayjs().isSame(dayjs(item?.endDate), 'day'),
+            const { photo, spaceName, isUnderMaintenance, bookingRange, originalUnit, _id } =
+              info.row.original;
+
+            const unitLeft = getAvailableUnits(
+              bookingRange,
+              currentDate,
+              currentDate,
+              originalUnit,
             );
+            const occupiedState = getOccupiedState(unitLeft, originalUnit);
 
             return (
-              <div className="flex items-center justify-between gap-2 w-96 mr-4">
-                <div className="flex justify-start items-center flex-1">
-                  <Box
-                    className={classNames(
-                      'bg-white border rounded-md',
-                      photo ? 'cursor-zoom-in' : '',
-                    )}
-                    onClick={() => (photo ? togglePreviewModal(photo) : null)}
-                  >
-                    {photo ? (
-                      <Image src={photo} alt="banner" height={32} width={32} />
-                    ) : (
-                      <Image src={null} withPlaceholder height={32} width={32} />
-                    )}
-                  </Box>
-                  <Link
-                    to={`/inventory/view-details/${_id}`}
-                    className="text-purple-450 font-medium px-2"
-                    target="_blank"
-                  >
-                    <Text
-                      className="overflow-hidden text-ellipsis underline"
-                      lineClamp={1}
-                      title={spaceName}
-                    >
-                      {spaceName}
-                    </Text>
-                  </Link>
-                </div>
-                <Badge
-                  className="capitalize"
-                  variant="filled"
-                  color={isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'}
-                >
-                  {isUnderMaintenance ? 'Under Maintenance' : isOccupied ? 'Occupied' : 'Available'}
-                </Badge>
-              </div>
+              <SpaceNamePhotoContent
+                id={_id}
+                spaceName={spaceName}
+                spacePhoto={photo}
+                occupiedStateLabel={occupiedState}
+                isUnderMaintenance={isUnderMaintenance}
+                togglePreviewModal={togglePreviewModal}
+                isTargetBlank
+              />
             );
-          }, [isUnderMaintenance]),
+          }, [info.row.original.isUnderMaintenance]),
       },
       {
         Header: 'FACIA TOWARDS',
@@ -435,33 +381,77 @@ const SelectSpace = () => {
         }) => useMemo(() => <div className="flex gap-x-2">{dimension}</div>, []),
       },
       {
+        Header: 'OCCUPANCY DATE',
+        accessor: 'scheduledDate',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { bookingRange, startDate, endDate, unit, _id },
+          },
+        }) =>
+          useMemo(() => {
+            const isDisabled =
+              values?.place?.some(item => item._id === _id) && (!startDate || !endDate);
+            const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
+
+            return (
+              <div className="min-w-[300px]">
+                <DateRangeSelector
+                  error={isDisabled}
+                  dateValue={[startDate || null, endDate || null]}
+                  onChange={val => updateData('dateRange', val, _id)}
+                  everyDayUnitsData={everyDayUnitsData}
+                />
+              </div>
+            );
+          }, []),
+      },
+      {
         Header: 'UNIT',
         accessor: 'specifications.unit',
         Cell: ({
           row: {
-            original: { unit, bookingRange, startDate, endDate, _id },
+            original: { unit, startDate, endDate, _id, availableUnit },
           },
         }) =>
           useMemo(() => {
-            const filterRange = validateFilterRange(bookingRange, startDate, endDate);
-            const lowUnit = getAvailableUnits(filterRange, unit, _id);
+            const isDisabled = !values?.place?.some(
+              item => item._id === _id && item.startDate !== null && item.endDate !== null,
+            );
+            const initialUnit = values?.place?.find(item => item._id === _id)?.initialUnit;
+            const available = values?.place?.find(item => item._id === _id)?.availableUnit;
+            const bookable = values?.place?.find(item => item._id === _id)?.unit;
+            const hasChangedUnit = values?.place?.find(item => item._id === _id)?.hasChangedUnit;
+            const isExceeded = bookable > (bookingId ? available + initialUnit : available);
 
             return (
-              <NumberInput
-                hideControls
-                defaultValue={Number(lowUnit) || 0}
-                max={Number(lowUnit)}
-                min={1}
-                onBlur={e => updateData('unit', e.target.value, _id)}
-                className="w-[100px]"
-                disabled={
-                  !values?.place?.find(
-                    item => item._id === _id && item.startDate !== null && item.endDate !== null,
-                  )
+              <Tooltip
+                label={
+                  hasChangedUnit && isExceeded
+                    ? 'Exceeded maximum units available for selected date range'
+                    : !unit
+                    ? 'Field cannot be empty'
+                    : null
                 }
-              />
+                opened={(hasChangedUnit && isExceeded) || !unit}
+                transition="slide-left"
+                position="right"
+                color="red"
+                radius="sm"
+                withArrow
+              >
+                <NumberInput
+                  hideControls
+                  defaultValue={!hasChangedUnit ? Number(bookable || 0) : unit}
+                  min={1}
+                  onChange={e => updateData('unit', e, _id)}
+                  className="w-[100px]"
+                  disabled={isDisabled}
+                  error={(hasChangedUnit && isExceeded) || !unit}
+                />
+              </Tooltip>
             );
-          }, [startDate, endDate]),
+          }, [startDate, endDate, unit, availableUnit]),
       },
       {
         Header: 'TRADED AMOUNT',
@@ -472,7 +462,7 @@ const SelectSpace = () => {
               <NumberInput
                 hideControls
                 defaultValue={+(info.row.original.tradedAmount || 0)}
-                onBlur={e => updateData('tradedAmount', e.target.value, info.row.original._id)}
+                onChange={e => updateData('tradedAmount', e, info.row.original._id)}
                 disabled={info.row.original.peer === '-'}
               />
             ),
@@ -492,33 +482,8 @@ const SelectSpace = () => {
               <NumberInput
                 hideControls
                 defaultValue={+(price || 0)}
-                onBlur={e => updateData('price', e.target.value, _id)}
+                onChange={e => updateData('price', e, _id)}
               />
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'OCCUPANCY DATE',
-        accessor: 'scheduledDate',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { bookingRange, startDate, endDate, _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div className="min-w-[300px]">
-                <DateRangeSelector
-                  error={
-                    !!values?.place?.find(item => item._id === _id) && (!startDate || !endDate)
-                  }
-                  dateValue={[startDate || null, endDate || null]}
-                  onChange={val => updateData('dateRange', val, _id)}
-                  dateRange={bookingRange}
-                />
-              </div>
             ),
             [],
           ),
@@ -688,14 +653,16 @@ const SelectSpace = () => {
         ) : (
           '-'
         );
-        obj.unit = item?.specifications?.unit || '-';
+        obj.originalUnit = item?.specifications?.unit || 1;
+        obj.unit = item?.specifications?.unit || 1;
         obj.impressionMax = item.specifications?.impressions?.max || 0;
         obj.impressionMin = item.specifications?.impressions?.min || 0;
         obj.health = item?.specifications?.health ?? 0;
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.location = item?.location?.city;
         obj.mediaType = item.basicInformation?.mediaType?.name;
-        obj.price = item.basicInformation?.price || 0;
+        obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
+        obj.tradedAmount = selectionItem?.tradedAmount ?? 0;
         obj.campaigns = item?.campaigns;
         obj.startDate = getDate(selectionItem, item, 'startDate');
         obj.endDate = getDate(selectionItem, item, 'endDate');

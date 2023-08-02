@@ -4,6 +4,7 @@ import { Button, createStyles } from '@mantine/core';
 import { RangeCalendar, DatePicker } from '@mantine/dates';
 import { Calendar } from 'react-feather';
 import dayjs from 'dayjs';
+import { DATE_FORMAT } from '../utils/constants';
 
 const styles = {
   monthPickerControlActive: { backgroundColor: '#4B0DAF !important' },
@@ -92,7 +93,7 @@ const DateRange = ({
           <Button
             onClick={() => {
               dateKeys.forEach(item =>
-                searchParams.set(item, dayjs(searchParams.get(item)).format('YYYY-MM-DD')),
+                searchParams.set(item, dayjs(searchParams.get(item)).format(DATE_FORMAT)),
               );
               setSearchParams(searchParams);
               handleClose();

@@ -7,6 +7,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
+import dayjs from 'dayjs';
 import whatsapp from '../../../assets/whatsapp.svg';
 import { FormProvider, useForm } from '../../../context/formContext';
 import TextInput from '../../shared/TextInput';
@@ -191,7 +192,7 @@ const ShareContent = ({ searchParamQueries }) => {
     }
 
     const response = await shareInventory.mutateAsync(
-      { queries: serialize(params), data },
+      { queries: serialize({ ...params, utcOffset: dayjs().utcOffset() }), data },
       {
         onSuccess: () => {
           setActiveFileType([]);

@@ -10,10 +10,9 @@ const inititalFilterData = {
     'online': 'Online',
     'offline': 'Offline',
   },
-  'paymentType': {
-    'neft': 'NEFT',
-    'rtgs': 'RTGS',
-    'cheque': 'Cheque',
+  'hasPaid': {
+    'true': 'Paid',
+    'false': 'Unpaid',
   },
 };
 
@@ -34,7 +33,7 @@ const Filter = ({
   showCampaignStatusOption = true,
 }) => {
   const [filterOptions, setFilterOptions] = useState({
-    paymentType: '',
+    hasPaid: '',
     campaignStatus: '',
     printingStatus: '',
     mountingStatus: '',
@@ -49,7 +48,7 @@ const Filter = ({
   const minPrice = searchParams.get('minPrice');
   const maxPrice = searchParams.get('maxPrice');
 
-  const paymentType = searchParams.get('paymentType');
+  const hasPaid = searchParams.get('hasPaid');
   const campaignStatus = searchParams.get('campaignStatus');
   const printingStatus = searchParams.get('printingStatus');
   const mountingStatus = searchParams.get('mountingStatus');
@@ -134,7 +133,7 @@ const Filter = ({
   };
 
   const handleResetParams = () => {
-    searchParams.delete('paymentType');
+    searchParams.delete('hasPaid');
     searchParams.delete('campaignStatus');
     searchParams.delete('printingStatus');
     searchParams.delete('mountingStatus');
@@ -144,7 +143,7 @@ const Filter = ({
     searchParams.delete('maxPrice');
     setSearchParams(searchParams);
     setFilterOptions({
-      paymentType: '',
+      hasPaid: '',
       printingStatus: '',
       mountingStatus: '',
       paymentStatus: '',
@@ -172,7 +171,7 @@ const Filter = ({
   useEffect(() => {
     setFilterOptions(prevState => ({
       ...prevState,
-      paymentType: paymentType || '',
+      hasPaid: hasPaid || '',
       campaignStatus: campaignStatus || '',
       printingStatus: printingStatus || '',
       mountingStatus: mountingStatus || '',
@@ -262,10 +261,10 @@ const Filter = ({
             </Accordion.Panel>
           </Accordion.Item>
 
-          <Accordion.Item value="paymentType" className="border-solid border-2 rounded-xl mb-2 p-1">
-            <Accordion.Control className="hover:bg-white">Payment Type</Accordion.Control>
+          <Accordion.Item value="hasPaid" className="border-solid border-2 rounded-xl mb-2 p-1">
+            <Accordion.Control className="hover:bg-white">Payment Status</Accordion.Control>
             <Accordion.Panel>
-              {renderStaticOptions(inititalFilterData.paymentType, 'paymentType')}
+              {renderStaticOptions(inititalFilterData.hasPaid, 'hasPaid')}
             </Accordion.Panel>
           </Accordion.Item>
 

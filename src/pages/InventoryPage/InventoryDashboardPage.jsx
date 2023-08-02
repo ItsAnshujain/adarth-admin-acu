@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedValue } from '@mantine/hooks';
-import { Link, useSearchParams } from 'react-router-dom';
-import { ActionIcon, Badge, Box, Button, Image, Loader, Progress, Text } from '@mantine/core';
+import { useSearchParams } from 'react-router-dom';
+import { ActionIcon, Badge, Button, Image, Loader, Progress } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
@@ -24,7 +24,15 @@ import {
 } from '../../apis/queries/inventory.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import modalConfig from '../../utils/modalConfig';
-import { categoryColors, ROLES, stringToColour } from '../../utils';
+import {
+  categoryColors,
+  currentDate,
+  generateSlNo,
+  getAvailableUnits,
+  getOccupiedState,
+  ROLES,
+  stringToColour,
+} from '../../utils';
 import { FormProvider, useForm } from '../../context/formContext';
 import TrashIcon from '../../assets/delete.png';
 import ExportIcon from '../../assets/export.png';
@@ -32,6 +40,7 @@ import RoleBased from '../../components/RoleBased';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
 import ViewByFilter from '../../components/modules/inventory/ViewByFilter';
 import ShareContent from '../../components/modules/inventory/ShareContent';
+import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
 
 dayjs.extend(isBetween);
 
@@ -93,80 +102,34 @@ const InventoryDashboardPage = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: info =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + info.row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'basicInformation.spaceName',
         Cell: info =>
           useMemo(() => {
-            const isOccupied = info.row.original.bookingRange?.some(
-              item =>
-                dayjs().isBetween(item?.startDate, item?.endDate) ||
-                dayjs().isSame(dayjs(item?.endDate), 'day'),
+            const unitLeft = getAvailableUnits(
+              info.row.original.bookingRange,
+              currentDate,
+              currentDate,
+              info.row.original.specifications?.unit,
+            );
+
+            const occupiedState = getOccupiedState(
+              unitLeft,
+              info.row.original.specifications?.unit,
             );
 
             return (
-              <div className="flex items-center justify-between gap-2 w-96 mr-4">
-                <div className="flex justify-start items-center flex-1">
-                  <Box
-                    className={classNames(
-                      'bg-white border rounded-md',
-                      info.row.original.basicInformation?.spacePhoto ? 'cursor-zoom-in' : '',
-                    )}
-                    onClick={() =>
-                      info.row.original.basicInformation?.spacePhoto
-                        ? togglePreviewModal(info.row.original.basicInformation?.spacePhoto)
-                        : null
-                    }
-                  >
-                    {info.row.original.basicInformation?.spacePhoto ? (
-                      <Image
-                        src={info.row.original.basicInformation?.spacePhoto}
-                        alt="banner"
-                        height={32}
-                        width={32}
-                      />
-                    ) : (
-                      <Image src={null} withPlaceholder height={32} width={32} />
-                    )}
-                  </Box>
-                  <Link
-                    to={`/inventory/view-details/${info.row.original._id}`}
-                    className="text-purple-450 font-medium px-2"
-                  >
-                    <Text
-                      className="overflow-hidden text-ellipsis underline"
-                      lineClamp={1}
-                      title={info.row.original.basicInformation?.spaceName}
-                    >
-                      {info.row.original.basicInformation?.spaceName}
-                    </Text>
-                  </Link>
-                </div>
-                <Badge
-                  className="capitalize"
-                  variant="filled"
-                  color={
-                    info.row.original.isUnderMaintenance ? 'yellow' : isOccupied ? 'blue' : 'green'
-                  }
-                >
-                  {info.row.original.isUnderMaintenance
-                    ? 'Under Maintenance'
-                    : isOccupied
-                    ? 'Occupied'
-                    : 'Available'}
-                </Badge>
-              </div>
+              <SpaceNamePhotoContent
+                id={info.row.original._id}
+                spaceName={info.row.original.basicInformation?.spaceName}
+                spacePhoto={info.row.original.basicInformation?.spacePhoto}
+                occupiedStateLabel={occupiedState}
+                isUnderMaintenance={info.row.original.isUnderMaintenance}
+                togglePreviewModal={togglePreviewModal}
+              />
             );
           }, []),
       },
