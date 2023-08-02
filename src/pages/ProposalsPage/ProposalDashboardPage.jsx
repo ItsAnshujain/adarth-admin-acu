@@ -13,7 +13,7 @@ import GridView from '../../components/modules/proposals/Grid';
 import { useFetchProposals, useUpdateProposal } from '../../apis/queries/proposal.queries';
 import useLayoutView from '../../store/layout.store';
 import toIndianCurrency from '../../utils/currencyFormat';
-import { serialize } from '../../utils';
+import { generateSlNo, serialize } from '../../utils';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
 import ProposalsMenuPopover from '../../components/Popovers/ProposalsMenuPopover';
 
@@ -74,16 +74,7 @@ const ProposalDashboardPage = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'PROPOSAL NAME',

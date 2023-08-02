@@ -13,7 +13,7 @@ import {
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
 import { Badge, Image, Loader, Progress, Tabs, Text } from '@mantine/core';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { getWord } from 'num-count';
@@ -44,6 +44,7 @@ import {
   downloadPdf,
   financialEndDate,
   financialStartDate,
+  generateSlNo,
   monthsInShort,
   quarters,
   serialize,
@@ -52,6 +53,7 @@ import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/modules/reports/ShareContent';
 import { DATE_FORMAT } from '../../utils/constants';
+import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
 
 dayjs.extend(quarterOfYear);
 
@@ -66,6 +68,16 @@ ChartJS.register(
   Tooltip,
   Legend,
 );
+
+const updatedModalConfig = {
+  ...modalConfig,
+  classNames: {
+    title: 'font-dmSans text-xl px-4',
+    header: 'px-4 pt-4',
+    body: '',
+    close: 'mr-4',
+  },
+};
 
 const options = {
   responsive: true,
@@ -182,6 +194,15 @@ const InventoryReportsPage = () => {
     }
   };
 
+  const togglePreviewModal = imgSrc =>
+    modals.openModal({
+      title: 'Preview',
+      children: (
+        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+      ),
+      ...updatedModalConfig,
+    });
+
   const inventoryHealthStatus = useMemo(
     () => ({
       datasets: [
@@ -201,48 +222,21 @@ const InventoryReportsPage = () => {
       Header: '#',
       accessor: 'id',
       disableSortBy: true,
-      Cell: ({ row }) =>
-        useMemo(() => {
-          let currentPage = page;
-          let rowCount = 0;
-          if (page < 1) {
-            currentPage = 1;
-          }
-          rowCount = (currentPage - 1) * limit;
-          return <p>{rowCount + row.index + 1}</p>;
-        }, []),
+      Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
     },
     {
       Header: 'SPACE NAME & PHOTO',
       accessor: 'basicInformation.spaceName',
-      Cell: ({
-        row: {
-          original: { _id, basicInformation },
-        },
-      }) =>
+      Cell: info =>
         useMemo(
           () => (
-            <div className="flex items-center gap-2">
-              <div className="bg-white border rounded-md">
-                {basicInformation?.spacePhoto ? (
-                  <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
-                ) : (
-                  <Image src={null} withPlaceholder height={32} width={32} />
-                )}
-              </div>
-              <Link
-                to={`/inventory/view-details/${_id}`}
-                className="font-medium px-2 max-w-[180px] underline"
-              >
-                <Text
-                  className="overflow-hidden text-ellipsis text-purple-450"
-                  lineClamp={1}
-                  title={basicInformation?.spaceName}
-                >
-                  {basicInformation?.spaceName}
-                </Text>
-              </Link>
-            </div>
+            <SpaceNamePhotoContent
+              id={info.row.original._id}
+              spaceName={info.row.original.basicInformation?.spaceName}
+              spacePhoto={info.row.original.basicInformation?.spacePhoto}
+              togglePreviewModal={togglePreviewModal}
+              isTargetBlank
+            />
           ),
           [],
         ),
@@ -425,49 +419,22 @@ const InventoryReportsPage = () => {
       Header: '#',
       accessor: 'id',
       disableSortBy: true,
-      Cell: ({ row }) =>
-        useMemo(() => {
-          let currentPage = page;
-          let rowCount = 0;
-          if (page < 1) {
-            currentPage = 1;
-          }
-          rowCount = (currentPage - 1) * limit;
-          return <p>{rowCount + row.index + 1}</p>;
-        }, []),
+      Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
     },
     {
       Header: 'SPACE NAME & PHOTO',
       accessor: 'basicInformation.spaceName',
       disableSortBy: true,
-      Cell: ({
-        row: {
-          original: { _id, basicInformation },
-        },
-      }) =>
+      Cell: info =>
         useMemo(
           () => (
-            <div className="flex items-center gap-2">
-              <div className="bg-white border rounded-md">
-                {basicInformation?.spacePhoto ? (
-                  <Image src={basicInformation?.spacePhoto} alt="banner" height={32} width={32} />
-                ) : (
-                  <Image src={null} withPlaceholder height={32} width={32} />
-                )}
-              </div>
-              <Link
-                to={`/inventory/view-details/${_id}`}
-                className="font-medium px-2 max-w-[180px] underline"
-              >
-                <Text
-                  className="overflow-hidden text-ellipsis text-purple-450"
-                  lineClamp={1}
-                  title={basicInformation?.spaceName}
-                >
-                  {basicInformation?.spaceName}
-                </Text>
-              </Link>
-            </div>
+            <SpaceNamePhotoContent
+              id={info.row.original._id}
+              spaceName={info.row.original.basicInformation?.spaceName}
+              spacePhoto={info.row.original.basicInformation?.spacePhoto}
+              togglePreviewModal={togglePreviewModal}
+              isTargetBlank
+            />
           ),
           [],
         ),
@@ -490,7 +457,6 @@ const InventoryReportsPage = () => {
         row: {
           original: { basicInformation },
         },
-        // }) => useMemo(() => <p className="w-fit">{basicInformation?.category?.name}</p>, []),
       }) =>
         useMemo(() => {
           const colorType = Object.keys(categoryColors).find(

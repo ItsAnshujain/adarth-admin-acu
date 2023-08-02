@@ -8,16 +8,14 @@ import {
   Badge,
   Loader,
   Group,
-  Box,
   Tooltip,
 } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import classNames from 'classnames';
 import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
@@ -34,7 +32,6 @@ import {
   getDate,
   getEveryDayUnits,
   getOccupiedState,
-  getOccupiedStateColor,
   stringToColour,
 } from '../../../utils';
 import Filter from '../inventory/Filter';
@@ -44,6 +41,7 @@ import DateRangeSelector from '../../DateRangeSelector';
 import RowsPerPage from '../../RowsPerPage';
 import modalConfig from '../../../utils/modalConfig';
 import useLayoutView from '../../../store/layout.store';
+import SpaceNamePhotoContent from '../inventory/SpaceNamePhotoContent';
 
 dayjs.extend(isBetween);
 
@@ -182,43 +180,15 @@ const Spaces = () => {
             const occupiedState = getOccupiedState(unitLeft, originalUnit);
 
             return (
-              <div className="flex items-center justify-between gap-2 w-96 mr-4">
-                <div className="flex justify-start items-center flex-1">
-                  <Box
-                    className={classNames(
-                      'bg-white border rounded-md',
-                      spacePhoto ? 'cursor-zoom-in' : '',
-                    )}
-                    onClick={() => (spacePhoto ? togglePreviewModal(spacePhoto) : null)}
-                  >
-                    {spacePhoto ? (
-                      <Image src={spacePhoto} alt="banner" height={32} width={32} />
-                    ) : (
-                      <Image src={null} withPlaceholder height={32} width={32} />
-                    )}
-                  </Box>
-                  <Link
-                    to={`/inventory/view-details/${_id}`}
-                    className="text-purple-450 font-medium px-2"
-                    target="_blank"
-                  >
-                    <Text
-                      className="overflow-hidden text-ellipsis underline"
-                      lineClamp={1}
-                      title={spaceName}
-                    >
-                      {spaceName}
-                    </Text>
-                  </Link>
-                </div>
-                <Badge
-                  className="capitalize"
-                  variant="filled"
-                  color={getOccupiedStateColor(isUnderMaintenance, occupiedState)}
-                >
-                  {isUnderMaintenance ? 'Under Maintenance' : occupiedState}
-                </Badge>
-              </div>
+              <SpaceNamePhotoContent
+                id={_id}
+                spaceName={spaceName}
+                spacePhoto={spacePhoto}
+                occupiedStateLabel={occupiedState}
+                isUnderMaintenance={isUnderMaintenance}
+                togglePreviewModal={togglePreviewModal}
+                isTargetBlank
+              />
             );
           }, []),
       },

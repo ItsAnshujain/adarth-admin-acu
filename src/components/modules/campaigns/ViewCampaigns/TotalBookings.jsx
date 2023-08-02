@@ -11,7 +11,7 @@ import DateRange from '../../../DateRange';
 import Table from '../../../Table/Table';
 import { useBookings } from '../../../../apis/queries/booking.queries';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
-import { serialize } from '../../../../utils';
+import { generateSlNo, serialize } from '../../../../utils';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import BookingsMenuPopover from '../../../Popovers/BookingsMenuPopover';
 import NoData from '../../../shared/NoData';
@@ -53,16 +53,7 @@ const TotalBookings = ({ campaignId }) => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'CLIENT',

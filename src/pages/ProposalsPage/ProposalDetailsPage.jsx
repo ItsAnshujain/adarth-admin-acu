@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Badge, Box, Button, Image, Loader, Progress, Text } from '@mantine/core';
+import { Badge, Button, Image, Loader, Progress, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
@@ -18,9 +18,9 @@ import toIndianCurrency from '../../utils/currencyFormat';
 import {
   categoryColors,
   currentDate,
+  generateSlNo,
   getAvailableUnits,
   getOccupiedState,
-  getOccupiedStateColor,
   stringToColour,
 } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
@@ -28,6 +28,17 @@ import Filter from '../../components/modules/inventory/Filter';
 import useUserStore from '../../store/user.store';
 import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesMenuPopover';
 import useLayoutView from '../../store/layout.store';
+import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
+
+const updatedModalConfig = {
+  ...modalConfig,
+  classNames: {
+    title: 'font-dmSans text-xl px-4',
+    header: 'px-4 pt-4',
+    body: '',
+    close: 'mr-4',
+  },
+};
 
 const ProposalDetailsPage = () => {
   const modals = useModals();
@@ -60,21 +71,13 @@ const ProposalDetailsPage = () => {
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
-  const toggleImagePreviewModal = imgSrc =>
-    modals.openContextModal('basic', {
+  const togglePreviewModal = imgSrc =>
+    modals.openModal({
       title: 'Preview',
-      innerProps: {
-        modalBody: (
-          <Box className=" flex justify-center" onClick={id => modals.closeModal(id)}>
-            {imgSrc ? (
-              <Image src={imgSrc} height={580} width={580} alt="preview" />
-            ) : (
-              <Image src={null} height={580} width={580} withPlaceholder />
-            )}
-          </Box>
-        ),
-      },
-      ...modalConfig,
+      children: (
+        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+      ),
+      ...updatedModalConfig,
     });
 
   const COLUMNS = useMemo(
@@ -83,16 +86,7 @@ const ProposalDetailsPage = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'SPACE NAME & PHOTO',
@@ -108,34 +102,14 @@ const ProposalDetailsPage = () => {
             const occupiedState = getOccupiedState(unitLeft, unit);
 
             return (
-              <div className="flex items-center gap-2">
-                <Box
-                  className="bg-white border rounded-md cursor-zoom-in"
-                  onClick={() => toggleImagePreviewModal(spacePhoto)}
-                >
-                  {spacePhoto ? (
-                    <Image src={spacePhoto} alt="banner" height={32} width={32} />
-                  ) : (
-                    <Image src={null} withPlaceholder height={32} width={32} />
-                  )}
-                </Box>
-                <Link to={`/inventory/view-details/${_id}`} className="font-medium px-2 underline">
-                  <Text
-                    className="overflow-hidden text-ellipsis max-w-[180px] text-purple-450"
-                    lineClamp={1}
-                    title={spaceName}
-                  >
-                    {spaceName}
-                  </Text>
-                </Link>
-                <Badge
-                  className="capitalize"
-                  variant="filled"
-                  color={getOccupiedStateColor(isUnderMaintenance, occupiedState)}
-                >
-                  {isUnderMaintenance ? 'Under Maintenance' : occupiedState}
-                </Badge>
-              </div>
+              <SpaceNamePhotoContent
+                id={_id}
+                spaceName={spaceName}
+                spacePhoto={spacePhoto}
+                occupiedStateLabel={occupiedState}
+                isUnderMaintenance={isUnderMaintenance}
+                togglePreviewModal={togglePreviewModal}
+              />
             );
           }, []),
       },

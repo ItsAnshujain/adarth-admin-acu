@@ -17,7 +17,7 @@ import {
   useUpdateBooking,
   useUpdateBookingStatus,
 } from '../../apis/queries/booking.queries';
-import { checkCampaignStats, serialize } from '../../utils';
+import { checkCampaignStats, generateSlNo, serialize } from '../../utils';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from '../../components/modules/bookings/BookingStatisticsView';
@@ -120,16 +120,7 @@ const BookingsDashboardPage = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'CAMPAIGN NAME',
