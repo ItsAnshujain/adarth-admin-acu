@@ -394,12 +394,14 @@ const ReleaseOrder = ({
 
     tempInitialTotal.mountingGstPercentage = values.mountingGstPercentage;
 
-    tempInitialTotal.gst.display = tempInitialTotal.subTotal.display * 0.18;
-    tempInitialTotal.gst.printing = tempInitialTotal.subTotal.printing * 0.18;
+    tempInitialTotal.gst.display = Math.round(tempInitialTotal.subTotal.display * 0.18);
+    tempInitialTotal.gst.printing = Math.round(tempInitialTotal.subTotal.printing * 0.18);
     tempInitialTotal.gst.mounting =
       values.mountingGstPercentage > 0
-        ? tempInitialTotal.subTotal.mounting * (tempInitialTotal.mountingGstPercentage / 100)
-        : tempInitialTotal.subTotal.mounting * 0.18;
+        ? Math.round(
+            tempInitialTotal.subTotal.mounting * (tempInitialTotal.mountingGstPercentage / 100),
+          )
+        : Math.round(tempInitialTotal.subTotal.mounting * 0.18);
 
     tempInitialTotal.total.display =
       tempInitialTotal.subTotal.display + tempInitialTotal.gst.display;
@@ -667,7 +669,7 @@ const ReleaseOrder = ({
           placeholder="Write..."
           value={
             bookingIdFromFinance
-              ? toWords.convert(totalPrice + totalPrice * 0.18)
+              ? toWords.convert(Math.round(totalPrice + totalPrice * 0.18))
               : calculatedData?.grandTotalInWords
               ? calculatedData.grandTotalInWords
               : ''

@@ -171,7 +171,7 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
               <p className="text-lg ml-2">
                 {previewData?.grandTotalInWords
                   ? previewData?.grandTotalInWords
-                  : totalPrice && toWords.convert(totalPrice + totalPrice * 0.18)}
+                  : totalPrice && toWords.convert(Math.round(totalPrice + totalPrice * 0.18))}
               </p>
             </div>
             <p className="text-lg">
