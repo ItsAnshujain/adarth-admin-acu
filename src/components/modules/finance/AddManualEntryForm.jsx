@@ -3,6 +3,7 @@ import { yupResolver } from '@mantine/form';
 import React, { useEffect } from 'react';
 import * as yup from 'yup';
 import { v4 as uuidv4 } from 'uuid';
+import classNames from 'classnames';
 import DatePicker from '../../shared/DatePicker';
 import NumberInput from '../../shared/NumberInput';
 import TextInput from '../../shared/TextInput';
@@ -140,7 +141,7 @@ const schema = {
   invoice: invoiceSchema,
 };
 
-const PurchaseAndInvoiceContent = () => {
+const PurchaseAndInvoiceContent = ({ type }) => {
   const { values, errors, setFieldValue } = useFormContext();
 
   useEffect(() => {
@@ -169,7 +170,9 @@ const PurchaseAndInvoiceContent = () => {
           className="mb-4"
         />
       </div>
-      <div className="grid grid-cols-3 gap-x-4">
+      <div
+        className={classNames('grid gap-x-4', type === 'invoice' ? ' grid-cols-3' : 'grid-cols-2')}
+      >
         <DatePicker
           label="Date"
           name="titleDate"
@@ -190,16 +193,18 @@ const PurchaseAndInvoiceContent = () => {
           size="md"
           className="mb-4"
         />
-        <NumberInput
-          label="HSN"
-          name="hsn"
-          errors={errors}
-          placeholder="Write..."
-          size="md"
-          className="mb-4"
-          min={0}
-          hideControls
-        />
+        {type === 'invoice' ? (
+          <NumberInput
+            label="HSN"
+            name="hsn"
+            errors={errors}
+            placeholder="Write..."
+            size="md"
+            className="mb-4"
+            min={0}
+            hideControls
+          />
+        ) : null}
       </div>
       <div className="grid grid-cols-3 gap-x-4">
         <NumberInput
@@ -430,7 +435,11 @@ const ManualEntryContent = ({
   return (
     <FormProvider form={form}>
       <form className="px-5" onSubmit={form.onSubmit(onSubmit)}>
-        <ManualEntries mountingSqftCost={mountingSqftCost} printingSqftCost={printingSqftCost} />
+        <ManualEntries
+          mountingSqftCost={mountingSqftCost}
+          printingSqftCost={printingSqftCost}
+          type={type}
+        />
         <Group position="right">
           <Button type="submit" className="primary-button">
             {item ? 'Edit' : 'Add'}

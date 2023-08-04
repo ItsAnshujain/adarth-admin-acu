@@ -35,7 +35,7 @@ import modalConfig from '../../utils/modalConfig';
 import PurchaseOrderPreview from '../../components/modules/finance/Create/PurchaseOrderPreview';
 import ReleaseOrderPreview from '../../components/modules/finance/Create/ReleaseOrderPreview';
 import InvoicePreview from '../../components/modules/finance/Create/InvoicePreview';
-import ManualEntryContent from '../../components/modules/finance/ManualEntryContent';
+import AddManualEntryForm from '../../components/modules/finance/AddManualEntryForm';
 import FormHeader from '../../components/modules/finance/Create/FormHeader';
 import { DATE_FORMAT } from '../../utils/constants';
 
@@ -505,7 +505,7 @@ const CreateFinancePage = () => {
       title: 'Manual Entry',
       innerProps: {
         modalBody: (
-          <ManualEntryContent
+          <AddManualEntryForm
             onClose={() => modals.closeModal()}
             setAddSpaceItem={setAddSpaceItem}
             addSpaceItem={addSpaceItem}
