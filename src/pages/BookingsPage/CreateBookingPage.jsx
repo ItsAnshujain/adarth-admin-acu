@@ -268,7 +268,7 @@ const CreateBookingPage = () => {
               item?.specifications?.unit && item.unit
                 ? item.specifications.unit - item.unit
                 : item.unit,
-            initialUnit: item?.unit,
+            initialUnit: item?.unit || 0,
             impressionMax: item?.specifications?.impressions?.max || 0,
             impressionMin: item?.specifications?.impressions?.min,
             health: item?.specifications?.health || 0,
