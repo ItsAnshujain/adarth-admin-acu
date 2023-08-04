@@ -138,9 +138,10 @@ const releaseSchema = bookingId =>
       .required('Release Order No is required'),
     companyName: yup.string().trim().required('Company Name is required'),
     quotationNo: yup
-      .string()
-      .trim()
-      .matches(onlyNumbersMatch, 'Must be a number')
+      .number()
+      .positive('Must be a positive number')
+      .typeError('Must be a number')
+      .nullable()
       .required('Quotation No is required'),
     contactPerson: yup.string().trim().required('Contact Person is required'),
     phone: yup
@@ -223,7 +224,7 @@ const releaseSchema = bookingId =>
 const initialReleaseValues = {
   releaseOrderNo: null,
   companyName: '',
-  quotationNo: '',
+  quotationNo: null,
   contactPerson: '',
   phone: '',
   mobile: '',
@@ -437,6 +438,7 @@ const CreateFinancePage = () => {
     bookingId || bookingIdFromFinance,
     !!bookingId || !!bookingIdFromFinance,
   );
+
   const { mutateAsync: generatePurchaseOrder, isLoading: isGeneratePurchaseOrderLoading } =
     useGeneratePurchaseOrder();
   const { mutateAsync: generateReleaseOrder, isLoading: isGenerateReleaseOrderLoading } =
@@ -633,6 +635,7 @@ const CreateFinancePage = () => {
             'printingSqftCost',
             'mountingSqftCost',
             'forMonths',
+            'mountingGstPercentage',
           ];
           Object.keys(data).forEach(key => {
             if (deletedKey.includes(key)) {
@@ -812,10 +815,10 @@ const CreateFinancePage = () => {
   }, [bookingId]);
 
   useEffect(() => {
-    if (bookingData?.campaign?.spaces) {
+    if (bookingData?.campaign?.spaces?.length) {
       setAddSpaceItem(bookingData?.campaign?.spaces);
     }
-  }, [bookingData]);
+  }, [bookingData?.campaign?.spaces?.length, bookingIdFromFinance]);
 
   useEffect(() => {
     if (bookingIdFromFinance === '') {

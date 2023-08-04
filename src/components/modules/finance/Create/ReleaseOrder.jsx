@@ -466,7 +466,7 @@ const ReleaseOrder = ({
             placeholder="Write..."
             id="companyName"
           />
-          <TextInput
+          <NumberInput
             styles={styles}
             label="Quotation No"
             name="quotationNo"
