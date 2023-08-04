@@ -345,29 +345,28 @@ const Spaces = () => {
         accessor: 'specifications.unit',
         Cell: ({
           row: {
-            original: { unit, startDate, endDate, _id, availableUnit },
+            original: { bookingRange, unit, startDate, endDate, _id, availableUnit, originalUnit },
           },
         }) =>
           useMemo(() => {
             const isDisabled = !values?.spaces?.some(
               item => item._id === _id && item.startDate !== null && item.endDate !== null,
             );
-            const initialUnit = values?.spaces?.find(item => item._id === _id)?.initialUnit;
-            const available = values?.spaces?.find(item => item._id === _id)?.availableUnit;
-            const bookable = values?.spaces?.find(item => item._id === _id)?.unit;
-            const hasChangedUnit = values?.spaces?.find(item => item._id === _id)?.hasChangedUnit;
-            const isExceeded = bookable > (proposalId ? available + initialUnit : available);
+
+            const unitLeft = getAvailableUnits(bookingRange, startDate, endDate, originalUnit);
+            const data = values?.spaces ? values.spaces.find(item => item._id === _id) : {};
+            const isExceeded = data?.unit > (proposalId ? unitLeft : data?.availableUnit);
 
             return (
               <Tooltip
                 label={
-                  hasChangedUnit && isExceeded
+                  data?.hasChangedUnit && isExceeded
                     ? 'Exceeded maximum units available for selected date range'
                     : !unit
                     ? 'Field cannot be empty'
                     : null
                 }
-                opened={(hasChangedUnit && isExceeded) || !unit}
+                opened={(data?.hasChangedUnit && isExceeded) || !unit}
                 transition="slide-left"
                 position="right"
                 color="red"
@@ -376,12 +375,12 @@ const Spaces = () => {
               >
                 <NumberInput
                   hideControls
-                  defaultValue={!hasChangedUnit ? Number(bookable || 0) : unit}
+                  defaultValue={!data?.hasChangedUnit ? Number(data?.unit || 0) : unit}
                   min={1}
                   onChange={e => updateData('unit', e, _id)}
                   className="w-[100px]"
                   disabled={isDisabled}
-                  error={(hasChangedUnit && isExceeded) || !unit}
+                  error={(data?.hasChangedUnit && isExceeded) || !unit}
                 />
               </Tooltip>
             );
