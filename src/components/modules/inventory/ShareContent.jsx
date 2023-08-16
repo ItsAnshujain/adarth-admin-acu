@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Group, Image, Radio } from '@mantine/core';
+import { Box, Button, Checkbox, Group, Image, Radio, Tooltip } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Mail, Link as LinkIcon, MessageSquare } from 'react-feather';
@@ -13,12 +13,7 @@ import { FormProvider, useForm } from '../../../context/formContext';
 import TextInput from '../../shared/TextInput';
 import { useShareInventory } from '../../../apis/queries/inventory.queries';
 import { downloadPdf, serialize } from '../../../utils';
-
-const fileType = [
-  { name: 'PPT', _id: 'ppt' },
-  { name: 'PDF', _id: 'pdf' },
-  { name: 'EXCEL', _id: 'excel' },
-];
+import { FILE_TYPE_LIST, OBJECT_FIT_LIST } from '../../../utils/constants';
 
 const placeHolders = {
   email: 'Email Address',
@@ -133,6 +128,8 @@ const schemas = {
 const ShareContent = ({ searchParamQueries }) => {
   const [activeFileType, setActiveFileType] = useState([]);
   const [activeShare, setActiveShare] = useState('');
+  const [activeAspectRatio, setActiveAspectRatio] = useState('');
+
   const form = useForm({
     validate: yupResolver(schemas[activeShare]),
     initialValues: initialValues[activeShare],
@@ -150,9 +147,8 @@ const ShareContent = ({ searchParamQueries }) => {
     setActiveFileType(tempArr);
   };
 
-  const handleActiveShare = value => {
-    setActiveShare(value);
-  };
+  const handleActiveAspectRatio = value => setActiveAspectRatio(value);
+  const handleActiveShare = value => setActiveShare(value);
 
   const handleSubmit = async formData => {
     const data = { ...formData };
@@ -165,6 +161,8 @@ const ShareContent = ({ searchParamQueries }) => {
 
     data.format = activeFileType.join(',');
     data.shareVia = activeShare === 'download' ? 'copy_link' : activeShare;
+    data.aspectRatio = activeAspectRatio !== '' ? activeAspectRatio : undefined;
+
     const params = {};
     searchParamQueries.forEach((value, key) => {
       params[key] = value;
@@ -204,6 +202,8 @@ const ShareContent = ({ searchParamQueries }) => {
           }
           form.setFieldValue('name', '');
           form.setFieldValue('to', '');
+          setActiveAspectRatio('');
+          setActiveShare('');
         },
       },
     );
@@ -235,7 +235,7 @@ const ShareContent = ({ searchParamQueries }) => {
           <div>
             <p className="font-medium text-xl mb-2">Select file type:</p>
             <div className="grid grid-cols-3 gap-2 mb-2">
-              {fileType.map(item => (
+              {FILE_TYPE_LIST.map(item => (
                 <Checkbox
                   key={uuidv4()}
                   onChange={event => handleActiveFileType(event.target.value)}
@@ -247,7 +247,38 @@ const ShareContent = ({ searchParamQueries }) => {
               ))}
             </div>
           </div>
-          <div className="my-2 ">
+
+          <div>
+            <p className="font-medium text-xl mb-2">
+              Select aspect ratio for space images <span className="text-base">(Optional)</span>:
+            </p>
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              {OBJECT_FIT_LIST.map(item => (
+                <Tooltip
+                  multiline
+                  width={220}
+                  withArrow
+                  transition="fade"
+                  transitionDuration={200}
+                  label={item.description}
+                  key={uuidv4()}
+                >
+                  <div>
+                    <Radio
+                      onChange={event => handleActiveAspectRatio(event.target.value)}
+                      label={item.name}
+                      defaultValue={item._id}
+                      checked={activeAspectRatio === item._id}
+                      className="font-medium my-2"
+                      size="md"
+                    />
+                  </div>
+                </Tooltip>
+              ))}
+            </div>
+          </div>
+
+          <div>
             <p className="font-medium text-xl mb-2">Share via:</p>
 
             <Group className="grid grid-cols-2 ">

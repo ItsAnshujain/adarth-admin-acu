@@ -1,6 +1,6 @@
-import { Button, Group } from '@mantine/core';
+import { ActionIcon, Button, Group, Image } from '@mantine/core';
 import { yupResolver } from '@mantine/form';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import * as yup from 'yup';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
@@ -8,6 +8,19 @@ import DatePicker from '../../shared/DatePicker';
 import NumberInput from '../../shared/NumberInput';
 import TextInput from '../../shared/TextInput';
 import { FormProvider, useForm, useFormContext } from '../../../context/formContext';
+import TrashIcon from '../../../assets/trash.svg';
+import { useFetchMasters } from '../../../apis/queries/masters.queries';
+import { serialize } from '../../../utils';
+import Select from '../../shared/Select';
+import { FACING_VALUE_LIST } from '../../../utils/constants';
+
+const query = {
+  parentId: null,
+  limit: 100,
+  page: 1,
+  sortBy: 'name',
+  sortOrder: 'asc',
+};
 
 const initialPurchaseValues = {
   name: '',
@@ -48,30 +61,25 @@ const initialReleaseValues = {
   city: '',
   location: '',
   media: '',
-  width: null,
-  height: null,
   area: null,
   displayCost: null,
   printingCost: 0,
   mountingCost: 0,
+  size: [
+    {
+      height: null,
+      width: null,
+      key: uuidv4(),
+    },
+  ],
+  unit: null,
+  facing: { label: '', value: '' },
 };
 
 const releaseSchema = yup.object({
   city: yup.string().trim().required('City is required'),
   location: yup.string().trim().required('Location is required'),
   media: yup.string().trim().required('Media is required'),
-  width: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Width is required'),
-  height: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Height is required'),
   area: yup
     .number()
     .min(0, 'Must be greater than or equal to 0')
@@ -91,6 +99,34 @@ const releaseSchema = yup.object({
     .number()
     .min(0, 'Must be greater than or equal to 0')
     .typeError('Must be a number'),
+  size: yup.array().of(
+    yup.object({
+      height: yup
+        .number()
+        .positive('Must be a positive number')
+        .typeError('Must be a number')
+        .nullable()
+        .required('Height is required'),
+      width: yup
+        .number()
+        .positive('Must be a positive number')
+        .typeError('Must be a number')
+        .nullable()
+        .required('Width is required'),
+    }),
+  ),
+  unit: yup
+    .number()
+    .positive('Must be a positive number')
+    .typeError('Must be a number')
+    .nullable()
+    .required('Unit is required'),
+  facing: yup
+    .object({
+      label: yup.string().trim(),
+      value: yup.string().trim(),
+    })
+    .test('facing', 'Facing is required', obj => obj.value !== ''),
 });
 
 const initialInvoiceValues = {
@@ -244,7 +280,30 @@ const PurchaseAndInvoiceContent = ({ type }) => {
 };
 
 const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
-  const { errors, values, setFieldValue, setValues } = useFormContext();
+  const { errors, values, setFieldValue, setValues, insertListItem, removeListItem } =
+    useFormContext();
+
+  const {
+    data: facingData,
+    isLoading: isFacingLoading,
+    isSuccess: isFacingLoaded,
+  } = useFetchMasters(serialize({ type: 'facing', ...query }));
+
+  const getFacingValue = (facing = 'single') => {
+    const facingIndex = FACING_VALUE_LIST.findIndex(item => facing.toLowerCase().includes(item));
+
+    return facingIndex + 1;
+  };
+
+  const memoizedFacingData = useMemo(() => {
+    if (isFacingLoaded) {
+      return facingData.docs.map(category => ({
+        label: category.name,
+        value: getFacingValue(category.name),
+      }));
+    }
+    return [];
+  }, [facingData, isFacingLoaded]);
 
   useEffect(() => {
     setValues({
@@ -254,9 +313,20 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
     });
   }, [values.area, mountingSqftCost, printingSqftCost]);
 
+  const calculateHeightWidth = useMemo(() => {
+    const total = values.size?.reduce((acc, item) => {
+      if (item?.width && item?.height) {
+        return acc + item.width * item.height;
+      }
+      return acc;
+    }, 0);
+
+    return total || 0;
+  }, [values.size]);
+
   useEffect(() => {
-    setFieldValue('area', (values.width || 0) * (values.height || 0));
-  }, [values.width, values.height]);
+    setFieldValue('area', calculateHeightWidth * (values.unit || 0) * (values.facing?.value || 0));
+  }, [calculateHeightWidth, values.unit, values.facing?.value]);
 
   return (
     <>
@@ -290,39 +360,82 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
           size="md"
           className="mb-4"
         />
-        <div className="grid grid-cols-2 gap-x-4">
-          <NumberInput
-            label="Width"
-            name="width"
-            withAsterisk
-            errors={errors}
-            placeholder="Write..."
-            size="md"
-            className="mb-4"
-            hideControls
-            onChange={e => {
-              if (e !== null || !Number.isNaN(e)) {
-                setFieldValue('width', e);
-              }
-            }}
-          />
-          <NumberInput
-            label="Height"
-            name="height"
-            withAsterisk
-            errors={errors}
-            placeholder="Write..."
-            size="md"
-            className="mb-4"
-            hideControls
-            onChange={e => {
-              if (e !== null || !Number.isNaN(e)) {
-                setFieldValue('height', e);
-              }
-            }}
-          />
+
+        <div className="max-h-[240px] overflow-y-scroll mb-2">
+          {values.size?.map((item, index) => (
+            <div key={item?.key} className="grid grid-cols-2 gap-4 relative">
+              {index !== 0 ? (
+                <ActionIcon
+                  className="absolute right-0"
+                  onClick={() => removeListItem('size', index)}
+                >
+                  <Image src={TrashIcon} height={15} width={15} />
+                </ActionIcon>
+              ) : null}
+              <div>
+                <p className="mt-[2px] font-medium text-[15px]">
+                  Width <span className="text-red-450">*</span>{' '}
+                  <span className="text-xs text-gray-500">(in ft)</span>
+                </p>
+                <NumberInput
+                  name={`size.${index}.width`}
+                  withAsterisk
+                  errors={errors}
+                  placeholder="Write..."
+                  size="md"
+                  className="mb-4"
+                />
+              </div>
+              <div>
+                <p className="mt-[2px] font-medium text-[15px]">
+                  Height <span className="text-red-450">*</span>{' '}
+                  <span className="text-xs text-gray-500">(in ft)</span>
+                </p>
+                <NumberInput
+                  name={`size.${index}.height`}
+                  withAsterisk
+                  errors={errors}
+                  placeholder="Write..."
+                  size="md"
+                  className="mb-4"
+                />
+              </div>
+            </div>
+          ))}
+
+          <Button
+            className="secondary-button mb-2"
+            onClick={() => insertListItem('size', { height: '', width: '', key: uuidv4() })}
+          >
+            Add More
+          </Button>
         </div>
       </div>
+
+      <div className="grid grid-cols-2 gap-x-4">
+        <NumberInput
+          label="Unit"
+          name="unit"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+        />
+        <Select
+          label="Facing"
+          name="facing"
+          withAsterisk
+          errors={errors}
+          placeholder="Select..."
+          size="md"
+          disabled={isFacingLoading}
+          classNames={{ label: 'font-medium mb-0' }}
+          options={memoizedFacingData}
+          className="mb-4"
+        />
+      </div>
+
       <div className="grid grid-cols-2 gap-x-4">
         <NumberInput
           label="Area"
@@ -428,6 +541,12 @@ const ManualEntryContent = ({
         printingCost: item?.printingCost,
         width: item?.width,
         hsn: item?.hsn,
+        size: item?.size?.map(ele => ({
+          height: ele?.height,
+          width: ele?.width,
+        })),
+        unit: item?.unit,
+        facing: { label: item?.facing?.label, value: item?.facing?.value },
       });
     }
   }, [item]);

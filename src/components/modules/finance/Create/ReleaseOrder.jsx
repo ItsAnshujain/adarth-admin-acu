@@ -147,7 +147,7 @@ const ReleaseOrder = ({
         Cell: ({ row: { index } }) => index + 1,
       },
       {
-        Header: 'City',
+        Header: 'CITY',
         accessor: 'city',
         disableSortBy: true,
         Cell: ({
@@ -169,7 +169,7 @@ const ReleaseOrder = ({
           ),
       },
       {
-        Header: 'City',
+        Header: 'LOCATION',
         accessor: 'location',
         disableSortBy: true,
         Cell: ({
@@ -191,7 +191,7 @@ const ReleaseOrder = ({
           ),
       },
       {
-        Header: 'Media',
+        Header: 'MEDIA',
         accessor: 'media',
         disableSortBy: true,
         Cell: ({
@@ -213,22 +213,37 @@ const ReleaseOrder = ({
           ),
       },
       {
-        Header: 'Width',
-        accessor: 'width',
+        Header: 'DIMENSION (WxH)',
+        accessor: 'dimensions',
         disableSortBy: true,
+        Cell: info =>
+          useMemo(
+            () => (
+              <div className="flex gap-x-2">
+                {info.row.original.size.length ? (
+                  <p>
+                    {info.row.original.size
+                      .map((item, index) =>
+                        index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
+                      )
+                      .filter(item => item !== null)
+                      .join(', ')}
+                  </p>
+                ) : (
+                  '-'
+                )}
+              </div>
+            ),
+            [],
+          ),
       },
       {
-        Header: 'Height',
-        accessor: 'height',
-        disableSortBy: true,
-      },
-      {
-        Header: 'Area',
+        Header: 'AREA',
         accessor: 'area',
         disableSortBy: true,
       },
       {
-        Header: 'Total Display Cost/Month',
+        Header: 'TOTAL DISPLAY COST/MONTH',
         accessor: 'displayCost',
         disableSortBy: true,
         Cell: ({
@@ -238,7 +253,7 @@ const ReleaseOrder = ({
         }) => useMemo(() => <p>{displayCost}</p>, []),
       },
       {
-        Header: 'Printing Cost',
+        Header: 'PRINTING COST',
         accessor: 'printingCost',
         disableSortBy: true,
         Cell: ({
@@ -248,7 +263,7 @@ const ReleaseOrder = ({
         }) => useMemo(() => <p>{printingCost}</p>, []),
       },
       {
-        Header: 'Mounting Cost',
+        Header: 'MOUNTING COST',
         accessor: 'mountingCost',
         disableSortBy: true,
         Cell: ({
@@ -267,13 +282,14 @@ const ReleaseOrder = ({
               area,
               city,
               displayCost,
-              height,
               itemId,
               location,
               media,
               mountingCost,
               printingCost,
-              width,
+              size,
+              unit,
+              facing,
             },
           },
         }) =>
@@ -295,13 +311,14 @@ const ReleaseOrder = ({
                         area,
                         city,
                         displayCost,
-                        height,
                         itemId,
                         location,
                         media,
                         mountingCost,
                         printingCost,
-                        width,
+                        size,
+                        unit,
+                        facing,
                       })
                     }
                   >
