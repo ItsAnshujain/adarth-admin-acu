@@ -80,3 +80,26 @@ export const MONTH_LIST = [
   { label: 'November', value: 11 },
   { label: 'December', value: 12 },
 ];
+
+export const FILE_TYPE_LIST = [
+  { name: 'PPT', _id: 'ppt' },
+  { name: 'PDF', _id: 'pdf' },
+  { name: 'EXCEL', _id: 'excel' },
+];
+
+export const OBJECT_FIT_LIST = [
+  {
+    name: 'Fill',
+    _id: 'fill',
+    description:
+      'The image is resized to fill the given dimension. If necessary, the image will be stretched or squished to fit',
+  },
+  {
+    name: 'Contain',
+    _id: 'contain',
+    description:
+      'The image keeps its aspect ratio, but is resized to fit within the given dimension',
+  },
+];
+
+export const FACING_VALUE_LIST = ['single', 'double', 'triple', 'four', 'five'];
