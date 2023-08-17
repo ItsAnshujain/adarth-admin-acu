@@ -579,7 +579,7 @@ const CreateFinancePage = () => {
           quantity: item.quantity,
           rate: item.rate,
           price: item.price,
-          index: index + 1,
+          index,
         }));
 
         if (!data.spaces.length) {
@@ -671,7 +671,7 @@ const CreateFinancePage = () => {
           mountingCost: item.mountingCost,
           printingCost: item.printingCost,
           width: item.width,
-          index: index + 1,
+          index,
           size: item.size,
         }));
 
@@ -695,7 +695,7 @@ const CreateFinancePage = () => {
             mountingCost: item.mountingCost,
             printingCost: item.printingCost,
             width: item.size?.[0]?.width,
-            index: index + 1,
+            index,
           }));
 
           const finalData = { ...data, ...updatedForm };
@@ -770,7 +770,7 @@ const CreateFinancePage = () => {
           quantity: item.quantity,
           rate: item.rate,
           price: item.price,
-          index: index + 1,
+          index,
           hsn: item?.hsn ? item.hsn.toString() : '',
         }));
 
