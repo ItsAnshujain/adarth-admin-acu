@@ -416,6 +416,7 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
         <NumberInput
           label="Unit"
           name="unit"
+          withAsterisk
           errors={errors}
           placeholder="Write..."
           size="md"

@@ -4,16 +4,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { Mail, Link as LinkIcon, MessageSquare } from 'react-feather';
 import classNames from 'classnames';
 import * as yup from 'yup';
-import { yupResolver } from '@mantine/form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
 import dayjs from 'dayjs';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import whatsapp from '../../../../assets/whatsapp.svg';
 import { useShareProposal } from '../../../../apis/queries/proposal.queries';
-import { FormProvider, useForm } from '../../../../context/formContext';
-import TextInput from '../../../shared/TextInput';
 import { serialize } from '../../../../utils';
 import { OBJECT_FIT_LIST, FILE_TYPE_LIST } from '../../../../utils/constants';
+import ControlledTextInput from '../../../shared/FormInputs/Controlled/ControlledTextInput';
 
 const placeHolders = {
   email: 'Email Address',
@@ -115,16 +115,16 @@ const schemas = {
   copy_link: copyLinkSchema,
 };
 
-const ShareContent = ({ id }) => {
+const ShareContent = ({ id, onClose }) => {
   const [activeFileType, setActiveFileType] = useState([]);
   const [activeShare, setActiveShare] = useState('');
-  const [activeAspectRatio, setActiveAspectRatio] = useState('');
+
   const form = useForm({
-    validate: yupResolver(schemas[activeShare]),
-    initialValues: initialValues[activeShare],
+    resolver: yupResolver(schemas[activeShare]),
+    defaultValues: initialValues[activeShare],
   });
 
-  const { mutateAsync: shareProposal, isLoading: isShareProposalLoading } = useShareProposal();
+  const shareProposal = useShareProposal();
 
   const handleActiveFileType = value => {
     let tempArr = [...activeFileType]; // TODO: use immmer
@@ -136,10 +136,9 @@ const ShareContent = ({ id }) => {
     setActiveFileType(tempArr);
   };
 
-  const handleActiveAspectRatio = value => setActiveAspectRatio(value);
   const handleActiveShare = value => setActiveShare(value);
 
-  const handleSubmit = async formData => {
+  const onSubmit = form.handleSubmit(async formData => {
     const data = { ...formData };
     if (!activeFileType.length) {
       showNotification({
@@ -150,9 +149,8 @@ const ShareContent = ({ id }) => {
 
     data.format = activeFileType.join(',');
     data.shareVia = activeShare;
-    data.aspectRatio = activeAspectRatio !== '' ? activeAspectRatio : undefined;
 
-    const res = await shareProposal(
+    const res = await shareProposal.mutateAsync(
       { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
       {
         onSuccess: () => {
@@ -163,10 +161,10 @@ const ShareContent = ({ id }) => {
               color: 'green',
             });
           }
-          form.setFieldValue('name', '');
-          form.setFieldValue('to', '');
-          setActiveAspectRatio('');
+
+          form.reset();
           setActiveShare('');
+          onClose();
         },
       },
     );
@@ -177,18 +175,18 @@ const ShareContent = ({ id }) => {
         color: 'blue',
       });
     }
-  };
+  });
 
   useEffect(() => {
     form.clearErrors();
-    form.setFieldValue('name', '');
-    form.setFieldValue('to', '');
+    form.setValue('name', '');
+    form.setValue('to', '');
   }, [activeShare]);
 
   return (
     <Box className="flex flex-col px-7">
-      <FormProvider form={form}>
-        <form onSubmit={form.onSubmit(handleSubmit)}>
+      <FormProvider {...form}>
+        <form onSubmit={onSubmit}>
           <div>
             <p className="font-medium text-xl mb-2">Select file type:</p>
             <div className="grid grid-cols-3 gap-2 mb-2">
@@ -210,28 +208,34 @@ const ShareContent = ({ id }) => {
               Select aspect ratio for space images <span className="text-base">(Optional)</span>:
             </p>
             <div className="grid grid-cols-3 gap-2 mb-2">
-              {OBJECT_FIT_LIST.map(item => (
-                <Tooltip
-                  multiline
-                  width={220}
-                  withArrow
-                  transition="fade"
-                  transitionDuration={200}
-                  label={item.description}
-                  key={uuidv4()}
-                >
-                  <div>
-                    <Radio
-                      onChange={event => handleActiveAspectRatio(event.target.value)}
-                      label={item.name}
-                      defaultValue={item._id}
-                      checked={activeAspectRatio === item._id}
-                      className="font-medium my-2"
-                      size="md"
-                    />
-                  </div>
-                </Tooltip>
-              ))}
+              <Controller
+                control={form.control}
+                name="aspectRatio"
+                render={({ field }) => (
+                  <Radio.Group size="md" {...field}>
+                    {OBJECT_FIT_LIST.map(item => (
+                      <Tooltip
+                        multiline
+                        width={220}
+                        withArrow
+                        transition="fade"
+                        transitionDuration={200}
+                        label={item.description}
+                        key={uuidv4()}
+                      >
+                        <div>
+                          <Radio
+                            label={item.name}
+                            id={item._id}
+                            value={item._id}
+                            className="font-medium my-2"
+                          />
+                        </div>
+                      </Tooltip>
+                    ))}
+                  </Radio.Group>
+                )}
+              />
             </div>
           </div>
 
@@ -261,19 +265,23 @@ const ShareContent = ({ id }) => {
               </div>
               {activeShare !== '' && (
                 <div>
-                  <TextInput name="name" placeholder="Name" className="mb-2" errors={form.errors} />
+                  <ControlledTextInput
+                    name="name"
+                    placeholder="Name"
+                    maxLength={200}
+                    className="mb-2"
+                  />
                   {activeShare !== 'copy_link' ? (
-                    <TextInput
+                    <ControlledTextInput
                       name="to"
                       placeholder={placeHolders[activeShare]}
-                      errors={form.errors}
+                      maxLength={200}
                     />
                   ) : null}
                   <Button
                     className="secondary-button font-medium text-base mt-2 w-full"
                     type="submit"
-                    loading={isShareProposalLoading}
-                    disabled={isShareProposalLoading}
+                    loading={shareProposal.isLoading}
                   >
                     {activeShare === 'copy_link' ? 'Copy' : 'Send'}
                   </Button>
