@@ -16,11 +16,10 @@ const Header = ({ isPeer }) => {
   const { mutateAsync: generatePdf, isLoading } = useGenerateProposalPdf();
 
   const toggleShareOptions = () => {
-    modals.openContextModal('basic', {
+    modals.openModal({
+      modalId: 'shareProposalOption',
       title: 'Share Option',
-      innerProps: {
-        modalBody: <ShareContent id={id} />,
-      },
+      children: <ShareContent id={id} onClose={() => modals.closeModal('shareProposalOption')} />,
       ...modalConfig,
     });
   };
