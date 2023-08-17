@@ -579,7 +579,7 @@ const CreateFinancePage = () => {
           quantity: item.quantity,
           rate: item.rate,
           price: item.price,
-          index: index + 1,
+          index,
         }));
 
         if (!data.spaces.length) {
@@ -636,6 +636,7 @@ const CreateFinancePage = () => {
             'mountingSqftCost',
             'forMonths',
             'mountingGstPercentage',
+            'spaces',
           ];
           Object.keys(data).forEach(key => {
             if (deletedKey.includes(key)) {
@@ -670,7 +671,8 @@ const CreateFinancePage = () => {
           mountingCost: item.mountingCost,
           printingCost: item.printingCost,
           width: item.width,
-          index: index + 1,
+          index,
+          size: item.size,
         }));
 
         if (!data.spaces.length) {
@@ -683,6 +685,19 @@ const CreateFinancePage = () => {
           open();
           setPreviewData({ ...data, ...updatedForm });
         } else if (submitType === 'save') {
+          data.spaces = addSpaceItem?.map((item, index) => ({
+            location: item.location,
+            area: item.area,
+            city: item.city,
+            displayCost: item.displayCost,
+            height: item.size?.[0]?.height,
+            media: item.media,
+            mountingCost: item.mountingCost,
+            printingCost: item.printingCost,
+            width: item.size?.[0]?.width,
+            index,
+          }));
+
           const finalData = { ...data, ...updatedForm };
           if (finalData.mountingGst === 0 || finalData.mountingGst === 18) {
             delete finalData.mountingGst;
@@ -755,7 +770,7 @@ const CreateFinancePage = () => {
           quantity: item.quantity,
           rate: item.rate,
           price: item.price,
-          index: index + 1,
+          index,
           hsn: item?.hsn ? item.hsn.toString() : '',
         }));
 

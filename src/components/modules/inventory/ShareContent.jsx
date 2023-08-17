@@ -1,24 +1,19 @@
-import { Box, Button, Checkbox, Group, Image, Radio } from '@mantine/core';
+import { Box, Button, Checkbox, Group, Image, Radio, Tooltip } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Mail, Link as LinkIcon, MessageSquare } from 'react-feather';
 import classNames from 'classnames';
 import * as yup from 'yup';
-import { yupResolver } from '@mantine/form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
 import dayjs from 'dayjs';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import whatsapp from '../../../assets/whatsapp.svg';
-import { FormProvider, useForm } from '../../../context/formContext';
-import TextInput from '../../shared/TextInput';
 import { useShareInventory } from '../../../apis/queries/inventory.queries';
 import { downloadPdf, serialize } from '../../../utils';
-
-const fileType = [
-  { name: 'PPT', _id: 'ppt' },
-  { name: 'PDF', _id: 'pdf' },
-  { name: 'EXCEL', _id: 'excel' },
-];
+import { FILE_TYPE_LIST, OBJECT_FIT_LIST } from '../../../utils/constants';
+import ControlledTextInput from '../../shared/FormInputs/Controlled/ControlledTextInput';
 
 const placeHolders = {
   email: 'Email Address',
@@ -130,12 +125,13 @@ const schemas = {
   download: downloadLinkSchema,
 };
 
-const ShareContent = ({ searchParamQueries }) => {
+const ShareContent = ({ searchParamQueries, onClose }) => {
   const [activeFileType, setActiveFileType] = useState([]);
   const [activeShare, setActiveShare] = useState('');
+
   const form = useForm({
-    validate: yupResolver(schemas[activeShare]),
-    initialValues: initialValues[activeShare],
+    resolver: yupResolver(schemas[activeShare]),
+    defaultValues: initialValues[activeShare],
   });
 
   const shareInventory = useShareInventory();
@@ -150,11 +146,9 @@ const ShareContent = ({ searchParamQueries }) => {
     setActiveFileType(tempArr);
   };
 
-  const handleActiveShare = value => {
-    setActiveShare(value);
-  };
+  const handleActiveShare = value => setActiveShare(value);
 
-  const handleSubmit = async formData => {
+  const onSubmit = form.handleSubmit(async formData => {
     const data = { ...formData };
     if (!activeFileType.length) {
       showNotification({
@@ -165,6 +159,7 @@ const ShareContent = ({ searchParamQueries }) => {
 
     data.format = activeFileType.join(',');
     data.shareVia = activeShare === 'download' ? 'copy_link' : activeShare;
+
     const params = {};
     searchParamQueries.forEach((value, key) => {
       params[key] = value;
@@ -202,8 +197,10 @@ const ShareContent = ({ searchParamQueries }) => {
               color: 'green',
             });
           }
-          form.setFieldValue('name', '');
-          form.setFieldValue('to', '');
+
+          form.reset();
+          setActiveShare('');
+          onClose();
         },
       },
     );
@@ -220,22 +217,22 @@ const ShareContent = ({ searchParamQueries }) => {
         downloadPdf(response.proposalShare[data.format]);
       }
     }
-  };
+  });
 
   useEffect(() => {
     form.clearErrors();
-    form.setFieldValue('name', '');
-    form.setFieldValue('to', '');
+    form.setValue('name', '');
+    form.setValue('to', '');
   }, [activeShare]);
 
   return (
     <Box className="flex flex-col px-7">
-      <FormProvider form={form}>
-        <form onSubmit={form.onSubmit(handleSubmit)}>
+      <FormProvider {...form}>
+        <form onSubmit={onSubmit}>
           <div>
             <p className="font-medium text-xl mb-2">Select file type:</p>
             <div className="grid grid-cols-3 gap-2 mb-2">
-              {fileType.map(item => (
+              {FILE_TYPE_LIST.map(item => (
                 <Checkbox
                   key={uuidv4()}
                   onChange={event => handleActiveFileType(event.target.value)}
@@ -247,7 +244,44 @@ const ShareContent = ({ searchParamQueries }) => {
               ))}
             </div>
           </div>
-          <div className="my-2 ">
+
+          <div>
+            <p className="font-medium text-xl mb-2">
+              Select aspect ratio for space images <span className="text-base">(Optional)</span>:
+            </p>
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              <Controller
+                control={form.control}
+                name="aspectRatio"
+                render={({ field }) => (
+                  <Radio.Group size="md" {...field}>
+                    {OBJECT_FIT_LIST.map(item => (
+                      <Tooltip
+                        multiline
+                        width={220}
+                        withArrow
+                        transition="fade"
+                        transitionDuration={200}
+                        label={item.description}
+                        key={uuidv4()}
+                      >
+                        <div>
+                          <Radio
+                            label={item.name}
+                            id={item._id}
+                            value={item._id}
+                            className="font-medium my-2"
+                          />
+                        </div>
+                      </Tooltip>
+                    ))}
+                  </Radio.Group>
+                )}
+              />
+            </div>
+          </div>
+
+          <div>
             <p className="font-medium text-xl mb-2">Share via:</p>
 
             <Group className="grid grid-cols-2 ">
@@ -274,18 +308,18 @@ const ShareContent = ({ searchParamQueries }) => {
               {activeShare !== '' && (
                 <div>
                   {activeShare !== 'download' ? (
-                    <TextInput
+                    <ControlledTextInput
                       name="name"
                       placeholder="Name"
+                      maxLength={200}
                       className="mb-2"
-                      errors={form.errors}
                     />
                   ) : null}
                   {activeShare !== 'copy_link' && activeShare !== 'download' ? (
-                    <TextInput
+                    <ControlledTextInput
                       name="to"
                       placeholder={placeHolders[activeShare]}
-                      errors={form.errors}
+                      maxLength={200}
                     />
                   ) : null}
                   {activeShare === 'email' ? (
