@@ -188,8 +188,8 @@ const ShareContent = ({ id, onClose }) => {
       <FormProvider {...form}>
         <form onSubmit={onSubmit}>
           <div>
-            <p className="font-medium text-xl mb-2">Select file type:</p>
-            <div className="grid grid-cols-3 gap-2 mb-2">
+            <p className="font-medium text-xl mb-3">Select file type:</p>
+            <div className="grid grid-cols-3 gap-2 mb-3">
               {FILE_TYPE_LIST.map(item => (
                 <Checkbox
                   key={uuidv4()}
@@ -205,14 +205,14 @@ const ShareContent = ({ id, onClose }) => {
 
           <div>
             <p className="font-medium text-xl mb-2">
-              Select aspect ratio for space images <span className="text-base">(Optional)</span>:
+              Select aspect ratio for space images (Optional):
             </p>
             <div className="grid grid-cols-3 gap-2 mb-2">
               <Controller
                 control={form.control}
                 name="aspectRatio"
                 render={({ field }) => (
-                  <Radio.Group size="md" {...field}>
+                  <Radio.Group size="md" classNames={{ root: 'mt-[-10px]' }} {...field}>
                     {OBJECT_FIT_LIST.map(item => (
                       <Tooltip
                         multiline
