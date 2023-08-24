@@ -35,10 +35,9 @@ import modalConfig from '../../utils/modalConfig';
 import PurchaseOrderPreview from '../../components/modules/finance/Create/PurchaseOrderPreview';
 import ReleaseOrderPreview from '../../components/modules/finance/Create/ReleaseOrderPreview';
 import InvoicePreview from '../../components/modules/finance/Create/InvoicePreview';
-import ManualEntryContent from '../../components/modules/finance/ManualEntryContent';
+import AddManualEntryForm from '../../components/modules/finance/AddManualEntryForm';
 import FormHeader from '../../components/modules/finance/Create/FormHeader';
-
-const DATE_FORMAT = 'YYYY-MM-DD';
+import { DATE_FORMAT } from '../../utils/constants';
 
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
@@ -139,9 +138,10 @@ const releaseSchema = bookingId =>
       .required('Release Order No is required'),
     companyName: yup.string().trim().required('Company Name is required'),
     quotationNo: yup
-      .string()
-      .trim()
-      .matches(onlyNumbersMatch, 'Must be a number')
+      .number()
+      .positive('Must be a positive number')
+      .typeError('Must be a number')
+      .nullable()
       .required('Quotation No is required'),
     contactPerson: yup.string().trim().required('Contact Person is required'),
     phone: yup
@@ -224,7 +224,7 @@ const releaseSchema = bookingId =>
 const initialReleaseValues = {
   releaseOrderNo: null,
   companyName: '',
-  quotationNo: '',
+  quotationNo: null,
   contactPerson: '',
   phone: '',
   mobile: '',
@@ -438,6 +438,7 @@ const CreateFinancePage = () => {
     bookingId || bookingIdFromFinance,
     !!bookingId || !!bookingIdFromFinance,
   );
+
   const { mutateAsync: generatePurchaseOrder, isLoading: isGeneratePurchaseOrderLoading } =
     useGeneratePurchaseOrder();
   const { mutateAsync: generateReleaseOrder, isLoading: isGenerateReleaseOrderLoading } =
@@ -506,7 +507,7 @@ const CreateFinancePage = () => {
       title: 'Manual Entry',
       innerProps: {
         modalBody: (
-          <ManualEntryContent
+          <AddManualEntryForm
             onClose={() => modals.closeModal()}
             setAddSpaceItem={setAddSpaceItem}
             addSpaceItem={addSpaceItem}
@@ -578,7 +579,7 @@ const CreateFinancePage = () => {
           quantity: item.quantity,
           rate: item.rate,
           price: item.price,
-          index: index + 1,
+          index,
         }));
 
         if (!data.spaces.length) {
@@ -634,6 +635,8 @@ const CreateFinancePage = () => {
             'printingSqftCost',
             'mountingSqftCost',
             'forMonths',
+            'mountingGstPercentage',
+            'spaces',
           ];
           Object.keys(data).forEach(key => {
             if (deletedKey.includes(key)) {
@@ -668,7 +671,8 @@ const CreateFinancePage = () => {
           mountingCost: item.mountingCost,
           printingCost: item.printingCost,
           width: item.width,
-          index: index + 1,
+          index,
+          size: item.size,
         }));
 
         if (!data.spaces.length) {
@@ -681,6 +685,19 @@ const CreateFinancePage = () => {
           open();
           setPreviewData({ ...data, ...updatedForm });
         } else if (submitType === 'save') {
+          data.spaces = addSpaceItem?.map((item, index) => ({
+            location: item.location,
+            area: item.area,
+            city: item.city,
+            displayCost: item.displayCost,
+            height: item.size?.[0]?.height,
+            media: item.media,
+            mountingCost: item.mountingCost,
+            printingCost: item.printingCost,
+            width: item.size?.[0]?.width,
+            index,
+          }));
+
           const finalData = { ...data, ...updatedForm };
           if (finalData.mountingGst === 0 || finalData.mountingGst === 18) {
             delete finalData.mountingGst;
@@ -753,7 +770,7 @@ const CreateFinancePage = () => {
           quantity: item.quantity,
           rate: item.rate,
           price: item.price,
-          index: index + 1,
+          index,
           hsn: item?.hsn ? item.hsn.toString() : '',
         }));
 
@@ -813,10 +830,10 @@ const CreateFinancePage = () => {
   }, [bookingId]);
 
   useEffect(() => {
-    if (bookingData?.campaign?.spaces) {
+    if (bookingData?.campaign?.spaces?.length) {
       setAddSpaceItem(bookingData?.campaign?.spaces);
     }
-  }, [bookingData]);
+  }, [bookingData?.campaign?.spaces?.length, bookingIdFromFinance]);
 
   useEffect(() => {
     if (bookingIdFromFinance === '') {

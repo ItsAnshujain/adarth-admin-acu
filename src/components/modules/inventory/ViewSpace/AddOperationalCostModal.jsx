@@ -8,12 +8,12 @@ import {
   useAddOperationalCost,
   useUpdateOperationalCost,
 } from '../../../../apis/queries/operationalCost.queries';
-import { serialize } from '../../../../utils';
+import { calculateDaysListByMonth, serialize } from '../../../../utils';
 import NumberInput from '../../../shared/NumberInput';
 import Select from '../../../shared/Select';
 import TextareaInput from '../../../shared/TextareaInput';
-import DatePicker from '../../../shared/DatePicker';
 import { useBookings } from '../../../../apis/queries/booking.queries';
+import { MONTH_LIST, YEAR_LIST } from '../../../../utils/constants';
 
 const bookingQueries = {
   page: 1,
@@ -38,9 +38,9 @@ const initialValues = {
   type: { label: '', value: '' },
   amount: null,
   description: '',
-  date: '',
   inventoryId: '',
   bookingId: '',
+  year: { label: '', value: -1 },
 };
 
 const schema = yup.object({
@@ -56,6 +56,12 @@ const schema = yup.object({
     .typeError('Must be a number')
     .nullable()
     .required('Amount is required'),
+  year: yup
+    .object({
+      label: yup.string().trim(),
+      value: yup.number(),
+    })
+    .test('year', 'Year is required', obj => obj.value !== -1),
 });
 
 const AddOperationalCostModal = ({
@@ -65,9 +71,11 @@ const AddOperationalCostModal = ({
   type,
   amount,
   description,
-  date,
   bookingId,
   bookingIdFromUrl,
+  year,
+  month,
+  day,
 }) => {
   const form = useForm({ validate: yupResolver(schema), initialValues });
   const {
@@ -110,6 +118,10 @@ const AddOperationalCostModal = ({
       }
     });
 
+    data.year = data.year.value;
+    data.month = data.month?.value;
+    data.day = data.day?.value;
+
     if (costId) {
       editCost({ id: costId, data }, { onSuccess: () => onClose() });
     } else {
@@ -125,11 +137,11 @@ const AddOperationalCostModal = ({
           label: type?.name,
           value: type?._id,
         },
-        date: new Date(date) || new Date(),
+        year: { value: year },
+        month: { value: month },
+        day: { value: day },
         description,
-        bookingId: {
-          value: bookingId,
-        },
+        bookingId: { value: bookingId },
       });
     } else {
       form.setFieldValue('bookingId', { value: bookingIdFromUrl });
@@ -140,15 +152,6 @@ const AddOperationalCostModal = ({
     <Box className="border-t">
       <FormProvider form={form}>
         <form className="px-5 pt-3" onSubmit={form.onSubmit(onSubmit)}>
-          <DatePicker
-            label="Date"
-            name="date"
-            withAsterisk
-            placeholder="DD/MM/YYYY"
-            size="md"
-            styles={styles}
-            className="mb-4"
-          />
           <Select
             label="Type"
             name="type"
@@ -167,6 +170,43 @@ const AddOperationalCostModal = ({
             }
             className="mb-4"
           />
+          <section className="grid grid-cols-3 gap-x-4">
+            <Select
+              label="Year"
+              name="year"
+              withAsterisk
+              errors={form.errors}
+              disabled={isOperationalCostLoading || isAddLoading || isEditLoading}
+              placeholder="Select..."
+              size="md"
+              options={YEAR_LIST}
+              className="mb-4"
+            />
+            <Select
+              label="Month"
+              name="month"
+              errors={form.errors}
+              disabled={isOperationalCostLoading || isAddLoading || isEditLoading}
+              placeholder="Select..."
+              size="md"
+              options={MONTH_LIST}
+              className="mb-4"
+            />
+            <Select
+              label="Day"
+              name="day"
+              errors={form.errors}
+              disabled={isOperationalCostLoading || isAddLoading || isEditLoading}
+              placeholder="Select..."
+              size="md"
+              options={
+                calculateDaysListByMonth(form.values.month?.value, form.values.year?.value).map(
+                  item => ({ label: item, value: item }),
+                ) || []
+              }
+              className="mb-4"
+            />
+          </section>
           <NumberInput
             label="Amount ₹"
             name="amount"

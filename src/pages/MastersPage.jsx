@@ -7,7 +7,7 @@ import Sidebar from '../components/Sidebar';
 import SubHeader from '../components/modules/masters/SubHeader';
 import MastersMenuPopover from '../components/Popovers/MastersMenuPopover';
 import Table from '../components/Table/Table';
-import { masterTypes } from '../utils';
+import { generateSlNo, masterTypes } from '../utils';
 import { useFetchMasters } from '../apis/queries/masters.queries';
 import RowsPerPage from '../components/RowsPerPage';
 import Search from '../components/Search';
@@ -54,16 +54,7 @@ const MastersPage = () => {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'NAME',

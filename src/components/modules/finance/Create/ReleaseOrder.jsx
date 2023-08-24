@@ -147,7 +147,7 @@ const ReleaseOrder = ({
         Cell: ({ row: { index } }) => index + 1,
       },
       {
-        Header: 'City',
+        Header: 'CITY',
         accessor: 'city',
         disableSortBy: true,
         Cell: ({
@@ -169,7 +169,7 @@ const ReleaseOrder = ({
           ),
       },
       {
-        Header: 'City',
+        Header: 'LOCATION',
         accessor: 'location',
         disableSortBy: true,
         Cell: ({
@@ -191,7 +191,7 @@ const ReleaseOrder = ({
           ),
       },
       {
-        Header: 'Media',
+        Header: 'MEDIA',
         accessor: 'media',
         disableSortBy: true,
         Cell: ({
@@ -213,22 +213,37 @@ const ReleaseOrder = ({
           ),
       },
       {
-        Header: 'Width',
-        accessor: 'width',
+        Header: 'DIMENSION (WxH)',
+        accessor: 'dimensions',
         disableSortBy: true,
+        Cell: info =>
+          useMemo(
+            () => (
+              <div className="flex gap-x-2">
+                {info.row.original.size.length ? (
+                  <p>
+                    {info.row.original.size
+                      .map((item, index) =>
+                        index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
+                      )
+                      .filter(item => item !== null)
+                      .join(', ')}
+                  </p>
+                ) : (
+                  '-'
+                )}
+              </div>
+            ),
+            [],
+          ),
       },
       {
-        Header: 'Height',
-        accessor: 'height',
-        disableSortBy: true,
-      },
-      {
-        Header: 'Area',
+        Header: 'AREA',
         accessor: 'area',
         disableSortBy: true,
       },
       {
-        Header: 'Total Display Cost/Month',
+        Header: 'TOTAL DISPLAY COST/MONTH',
         accessor: 'displayCost',
         disableSortBy: true,
         Cell: ({
@@ -238,7 +253,7 @@ const ReleaseOrder = ({
         }) => useMemo(() => <p>{displayCost}</p>, []),
       },
       {
-        Header: 'Printing Cost',
+        Header: 'PRINTING COST',
         accessor: 'printingCost',
         disableSortBy: true,
         Cell: ({
@@ -248,7 +263,7 @@ const ReleaseOrder = ({
         }) => useMemo(() => <p>{printingCost}</p>, []),
       },
       {
-        Header: 'Mounting Cost',
+        Header: 'MOUNTING COST',
         accessor: 'mountingCost',
         disableSortBy: true,
         Cell: ({
@@ -267,13 +282,14 @@ const ReleaseOrder = ({
               area,
               city,
               displayCost,
-              height,
               itemId,
               location,
               media,
               mountingCost,
               printingCost,
-              width,
+              size,
+              unit,
+              facing,
             },
           },
         }) =>
@@ -295,13 +311,14 @@ const ReleaseOrder = ({
                         area,
                         city,
                         displayCost,
-                        height,
                         itemId,
                         location,
                         media,
                         mountingCost,
                         printingCost,
-                        width,
+                        size,
+                        unit,
+                        facing,
                       })
                     }
                   >
@@ -394,12 +411,14 @@ const ReleaseOrder = ({
 
     tempInitialTotal.mountingGstPercentage = values.mountingGstPercentage;
 
-    tempInitialTotal.gst.display = tempInitialTotal.subTotal.display * 0.18;
-    tempInitialTotal.gst.printing = tempInitialTotal.subTotal.printing * 0.18;
+    tempInitialTotal.gst.display = Math.round(tempInitialTotal.subTotal.display * 0.18);
+    tempInitialTotal.gst.printing = Math.round(tempInitialTotal.subTotal.printing * 0.18);
     tempInitialTotal.gst.mounting =
       values.mountingGstPercentage > 0
-        ? tempInitialTotal.subTotal.mounting * (tempInitialTotal.mountingGstPercentage / 100)
-        : tempInitialTotal.subTotal.mounting * 0.18;
+        ? Math.round(
+            tempInitialTotal.subTotal.mounting * (tempInitialTotal.mountingGstPercentage / 100),
+          )
+        : Math.round(tempInitialTotal.subTotal.mounting * 0.18);
 
     tempInitialTotal.total.display =
       tempInitialTotal.subTotal.display + tempInitialTotal.gst.display;
@@ -464,7 +483,7 @@ const ReleaseOrder = ({
             placeholder="Write..."
             id="companyName"
           />
-          <TextInput
+          <NumberInput
             styles={styles}
             label="Quotation No"
             name="quotationNo"
@@ -667,7 +686,7 @@ const ReleaseOrder = ({
           placeholder="Write..."
           value={
             bookingIdFromFinance
-              ? toWords.convert(totalPrice + totalPrice * 0.18)
+              ? toWords.convert(Math.round(totalPrice + totalPrice * 0.18))
               : calculatedData?.grandTotalInWords
               ? calculatedData.grandTotalInWords
               : ''

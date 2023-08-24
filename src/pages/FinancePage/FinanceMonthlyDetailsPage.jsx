@@ -14,7 +14,7 @@ import Table from '../../components/Table/Table';
 import { useFetchFinanceByYearAndMonth } from '../../apis/queries/finance.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import FinanceMenuPopover from '../../components/Popovers/FinanceMenuPopover';
-import { downloadPdf, orderTitle, ROLES } from '../../utils';
+import { downloadPdf, generateSlNo, orderTitle, ROLES } from '../../utils';
 import RoleBased from '../../components/RoleBased';
 import modalConfig from '../../utils/modalConfig';
 import PreviewContent from '../../components/modules/finance/PreviewContent';
@@ -91,23 +91,13 @@ const FinanceMonthlyDetailsPage = () => {
       ...modalConfig,
     });
 
-  // TODO: disable SortBy in all col for now
   const purchaseOrderColumn = useMemo(
     () => [
       {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'ORDER ID',
@@ -266,23 +256,13 @@ const FinanceMonthlyDetailsPage = () => {
     [financialDataByMonth?.finances?.docs],
   );
 
-  // TODO: disable SortBy in all col for now
   const releaseOrderColumn = useMemo(
     () => [
       {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'ORDER ID',
@@ -451,23 +431,13 @@ const FinanceMonthlyDetailsPage = () => {
     [financialDataByMonth?.finances?.docs],
   );
 
-  // TODO: disable SortBy in all col for now
   const invoiceColumn = useMemo(
     () => [
       {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: ({ row }) =>
-          useMemo(() => {
-            let currentPage = page;
-            let rowCount = 0;
-            if (page < 1) {
-              currentPage = 1;
-            }
-            rowCount = (currentPage - 1) * limit;
-            return <p>{rowCount + row.index + 1}</p>;
-          }, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'ORDER ID',

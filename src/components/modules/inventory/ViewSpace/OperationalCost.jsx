@@ -1,6 +1,5 @@
 import { ActionIcon, Box, Button, Group, Loader } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 import { Edit } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
@@ -9,8 +8,6 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 import modalConfig from '../../../../utils/modalConfig';
 import AddOperationalCostModal from './AddOperationalCostModal';
 
-const DATE_FORMAT = 'DD-MM-YYYY';
-
 const OperationalCost = ({ inventoryDetails, isPeer }) => {
   const modals = useModals();
   const [searchParams] = useSearchParams();
@@ -18,7 +15,17 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
   const { data: operationaCostData, isLoading } = useFetchOperationalCost(inventoryId);
   const bookingIdFromUrl = searchParams.get('bookingId');
 
-  const handleOperationalCost = (_, costId, type, amount, description, date, bookingId) =>
+  const handleOperationalCost = (
+    _,
+    costId,
+    type,
+    amount,
+    description,
+    year,
+    month,
+    day,
+    bookingId,
+  ) =>
     modals.openContextModal('basic', {
       title: `${costId ? 'Edit' : 'Add'} Operational Cost`,
       innerProps: {
@@ -30,9 +37,11 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
             type={type}
             amount={amount}
             description={description}
-            date={date}
             bookingId={bookingId}
             bookingIdFromUrl={bookingIdFromUrl}
+            year={year}
+            month={month}
+            day={day}
           />
         ),
       },
@@ -75,7 +84,9 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
                               item?.type,
                               item?.amount,
                               item?.description,
-                              item?.date,
+                              item?.year,
+                              item?.month,
+                              item?.day,
                               item?.bookingId,
                             )
                           }
@@ -91,7 +102,7 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
                         </p>
                         <p className="text-xs mb-1">Created at:</p>
                         <p className="text-xs text-gray-500 font-medium">
-                          {item?.date ? dayjs(item.date).format(DATE_FORMAT) : null}
+                          {item?.day || 'NA'}/{item?.month || 'NA'}/{item?.year}
                         </p>
                       </div>
                     </div>

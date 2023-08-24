@@ -2,8 +2,9 @@ import { Button } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { ArrowLeft } from 'react-feather';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import dayjs from 'dayjs';
 import { useGenerateProposalPdf } from '../../../../apis/queries/proposal.queries';
-import { downloadPdf } from '../../../../utils';
+import { downloadPdf, serialize } from '../../../../utils';
 import modalConfig from '../../../../utils/modalConfig';
 import ShareContent from './ShareContent';
 
@@ -15,17 +16,16 @@ const Header = ({ isPeer }) => {
   const { mutateAsync: generatePdf, isLoading } = useGenerateProposalPdf();
 
   const toggleShareOptions = () => {
-    modals.openContextModal('basic', {
+    modals.openModal({
+      modalId: 'shareProposalOption',
       title: 'Share Option',
-      innerProps: {
-        modalBody: <ShareContent id={id} />,
-      },
+      children: <ShareContent id={id} onClose={() => modals.closeModal('shareProposalOption')} />,
       ...modalConfig,
     });
   };
 
   const onClickDownloadPdf = async () => {
-    const res = await generatePdf(id);
+    const res = await generatePdf({ id, queries: serialize({ utcOffset: dayjs().utcOffset() }) });
     downloadPdf(res?.link);
   };
 

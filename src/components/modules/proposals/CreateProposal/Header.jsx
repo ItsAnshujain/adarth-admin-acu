@@ -64,7 +64,11 @@ const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposal
         <Button onClick={handleHome} className="border-black text-black radius-md">
           Cancel
         </Button>
-        <Button onClick={handleBack} className="bg-black">
+        <Button
+          onClick={handleBack}
+          className="bg-black"
+          disabled={isProposalLoading || values?.spaces.find(item => !item.unit)}
+        >
           <ChevronLeft className="mr-2 h-4" />
           Back
         </Button>
@@ -78,7 +82,7 @@ const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposal
           <Button
             type="submit"
             className="bg-purple-450 order-3"
-            disabled={isProposalLoading}
+            disabled={isProposalLoading || values?.spaces.find(item => !item.unit)}
             loading={isProposalLoading}
           >
             {isProposalLoading

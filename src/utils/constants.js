@@ -45,3 +45,61 @@ export const MODE_OF_PAYMENT = [
 export const DATE_FORMAT = 'YYYY-MM-DD';
 
 export const DATE_SECOND_FORMAT = 'DD MMM YYYY';
+
+export const BOOKING_PAID_STATUS = [
+  { label: 'Paid', value: true },
+  { label: 'Unpaid', value: false },
+];
+
+export const YEAR_LIST = [
+  { label: 'Select', value: -1 },
+  { label: '2020', value: 2020 },
+  { label: '2021', value: 2021 },
+  { label: '2022', value: 2022 },
+  { label: '2023', value: 2023 },
+  { label: '2024', value: 2024 },
+  { label: '2025', value: 2025 },
+  { label: '2026', value: 2026 },
+  { label: '2027', value: 2027 },
+  { label: '2028', value: 2028 },
+  { label: '2029', value: 2029 },
+  { label: '2030', value: 2030 },
+];
+
+export const MONTH_LIST = [
+  { label: 'January', value: 1 },
+  { label: 'February', value: 2 },
+  { label: 'March', value: 3 },
+  { label: 'April', value: 4 },
+  { label: 'May', value: 5 },
+  { label: 'June', value: 6 },
+  { label: 'July', value: 7 },
+  { label: 'August', value: 8 },
+  { label: 'September', value: 9 },
+  { label: 'October', value: 10 },
+  { label: 'November', value: 11 },
+  { label: 'December', value: 12 },
+];
+
+export const FILE_TYPE_LIST = [
+  { name: 'PPT', _id: 'ppt' },
+  { name: 'PDF', _id: 'pdf' },
+  { name: 'EXCEL', _id: 'excel' },
+];
+
+export const OBJECT_FIT_LIST = [
+  {
+    name: 'Fill',
+    _id: 'fill',
+    description:
+      'The image is resized to fill the given dimension. If necessary, the image will be stretched or squished to fit',
+  },
+  {
+    name: 'Contain',
+    _id: 'contain',
+    description:
+      'The image keeps its aspect ratio, but is resized to fit within the given dimension',
+  },
+];
+
+export const FACING_VALUE_LIST = ['single', 'double', 'triple', 'four', 'five'];

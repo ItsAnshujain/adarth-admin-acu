@@ -105,35 +105,72 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
               : previewData?.spaces?.map((item, index) => (
                   <div className="flex justify-between items-center" key={uuidv4()}>
                     <p className="text-lg mr-2">{index + 1}</p>
-                    <Group className="grid grid-cols-9">
-                      <Text
-                        className="overflow-hidden text-ellipsis max-w-[180px]"
-                        lineClamp={1}
-                        title={item?.city}
-                      >
-                        {item?.city}
-                      </Text>
-                      <Text
-                        className="overflow-hidden text-ellipsis max-w-[180px]"
-                        lineClamp={1}
-                        title={item?.location}
-                      >
-                        {item?.location}
-                      </Text>
-                      <Text
-                        className="overflow-hidden text-ellipsis max-w-[180px]"
-                        lineClamp={1}
-                        title={item?.media}
-                      >
-                        {item?.media}
-                      </Text>
-
-                      <Text>{item?.width}</Text>
-                      <Text>{item?.height}</Text>
-                      <Text>{item?.area}</Text>
-                      <Text>{item?.displayCost}</Text>
-                      <Text>{item?.printingCost}</Text>
-                      <Text>{item?.mountingCost}</Text>
+                    <Group className="grid grid-cols-8 gap-2">
+                      <div>
+                        <p>City:</p>
+                        <Text
+                          className="overflow-hidden text-ellipsis max-w-[180px]"
+                          lineClamp={1}
+                          title={item?.city}
+                        >
+                          {item?.city}
+                        </Text>
+                      </div>
+                      <div>
+                        <p>Location:</p>
+                        <Text
+                          className="overflow-hidden text-ellipsis max-w-[180px]"
+                          lineClamp={1}
+                          title={item?.location}
+                        >
+                          {item?.location}
+                        </Text>
+                      </div>
+                      <div>
+                        <p>Media:</p>
+                        <Text
+                          className="overflow-hidden text-ellipsis max-w-[180px]"
+                          lineClamp={1}
+                          title={item?.media}
+                        >
+                          {item?.media}
+                        </Text>
+                      </div>
+                      <div>
+                        <p>
+                          Dimensions <span className="text-sm">(WxH)</span>:
+                        </p>
+                        <div className="flex gap-x-2">
+                          {item?.size?.length ? (
+                            <p>
+                              {item.size
+                                .map((ele, idx) =>
+                                  idx < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
+                                )
+                                .filter(ele => ele !== null)
+                                .join(', ')}
+                            </p>
+                          ) : (
+                            '-'
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <p>Area:</p>
+                        <Text>{item?.area}</Text>
+                      </div>
+                      <div>
+                        <p>Display Cost:</p>
+                        <Text>{item?.displayCost}</Text>
+                      </div>
+                      <div>
+                        <p>Printing Cost:</p>
+                        <Text>{item?.printingCost}</Text>
+                      </div>
+                      <div>
+                        <p>Mounting Cost:</p>
+                        <Text>{item?.mountingCost}</Text>
+                      </div>
                     </Group>
                   </div>
                 ))}
@@ -171,7 +208,7 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
               <p className="text-lg ml-2">
                 {previewData?.grandTotalInWords
                   ? previewData?.grandTotalInWords
-                  : totalPrice && toWords.convert(totalPrice + totalPrice * 0.18)}
+                  : totalPrice && toWords.convert(Math.round(totalPrice + totalPrice * 0.18))}
               </p>
             </div>
             <p className="text-lg">

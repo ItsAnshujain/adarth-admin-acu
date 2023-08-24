@@ -3,18 +3,13 @@ import * as yup from 'yup';
 import shallow from 'zustand/shallow';
 import { Title, Text, Button } from '@mantine/core';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { yupResolver } from '@mantine/form';
+import { FormProvider, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import banner from '../assets/login.svg';
-import { useForm, FormProvider } from '../context/formContext';
 import { useLogin } from '../apis/queries/auth.queries';
 import useUserStore from '../store/user.store';
-import TextInput from '../components/shared/TextInput';
-import PasswordInput from '../components/shared/PasswordInput';
-
-const initialValues = {
-  email: '',
-  password: '',
-};
+import ControlledPasswordInput from '../components/shared/FormInputs/Controlled/ControlledPasswordInput';
+import ControlledTextInput from '../components/shared/FormInputs/Controlled/ControlledTextInput';
 
 const schema = yup.object({
   email: yup.string().trim().required('Email is required').email('Invalid Email'),
@@ -41,12 +36,12 @@ const LoginPage = () => {
   );
 
   const redirectTo = searchParams.get('redirect_to');
-  const { mutateAsync: login, isLoading } = useLogin();
+  const login = useLogin();
 
-  const form = useForm({ validate: yupResolver(schema), initialValues });
+  const form = useForm({ resolver: yupResolver(schema) });
 
-  const onSubmitHandler = async formData => {
-    const response = await login(formData);
+  const onSubmit = form.handleSubmit(async formData => {
+    const response = await login.mutateAsync(formData);
     setToken(response.token);
     setId(response.id);
     setHasAcceptedTerms(response.hasAcceptedTerms);
@@ -64,17 +59,6 @@ const LoginPage = () => {
     } else {
       navigate('/home');
     }
-  };
-
-  const styles = () => ({
-    label: {
-      color: 'grey',
-      opacity: '0.5',
-      marginBottom: '16px',
-      marginTop: '24px',
-      fontWeight: '100',
-      fontSize: '16px',
-    },
   });
 
   return (
@@ -84,41 +68,25 @@ const LoginPage = () => {
       </div>
       <div className="flex h-screen w-full flex-col justify-center px-5 md:w-[31%] md:px-0">
         <Title className="mb-1">Login to Adarth</Title>
-        <Text>Please use registered email for login</Text>
-        <FormProvider form={form}>
-          <form onSubmit={form.onSubmit(onSubmitHandler)}>
-            <TextInput
+        <Text className="mb-5">Please use registered email for login</Text>
+        <FormProvider {...form}>
+          <form onSubmit={onSubmit}>
+            <ControlledTextInput
               name="email"
               label="Email"
-              disabled={isLoading}
-              size="lg"
               placeholder="Your Email"
-              styles={styles}
-              errors={form.errors}
+              className="mb-4"
             />
-            <PasswordInput
+            <ControlledPasswordInput
               name="password"
               label="Password"
-              disabled={isLoading}
-              size="lg"
               placeholder="Your Password"
-              styles={styles}
-              errors={form.errors}
+              className="mb-4"
             />
             <Button
-              loading={isLoading}
-              className="mt-5 width-full bg-purple-450"
-              color="primary"
               type="submit"
-              styles={() => ({
-                root: {
-                  width: '100%',
-                  height: '40px',
-                  '&:hover': {
-                    backgroundColor: '#4B0DAF',
-                  },
-                },
-              })}
+              className="primary-button w-full text-base"
+              loading={login.isLoading}
             >
               Login
             </Button>

@@ -23,14 +23,20 @@ import { useCampaignReport, useCampaignStats } from '../../apis/queries/campaign
 import ViewByFilter from '../../components/modules/reports/ViewByFilter';
 import CampaignStatsContent from '../../components/modules/reports/Campaign/CampaignStatsContent';
 import CampaignPieContent from '../../components/modules/reports/Campaign/CampaignPieContent';
-import { dateByQuarter, daysInAWeek, downloadPdf, monthsInShort, quarters } from '../../utils';
+import {
+  daysInAWeek,
+  downloadPdf,
+  financialEndDate,
+  financialStartDate,
+  monthsInShort,
+  quarters,
+} from '../../utils';
 import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/modules/reports/ShareContent';
+import { DATE_FORMAT } from '../../utils/constants';
 
 dayjs.extend(quarterOfYear);
-
-const DATE_FORMAT = 'YYYY-MM-DD';
 
 ChartJS.register(ArcElement, Tooltip, CategoryScale, LinearScale, BarElement, Title, Legend);
 const options = {
@@ -41,9 +47,9 @@ const options = {
 const CampaignReportsPage = () => {
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
-    startDate: dayjs().startOf('year').format(DATE_FORMAT),
-    endDate: dayjs().endOf('year').format(DATE_FORMAT),
     groupBy: 'month',
+    startDate: financialStartDate,
+    endDate: financialEndDate,
   });
 
   const share = searchParams.get('share');
@@ -81,15 +87,15 @@ const CampaignReportsPage = () => {
   } = useCampaignReport(searchParams.toString());
 
   const handleViewBy = viewType => {
-    if (viewType === 'reset') {
-      const startDate = dayjs().startOf('year').format(DATE_FORMAT);
-      const endDate = dayjs().endOf('year').format(DATE_FORMAT);
+    if (viewType === 'reset' || viewType === 'year') {
+      const startDate = financialStartDate;
+      const endDate = financialEndDate;
       searchParams.set('startDate', startDate);
       searchParams.set('endDate', endDate);
-      searchParams.set('groupBy', 'year');
+      searchParams.set('groupBy', 'month');
       setSearchParams(searchParams);
     }
-    if (viewType === 'week' || viewType === 'month' || viewType === 'year') {
+    if (viewType === 'week' || viewType === 'month') {
       const startDate = dayjs().startOf(viewType).format(DATE_FORMAT);
       const endDate = dayjs().endOf(viewType).format(DATE_FORMAT);
 
@@ -97,19 +103,13 @@ const CampaignReportsPage = () => {
       searchParams.set('endDate', endDate);
       searchParams.set(
         'groupBy',
-        viewType === 'year'
-          ? 'month'
-          : viewType === 'month'
-          ? 'dayOfMonth'
-          : viewType === 'week'
-          ? 'dayOfWeek'
-          : 'month',
+        viewType === 'month' ? 'dayOfMonth' : viewType === 'week' ? 'dayOfWeek' : 'month',
       );
       setSearchParams(searchParams);
     }
     if (viewType === 'quarter') {
-      searchParams.set('startDate', dateByQuarter[dayjs().quarter()].startDate);
-      searchParams.set('endDate', dateByQuarter[dayjs().quarter()].endDate);
+      searchParams.set('startDate', financialStartDate);
+      searchParams.set('endDate', financialEndDate);
       searchParams.set('groupBy', 'quarter');
       setSearchParams(searchParams);
     }
@@ -190,14 +190,70 @@ const CampaignReportsPage = () => {
 
       report?.revenue?.forEach(item => {
         if (item?._id) {
-          if (item.upcoming) {
-            tempBarData.datasets[0].data[item._id - 1] = item.upcoming;
-          }
-          if (item.ongoing) {
-            tempBarData.datasets[1].data[item._id - 1] = item.ongoing;
-          }
-          if (item.completed) {
-            tempBarData.datasets[2].data[item._id - 1] = item.completed;
+          if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
+            if (item.upcoming) {
+              tempBarData.datasets[0].data[item._id - 1] = item.upcoming;
+            }
+            if (item.ongoing) {
+              tempBarData.datasets[1].data[item._id - 1] = item.ongoing;
+            }
+            if (item.completed) {
+              tempBarData.datasets[2].data[item._id - 1] = item.completed;
+            }
+          } else if (groupBy === 'quarter') {
+            if (dayjs().quarter() === 1) {
+              if (item.upcoming) {
+                tempBarData.datasets[0].data[item._id + 3] = item.upcoming;
+              }
+              if (item.ongoing) {
+                tempBarData.datasets[1].data[item._id + 3] = item.ongoing;
+              }
+              if (item.completed) {
+                tempBarData.datasets[2].data[item._id + 3] = item.completed;
+              }
+            } else if (dayjs().quarter() === 4) {
+              if (item.upcoming) {
+                tempBarData.datasets[0].data[item._id - 3] = item.upcoming;
+              }
+              if (item.ongoing) {
+                tempBarData.datasets[1].data[item._id - 3] = item.ongoing;
+              }
+              if (item.completed) {
+                tempBarData.datasets[2].data[item._id - 3] = item.completed;
+              }
+            } else {
+              if (item.upcoming) {
+                tempBarData.datasets[0].data[item._id - 1] = item.upcoming;
+              }
+              if (item.ongoing) {
+                tempBarData.datasets[1].data[item._id - 1] = item.ongoing;
+              }
+              if (item.completed) {
+                tempBarData.datasets[2].data[item._id - 1] = item.completed;
+              }
+            }
+          } else if (item._id < 4) {
+            // For financial year. if the month is less than 4 then it will be in the next year
+            if (item.upcoming) {
+              tempBarData.datasets[0].data[item._id + 8] = item.upcoming;
+            }
+            if (item.ongoing) {
+              tempBarData.datasets[1].data[item._id + 8] = item.ongoing;
+            }
+            if (item.completed) {
+              tempBarData.datasets[2].data[item._id + 8] = item.completed;
+            }
+          } else {
+            // For financial year. if the month is greater than 4 then it will be in the same year
+            if (item.upcoming) {
+              tempBarData.datasets[0].data[item._id - 4] = item.upcoming;
+            }
+            if (item.ongoing) {
+              tempBarData.datasets[1].data[item._id - 4] = item.ongoing;
+            }
+            if (item.completed) {
+              tempBarData.datasets[2].data[item._id - 4] = item.completed;
+            }
           }
         }
       });
