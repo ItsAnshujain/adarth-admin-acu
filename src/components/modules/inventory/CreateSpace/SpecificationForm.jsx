@@ -129,7 +129,7 @@ const SpecificationForm = () => {
           />
           <div className="max-h-[240px] overflow-y-scroll mb-5">
             {values.specifications?.size?.map((item, index) => (
-              <div key={item?.key} className="grid grid-cols-2 gap-4 relative">
+              <div key={uuidv4()} className="grid grid-cols-2 gap-4 relative">
                 {index !== 0 ? (
                   <ActionIcon
                     className="absolute right-0"
