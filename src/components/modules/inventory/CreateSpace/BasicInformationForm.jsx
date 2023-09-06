@@ -165,7 +165,6 @@ const BasicInformationForm = () => {
         <TextInput
           label="Landlord"
           name="basicInformation.landlord"
-          withAsterisk
           styles={styles}
           errors={errors}
           placeholder="Write..."
@@ -272,7 +271,6 @@ const BasicInformationForm = () => {
         <NumberInput
           label="Price"
           name="basicInformation.price"
-          withAsterisk
           styles={styles}
           errors={errors}
           placeholder="Write..."
