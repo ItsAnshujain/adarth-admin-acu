@@ -122,6 +122,14 @@ const CreateBookingPage = () => {
         return;
       }
 
+      if (data.place.some(item => item.price === 0)) {
+        showNotification({
+          title: 'One of your space price is zero. Please add the price to continue',
+          color: 'blue',
+        });
+        return;
+      }
+
       if (
         data.place?.some(item =>
           bookingId
