@@ -58,7 +58,6 @@ const initialValues = {
     address: '',
     city: '',
     state: '',
-    zip: null,
     zone: '',
     landmark: '',
     facing: '',
@@ -69,7 +68,7 @@ const initialValues = {
 const basicInformationSchema = yup.object({
   basicInformation: yup.object({
     spaceName: yup.string().trim().required('Space name is required'),
-    landlord: yup.string().trim().required('Landlord is required'),
+    landlord: yup.string().trim(),
     mediaOwner: yup.object({
       label: yup.string().trim(),
       value: yup.string().trim(),
@@ -100,9 +99,8 @@ const basicInformationSchema = yup.object({
     description: yup.string().trim(),
     price: yup
       .number()
-      .positive('Price must be a positive number')
       .typeError('Price must be a number')
-      .required('Price is required'),
+      .positive('Price must be a positive number'),
     spacePhoto: yup.string().trim(),
     otherPhotos: yup.array().of(yup.string().trim()),
     footFall: yup
@@ -152,28 +150,26 @@ const specificationsValues = yup.object({
 
 const locationValues = yup.object({
   location: yup.object({
-    latitude: yup
-      .number()
-      .typeError('Latitude must be a number')
-      .required('Latitude is required')
-      .nullable(),
-    longitude: yup
-      .number()
-      .typeError('Longitude must be a number')
-      .required('Longitude is required')
-      .nullable(),
-    address: yup.string().trim().required('Address is required'),
+    latitude: yup.number().typeError('Latitude must be a number').nullable(),
+    longitude: yup.number().typeError('Longitude must be a number').nullable(),
+    address: yup.string().trim(),
     city: yup.string().trim().required('City is required'),
     state: yup.string().trim().required('State is required'),
     zip: yup
       .number()
       .typeError('Zip must be a number')
-      .positive('Zip must be a positive number')
-      .test('len', 'Zip must be 6 digits', val => val?.toString().length === 6)
-      .required('Zip is required')
-      .nullable(),
+
+      .test('is-specific-length', 'Zip must be 6 digits', val => {
+        if (val === undefined || val === null || val === '') {
+          return true;
+        }
+
+        const stringVal = val.toString();
+        return stringVal.length === 6;
+      })
+      .positive('Zip must be a positive number'),
     zone: yup.string().trim().required('Zone is required'),
-    landmark: yup.string().trim().required('Landmark is required'),
+    landmark: yup.string().trim(),
     facing: yup.string().trim().required('Facing is required'),
     tier: yup.string().trim().required('Tier is required'),
     faciaTowards: yup.string().trim(),
@@ -303,7 +299,7 @@ const CreateInventoryPage = () => {
           peerMediaOwner: basicInformation?.peerMediaOwner || undefined,
           description: basicInformation?.description || '',
           footFall: basicInformation?.footFall ? parseInt(basicInformation.footFall, 10) : null,
-          price: basicInformation?.price ? parseInt(basicInformation?.price, 10) : null,
+          price: basicInformation?.price ? parseInt(basicInformation?.price, 10) : undefined,
           category: {
             label: basicInformation?.category?.name || '',
             value: basicInformation?.category?._id || '',
@@ -360,7 +356,7 @@ const CreateInventoryPage = () => {
           address: location?.address || '',
           city: location?.city || '',
           state: location?.state || '',
-          zip: location?.zip ? parseInt(location.zip, 10) : null,
+          zip: location?.zip ? parseInt(location.zip, 10) : undefined,
           zone: location?.zone || '',
           landmark: location?.landmark || '',
           facing: location?.facing || '',
