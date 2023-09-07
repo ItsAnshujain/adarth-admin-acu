@@ -477,7 +477,8 @@ const SelectSpace = () => {
           },
         }) =>
           useMemo(() => {
-            const isPriceZero = values?.place?.some(item => item._id === _id) && price === 0;
+            const isPriceZero =
+              values?.place?.some(item => item._id === _id) && (price === 0 || !price);
 
             return (
               <NumberInput
