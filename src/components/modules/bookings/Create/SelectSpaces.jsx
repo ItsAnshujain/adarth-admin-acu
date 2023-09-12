@@ -476,16 +476,19 @@ const SelectSpace = () => {
             original: { price, _id },
           },
         }) =>
-          useMemo(
-            () => (
+          useMemo(() => {
+            const isPriceZero =
+              values?.place?.some(item => item._id === _id) && (price === 0 || !price);
+
+            return (
               <NumberInput
                 hideControls
                 defaultValue={+(price || 0)}
                 onChange={e => updateData('price', e, _id)}
+                error={isPriceZero}
               />
-            ),
-            [],
-          ),
+            );
+          }, []),
       },
       {
         Header: 'MEDIA OWNER NAME',

@@ -63,9 +63,7 @@ const LocationForm = () => {
       </p>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-4">
         <div>
-          <p style={styles.label}>
-            Address <span className="text-red-450">*</span>
-          </p>
+          <p style={styles.label}>Address</p>
           {typeof window.google !== 'undefined' ? (
             <AutoCompleteLocationInput
               addressKeyName="location.address"
@@ -96,7 +94,6 @@ const LocationForm = () => {
           <NumberInput
             label="Latitude"
             name="location.latitude"
-            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Write..."
@@ -158,7 +155,6 @@ const LocationForm = () => {
           <NumberInput
             label="Zip"
             name="location.zip"
-            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Write..."
@@ -167,7 +163,6 @@ const LocationForm = () => {
           <NumberInput
             label="Longitude"
             name="location.longitude"
-            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Write..."
@@ -177,7 +172,6 @@ const LocationForm = () => {
           <TextInput
             label="Landmark"
             name="location.landmark"
-            withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Write..."
