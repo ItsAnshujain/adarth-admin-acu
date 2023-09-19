@@ -176,7 +176,7 @@ const SelectSpace = () => {
     return totalPrice;
   };
 
-  const updateData = debounce((key, val, id) => {
+  const updateData = debounce((key, val, id, inputId) => {
     if (key === 'dateRange') {
       let availableUnit = 0;
       const hasChangedUnit = values.place.find(item => item._id === id)?.hasChangedUnit;
@@ -226,6 +226,10 @@ const SelectSpace = () => {
             : item,
         ),
       );
+
+      if (inputId) {
+        setTimeout(() => document.querySelector(`#${inputId}`)?.focus());
+      }
     }
   }, 500);
 
@@ -440,10 +444,11 @@ const SelectSpace = () => {
                 withArrow
               >
                 <NumberInput
+                  id={`unit-${_id}`}
                   hideControls
                   defaultValue={!data?.hasChangedUnit ? Number(data?.unit || 0) : unit}
                   min={1}
-                  onChange={e => updateData('unit', e, _id)}
+                  onChange={e => updateData('unit', e, _id, `unit-${_id}`)}
                   className="w-[100px]"
                   disabled={isDisabled}
                   error={(data?.hasChangedUnit && isExceeded) || !unit}
@@ -459,9 +464,17 @@ const SelectSpace = () => {
           useMemo(
             () => (
               <NumberInput
+                id={`tradedAmount-${info.row.original._id}`}
                 hideControls
                 defaultValue={+(info.row.original.tradedAmount || 0)}
-                onChange={e => updateData('tradedAmount', e, info.row.original._id)}
+                onChange={e =>
+                  updateData(
+                    'tradedAmount',
+                    e,
+                    info.row.original._id,
+                    `tradedAmount-${info.row.original._id}`,
+                  )
+                }
                 disabled={info.row.original.peer === '-'}
               />
             ),
@@ -482,9 +495,10 @@ const SelectSpace = () => {
 
             return (
               <NumberInput
+                id={`price-${_id}`}
                 hideControls
                 defaultValue={+(price || 0)}
-                onChange={e => updateData('price', e, _id)}
+                onChange={e => updateData('price', e, _id, `price-${_id}`)}
                 error={isPriceZero}
               />
             );
