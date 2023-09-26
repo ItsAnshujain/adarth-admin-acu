@@ -150,6 +150,14 @@ const CreateBookingPage = () => {
         unit: item?.unit ? +item.unit : 1,
       }));
 
+      if (data.place.some(item => item.price === 0 || !item.price)) {
+        showNotification({
+          title: 'One of your space price is zero. Please add the price to continue',
+          color: 'blue',
+        });
+        return;
+      }
+
       data.place.forEach(item => {
         const start = item.startDate;
         const end = item.endDate;
