@@ -140,8 +140,8 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
                         <p>{item?.hsn || '-'}</p>
                       </div>
                       <div>
-                        <p>Quantity:</p>
-                        <p>1</p>
+                        <p>Unit:</p>
+                        <p>{item?.unit ?? 1}</p>
                       </div>
                       <div>
                         <p>Rate:</p>

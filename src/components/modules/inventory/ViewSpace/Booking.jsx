@@ -234,6 +234,11 @@ const Booking = ({ inventoryId }) => {
           ),
       },
       {
+        Header: 'UNIT',
+        accessor: 'unit',
+        Cell: info => useMemo(() => <p>{info.row.original.unit || '-'}</p>, []),
+      },
+      {
         Header: 'PRICING',
         accessor: 'totalPrice',
         Cell: ({
