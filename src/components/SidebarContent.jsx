@@ -120,7 +120,7 @@ const SidebarContent = ({ className }) => {
         <RoleBased acceptedRoles={item.acceptedRoles} key={uuidv4()}>
           <div
             className={classNames(
-              'w-full flex flex-col rounded-sm',
+              'w-full flex flex-col rounded-[4px]',
               pathname.includes(item.path) && 'bg-gradient-to-r from-orange-400 to-red-500',
             )}
           >
@@ -129,7 +129,7 @@ const SidebarContent = ({ className }) => {
                 'flex items-center justify-between',
                 pathname.includes(item.path) &&
                   item.nested &&
-                  'bg-gradient-to-r from-orange-400 to-red-500',
+                  'bg-gradient-to-r from-orange-400 to-red-500 rounded-t-[4px]',
               )}
               onClick={() => setToggleNestedTab(!toggleNestedTab)}
             >

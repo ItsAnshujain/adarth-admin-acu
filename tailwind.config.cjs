@@ -9,6 +9,7 @@ module.exports = {
       },
       colors: {
         purple: { 450: '#4B0DAF', 350: '#914EFB' },
+        darkPurple: { 450: '#390D7F' },
         orange: { 450: '#C2410C', 350: '#FF900E' },
         gray: { 450: '#E5E7EB', 550: '#969EA1' },
         red: {

@@ -29,17 +29,20 @@ const Sidebar = () => {
         <SidebarContent className="gap-3 px-5" />
         <List className="p-5 text-white" listStyleType="disc">
           <List.Item>
-            <Button className="p-0 text-base" onClick={() => handleModal('privacyPolicy')}>
+            <Button className="p-0 text-xs font-light" onClick={() => handleModal('privacyPolicy')}>
               Privacy Policy
             </Button>
           </List.Item>
           <List.Item>
-            <Button className="p-0 text-base " onClick={() => handleModal('disclaimerPolicy')}>
+            <Button
+              className="p-0 text-xs font-light"
+              onClick={() => handleModal('disclaimerPolicy')}
+            >
               Disclaimer policy
             </Button>
           </List.Item>
           <List.Item>
-            <Button className="p-0 text-base" onClick={() => handleModal('cookiePolicy')}>
+            <Button className="p-0 text-xs font-light" onClick={() => handleModal('cookiePolicy')}>
               Cookie Policy
             </Button>
           </List.Item>
