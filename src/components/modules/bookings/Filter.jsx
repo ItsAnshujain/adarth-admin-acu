@@ -1,5 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Accordion, Button, Drawer, NumberInput, Radio, RangeSlider } from '@mantine/core';
+import {
+  Accordion,
+  Button,
+  Checkbox,
+  Drawer,
+  NumberInput,
+  Radio,
+  RangeSlider,
+} from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useFetchMasters } from '../../../apis/queries/masters.queries';
@@ -14,6 +22,30 @@ const inititalFilterData = {
     'true': 'Paid',
     'false': 'Unpaid',
   },
+  'doNotHaveFinance': [
+    {
+      name: 'Purchase Order',
+      _id: 'purchaseOrder',
+    },
+    {
+      name: 'Release Order',
+      _id: 'releaseOrder',
+    },
+    {
+      name: 'Invoice',
+      _id: 'invoice',
+    },
+  ],
+};
+
+const defaultValue = {
+  hasPaid: '',
+  campaignStatus: '',
+  printingStatus: '',
+  mountingStatus: '',
+  paymentStatus: '',
+  type: '',
+  doNotHaveFinance: [],
 };
 
 const sliderStyle = {
@@ -32,14 +64,7 @@ const Filter = ({
   showBookingTypeOption = true,
   showCampaignStatusOption = true,
 }) => {
-  const [filterOptions, setFilterOptions] = useState({
-    hasPaid: '',
-    campaignStatus: '',
-    printingStatus: '',
-    mountingStatus: '',
-    paymentStatus: '',
-    type: '',
-  });
+  const [filterOptions, setFilterOptions] = useState(defaultValue);
   const [searchParams, setSearchParams] = useSearchParams();
   const [_, setDynamicNumInput] = useState({
     min: 0,
@@ -54,6 +79,7 @@ const Filter = ({
   const mountingStatus = searchParams.get('mountingStatus');
   const paymentStatus = searchParams.get('paymentStatus');
   const type = searchParams.get('type');
+  const doNotHaveFinance = searchParams.get('doNotHaveFinance');
 
   const { data: campaignStatusData } = useFetchMasters(
     serialize({ type: 'booking_campaign_status', parentId: null, page: 1, limit: 100 }),
@@ -71,6 +97,17 @@ const Filter = ({
   const handleCheckedValues = (filterValues, filterKey) => {
     setFilterOptions(prevState => ({ ...prevState, [filterKey]: filterValues }));
     searchParams.set(filterKey, filterValues);
+  };
+
+  const handleStatusArr = (stat, key) => {
+    let tempArr = [...filterOptions[key]]; // TODO: use immmer
+    if (tempArr.some(item => item === stat)) {
+      tempArr = tempArr.filter(item => item !== stat);
+    } else {
+      tempArr.push(stat);
+    }
+
+    setFilterOptions({ ...filterOptions, [key]: [...tempArr] });
   };
 
   const renderStaticOptions = useCallback(
@@ -126,13 +163,41 @@ const Filter = ({
     [filterOptions],
   );
 
+  const renderDynamicOptionsArr = useCallback(
+    (data, filterKey) =>
+      data?.map(item => (
+        <div className="flex gap-2 mb-2" key={item?._id}>
+          <Checkbox
+            onChange={event => handleStatusArr(event.target.value, filterKey)}
+            label={item?.name}
+            defaultValue={item?._id}
+            checked={filterOptions[filterKey].includes(item._id)}
+          />
+        </div>
+      )),
+    [filterOptions.doNotHaveFinance],
+  );
+
   const handleNavigationByFilter = () => {
+    Object.keys(filterOptions).forEach(item => {
+      searchParams.delete(item);
+    });
+
     searchParams.set('page', 1);
+    Object.keys(filterOptions).forEach(key => {
+      if (filterOptions[key].length && Array.isArray(filterOptions[key])) {
+        searchParams.append(key, filterOptions[key].join(','));
+      }
+    });
     setSearchParams(searchParams);
     setShowFilter(false);
   };
 
   const handleResetParams = () => {
+    Object.keys(defaultValue).forEach(item => {
+      searchParams.delete(item);
+    });
+
     searchParams.delete('hasPaid');
     searchParams.delete('campaignStatus');
     searchParams.delete('printingStatus');
@@ -142,13 +207,7 @@ const Filter = ({
     searchParams.delete('minPrice');
     searchParams.delete('maxPrice');
     setSearchParams(searchParams);
-    setFilterOptions({
-      hasPaid: '',
-      printingStatus: '',
-      mountingStatus: '',
-      paymentStatus: '',
-      type: '',
-    });
+    setFilterOptions(defaultValue);
   };
 
   const handleMinPrice = e => {
@@ -177,6 +236,7 @@ const Filter = ({
       mountingStatus: mountingStatus || '',
       paymentStatus: paymentStatus || '',
       type: type || '',
+      doNotHaveFinance: doNotHaveFinance?.split(',') || [],
     }));
   }, [searchParams]);
 
@@ -319,6 +379,18 @@ const Filter = ({
             <Accordion.Panel>
               <div className="mt-2">
                 {renderBookingConfirmationStatus(paymentStatusData?.docs, 'paymentStatus')}
+              </div>
+            </Accordion.Panel>
+          </Accordion.Item>
+
+          <Accordion.Item
+            className="border-solid border-2 rounded-xl mb-2 p-1"
+            value="doNotHaveFinance"
+          >
+            <Accordion.Control className="hover:bg-white">Outstanding Finances</Accordion.Control>
+            <Accordion.Panel>
+              <div className="mt-2">
+                {renderDynamicOptionsArr(inititalFilterData?.doNotHaveFinance, 'doNotHaveFinance')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
