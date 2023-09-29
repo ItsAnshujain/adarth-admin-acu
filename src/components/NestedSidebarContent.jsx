@@ -26,7 +26,12 @@ const NestedSidebarContent = ({ list, path, toggleNestedTab }) => {
 
   return (
     <Collapse in={isActive && toggleNestedTab}>
-      <div className="flex flex-col items-start pl-5 py-3 bg-darkPurple-450 overflow-y-auto max-h-[260px] rounded-b-[4px]">
+      <div
+        className={classNames(
+          'flex flex-col items-start pl-5 bg-darkPurple-450 overflow-y-auto max-h-[260px] rounded-b-[4px]',
+          pathname.includes('masters') || pathname.includes('reports') ? 'py-3' : '',
+        )}
+      >
         {list.map(item => (
           <Link
             key={uuidv4()}

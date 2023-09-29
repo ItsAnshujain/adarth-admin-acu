@@ -52,7 +52,7 @@ const ManagingSubHeader = ({ activeChildTab, userId }) => {
             <Button onClick={toggleFilter} variant="default" className="font-medium">
               <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
             </Button>
-            {showFilter && activeChildTab === 'booking' && (
+            {showFilter && (activeChildTab === 'booking' || activeChildTab === 'sales') && (
               <BookingFilter isOpened={showFilter} setShowFilter={setShowFilter} />
             )}
             {showFilter && activeChildTab === 'proposal' && (
