@@ -212,22 +212,25 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           </Spoiler>
           <div className="flex flex-col mt-4 w-[260px]">
             <Group className="col-span-1 grid grid-cols-2">
-              <p className="text-slate-400">Amount: </p>
-              <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.totalPrice)}</p>
+              <p className="text-slate-400 font-bold">Amount: </p>
+              <p className="font-medium">
+                {toIndianCurrency(bookingData?.campaign?.totalPrice, true)}
+              </p>
             </Group>
             <Group className="col-span-1 grid grid-cols-2">
-              <p className="text-slate-400">GST: </p>
-              <p className="font-bold">
+              <p className="text-slate-400 font-bold">GST: </p>
+              <p className="font-medium">
                 {toIndianCurrency(
                   bookingData?.campaign?.price && bookingData?.campaign?.totalPrice
                     ? bookingData.campaign.price - bookingData.campaign.totalPrice
                     : 0,
+                  true,
                 )}
               </p>
             </Group>
             <Group className="col-span-1 grid grid-cols-2">
-              <p className="text-slate-400">Total Amount: </p>
-              <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.price)}</p>
+              <p className="text-slate-400 font-bold">Total Amount: </p>
+              <p className="font-medium">{toIndianCurrency(bookingData?.campaign?.price, true)}</p>
             </Group>
           </div>
           <div className="mt-8">

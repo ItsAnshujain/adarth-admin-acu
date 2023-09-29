@@ -26,13 +26,13 @@ const NestedSidebarContent = ({ list, path, toggleNestedTab }) => {
 
   return (
     <Collapse in={isActive && toggleNestedTab}>
-      <div className="flex flex-col items-start pl-5 bg-orange-400 overflow-y-auto max-h-[260px]">
+      <div className="flex flex-col items-start pl-5 py-3 bg-darkPurple-450 overflow-y-auto max-h-[260px] rounded-b-[4px]">
         {list.map(item => (
           <Link
             key={uuidv4()}
             to={item.subPath ? `${path}${item.subPath}` : path}
             className={classNames(
-              checkActive(item?.label, item?.subPath) ? 'text-black' : 'text-white',
+              checkActive(item?.label, item?.subPath) ? 'text-white' : 'text-gray-550',
               pathname.includes('masters') ? 'mb-2' : pathname.includes('reports') ? 'mb-2' : '',
               item?.label === 'Payment Status' ? 'hidden' : '',
               'font-medium text-base pl-[28px]',

@@ -9,6 +9,7 @@ import {
   Select,
   Card,
   Group,
+  Text,
 } from '@mantine/core';
 import { useMemo, useRef } from 'react';
 import { Calendar, ChevronDown, Eye } from 'react-feather';
@@ -183,7 +184,13 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
       </div>
       <div className="flex flex-col w-full">
         <div className="flex justify-between items-center w-full mb-2">
-          <p className="font-bold">{data?.basicInformation?.spaceName || <NoData type="na" />}</p>
+          <Text
+            className="font-bold text-ellipsis flex-1 "
+            lineClamp={2}
+            title={data?.basicInformation?.spaceName}
+          >
+            {data?.basicInformation?.spaceName || <NoData type="na" />}
+          </Text>
           <div className="flex gap-2 items-center">
             <Dropzone openRef={openRef} style={styles} onDrop={handleUpload} multiple={false}>
               {/* children */}
