@@ -174,8 +174,8 @@ const SalesViewTable = ({ data: bookingData, isLoading }) => {
       },
       {
         Header: 'SALES INCHARGE',
-        accessor: 'salesIncharge',
-        Cell: info => useMemo(() => <p>{info.row.original.salesIncharge || '-'}</p>, []),
+        accessor: 'salesPerson',
+        Cell: info => useMemo(() => <p>{info.row.original.salesPerson?.name || '-'}</p>, []),
       },
       {
         Header: 'PAYMENT STATUS',
