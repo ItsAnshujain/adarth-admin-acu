@@ -103,6 +103,11 @@ const Booking = ({ inventoryId }) => {
         }) => useMemo(() => <p>{incharge?.name || '-'}</p>, []),
       },
       {
+        Header: 'SALES PERSON',
+        accessor: 'salesPerson',
+        Cell: info => useMemo(() => <p>{info.row.original.salesPerson?.name || '-'}</p>, []),
+      },
+      {
         Header: 'PRINTING STATUS',
         accessor: 'currentStatus.printingStatus',
         Cell: ({
@@ -232,6 +237,11 @@ const Booking = ({ inventoryId }) => {
             ),
             [],
           ),
+      },
+      {
+        Header: 'UNIT',
+        accessor: 'unit',
+        Cell: info => useMemo(() => <p>{info.row.original.unit || '-'}</p>, []),
       },
       {
         Header: 'PRICING',

@@ -88,8 +88,8 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                     </Group>
                     <Group className="grid grid-cols-3">
                       <div>
-                        <p>Quantity:</p>
-                        <p>1</p>
+                        <p>Unit:</p>
+                        <p>{item?.unit ?? 1}</p>
                       </div>
                       <div>
                         <p>Rate:</p>

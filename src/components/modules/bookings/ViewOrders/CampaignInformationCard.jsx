@@ -10,6 +10,7 @@ import { serialize } from '../../../../utils';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import { useFetchUsers, useFetchUsersById } from '../../../../apis/queries/users.queries';
 import useTokenIdStore from '../../../../store/user.store';
+import { useUpdateBooking } from '../../../../apis/queries/booking.queries';
 
 const styles = {
   label: {
@@ -35,7 +36,8 @@ const CampaignInformationCard = () => {
   const { id: bookingId } = useParams();
   const userId = useTokenIdStore(state => state.id);
   const { data: userDetails } = useFetchUsersById(userId);
-  const { mutate: updateCampaign } = useUpdateCampaign();
+  const updateCampaign = useUpdateCampaign();
+  const updateBooking = useUpdateBooking();
   const bookingData = queryClient.getQueryData(['booking-by-id', bookingId]);
 
   const {
@@ -60,12 +62,32 @@ const CampaignInformationCard = () => {
     userDetails?.role !== 'associate',
   );
 
+  const handleActiveSalesPerson = useCallback(
+    salesPersonId => {
+      if (salesPersonId === '') return;
+      if (bookingData?.campaign) {
+        updateBooking.mutate(
+          {
+            id: bookingId,
+            data: { salesPerson: salesPersonId },
+          },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries(['booking-by-id', bookingId]);
+            },
+          },
+        );
+      }
+    },
+    [bookingData?.campaign],
+  );
+
   const handleActiveIncharge = useCallback(
     inchargeId => {
       if (inchargeId === '') return;
 
       if (bookingData?.campaign) {
-        updateCampaign(
+        updateCampaign.mutate(
           {
             id: bookingData.campaign?._id,
             data: { incharge: inchargeId },
@@ -184,6 +206,27 @@ const CampaignInformationCard = () => {
             />
           )}
         </div>
+
+        <section>
+          <p className="text-slate-400">Sales Person</p>
+          {userDetails?.role === 'associate' ? (
+            <p className="font-bold">{userDetails?.name}</p>
+          ) : (
+            <Select
+              styles={styles}
+              disabled={
+                isLoadingUserData ||
+                (userDetails?.role === 'associate' &&
+                  bookingData?.campaign?.incharge?.[0]?._id !== userDetails?._id)
+              }
+              placeholder="Select..."
+              data={isUserDataLoaded ? inchargeList : []}
+              onChange={e => handleActiveSalesPerson(e)}
+              value={bookingData?.salesPerson?._id}
+            />
+          )}
+        </section>
+
         <div>
           <p className="text-slate-400">Start Date</p>
           <p className="font-bold">
