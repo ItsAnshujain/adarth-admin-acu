@@ -1,12 +1,12 @@
-import { ActionIcon, Box, Button, Group, Loader } from '@mantine/core';
+import { Box, Button, Group, Loader } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import React, { useMemo } from 'react';
-import { Edit } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useFetchOperationalCost } from '../../../../apis/queries/operationalCost.queries';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import modalConfig from '../../../../utils/modalConfig';
 import AddOperationalCostModal from './AddOperationalCostModal';
+import OperationalCostMenuPopover from '../../../Popovers/OperationalCostMenuPopover';
 
 const OperationalCost = ({ inventoryDetails, isPeer }) => {
   const modals = useModals();
@@ -66,7 +66,7 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
               Space Name: {inventoryDetails?.basicInformation?.spaceName}
             </p>
           </Group>
-          <div className="">
+          <div>
             <div className="min-h-[400px] max-h-[400px] overflow-y-auto px-3">
               {operationaCostData?.length ? (
                 operationaCostData.map(item => (
@@ -75,9 +75,23 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
                     className="py-3 border-b border-black flex justify-between pl-5 pr-10"
                   >
                     <div className="flex">
+                      <div className="ml-3">
+                        <p className="font-medium">{item?.type?.name}</p>
+                        <p className="font-light text-sm w-[80%] mb-1 text-gray-500">
+                          {item?.description}
+                        </p>
+                        <p className="text-xs mb-1">Created at:</p>
+                        <p className="text-xs text-gray-500 font-medium">
+                          {item?.day || 'NA'}/{item?.month || 'NA'}/{item?.year}
+                        </p>
+                      </div>
+                    </div>
+                    <Group align="flex-start">
+                      <p>{toIndianCurrency(item?.amount)}</p>
                       {!isPeer ? (
-                        <ActionIcon
-                          onClick={e =>
+                        <OperationalCostMenuPopover
+                          itemId={item?._id}
+                          onEdit={e =>
                             handleOperationalCost(
                               e,
                               item?._id,
@@ -90,23 +104,9 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
                               item?.bookingId,
                             )
                           }
-                        >
-                          <Edit className="text-black" />
-                        </ActionIcon>
+                        />
                       ) : null}
-
-                      <div className="ml-3">
-                        <p className="font-medium">{item?.type?.name}</p>
-                        <p className="font-light text-sm w-[80%] mb-1 text-gray-500">
-                          {item?.description}
-                        </p>
-                        <p className="text-xs mb-1">Created at:</p>
-                        <p className="text-xs text-gray-500 font-medium">
-                          {item?.day || 'NA'}/{item?.month || 'NA'}/{item?.year}
-                        </p>
-                      </div>
-                    </div>
-                    <p>{toIndianCurrency(item?.amount)}</p>
+                    </Group>
                   </Box>
                 ))
               ) : (

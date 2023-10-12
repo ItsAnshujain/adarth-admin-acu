@@ -189,6 +189,10 @@ const ShareContent = ({ id, onClose }) => {
     if (activeShare === 'download') {
       if (res?.link?.[data.format]) {
         downloadPdf(res.link[data.format]);
+        showNotification({
+          title: 'Download successful',
+          color: 'green',
+        });
       }
     }
   });
@@ -310,7 +314,7 @@ const ShareContent = ({ id, onClose }) => {
                   </Button>
                   {activeFileType.length !== 1 && activeShare === 'download' ? (
                     <p className="text-red-450 text-center">
-                      Kindly select one option at a time to download
+                      Kindly select one file type at a time to download
                     </p>
                   ) : null}
                 </div>
