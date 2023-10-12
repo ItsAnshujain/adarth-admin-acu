@@ -1,11 +1,9 @@
 import { useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Button, Loader, Progress, Select, Text } from '@mantine/core';
+import { Loader, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
-import classNames from 'classnames';
 import { Link, useSearchParams } from 'react-router-dom';
-import multiDownload from 'multi-download';
 import { checkCampaignStats, generateSlNo, serialize } from '../../../../utils';
 import { useUpdateBooking, useUpdateBookingStatus } from '../../../../apis/queries/booking.queries';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
@@ -35,7 +33,7 @@ const sortOrders = order => {
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
-const BookingTableView = ({ data: bookingData, isLoading }) => {
+const SalesViewTable = ({ data: bookingData, isLoading }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
@@ -175,6 +173,93 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
         }) => useMemo(() => <p className="capitalize">{type}</p>, []),
       },
       {
+        Header: 'SALES INCHARGE',
+        accessor: 'salesPerson',
+        Cell: info => useMemo(() => <p>{info.row.original.salesPerson?.name || '-'}</p>, []),
+      },
+      {
+        Header: 'PAYMENT STATUS',
+        accessor: 'hasPaid',
+        Cell: info =>
+          useMemo(() => {
+            const updatedBookingPaid = [...BOOKING_PAID_STATUS];
+            updatedBookingPaid.unshift({ label: 'Select', value: '' });
+
+            return (
+              <Select
+                className="mr-2"
+                data={updatedBookingPaid}
+                styles={statusSelectStyle}
+                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+                rightSectionWidth={40}
+                onChange={e => handlePaymentStatusUpdate(info.row.original?._id, e)}
+                defaultValue={info.row.original?.hasPaid ?? ''}
+              />
+            );
+          }, []),
+      },
+      {
+        Header: 'OUTSTANDING AMOUNT',
+        accessor: 'outstandingAmount',
+        disableSortBy: true,
+        Cell: info =>
+          useMemo(
+            () => (
+              <p>
+                {info.row.original.unpaidAmount
+                  ? toIndianCurrency(info.row.original.unpaidAmount)
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'PRICING',
+        accessor: 'campaign.totalPrice',
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
+      },
+      {
+        Header: 'SCHEDULE',
+        accessor: 'schedule',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center w-max">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
+                  {campaign?.startDate ? (
+                    dayjs(campaign?.startDate).format(DATE_FORMAT)
+                  ) : (
+                    <NoData type="na" />
+                  )}
+                </p>
+                <span className="px-2">&gt;</span>
+                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
+                  {campaign?.endDate ? (
+                    dayjs(campaign?.endDate).format(DATE_FORMAT)
+                  ) : (
+                    <NoData type="na" />
+                  )}
+                </p>
+              </div>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'TOTAL SPACES',
+        accessor: 'totalSpaces',
+      },
+      {
         Header: 'CAMPAIGN STATUS',
         accessor: 'currentStatus.campaignStatus',
         Cell: ({
@@ -290,236 +375,6 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
           ),
       },
       {
-        Header: 'CAMPAIGN INCHARGE',
-        accessor: 'campaign.incharge.name',
-        Cell: ({
-          row: {
-            original: { campaign },
-          },
-        }) => useMemo(() => <p>{campaign?.incharge?.name || '-'}</p>, []),
-      },
-      {
-        Header: 'SALES PERSON',
-        accessor: 'salesPerson',
-        Cell: info => useMemo(() => <p>{info.row.original.salesPerson?.name || '-'}</p>, []),
-      },
-      {
-        Header: 'HEALTH STATUS',
-        accessor: 'campaign.avgHealth',
-        Cell: ({
-          row: {
-            original: { campaign },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div className="w-24">
-                <Progress
-                  sections={[
-                    { value: campaign?.avgHealth, color: 'green' },
-                    { value: 100 - (campaign?.avgHealth || 0), color: 'red' },
-                  ]}
-                />
-              </div>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'PAYMENT STATUS',
-        accessor: 'hasPaid',
-        Cell: info =>
-          useMemo(() => {
-            const updatedBookingPaid = [...BOOKING_PAID_STATUS];
-            updatedBookingPaid.unshift({ label: 'Select', value: '' });
-
-            return (
-              <Select
-                className="mr-2"
-                data={updatedBookingPaid}
-                styles={statusSelectStyle}
-                rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-                rightSectionWidth={40}
-                onChange={e => handlePaymentStatusUpdate(info.row.original?._id, e)}
-                defaultValue={info.row.original?.hasPaid ?? ''}
-              />
-            );
-          }, []),
-      },
-      {
-        Header: 'OUTSTANDING AMOUNT',
-        accessor: 'outstandingAmount',
-        disableSortBy: true,
-        Cell: info =>
-          useMemo(
-            () => (
-              <p>
-                {info.row.original.unpaidAmount
-                  ? toIndianCurrency(info.row.original.unpaidAmount)
-                  : '-'}
-              </p>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'PRICING',
-        accessor: 'campaign.totalPrice',
-        Cell: ({
-          row: {
-            original: { campaign },
-          },
-        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
-      },
-      {
-        Header: 'SCHEDULE',
-        accessor: 'schedule',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { campaign },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div className="flex items-center w-max">
-                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
-                  {campaign?.startDate ? (
-                    dayjs(campaign?.startDate).format(DATE_FORMAT)
-                  ) : (
-                    <NoData type="na" />
-                  )}
-                </p>
-                <span className="px-2">&gt;</span>
-                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
-                  {campaign?.endDate ? (
-                    dayjs(campaign?.endDate).format(DATE_FORMAT)
-                  ) : (
-                    <NoData type="na" />
-                  )}
-                </p>
-              </div>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'DOWNLOAD UPLOADED MEDIA',
-        accessor: '',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { campaign },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <Button
-                className={classNames(
-                  campaign?.medias?.length
-                    ? 'text-purple-450 cursor-pointer'
-                    : 'pointer-events-none text-gray-450 bg-white',
-                  'font-medium  text-base',
-                )}
-                disabled={!campaign?.medias?.length}
-                onClick={() => multiDownload(campaign?.medias)}
-              >
-                Download
-              </Button>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'TOTAL SPACES',
-        accessor: 'totalSpaces',
-      },
-      {
-        Header: 'PURCHASE ORDER',
-        accessor: 'purchaseOrder',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { purchaseOrder },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <a
-                href={purchaseOrder}
-                className={classNames(
-                  purchaseOrder
-                    ? 'text-purple-450 cursor-pointer'
-                    : 'pointer-events-none text-gray-450',
-                  'font-medium',
-                )}
-                target="_blank"
-                download
-                rel="noopener noreferrer"
-              >
-                Download
-              </a>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'RELEASE ORDER',
-        accessor: 'releaseOrder',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { releaseOrder },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <a
-                href={releaseOrder}
-                className={classNames(
-                  releaseOrder
-                    ? 'text-purple-450 cursor-pointer'
-                    : 'pointer-events-none text-gray-450',
-                  'font-medium',
-                )}
-                target="_blank"
-                download
-                rel="noopener noreferrer"
-              >
-                Download
-              </a>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'INVOICE',
-        accessor: 'invoice',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { invoice },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <a
-                href={invoice}
-                className={classNames(
-                  invoice ? 'text-purple-450 cursor-pointer' : 'pointer-events-none text-gray-450',
-                  'font-medium',
-                )}
-                target="_blank"
-                download
-                rel="noopener noreferrer"
-              >
-                Download
-              </a>
-            ),
-            [],
-          ),
-      },
-      {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
@@ -599,4 +454,4 @@ const BookingTableView = ({ data: bookingData, isLoading }) => {
   );
 };
 
-export default BookingTableView;
+export default SalesViewTable;

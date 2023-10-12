@@ -102,10 +102,14 @@ const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, has
                         {item?.basicInformation?.spaceName}
                       </Text>
                     </Group>
-                    <Group className="grid grid-cols-3">
+                    <Group className="grid grid-cols-4">
                       <div>
                         <p>Quantity:</p>
                         <p>{item?.quantity ?? 1}</p>
+                      </div>
+                      <div>
+                        <p>Unit:</p>
+                        <p>{item?.unit ?? 1}</p>
                       </div>
                       <div>
                         <p>Rate:</p>
