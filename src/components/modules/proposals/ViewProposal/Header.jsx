@@ -1,6 +1,6 @@
 import { Button } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { ArrowLeft } from 'react-feather';
+import { ArrowLeft, Share2 } from 'react-feather';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import modalConfig from '../../../../utils/modalConfig';
 import ShareContent from './ShareContent';
@@ -14,7 +14,7 @@ const Header = ({ isPeer }) => {
   const toggleShareOptions = () => {
     modals.openModal({
       modalId: 'shareProposalOption',
-      title: 'Share Option',
+      title: 'Share and Download Option',
       children: <ShareContent id={id} onClose={() => modals.closeModal('shareProposalOption')} />,
       ...modalConfig,
     });
@@ -27,8 +27,12 @@ const Header = ({ isPeer }) => {
       </div>
       <div className="flex gap-4">
         <div className="relative">
-          <Button className="bg-black" onClick={toggleShareOptions}>
-            Share
+          <Button
+            className="bg-black"
+            onClick={toggleShareOptions}
+            leftIcon={<Share2 className="h-5" />}
+          >
+            Share and Download
           </Button>
         </div>
         {!isPeer ? (
