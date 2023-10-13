@@ -102,6 +102,7 @@ const UsersDetailsPage = () => {
           <OverviewUserDetails
             userDetails={userById.data}
             isUserDetailsLoading={userById.isLoading}
+            userId={userId}
           />
         </Tabs.Panel>
         <Tabs.Panel value="managing">

@@ -4,6 +4,7 @@ import { ChevronDown } from 'react-feather';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
+import { showNotification } from '@mantine/notifications';
 import { SMTP_SERVICES } from '../../../utils/constants';
 import { useFetchUsersById, useUpdateUsers } from '../../../apis/queries/users.queries';
 import useUserStore from '../../../store/user.store';
@@ -57,7 +58,13 @@ const AddSmtpSetupForm = () => {
     updateUser.mutate(
       { userId, data: { smtp: data } },
       {
-        onSuccess: () => form.reset(),
+        onSuccess: () => {
+          showNotification({
+            title: 'User updated successfully',
+            color: 'green',
+          });
+          form.reset();
+        },
       },
     );
   });
