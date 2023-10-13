@@ -2,6 +2,7 @@ import { Button, Divider, Image } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import React, { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { showNotification } from '@mantine/notifications';
 import CheckIcon from '../../../../assets/check.svg';
 import TrashIcon from '../../../../assets/trash.svg';
 import { useDeleteOperationalCost } from '../../../../apis/queries/operationalCost.queries';
@@ -15,6 +16,10 @@ const DeleteOperationalCostContent = ({ onClickCancel = () => {}, itemId }) => {
   const handleConfirm = () =>
     deleteOperationalCost.mutate(itemId, {
       onSuccess: () => {
+        showNotification({
+          title: 'Operational cost deleted successfully',
+          color: 'green',
+        });
         queryClient.invalidateQueries(['operational-cost']);
         setAccept(true);
         setTimeout(() => modals.closeModal(), 2000);

@@ -57,7 +57,7 @@ const SpaceList = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
     limit: 20,
-    sortBy: 'basicInformation.spaceName',
+    sortBy: 'createdAt',
     sortOrder: 'desc',
     isUnderMaintenance: false,
     isActive: true,
