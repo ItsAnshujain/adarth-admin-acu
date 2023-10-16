@@ -1,7 +1,7 @@
 import { useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Loader, Select, Text } from '@mantine/core';
+import { Group, Loader, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import { Link, useSearchParams } from 'react-router-dom';
 import { checkCampaignStats, generateSlNo, serialize } from '../../../../utils';
@@ -14,6 +14,7 @@ import Search from '../../../Search';
 import NoData from '../../../shared/NoData';
 import BookingsMenuPopover from '../../../Popovers/BookingsMenuPopover';
 import { BOOKING_PAID_STATUS } from '../../../../utils/constants';
+import DateAndFilterHeader from './DateAndFilterHeader';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -33,7 +34,7 @@ const sortOrders = order => {
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
-const SalesViewTable = ({ data: bookingData, isLoading }) => {
+const SalesViewTable = ({ data: bookingData, isLoading, activeChildTab }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
@@ -419,16 +420,18 @@ const SalesViewTable = ({ data: bookingData, isLoading }) => {
   }, [debouncedSearch]);
 
   return (
-    <div className="">
-      <div className="pr-7">
-        <div className="flex justify-between h-20 items-center pl-5">
-          <RowsPerPage
-            setCount={currentLimit => handlePagination('limit', currentLimit)}
-            count={bookingData.limit?.toString()}
-          />
+    <div>
+      <div className="flex justify-between h-20 items-center px-4">
+        <RowsPerPage
+          setCount={currentLimit => handlePagination('limit', currentLimit)}
+          count={bookingData.limit?.toString()}
+        />
+        <Group>
           <Search search={searchInput} setSearch={setSearchInput} />
-        </div>
+          <DateAndFilterHeader activeChildTab={activeChildTab} />
+        </Group>
       </div>
+
       {isLoading ? (
         <div className="flex justify-center items-center h-[380px]">
           <Loader />

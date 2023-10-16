@@ -125,6 +125,7 @@ const schemas = {
 const ShareContent = ({ id, onClose }) => {
   const [activeFileType, setActiveFileType] = useState([]);
   const [activeShare, setActiveShare] = useState('');
+  const [loaderType, setLoaderType] = useState(-1);
 
   const form = useForm({
     resolver: yupResolver(schemas[activeShare]),
@@ -203,11 +204,14 @@ const ShareContent = ({ id, onClose }) => {
       return;
     }
 
+    setLoaderType('download');
+
     const data = {
       name: '',
       to: '',
       format: activeFileType.join(','),
       shareVia: 'copy_link',
+      aspectRatio: 'fill;generic',
     };
 
     if (watchAspectRatio) {
@@ -223,6 +227,10 @@ const ShareContent = ({ id, onClose }) => {
         onSuccess: () => {
           setActiveFileType([]);
           onClose();
+          setLoaderType(-1);
+        },
+        onError: () => {
+          setLoaderType(-1);
         },
       },
     );
@@ -269,13 +277,14 @@ const ShareContent = ({ id, onClose }) => {
               placeholder="Select..."
               rightSection={<ChevronDown size={16} />}
               className="mb-2"
+              defaultValue="fill;generic"
             />
           </div>
 
           <Button
             className="primary-button font-medium text-base mt-2 w-full"
             onClick={handleDownload}
-            loading={shareProposal.isLoading}
+            loading={loaderType === 'download'}
             disabled={shareProposal.isLoading}
             leftIcon={
               <Image src={DownloadIcon} alt="download" height={24} width={24} fit="contain" />
@@ -330,7 +339,7 @@ const ShareContent = ({ id, onClose }) => {
                   <Button
                     className="secondary-button font-medium text-base mt-2 w-full"
                     type="submit"
-                    loading={shareProposal.isLoading}
+                    loading={loaderType !== 'download' && shareProposal.isLoading}
                     disabled={shareProposal.isLoading}
                   >
                     {activeShare === 'copy_link' ? 'Copy' : 'Send'}

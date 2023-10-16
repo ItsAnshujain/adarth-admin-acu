@@ -7,6 +7,7 @@ import {
   deleteInventoryById,
   fetchBookingsByInventoryId,
   fetchDistinctAdditionalTags,
+  fetchDistinctCities,
   fetchInventory,
   fetchInventoryById,
   fetchInventoryReportList,
@@ -268,6 +269,17 @@ export const useDistinctAdditionalTags = (enabled = true) =>
     queryKey: ['distinct-tags'],
     queryFn: async () => {
       const res = await fetchDistinctAdditionalTags();
+      return res?.data;
+    },
+    enabled,
+    onError: onApiError,
+  });
+
+export const useDistinctCities = (enabled = true) =>
+  useQuery({
+    queryKey: ['distinct-cities'],
+    queryFn: async () => {
+      const res = await fetchDistinctCities();
       return res?.data;
     },
     enabled,
