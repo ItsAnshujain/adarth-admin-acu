@@ -70,7 +70,7 @@ const Spaces = () => {
     limit: activeLayout.inventoryLimit || 20,
     page: 1,
     sortOrder: 'desc',
-    sortBy: 'basicInformation.spaceName',
+    sortBy: 'createdAt',
     isUnderMaintenance: false,
     isActive: true,
   });

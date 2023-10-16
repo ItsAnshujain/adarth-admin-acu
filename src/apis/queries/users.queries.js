@@ -73,11 +73,6 @@ export const useUpdateUsers = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('users-by-id');
-        showNotification({
-          title: 'User updated successfully',
-          autoClose: 3000,
-          color: 'green',
-        });
       },
       onError: err => {
         showNotification({

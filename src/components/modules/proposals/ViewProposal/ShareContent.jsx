@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import whatsapp from '../../../../assets/whatsapp.svg';
 import { useShareProposal } from '../../../../apis/queries/proposal.queries';
-import { serialize } from '../../../../utils';
+import { downloadPdf, serialize } from '../../../../utils';
 import { OBJECT_FIT_LIST, FILE_TYPE_LIST } from '../../../../utils/constants';
 import ControlledTextInput from '../../../shared/FormInputs/Controlled/ControlledTextInput';
 
@@ -43,6 +43,11 @@ const sendVia = [
   {
     name: 'Copy Link',
     _id: 'copy_link',
+    icon: <LinkIcon className="h-4" color="#000" />,
+  },
+  {
+    name: 'Download',
+    _id: 'download',
     icon: <LinkIcon className="h-4" color="#000" />,
   },
 ];
@@ -101,6 +106,10 @@ const copyLinkSchema = yup.object({
   name: yup.string().trim().required('Name is required'),
 });
 
+const downloadLinkSchema = yup.object({
+  name: yup.string().trim(),
+});
+
 const initialValues = {
   email: initialEmailValues,
   whatsapp: initialWhatsAppValues,
@@ -113,6 +122,7 @@ const schemas = {
   whatsapp: whatsAppSchema,
   message: messageSchema,
   copy_link: copyLinkSchema,
+  download: downloadLinkSchema,
 };
 
 const ShareContent = ({ id, onClose }) => {
@@ -148,7 +158,7 @@ const ShareContent = ({ id, onClose }) => {
     }
 
     data.format = activeFileType.join(',');
-    data.shareVia = activeShare;
+    data.shareVia = activeShare === 'download' ? 'copy_link' : activeShare;
 
     const res = await shareProposal.mutateAsync(
       { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
@@ -174,6 +184,16 @@ const ShareContent = ({ id, onClose }) => {
         title: 'Link Copied',
         color: 'blue',
       });
+    }
+
+    if (activeShare === 'download') {
+      if (res?.link?.[data.format]) {
+        downloadPdf(res.link[data.format]);
+        showNotification({
+          title: 'Download successful',
+          color: 'green',
+        });
+      }
     }
   });
 
@@ -265,13 +285,15 @@ const ShareContent = ({ id, onClose }) => {
               </div>
               {activeShare !== '' && (
                 <div>
-                  <ControlledTextInput
-                    name="name"
-                    placeholder="Name"
-                    maxLength={200}
-                    className="mb-2"
-                  />
-                  {activeShare !== 'copy_link' ? (
+                  {activeShare !== 'download' ? (
+                    <ControlledTextInput
+                      name="name"
+                      placeholder="Name"
+                      maxLength={200}
+                      className="mb-2"
+                    />
+                  ) : null}
+                  {activeShare !== 'copy_link' && activeShare !== 'download' ? (
                     <ControlledTextInput
                       name="to"
                       placeholder={placeHolders[activeShare]}
@@ -282,9 +304,19 @@ const ShareContent = ({ id, onClose }) => {
                     className="secondary-button font-medium text-base mt-2 w-full"
                     type="submit"
                     loading={shareProposal.isLoading}
+                    disabled={activeFileType.length !== 1 && activeShare === 'download'}
                   >
-                    {activeShare === 'copy_link' ? 'Copy' : 'Send'}
+                    {activeShare === 'copy_link'
+                      ? 'Copy'
+                      : activeShare === 'download'
+                      ? 'Download'
+                      : 'Send'}
                   </Button>
+                  {activeFileType.length !== 1 && activeShare === 'download' ? (
+                    <p className="text-red-450 text-center">
+                      Kindly select one file type at a time to download
+                    </p>
+                  ) : null}
                 </div>
               )}
             </Group>

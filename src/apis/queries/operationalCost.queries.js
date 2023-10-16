@@ -2,9 +2,11 @@ import { showNotification } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   addOperationalCost,
+  deleteOperationalCost,
   fetchOperationalCost,
   updateOperationalCost,
 } from '../requests/operationalCost.requests';
+import { onApiError } from '../../utils';
 
 export const useFetchOperationalCost = (inventoryId, enabled = true) => {
   const queryClient = useQueryClient();
@@ -68,3 +70,12 @@ export const useUpdateOperationalCost = () => {
     },
   );
 };
+
+export const useDeleteOperationalCost = () =>
+  useMutation({
+    mutationFn: async id => {
+      const res = await deleteOperationalCost(id);
+      return res;
+    },
+    onError: onApiError,
+  });

@@ -105,7 +105,17 @@ const SignatureAndLetterhead = () => {
       }
     });
 
-    updateUser({ userId, data });
+    updateUser(
+      { userId, data },
+      {
+        onSuccess: () => {
+          showNotification({
+            title: 'User updated successfully',
+            color: 'green',
+          });
+        },
+      },
+    );
   };
 
   useEffect(() => {
