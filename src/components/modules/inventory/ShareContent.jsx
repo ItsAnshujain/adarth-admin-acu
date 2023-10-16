@@ -1,19 +1,21 @@
-import { Box, Button, Checkbox, Group, Image, Radio, Tooltip } from '@mantine/core';
+import { Box, Button, Checkbox, Group, Image, Radio } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Mail, Link as LinkIcon, MessageSquare } from 'react-feather';
+import { Mail, Link as LinkIcon, MessageSquare, ChevronDown } from 'react-feather';
 import classNames from 'classnames';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
 import dayjs from 'dayjs';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import whatsapp from '../../../assets/whatsapp.svg';
 import { useShareInventory } from '../../../apis/queries/inventory.queries';
 import { downloadPdf, serialize } from '../../../utils';
-import { FILE_TYPE_LIST, OBJECT_FIT_LIST } from '../../../utils/constants';
+import { FILE_TYPE_LIST, OBJECT_FIT_LIST_V2 } from '../../../utils/constants';
 import ControlledTextInput from '../../shared/FormInputs/Controlled/ControlledTextInput';
+import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelect';
+import DownloadIcon from '../../../assets/download-cloud.svg';
 
 const placeHolders = {
   email: 'Email Address',
@@ -43,11 +45,6 @@ const sendVia = [
   {
     name: 'Copy Link',
     _id: 'copy_link',
-    icon: <LinkIcon className="h-4" color="#000" />,
-  },
-  {
-    name: 'Download',
-    _id: 'download',
     icon: <LinkIcon className="h-4" color="#000" />,
   },
 ];
@@ -158,7 +155,7 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
     }
 
     data.format = activeFileType.join(',');
-    data.shareVia = activeShare === 'download' ? 'copy_link' : activeShare;
+    data.shareVia = activeShare;
 
     const params = {};
     searchParamQueries.forEach((value, key) => {
@@ -211,13 +208,63 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
         color: 'blue',
       });
     }
-
-    if (activeShare === 'download') {
-      if (response?.proposalShare?.[data.format]) {
-        downloadPdf(response.proposalShare[data.format]);
-      }
-    }
   });
+
+  const watchAspectRatio = form.watch('aspectRatio');
+
+  const handleDownload = async () => {
+    if (!activeFileType.length) {
+      showNotification({
+        title: 'Please select a file type to continue',
+        color: 'yellow',
+      });
+      return;
+    }
+
+    if (activeFileType.length > 1) {
+      showNotification({
+        title: 'Please select only one file type to continue',
+        color: 'yellow',
+      });
+      return;
+    }
+
+    const data = {
+      name: '',
+      to: '',
+      format: activeFileType.join(','),
+      shareVia: 'copy_link',
+    };
+
+    const params = {};
+    searchParamQueries.forEach((value, key) => {
+      params[key] = value;
+    });
+
+    if (watchAspectRatio) {
+      const aspectRatio = watchAspectRatio.split(';')[0];
+      const templateType = watchAspectRatio.split(';')[1];
+      data.aspectRatio = aspectRatio;
+      data.templateType = templateType;
+    }
+
+    const response = await shareInventory.mutateAsync(
+      { queries: serialize({ ...params, utcOffset: dayjs().utcOffset() }), data },
+      {
+        onSuccess: () => {
+          setActiveFileType([]);
+          onClose();
+        },
+      },
+    );
+    if (response?.proposalShare?.[data.format]) {
+      downloadPdf(response.proposalShare[data.format]);
+      showNotification({
+        title: 'Download successful',
+        color: 'green',
+      });
+    }
+  };
 
   useEffect(() => {
     form.clearErrors();
@@ -231,7 +278,7 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
         <form onSubmit={onSubmit}>
           <div>
             <p className="font-medium text-xl mb-3">Select file type:</p>
-            <div className="grid grid-cols-3 gap-2 mb-3">
+            <div className="grid grid-cols-3 gap-2 mb-5">
               {FILE_TYPE_LIST.map(item => (
                 <Checkbox
                   key={uuidv4()}
@@ -246,45 +293,31 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
           </div>
 
           <div>
-            <p className="font-medium text-xl mb-2">
-              Select aspect ratio for space images (Optional):
-            </p>
-            <div className="grid grid-cols-3 gap-2 mb-2">
-              <Controller
-                control={form.control}
-                name="aspectRatio"
-                render={({ field }) => (
-                  <Radio.Group size="md" classNames={{ root: 'mt-[-10px]' }} {...field}>
-                    {OBJECT_FIT_LIST.map(item => (
-                      <Tooltip
-                        multiline
-                        width={220}
-                        withArrow
-                        transition="fade"
-                        transitionDuration={200}
-                        label={item.description}
-                        key={uuidv4()}
-                      >
-                        <div>
-                          <Radio
-                            label={item.name}
-                            id={item._id}
-                            value={item._id}
-                            className="font-medium my-2"
-                          />
-                        </div>
-                      </Tooltip>
-                    ))}
-                  </Radio.Group>
-                )}
-              />
-            </div>
+            <p className="font-medium text-xl mb-2">Select a template</p>
+            <ControlledSelect
+              name="aspectRatio"
+              data={OBJECT_FIT_LIST_V2}
+              placeholder="Select..."
+              rightSection={<ChevronDown size={16} />}
+              className="mb-2"
+            />
           </div>
 
-          <div>
-            <p className="font-medium text-xl mb-2">Share via:</p>
+          <Button
+            className="primary-button font-medium text-base mt-2 w-full"
+            onClick={handleDownload}
+            loading={shareInventory.isLoading}
+            disabled={shareInventory.isLoading}
+            leftIcon={
+              <Image src={DownloadIcon} alt="download" height={24} width={24} fit="contain" />
+            }
+          >
+            Download
+          </Button>
 
-            <Group className="grid grid-cols-2 ">
+          <div className="mt-5">
+            <p className="font-medium text-xl mb-2">Share via:</p>
+            <Group className="grid grid-cols-2">
               <div>
                 {sendVia.map(item => (
                   <Group
@@ -307,15 +340,13 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
               </div>
               {activeShare !== '' && (
                 <div>
-                  {activeShare !== 'download' ? (
-                    <ControlledTextInput
-                      name="name"
-                      placeholder="Name"
-                      maxLength={200}
-                      className="mb-2"
-                    />
-                  ) : null}
-                  {activeShare !== 'copy_link' && activeShare !== 'download' ? (
+                  <ControlledTextInput
+                    name="name"
+                    placeholder="Name"
+                    maxLength={200}
+                    className="mb-2"
+                  />
+                  {activeShare !== 'copy_link' ? (
                     <ControlledTextInput
                       name="to"
                       placeholder={placeHolders[activeShare]}
@@ -331,19 +362,10 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
                     className="secondary-button font-medium text-base mt-2 w-full"
                     type="submit"
                     loading={shareInventory.isLoading}
-                    disabled={activeFileType.length !== 1 && activeShare === 'download'}
+                    disabled={shareInventory.isLoading}
                   >
-                    {activeShare === 'copy_link'
-                      ? 'Copy'
-                      : activeShare === 'download'
-                      ? 'Download'
-                      : 'Send'}
+                    {activeShare === 'copy_link' ? 'Copy' : 'Send'}
                   </Button>
-                  {activeFileType.length !== 1 && activeShare === 'download' ? (
-                    <p className="text-red-450 text-center">
-                      Kindly select one option at a time to download
-                    </p>
-                  ) : null}
                 </div>
               )}
             </Group>

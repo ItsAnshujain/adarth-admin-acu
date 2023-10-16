@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Tabs } from '@mantine/core';
 import { useParams, useSearchParams } from 'react-router-dom';
+import classNames from 'classnames';
 import { useFetchUsersById } from '../../apis/queries/users.queries';
 import ManagingCampaignSubHeader from '../../components/modules/users/View/ManagingSubHeader';
 import OverviewUserDetails from '../../components/modules/users/View/OverviewUserDetails';
@@ -91,11 +92,23 @@ const UsersDetailsPage = () => {
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <Tabs value={activeParentTab} onTabChange={setActiveParentTab}>
         <Tabs.List className="h-[60px] relative">
-          <Tabs.Tab className="text-base hover:bg-transparent" value="overview">
+          <Tabs.Tab
+            className={classNames(
+              'text-base hover:bg-transparent',
+              activeParentTab === 'overview' ? 'text-purple-450 font-medium' : '',
+            )}
+            value="overview"
+          >
             Overview
           </Tabs.Tab>
-          <Tabs.Tab className="text-base hover:bg-transparent" value="managing">
-            Managing
+          <Tabs.Tab
+            className={classNames(
+              'text-base hover:bg-transparent',
+              activeParentTab === 'managing' ? 'text-purple-450 font-medium' : '',
+            )}
+            value="managing"
+          >
+            Analytics
           </Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="overview">

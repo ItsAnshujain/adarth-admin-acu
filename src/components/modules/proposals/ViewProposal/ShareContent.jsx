@@ -211,7 +211,10 @@ const ShareContent = ({ id, onClose }) => {
     };
 
     if (watchAspectRatio) {
-      data.aspectRatio = watchAspectRatio;
+      const aspectRatio = watchAspectRatio.split(';')[0];
+      const templateType = watchAspectRatio.split(';')[1];
+      data.aspectRatio = aspectRatio;
+      data.templateType = templateType;
     }
 
     const res = await shareProposal.mutateAsync(
@@ -283,7 +286,7 @@ const ShareContent = ({ id, onClose }) => {
 
           <div className="mt-5">
             <p className="font-medium text-xl mb-2">Share via:</p>
-            <Group className="grid grid-cols-2 ">
+            <Group className="grid grid-cols-2">
               <div>
                 {sendVia.map(item => (
                   <Group
@@ -318,6 +321,11 @@ const ShareContent = ({ id, onClose }) => {
                       placeholder={placeHolders[activeShare]}
                       maxLength={200}
                     />
+                  ) : null}
+                  {activeShare === 'email' ? (
+                    <p className="mt-2 text-sm">
+                      Note: For multiple emails, please separate with a comma
+                    </p>
                   ) : null}
                   <Button
                     className="secondary-button font-medium text-base mt-2 w-full"
