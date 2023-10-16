@@ -33,6 +33,8 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
     const tempArr = inventoryData;
     tempArr?.docs?.map(item => {
       if (item?.spacePhoto) tempPics.push(item.spacePhoto);
+      if (item?.longShot) tempPics.push(item.longShot);
+      if (item?.closeShot) tempPics.push(item.closeShot);
       if (item?.otherPhotos) tempPics.push(...item.otherPhotos);
       return tempPics;
     });

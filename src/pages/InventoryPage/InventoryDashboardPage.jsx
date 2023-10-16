@@ -442,7 +442,7 @@ const InventoryDashboardPage = () => {
   const toggleShareOptions = () => {
     modals.openModal({
       modalId: 'shareInventoryOption',
-      title: 'Share Option',
+      title: 'Share and Download Option',
       children: (
         <ShareContent
           searchParamQueries={searchParams}
