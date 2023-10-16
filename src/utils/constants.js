@@ -103,3 +103,10 @@ export const OBJECT_FIT_LIST = [
 ];
 
 export const FACING_VALUE_LIST = ['single', 'double', 'triple', 'four', 'five'];
+
+export const OBJECT_FIT_LIST_V2 = [
+  { label: 'Generic Fill', value: 'fill' },
+  { label: 'Generic Contain', value: 'contain' },
+  { label: 'Long Shot / Close Shot - Fill', value: 'shot-fill' },
+  { label: 'Long Shot / Close Shot - Contain', value: 'shot-contain' },
+];

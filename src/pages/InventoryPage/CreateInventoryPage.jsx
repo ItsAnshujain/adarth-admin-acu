@@ -115,6 +115,8 @@ const basicInformationSchema = yup.object({
       })
       .test('demographic', 'Demographics is required', obj => obj.value !== ''),
     audience: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
+    longShot: yup.string().trim(),
+    closeShot: yup.string().trim(),
   }),
 });
 
@@ -323,6 +325,8 @@ const CreateInventoryPage = () => {
           audience: arrOfAudience || [],
           spacePhoto: basicInformation?.spacePhoto || '',
           otherPhotos: basicInformation?.otherPhotos || [],
+          longShot: basicInformation?.longShot || undefined,
+          closeShot: basicInformation?.closeShot || undefined,
         },
         specifications: {
           illuminations: {

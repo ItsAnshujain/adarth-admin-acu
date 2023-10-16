@@ -13,6 +13,8 @@ const Preview = () => {
     const tempPics = [];
 
     if (values?.basicInformation?.spacePhoto) tempPics.push(values.basicInformation.spacePhoto);
+    if (values?.basicInformation?.longShot) tempPics.push(values.basicInformation.longShot);
+    if (values?.basicInformation?.closeShot) tempPics.push(values.basicInformation.closeShot);
     if (values?.basicInformation?.otherPhotos)
       tempPics.push(...values.basicInformation.otherPhotos);
 

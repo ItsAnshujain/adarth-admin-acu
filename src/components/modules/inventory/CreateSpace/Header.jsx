@@ -55,7 +55,7 @@ const Header = ({ setFormStep, formStep, isLoading, isSaved }) => {
           </Chip>
         ))}
       </div>
-      <div className="flex gap-4 pr-7 flex-wrap">
+      <div className="flex gap-4 pr-5 flex-wrap">
         <Button className="border-black radius-md text-black" onClick={handleInventory}>
           Cancel
         </Button>
