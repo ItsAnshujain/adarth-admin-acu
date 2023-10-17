@@ -21,19 +21,19 @@ const ProcessPipeline = ({ bookingData }) => {
         statusArr: [
           {
             status: 'Purchase Order',
-            date: '',
+            date: bookingData?.purchaseOrderUpdatedAt,
             isSuccess: bookingData?.purchaseOrder,
           },
           {
             status: 'Release Order',
-            date: '',
+            date: bookingData?.releaseOrderUpdatedAt,
             isSuccess: bookingData?.releaseOrder,
             hasBottomEdge: false,
             className: 'ml-[55px]',
           },
           {
             status: 'Invoice',
-            date: '',
+            date: bookingData?.invoiceUpdatedAt,
             isSuccess: bookingData?.invoice,
             hasRightEdge: false,
             hasBottomEdge: false,
@@ -144,7 +144,7 @@ const ProcessPipeline = ({ bookingData }) => {
       },
       {
         status: 'Payment Received',
-        date: '',
+        date: bookingData?.hasPaidUpdatedAt,
         isSuccess: bookingData?.hasPaid,
         hasRightEdge: false,
         hasBottomEdge: false,

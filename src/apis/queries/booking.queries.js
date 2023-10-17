@@ -21,6 +21,7 @@ import {
   generateManualInvoiceReceipt,
   fetchBookingStatsById,
   fetchbookingById,
+  fetchUserSalesByUserId,
 } from '../requests/booking.requests';
 import { onApiError } from '../../utils';
 
@@ -389,6 +390,17 @@ export const useBookingStatsById = (bookingId, enabled = true) =>
     queryKey: ['booking-stats-by-id', bookingId],
     queryFn: async () => {
       const res = await fetchBookingStatsById(bookingId);
+      return res?.data;
+    },
+    enabled,
+    onError: onApiError,
+  });
+
+export const useUserSalesByUserId = (payload, enabled = true) =>
+  useQuery({
+    queryKey: ['user-sales-by-user-id', payload],
+    queryFn: async () => {
+      const res = await fetchUserSalesByUserId(payload);
       return res?.data;
     },
     enabled,

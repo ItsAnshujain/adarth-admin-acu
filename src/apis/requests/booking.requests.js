@@ -47,3 +47,5 @@ export const generateManualInvoiceReceipt = data =>
   http.post('/booking/generate-receipt/manual/invoice', data);
 
 export const fetchBookingStatsById = id => http.get(urlcat('/booking/:id/stats', { id }));
+
+export const fetchUserSalesByUserId = payload => http.get(urlcat('/booking/user-sales', payload));
