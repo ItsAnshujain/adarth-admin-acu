@@ -1,27 +1,35 @@
 import React, { useEffect } from 'react';
-import { Button, Image, Skeleton } from '@mantine/core';
+import { ActionIcon, Button, Image, Skeleton } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { showNotification } from '@mantine/notifications';
+import { XCircle } from 'react-feather';
+import { useQueryClient } from '@tanstack/react-query';
 import PreviewCard from '../Create/PreviewCard';
 import UserImage from '../../../../assets/placeholders/user.png';
 import ControlledNumberInput from '../../../shared/FormInputs/Controlled/ControlledNumberInput';
 import { useUpdateUsers } from '../../../../apis/queries/users.queries';
+import useUserStore from '../../../../store/user.store';
 
 const schema = yup.object({
   salesTarget: yup
     .number()
-    .positive('Must be a positive number')
     .typeError('Must be a number')
     .nullable()
-    .required('Amount is required'),
+    .required('Amount is required')
+    .min(0, 'Value must be greater than or equal to zero')
+    .integer('Value must be an integer'),
 });
 
 const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId }) => {
+  const queryClient = useQueryClient();
   const form = useForm({ resolver: yupResolver(schema) });
   const updateUser = useUpdateUsers();
+  const meId = useUserStore(state => state.id);
+
+  const myDetails = queryClient.getQueryData(['users-by-id', meId]);
 
   const onSubmit = form.handleSubmit(async formData => {
     updateUser.mutate(
@@ -44,9 +52,7 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
 
   useEffect(() => {
     if (userDetails?.salesTarget) {
-      form.reset({
-        salesTarget: userDetails?.salesTarget,
-      });
+      form.setValue('salesTarget', userDetails?.salesTarget);
     }
   }, [userDetails?.salesTarget]);
 
@@ -121,17 +127,34 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
         ) : null}
         <div className="col-span-3 flex flex-col px-5">
           <FormProvider {...form}>
-            <form className="mb-4" onSubmit={onSubmit}>
+            <form className="mb-8 flex flex-row" onSubmit={onSubmit}>
               <ControlledNumberInput
                 label="Sales Target ₹"
                 name="salesTarget"
                 withAsterisk
                 placeholder="Write..."
-                className="mb-4 w-[300px]"
+                className="w-[200px] mr-3"
+                readOnly={myDetails?.role === 'supervisor'}
+                disabled={myDetails?.role === 'supervisor'}
+                rightSection={
+                  <ActionIcon
+                    onClick={() => form.setValue('salesTarget', undefined)}
+                    className="mr-3"
+                    disabled={myDetails?.role === 'supervisor'}
+                  >
+                    <XCircle className="h-4" />
+                  </ActionIcon>
+                }
               />
-              <Button type="submit" className="primary-button" loading={updateUser.isLoading}>
-                {userDetails?.salesTarget ? 'Edit' : 'Add'}
-              </Button>
+              {myDetails?.role !== 'supervisor' ? (
+                <Button
+                  type="submit"
+                  className="primary-button self-end"
+                  loading={updateUser.isLoading}
+                >
+                  {userDetails?.salesTarget ? 'Edit' : 'Save'}
+                </Button>
+              ) : null}
             </form>
           </FormProvider>
           <div className="col-span-2 grid grid-cols-2 gap-8">

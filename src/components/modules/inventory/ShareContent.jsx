@@ -125,6 +125,7 @@ const schemas = {
 const ShareContent = ({ searchParamQueries, onClose }) => {
   const [activeFileType, setActiveFileType] = useState([]);
   const [activeShare, setActiveShare] = useState('');
+  const [loaderType, setLoaderType] = useState(-1);
 
   const form = useForm({
     resolver: yupResolver(schemas[activeShare]),
@@ -229,11 +230,14 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
       return;
     }
 
+    setLoaderType('download');
+
     const data = {
       name: '',
       to: '',
       format: activeFileType.join(','),
       shareVia: 'copy_link',
+      aspectRatio: 'fill;generic',
     };
 
     const params = {};
@@ -254,6 +258,10 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
         onSuccess: () => {
           setActiveFileType([]);
           onClose();
+          setLoaderType(-1);
+        },
+        onError: () => {
+          setLoaderType(-1);
         },
       },
     );
@@ -300,13 +308,14 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
               placeholder="Select..."
               rightSection={<ChevronDown size={16} />}
               className="mb-2"
+              defaultValue="fill;generic"
             />
           </div>
 
           <Button
             className="primary-button font-medium text-base mt-2 w-full"
             onClick={handleDownload}
-            loading={shareInventory.isLoading}
+            loading={loaderType === 'download'}
             disabled={shareInventory.isLoading}
             leftIcon={
               <Image src={DownloadIcon} alt="download" height={24} width={24} fit="contain" />
@@ -361,7 +370,7 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
                   <Button
                     className="secondary-button font-medium text-base mt-2 w-full"
                     type="submit"
-                    loading={shareInventory.isLoading}
+                    loading={loaderType !== 'download' && shareInventory.isLoading}
                     disabled={shareInventory.isLoading}
                   >
                     {activeShare === 'copy_link' ? 'Copy' : 'Send'}

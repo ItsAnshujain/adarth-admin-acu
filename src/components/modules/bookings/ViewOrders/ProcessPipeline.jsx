@@ -20,6 +20,30 @@ const ProcessPipeline = ({ bookingData }) => {
       {
         statusArr: [
           {
+            status: 'Purchase Order',
+            date: '',
+            isSuccess: bookingData?.purchaseOrder,
+          },
+          {
+            status: 'Release Order',
+            date: '',
+            isSuccess: bookingData?.releaseOrder,
+            hasBottomEdge: false,
+            className: 'ml-[55px]',
+          },
+          {
+            status: 'Invoice',
+            date: '',
+            isSuccess: bookingData?.invoice,
+            hasRightEdge: false,
+            hasBottomEdge: false,
+            className: 'ml-[55px]',
+          },
+        ],
+      },
+      {
+        statusArr: [
+          {
             status: 'Media Received',
             date: bookingData?.printingStatus?.Upcoming || bookingData?.paymentStatus?.Paid,
             isSuccess:
@@ -97,7 +121,7 @@ const ProcessPipeline = ({ bookingData }) => {
                 bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'upcoming') ||
               bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'ongoing' ||
               bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'completed',
-            hasBottomEdge: false,
+            hasBottomEdge: true,
           },
           {
             status: 'Campaign Ongoing',
@@ -117,6 +141,13 @@ const ProcessPipeline = ({ bookingData }) => {
             className: 'ml-[55px]',
           },
         ],
+      },
+      {
+        status: 'Payment Received',
+        date: '',
+        isSuccess: bookingData?.hasPaid,
+        hasRightEdge: false,
+        hasBottomEdge: false,
       },
     ],
     [bookingData],

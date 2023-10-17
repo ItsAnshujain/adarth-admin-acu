@@ -119,7 +119,7 @@ const UsersDetailsPage = () => {
           />
         </Tabs.Panel>
         <Tabs.Panel value="managing">
-          <ManagingCampaignSubHeader activeChildTab={activeChildTab} userId={userId} />
+          <ManagingCampaignSubHeader userId={userId} />
           <div>
             <Tabs value={activeChildTab} onTabChange={handleChildTab}>
               <Tabs.List className="h-16">
@@ -135,7 +135,11 @@ const UsersDetailsPage = () => {
               </Tabs.List>
 
               <Tabs.Panel value="booking">
-                <BookingTableView data={bookingData} isLoading={isLoadingBookingData} />
+                <BookingTableView
+                  data={bookingData}
+                  isLoading={isLoadingBookingData}
+                  activeChildTab={activeChildTab}
+                />
               </Tabs.Panel>
               <Tabs.Panel value="proposal" className="mr-5">
                 <ProposalTableView
@@ -143,10 +147,15 @@ const UsersDetailsPage = () => {
                   userId={userId}
                   data={proposalsData}
                   isLoading={isLoadingProposalsData}
+                  activeChildTab={activeChildTab}
                 />
               </Tabs.Panel>
               <Tabs.Panel value="sales">
-                <SalesViewTable data={bookingData} isLoading={isLoadingBookingData} />
+                <SalesViewTable
+                  data={bookingData}
+                  isLoading={isLoadingBookingData}
+                  activeChildTab={activeChildTab}
+                />
               </Tabs.Panel>
             </Tabs>
           </div>

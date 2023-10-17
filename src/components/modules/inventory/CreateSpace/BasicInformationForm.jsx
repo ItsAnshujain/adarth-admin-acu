@@ -392,8 +392,8 @@ const BasicInformationForm = () => {
 
         <Group className="grid grid-cols-2 mb-4">
           <div>
-            <p className="text-xl font-bold">Long Short</p>
-            <p className="text-gray-500 my-2">Upload a long short image</p>
+            <p className="text-xl font-bold">Long Shot</p>
+            <p className="text-gray-500 my-2">Upload a long shot image</p>
             {values?.basicInformation?.longShot ? (
               <div className="relative">
                 <Image
@@ -426,8 +426,8 @@ const BasicInformationForm = () => {
           </div>
 
           <div>
-            <p className="text-xl font-bold">Close Short</p>
-            <p className="text-gray-500 my-2">Upload a close short image</p>
+            <p className="text-xl font-bold">Close Shot</p>
+            <p className="text-gray-500 my-2">Upload a close shot image</p>
             {values?.basicInformation?.closeShot ? (
               <div className="relative">
                 <Image
