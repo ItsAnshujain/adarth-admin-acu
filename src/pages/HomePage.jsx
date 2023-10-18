@@ -11,7 +11,7 @@ import {
   BarElement,
   Tooltip,
 } from 'chart.js';
-import { Loader, Box, Group } from '@mantine/core';
+import { Loader, Box, Group, ColorSwatch } from '@mantine/core';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -40,6 +40,7 @@ import {
 import ViewByFilter from '../components/modules/reports/ViewByFilter';
 import { DATE_FORMAT } from '../utils/constants';
 import StatisticsCard from '../components/modules/home/StatisticsCard';
+import Calendar from '../components/modules/home/Calendar';
 
 dayjs.extend(quarterOfYear);
 
@@ -354,8 +355,25 @@ const HomePage = () => {
               </section>
             </article>
 
-            <article className="bg-gray-450 col-span-4 h-full" />
+            <article className="bg-gray-50 col-span-4 h-full rounded-md border relative">
+              <div className="bg-red absolute right-[16px] top-[25px] flex gap-4">
+                <Group className="flex gap-1">
+                  <ColorSwatch color="#914EFB" size={10} mr={4} />
+                  <p className="text-black text-xs">Vacant Inventory</p>
+                </Group>
+                <Group className="flex gap-1">
+                  <ColorSwatch color="#28B446" size={10} mr={4} />
+                  <p className="text-black text-xs">Booking Starting</p>
+                </Group>
+                <Group className="flex gap-1">
+                  <ColorSwatch color="#FD3434" size={10} mr={4} />
+                  <p className="text-black text-xs">Booking Ending</p>
+                </Group>
+              </div>
+              <Calendar />
+            </article>
           </Group>
+
           <div className="flex flex-col items-start gap-4 md:flex-row">
             <div className="w-full md:w-[68%]">
               <div className="flex justify-between items-center">
