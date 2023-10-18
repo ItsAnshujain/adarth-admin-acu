@@ -1,13 +1,7 @@
-import OngoingBookingIcon from '../assets/ongoing-booking.svg';
-import UpcomingBookingIcon from '../assets/upcoming-booking.svg';
-import CompleteBookingIcon from '../assets/complete-booking.svg';
 import LeadsDiscussionIcon from '../assets/leads-discussion.svg';
 import LeadsProgressIcon from '../assets/leads-progress.svg';
 import LeadsCompleteIcon from '../assets/leads-complete.svg';
 import LeadsLostIcon from '../assets/leads-lost.svg';
-import ProposalConvertIcon from '../assets/proposal-convert.svg';
-import ProposalCreateIcon from '../assets/proposal-create.svg';
-import ProposalSendIcon from '../assets/proposal-send.svg';
 
 export const SMTP_SERVICES = [
   { label: '1und1', value: '1und1' },
@@ -122,78 +116,33 @@ export const OBJECT_FIT_LIST_V2 = [
   { label: 'Long Shot / Close Shot - Contain', value: 'contain;longShotCloseShot' },
 ];
 
-export const BOOKING_LIST = [
-  {
-    label: 'Ongoing',
-    count: 3,
-    textColor: 'text-purple-350',
-    backgroundColor: 'bg-purple-100',
-    icon: OngoingBookingIcon,
-  },
-  {
-    label: 'Upcoming',
-    count: 4,
-    textColor: 'text-orange-350',
-    backgroundColor: 'bg-orange-100',
-    icon: UpcomingBookingIcon,
-  },
-  {
-    label: 'Completed',
-    count: 10,
-    textColor: 'text-green-350',
-    backgroundColor: 'bg-green-100',
-    icon: CompleteBookingIcon,
-  },
-];
-
 export const LEADS_LIST = [
   {
-    label: 'initiate Discussion',
-    count: 3,
+    label: 'Initiate Discussion',
+    count: 1,
     textColor: 'text-orange-350',
-    backgroundColor: 'bg-orange-100',
+    backgroundColor: 'bg-orange-50',
     icon: LeadsDiscussionIcon,
   },
   {
-    label: 'in Progress',
-    count: 4,
+    label: 'In Progress',
+    count: 1,
     textColor: 'text-purple-350',
-    backgroundColor: 'bg-purple-100',
+    backgroundColor: 'bg-purple-50',
     icon: LeadsProgressIcon,
   },
   {
     label: 'Completed',
-    count: 10,
+    count: 1,
     textColor: 'text-green-350',
-    backgroundColor: 'bg-green-100',
+    backgroundColor: 'bg-green-50',
     icon: LeadsCompleteIcon,
   },
   {
     label: 'Lost',
-    count: 10,
+    count: 1,
     textColor: 'text-red-350',
     backgroundColor: 'bg-red-100',
     icon: LeadsLostIcon,
-  },
-];
-
-export const PROPOSAL_LIST = [
-  {
-    label: 'Total Proposal converted',
-    count: 3,
-    textColor: 'text-green-350',
-    icon: ProposalConvertIcon,
-  },
-  {
-    label: 'Total Proposal created',
-    count: 4,
-    textColor: 'text-purple-350',
-    icon: ProposalCreateIcon,
-  },
-  {
-    label: 'Total Proposal sent',
-    count: 10,
-    textColor: 'text-orange-350',
-    icon: ProposalSendIcon,
   },
 ];
