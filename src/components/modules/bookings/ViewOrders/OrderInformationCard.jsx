@@ -67,7 +67,7 @@ const OrderInformationCard = () => {
               : bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
               ? 'Printing in progress'
               : bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
-              ? 'Printing completed'
+              ? 'Completed'
               : '-'}
           </p>
         </div>

@@ -260,7 +260,7 @@ const BookingTableView = ({ data: bookingData, isLoading, activeChildTab }) => {
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Printing in progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
-                  ? 'Printing completed'
+                  ? 'Completed'
                   : '-'}
               </p>
             ),
@@ -405,7 +405,7 @@ const BookingTableView = ({ data: bookingData, isLoading, activeChildTab }) => {
           ),
       },
       {
-        Header: 'DOWNLOAD UPLOADED MEDIA',
+        Header: 'DOWNLOAD ARTWORK',
         accessor: '',
         disableSortBy: true,
         Cell: ({

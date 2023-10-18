@@ -64,7 +64,7 @@ const ProcessPipeline = ({ bookingData }) => {
             className: 'ml-[55px]',
           },
           {
-            status: 'Printing Completed',
+            status: 'Completed',
             date: bookingData?.printingStatus?.Completed,
             isSuccess: bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed',
             hasRightEdge: false,

@@ -345,7 +345,7 @@ const SalesViewTable = ({ data: bookingData, isLoading, activeChildTab }) => {
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Printing in progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
-                  ? 'Printing completed'
+                  ? 'Completed'
                   : '-'}
               </p>
             ),
