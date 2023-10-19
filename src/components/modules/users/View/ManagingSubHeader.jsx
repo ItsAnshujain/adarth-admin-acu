@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Group } from '@mantine/core';
-import { Pie } from 'react-chartjs-2';
+import { Pie, Doughnut } from 'react-chartjs-2';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Chart as ChartJS,
@@ -47,10 +47,17 @@ ChartJS.register(
   Legend,
 );
 
-const leadsPieConfig = {
-  options: {
-    responsive: true,
+const salesPieConfig = {
+  responsive: true,
+  plugins: {
+    tooltip: {
+      enabled: false,
+    },
   },
+};
+
+const leadsPieConfig = {
+  options: { responsive: true },
   styles: {
     backgroundColor: [
       'rgba(75, 192, 192, 1)',
@@ -69,9 +76,7 @@ const leadsPieConfig = {
 };
 
 const bookingPieConfig = {
-  options: {
-    responsive: true,
-  },
+  options: { responsive: true },
   styles: {
     backgroundColor: ['rgba(75, 192, 192, 1)', 'rgba(145, 78, 251, 1)', 'rgba(255, 144, 14 , 1)'],
     borderColor: ['rgba(75, 192, 192, 1)', 'rgba(145, 78, 251, 1)', 'rgba(255, 144, 14 , 1)'],
@@ -112,6 +117,32 @@ const ManagingSubHeader = ({ userId }) => {
   });
 
   const revenueDataByIndustryQuery = useBookingRevenueByIndustry(['groupBy', 'by']);
+
+  const revenueBreakupData = useMemo(
+    () => ({
+      datasets: [
+        {
+          data: userSales.data?.salesTarget ? [userSales.data.salesTarget ?? 0, 0] : [0, 1],
+          backgroundColor: ['#914EFB', '#EEEEEE'],
+          borderColor: ['#914EFB', '#EEEEEE'],
+          borderWidth: 1,
+        },
+        {
+          data: userSales.data?.sales ? [userSales.data.sales ?? 0, 0] : [0, 1],
+          backgroundColor: ['#4BC0C0', '#EEEEEE'],
+          borderColor: ['#4BC0C0', '#EEEEEE'],
+          borderWidth: 1,
+        },
+        {
+          data: [userSales.data?.ownSiteSales ?? 0, userSales.data?.totalTradedAmount ?? 0],
+          backgroundColor: ['#2938F7', '#FF900E'],
+          borderColor: ['#2938F7', '#FF900E'],
+          borderWidth: 1,
+        },
+      ],
+    }),
+    [userSales.data],
+  );
 
   const handleUpdatedReveueByIndustry = useCallback(() => {
     const tempBarData = {
@@ -164,7 +195,7 @@ const ManagingSubHeader = ({ userId }) => {
       <article className="p-4 grid grid-cols-2 gap-4 grid-rows-2">
         <section className="min-h-44 rounded-lg border flex flex-row items-start gap-3 p-4">
           <Box className="w-36">
-            <Pie data={updatedIndustry} options={leadsPieConfig.options} key={updatedIndustry.id} />
+            <Doughnut options={salesPieConfig} data={revenueBreakupData} />
           </Box>
 
           <div className="flex-1 grid grid-cols-2 gap-3">
