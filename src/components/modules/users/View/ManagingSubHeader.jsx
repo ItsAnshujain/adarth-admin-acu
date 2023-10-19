@@ -34,6 +34,7 @@ import CompleteBookingIcon from '../../../../assets/complete-booking.svg';
 import ProposalConvertIcon from '../../../../assets/proposal-convert.svg';
 import ProposalCreateIcon from '../../../../assets/proposal-create.svg';
 import ProposalSendIcon from '../../../../assets/proposal-send.svg';
+import OutstandingPoIcon from '../../../../assets/outstanding-po.svg';
 
 ChartJS.register(
   ArcElement,
@@ -134,7 +135,7 @@ const ManagingSubHeader = ({ userId }) => {
           borderWidth: 1,
         },
         {
-          data: [userSales.data?.ownSiteSales ?? 0, userSales.data?.totalTradedAmount ?? 0],
+          data: [userSales.data?.totalTradedAmount ?? 0, userSales.data?.ownSiteSales ?? 0],
           backgroundColor: ['#2938F7', '#FF900E'],
           borderColor: ['#2938F7', '#FF900E'],
           borderWidth: 1,
@@ -308,8 +309,8 @@ const ManagingSubHeader = ({ userId }) => {
           <ProposalStatisticsCard
             label="Oustanding PO"
             count={`₹${getWord(userSales.data?.outStandingPo || 0)}`}
-            textColor="text-orange-350"
-            icon={ProposalSendIcon}
+            textColor="text-blue-250"
+            icon={OutstandingPoIcon}
           />
         </section>
       </article>

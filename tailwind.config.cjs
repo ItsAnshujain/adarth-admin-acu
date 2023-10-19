@@ -14,7 +14,7 @@ module.exports = {
         gray: { 450: '#E5E7EB', 550: '#969EA1', 50: '#EEEEEE' },
         green: { 350: '#4BC0C0', 50: '#EDF8F8' },
         red: { 450: '#FA5252', 350: '#E61B23' },
-        blue: { 350: '#2938F7', 50: '#E9EBFE' },
+        blue: { 350: '#2938F7', 250: '#0EA8FF', 50: '#E9EBFE' },
       },
       screens: {
         '2xl': '1440px',
