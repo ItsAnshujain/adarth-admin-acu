@@ -22,6 +22,7 @@ import {
   fetchBookingStatsById,
   fetchbookingById,
   fetchUserSalesByUserId,
+  fetchCalendarEvents,
 } from '../requests/booking.requests';
 import { onApiError } from '../../utils';
 
@@ -401,6 +402,17 @@ export const useUserSalesByUserId = (payload, enabled = true) =>
     queryKey: ['user-sales-by-user-id', payload],
     queryFn: async () => {
       const res = await fetchUserSalesByUserId(payload);
+      return res?.data;
+    },
+    enabled,
+    onError: onApiError,
+  });
+
+export const useCalendarEvents = (payload, enabled = true) =>
+  useQuery({
+    queryKey: ['calendar-events', payload],
+    queryFn: async () => {
+      const res = await fetchCalendarEvents(payload);
       return res?.data;
     },
     enabled,
