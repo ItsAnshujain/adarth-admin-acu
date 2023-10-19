@@ -17,6 +17,7 @@ import { useDeleteUploadedFile, useUploadFile } from '../../../../apis/queries/u
 import modalConfig from '../../../../utils/modalConfig';
 import Select from '../../../shared/Select';
 import SelectTermsItem from './SelectTermsItem';
+import { useProposalTerms } from '../../../../apis/queries/proposal.queries';
 
 const nativeSelectStyles = {
   rightSection: { pointerEvents: 'none' },
@@ -49,6 +50,12 @@ const BasicInfo = ({ proposalId, userData }) => {
   const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
     serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
   );
+  const proposalTermsQuery = useProposalTerms({
+    page: 1,
+    limit: 20,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+  });
 
   const onHandleDrop = async (params, key) => {
     const isValidResolution = await validateImageResolution(params?.[0], 1350, 80);
@@ -96,15 +103,25 @@ const BasicInfo = ({ proposalId, userData }) => {
   };
 
   const memoizedProposalData = useMemo(() => {
-    if (!proposalStatusData?.docs.length) return [{ addMore: true }];
+    if (!proposalStatusData?.docs.length) return [];
     const temp = proposalStatusData?.docs?.map(item => ({
+      label: item?.name,
+      value: item?._id,
+    }));
+
+    return temp;
+  }, [proposalStatusData?.docs]);
+
+  const memoizedProposalTerms = useMemo(() => {
+    if (!proposalTermsQuery.data?.docs?.length) return [{ addMore: true }];
+    const temp = proposalTermsQuery.data?.docs?.map(item => ({
       label: item?.name,
       value: item?._id,
     }));
 
     temp.push({ addMore: true });
     return temp;
-  }, [proposalStatusData?.docs]);
+  }, [proposalTermsQuery.data?.docs]);
 
   return (
     <div className="flex gap-4 pt-4 flex-col">
@@ -353,12 +370,11 @@ const BasicInfo = ({ proposalId, userData }) => {
         <Group className="flex flex-col col-span-1 items-start">
           <Select
             label="Select Terms and Conditions"
-            name="status"
-            options={memoizedProposalData}
+            name="proposalTermsId"
+            options={memoizedProposalTerms}
             styles={nativeSelectStyles}
             rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
             rightSectionWidth={40}
-            disabled={isProposalStatusLoading}
             className="mb-7 w-full"
             classNames={{ dropdown: 'px-1 py-2' }}
             placeholder="Select Terms and Conditions"
@@ -369,16 +385,20 @@ const BasicInfo = ({ proposalId, userData }) => {
             }
           />
 
-          <Text size="md" weight="bold">
-            Terms and Conditions:
-          </Text>
-          <ul className="list-disc pl-5">
-            <li>Printing charges are additional.</li>
-            <li>Mounting charges are additional.</li>
-            <li>Booking amount to be paid at the time of adsite blocking.</li>
-            <li>Payment conditions to be adhered at the time of booking.</li>
-            <li>GST is applicable as per government rules.</li>
-          </ul>
+          {values.proposalTermsId ? (
+            <>
+              <Text size="md" weight="bold">
+                Terms and Conditions:
+              </Text>
+              <ul className="list-disc pl-5">
+                <li>Printing charges are additional.</li>
+                <li>Mounting charges are additional.</li>
+                <li>Booking amount to be paid at the time of adsite blocking.</li>
+                <li>Payment conditions to be adhered at the time of booking.</li>
+                <li>GST is applicable as per government rules.</li>
+              </ul>
+            </>
+          ) : null}
         </Group>
       </section>
     </div>

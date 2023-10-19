@@ -158,6 +158,10 @@ const CreateProposalPage = () => {
 
       delete data.uploadType;
 
+      if (data.proposalTermsId) {
+        data.proposalTermsId = data.proposalTermsId.value;
+      }
+
       if (proposalId) {
         data = {
           ...data,
