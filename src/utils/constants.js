@@ -119,28 +119,28 @@ export const OBJECT_FIT_LIST_V2 = [
 export const LEADS_LIST = [
   {
     label: 'Initiate Discussion',
-    count: 1,
+    count: 0,
     textColor: 'text-orange-350',
     backgroundColor: 'bg-orange-50',
     icon: LeadsDiscussionIcon,
   },
   {
     label: 'In Progress',
-    count: 1,
+    count: 0,
     textColor: 'text-purple-350',
     backgroundColor: 'bg-purple-50',
     icon: LeadsProgressIcon,
   },
   {
     label: 'Completed',
-    count: 1,
+    count: 0,
     textColor: 'text-green-350',
     backgroundColor: 'bg-green-50',
     icon: LeadsCompleteIcon,
   },
   {
     label: 'Lost',
-    count: 1,
+    count: 0,
     textColor: 'text-red-350',
     backgroundColor: 'bg-red-100',
     icon: LeadsLostIcon,

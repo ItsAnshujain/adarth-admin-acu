@@ -285,7 +285,7 @@ const ManagingSubHeader = ({ userId }) => {
           </div>
         </section>
 
-        <section className="h-32 grid grid-cols-3 gap-4">
+        <section className="min-h-44 grid grid-cols-2 grid-rows-2 gap-4">
           <ProposalStatisticsCard
             label="Total proposal converted"
             count={userSales.data?.totalProposalConverted || 0}
@@ -301,6 +301,13 @@ const ManagingSubHeader = ({ userId }) => {
           <ProposalStatisticsCard
             label="Total proposal sent"
             count={userSales.data?.totalProposalSent || 0}
+            textColor="text-orange-350"
+            icon={ProposalSendIcon}
+          />
+          {/* not part of proposal */}
+          <ProposalStatisticsCard
+            label="Oustanding PO"
+            count={`₹${getWord(userSales.data?.outStandingPo || 0)}`}
             textColor="text-orange-350"
             icon={ProposalSendIcon}
           />
