@@ -1,12 +1,13 @@
 import { Box, Button, Group } from '@mantine/core';
 import React from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { showNotification } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
 import ControlledTextInput from '../../../shared/FormInputs/Controlled/ControlledTextInput';
 import { useCreateProposalTerms } from '../../../../apis/queries/proposal.queries';
+import RichTextEditorComponent from '../../../shared/rte/RichTextEditorComponent';
 
 const schema = yup.object({
   name: yup.string().required('Title is required'),
@@ -45,13 +46,29 @@ const AddTermsAndConditionsForm = ({ onClose }) => {
             maxLength={200}
             className="mb-4"
           />
-          <ControlledTextInput
-            label="Description"
-            name="description"
-            placeholder="Write..."
-            maxLength={200}
-            className="mb-4"
-          />
+          <section className="mb-4">
+            <p className="mb-2 font-medium text-black">Description</p>
+            <Controller
+              name="description"
+              control={form.control}
+              render={({ field }) => (
+                <RichTextEditorComponent
+                  {...field}
+                  lexicalJson=""
+                  onChange={value => field.onChange(value)}
+                  defaultValue={
+                    !form.getFieldState('description').isDirty
+                      ? JSON.stringify(form.getValues('description'))
+                      : undefined
+                  }
+                  error={form.formState.errors.description?.message}
+                  title="Description"
+                  placeholder="Write..."
+                />
+              )}
+            />
+          </section>
+
           <Group position="right">
             <Button
               className="dark-button"

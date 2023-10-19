@@ -10,6 +10,7 @@ import {
   shareProposal,
   updateProposal,
   fetchProposalTerms,
+  fetchProposalTermById,
 } from '../requests/proposal.requests';
 import { onApiError } from '../../utils';
 
@@ -158,6 +159,17 @@ export const useProposalTerms = (query, enabled = true) =>
     queryKey: ['proposal-terms', query],
     queryFn: async () => {
       const res = await fetchProposalTerms(query);
+      return res?.data;
+    },
+    enabled,
+    onError: onApiError,
+  });
+
+export const useProposalTermsById = (proposalTermId, enabled = true) =>
+  useQuery({
+    queryKey: ['proposal-term-by-id', proposalTermId],
+    queryFn: async () => {
+      const res = await fetchProposalTermById(proposalTermId);
       return res?.data;
     },
     enabled,

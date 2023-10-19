@@ -17,7 +17,8 @@ import { useDeleteUploadedFile, useUploadFile } from '../../../../apis/queries/u
 import modalConfig from '../../../../utils/modalConfig';
 import Select from '../../../shared/Select';
 import SelectTermsItem from './SelectTermsItem';
-import { useProposalTerms } from '../../../../apis/queries/proposal.queries';
+import { useProposalTerms, useProposalTermsById } from '../../../../apis/queries/proposal.queries';
+import ViewRte from '../../../shared/rte/ViewRte';
 
 const nativeSelectStyles = {
   rightSection: { pointerEvents: 'none' },
@@ -56,6 +57,10 @@ const BasicInfo = ({ proposalId, userData }) => {
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });
+  const proposalTermById = useProposalTermsById(
+    values?.proposalTermsId?.value,
+    !!values?.proposalTermsId?.value,
+  );
 
   const onHandleDrop = async (params, key) => {
     const isValidResolution = await validateImageResolution(params?.[0], 1350, 80);
@@ -386,18 +391,15 @@ const BasicInfo = ({ proposalId, userData }) => {
           />
 
           {values.proposalTermsId ? (
-            <>
+            <section className="py-5">
               <Text size="md" weight="bold">
-                Terms and Conditions:
+                Terms and Conditions
               </Text>
-              <ul className="list-disc pl-5">
-                <li>Printing charges are additional.</li>
-                <li>Mounting charges are additional.</li>
-                <li>Booking amount to be paid at the time of adsite blocking.</li>
-                <li>Payment conditions to be adhered at the time of booking.</li>
-                <li>GST is applicable as per government rules.</li>
-              </ul>
-            </>
+              <p>{proposalTermById?.data?.name}</p>
+              {proposalTermById?.data?.description?.[0] !== '' ? (
+                <ViewRte data={proposalTermById?.data?.description[0] || ''} />
+              ) : null}
+            </section>
           ) : null}
         </Group>
       </section>
