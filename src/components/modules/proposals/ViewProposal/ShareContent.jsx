@@ -146,6 +146,8 @@ const ShareContent = ({ id, onClose }) => {
 
   const handleActiveShare = value => setActiveShare(value);
 
+  const watchAspectRatio = form.watch('aspectRatio');
+
   const onSubmit = form.handleSubmit(async formData => {
     const data = { ...formData };
     if (!activeFileType.length) {
@@ -157,6 +159,13 @@ const ShareContent = ({ id, onClose }) => {
 
     data.format = activeFileType.join(',');
     data.shareVia = activeShare;
+
+    if (watchAspectRatio) {
+      const aspectRatio = watchAspectRatio.split(';')[0];
+      const templateType = watchAspectRatio.split(';')[1];
+      data.aspectRatio = aspectRatio;
+      data.templateType = templateType;
+    }
 
     const res = await shareProposal.mutateAsync(
       { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
@@ -184,8 +193,6 @@ const ShareContent = ({ id, onClose }) => {
       });
     }
   });
-
-  const watchAspectRatio = form.watch('aspectRatio');
 
   const handleDownload = async () => {
     if (!activeFileType.length) {

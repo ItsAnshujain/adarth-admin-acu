@@ -146,6 +146,8 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
 
   const handleActiveShare = value => setActiveShare(value);
 
+  const watchAspectRatio = form.watch('aspectRatio');
+
   const onSubmit = form.handleSubmit(async formData => {
     const data = { ...formData };
     if (!activeFileType.length) {
@@ -157,6 +159,13 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
 
     data.format = activeFileType.join(',');
     data.shareVia = activeShare;
+
+    if (watchAspectRatio) {
+      const aspectRatio = watchAspectRatio.split(';')[0];
+      const templateType = watchAspectRatio.split(';')[1];
+      data.aspectRatio = aspectRatio;
+      data.templateType = templateType;
+    }
 
     const params = {};
     searchParamQueries.forEach((value, key) => {
@@ -210,8 +219,6 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
       });
     }
   });
-
-  const watchAspectRatio = form.watch('aspectRatio');
 
   const handleDownload = async () => {
     if (!activeFileType.length) {

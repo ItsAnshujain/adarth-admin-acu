@@ -1,6 +1,6 @@
 import { ActionIcon, Badge, Box, Group, Image as MantineImage, Radio, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Dropzone } from '@mantine/dropzone';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
@@ -15,6 +15,10 @@ import image from '../../../../assets/image.png';
 import trash from '../../../../assets/trash.svg';
 import { useDeleteUploadedFile, useUploadFile } from '../../../../apis/queries/upload.queries';
 import modalConfig from '../../../../utils/modalConfig';
+import Select from '../../../shared/Select';
+import SelectTermsItem from './SelectTermsItem';
+import { useProposalTerms, useProposalTermsById } from '../../../../apis/queries/proposal.queries';
+import ViewRte from '../../../shared/rte/ViewRte';
 
 const nativeSelectStyles = {
   rightSection: { pointerEvents: 'none' },
@@ -46,6 +50,16 @@ const BasicInfo = ({ proposalId, userData }) => {
 
   const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
     serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
+  );
+  const proposalTermsQuery = useProposalTerms({
+    page: 1,
+    limit: 20,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+  });
+  const proposalTermById = useProposalTermsById(
+    values?.proposalTermsId?.value,
+    !!values?.proposalTermsId?.value,
   );
 
   const onHandleDrop = async (params, key) => {
@@ -93,6 +107,27 @@ const BasicInfo = ({ proposalId, userData }) => {
     }
   };
 
+  const memoizedProposalData = useMemo(() => {
+    if (!proposalStatusData?.docs.length) return [];
+    const temp = proposalStatusData?.docs?.map(item => ({
+      label: item?.name,
+      value: item?._id,
+    }));
+
+    return temp;
+  }, [proposalStatusData?.docs]);
+
+  const memoizedProposalTerms = useMemo(() => {
+    if (!proposalTermsQuery.data?.docs?.length) return [{ addMore: true }];
+    const temp = proposalTermsQuery.data?.docs?.map(item => ({
+      label: item?.name,
+      value: item?._id,
+    }));
+
+    temp.push({ addMore: true });
+    return temp;
+  }, [proposalTermsQuery.data?.docs]);
+
   return (
     <div className="flex gap-4 pt-4 flex-col">
       <Text size="md" weight="bold">
@@ -113,12 +148,7 @@ const BasicInfo = ({ proposalId, userData }) => {
             <NativeSelect
               label="Status"
               name="status"
-              data={
-                proposalStatusData?.docs?.map(item => ({
-                  label: item?.name,
-                  value: item?._id,
-                })) || []
-              }
+              data={memoizedProposalData}
               styles={nativeSelectStyles}
               rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
               rightSectionWidth={40}
@@ -341,17 +371,37 @@ const BasicInfo = ({ proposalId, userData }) => {
           </div>
         </section>
       )}
-      <section>
-        <Text size="md" weight="bold">
-          Terms and Conditions:
-        </Text>
-        <ul className="list-disc pl-5">
-          <li>Printing charges are additional.</li>
-          <li>Mounting charges are additional.</li>
-          <li>Booking amount to be paid at the time of adsite blocking.</li>
-          <li>Payment conditions to be adhered at the time of booking.</li>
-          <li>GST is applicable as per government rules.</li>
-        </ul>
+      <section className="grid grid-cols-2">
+        <Group className="flex flex-col col-span-1 items-start">
+          <Select
+            label="Select Terms and Conditions"
+            name="proposalTermsId"
+            options={memoizedProposalTerms}
+            styles={nativeSelectStyles}
+            rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+            rightSectionWidth={40}
+            className="mb-7 w-full"
+            classNames={{ dropdown: 'px-1 py-2' }}
+            placeholder="Select Terms and Conditions"
+            itemComponent={SelectTermsItem}
+            filter={(value, item) =>
+              item.label.toLowerCase().includes(value.toLowerCase().trim()) ||
+              item.description.toLowerCase().includes(value.toLowerCase().trim())
+            }
+          />
+
+          {values.proposalTermsId ? (
+            <section className="py-5">
+              <Text size="md" weight="bold">
+                Terms and Conditions
+              </Text>
+              <p>{proposalTermById?.data?.name}</p>
+              {proposalTermById?.data?.description?.[0] !== '' ? (
+                <ViewRte data={proposalTermById?.data?.description[0] || ''} />
+              ) : null}
+            </section>
+          ) : null}
+        </Group>
       </section>
     </div>
   );

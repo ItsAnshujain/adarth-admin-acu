@@ -2,13 +2,17 @@ import { showNotification } from '@mantine/notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createProposal,
+  createProposalTerms,
   deleteProposal,
   fetchProposalById,
   fetchProposals,
   generateProposalPdf,
   shareProposal,
   updateProposal,
+  fetchProposalTerms,
+  fetchProposalTermById,
 } from '../requests/proposal.requests';
+import { onApiError } from '../../utils';
 
 export const useCreateProposal = () => {
   const queryClient = useQueryClient();
@@ -139,4 +143,35 @@ export const useGenerateProposalPdf = () =>
   useMutation(async ({ id, queries }) => {
     const res = await generateProposalPdf(id, queries);
     return res?.data;
+  });
+
+export const useCreateProposalTerms = () =>
+  useMutation({
+    mutationFn: async payload => {
+      const res = await createProposalTerms(payload);
+      return res;
+    },
+    onError: onApiError,
+  });
+
+export const useProposalTerms = (query, enabled = true) =>
+  useQuery({
+    queryKey: ['proposal-terms', query],
+    queryFn: async () => {
+      const res = await fetchProposalTerms(query);
+      return res?.data;
+    },
+    enabled,
+    onError: onApiError,
+  });
+
+export const useProposalTermsById = (proposalTermId, enabled = true) =>
+  useQuery({
+    queryKey: ['proposal-term-by-id', proposalTermId],
+    queryFn: async () => {
+      const res = await fetchProposalTermById(proposalTermId);
+      return res?.data;
+    },
+    enabled,
+    onError: onApiError,
   });
