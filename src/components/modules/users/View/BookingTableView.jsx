@@ -370,7 +370,7 @@ const BookingTableView = ({ data: bookingData, isLoading, activeChildTab }) => {
           row: {
             original: { campaign },
           },
-        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
+        }) => useMemo(() => toIndianCurrency(campaign?.price || 0), []),
       },
       {
         Header: 'SCHEDULE',
