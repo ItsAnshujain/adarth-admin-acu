@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import dayjs from 'dayjs';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import BasicInformationForm from '../../components/modules/bookings/Create/BasicInformationForm';
 import SelectSpaces from '../../components/modules/bookings/Create/SelectSpaces';
@@ -17,7 +17,8 @@ import {
   useCreateBookings,
   useUpdateBooking,
 } from '../../apis/queries/booking.queries';
-import { gstRegexMatch, panRegexMatch, isValidURL } from '../../utils';
+import { gstRegexMatch, panRegexMatch, isValidURL, serialize } from '../../utils';
+import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 
 const initialValues = {
   client: {
@@ -72,16 +73,33 @@ const campaignInformationSchema = yup.object({
 
 const schemas = [basicInformationSchema, campaignInformationSchema, yup.object()];
 
+const proposalByIdQuery = {
+  owner: 'all',
+  page: 1,
+  limit: 10,
+  sortBy: 'createdAt',
+  sortOrder: 'asc',
+};
+
 const CreateBookingPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { id: bookingId } = useParams();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  const [searchParams] = useSearchParams(proposalByIdQuery);
+
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ validate: yupResolver(schemas[formStep - 1]), initialValues });
   const { mutateAsync: createBooking, isLoading } = useCreateBookings();
   const update = useUpdateBooking();
   const bookingById = useBookingById(bookingId, !!bookingId);
+
+  const proposalId = searchParams.get('proposalId');
+  const proposalLimit = searchParams.get('proposalLimit');
+  const proposalById = useFetchProposalById(
+    `${proposalId}?${serialize({ ...proposalByIdQuery, limit: proposalLimit })}`,
+    !!proposalId,
+  );
 
   const handleSubmit = async formData => {
     setFormStep(prevState => prevState + 1);
@@ -223,6 +241,7 @@ const CreateBookingPage = () => {
             ...totalImpressionAndHealth,
             startDate: minDate,
             endDate: maxDate,
+            proposalId: proposalId || null,
           },
           {
             onSuccess: () => {
@@ -287,6 +306,30 @@ const CreateBookingPage = () => {
       });
     }
   }, [bookingById.data]);
+
+  useEffect(() => {
+    if (proposalById.data) {
+      form.setValues({
+        ...form.values,
+        campaignName: proposalById.data?.proposal?.name || '',
+        description: proposalById.data?.proposal?.description || '',
+        place: proposalById.data?.inventories.docs.map(item => ({
+          _id: item._id,
+          price: item.price,
+          media: isValidURL(item.media) ? item.media : undefined,
+          startDate: item.startDate,
+          endDate: item.endDate,
+          tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
+          unit: item?.bookedUnits,
+          availableUnit: item?.remainingUnits,
+          initialUnit: item?.bookedUnits || 0,
+          impressionMax: item?.specifications?.impressions?.max || 0,
+          impressionMin: item?.specifications?.impressions?.min,
+          health: item?.specifications?.health || 0,
+        })),
+      });
+    }
+  }, [proposalById.data]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">

@@ -27,7 +27,14 @@ const Card = ({ proposalData }) => (
       </div>
       <div className="flex justify-between items-center">
         <p className="text-purple-450 font-bold">₹{proposalData?.price || 0}</p>
-        <ProposalsMenuPopover itemId={proposalData?._id} />
+        <ProposalsMenuPopover
+          itemId={proposalData?._id}
+          enableEdit={proposalData?.creator && !proposalData?.creator?.isPeer}
+          enableDelete={proposalData?.creator && !proposalData?.creator?.isPeer}
+          enableConvert
+          proposalLimit={proposalData?.totalPlaces}
+          bookingId={proposalData?.bookingId}
+        />
       </div>
     </div>
   </MantineCard>

@@ -20,6 +20,30 @@ const ProcessPipeline = ({ bookingData }) => {
       {
         statusArr: [
           {
+            status: 'Purchase Order',
+            date: bookingData?.purchaseOrderUpdatedAt,
+            isSuccess: bookingData?.purchaseOrder,
+          },
+          {
+            status: 'Release Order',
+            date: bookingData?.releaseOrderUpdatedAt,
+            isSuccess: bookingData?.releaseOrder,
+            hasBottomEdge: false,
+            className: 'ml-[55px]',
+          },
+          {
+            status: 'Invoice',
+            date: bookingData?.invoiceUpdatedAt,
+            isSuccess: bookingData?.invoice,
+            hasRightEdge: false,
+            hasBottomEdge: false,
+            className: 'ml-[55px]',
+          },
+        ],
+      },
+      {
+        statusArr: [
+          {
             status: 'Media Received',
             date: bookingData?.printingStatus?.Upcoming || bookingData?.paymentStatus?.Paid,
             isSuccess:
@@ -40,7 +64,7 @@ const ProcessPipeline = ({ bookingData }) => {
             className: 'ml-[55px]',
           },
           {
-            status: 'Printing Completed',
+            status: 'Completed',
             date: bookingData?.printingStatus?.Completed,
             isSuccess: bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed',
             hasRightEdge: false,
@@ -97,7 +121,7 @@ const ProcessPipeline = ({ bookingData }) => {
                 bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'upcoming') ||
               bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'ongoing' ||
               bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'completed',
-            hasBottomEdge: false,
+            hasBottomEdge: true,
           },
           {
             status: 'Campaign Ongoing',
@@ -117,6 +141,13 @@ const ProcessPipeline = ({ bookingData }) => {
             className: 'ml-[55px]',
           },
         ],
+      },
+      {
+        status: 'Payment Received',
+        date: bookingData?.hasPaidUpdatedAt,
+        isSuccess: bookingData?.hasPaid,
+        hasRightEdge: false,
+        hasBottomEdge: false,
       },
     ],
     [bookingData],

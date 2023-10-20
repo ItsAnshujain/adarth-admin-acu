@@ -55,6 +55,10 @@ const BasicInfo = ({
 
     if (inventoryDetails?.basicInformation?.spacePhoto)
       tempPics.push(inventoryDetails.basicInformation.spacePhoto);
+    if (inventoryDetails?.basicInformation?.longShot)
+      tempPics.push(inventoryDetails.basicInformation.longShot);
+    if (inventoryDetails?.basicInformation?.closeShot)
+      tempPics.push(inventoryDetails.basicInformation.closeShot);
     if (inventoryDetails?.basicInformation?.otherPhotos)
       tempPics.push(...inventoryDetails.basicInformation.otherPhotos);
 

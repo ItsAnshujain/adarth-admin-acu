@@ -1,9 +1,7 @@
-import { Dropzone } from '@mantine/dropzone';
-import { ActionIcon, Button, FileButton, Image, Text } from '@mantine/core';
+import { ActionIcon, Button, FileButton, Group, Image, Text } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
-import image from '../../../../assets/image.png';
+import { useEffect, useRef, useState } from 'react';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import { serialize } from '../../../../utils';
 import { useFormContext } from '../../../../context/formContext';
@@ -15,6 +13,7 @@ import NumberInput from '../../../shared/NumberInput';
 import AsyncMultiSelect from '../../../shared/AsyncMultiSelect';
 import trash from '../../../../assets/trash.svg';
 import useTokenIdStore from '../../../../store/user.store';
+import DropzoneComponent from '../../../shared/Dropzone';
 
 const styles = {
   label: {
@@ -58,7 +57,9 @@ const BasicInformationForm = () => {
   const userId = useTokenIdStore(state => state.id);
   const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
   const ref = useRef();
-  const { errors, getInputProps, values, setFieldValue } = useFormContext();
+  const { errors, values, setFieldValue } = useFormContext();
+  const [currentImageLoading, setCurrentImageLoading] = useState(-1);
+
   const {
     data: organizationData,
     isSuccess: isOrganizationDataLoaded,
@@ -99,38 +100,52 @@ const BasicInformationForm = () => {
     isLoading: isDemographicDataLoading,
   } = useFetchMasters(serialize({ type: 'demographic', ...query }));
 
-  const { mutateAsync: upload, isLoading } = useUploadFile();
-  const { mutateAsync: deleteFile, isLoading: isDeleteLoading } = useDeleteUploadedFile();
+  const upload = useUploadFile();
+  const deleteFile = useDeleteUploadedFile();
 
-  const onHandleDrop = async params => {
+  const onHandleDrop = async (params, formKey) => {
+    setCurrentImageLoading(formKey);
     const formData = new FormData();
     formData.append('files', params?.[0]);
-    const res = await upload(formData);
-    setFieldValue('basicInformation.spacePhoto', res?.[0].Location);
+    const res = await upload.mutateAsync(formData, {
+      onSuccess: () => setCurrentImageLoading(-1),
+    });
+    setFieldValue(`basicInformation.${formKey}`, res?.[0].Location);
   };
 
   const onHandleMultipleImages = async params => {
+    setCurrentImageLoading('otherPhotos');
     const formData = new FormData();
     params?.forEach(item => formData.append('files', item));
-    const res = await upload(formData);
+    const res = await upload.mutateAsync(formData, {
+      onSuccess: () => setCurrentImageLoading(-1),
+    });
     const arrayOfImages = res.map(item => item?.Location);
     const tempSpacePhotos = values?.basicInformation?.otherPhotos;
     setFieldValue('basicInformation.otherPhotos', [...tempSpacePhotos, ...arrayOfImages]);
   };
 
-  const handleDeleteImage = async () => {
-    if (values?.basicInformation?.spacePhoto) {
-      await deleteFile(values?.basicInformation?.spacePhoto.split('/').at(-1), {
-        onSuccess: () => setFieldValue('basicInformation.spacePhoto', ''),
+  const handleDeleteImage = async formKey => {
+    setCurrentImageLoading(formKey);
+    if (values?.basicInformation?.[formKey]) {
+      await deleteFile.mutateAsync(values?.basicInformation?.[formKey].split('/').at(-1), {
+        onSuccess: () => {
+          setFieldValue(`basicInformation.${formKey}`, '');
+          setCurrentImageLoading(-1);
+        },
       });
     }
   };
 
   const handleDeleteMultipleImages = async docIndex => {
+    setCurrentImageLoading(docIndex);
     const tempSpacePhotos = values?.basicInformation?.otherPhotos;
     const res = tempSpacePhotos.filter(item => item !== tempSpacePhotos[docIndex]);
-    await deleteFile(tempSpacePhotos[docIndex]?.split('/').at(-1), {
-      onSuccess: () => setFieldValue('basicInformation.otherPhotos', [...res]),
+    await deleteFile.mutateAsync(tempSpacePhotos[docIndex]?.split('/').at(-1), {
+      onSuccess: () => {
+        setFieldValue('basicInformation.otherPhotos', [...res]);
+        setCurrentImageLoading(-1);
+      },
     });
     ref.current.value = '';
   };
@@ -329,8 +344,8 @@ const BasicInformationForm = () => {
           className="mb-7"
         />
       </div>
-      <div className="flex flex-col flex-1 pr-7">
-        <div className="mb-2">
+      <div className="flex flex-col flex-1 pr-5">
+        <div className="mb-4">
           <p className="text-xl font-bold">Photo</p>
           <p className="text-gray-500 my-2">Please select and upload images for the inventory</p>
 
@@ -339,7 +354,7 @@ const BasicInformationForm = () => {
               <Image
                 src={values?.basicInformation?.spacePhoto}
                 alt="more-preview"
-                height={400}
+                height={350}
                 className="bg-slate-300"
                 placeholder={
                   <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
@@ -348,36 +363,103 @@ const BasicInformationForm = () => {
 
               <ActionIcon
                 className="absolute right-2 top-1 bg-white"
-                onClick={handleDeleteImage}
-                loading={isDeleteLoading}
-                disabled={isDeleteLoading}
+                onClick={() => handleDeleteImage('spacePhoto')}
+                loading={currentImageLoading === 'spacePhoto'}
+                disabled={deleteFile.isLoading}
               >
                 <Image src={trash} alt="trash-icon" />
               </ActionIcon>
             </div>
           ) : (
-            <div className="h-[400px] mb-4">
-              <Dropzone
-                onDrop={onHandleDrop}
-                accept={['image/png', 'image/jpeg']}
-                className="h-full w-full flex justify-center items-center bg-slate-100"
-                loading={isLoading}
+            <div className="h-[350px] mb-4">
+              <DropzoneComponent
+                isLoading={currentImageLoading === 'spacePhoto'}
                 name="spacePhoto"
-                multiple={false}
-                {...getInputProps('spacePhoto')}
-              >
-                <div className="flex items-center justify-center">
-                  <Image src={image} alt="placeholder" height={50} width={50} />
-                </div>
-                <p>
-                  Drag and drop the files directly into the upload area or{' '}
-                  <span className="text-purple-450 border-none">browse</span>
-                </p>
-                <p className="text-gray-400 text-center">Supported png format only</p>
-              </Dropzone>
+                onDrop={e => onHandleDrop(e, 'spacePhoto')}
+                addExtraContent={
+                  <>
+                    <p>
+                      Drag and drop the files directly into the upload area or{' '}
+                      <span className="text-purple-450 border-none">browse</span>
+                    </p>
+                    <p className="text-gray-400 text-center">Supported images only</p>
+                  </>
+                }
+              />
             </div>
           )}
         </div>
+
+        <Group className="grid grid-cols-2 mb-4">
+          <div>
+            <p className="text-xl font-bold">Long Shot</p>
+            <p className="text-gray-500 my-2">Upload a long shot image</p>
+            {values?.basicInformation?.longShot ? (
+              <div className="relative">
+                <Image
+                  src={values?.basicInformation?.longShot}
+                  alt="more-preview"
+                  height={200}
+                  className="bg-slate-300"
+                  placeholder={
+                    <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
+                  }
+                />
+                <ActionIcon
+                  className="absolute right-2 top-1 bg-white"
+                  onClick={() => handleDeleteImage('longShot')}
+                  loading={currentImageLoading === 'longShot'}
+                  disabled={deleteFile.isLoading}
+                >
+                  <Image src={trash} alt="trash-icon" />
+                </ActionIcon>
+              </div>
+            ) : (
+              <div className="h-[200px]">
+                <DropzoneComponent
+                  isLoading={currentImageLoading === 'longShot'}
+                  name="longShot"
+                  onDrop={e => onHandleDrop(e, 'longShot')}
+                />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <p className="text-xl font-bold">Close Shot</p>
+            <p className="text-gray-500 my-2">Upload a close shot image</p>
+            {values?.basicInformation?.closeShot ? (
+              <div className="relative">
+                <Image
+                  src={values?.basicInformation?.closeShot}
+                  alt="more-preview"
+                  height={200}
+                  className="bg-slate-300"
+                  placeholder={
+                    <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
+                  }
+                />
+                <ActionIcon
+                  className="absolute right-2 top-1 bg-white"
+                  onClick={() => handleDeleteImage('closeShot')}
+                  loading={currentImageLoading === 'closeShot'}
+                  disabled={deleteFile.isLoading}
+                >
+                  <Image src={trash} alt="trash-icon" />
+                </ActionIcon>
+              </div>
+            ) : (
+              <div className="h-[200px]">
+                <DropzoneComponent
+                  isLoading={currentImageLoading === 'closeShot'}
+                  name="closeShot"
+                  onDrop={e => onHandleDrop(e, 'closeShot')}
+                />
+              </div>
+            )}
+          </div>
+        </Group>
+
         <div>
           <p className="text-xl font-bold">Other Images</p>
           <p className="text-gray-500 mb-2">
@@ -390,7 +472,7 @@ const BasicInformationForm = () => {
               onChange={onHandleMultipleImages}
               accept="image/png,image/jpeg"
               multiple
-              loading={isLoading}
+              loading={currentImageLoading === 'otherPhotos'}
               ref={ref}
             >
               {props => (
@@ -408,7 +490,8 @@ const BasicInformationForm = () => {
                   <ActionIcon
                     className="absolute right-2 top-1 bg-white"
                     onClick={() => handleDeleteMultipleImages(index)}
-                    disabled={isDeleteLoading}
+                    disabled={deleteFile.isLoading}
+                    loading={currentImageLoading === index}
                   >
                     <Image src={trash} alt="trash-icon" />
                   </ActionIcon>

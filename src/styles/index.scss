@@ -34,10 +34,49 @@
   @apply font-dmSans bg-orange-450 text-white disabled:bg-orange-400 #{!important};
 }
 
+.dark-button {
+  @apply font-dmSans bg-black text-white disabled:bg-gray-400 #{!important};
+}
+
 .transparent-black {
   background: rgb(0 0 0 / 50%);
 }
 
 .sidebar-scroll::-webkit-scrollbar-thumb {
   background-color: #4b0daf;
+}
+
+// Full Calendar
+.fc .fc-daygrid-day-top {
+  flex-direction: column !important;
+}
+
+.fc .fc-daygrid-day-bg .fc-highlight {
+  background-color: #f4edfe;
+}
+
+.fc-toolbar-title {
+  color: #000;
+  font-size: medium !important;
+}
+
+.fc-toolbar-chunk div {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.fc-toolbar-chunk div button {
+  background-color: transparent !important;
+  border: transparent !important;
+  padding: 0 !important;
+}
+
+.fc-toolbar-chunk div h2 {
+  padding: 5px 10px !important;
+  margin: 0 5px !important;
+}
+
+.fc .fc-toolbar.fc-header-toolbar {
+  margin-bottom: 0;
+  padding: 1rem;
 }

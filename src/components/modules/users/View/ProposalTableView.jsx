@@ -9,6 +9,7 @@ import { generateSlNo, serialize } from '../../../../utils';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import ProposalsMenuPopover from '../../../Popovers/ProposalsMenuPopover';
 import Table from '../../../Table/Table';
+import DateAndFilterHeader from './DateAndFilterHeader';
 
 const nativeSelectStyles = {
   rightSection: { pointerEvents: 'none' },
@@ -28,7 +29,7 @@ const sortOrders = order => {
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
-const ProposalTableView = ({ data, isLoading }) => {
+const ProposalTableView = ({ data, isLoading, activeChildTab }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
@@ -93,6 +94,12 @@ const ProposalTableView = ({ data, isLoading }) => {
             ),
             [],
           ),
+      },
+      {
+        Header: 'PROPOSAL ID',
+        accessor: 'proposalId',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.proposalId || '-'}</p>, []),
       },
       {
         Header: 'CREATOR',
@@ -206,16 +213,32 @@ const ProposalTableView = ({ data, isLoading }) => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, creator, totalPlaces, bookingId },
           },
-        }) => useMemo(() => <ProposalsMenuPopover itemId={_id} />, []),
+        }) =>
+          useMemo(
+            () => (
+              <ProposalsMenuPopover
+                itemId={_id}
+                enableEdit={creator && !creator?.isPeer}
+                enableDelete={creator && !creator?.isPeer}
+                enableConvert
+                proposalLimit={totalPlaces}
+                bookingId={bookingId}
+              />
+            ),
+            [],
+          ),
       },
     ],
     [data?.docs, proposalStatusData],
   );
 
   return (
-    <div className="mt-8">
+    <div>
+      <div className="flex justify-end h-20 items-center">
+        <DateAndFilterHeader activeChildTab={activeChildTab} />
+      </div>
       {isLoading ? (
         <div className="flex justify-center items-center h-[380px]">
           <Loader />

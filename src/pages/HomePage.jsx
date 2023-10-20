@@ -1,4 +1,4 @@
-import { Line, Doughnut } from 'react-chartjs-2';
+import { Line, Doughnut, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -11,21 +11,20 @@ import {
   BarElement,
   Tooltip,
 } from 'chart.js';
-import { Image, Loader } from '@mantine/core';
+import { Loader, Box, Group, ColorSwatch } from '@mantine/core';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { v4 as uuidv4 } from 'uuid';
 import AreaHeader from '../components/modules/home/Header';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import OngoingCampaignIcon from '../assets/ongoing-campaign.svg';
-import UpcomingCampaignIcon from '../assets/upcoming-campaign.svg';
-import CompletedCampaignIcon from '../assets/completed-campaign.svg';
-import VacantIcon from '../assets/vacant.svg';
-import OccupiedIcon from '../assets/occupied.svg';
-import TotalCampaignIcon from '../assets/total-campaign.svg';
+import OngoingBookingIcon from '../assets/ongoing-booking.svg';
+import UpcomingBookingIcon from '../assets/upcoming-booking.svg';
+import CompleteBookingIcon from '../assets/complete-booking.svg';
+import VacantSpaceIcon from '../assets/vacant-space.svg';
+import OccupiedSpaceIcon from '../assets/occupied-space.svg';
 import useUserStore from '../store/user.store';
 import { useBookingStats, useFetchBookingRevenue } from '../apis/queries/booking.queries';
 import { useInventoryStats } from '../apis/queries/inventory.queries';
@@ -40,6 +39,8 @@ import {
 } from '../utils';
 import ViewByFilter from '../components/modules/reports/ViewByFilter';
 import { DATE_FORMAT } from '../utils/constants';
+import StatisticsCard from '../components/modules/home/StatisticsCard';
+import Calendar from '../components/modules/home/Calendar';
 
 dayjs.extend(quarterOfYear);
 
@@ -55,14 +56,34 @@ ChartJS.register(
   Title,
 );
 
-const options = {
-  responsive: true,
-};
+const options = { responsive: true };
 
 // Doughnut
 const config = {
   type: 'line',
   options: { responsive: true },
+};
+
+const bookingPieConfig = {
+  options: {
+    responsive: true,
+  },
+  styles: {
+    backgroundColor: ['rgba(75, 192, 192, 1)', 'rgba(145, 78, 251, 1)', 'rgba(255, 144, 14 , 1)'],
+    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(145, 78, 251, 1)', 'rgba(255, 144, 14 , 1)'],
+    borderWidth: 1,
+  },
+};
+
+const inventoryPieConfig = {
+  options: {
+    responsive: true,
+  },
+  styles: {
+    backgroundColor: ['rgba(145, 78, 251, 1)', 'rgba(255, 144, 14 , 1)'],
+    borderColor: ['rgba(145, 78, 251, 1)', 'rgba(255, 144, 14 , 1)'],
+    borderWidth: 1,
+  },
 };
 
 const HomePage = () => {
@@ -90,8 +111,8 @@ const HomePage = () => {
     ],
   });
 
-  const { data: bookingStats } = useBookingStats('');
-  const { data: inventoryStats, isLoading: isInventoryStatsLoading } = useInventoryStats('');
+  const bookingStats = useBookingStats('');
+  const inventoryStats = useInventoryStats('');
   const { data: bookingRevenue, isLoading: isBookingRevenueLoading } = useFetchBookingRevenue(
     serialize(queryByTime),
   );
@@ -99,14 +120,14 @@ const HomePage = () => {
     () => ({
       datasets: [
         {
-          data: [inventoryStats?.unHealthy ?? 0, inventoryStats?.healthy ?? 0],
+          data: [inventoryStats.data?.unHealthy ?? 0, inventoryStats.data?.healthy ?? 0],
           backgroundColor: ['#FF900E', '#914EFB'],
           borderColor: ['#FF900E', '#914EFB'],
           borderWidth: 1,
         },
       ],
     }),
-    [inventoryStats],
+    [inventoryStats.data],
   );
 
   const handleViewBy = viewType => {
@@ -133,6 +154,70 @@ const HomePage = () => {
       });
     }
   };
+
+  const [updatedBookingChart, setUpdatedBookingChart] = useState({
+    id: uuidv4(),
+    labels: [],
+    datasets: [
+      {
+        label: '',
+        data: [],
+        ...bookingPieConfig.styles,
+      },
+    ],
+  });
+  const [updatedInventoryChart, setUpdatedInventoryChart] = useState({
+    id: uuidv4(),
+    labels: [],
+    datasets: [
+      {
+        label: '',
+        data: [],
+        ...inventoryPieConfig.styles,
+      },
+    ],
+  });
+
+  const handleUpdatedBookingChart = useCallback(() => {
+    const tempBarData = {
+      labels: [],
+      datasets: [
+        {
+          label: '',
+          data: [],
+          ...bookingPieConfig.styles,
+        },
+      ],
+    };
+    if (bookingStats.data) {
+      tempBarData.datasets[0].data[0] = bookingStats?.data.Completed;
+      tempBarData.datasets[0].data[1] = bookingStats?.data.Ongoing;
+      tempBarData.datasets[0].data[2] = bookingStats?.data.Upcoming;
+      setUpdatedBookingChart(tempBarData);
+    }
+  }, [bookingStats.data]);
+
+  const handleUpdatedInventoryChart = useCallback(() => {
+    const tempBarData = {
+      labels: [],
+      datasets: [
+        {
+          label: '',
+          data: [],
+          ...inventoryPieConfig.styles,
+        },
+      ],
+    };
+    if (inventoryStats.data) {
+      tempBarData.datasets[0].data[0] = inventoryStats?.data.occupied;
+      tempBarData.datasets[0].data[1] = inventoryStats?.data.vacant;
+      setUpdatedInventoryChart(tempBarData);
+    }
+  }, [inventoryStats.data]);
+
+  useEffect(() => handleUpdatedBookingChart(), [bookingStats.data]);
+
+  useEffect(() => handleUpdatedInventoryChart(), [inventoryStats.data]);
 
   useEffect(() => {
     if (bookingRevenue) {
@@ -192,111 +277,146 @@ const HomePage = () => {
         <Sidebar />
         <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
           <AreaHeader text={`Hello, ${userCachedData?.name || 'User'}`} />
-          <div className="my-5">
-            <div className="grid grid-rows-2 mb-5 gap-5">
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-                <div className="border rounded p-8 flex-1">
-                  <Image
-                    src={TotalCampaignIcon}
-                    alt="folder"
-                    height={24}
-                    width={24}
-                    fit="contain"
-                  />
-                  <p className="my-2 font-light text-slate-400">Total Bookings(Overall)</p>
-                  <p className="font-bold">{bookingStats?.totalCampaigns || 0}</p>
-                </div>
-                <div className="border rounded p-8  flex-1">
-                  <Image
-                    src={OngoingCampaignIcon}
-                    alt="folder"
-                    height={24}
-                    width={24}
-                    fit="contain"
-                  />
-                  <p className="my-2 font-light text-slate-400">Total Ongoing Bookings</p>
-                  <p className="font-bold">{bookingStats?.Ongoing || 0}</p>
-                </div>
-                <div className="border rounded p-8  flex-1">
-                  <Image
-                    src={UpcomingCampaignIcon}
-                    alt="folder"
-                    height={24}
-                    width={24}
-                    fit="contain"
-                  />
-                  <p className="my-2 font-light text-slate-400">Upcoming Bookings</p>
-                  <p className="font-bold">{bookingStats?.Upcoming || 0}</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-                <div className="border rounded p-8 flex-1">
-                  <Image
-                    src={CompletedCampaignIcon}
-                    alt="folder"
-                    height={24}
-                    width={24}
-                    fit="contain"
-                  />
-                  <p className="my-2 font-light text-slate-400">Completed Bookings</p>
-                  <p className="font-bold">{bookingStats?.Completed || 0}</p>
-                </div>
-                <div className="border rounded p-8 flex-1">
-                  <Image src={VacantIcon} alt="folder" height={24} width={24} fit="contain" />
-                  <p className="my-2 font-light text-slate-400">Vacant Inventory</p>
-                  <p className="font-bold">{inventoryStats?.vacant || 0}</p>
-                </div>
-                <div className="border rounded p-8  flex-1">
-                  <Image src={OccupiedIcon} alt="folder" height={24} width={24} fit="contain" />
-                  <p className="my-2 font-light text-slate-400">Occupied Inventory</p>
-                  <p className="font-bold">{inventoryStats?.occupied || 0}</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col items-start gap-4 md:flex-row">
-              <div className="w-full md:w-[68%]">
-                <div className="flex justify-between items-center">
-                  <p className="font-bold">Revenue Graph</p>
-                  <ViewByFilter handleViewBy={handleViewBy} />
-                </div>
-                {isBookingRevenueLoading ? (
-                  <Loader className="mx-auto" mt={80} />
-                ) : (
-                  <div className="flex flex-col pl-7 relative">
-                    <p className="transform rotate-[-90deg] absolute left-[-28px] top-[40%]">
-                      In Lakhs &gt;
-                    </p>
-                    <Line height="100" data={updatedLineData} options={options} key={uuidv4()} />
-                    <p className="text-center">{timeLegend[queryByTime.groupBy]} &gt;</p>
+
+          <Group className="grid grid-cols-7 my-5">
+            <article className="flex-1 col-span-3">
+              <section className="min-h-44 rounded-lg border flex flex-col gap-2 p-4 mb-4">
+                <p className="text-md font-semibold">Bookings</p>
+                <Group>
+                  <Box className="w-36">
+                    <Pie
+                      data={updatedBookingChart}
+                      options={bookingPieConfig.options}
+                      key={updatedBookingChart.id}
+                    />
+                  </Box>
+                  <div className="flex-1 flex flex-col gap-y-4">
+                    <Group className="grid grid-cols-2 gap-3 h-full">
+                      <StatisticsCard
+                        icon={OngoingBookingIcon}
+                        label="Ongoing"
+                        count={bookingStats.data?.Ongoing || 0}
+                        textColor="text-purple-350"
+                        backgroundColor="bg-purple-50"
+                        className="col-span-1"
+                      />
+                      <StatisticsCard
+                        icon={UpcomingBookingIcon}
+                        label="Upcoming"
+                        count={bookingStats.data?.Upcoming || 0}
+                        textColor="text-orange-350"
+                        backgroundColor="bg-orange-50"
+                        className="col-span-1"
+                      />
+                      <StatisticsCard
+                        icon={CompleteBookingIcon}
+                        label="Completed"
+                        count={bookingStats.data?.Completed || 0}
+                        textColor="text-green-350"
+                        backgroundColor="bg-green-50"
+                        className="col-span-2"
+                      />
+                    </Group>
                   </div>
+                </Group>
+              </section>
+
+              <section className="min-h-44 rounded-lg border flex flex-col gap-2 p-4">
+                <p className="text-md font-semibold">Inventory</p>
+                <Group>
+                  <Box className="w-36">
+                    <Pie
+                      data={updatedInventoryChart}
+                      options={inventoryPieConfig.options}
+                      key={updatedInventoryChart.id}
+                    />
+                  </Box>
+                  <div className="flex-1 flex flex-col gap-y-4">
+                    <Group className="grid grid-cols-1 gap-3 h-full">
+                      <StatisticsCard
+                        icon={OccupiedSpaceIcon}
+                        label="Occupied"
+                        count={inventoryStats.data?.occupied || 0}
+                        textColor="text-purple-350"
+                        backgroundColor="bg-purple-50"
+                        className="col-span-1"
+                      />
+                      <StatisticsCard
+                        icon={VacantSpaceIcon}
+                        label="Vacant"
+                        count={inventoryStats.data?.vacant || 0}
+                        textColor="text-orange-350"
+                        backgroundColor="bg-orange-50"
+                        className="col-span-1"
+                      />
+                    </Group>
+                  </div>
+                </Group>
+              </section>
+            </article>
+
+            <article className="bg-gray-50 col-span-4 h-full rounded-md border relative">
+              <div className="bg-red absolute right-[16px] top-[25px] flex gap-4">
+                <Group className="flex gap-1">
+                  <ColorSwatch color="#914EFB" size={10} mr={4} />
+                  <p className="text-black text-xs">Vacant Inventory</p>
+                </Group>
+                <Group className="flex gap-1">
+                  <ColorSwatch color="#28B446" size={10} mr={4} />
+                  <p className="text-black text-xs">Booking Starting</p>
+                </Group>
+                <Group className="flex gap-1">
+                  <ColorSwatch color="#FD3434" size={10} mr={4} />
+                  <p className="text-black text-xs">Booking Ending</p>
+                </Group>
+              </div>
+              <Calendar />
+            </article>
+          </Group>
+
+          <div className="flex flex-col items-start gap-4 md:flex-row">
+            <div className="w-full md:w-[68%]">
+              <div className="flex justify-between items-center">
+                <p className="font-bold">Revenue Graph</p>
+                <ViewByFilter handleViewBy={handleViewBy} />
+              </div>
+              {isBookingRevenueLoading ? (
+                <Loader className="mx-auto" mt={80} />
+              ) : (
+                <div className="flex flex-col pl-7 relative">
+                  <p className="transform rotate-[-90deg] absolute left-[-28px] top-[40%]">
+                    In Lakhs &gt;
+                  </p>
+                  <Line height="100" data={updatedLineData} options={options} key={uuidv4()} />
+                  <p className="text-center">{timeLegend[queryByTime.groupBy]} &gt;</p>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-4 p-4 border rounded-md items-center justify-center flex-1">
+              <div className="w-32">
+                {inventoryStats.isLoading ? (
+                  <Loader className="mx-auto" />
+                ) : inventoryStats.data?.healthy === 0 && inventoryStats.data?.unHealthy === 0 ? (
+                  <p className="text-center">NA</p>
+                ) : (
+                  <Doughnut options={config.options} data={inventoryHealthStatus} />
                 )}
               </div>
-              <div className="flex gap-4 p-4 border rounded-md items-center justify-center flex-1">
-                <div className="w-32">
-                  {isInventoryStatsLoading ? (
-                    <Loader className="mx-auto" />
-                  ) : inventoryStats?.healthy === 0 && inventoryStats?.unHealthy === 0 ? (
-                    <p className="text-center">NA</p>
-                  ) : (
-                    <Doughnut options={config.options} data={inventoryHealthStatus} />
-                  )}
-                </div>
-                <div>
-                  <p className="font-medium text-center">Health Status of Inventory</p>
-                  <div className="flex gap-8 mt-6 flex-row">
-                    <div className="flex gap-2 items-center">
-                      <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
-                      <div>
-                        <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
-                        <p className="font-bold text-lg">{inventoryStats?.healthy || 0}</p>
-                      </div>
+              <div>
+                <p className="font-medium text-center">Health Status of Inventory</p>
+                <div className="flex gap-8 mt-6 flex-row">
+                  <div className="flex gap-2 items-center">
+                    <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+                    <div>
+                      <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
+                      <p className="font-bold text-lg">{inventoryStats.data?.healthy || 0}</p>
                     </div>
-                    <div className="flex gap-2 items-center">
-                      <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
-                      <div>
-                        <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
-                        <p className="font-bold text-lg">{inventoryStats?.unHealthy || 0}</p>
-                      </div>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+                    <div>
+                      <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
+                      <p className="font-bold text-lg">{inventoryStats.data?.unHealthy || 0}</p>
                     </div>
                   </div>
                 </div>

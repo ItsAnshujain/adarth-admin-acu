@@ -100,6 +100,12 @@ const ProposalDashboardPage = () => {
           ),
       },
       {
+        Header: 'PROPOSAL ID',
+        accessor: 'proposalId',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.proposalId || '-'}</p>, []),
+      },
+      {
         Header: 'CREATOR',
         accessor: 'creator.name',
         Cell: ({
@@ -211,7 +217,7 @@ const ProposalDashboardPage = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id, creator },
+            original: { _id, creator, totalPlaces, bookingId },
           },
         }) =>
           useMemo(
@@ -220,6 +226,9 @@ const ProposalDashboardPage = () => {
                 itemId={_id}
                 enableEdit={creator && !creator?.isPeer}
                 enableDelete={creator && !creator?.isPeer}
+                enableConvert
+                proposalLimit={totalPlaces}
+                bookingId={bookingId}
               />
             ),
             [],

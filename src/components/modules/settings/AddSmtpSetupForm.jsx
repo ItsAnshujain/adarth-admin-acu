@@ -2,23 +2,16 @@ import React, { useEffect } from 'react';
 import { Button } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import * as yup from 'yup';
-import { yupResolver } from '@mantine/form';
-import { FormProvider, useForm } from '../../../context/formContext';
-import TextInput from '../../shared/TextInput';
-import PasswordInput from '../../shared/PasswordInput';
-import NativeSelect from '../../shared/NativeSelect';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { FormProvider, useForm } from 'react-hook-form';
+import { showNotification } from '@mantine/notifications';
 import { SMTP_SERVICES } from '../../../utils/constants';
-import NumberInput from '../../shared/NumberInput';
 import { useFetchUsersById, useUpdateUsers } from '../../../apis/queries/users.queries';
 import useUserStore from '../../../store/user.store';
-
-const initialValues = {
-  service: '',
-  username: '',
-  password: '',
-  host: '',
-  port: null,
-};
+import ControlledNumberInput from '../../shared/FormInputs/Controlled/ControlledNumberInput';
+import ControlledTextInput from '../../shared/FormInputs/Controlled/ControlledTextInput';
+import ControlledPasswordInput from '../../shared/FormInputs/Controlled/ControlledPasswordInput';
+import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelect';
 
 const schema = yup.object({
   service: yup.string().trim().required('Service is required'),
@@ -47,13 +40,14 @@ const schema = yup.object({
     }),
 });
 
-const SmtpSetup = () => {
-  const form = useForm({ validate: yupResolver(schema), initialValues });
+const AddSmtpSetupForm = () => {
+  const form = useForm({ resolver: yupResolver(schema) });
   const userId = useUserStore(state => state.id);
-  const { mutateAsync: updateUser, isLoading: isUserUpdateLoading } = useUpdateUsers();
+  const updateUser = useUpdateUsers();
   const { data: userData } = useFetchUsersById(userId);
+  const watchService = form.watch('service');
 
-  const onSubmit = async formData => {
+  const onSubmit = form.handleSubmit(async formData => {
     const data = { ...formData };
 
     if (data.service !== 'others') {
@@ -61,18 +55,23 @@ const SmtpSetup = () => {
       delete data.port;
     }
 
-    updateUser(
+    updateUser.mutate(
       { userId, data: { smtp: data } },
       {
-        onSuccess: () => form.reset(),
+        onSuccess: () => {
+          showNotification({
+            title: 'User updated successfully',
+            color: 'green',
+          });
+          form.reset();
+        },
       },
     );
-  };
+  });
 
   useEffect(() => {
     if (userData?.smtp) {
-      form.setValues({
-        ...form.values,
+      form.reset({
         service: userData?.smtp?.service,
         username: userData?.smtp?.username,
         host: userData?.smtp?.host || '',
@@ -83,71 +82,54 @@ const SmtpSetup = () => {
 
   return (
     <article className="px-5 mt-4">
-      <FormProvider form={form}>
-        <form onSubmit={form.onSubmit(onSubmit)}>
+      <FormProvider {...form}>
+        <form onSubmit={onSubmit}>
           <div className="grid gap-3 grid-cols-3 mb-4">
-            <NativeSelect
+            <ControlledSelect
               label="Services"
               name="service"
               withAsterisk
               placeholder="Select a service"
-              errors={form.errors}
-              options={SMTP_SERVICES}
+              data={SMTP_SERVICES}
               rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
               rightSectionWidth={40}
-              size="md"
               className="col-start-1 col-span-1"
-              classNames={{ label: 'font-bold mb-2 text-base' }}
             />
-
-            <TextInput
+            <ControlledTextInput
               label="Username"
               name="username"
               withAsterisk
               placeholder="Enter username"
-              errors={form.errors}
-              size="md"
               className="col-start-1 col-span-1"
-              classNames={{ label: 'font-bold mb-2 text-base' }}
             />
-            <PasswordInput
+            <ControlledPasswordInput
               label="Password"
               name="password"
               withAsterisk
               placeholder="Enter password"
-              errors={form.errors}
-              size="md"
               className="col-start-2 col-span-1"
-              classNames={{ label: 'font-bold mb-2 text-base' }}
             />
-
-            {form.values.service === 'others' ? (
+            {watchService === 'others' ? (
               <>
-                <TextInput
+                <ControlledTextInput
                   label="SMTP host"
                   name="host"
                   withAsterisk
                   placeholder="Enter host"
-                  errors={form.errors}
-                  size="md"
                   className="col-start-1 col-span-1"
-                  classNames={{ label: 'font-bold mb-2 text-base' }}
                 />
-                <NumberInput
+                <ControlledNumberInput
                   label="SMTP port"
                   name="port"
                   withAsterisk
                   placeholder="Enter port"
-                  errors={form.errors}
-                  size="md"
                   className="col-start-2 col-span-1"
-                  classNames={{ label: 'font-bold mb-2 text-base' }}
                 />
               </>
             ) : null}
           </div>
 
-          <Button className="primary-button" type="submit" loading={isUserUpdateLoading}>
+          <Button className="primary-button" type="submit" loading={updateUser.isLoading}>
             Submit
           </Button>
         </form>
@@ -156,4 +138,4 @@ const SmtpSetup = () => {
   );
 };
 
-export default SmtpSetup;
+export default AddSmtpSetupForm;

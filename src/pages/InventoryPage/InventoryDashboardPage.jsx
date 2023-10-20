@@ -71,7 +71,7 @@ const InventoryDashboardPage = () => {
     limit: activeLayout.inventoryLimit || 20,
     page: 1,
     sortOrder: 'desc',
-    sortBy: 'basicInformation.spaceName',
+    sortBy: 'createdAt',
     isActive: true,
   });
   const { data: inventoryData, isLoading: isInventoryDataLoading } = useFetchInventory(
@@ -442,7 +442,7 @@ const InventoryDashboardPage = () => {
   const toggleShareOptions = () => {
     modals.openModal({
       modalId: 'shareInventoryOption',
-      title: 'Share Option',
+      title: 'Share and Download Option',
       children: (
         <ShareContent
           searchParamQueries={searchParams}

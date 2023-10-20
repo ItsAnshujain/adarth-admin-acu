@@ -101,13 +101,13 @@ const FinanceMonthlyDetailsPage = () => {
       },
       {
         Header: 'ORDER ID',
-        accessor: 'bookingId',
+        accessor: 'financeId',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { bookingId },
+            original: { financeId },
           },
-        }) => useMemo(() => <p>{bookingId || '-'}</p>, []),
+        }) => useMemo(() => <p>{financeId || '-'}</p>, []),
       },
       {
         Header: 'ORGANIZATION',
@@ -266,13 +266,13 @@ const FinanceMonthlyDetailsPage = () => {
       },
       {
         Header: 'ORDER ID',
-        accessor: 'bookingId',
+        accessor: 'financeId',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { bookingId },
+            original: { financeId },
           },
-        }) => useMemo(() => <p>{bookingId || '-'}</p>, []),
+        }) => useMemo(() => <p>{financeId || '-'}</p>, []),
       },
       {
         Header: 'ORGANIZATION',
@@ -441,13 +441,13 @@ const FinanceMonthlyDetailsPage = () => {
       },
       {
         Header: 'ORDER ID',
-        accessor: 'bookingId',
+        accessor: 'financeId',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { bookingId },
+            original: { financeId },
           },
-        }) => useMemo(() => <p>{bookingId || '-'}</p>, []),
+        }) => useMemo(() => <p>{financeId || '-'}</p>, []),
       },
       {
         Header: 'ORGANIZATION',

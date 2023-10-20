@@ -1,3 +1,4 @@
+import urlcat from 'urlcat';
 import http from '../http';
 
 export const createProposal = data => http.post('/proposal', data);
@@ -14,3 +15,9 @@ export const shareProposal = (id, queries, data) =>
   http.post(`/proposal/${id}/share?${queries}`, data);
 
 export const generateProposalPdf = (id, queries) => http.get(`/proposal/${id}/gen-pdf?${queries}`);
+
+export const createProposalTerms = data => http.post(urlcat('/proposal-terms'), data);
+
+export const fetchProposalTerms = payload => http.get(urlcat('/proposal-terms', payload));
+
+export const fetchProposalTermById = id => http.get(urlcat('/proposal-terms/:id', { id }));
