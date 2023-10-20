@@ -100,6 +100,12 @@ const ProposalDashboardPage = () => {
           ),
       },
       {
+        Header: 'PROPOSAL ID',
+        accessor: 'proposalId',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.proposalId || '-'}</p>, []),
+      },
+      {
         Header: 'CREATOR',
         accessor: 'creator.name',
         Cell: ({
@@ -220,6 +226,7 @@ const ProposalDashboardPage = () => {
                 itemId={_id}
                 enableEdit={creator && !creator?.isPeer}
                 enableDelete={creator && !creator?.isPeer}
+                enableConvert
               />
             ),
             [],
