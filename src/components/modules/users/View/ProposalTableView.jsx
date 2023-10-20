@@ -213,9 +213,22 @@ const ProposalTableView = ({ data, isLoading, activeChildTab }) => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id },
+            original: { _id, creator, totalPlaces, bookingId },
           },
-        }) => useMemo(() => <ProposalsMenuPopover itemId={_id} />, []),
+        }) =>
+          useMemo(
+            () => (
+              <ProposalsMenuPopover
+                itemId={_id}
+                enableEdit={creator && !creator?.isPeer}
+                enableDelete={creator && !creator?.isPeer}
+                enableConvert
+                proposalLimit={totalPlaces}
+                bookingId={bookingId}
+              />
+            ),
+            [],
+          ),
       },
     ],
     [data?.docs, proposalStatusData],
