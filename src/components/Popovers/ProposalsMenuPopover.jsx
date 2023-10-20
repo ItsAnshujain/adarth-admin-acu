@@ -1,7 +1,7 @@
 import { Button, Menu } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { Link } from 'react-router-dom';
-import { Eye, Edit2, Trash, Key } from 'react-feather';
+import { Eye, Edit2, Trash, Key, Book } from 'react-feather';
 import modalConfig from '../../utils/modalConfig';
 import DeleteProposalContent from '../DeleteProposalContent';
 import MenuIcon from '../Menu';
@@ -14,6 +14,7 @@ const ProposalsMenuPopover = ({
   enableEdit = true,
   enableDelete = true,
   proposalLimit,
+  bookingId,
 }) => {
   const modals = useModals();
 
@@ -36,17 +37,27 @@ const ProposalsMenuPopover = ({
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        {enableConvert ? (
+        {enableConvert && !bookingId ? (
           <Link to={`/bookings/create-order?proposalId=${itemId}&proposalLimit=${proposalLimit}`}>
             <Menu.Item
               className="cursor-pointer flex items-center gap-1"
               icon={<Key className="h-4" />}
             >
-              {'Convert to Booking' || 'Booking Link'}
+              Convert to Booking
             </Menu.Item>
           </Link>
         ) : null}
-        {enableView ? (
+        {enableConvert && bookingId ? (
+          <Link to={`/bookings/view-details/${bookingId}`}>
+            <Menu.Item
+              className="cursor-pointer flex items-center gap-1"
+              icon={<Book className="h-4" />}
+            >
+              Booking Link
+            </Menu.Item>
+          </Link>
+        ) : null}
+        {enableView && !bookingId ? (
           <Link to={`/proposals/view-details/${itemId}`}>
             <Menu.Item
               className="cursor-pointer flex items-center gap-1"
@@ -56,7 +67,7 @@ const ProposalsMenuPopover = ({
             </Menu.Item>
           </Link>
         ) : null}
-        {enableEdit ? (
+        {enableEdit && !bookingId ? (
           <Link to={`/proposals/edit-details/${itemId}`}>
             <Menu.Item
               icon={<Edit2 className="h-4" />}
@@ -66,7 +77,7 @@ const ProposalsMenuPopover = ({
             </Menu.Item>
           </Link>
         ) : null}
-        {enableDelete ? (
+        {enableDelete && !bookingId ? (
           <Menu.Item
             icon={<Trash className="h-4" />}
             onClick={e => handleStopPropagation(e, toggleDeleteModal)}

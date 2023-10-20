@@ -100,7 +100,7 @@ const CreateBookingPage = () => {
     `${proposalId}?${serialize({ ...proposalByIdQuery, limit: proposalLimit })}`,
     !!proposalId,
   );
-  // console.log(proposalById.data);
+
   const handleSubmit = async formData => {
     setFormStep(prevState => prevState + 1);
     if (formStep === 3) {
