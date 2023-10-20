@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import dayjs from 'dayjs';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { ChevronLeft, ChevronRight, Key } from 'react-feather';
+import { Book, ChevronLeft, ChevronRight, Key } from 'react-feather';
 import { getWord } from 'num-count';
 import { Link } from 'react-router-dom';
 import toIndianCurrency from '../../../../utils/currencyFormat';
@@ -103,13 +103,23 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
         <Text size="xl" weight="bold">
           Proposal Details
         </Text>
-        <Link
-          to={`/bookings/create-order?proposalId=${proposalId}&proposalLimit=${proposalData?.totalSpaces}`}
-          className="bg-gray-450 px-2 py-1 rounded-md shadow-sm flex items-center"
-        >
-          <Key className="h-4" />
-          <p className="text-sm font-medium">{'Convert to Booking' || 'Booking Link'}</p>
-        </Link>
+        {!proposalData?.bookingId ? (
+          <Link
+            to={`/bookings/create-order?proposalId=${proposalId}&proposalLimit=${proposalData?.totalSpaces}`}
+            className="bg-gray-450 px-2 py-1 rounded-md shadow-sm flex items-center"
+          >
+            <Key className="h-4" />
+            <p className="text-sm font-medium">Convert to Booking</p>
+          </Link>
+        ) : (
+          <Link
+            to={`/bookings/view-details/${proposalData?.bookingId}`}
+            className="bg-gray-450 px-2 py-1 rounded-md shadow-sm flex items-center"
+          >
+            <Book className="h-4" />
+            <p className="text-sm font-medium">Booking Link</p>
+          </Link>
+        )}
       </Group>
       {isProposalDataLoading ? (
         <SkeletonTopWrapper />

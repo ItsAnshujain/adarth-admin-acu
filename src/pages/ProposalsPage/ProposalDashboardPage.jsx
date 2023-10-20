@@ -217,7 +217,7 @@ const ProposalDashboardPage = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { _id, creator, totalPlaces },
+            original: { _id, creator, totalPlaces, bookingId },
           },
         }) =>
           useMemo(
@@ -228,6 +228,7 @@ const ProposalDashboardPage = () => {
                 enableDelete={creator && !creator?.isPeer}
                 enableConvert
                 proposalLimit={totalPlaces}
+                bookingId={bookingId}
               />
             ),
             [],
