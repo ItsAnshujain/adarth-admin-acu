@@ -54,8 +54,8 @@ const BasicInfo = ({ proposalId, userData }) => {
   const proposalTermsQuery = useProposalTerms({
     page: 1,
     limit: 20,
-    sortBy: 'name',
-    sortOrder: 'asc',
+    sortBy: 'isGlobal',
+    sortOrder: 'desc',
   });
   const proposalTermById = useProposalTermsById(
     values?.proposalTermsId?.value,
