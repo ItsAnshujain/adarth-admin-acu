@@ -22,7 +22,7 @@ const SkeletonTopWrapper = () => (
   </div>
 );
 
-const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
+const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalId }) => {
   const modals = useModals();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
   const [embla, setEmbla] = useState(null);
@@ -104,11 +104,11 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
           Proposal Details
         </Text>
         <Link
-          to="/bookings/create-order"
+          to={`/bookings/create-order?proposalId=${proposalId}&proposalLimit=${proposalData?.totalSpaces}`}
           className="bg-gray-450 px-2 py-1 rounded-md shadow-sm flex items-center"
         >
           <Key className="h-4" />
-          <p className="text-sm font-medium">Convert to Booking</p>
+          <p className="text-sm font-medium">{'Convert to Booking' || 'Booking Link'}</p>
         </Link>
       </Group>
       {isProposalDataLoading ? (

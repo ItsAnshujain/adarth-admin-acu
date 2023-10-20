@@ -398,6 +398,7 @@ const ProposalDetailsPage = () => {
         proposalData={proposalData?.proposal}
         isProposalDataLoading={isProposalDataLoading}
         inventoryData={proposalData?.inventories}
+        proposalId={proposalId}
       />
       <div className="flex justify-between mt-4">
         <Text size="xl" weight="bolder">

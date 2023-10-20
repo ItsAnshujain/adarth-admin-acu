@@ -13,6 +13,7 @@ const ProposalsMenuPopover = ({
   enableView = true,
   enableEdit = true,
   enableDelete = true,
+  proposalLimit,
 }) => {
   const modals = useModals();
 
@@ -36,7 +37,7 @@ const ProposalsMenuPopover = ({
       </Menu.Target>
       <Menu.Dropdown>
         {enableConvert ? (
-          <Link to="/bookings/create-order">
+          <Link to={`/bookings/create-order?proposalId=${itemId}&proposalLimit=${proposalLimit}`}>
             <Menu.Item
               className="cursor-pointer flex items-center gap-1"
               icon={<Key className="h-4" />}

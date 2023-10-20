@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -17,7 +17,7 @@ const Calendar = () => {
     endDate: dayjs().endOf('month').format('YYYY-MM-DD'),
   });
 
-  const calendarEvents = useCalendarEvents(month);
+  const calendarEvents = useCalendarEvents({ ...month, utcOffset: dayjs().utcOffset() });
 
   const renderEventContent = eventInfo => {
     const {
@@ -97,33 +97,13 @@ const Calendar = () => {
     </div>
   );
 
-  const handleCalendarData = useMemo(() => {
-    const temp = [];
-    if (!calendarEvents.data) return {};
-
-    Object.keys(calendarEvents.data).forEach(key => {
-      temp.push({
-        id: key,
-        start: dayjs(key, 'DD-MM-YYYY').format('YYYY-MM-DD'),
-        hasBookingStarted: !!calendarEvents.data[key]?.bookingStarting,
-        hasBookingEnd: !!calendarEvents.data[key]?.bookingEnding,
-        hasVacantSpace: !!calendarEvents.data[key]?.inventoryVacancy,
-        bookingStarting: calendarEvents.data[key]?.bookingStarting || [],
-        bookingEnding: calendarEvents.data[key]?.bookingEnding || [],
-        inventoryVacancy: calendarEvents.data[key]?.inventoryVacancy || [],
-      });
-    });
-
-    return temp;
-  }, [calendarEvents.data]);
-
   return (
     <FullCalendar
       height="100%"
       plugins={[dayGridPlugin, interactionPlugin]}
       initialView="dayGridMonth"
       selectable
-      events={handleCalendarData}
+      events={calendarEvents.data || []}
       eventContent={renderEventContent}
       dayCellClassNames={() => 'bg-white'}
       headerToolbar={{

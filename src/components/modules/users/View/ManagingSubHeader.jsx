@@ -14,7 +14,6 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { getWord } from 'num-count';
 import OwnSiteIcon from '../../../../assets/own-site-sale.svg';
 import TradedSiteIcon from '../../../../assets/traded-site-sale.svg';
 import {
@@ -35,6 +34,7 @@ import ProposalConvertIcon from '../../../../assets/proposal-convert.svg';
 import ProposalCreateIcon from '../../../../assets/proposal-create.svg';
 import ProposalSendIcon from '../../../../assets/proposal-send.svg';
 import OutstandingPoIcon from '../../../../assets/outstanding-po.svg';
+import toIndianCurrency from '../../../../utils/currencyFormat';
 
 ChartJS.register(
   ArcElement,
@@ -203,9 +203,9 @@ const ManagingSubHeader = ({ userId }) => {
             <div>
               <Group className="flex-col items-start gap-0 mb-5">
                 <p className="text-md font-medium">Sales Target</p>
-                <p className="text-xl font-bold text-purple-350">{`₹${getWord(
-                  userSales.data?.salesTarget || 0,
-                )}`}</p>
+                <p className="text-xl font-bold text-purple-350">
+                  {toIndianCurrency(userSales.data?.salesTarget || 0)}
+                </p>
               </Group>
               <SalesStatisticsCard
                 icon={OwnSiteIcon}
@@ -218,9 +218,9 @@ const ManagingSubHeader = ({ userId }) => {
             <div>
               <Group className="flex-col items-start gap-0 mb-5">
                 <p className="text-md font-medium">Total Sales</p>
-                <p className="text-xl font-bold text-green-350">{`₹${getWord(
-                  userSales.data?.sales || 0,
-                )}`}</p>
+                <p className="text-xl font-bold text-green-350">
+                  {toIndianCurrency(userSales.data?.sales || 0)}
+                </p>
               </Group>
               <SalesStatisticsCard
                 icon={TradedSiteIcon}
@@ -308,7 +308,7 @@ const ManagingSubHeader = ({ userId }) => {
           {/* not part of proposal */}
           <ProposalStatisticsCard
             label="Oustanding PO"
-            count={`₹${getWord(userSales.data?.outStandingPo || 0)}`}
+            count={toIndianCurrency(userSales.data?.outStandingPo || 0)}
             textColor="text-blue-250"
             icon={OutstandingPoIcon}
           />
