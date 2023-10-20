@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 // import {
 //   EditorState,
 //   SerializedEditorState,
@@ -19,7 +19,7 @@ import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import ToolbarPlugin from './ToolbarPlugin';
 import theme from './theme';
 import nodes from './nodes';
-// import TabFocusPlugin from './plugin/TabFocusPlugin';
+import TabFocusPlugin from './TabFocusPlugin';
 
 function onChange(editorState) {
   editorState.read(() => {
@@ -63,60 +63,68 @@ function onError(_error) {
   throw _error;
 }
 
-const RichTextEditorComponent = ({
-  className,
-  lexicalJson,
-  onChange: onAnswerChange,
-  error,
-  defaultValue,
-  title = '',
-  placeholder = 'Description',
-}) => {
-  const initialConfig = {
-    namespace: 'MyEditor',
-    theme,
-    nodes,
-    onError,
-  };
+const RichTextEditorComponent = forwardRef(
+  (
+    {
+      className,
+      lexicalJson,
+      onChange: onAnswerChange,
+      error,
+      defaultValue,
+      title = '',
+      placeholder = 'Description',
+      ...props
+    },
+    ref,
+  ) => {
+    const initialConfig = {
+      namespace: 'MyEditor',
+      theme,
+      nodes,
+      onError,
+    };
 
-  return (
-    <div className={className}>
-      <LexicalComposer initialConfig={initialConfig}>
-        <div className="rounded-none border border-gray-350">
-          <ToolbarPlugin lexicalJson={lexicalJson} />
-          <div className="editor-shell p-3">
-            <RichTextPlugin
-              contentEditable={<ContentEditable className="outline-none" />}
-              placeholder={
-                <div className="relative">
-                  <div className="pointer-events-none absolute top-[-24px] text-gray-450">
-                    {placeholder}...
+    return (
+      <div className={className}>
+        <LexicalComposer initialConfig={initialConfig}>
+          <div className="rounded-none border border-gray-350">
+            <ToolbarPlugin lexicalJson={lexicalJson} />
+            <div className="editor-shell p-3">
+              <RichTextPlugin
+                contentEditable={<ContentEditable className="outline-none" />}
+                placeholder={
+                  <div className="relative">
+                    <div className="pointer-events-none absolute top-[-24px] text-gray-450">
+                      {placeholder}...
+                    </div>
                   </div>
-                </div>
-              }
-              ErrorBoundary={LexicalErrorBoundary}
-            />
+                }
+                ErrorBoundary={LexicalErrorBoundary}
+              />
+            </div>
           </div>
-        </div>
-        <OnChangePlugin
-          onChange={editorState => {
-            const json = editorState.toJSON();
-            onChange(editorState);
-            onAnswerChange?.(json);
-          }}
-        />
-        <DefaultValuePlugin defaultValue={defaultValue} />
-        <HistoryPlugin />
-        <ListPlugin />
-        <CheckListPlugin />
-        <FocusPlugin />
-        <LinkPlugin />
-        {/* <TabFocusPlugin /> */}
-        <TabIndentationPlugin />
-      </LexicalComposer>
-      {error && <div className="mt-1 px-2 py-1 text-sm text-red-450">{`${title} is ${error}`}</div>}
-    </div>
-  );
-};
+          <OnChangePlugin
+            onChange={editorState => {
+              const json = editorState.toJSON();
+              onChange(editorState);
+              onAnswerChange?.(json);
+            }}
+          />
+          <DefaultValuePlugin defaultValue={defaultValue} />
+          <HistoryPlugin />
+          <ListPlugin />
+          <CheckListPlugin />
+          <FocusPlugin />
+          <LinkPlugin />
+          <TabFocusPlugin />
+          <TabIndentationPlugin />
+        </LexicalComposer>
+        {error && (
+          <div className="mt-1 px-2 py-1 text-sm text-red-450">{`${title} is ${error}`}</div>
+        )}
+      </div>
+    );
+  },
+);
 
 export default RichTextEditorComponent;

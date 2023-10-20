@@ -218,7 +218,8 @@ const ShareContent = ({ id, onClose }) => {
       to: '',
       format: activeFileType.join(','),
       shareVia: 'copy_link',
-      aspectRatio: 'fill;generic',
+      aspectRatio: 'fill',
+      templateType: 'generic',
     };
 
     if (watchAspectRatio) {
