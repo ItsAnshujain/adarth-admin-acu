@@ -6,6 +6,7 @@ import { ColorSwatch, Group, Popover } from '@mantine/core';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { Link } from 'react-router-dom';
+import { isArray } from 'lodash';
 import { useCalendarEvents } from '../../../apis/queries/booking.queries';
 
 dayjs.extend(customParseFormat);
@@ -46,35 +47,43 @@ const Calendar = () => {
               </p>
             </section>
             <section className="p-3 bg-white">
-              {inventoryVacancy?.[0]?.inventory.map(item => (
-                <Group key={item?._id} className="flex gap-1">
-                  <ColorSwatch color="#914EFB" size={10} mr={4} />
-                  <Link to={`/inventory/view-details/${item?._id}`}>
-                    <p className="text-black font-medium">{item?.basicInformation?.spaceName}</p>
-                  </Link>
-                  <p className="text-black">will be vacant</p>
-                </Group>
-              ))}
+              {isArray(inventoryVacancy)
+                ? inventoryVacancy?.[0]?.inventory.map(item => (
+                    <Group key={item?._id} className="flex gap-1">
+                      <ColorSwatch color="#914EFB" size={10} mr={4} />
+                      <Link to={`/inventory/view-details/${item?._id}`}>
+                        <p className="text-black font-medium">
+                          {item?.basicInformation?.spaceName}
+                        </p>
+                      </Link>
+                      <p className="text-black">will be vacant</p>
+                    </Group>
+                  ))
+                : null}
 
-              {bookingStarting?.map(item => (
-                <Group key={item?._id} className="flex gap-1">
-                  <ColorSwatch color="#28B446" size={10} mr={4} />
-                  <Link to={`/bookings/view-details/${item?._id}`}>
-                    <p className="text-black font-medium">{item?.campaign?.name}</p>
-                  </Link>
-                  <p className="text-black">campaign starting</p>
-                </Group>
-              ))}
+              {isArray(bookingStarting)
+                ? bookingStarting?.map(item => (
+                    <Group key={item?._id} className="flex gap-1">
+                      <ColorSwatch color="#28B446" size={10} mr={4} />
+                      <Link to={`/bookings/view-details/${item?._id}`}>
+                        <p className="text-black font-medium">{item?.campaign?.name}</p>
+                      </Link>
+                      <p className="text-black">campaign starting</p>
+                    </Group>
+                  ))
+                : null}
 
-              {bookingEnding?.map(item => (
-                <Group key={item?._id} className="flex gap-1">
-                  <ColorSwatch color="#FD3434" size={10} mr={4} />
-                  <Link to={`/bookings/view-details/${item?._id}`}>
-                    <p className="text-black font-medium">{item?.campaign?.name}</p>
-                  </Link>
-                  <p className="text-black">campaign ending</p>
-                </Group>
-              ))}
+              {isArray(bookingEnding)
+                ? bookingEnding?.map(item => (
+                    <Group key={item?._id} className="flex gap-1">
+                      <ColorSwatch color="#FD3434" size={10} mr={4} />
+                      <Link to={`/bookings/view-details/${item?._id}`}>
+                        <p className="text-black font-medium">{item?.campaign?.name}</p>
+                      </Link>
+                      <p className="text-black">campaign ending</p>
+                    </Group>
+                  ))
+                : null}
             </section>
           </article>
         </Popover.Dropdown>

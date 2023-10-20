@@ -96,6 +96,12 @@ const ProposalTableView = ({ data, isLoading, activeChildTab }) => {
           ),
       },
       {
+        Header: 'PROPOSAL ID',
+        accessor: 'proposalId',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{info.row.original.proposalId || '-'}</p>, []),
+      },
+      {
         Header: 'CREATOR',
         accessor: 'creator.name',
         Cell: ({

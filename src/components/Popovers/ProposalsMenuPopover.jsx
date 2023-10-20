@@ -1,7 +1,7 @@
 import { Button, Menu } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { Link } from 'react-router-dom';
-import { Eye, Edit2, Trash } from 'react-feather';
+import { Eye, Edit2, Trash, Key } from 'react-feather';
 import modalConfig from '../../utils/modalConfig';
 import DeleteProposalContent from '../DeleteProposalContent';
 import MenuIcon from '../Menu';
@@ -9,6 +9,7 @@ import { handleStopPropagation } from '../../utils';
 
 const ProposalsMenuPopover = ({
   itemId,
+  enableConvert = false,
   enableView = true,
   enableEdit = true,
   enableDelete = true,
@@ -34,13 +35,23 @@ const ProposalsMenuPopover = ({
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
+        {enableConvert ? (
+          <Link to="/bookings/create-order">
+            <Menu.Item
+              className="cursor-pointer flex items-center gap-1"
+              icon={<Key className="h-4" />}
+            >
+              {'Convert to Booking' || 'Booking Link'}
+            </Menu.Item>
+          </Link>
+        ) : null}
         {enableView ? (
           <Link to={`/proposals/view-details/${itemId}`}>
             <Menu.Item
               className="cursor-pointer flex items-center gap-1"
               icon={<Eye className="h-4" />}
             >
-              <span className="ml-1">View</span>
+              View
             </Menu.Item>
           </Link>
         ) : null}
@@ -50,7 +61,7 @@ const ProposalsMenuPopover = ({
               icon={<Edit2 className="h-4" />}
               className="cursor-pointer flex items-center gap-1"
             >
-              <span className="ml-1">Edit</span>
+              Edit
             </Menu.Item>
           </Link>
         ) : null}
@@ -60,7 +71,7 @@ const ProposalsMenuPopover = ({
             onClick={e => handleStopPropagation(e, toggleDeleteModal)}
             className="cursor-pointer flex items-center gap-1"
           >
-            <span className="ml-1">Delete</span>
+            Delete
           </Menu.Item>
         ) : null}
       </Menu.Dropdown>

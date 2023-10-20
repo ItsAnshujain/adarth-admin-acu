@@ -1,12 +1,13 @@
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
-import { BackgroundImage, Center, Image, Skeleton, Spoiler, Text } from '@mantine/core';
+import { BackgroundImage, Center, Group, Image, Skeleton, Spoiler, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { ChevronLeft, ChevronRight } from 'react-feather';
+import { ChevronLeft, ChevronRight, Key } from 'react-feather';
 import { getWord } from 'num-count';
+import { Link } from 'react-router-dom';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import modalConfig from '../../../../utils/modalConfig';
 
@@ -98,9 +99,18 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
 
   return (
     <div className="mt-4">
-      <Text size="xl" weight="bold">
-        Proposal Details
-      </Text>
+      <Group position="apart">
+        <Text size="xl" weight="bold">
+          Proposal Details
+        </Text>
+        <Link
+          to="/bookings/create-order"
+          className="bg-gray-450 px-2 py-1 rounded-md shadow-sm flex items-center"
+        >
+          <Key className="h-4" />
+          <p className="text-sm font-medium">Convert to Booking</p>
+        </Link>
+      </Group>
       {isProposalDataLoading ? (
         <SkeletonTopWrapper />
       ) : (
