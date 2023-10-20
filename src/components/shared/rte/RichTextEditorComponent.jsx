@@ -10,7 +10,7 @@ import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
-import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
+// import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
@@ -19,7 +19,7 @@ import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import ToolbarPlugin from './ToolbarPlugin';
 import theme from './theme';
 import nodes from './nodes';
-import TabFocusPlugin from './TabFocusPlugin';
+// import TabFocusPlugin from './TabFocusPlugin';
 
 function onChange(editorState) {
   editorState.read(() => {
@@ -116,8 +116,8 @@ const RichTextEditorComponent = forwardRef(
           <CheckListPlugin />
           <FocusPlugin />
           <LinkPlugin />
-          <TabFocusPlugin />
-          <TabIndentationPlugin />
+          {/* <TabFocusPlugin />
+          <TabIndentationPlugin /> */}
         </LexicalComposer>
         {error && (
           <div className="mt-1 px-2 py-1 text-sm text-red-450">{`${title} is ${error}`}</div>
