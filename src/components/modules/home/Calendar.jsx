@@ -1,95 +1,44 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { ColorSwatch, Group, Popover } from '@mantine/core';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { Link } from 'react-router-dom';
-import { isArray } from 'lodash';
 import { useCalendarEvents } from '../../../apis/queries/booking.queries';
+import CalendarEventPopover from './CalendarEventPopover';
+import { DATE_FORMAT, DATE_FOURTH_FORMAT } from '../../../utils/constants';
+import CalendarHeader from './CalendarHeader';
 
 dayjs.extend(customParseFormat);
 
 const Calendar = () => {
   const [month, setMonth] = useState({
-    startDate: dayjs().startOf('month').format('YYYY-MM-DD'),
-    endDate: dayjs().endOf('month').format('YYYY-MM-DD'),
+    startDate: dayjs().startOf('month').format(DATE_FORMAT),
+    endDate: dayjs().endOf('month').format(DATE_FORMAT),
   });
-
+  const [monthTitle, setMonthTitle] = useState(dayjs().startOf('month').format(DATE_FOURTH_FORMAT));
+  const ref = useRef(null);
   const calendarEvents = useCalendarEvents({ ...month, utcOffset: dayjs().utcOffset() });
 
-  const renderEventContent = eventInfo => {
-    const {
-      hasVacantSpace,
-      hasBookingEnd,
-      hasBookingStarted,
-      bookingStarting,
-      bookingEnding,
-      inventoryVacancy,
-    } = eventInfo.event.extendedProps;
+  const handlePreviousNextMonth = (type, filterDate) => {
+    const calendarApi = ref.current?.getApi();
+    if (filterDate) {
+      calendarApi[type](filterDate);
+    } else {
+      calendarApi[type]();
+    }
+    const { start, end } = calendarApi.currentData.dateProfile.activeRange;
+    const formattedStartDate = dayjs(start).format(DATE_FORMAT);
+    const formattedEndDate = dayjs(end).format(DATE_FORMAT);
 
-    return (
-      <Popover width={300}>
-        <Popover.Target>
-          <Group position="center" spacing="xs" className="cursor-pointer py-2">
-            {hasVacantSpace ? <ColorSwatch color="#914EFB" size={10} /> : null}
-            {hasBookingEnd ? <ColorSwatch color="#FD3434" size={10} /> : null}
-            {hasBookingStarted ? <ColorSwatch color="#28B446" size={10} /> : null}
-          </Group>
-        </Popover.Target>
-
-        <Popover.Dropdown className="z-[999] p-0">
-          <article className="">
-            <section className="bg-gray-100 px-2 py-1">
-              <p className="text-black text-md font-bold">
-                {dayjs(eventInfo.event.start).format('MMMM DD, YYYY')}
-              </p>
-            </section>
-            <section className="p-3 bg-white">
-              {isArray(inventoryVacancy)
-                ? inventoryVacancy?.[0]?.inventory.map(item => (
-                    <Group key={item?._id} className="flex gap-1">
-                      <ColorSwatch color="#914EFB" size={10} mr={4} />
-                      <Link to={`/inventory/view-details/${item?._id}`}>
-                        <p className="text-black font-medium">
-                          {item?.basicInformation?.spaceName}
-                        </p>
-                      </Link>
-                      <p className="text-black">will be vacant</p>
-                    </Group>
-                  ))
-                : null}
-
-              {isArray(bookingStarting)
-                ? bookingStarting?.map(item => (
-                    <Group key={item?._id} className="flex gap-1">
-                      <ColorSwatch color="#28B446" size={10} mr={4} />
-                      <Link to={`/bookings/view-details/${item?._id}`}>
-                        <p className="text-black font-medium">{item?.campaign?.name}</p>
-                      </Link>
-                      <p className="text-black">campaign starting</p>
-                    </Group>
-                  ))
-                : null}
-
-              {isArray(bookingEnding)
-                ? bookingEnding?.map(item => (
-                    <Group key={item?._id} className="flex gap-1">
-                      <ColorSwatch color="#FD3434" size={10} mr={4} />
-                      <Link to={`/bookings/view-details/${item?._id}`}>
-                        <p className="text-black font-medium">{item?.campaign?.name}</p>
-                      </Link>
-                      <p className="text-black">campaign ending</p>
-                    </Group>
-                  ))
-                : null}
-            </section>
-          </article>
-        </Popover.Dropdown>
-      </Popover>
-    );
+    setMonth({
+      startDate: formattedStartDate,
+      endDate: formattedEndDate,
+    });
+    setMonthTitle(calendarApi.currentData.viewTitle ?? 'NA');
   };
+
+  const renderEventContent = eventInfo => <CalendarEventPopover eventInfo={eventInfo} />;
 
   const renderDayCellContent = e => (
     <div className="w-full">
@@ -98,31 +47,35 @@ const Calendar = () => {
   );
 
   return (
-    <FullCalendar
-      height="100%"
-      plugins={[dayGridPlugin, interactionPlugin]}
-      initialView="dayGridMonth"
-      selectable
-      events={calendarEvents.data || []}
-      eventContent={renderEventContent}
-      dayCellClassNames={() => 'bg-white'}
-      headerToolbar={{
-        left: 'prev,title,next',
-        center: '',
-        right: '',
-      }}
-      datesSet={e => {
-        setMonth({
-          startDate: dayjs(e.startStr).format('YYYY-MM-DD'),
-          endDate: dayjs(e.endStr).format('YYYY-MM-DD'),
-        });
-      }}
-      viewClassNames={() => 'bg-white'}
-      dayHeaderClassNames={() => 'bg-purple-50 text-md font-medium'}
-      eventBackgroundColor="transparent"
-      eventBorderColor="transparent"
-      dayCellContent={e => renderDayCellContent(e)}
-    />
+    <>
+      <CalendarHeader
+        monthTitle={monthTitle}
+        onNext={() => handlePreviousNextMonth('next')}
+        onPrevious={() => handlePreviousNextMonth('prev')}
+        onFilter={filterDate => handlePreviousNextMonth('gotoDate', filterDate)}
+      />
+
+      <FullCalendar
+        height="100%"
+        plugins={[dayGridPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        selectable
+        events={calendarEvents.data || []}
+        eventContent={renderEventContent}
+        dayCellClassNames={() => 'bg-white'}
+        ref={ref}
+        headerToolbar={{
+          left: '',
+          center: '',
+          right: '',
+        }}
+        viewClassNames={() => 'bg-white'}
+        dayHeaderClassNames={() => 'bg-purple-50 text-md font-medium'}
+        eventBackgroundColor="transparent"
+        eventBorderColor="transparent"
+        dayCellContent={renderDayCellContent}
+      />
+    </>
   );
 };
 
