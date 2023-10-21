@@ -11,7 +11,7 @@ import {
   BarElement,
   Tooltip,
 } from 'chart.js';
-import { Loader, Box, Group, ColorSwatch } from '@mantine/core';
+import { Loader, Box, Group } from '@mantine/core';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -278,7 +278,7 @@ const HomePage = () => {
         <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
           <AreaHeader text={`Hello, ${userCachedData?.name || 'User'}`} />
 
-          <Group className="grid grid-cols-7 my-5">
+          <Group className="grid grid-cols-7 mt-5 mb-14">
             <article className="flex-1 col-span-3">
               <section className="min-h-44 rounded-lg border flex flex-col gap-2 p-4 mb-4">
                 <p className="text-md font-semibold">Bookings</p>
@@ -355,21 +355,7 @@ const HomePage = () => {
               </section>
             </article>
 
-            <article className="bg-gray-50 col-span-4 h-full rounded-md border relative">
-              <div className="bg-red absolute right-[16px] top-[25px] flex gap-4">
-                <Group className="flex gap-1">
-                  <ColorSwatch color="#914EFB" size={10} mr={4} />
-                  <p className="text-black text-xs">Vacant Inventory</p>
-                </Group>
-                <Group className="flex gap-1">
-                  <ColorSwatch color="#28B446" size={10} mr={4} />
-                  <p className="text-black text-xs">Booking Starting</p>
-                </Group>
-                <Group className="flex gap-1">
-                  <ColorSwatch color="#FD3434" size={10} mr={4} />
-                  <p className="text-black text-xs">Booking Ending</p>
-                </Group>
-              </div>
+            <article className="bg-gray-50 col-span-4 h-full rounded-md">
               <Calendar />
             </article>
           </Group>
