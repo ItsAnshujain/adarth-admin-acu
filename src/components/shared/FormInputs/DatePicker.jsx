@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { DatePicker as MantineDatePicker } from '@mantine/dates';
 import { createStyles } from '@mantine/core';
 
@@ -9,7 +9,7 @@ export const useStyles = createStyles({
   selected: { color: '#FFF !important' },
 });
 
-const DatePicker = React.forwardRef(({ ...props }, ref) => {
+const DatePicker = forwardRef(({ ...props }, ref) => {
   const { classes, cx } = useStyles();
 
   return (

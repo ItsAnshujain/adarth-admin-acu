@@ -4,6 +4,7 @@ import {
   IconBold,
   IconHighlight,
   IconItalic,
+  IconList,
   IconListNumbers,
   IconUnderline,
   IconStrikethrough,
@@ -28,7 +29,7 @@ import {
   ListNode,
   REMOVE_LIST_COMMAND,
 } from '@lexical/list';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { $isParentElementRTL } from '@lexical/selection';
 import { $isHeadingNode } from '@lexical/rich-text';
 import { $getNearestNodeOfType, mergeRegister } from '@lexical/utils';
@@ -39,50 +40,34 @@ const LowPriority = 1;
 
 const ToolbarPlugin = ({ lexicalJson }) => {
   const [editor] = useLexicalComposerContext();
-  const [, setCanUndo] = React.useState(false);
-  const [, setCanRedo] = React.useState(false);
-  const [blockType, setBlockType] = React.useState('paragraph');
-  const [, setSelectedElementKey] = React.useState(null);
-  const [, setCodeLanguage] = React.useState('');
-  const [, setIsRTL] = React.useState(false);
-  const [isBold, setIsBold] = React.useState(false);
-  const [isItalic, setIsItalic] = React.useState(false);
-  const [isUnderline, setIsUnderline] = React.useState(false);
-  const [isStrikethrough, setIsStrikethrough] = React.useState(false);
-  const [isCode, setIsCode] = React.useState(false);
-  const [isHighlight, setIsHighlight] = React.useState(false);
-  const [textAlign, setTextAlign] = React.useState('');
-
-  /* TODO: Uncomment if h1, h2 format required */
-
-  // const formatHeading = (headingSize: HeadingTagType) => {
-  //   editor.update(() => {
-  //     const selection = $getSelection();
-
-  //     if ($isRangeSelection(selection)) {
-  //       if (blockType !== headingSize) {
-  //         $wrapNodes(selection, () => $createHeadingNode(headingSize));
-  //       } else {
-  //         $wrapNodes(selection, () => $createParagraphNode());
-  //       }
-  //     }
-  //   });
-  // };
+  const [, setCanUndo] = useState(false);
+  const [, setCanRedo] = useState(false);
+  const [blockType, setBlockType] = useState('paragraph');
+  const [, setSelectedElementKey] = useState(null);
+  const [, setCodeLanguage] = useState('');
+  const [, setIsRTL] = useState(false);
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+  const [isUnderline, setIsUnderline] = useState(false);
+  const [isStrikethrough, setIsStrikethrough] = useState(false);
+  const [isCode, setIsCode] = useState(false);
+  const [isHighlight, setIsHighlight] = useState(false);
+  const [textAlign, setTextAlign] = useState('');
 
   const formatList = listType => {
     if (listType === 'number' && blockType !== 'number') {
       editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
       setBlockType('number');
-    } else if (listType === 'bullet' && blockType !== 'bullet') {
+    } else if (listType === 'ul' && blockType !== 'ul') {
       editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
-      setBlockType('bullet');
+      setBlockType('ul');
     } else {
       editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
       setBlockType('paragraph');
     }
   };
 
-  const updateToolbar = React.useCallback(() => {
+  const updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
       const anchorNode = selection.anchor.getNode();
@@ -115,7 +100,7 @@ const ToolbarPlugin = ({ lexicalJson }) => {
     }
   }, [editor]);
 
-  React.useEffect(
+  useEffect(
     () =>
       mergeRegister(
         editor.registerUpdateListener(({ editorState }) => {
@@ -151,7 +136,7 @@ const ToolbarPlugin = ({ lexicalJson }) => {
     [editor, updateToolbar],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     let timeoutId;
     if (lexicalJson && !isEmpty(lexicalJson)) {
       // TODO: need fix here. Toolbar not to be modified
@@ -209,15 +194,11 @@ const ToolbarPlugin = ({ lexicalJson }) => {
       >
         <IconCode />
       </ActionIcon>
-      {/* TODO: Uncomment if h1, h2 format required */}
-      {/* <ActionIcon color={blockType === 'h1' ? 'dark' : 'gray'} onClick={() => formatHeading('h1')}>
-        <IconH1 />
-      </ActionIcon>
-      <ActionIcon color={blockType === 'h2' ? 'dark' : 'gray'} onClick={() => formatHeading('h2')}>
-        <IconH2 />
-      </ActionIcon> */}
       <ActionIcon onClick={() => (blockType === 'ol' ? formatList('') : formatList('number'))}>
         <IconListNumbers color={blockType === 'ol' ? 'black' : 'gray'} />
+      </ActionIcon>
+      <ActionIcon onClick={() => (blockType === 'ul' ? formatList('') : formatList('ul'))}>
+        <IconList color={blockType === 'ul' ? 'black' : 'gray'} />
       </ActionIcon>
       <ActionIcon
         onClick={() => {
@@ -226,7 +207,7 @@ const ToolbarPlugin = ({ lexicalJson }) => {
         }}
       >
         <IconAlignLeft color={textAlign === 'left' ? 'black' : 'gray'} />
-      </ActionIcon>{' '}
+      </ActionIcon>
       <ActionIcon
         onClick={() => {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'center');
@@ -234,7 +215,7 @@ const ToolbarPlugin = ({ lexicalJson }) => {
         }}
       >
         <IconAlignCenter color={textAlign === 'center' ? 'black' : 'gray'} />
-      </ActionIcon>{' '}
+      </ActionIcon>
       <ActionIcon
         onClick={() => {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'right');

@@ -50,7 +50,7 @@ export const DefaultValuePlugin = ({ defaultValue }) => {
 
 const FocusPlugin = ({ focus }) => {
   const [editor] = useLexicalComposerContext();
-  React.useEffect(() => {
+  useEffect(() => {
     // Focus the editor when the effect fires!
     if (focus) {
       editor.focus();

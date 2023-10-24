@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
@@ -16,7 +16,7 @@ const ViewRte = ({ data }) => {
   const RenderJson = ({ lexicalJson }) => {
     const [editor] = useLexicalComposerContext();
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (lexicalJson && !isEmpty(lexicalJson)) {
         const newEditorState = editor.parseEditorState(lexicalJson);
         editor.setEditorState(newEditorState);
