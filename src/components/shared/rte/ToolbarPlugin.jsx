@@ -4,6 +4,7 @@ import {
   IconBold,
   IconHighlight,
   IconItalic,
+  IconList,
   IconListNumbers,
   IconUnderline,
   IconStrikethrough,
@@ -53,29 +54,13 @@ const ToolbarPlugin = ({ lexicalJson }) => {
   const [isHighlight, setIsHighlight] = useState(false);
   const [textAlign, setTextAlign] = useState('');
 
-  /* TODO: Uncomment if h1, h2 format required */
-
-  // const formatHeading = (headingSize: HeadingTagType) => {
-  //   editor.update(() => {
-  //     const selection = $getSelection();
-
-  //     if ($isRangeSelection(selection)) {
-  //       if (blockType !== headingSize) {
-  //         $wrapNodes(selection, () => $createHeadingNode(headingSize));
-  //       } else {
-  //         $wrapNodes(selection, () => $createParagraphNode());
-  //       }
-  //     }
-  //   });
-  // };
-
   const formatList = listType => {
     if (listType === 'number' && blockType !== 'number') {
       editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
       setBlockType('number');
-    } else if (listType === 'bullet' && blockType !== 'bullet') {
+    } else if (listType === 'ul' && blockType !== 'ul') {
       editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
-      setBlockType('bullet');
+      setBlockType('ul');
     } else {
       editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
       setBlockType('paragraph');
@@ -209,15 +194,11 @@ const ToolbarPlugin = ({ lexicalJson }) => {
       >
         <IconCode />
       </ActionIcon>
-      {/* TODO: Uncomment if h1, h2 format required */}
-      {/* <ActionIcon color={blockType === 'h1' ? 'dark' : 'gray'} onClick={() => formatHeading('h1')}>
-        <IconH1 />
-      </ActionIcon>
-      <ActionIcon color={blockType === 'h2' ? 'dark' : 'gray'} onClick={() => formatHeading('h2')}>
-        <IconH2 />
-      </ActionIcon> */}
       <ActionIcon onClick={() => (blockType === 'ol' ? formatList('') : formatList('number'))}>
         <IconListNumbers color={blockType === 'ol' ? 'black' : 'gray'} />
+      </ActionIcon>
+      <ActionIcon onClick={() => (blockType === 'ul' ? formatList('') : formatList('ul'))}>
+        <IconList color={blockType === 'ul' ? 'black' : 'gray'} />
       </ActionIcon>
       <ActionIcon
         onClick={() => {
@@ -226,7 +207,7 @@ const ToolbarPlugin = ({ lexicalJson }) => {
         }}
       >
         <IconAlignLeft color={textAlign === 'left' ? 'black' : 'gray'} />
-      </ActionIcon>{' '}
+      </ActionIcon>
       <ActionIcon
         onClick={() => {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'center');
@@ -234,7 +215,7 @@ const ToolbarPlugin = ({ lexicalJson }) => {
         }}
       >
         <IconAlignCenter color={textAlign === 'center' ? 'black' : 'gray'} />
-      </ActionIcon>{' '}
+      </ActionIcon>
       <ActionIcon
         onClick={() => {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'right');
