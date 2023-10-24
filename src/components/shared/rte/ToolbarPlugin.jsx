@@ -28,7 +28,7 @@ import {
   ListNode,
   REMOVE_LIST_COMMAND,
 } from '@lexical/list';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { $isParentElementRTL } from '@lexical/selection';
 import { $isHeadingNode } from '@lexical/rich-text';
 import { $getNearestNodeOfType, mergeRegister } from '@lexical/utils';
@@ -39,19 +39,19 @@ const LowPriority = 1;
 
 const ToolbarPlugin = ({ lexicalJson }) => {
   const [editor] = useLexicalComposerContext();
-  const [, setCanUndo] = React.useState(false);
-  const [, setCanRedo] = React.useState(false);
-  const [blockType, setBlockType] = React.useState('paragraph');
-  const [, setSelectedElementKey] = React.useState(null);
-  const [, setCodeLanguage] = React.useState('');
-  const [, setIsRTL] = React.useState(false);
-  const [isBold, setIsBold] = React.useState(false);
-  const [isItalic, setIsItalic] = React.useState(false);
-  const [isUnderline, setIsUnderline] = React.useState(false);
-  const [isStrikethrough, setIsStrikethrough] = React.useState(false);
-  const [isCode, setIsCode] = React.useState(false);
-  const [isHighlight, setIsHighlight] = React.useState(false);
-  const [textAlign, setTextAlign] = React.useState('');
+  const [, setCanUndo] = useState(false);
+  const [, setCanRedo] = useState(false);
+  const [blockType, setBlockType] = useState('paragraph');
+  const [, setSelectedElementKey] = useState(null);
+  const [, setCodeLanguage] = useState('');
+  const [, setIsRTL] = useState(false);
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+  const [isUnderline, setIsUnderline] = useState(false);
+  const [isStrikethrough, setIsStrikethrough] = useState(false);
+  const [isCode, setIsCode] = useState(false);
+  const [isHighlight, setIsHighlight] = useState(false);
+  const [textAlign, setTextAlign] = useState('');
 
   /* TODO: Uncomment if h1, h2 format required */
 
@@ -82,7 +82,7 @@ const ToolbarPlugin = ({ lexicalJson }) => {
     }
   };
 
-  const updateToolbar = React.useCallback(() => {
+  const updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
       const anchorNode = selection.anchor.getNode();
@@ -115,7 +115,7 @@ const ToolbarPlugin = ({ lexicalJson }) => {
     }
   }, [editor]);
 
-  React.useEffect(
+  useEffect(
     () =>
       mergeRegister(
         editor.registerUpdateListener(({ editorState }) => {
@@ -151,7 +151,7 @@ const ToolbarPlugin = ({ lexicalJson }) => {
     [editor, updateToolbar],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     let timeoutId;
     if (lexicalJson && !isEmpty(lexicalJson)) {
       // TODO: need fix here. Toolbar not to be modified

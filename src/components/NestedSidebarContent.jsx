@@ -1,6 +1,6 @@
 import { Collapse } from '@mantine/core';
 import classNames from 'classnames';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { masterTypes } from '../utils';
@@ -10,7 +10,7 @@ const NestedSidebarContent = ({ list, path, toggleNestedTab }) => {
   const [searchParams] = useSearchParams();
   const type = searchParams.get('type');
 
-  const isActive = React.useMemo(() => {
+  const isActive = useMemo(() => {
     const [_, pathName, subPathName] = pathname.split('/');
     if (pathName === 'reports' && path === '/masters') {
       return false;
