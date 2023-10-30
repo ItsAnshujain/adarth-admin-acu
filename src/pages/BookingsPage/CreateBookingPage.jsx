@@ -90,8 +90,8 @@ const CreateBookingPage = () => {
 
   const [formStep, setFormStep] = useState(1);
   const form = useForm({ validate: yupResolver(schemas[formStep - 1]), initialValues });
-  const { mutateAsync: createBooking, isLoading } = useCreateBookings();
-  const update = useUpdateBooking();
+  const createBooking = useCreateBookings();
+  const updateBooking = useUpdateBooking();
   const bookingById = useBookingById(bookingId, !!bookingId);
 
   const proposalId = searchParams.get('proposalId');
@@ -214,7 +214,7 @@ const CreateBookingPage = () => {
       });
 
       if (bookingId) {
-        update.mutate(
+        updateBooking.mutate(
           {
             id: bookingId,
             data: {
@@ -235,7 +235,7 @@ const CreateBookingPage = () => {
           },
         );
       } else {
-        await createBooking(
+        createBooking.mutate(
           {
             ...data,
             ...totalImpressionAndHealth,
@@ -338,7 +338,7 @@ const CreateBookingPage = () => {
           <Header
             setFormStep={setFormStep}
             formStep={formStep}
-            isLoading={isLoading || update.isLoading}
+            isLoading={createBooking.isLoading || updateBooking.isLoading}
             isEditable={!!bookingId}
           />
           {getForm()}

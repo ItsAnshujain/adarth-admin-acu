@@ -7,6 +7,7 @@ import { isEmpty } from 'lodash';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import theme from './theme';
 import nodes from './nodes';
+import htmlConverter from '../../../utils/htmlConverter';
 
 const ViewRte = ({ data }) => {
   const onError = _error => {
@@ -20,6 +21,10 @@ const ViewRte = ({ data }) => {
       if (lexicalJson && !isEmpty(lexicalJson)) {
         const newEditorState = editor.parseEditorState(lexicalJson);
         editor.setEditorState(newEditorState);
+        const res = htmlConverter(editor);
+        // TODO: remove after fixing html converter
+        // eslint-disable-next-line no-console
+        console.log(res);
       }
     }, [editor, lexicalJson]);
 

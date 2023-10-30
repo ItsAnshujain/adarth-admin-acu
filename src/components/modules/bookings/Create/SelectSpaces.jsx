@@ -1,20 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Button,
-  Image,
-  NumberInput,
-  Progress,
-  Badge,
-  Loader,
-  Chip,
-  HoverCard,
-  Group,
-  Tooltip,
-} from '@mantine/core';
+import { useEffect, useMemo, useState } from 'react';
+import { Button, Image, NumberInput, Progress, Badge, Loader, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
-import classNames from 'classnames';
-import { Dropzone } from '@mantine/dropzone';
 import { useDebouncedValue } from '@mantine/hooks';
 import { v4 as uuidv4 } from 'uuid';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -26,7 +13,6 @@ import Search from '../../../Search';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
-import upload from '../../../../assets/upload.svg';
 import { useFormContext } from '../../../../context/formContext';
 import {
   categoryColors,
@@ -38,9 +24,7 @@ import {
   getEveryDayUnits,
   getOccupiedState,
   stringToColour,
-  supportedTypes,
 } from '../../../../utils';
-import { useUploadFile } from '../../../../apis/queries/upload.queries';
 import Filter from '../../inventory/Filter';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../../../DateRangeSelector';
@@ -48,6 +32,7 @@ import modalConfig from '../../../../utils/modalConfig';
 import RowsPerPage from '../../../RowsPerPage';
 import useLayoutView from '../../../../store/layout.store';
 import SpaceNamePhotoContent from '../../inventory/SpaceNamePhotoContent';
+import UploadMediaButton from './UploadMediaButton';
 
 dayjs.extend(isBetween);
 
@@ -59,87 +44,6 @@ const updatedModalConfig = {
     body: '',
     close: 'mr-4',
   },
-};
-
-const updatedSupportedTypes = [...supportedTypes, 'MP4'];
-
-const styles = {
-  padding: 0,
-  border: 'none',
-};
-
-const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
-  const openRef = useRef(null);
-  const { mutateAsync: uploadMedia, isLoading } = useUploadFile();
-  const handleUpload = async params => {
-    const formData = new FormData();
-    formData.append('files', params?.[0]);
-    const res = await uploadMedia(formData);
-
-    if (res?.[0].Location) {
-      updateData('media', res[0].Location, id);
-    }
-  };
-
-  return (
-    <>
-      <Dropzone
-        style={styles}
-        onDrop={handleUpload}
-        multiple={false}
-        disabled={!isActive || isLoading}
-        openRef={openRef}
-        maxSize={5000000}
-      >
-        {/* children */}
-      </Dropzone>
-      <HoverCard openDelay={1000}>
-        <HoverCard.Target>
-          <Button
-            disabled={isLoading}
-            onClick={() => openRef.current()}
-            loading={isLoading}
-            className={classNames(
-              isActive ? 'bg-purple-350 cursor-pointer' : 'bg-purple-200 cursor-not-allowed',
-              'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md',
-            )}
-          >
-            {hasMedia ? (
-              <>
-                <Chip
-                  classNames={{ checkIcon: 'text-white', label: 'bg-transparent' }}
-                  checked
-                  variant="filled"
-                  color="green"
-                  radius="lg"
-                  size="xs"
-                />
-                {isLoading ? 'Uploading' : 'Uploaded'}
-              </>
-            ) : isLoading ? (
-              'Uploading'
-            ) : (
-              'Upload'
-            )}
-            <img src={upload} alt="Upload" className="ml-2" />
-          </Button>
-        </HoverCard.Target>
-        <HoverCard.Dropdown>
-          <div className="text-sm flex flex-col">
-            <span className="font-bold text-gray-500">Supported types</span>
-            <div className="mt-1">
-              {updatedSupportedTypes.map(item => (
-                <Badge key={uuidv4()} className="mr-2">
-                  {item}
-                </Badge>
-              ))}
-            </div>
-            <p className="mt-1 font-bold text-gray-500">Media size cannot be more than 5MB</p>
-          </div>
-        </HoverCard.Dropdown>
-      </HoverCard>
-    </>
-  );
 };
 
 const SelectSpace = () => {
@@ -167,7 +71,7 @@ const SelectSpace = () => {
   });
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
-  const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
+  const inventoryQuery = useFetchInventory(searchParams.toString());
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
@@ -580,7 +484,7 @@ const SelectSpace = () => {
         }) =>
           useMemo(
             () => (
-              <UploadButton
+              <UploadMediaButton
                 updateData={updateData}
                 isActive={values?.place?.find(item => item._id === _id)}
                 hasMedia={values?.place?.find(item => (item._id === _id ? !!item?.media : false))}
@@ -639,8 +543,8 @@ const SelectSpace = () => {
   };
 
   useEffect(() => {
-    if (inventoryData) {
-      const { docs, ...page } = inventoryData;
+    if (inventoryQuery.data?.docs) {
+      const { docs, ...page } = inventoryQuery.data;
       const finalData = [];
 
       for (const item of docs) {
@@ -689,7 +593,7 @@ const SelectSpace = () => {
       setUpdatedInventoryData(finalData);
       setPagination(page);
     }
-  }, [inventoryData]);
+  }, [inventoryQuery.data?.docs]);
 
   useEffect(() => {
     handleSearch();
@@ -698,6 +602,38 @@ const SelectSpace = () => {
       setSearchParams(searchParams);
     }
   }, [debouncedSearch]);
+
+  // useEffect(() => {
+  //   const newList = [...updatedInventoryData];
+
+  //   if (!newList.length) return;
+
+  //   const res = newList.map(item => ({
+  //     ...item,
+  //     availableUnit: getAvailableUnits(
+  //       item.bookingRange,
+  //       item.startDate,
+  //       item.endDate,
+  //       item.originalUnit,
+  //     ),
+  //   }));
+  // getAvailableUnits(item.bookingRange, item.startDate, item.endDate, item.originalUnit),
+  // availableUnit = getAvailableUnits(
+  //   newList[index].bookingRange,
+  //   newList[index].startDate,
+  //   newList[index].endDate,
+  //   newList[index].originalUnit,
+  // );
+
+  // const res1 = values?.place.map(item => {
+  //   const exceededUnit = res.find(ele => ele._id === item._id && ele.unit > item.availableUnit);
+  // console.log({ exceededUnit });
+  //   return exceededUnit;
+  // });
+  // console.log({ res });
+  // console.log({ res1 });
+  // console.log(values?.place);
+  // }, [updatedInventoryData]);
 
   return (
     <>
@@ -737,9 +673,9 @@ const SelectSpace = () => {
             />
             <p className="text-purple-450 text-sm">
               Total Places{' '}
-              {inventoryData?.totalDocs ? (
+              {inventoryQuery.data?.totalDocs ? (
                 <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-                  {inventoryData.totalDocs}
+                  {inventoryQuery.data?.totalDocs}
                 </span>
               ) : null}
             </p>
@@ -747,17 +683,17 @@ const SelectSpace = () => {
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
-      {isLoading ? (
+      {inventoryQuery.isLoading ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
         </div>
       ) : null}
-      {!inventoryData?.docs?.length && !isLoading ? (
+      {!inventoryQuery.data?.docs?.length && !inventoryQuery.isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-      {inventoryData?.docs?.length ? (
+      {inventoryQuery.data?.docs?.length ? (
         <Table
           data={updatedInventoryData}
           COLUMNS={COLUMNS}
