@@ -3,6 +3,7 @@ import { ColorSwatch, Group, Popover } from '@mantine/core';
 import { isArray } from 'lodash';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { DATE_THIRD_FORMAT } from '../../../utils/constants';
 
 const CalendarEventPopover = ({ eventInfo }) => {
   const {
@@ -15,7 +16,7 @@ const CalendarEventPopover = ({ eventInfo }) => {
   } = eventInfo.event.extendedProps;
 
   return (
-    <Popover width={300} withinPortal>
+    <Popover width={300} withinPortal shadow="md" radius={12}>
       <Popover.Target>
         <Group position="center" spacing="xs" className="cursor-pointer py-2 z-0">
           {hasVacantSpace ? <ColorSwatch color="#914EFB" size={10} /> : null}
@@ -26,13 +27,13 @@ const CalendarEventPopover = ({ eventInfo }) => {
 
       <Popover.Dropdown className="p-0">
         <article>
-          <section className="bg-gray-100 px-2 py-1">
+          <section className="bg-gray-100 px-2 py-1 rounded-t-xl">
             <p className="text-black text-md font-bold">
-              {dayjs(eventInfo.event.start).format('MMMM DD, YYYY')}
+              {dayjs(eventInfo.event.start).format(DATE_THIRD_FORMAT)}
             </p>
           </section>
-          <section className="p-3 bg-white min-h-[50px] max-h-[150px] overflow-y-auto z-[999]">
-            <div className="z-[999]">
+          <section className="p-3 bg-white min-h-[50px] max-h-[150px] overflow-y-auto rounded-b-xl">
+            <div>
               {isArray(inventoryVacancy)
                 ? inventoryVacancy?.[0]?.inventory.map(item => (
                     <Group key={item?._id} className="flex flex-row gap-1">
@@ -52,7 +53,7 @@ const CalendarEventPopover = ({ eventInfo }) => {
                 : null}
             </div>
 
-            <div className="z-[999]">
+            <div>
               {isArray(bookingStarting)
                 ? bookingStarting?.map(item => (
                     <Group key={item?._id} className="flex flex-row gap-1">
@@ -72,7 +73,7 @@ const CalendarEventPopover = ({ eventInfo }) => {
                 : null}
             </div>
 
-            <div className="z-[999]">
+            <div>
               {isArray(bookingEnding)
                 ? bookingEnding?.map(item => (
                     <Group key={item?._id} className="flex flex-row gap-1">

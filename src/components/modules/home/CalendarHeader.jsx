@@ -57,7 +57,14 @@ const CalendarHeader = ({
         >
           <ChevronLeft className="h-5 text-black" />
         </ActionIcon>
-        <Popover opened={opened} onChange={setOpened} width={380}>
+        <Popover
+          opened={opened}
+          onChange={setOpened}
+          width={300}
+          position="bottom-start"
+          shadow="md"
+          radius={12}
+        >
           <Popover.Target>
             <Button className="light-button font-medium" onClick={() => setOpened(o => !o)}>
               {monthTitle || ''}
@@ -71,15 +78,16 @@ const CalendarHeader = ({
               value={activeYear}
               onChange={handleActiveYear}
               rightSection={<ChevronDown size={16} />}
+              styles={{ rightSection: { pointerEvents: 'none' } }}
             />
 
-            <Group className="grid grid-cols-3 grid-rows-4 gap-2">
+            <Group className="grid grid-cols-3 grid-rows-4 gap-x-2 gap-y-3">
               {monthsInShort.map(month => (
                 <Button
                   key={month.value}
                   className={classNames(
                     activeMonth === month.value ? 'primary-button' : 'light-button',
-                    'font-medium border-gray-200 rounded-md',
+                    'font-medium border-gray-200 rounded-md p-0',
                   )}
                   onClick={() => handleActiveMonth(month)}
                 >
