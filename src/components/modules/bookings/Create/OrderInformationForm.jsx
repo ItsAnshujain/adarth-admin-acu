@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useFormContext } from '../../../../context/formContext';
 import TextInput from '../../../shared/TextInput';
 import Textarea from '../../../shared/TextareaInput';
@@ -40,14 +41,18 @@ const query = {
 };
 
 const OrderInformationForm = () => {
-  const { errors } = useFormContext();
+  const form = useFormContext();
 
-  const {
-    data: industryData,
-    isSuccess: isIndustryDataLoaded,
-    isLoading: isIndustryDataLoading,
-  } = useFetchMasters(serialize({ type: 'industry', ...query }));
+  const industryQuery = useFetchMasters(serialize({ type: 'industry', ...query }));
 
+  const memoizedIndustryQuery = useMemo(
+    () =>
+      industryQuery.data?.docs.map(type => ({
+        label: type.name,
+        value: type._id,
+      })),
+    [industryQuery?.data?.docs],
+  );
   return (
     <div className="mt-4">
       <p className="text-xl font-bold">Order Information</p>
@@ -59,24 +64,17 @@ const OrderInformationForm = () => {
             name="campaignName"
             withAsterisk
             placeholder="Write..."
-            errors={errors}
+            errors={form.errors}
           />
           <NativeSelect
             label="Industry"
             name="industry"
             withAsterisk
             styles={styles}
-            errors={errors}
-            disabled={isIndustryDataLoading}
+            errors={form.errors}
+            disabled={industryQuery.isLoading}
             placeholder="Select..."
-            options={
-              isIndustryDataLoaded
-                ? industryData.docs.map(type => ({
-                    label: type.name,
-                    value: type._id,
-                  }))
-                : []
-            }
+            options={industryQuery.isSuccess ? memoizedIndustryQuery : []}
             className="mb-7"
           />
         </div>
@@ -86,7 +84,7 @@ const OrderInformationForm = () => {
             label="Description"
             name="description"
             placeholder="Maximun 400 characters"
-            errors={errors}
+            errors={form.errors}
             maxLength={400}
           />
         </div>

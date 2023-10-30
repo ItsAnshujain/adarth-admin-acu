@@ -13,7 +13,7 @@ const styles = {
   },
 };
 const BasicInformationForm = () => {
-  const { errors } = useFormContext();
+  const form = useFormContext();
 
   return (
     <div className="mt-4">
@@ -26,28 +26,28 @@ const BasicInformationForm = () => {
             name="client.companyName"
             withAsterisk
             placeholder="Write..."
-            errors={errors}
+            errors={form.errors}
           />
           <TextInput
             styles={styles}
             label="Client Email"
             name="client.email"
             placeholder="Write..."
-            errors={errors}
+            errors={form.errors}
           />
           <TextInput
             styles={styles}
             label="Client Pan Number"
             name="client.panNumber"
             placeholder="Write..."
-            errors={errors}
+            errors={form.errors}
           />
           <TextInput
             styles={styles}
             label="Brand Display Name "
             name="displayBrands"
             placeholder="Write..."
-            errors={errors}
+            errors={form.errors}
           />
         </div>
         <div className="flex flex-col gap-4">
@@ -57,21 +57,21 @@ const BasicInformationForm = () => {
             name="client.name"
             withAsterisk
             placeholder="Write..."
-            errors={errors}
+            errors={form.errors}
           />
           <TextInput
             styles={styles}
             label="Client Contact Number"
             name="client.contactNumber"
             placeholder="Write..."
-            errors={errors}
+            errors={form.errors}
           />
           <TextInput
             styles={styles}
             label="Client GST Number"
             name="client.gstNumber"
             placeholder="Write..."
-            errors={errors}
+            errors={form.errors}
           />
         </div>
       </div>
