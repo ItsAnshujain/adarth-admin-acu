@@ -1,10 +1,4 @@
 import React, { forwardRef, useEffect } from 'react';
-// import {
-//   EditorState,
-//   SerializedEditorState,
-//   SerializedLexicalNode,
-//   SerializedRootNode,
-// } from 'lexical';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
@@ -63,6 +57,14 @@ function onError(_error) {
   throw _error;
 }
 
+const RefPlugin = ({ editorRef }) => {
+  const [editor] = useLexicalComposerContext();
+  // eslint-disable-next-line no-param-reassign
+  editorRef.current = editor;
+
+  return null;
+};
+
 const RichTextEditorComponent = forwardRef(
   (
     {
@@ -73,7 +75,7 @@ const RichTextEditorComponent = forwardRef(
       defaultValue,
       title = '',
       placeholder = 'Description',
-      ...props
+      ..._props
     },
     ref,
   ) => {
@@ -118,6 +120,7 @@ const RichTextEditorComponent = forwardRef(
           <LinkPlugin />
           {/* <TabFocusPlugin />
           <TabIndentationPlugin /> */}
+          <RefPlugin editorRef={ref} />
         </LexicalComposer>
         {error && (
           <div className="mt-1 px-2 py-1 text-sm text-red-450">{`${title} is ${error}`}</div>

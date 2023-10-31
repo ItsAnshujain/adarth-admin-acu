@@ -45,6 +45,7 @@
     "dayjs": "^1.11.5",
     "embla-carousel-react": "^7.0.9",
     "google-map-react": "^2.2.0",
+    "he": "^1.2.0",
     "lexical": "^0.12.2",
     "lodash": "^4.17.21",
     "multi-download": "^4.0.0",

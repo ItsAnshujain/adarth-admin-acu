@@ -64,7 +64,7 @@ const CreateProposalPage = () => {
   const [query] = useState({
     owner: 'all',
     page: 1,
-    limit: 10,
+    limit: 30,
     sortBy: 'createdAt',
     sortOrder: 'asc',
   });
