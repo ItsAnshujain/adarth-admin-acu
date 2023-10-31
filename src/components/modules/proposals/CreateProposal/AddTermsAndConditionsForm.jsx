@@ -42,6 +42,7 @@ const AddTermsAndConditionsForm = ({ onClose }) => {
           <ControlledTextInput
             label="Title"
             name="name"
+            withAsterisk
             placeholder="Write..."
             maxLength={200}
             className="mb-4"

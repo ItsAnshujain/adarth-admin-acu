@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
-import { yupResolver } from '@mantine/form';
+import { useCallback, useEffect, useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import dayjs from 'dayjs';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import { FormProvider, useForm } from 'react-hook-form';
 import BasicInformationForm from '../../components/modules/bookings/Create/BasicInformationForm';
 import SelectSpaces from '../../components/modules/bookings/Create/SelectSpaces';
 import OrderInformationForm from '../../components/modules/bookings/Create/OrderInformationForm';
 import SuccessModal from '../../components/shared/Modal';
 import Header from '../../components/modules/bookings/Create/Header';
-import { FormProvider, useForm } from '../../context/formContext';
 import {
   useBookingById,
   useCreateBookings,
@@ -20,7 +20,7 @@ import {
 import { gstRegexMatch, panRegexMatch, isValidURL, serialize } from '../../utils';
 import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 
-const initialValues = {
+const defaultValues = {
   client: {
     companyName: '',
     name: '',
@@ -89,7 +89,7 @@ const CreateBookingPage = () => {
   const [searchParams] = useSearchParams(proposalByIdQuery);
 
   const [formStep, setFormStep] = useState(1);
-  const form = useForm({ validate: yupResolver(schemas[formStep - 1]), initialValues });
+  const form = useForm({ resolver: yupResolver(schemas[formStep - 1]), defaultValues });
   const createBooking = useCreateBookings();
   const updateBooking = useUpdateBooking();
   const bookingById = useBookingById(bookingId, !!bookingId);
@@ -101,12 +101,15 @@ const CreateBookingPage = () => {
     !!proposalId,
   );
 
-  const handleSubmit = async formData => {
+  const watchPlace = form.watch('place') || [];
+
+  const handleSubmit = form.handleSubmit(async formData => {
     setFormStep(prevState => prevState + 1);
     if (formStep === 3) {
       const data = { ...formData };
+
       setFormStep(3);
-      if (!form.values?.place?.length) {
+      if (!watchPlace?.length) {
         showNotification({
           title: 'Please select atleast one place to continue',
           color: 'blue',
@@ -154,7 +157,7 @@ const CreateBookingPage = () => {
         return;
       }
 
-      data.place = form.values?.place?.map(item => ({
+      data.place = watchPlace?.map(item => ({
         id: item._id,
         price: +item.price,
         media: isValidURL(item.media) ? item.media : undefined,
@@ -197,7 +200,7 @@ const CreateBookingPage = () => {
         data.displayBrands = [data.displayBrands];
       }
 
-      const totalPrice = form.values?.place?.reduce((acc, item) => acc + +(item.price || 0), 0);
+      const totalPrice = watchPlace?.reduce((acc, item) => acc + +(item.price || 0), 0);
       const gstCalculation = totalPrice * 0.18;
       data.price = totalPrice + gstCalculation;
 
@@ -214,6 +217,18 @@ const CreateBookingPage = () => {
       });
 
       if (bookingId) {
+        // TODO: remove after testing
+        // eslint-disable-next-line no-console
+        console.log({
+          id: bookingId,
+          data: {
+            ...data,
+            ...totalImpressionAndHealth,
+            startDate: minDate,
+            endDate: maxDate,
+          },
+        });
+        // return;
         updateBooking.mutate(
           {
             id: bookingId,
@@ -235,6 +250,16 @@ const CreateBookingPage = () => {
           },
         );
       } else {
+        // TODO: remove after testing
+        // eslint-disable-next-line no-console
+        console.log({
+          ...data,
+          ...totalImpressionAndHealth,
+          startDate: minDate,
+          endDate: maxDate,
+          proposalId: proposalId || null,
+        });
+        // return;
         createBooking.mutate(
           {
             ...data,
@@ -255,23 +280,26 @@ const CreateBookingPage = () => {
         );
       }
     }
-  };
+  });
 
-  const getForm = () =>
-    formStep === 1 ? (
-      <BasicInformationForm />
-    ) : formStep === 2 ? (
-      <OrderInformationForm />
-    ) : (
-      <SelectSpaces />
-    );
+  const getForm = useCallback(
+    () =>
+      formStep === 1 ? (
+        <BasicInformationForm />
+      ) : formStep === 2 ? (
+        <OrderInformationForm />
+      ) : (
+        <SelectSpaces />
+      ),
+    [formStep],
+  );
 
   useEffect(() => {
     if (bookingById.data) {
       const { client, displayBrands, campaign } = bookingById.data;
 
-      form.setValues({
-        ...form.values,
+      form.reset({
+        // ...form.values,
         client: {
           companyName: client?.companyName || '',
           name: client?.name || '',
@@ -309,8 +337,8 @@ const CreateBookingPage = () => {
 
   useEffect(() => {
     if (proposalById.data) {
-      form.setValues({
-        ...form.values,
+      form.reset({
+        // ...form.values,
         campaignName: proposalById.data?.proposal?.name || '',
         description: proposalById.data?.proposal?.description || '',
         place: proposalById.data?.inventories.docs.map(item => ({
@@ -333,8 +361,8 @@ const CreateBookingPage = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
-      <FormProvider form={form}>
-        <form onSubmit={form.onSubmit(handleSubmit)}>
+      <FormProvider {...form}>
+        <form onSubmit={handleSubmit}>
           <Header
             setFormStep={setFormStep}
             formStep={formStep}

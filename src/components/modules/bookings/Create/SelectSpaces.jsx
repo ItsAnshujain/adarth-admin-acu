@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Image, NumberInput, Progress, Badge, Loader, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
@@ -9,11 +9,11 @@ import dayjs from 'dayjs';
 import { useModals } from '@mantine/modals';
 import { getWord } from 'num-count';
 import shallow from 'zustand/shallow';
+import { useFormContext } from 'react-hook-form';
 import Search from '../../../Search';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
-import { useFormContext } from '../../../../context/formContext';
 import {
   categoryColors,
   currentDate,
@@ -49,7 +49,7 @@ const updatedModalConfig = {
 const SelectSpace = () => {
   const modals = useModals();
   const { id: bookingId } = useParams();
-  const { setFieldValue, values } = useFormContext();
+  const form = useFormContext();
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
@@ -80,10 +80,12 @@ const SelectSpace = () => {
     return totalPrice;
   };
 
+  const watchPlace = form.watch('place') || [];
+
   const updateData = debounce((key, val, id, inputId) => {
     if (key === 'dateRange') {
       let availableUnit = 0;
-      const hasChangedUnit = values.place.find(item => item._id === id)?.hasChangedUnit;
+      const hasChangedUnit = watchPlace.find(item => item._id === id)?.hasChangedUnit;
       setUpdatedInventoryData(prev => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
@@ -99,9 +101,9 @@ const SelectSpace = () => {
         return newList;
       });
 
-      setFieldValue(
+      form.setValue(
         'place',
-        values.place.map(item =>
+        watchPlace.map(item =>
           item._id === id
             ? {
                 ...item,
@@ -122,9 +124,9 @@ const SelectSpace = () => {
         ),
       );
 
-      setFieldValue(
+      form.setValue(
         'place',
-        values.place.map(item =>
+        watchPlace.map(item =>
           item._id === id
             ? { ...item, [key]: val, ...(key === 'unit' ? { hasChangedUnit: true } : {}) }
             : item,
@@ -137,7 +139,7 @@ const SelectSpace = () => {
     }
   }, 500);
 
-  const handleSelection = selectedRows => setFieldValue('place', selectedRows);
+  const handleSelection = selectedRows => form.setValue('place', selectedRows);
 
   const togglePreviewModal = imgSrc =>
     modals.openModal({
@@ -148,88 +150,88 @@ const SelectSpace = () => {
       ...updatedModalConfig,
     });
 
+  const RenderSerialNumberCell = useCallback(
+    ({ row }) => generateSlNo(row.index, pages, limit),
+    [pages, limit],
+  );
+
+  const RenderNameCell = useCallback(({ row }) => {
+    const { photo, spaceName, isUnderMaintenance, bookingRange, originalUnit, _id } = row.original;
+    const unitLeft = getAvailableUnits(bookingRange, currentDate, currentDate, originalUnit);
+    const occupiedState = getOccupiedState(unitLeft, originalUnit);
+
+    return (
+      <SpaceNamePhotoContent
+        id={_id}
+        spaceName={spaceName}
+        spacePhoto={photo}
+        occupiedStateLabel={occupiedState}
+        isUnderMaintenance={isUnderMaintenance}
+        togglePreviewModal={togglePreviewModal}
+        isTargetBlank
+      />
+    );
+  }, []);
+
+  const RenderFaciaTowardsCell = useCallback(({ row }) => row.original.faciaTowards || '-', []);
+
+  const RenderCityCell = useCallback(({ row }) => row.original.location || '-', []);
+
+  const RenderAdditionalTagsCell = useCallback(
+    ({ row }) => (
+      <div className="flex gap-x-2">
+        {row.original.additionalTags?.length
+          ? row.original.additionalTags.map(
+              (item, index) =>
+                index < 2 && (
+                  <Badge
+                    key={uuidv4()}
+                    size="lg"
+                    className="capitalize w-fit"
+                    title={item}
+                    variant="outline"
+                    color="cyan"
+                    radius="xs"
+                  >
+                    {item}
+                  </Badge>
+                ),
+            )
+          : '-'}
+      </div>
+    ),
+    [],
+  );
+
   const COLUMNS = useMemo(
     () => [
       {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, pages, limit)}</p>, []),
+        Cell: RenderSerialNumberCell,
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'basicInformation.spaceName',
-        Cell: info =>
-          useMemo(() => {
-            const { photo, spaceName, isUnderMaintenance, bookingRange, originalUnit, _id } =
-              info.row.original;
-
-            const unitLeft = getAvailableUnits(
-              bookingRange,
-              currentDate,
-              currentDate,
-              originalUnit,
-            );
-            const occupiedState = getOccupiedState(unitLeft, originalUnit);
-
-            return (
-              <SpaceNamePhotoContent
-                id={_id}
-                spaceName={spaceName}
-                spacePhoto={photo}
-                occupiedStateLabel={occupiedState}
-                isUnderMaintenance={isUnderMaintenance}
-                togglePreviewModal={togglePreviewModal}
-                isTargetBlank
-              />
-            );
-          }, [info.row.original.isUnderMaintenance]),
+        Cell: RenderNameCell,
       },
       {
         Header: 'FACIA TOWARDS',
         accessor: 'location.faciaTowards',
         disableSortBy: true,
-        Cell: info => useMemo(() => <p>{info.row.original.faciaTowards || '-'}</p>, []),
+        Cell: RenderFaciaTowardsCell,
       },
       {
         Header: 'CITY',
         accessor: 'location.city',
-        Cell: ({
-          row: {
-            original: { location },
-          },
-        }) => useMemo(() => <p>{location || '-'}</p>, []),
+        Cell: RenderCityCell,
       },
       {
         Header: 'ADDITIONAL TAGS',
         accessor: 'specifications.additionalTags',
         disableSortBy: true,
-        Cell: info =>
-          useMemo(
-            () => (
-              <div className="flex gap-x-2">
-                {info.row.original.additionalTags?.length
-                  ? info.row.original.additionalTags.map(
-                      (item, index) =>
-                        index < 2 && (
-                          <Badge
-                            key={uuidv4()}
-                            size="lg"
-                            className="capitalize w-fit"
-                            title={item}
-                            variant="outline"
-                            color="cyan"
-                            radius="xs"
-                          >
-                            {item}
-                          </Badge>
-                        ),
-                    )
-                  : '-'}
-              </div>
-            ),
-            [],
-          ),
+        Cell: RenderAdditionalTagsCell,
       },
       {
         Header: 'CATEGORY',
@@ -299,7 +301,7 @@ const SelectSpace = () => {
         }) =>
           useMemo(() => {
             const isDisabled =
-              values?.place?.some(item => item._id === _id) && (!startDate || !endDate);
+              watchPlace?.some(item => item._id === _id) && (!startDate || !endDate);
             const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
 
             return (
@@ -323,11 +325,11 @@ const SelectSpace = () => {
           },
         }) =>
           useMemo(() => {
-            const isDisabled = !values?.place?.some(
+            const isDisabled = !watchPlace?.some(
               item => item._id === _id && item.startDate !== null && item.endDate !== null,
             );
             const unitLeft = getAvailableUnits(bookingRange, startDate, endDate, originalUnit);
-            const data = values?.place ? values.place.find(item => item._id === _id) : {};
+            const data = watchPlace ? watchPlace.find(item => item._id === _id) : {};
             const isExceeded =
               data?.unit > (bookingId ? unitLeft + (data?.initialUnit || 0) : data?.availableUnit);
 
@@ -395,7 +397,7 @@ const SelectSpace = () => {
         }) =>
           useMemo(() => {
             const isPriceZero =
-              values?.place?.some(item => item._id === _id) && (price === 0 || !price);
+              watchPlace?.some(item => item._id === _id) && (price === 0 || !price);
 
             return (
               <NumberInput
@@ -486,8 +488,8 @@ const SelectSpace = () => {
             () => (
               <UploadMediaButton
                 updateData={updateData}
-                isActive={values?.place?.find(item => item._id === _id)}
-                hasMedia={values?.place?.find(item => (item._id === _id ? !!item?.media : false))}
+                isActive={watchPlace?.find(item => item._id === _id)}
+                hasMedia={watchPlace?.find(item => (item._id === _id ? !!item?.media : false))}
                 id={_id}
               />
             ),
@@ -509,7 +511,7 @@ const SelectSpace = () => {
           ),
       },
     ],
-    [updatedInventoryData, values?.place],
+    [updatedInventoryData, watchPlace.length],
   );
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -548,7 +550,7 @@ const SelectSpace = () => {
       const finalData = [];
 
       for (const item of docs) {
-        const selectionItem = values?.place?.find(pl => pl._id === item._id);
+        const selectionItem = watchPlace?.find(pl => pl._id === item._id);
 
         const obj = {};
         obj.photo = item.basicInformation.spacePhoto;
@@ -603,38 +605,6 @@ const SelectSpace = () => {
     }
   }, [debouncedSearch]);
 
-  // useEffect(() => {
-  //   const newList = [...updatedInventoryData];
-
-  //   if (!newList.length) return;
-
-  //   const res = newList.map(item => ({
-  //     ...item,
-  //     availableUnit: getAvailableUnits(
-  //       item.bookingRange,
-  //       item.startDate,
-  //       item.endDate,
-  //       item.originalUnit,
-  //     ),
-  //   }));
-  // getAvailableUnits(item.bookingRange, item.startDate, item.endDate, item.originalUnit),
-  // availableUnit = getAvailableUnits(
-  //   newList[index].bookingRange,
-  //   newList[index].startDate,
-  //   newList[index].endDate,
-  //   newList[index].originalUnit,
-  // );
-
-  // const res1 = values?.place.map(item => {
-  //   const exceededUnit = res.find(ele => ele._id === item._id && ele.unit > item.availableUnit);
-  // console.log({ exceededUnit });
-  //   return exceededUnit;
-  // });
-  // console.log({ res });
-  // console.log({ res1 });
-  // console.log(values?.place);
-  // }, [updatedInventoryData]);
-
   return (
     <>
       <div className="flex gap-2 py-5 flex-col">
@@ -652,12 +622,12 @@ const SelectSpace = () => {
         <div className="flex gap-4">
           <div>
             <p className="text-slate-400">Selected Places</p>
-            <p className="font-bold">{values?.place?.length}</p>
+            <p className="font-bold">{watchPlace?.length}</p>
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
             <Group>
-              <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
+              <p className="font-bold">{toIndianCurrency(getTotalPrice(watchPlace))}</p>
               <p className="text-xs">**additional gst to be included</p>
             </Group>
           </div>
@@ -699,7 +669,7 @@ const SelectSpace = () => {
           COLUMNS={COLUMNS}
           allowRowsSelect
           setSelectedFlatRows={handleSelection}
-          selectedRowData={values?.place}
+          selectedRowData={watchPlace}
           handleSorting={handleSortByColumn}
           activePage={pagination.page}
           totalPages={pagination.totalPages}
