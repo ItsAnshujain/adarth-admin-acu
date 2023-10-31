@@ -510,3 +510,8 @@ export const timeLegend = {
   quarter: 'Months',
   month: 'Months',
 };
+
+export const formLabelStyles = {
+  label: 'font-bold text-primary text-base mb-2',
+  input: 'border-gray-450',
+};

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   BackgroundImage,
   Center,
+  Divider,
   Group,
   Image,
   Pagination,
@@ -210,27 +211,31 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           >
             {bookingData?.campaign?.description || 'NA'}
           </Spoiler>
-          <div className="flex flex-col mt-4 w-[260px]">
-            <Group className="col-span-1 grid grid-cols-2">
-              <p className="text-slate-400 font-bold">Amount: </p>
-              <p className="font-medium">
-                {toIndianCurrency(bookingData?.campaign?.totalPrice, true)}
+          <div className="flex flex-col mt-4 w-[300px] border rounded-xl">
+            <div className="pt-3 px-4">
+              <Group className="justify-between">
+                <p className="text-slate-400 font-medium text-sm">Amount</p>
+                <p className="font-semibold text-sm">
+                  {toIndianCurrency(bookingData?.campaign?.totalPrice)}
+                </p>
+              </Group>
+              <Divider color="#E5E7EB" className="my-2" />
+              <Group className="justify-between mb-3">
+                <p className="text-slate-400 font-medium text-sm">GST</p>
+                <p className="font-semibold text-sm">
+                  {toIndianCurrency(
+                    bookingData?.campaign?.price && bookingData?.campaign?.totalPrice
+                      ? bookingData.campaign.price - bookingData.campaign.totalPrice
+                      : 0,
+                  )}
+                </p>
+              </Group>
+            </div>
+            <Group className="justify-between bg-gray-25 px-4 py-2 rounded-b-xl">
+              <p className="text-black font-semibold text-sm">Total Amount</p>
+              <p className="font-bold text-purple-450 text-lg">
+                {toIndianCurrency(bookingData?.campaign?.price)}
               </p>
-            </Group>
-            <Group className="col-span-1 grid grid-cols-2">
-              <p className="text-slate-400 font-bold">GST: </p>
-              <p className="font-medium">
-                {toIndianCurrency(
-                  bookingData?.campaign?.price && bookingData?.campaign?.totalPrice
-                    ? bookingData.campaign.price - bookingData.campaign.totalPrice
-                    : 0,
-                  true,
-                )}
-              </p>
-            </Group>
-            <Group className="col-span-1 grid grid-cols-2">
-              <p className="text-slate-400 font-bold">Total Amount: </p>
-              <p className="font-medium">{toIndianCurrency(bookingData?.campaign?.price, true)}</p>
             </Group>
           </div>
           <div className="mt-8">

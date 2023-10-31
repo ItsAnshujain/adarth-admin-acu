@@ -50,6 +50,7 @@ ChartJS.register(
 
 const salesPieConfig = {
   responsive: true,
+  cutout: 22,
   plugins: {
     tooltip: {
       enabled: false,

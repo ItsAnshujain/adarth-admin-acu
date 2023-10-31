@@ -1,8 +1,8 @@
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
-import TextInput from '../TextInput';
+import TextareaInput from '../Textarea';
 
-const ControlledTextInput = ({ name, ...props }) => {
+const ControlledTextarea = ({ name, ...props }) => {
   const form = useFormContext();
 
   const getError = () => {
@@ -12,13 +12,12 @@ const ControlledTextInput = ({ name, ...props }) => {
       errorPart.forEach(item => {
         if (item) error = error?.[item];
       });
-
       return error?.message;
     }
     return form.formState?.errors?.[name]?.message;
   };
 
-  return <TextInput {...form.register(name)} error={getError()} {...props} />;
+  return <TextareaInput {...props} {...form.register(name)} error={getError()} />;
 };
 
-export default ControlledTextInput;
+export default ControlledTextarea;
