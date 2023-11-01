@@ -176,6 +176,8 @@ const Filter = ({ isOpened, setShowFilter }) => {
       filterOptions.tags,
       filterOptions.demographic,
       filterOptions.audience,
+      filterOptions.additionalTags,
+      filterOptions.cities,
     ],
   );
 
@@ -191,7 +193,20 @@ const Filter = ({ isOpened, setShowFilter }) => {
           />
         </div>
       )),
-    [filterOptions.additionalTags, filterOptions.cities],
+    [
+      filterOptions.owner,
+      filterOptions.category,
+      filterOptions.subCategory,
+      filterOptions.mediaType,
+      filterOptions.tier,
+      filterOptions.zone,
+      filterOptions.facing,
+      filterOptions.tags,
+      filterOptions.demographic,
+      filterOptions.audience,
+      filterOptions.additionalTags,
+      filterOptions.cities,
+    ],
   );
 
   const handleNavigationByFilter = () => {

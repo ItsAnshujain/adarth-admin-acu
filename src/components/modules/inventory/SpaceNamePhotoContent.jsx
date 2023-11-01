@@ -1,6 +1,6 @@
 import { Badge, Box, Image, Text } from '@mantine/core';
 import classNames from 'classnames';
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { getOccupiedStateColor } from '../../../utils';
 
@@ -47,4 +47,4 @@ const SpaceNamePhotoContent = ({
   </div>
 );
 
-export default SpaceNamePhotoContent;
+export default memo(SpaceNamePhotoContent);

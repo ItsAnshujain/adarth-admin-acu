@@ -30,11 +30,12 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
   ) =>
     modals.openContextModal('basic', {
       title: `${costId ? 'Edit' : 'Add'} Operational Cost`,
+      modalId: 'addOperationalCost',
       innerProps: {
         modalBody: (
           <AddOperationalCostModal
             inventoryId={inventoryId}
-            onClose={id => modals.closeModal(id)}
+            onClose={() => modals.closeModal('addOperationalCost')}
             costId={costId}
             type={type}
             amount={amount}
@@ -58,10 +59,11 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
   const toggleDeleteModal = itemId =>
     modals.openContextModal('basic', {
       title: '',
+      modalId: 'deleteOperationalCost',
       innerProps: {
         modalBody: (
           <DeleteOperationalCostContent
-            onClickCancel={id => modals.closeModal(id)}
+            onClose={() => modals.closeModal('deleteOperationalCost')}
             itemId={itemId}
           />
         ),

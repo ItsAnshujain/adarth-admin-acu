@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
@@ -7,6 +7,7 @@ import { isEmpty } from 'lodash';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import theme from './theme';
 import nodes from './nodes';
+import htmlConverter from '../../../utils/htmlConverter';
 
 const ViewRte = ({ data }) => {
   const onError = _error => {
@@ -16,10 +17,14 @@ const ViewRte = ({ data }) => {
   const RenderJson = ({ lexicalJson }) => {
     const [editor] = useLexicalComposerContext();
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (lexicalJson && !isEmpty(lexicalJson)) {
         const newEditorState = editor.parseEditorState(lexicalJson);
         editor.setEditorState(newEditorState);
+        const res = htmlConverter(editor);
+        // TODO: remove after fixing html converter
+        // eslint-disable-next-line no-console
+        console.log(res);
       }
     }, [editor, lexicalJson]);
 

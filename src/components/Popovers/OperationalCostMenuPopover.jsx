@@ -12,10 +12,11 @@ const OperationalCostMenuPopover = ({ itemId, onEdit = () => {} }) => {
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
       title: '',
+      modalId: 'deleteOperationalCost',
       innerProps: {
         modalBody: (
           <DeleteOperationalCostContent
-            onClickCancel={id => modals.closeModal(id)}
+            onClose={() => modals.closeModal('deleteOperationalCost')}
             itemId={itemId}
           />
         ),

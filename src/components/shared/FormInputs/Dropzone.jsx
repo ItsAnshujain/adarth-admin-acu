@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { AspectRatio, Image, SimpleGrid, Text } from '@mantine/core';
 import { Dropzone as MantineDropzone } from '@mantine/dropzone';
 import { isString } from 'lodash';
@@ -50,7 +50,7 @@ const Dropzone = ({ multiple = false, value, onChange, error, imgUrl, ...props }
     else onChange?.(droppedFiles[0]);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setFiles(() => {
       if (!value) return [];
 

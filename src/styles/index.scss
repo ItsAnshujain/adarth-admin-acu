@@ -38,6 +38,10 @@
   @apply font-dmSans bg-black text-white disabled:bg-gray-400 #{!important};
 }
 
+.light-button {
+  @apply font-dmSans bg-white text-black disabled:bg-gray-400 #{!important};
+}
+
 .transparent-black {
   background: rgb(0 0 0 / 50%);
 }
@@ -47,6 +51,15 @@
 }
 
 // Full Calendar
+.fc .fc-scrollgrid-section-body table,
+.fc .fc-scrollgrid-section-footer table {
+  tbody {
+    tr:last-child {
+      display: none;
+    }
+  }
+}
+
 .fc .fc-daygrid-day-top {
   flex-direction: column !important;
 }

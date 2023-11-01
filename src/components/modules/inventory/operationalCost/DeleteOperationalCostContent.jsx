@@ -1,5 +1,4 @@
 import { Button, Divider, Image } from '@mantine/core';
-import { useModals } from '@mantine/modals';
 import React, { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { showNotification } from '@mantine/notifications';
@@ -7,8 +6,7 @@ import CheckIcon from '../../../../assets/check.svg';
 import TrashIcon from '../../../../assets/trash.svg';
 import { useDeleteOperationalCost } from '../../../../apis/queries/operationalCost.queries';
 
-const DeleteOperationalCostContent = ({ onClickCancel = () => {}, itemId }) => {
-  const modals = useModals();
+const DeleteOperationalCostContent = ({ onClose = () => {}, itemId }) => {
   const queryClient = useQueryClient();
   const [accept, setAccept] = useState(false);
   const deleteOperationalCost = useDeleteOperationalCost();
@@ -22,7 +20,7 @@ const DeleteOperationalCostContent = ({ onClickCancel = () => {}, itemId }) => {
         });
         queryClient.invalidateQueries(['operational-cost']);
         setAccept(true);
-        setTimeout(() => modals.closeModal(), 2000);
+        setTimeout(() => onClose(), 2000);
       },
     });
 
@@ -37,7 +35,7 @@ const DeleteOperationalCostContent = ({ onClickCancel = () => {}, itemId }) => {
         {!accept ? (
           <div className="flex gap-2  justify-end">
             <Button
-              onClick={onClickCancel}
+              onClick={onClose}
               className="bg-black text-white rounded-md text-sm px-8 py-3"
               disabled={deleteOperationalCost.isLoading}
             >

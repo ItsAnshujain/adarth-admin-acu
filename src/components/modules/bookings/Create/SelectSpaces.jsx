@@ -1,20 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Button,
-  Image,
-  NumberInput,
-  Progress,
-  Badge,
-  Loader,
-  Chip,
-  HoverCard,
-  Group,
-  Tooltip,
-} from '@mantine/core';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button, Image, NumberInput, Progress, Badge, Loader, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
-import classNames from 'classnames';
-import { Dropzone } from '@mantine/dropzone';
 import { useDebouncedValue } from '@mantine/hooks';
 import { v4 as uuidv4 } from 'uuid';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -22,12 +9,11 @@ import dayjs from 'dayjs';
 import { useModals } from '@mantine/modals';
 import { getWord } from 'num-count';
 import shallow from 'zustand/shallow';
+import { useFormContext } from 'react-hook-form';
 import Search from '../../../Search';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
-import upload from '../../../../assets/upload.svg';
-import { useFormContext } from '../../../../context/formContext';
 import {
   categoryColors,
   currentDate,
@@ -38,9 +24,7 @@ import {
   getEveryDayUnits,
   getOccupiedState,
   stringToColour,
-  supportedTypes,
 } from '../../../../utils';
-import { useUploadFile } from '../../../../apis/queries/upload.queries';
 import Filter from '../../inventory/Filter';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../../../DateRangeSelector';
@@ -48,6 +32,7 @@ import modalConfig from '../../../../utils/modalConfig';
 import RowsPerPage from '../../../RowsPerPage';
 import useLayoutView from '../../../../store/layout.store';
 import SpaceNamePhotoContent from '../../inventory/SpaceNamePhotoContent';
+import UploadMediaButton from './UploadMediaButton';
 
 dayjs.extend(isBetween);
 
@@ -61,91 +46,10 @@ const updatedModalConfig = {
   },
 };
 
-const updatedSupportedTypes = [...supportedTypes, 'MP4'];
-
-const styles = {
-  padding: 0,
-  border: 'none',
-};
-
-const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
-  const openRef = useRef(null);
-  const { mutateAsync: uploadMedia, isLoading } = useUploadFile();
-  const handleUpload = async params => {
-    const formData = new FormData();
-    formData.append('files', params?.[0]);
-    const res = await uploadMedia(formData);
-
-    if (res?.[0].Location) {
-      updateData('media', res[0].Location, id);
-    }
-  };
-
-  return (
-    <>
-      <Dropzone
-        style={styles}
-        onDrop={handleUpload}
-        multiple={false}
-        disabled={!isActive || isLoading}
-        openRef={openRef}
-        maxSize={5000000}
-      >
-        {/* children */}
-      </Dropzone>
-      <HoverCard openDelay={1000}>
-        <HoverCard.Target>
-          <Button
-            disabled={isLoading}
-            onClick={() => openRef.current()}
-            loading={isLoading}
-            className={classNames(
-              isActive ? 'bg-purple-350 cursor-pointer' : 'bg-purple-200 cursor-not-allowed',
-              'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md',
-            )}
-          >
-            {hasMedia ? (
-              <>
-                <Chip
-                  classNames={{ checkIcon: 'text-white', label: 'bg-transparent' }}
-                  checked
-                  variant="filled"
-                  color="green"
-                  radius="lg"
-                  size="xs"
-                />
-                {isLoading ? 'Uploading' : 'Uploaded'}
-              </>
-            ) : isLoading ? (
-              'Uploading'
-            ) : (
-              'Upload'
-            )}
-            <img src={upload} alt="Upload" className="ml-2" />
-          </Button>
-        </HoverCard.Target>
-        <HoverCard.Dropdown>
-          <div className="text-sm flex flex-col">
-            <span className="font-bold text-gray-500">Supported types</span>
-            <div className="mt-1">
-              {updatedSupportedTypes.map(item => (
-                <Badge key={uuidv4()} className="mr-2">
-                  {item}
-                </Badge>
-              ))}
-            </div>
-            <p className="mt-1 font-bold text-gray-500">Media size cannot be more than 5MB</p>
-          </div>
-        </HoverCard.Dropdown>
-      </HoverCard>
-    </>
-  );
-};
-
 const SelectSpace = () => {
   const modals = useModals();
   const { id: bookingId } = useParams();
-  const { setFieldValue, values } = useFormContext();
+  const form = useFormContext();
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
@@ -167,7 +71,7 @@ const SelectSpace = () => {
   });
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
-  const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
+  const inventoryQuery = useFetchInventory(searchParams.toString());
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
@@ -176,10 +80,12 @@ const SelectSpace = () => {
     return totalPrice;
   };
 
+  const watchPlace = form.watch('place') || [];
+
   const updateData = debounce((key, val, id, inputId) => {
     if (key === 'dateRange') {
       let availableUnit = 0;
-      const hasChangedUnit = values.place.find(item => item._id === id)?.hasChangedUnit;
+      const hasChangedUnit = watchPlace.find(item => item._id === id)?.hasChangedUnit;
       setUpdatedInventoryData(prev => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
@@ -195,9 +101,9 @@ const SelectSpace = () => {
         return newList;
       });
 
-      setFieldValue(
+      form.setValue(
         'place',
-        values.place.map(item =>
+        watchPlace.map(item =>
           item._id === id
             ? {
                 ...item,
@@ -218,9 +124,9 @@ const SelectSpace = () => {
         ),
       );
 
-      setFieldValue(
+      form.setValue(
         'place',
-        values.place.map(item =>
+        watchPlace.map(item =>
           item._id === id
             ? { ...item, [key]: val, ...(key === 'unit' ? { hasChangedUnit: true } : {}) }
             : item,
@@ -233,7 +139,7 @@ const SelectSpace = () => {
     }
   }, 500);
 
-  const handleSelection = selectedRows => setFieldValue('place', selectedRows);
+  const handleSelection = selectedRows => form.setValue('place', selectedRows);
 
   const togglePreviewModal = imgSrc =>
     modals.openModal({
@@ -244,88 +150,88 @@ const SelectSpace = () => {
       ...updatedModalConfig,
     });
 
+  const RenderSerialNumberCell = useCallback(
+    ({ row }) => generateSlNo(row.index, pages, limit),
+    [pages, limit],
+  );
+
+  const RenderNameCell = useCallback(({ row }) => {
+    const { photo, spaceName, isUnderMaintenance, bookingRange, originalUnit, _id } = row.original;
+    const unitLeft = getAvailableUnits(bookingRange, currentDate, currentDate, originalUnit);
+    const occupiedState = getOccupiedState(unitLeft, originalUnit);
+
+    return (
+      <SpaceNamePhotoContent
+        id={_id}
+        spaceName={spaceName}
+        spacePhoto={photo}
+        occupiedStateLabel={occupiedState}
+        isUnderMaintenance={isUnderMaintenance}
+        togglePreviewModal={togglePreviewModal}
+        isTargetBlank
+      />
+    );
+  }, []);
+
+  const RenderFaciaTowardsCell = useCallback(({ row }) => row.original.faciaTowards || '-', []);
+
+  const RenderCityCell = useCallback(({ row }) => row.original.location || '-', []);
+
+  const RenderAdditionalTagsCell = useCallback(
+    ({ row }) => (
+      <div className="flex gap-x-2">
+        {row.original.additionalTags?.length
+          ? row.original.additionalTags.map(
+              (item, index) =>
+                index < 2 && (
+                  <Badge
+                    key={uuidv4()}
+                    size="lg"
+                    className="capitalize w-fit"
+                    title={item}
+                    variant="outline"
+                    color="cyan"
+                    radius="xs"
+                  >
+                    {item}
+                  </Badge>
+                ),
+            )
+          : '-'}
+      </div>
+    ),
+    [],
+  );
+
   const COLUMNS = useMemo(
     () => [
       {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, pages, limit)}</p>, []),
+        Cell: RenderSerialNumberCell,
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'basicInformation.spaceName',
-        Cell: info =>
-          useMemo(() => {
-            const { photo, spaceName, isUnderMaintenance, bookingRange, originalUnit, _id } =
-              info.row.original;
-
-            const unitLeft = getAvailableUnits(
-              bookingRange,
-              currentDate,
-              currentDate,
-              originalUnit,
-            );
-            const occupiedState = getOccupiedState(unitLeft, originalUnit);
-
-            return (
-              <SpaceNamePhotoContent
-                id={_id}
-                spaceName={spaceName}
-                spacePhoto={photo}
-                occupiedStateLabel={occupiedState}
-                isUnderMaintenance={isUnderMaintenance}
-                togglePreviewModal={togglePreviewModal}
-                isTargetBlank
-              />
-            );
-          }, [info.row.original.isUnderMaintenance]),
+        Cell: RenderNameCell,
       },
       {
         Header: 'FACIA TOWARDS',
         accessor: 'location.faciaTowards',
         disableSortBy: true,
-        Cell: info => useMemo(() => <p>{info.row.original.faciaTowards || '-'}</p>, []),
+        Cell: RenderFaciaTowardsCell,
       },
       {
         Header: 'CITY',
         accessor: 'location.city',
-        Cell: ({
-          row: {
-            original: { location },
-          },
-        }) => useMemo(() => <p>{location || '-'}</p>, []),
+        Cell: RenderCityCell,
       },
       {
         Header: 'ADDITIONAL TAGS',
         accessor: 'specifications.additionalTags',
         disableSortBy: true,
-        Cell: info =>
-          useMemo(
-            () => (
-              <div className="flex gap-x-2">
-                {info.row.original.additionalTags?.length
-                  ? info.row.original.additionalTags.map(
-                      (item, index) =>
-                        index < 2 && (
-                          <Badge
-                            key={uuidv4()}
-                            size="lg"
-                            className="capitalize w-fit"
-                            title={item}
-                            variant="outline"
-                            color="cyan"
-                            radius="xs"
-                          >
-                            {item}
-                          </Badge>
-                        ),
-                    )
-                  : '-'}
-              </div>
-            ),
-            [],
-          ),
+        Cell: RenderAdditionalTagsCell,
       },
       {
         Header: 'CATEGORY',
@@ -395,7 +301,7 @@ const SelectSpace = () => {
         }) =>
           useMemo(() => {
             const isDisabled =
-              values?.place?.some(item => item._id === _id) && (!startDate || !endDate);
+              watchPlace?.some(item => item._id === _id) && (!startDate || !endDate);
             const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
 
             return (
@@ -419,11 +325,11 @@ const SelectSpace = () => {
           },
         }) =>
           useMemo(() => {
-            const isDisabled = !values?.place?.some(
+            const isDisabled = !watchPlace?.some(
               item => item._id === _id && item.startDate !== null && item.endDate !== null,
             );
             const unitLeft = getAvailableUnits(bookingRange, startDate, endDate, originalUnit);
-            const data = values?.place ? values.place.find(item => item._id === _id) : {};
+            const data = watchPlace ? watchPlace.find(item => item._id === _id) : {};
             const isExceeded =
               data?.unit > (bookingId ? unitLeft + (data?.initialUnit || 0) : data?.availableUnit);
 
@@ -491,7 +397,7 @@ const SelectSpace = () => {
         }) =>
           useMemo(() => {
             const isPriceZero =
-              values?.place?.some(item => item._id === _id) && (price === 0 || !price);
+              watchPlace?.some(item => item._id === _id) && (price === 0 || !price);
 
             return (
               <NumberInput
@@ -580,10 +486,10 @@ const SelectSpace = () => {
         }) =>
           useMemo(
             () => (
-              <UploadButton
+              <UploadMediaButton
                 updateData={updateData}
-                isActive={values?.place?.find(item => item._id === _id)}
-                hasMedia={values?.place?.find(item => (item._id === _id ? !!item?.media : false))}
+                isActive={watchPlace?.find(item => item._id === _id)}
+                hasMedia={watchPlace?.find(item => (item._id === _id ? !!item?.media : false))}
                 id={_id}
               />
             ),
@@ -605,7 +511,7 @@ const SelectSpace = () => {
           ),
       },
     ],
-    [updatedInventoryData, values?.place],
+    [updatedInventoryData, watchPlace.length],
   );
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -639,12 +545,12 @@ const SelectSpace = () => {
   };
 
   useEffect(() => {
-    if (inventoryData) {
-      const { docs, ...page } = inventoryData;
+    if (inventoryQuery.data?.docs) {
+      const { docs, ...page } = inventoryQuery.data;
       const finalData = [];
 
       for (const item of docs) {
-        const selectionItem = values?.place?.find(pl => pl._id === item._id);
+        const selectionItem = watchPlace?.find(pl => pl._id === item._id);
 
         const obj = {};
         obj.photo = item.basicInformation.spacePhoto;
@@ -689,7 +595,7 @@ const SelectSpace = () => {
       setUpdatedInventoryData(finalData);
       setPagination(page);
     }
-  }, [inventoryData]);
+  }, [inventoryQuery.data?.docs]);
 
   useEffect(() => {
     handleSearch();
@@ -716,12 +622,12 @@ const SelectSpace = () => {
         <div className="flex gap-4">
           <div>
             <p className="text-slate-400">Selected Places</p>
-            <p className="font-bold">{values?.place?.length}</p>
+            <p className="font-bold">{watchPlace?.length}</p>
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
             <Group>
-              <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
+              <p className="font-bold">{toIndianCurrency(getTotalPrice(watchPlace))}</p>
               <p className="text-xs">**additional gst to be included</p>
             </Group>
           </div>
@@ -737,9 +643,9 @@ const SelectSpace = () => {
             />
             <p className="text-purple-450 text-sm">
               Total Places{' '}
-              {inventoryData?.totalDocs ? (
+              {inventoryQuery.data?.totalDocs ? (
                 <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-                  {inventoryData.totalDocs}
+                  {inventoryQuery.data?.totalDocs}
                 </span>
               ) : null}
             </p>
@@ -747,23 +653,23 @@ const SelectSpace = () => {
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
-      {isLoading ? (
+      {inventoryQuery.isLoading ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
         </div>
       ) : null}
-      {!inventoryData?.docs?.length && !isLoading ? (
+      {!inventoryQuery.data?.docs?.length && !inventoryQuery.isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-      {inventoryData?.docs?.length ? (
+      {inventoryQuery.data?.docs?.length ? (
         <Table
           data={updatedInventoryData}
           COLUMNS={COLUMNS}
           allowRowsSelect
           setSelectedFlatRows={handleSelection}
-          selectedRowData={values?.place}
+          selectedRowData={watchPlace}
           handleSorting={handleSortByColumn}
           activePage={pagination.page}
           totalPages={pagination.totalPages}

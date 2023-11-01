@@ -99,7 +99,7 @@ const TotalBookings = ({ campaignId }) => {
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Printing in progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
-                  ? 'Completed'
+                  ? 'Printing completed'
                   : '-'}
               </p>
             ),

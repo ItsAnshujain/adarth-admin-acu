@@ -275,7 +275,7 @@ const BookingsDashboardPage = () => {
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
                   ? 'Printing in progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
-                  ? 'Completed'
+                  ? 'Printing completed'
                   : 'Printing upcoming'}
               </p>
             ),

@@ -1,27 +1,39 @@
 import { Box, Button, Group } from '@mantine/core';
-import React from 'react';
+import React, { useRef } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { showNotification } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
+import * as he from 'he';
 import ControlledTextInput from '../../../shared/FormInputs/Controlled/ControlledTextInput';
 import { useCreateProposalTerms } from '../../../../apis/queries/proposal.queries';
 import RichTextEditorComponent from '../../../shared/rte/RichTextEditorComponent';
+import htmlConverter from '../../../../utils/htmlConverter';
 
 const schema = yup.object({
   name: yup.string().required('Title is required'),
   description: yup.mixed(),
+  descriptionHtml: yup.mixed(),
 });
 
 const AddTermsAndConditionsForm = ({ onClose }) => {
   const queryClient = useQueryClient();
   const form = useForm({ resolver: yupResolver(schema) });
-
+  const editorRef = useRef();
   const createProposalTerms = useCreateProposalTerms();
 
   const onSubmit = form.handleSubmit(async formData => {
     const data = { ...formData };
+
+    if (data.description) {
+      if (editorRef.current !== null) {
+        const latestEditorState = editorRef.current.parseEditorState(data.description);
+        editorRef.current.setEditorState(latestEditorState);
+        const parsedHtml = htmlConverter(editorRef.current);
+        data.descriptionHtml = he.encode(parsedHtml);
+      }
+    }
 
     createProposalTerms.mutate(data, {
       onSuccess: () => {
@@ -42,6 +54,7 @@ const AddTermsAndConditionsForm = ({ onClose }) => {
           <ControlledTextInput
             label="Title"
             name="name"
+            withAsterisk
             placeholder="Write..."
             maxLength={200}
             className="mb-4"
@@ -64,6 +77,7 @@ const AddTermsAndConditionsForm = ({ onClose }) => {
                   error={form.formState.errors.description?.message}
                   title="Description"
                   placeholder="Write..."
+                  ref={editorRef}
                 />
               )}
             />

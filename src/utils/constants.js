@@ -51,6 +51,10 @@ export const DATE_FORMAT = 'YYYY-MM-DD';
 
 export const DATE_SECOND_FORMAT = 'DD MMM YYYY';
 
+export const DATE_THIRD_FORMAT = 'MMMM DD, YYYY';
+
+export const DATE_FOURTH_FORMAT = 'MMMM YYYY';
+
 export const BOOKING_PAID_STATUS = [
   { label: 'Paid', value: true },
   { label: 'Unpaid', value: false },
@@ -145,4 +149,19 @@ export const LEADS_LIST = [
     backgroundColor: 'bg-red-100',
     icon: LeadsLostIcon,
   },
+];
+
+export const monthsInShort = [
+  { label: 'Jan', value: '01' },
+  { label: 'Feb', value: '02' },
+  { label: 'Mar', value: '03' },
+  { label: 'Apr', value: '04' },
+  { label: 'May', value: '05' },
+  { label: 'Jun', value: '06' },
+  { label: 'Jul', value: '07' },
+  { label: 'Aug', value: '08' },
+  { label: 'Sept', value: '09' },
+  { label: 'Oct', value: '10' },
+  { label: 'Nov', value: '11' },
+  { label: 'Dec', value: '12' },
 ];
