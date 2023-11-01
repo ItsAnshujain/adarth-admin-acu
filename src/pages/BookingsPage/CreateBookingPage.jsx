@@ -17,23 +17,29 @@ import {
   useCreateBookings,
   useUpdateBooking,
 } from '../../apis/queries/booking.queries';
-import { gstRegexMatch, panRegexMatch, isValidURL, serialize } from '../../utils';
+import {
+  gstRegexMatch,
+  panRegexMatch,
+  isValidURL,
+  serialize,
+  calculateTotalPrice,
+} from '../../utils';
 import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 
 const defaultValues = {
   client: {
-    companyName: '',
-    name: '',
+    companyName: 'Test',
+    name: 'Test',
     email: '',
     contactNumber: '',
     panNumber: '',
     gstNumber: '',
   },
-  campaignName: '',
+  campaignName: 'Test',
   description: '',
   place: [],
   price: 0,
-  industry: '',
+  industry: '63f9c30b1a5afbaafe11b0c1',
   displayBrands: '',
 };
 
@@ -200,7 +206,7 @@ const CreateBookingPage = () => {
         data.displayBrands = [data.displayBrands];
       }
 
-      const totalPrice = watchPlace?.reduce((acc, item) => acc + +(item.price || 0), 0);
+      const totalPrice = calculateTotalPrice(watchPlace);
       const gstCalculation = totalPrice * 0.18;
       data.price = totalPrice + gstCalculation;
 

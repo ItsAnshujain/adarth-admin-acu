@@ -1,13 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Image, NumberInput, Progress, Badge, Loader, Group, Tooltip } from '@mantine/core';
+import { Button, Image, NumberInput, Loader, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
-import { v4 as uuidv4 } from 'uuid';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { useModals } from '@mantine/modals';
-import { getWord } from 'num-count';
 import shallow from 'zustand/shallow';
 import { useFormContext } from 'react-hook-form';
 import Search from '../../../Search';
@@ -15,7 +13,7 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import {
-  categoryColors,
+  calculateTotalPrice,
   currentDate,
   debounce,
   generateSlNo,
@@ -23,7 +21,6 @@ import {
   getDate,
   getEveryDayUnits,
   getOccupiedState,
-  stringToColour,
 } from '../../../../utils';
 import Filter from '../../inventory/Filter';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
@@ -32,7 +29,13 @@ import modalConfig from '../../../../utils/modalConfig';
 import RowsPerPage from '../../../RowsPerPage';
 import useLayoutView from '../../../../store/layout.store';
 import SpaceNamePhotoContent from '../../inventory/SpaceNamePhotoContent';
-import UploadMediaButton from './UploadMediaButton';
+import AdditionalTagsContent from '../../inventory/AdditionalTagsContent';
+import HealthStatusContent from '../../inventory/HealthStatusContent';
+import CategoryContent from '../../inventory/CategoryContent';
+import SubCategoryContent from '../../inventory/SubCategoryContent';
+import ImpressionContent from '../../inventory/ImpressionContent';
+import UploadMediaContent from '../../inventory/UploadMediaContent';
+import DimensionContent from '../../inventory/DimensionContent';
 
 dayjs.extend(isBetween);
 
@@ -74,11 +77,6 @@ const SelectSpace = () => {
   const inventoryQuery = useFetchInventory(searchParams.toString());
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
-
-  const getTotalPrice = (places = []) => {
-    const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
-    return totalPrice;
-  };
 
   const watchPlace = form.watch('place') || [];
 
@@ -139,6 +137,11 @@ const SelectSpace = () => {
     }
   }, 500);
 
+  const memoizedCalculateTotalPrice = useMemo(
+    () => calculateTotalPrice(watchPlace),
+    [watchPlace.length, updateData],
+  );
+
   const handleSelection = selectedRows => form.setValue('place', selectedRows);
 
   const togglePreviewModal = imgSrc =>
@@ -150,6 +153,7 @@ const SelectSpace = () => {
       ...updatedModalConfig,
     });
 
+  // Table Cell
   const RenderSerialNumberCell = useCallback(
     ({ row }) => generateSlNo(row.index, pages, limit),
     [pages, limit],
@@ -178,29 +182,46 @@ const SelectSpace = () => {
   const RenderCityCell = useCallback(({ row }) => row.original.location || '-', []);
 
   const RenderAdditionalTagsCell = useCallback(
-    ({ row }) => (
-      <div className="flex gap-x-2">
-        {row.original.additionalTags?.length
-          ? row.original.additionalTags.map(
-              (item, index) =>
-                index < 2 && (
-                  <Badge
-                    key={uuidv4()}
-                    size="lg"
-                    className="capitalize w-fit"
-                    title={item}
-                    variant="outline"
-                    color="cyan"
-                    radius="xs"
-                  >
-                    {item}
-                  </Badge>
-                ),
-            )
-          : '-'}
-      </div>
-    ),
+    ({ row }) => <AdditionalTagsContent list={row.original.additionalTags || []} />,
     [],
+  );
+
+  const RenderCategoryCell = useCallback(
+    ({ row }) => <CategoryContent category={row.original.category} />,
+    [],
+  );
+
+  const RenderSubCategoryCell = useCallback(
+    ({ row }) => <SubCategoryContent subCategory={row.original.subCategory} />,
+    [],
+  );
+
+  const RenderDimensionCell = useCallback(
+    ({ row }) => <DimensionContent list={row.original.dimension} />,
+    [],
+  );
+
+  const RenderMediaOwnerCell = useCallback(({ row }) => row.original.mediaOwner || '-', []);
+
+  const RenderPeerCell = useCallback(({ row }) => row.original.peer || '-', []);
+
+  const RenderInventoryIdCell = useCallback(({ row }) => row.original.inventoryId || '-', []);
+
+  const RenderMediaTypeCell = useCallback(({ row }) => row.original.mediaType || '-', []);
+
+  const RenderHealthStatusCell = useCallback(
+    ({ row }) => <HealthStatusContent health={row.original.health || 0} />,
+    [],
+  );
+
+  const RenderImpressionCell = useCallback(
+    ({ row }) => <ImpressionContent impressionMax={row.original.impressionMax || 0} />,
+    [],
+  );
+
+  const RenderUploadMediaCell = useCallback(
+    ({ row }) => <UploadMediaContent id={row.original._id} updateData={updateData} />,
+    [updateData],
   );
 
   const COLUMNS = useMemo(
@@ -236,59 +257,18 @@ const SelectSpace = () => {
       {
         Header: 'CATEGORY',
         accessor: 'basicInformation.category.name',
-        Cell: ({
-          row: {
-            original: { category },
-          },
-        }) =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === category,
-            );
-
-            return (
-              <div>
-                {category ? (
-                  <Badge color={colorType || 'gray'} size="lg" className="capitalize">
-                    {category}
-                  </Badge>
-                ) : (
-                  <span>-</span>
-                )}
-              </div>
-            );
-          }, []),
+        Cell: RenderCategoryCell,
       },
       {
         Header: 'SUB CATEGORY',
         accessor: 'basicInformation.subCategory.name',
-        Cell: info =>
-          useMemo(
-            () =>
-              info.row.original.subCategory ? (
-                <p
-                  className="h-6 px-3 flex items-center rounded-xl text-white font-medium text-[13px] capitalize"
-                  style={{
-                    background: stringToColour(info.row.original.subCategory),
-                  }}
-                >
-                  {info.row.original.subCategory}
-                </p>
-              ) : (
-                '-'
-              ),
-            [],
-          ),
+        Cell: RenderSubCategoryCell,
       },
       {
         Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { dimension },
-          },
-        }) => useMemo(() => <div className="flex gap-x-2">{dimension}</div>, []),
+        Cell: RenderDimensionCell,
       },
       {
         Header: 'OCCUPANCY DATE',
@@ -413,100 +393,52 @@ const SelectSpace = () => {
       {
         Header: 'MEDIA OWNER NAME',
         accessor: 'basicInformation.mediaOwner.name',
-        Cell: ({
-          row: {
-            original: { mediaOwner },
-          },
-        }) => useMemo(() => <p className="w-fit">{mediaOwner}</p>, []),
+        Cell: RenderMediaOwnerCell,
       },
       {
         Header: 'PEER',
         accessor: 'basicInformation.peerMediaOwner',
-        Cell: ({
-          row: {
-            original: { peer },
-          },
-        }) => useMemo(() => <p className="w-fit">{peer}</p>, []),
+        Cell: RenderPeerCell,
       },
       {
         Header: 'INVENTORY ID',
         accessor: 'inventoryId',
-        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+        Cell: RenderInventoryIdCell,
       },
       {
         Header: 'MEDIA TYPE',
         accessor: 'basicInformation.mediaType.name',
-        Cell: ({
-          row: {
-            original: { mediaType },
-          },
-        }) => useMemo(() => <p>{mediaType || '-'}</p>),
+        Cell: RenderMediaTypeCell,
       },
       {
         Header: 'HEALTH STATUS',
         accessor: 'specifications.health',
-        Cell: ({ row: { original } }) =>
-          useMemo(
-            () => (
-              <div className="w-24">
-                <Progress
-                  sections={[
-                    { value: original.health, color: 'green' },
-                    { value: 100 - original.health, color: 'red' },
-                  ]}
-                />
-              </div>
-            ),
-            [],
-          ),
+        Cell: RenderHealthStatusCell,
       },
       {
         Header: 'IMPRESSION',
         accessor: 'specifications.impressions.max',
-        Cell: ({
-          row: {
-            original: { impressionMax },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <p className="capitalize w-32">{impressionMax ? getWord(impressionMax) : 'NA'}</p>
-            ),
-            [],
-          ),
+        Cell: RenderImpressionCell,
       },
       {
         Header: 'UPLOAD MEDIA',
         accessor: '',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <UploadMediaButton
-                updateData={updateData}
-                isActive={watchPlace?.find(item => item._id === _id)}
-                hasMedia={watchPlace?.find(item => (item._id === _id ? !!item?.media : false))}
-                id={_id}
-              />
-            ),
-            [],
-          ),
+        Cell: RenderUploadMediaCell,
       },
       {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id },
-          },
-        }) =>
+        Cell: info =>
           useMemo(
-            () => <SpacesMenuPopover itemId={_id} enableDelete={false} openInNewWindow />,
+            () => (
+              <SpacesMenuPopover
+                itemId={info.row.original._id}
+                enableDelete={false}
+                openInNewWindow
+              />
+            ),
             [],
           ),
       },
@@ -545,6 +477,14 @@ const SelectSpace = () => {
   };
 
   useEffect(() => {
+    handleSearch();
+    if (debouncedSearch === '') {
+      searchParams.delete('search');
+      setSearchParams(searchParams);
+    }
+  }, [debouncedSearch]);
+
+  useEffect(() => {
     if (inventoryQuery.data?.docs) {
       const { docs, ...page } = inventoryQuery.data;
       const finalData = [];
@@ -563,18 +503,7 @@ const SelectSpace = () => {
         obj.subCategory = item?.basicInformation?.subCategory?.name;
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
-        obj.dimension = item.specifications?.size?.length ? (
-          <p>
-            {item.specifications.size
-              .map((ele, index) =>
-                index < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
-              )
-              .filter(ele => ele !== null)
-              .join(', ')}
-          </p>
-        ) : (
-          '-'
-        );
+        obj.dimension = item.specifications?.size;
         obj.originalUnit = item?.specifications?.unit || 1;
         obj.unit = item?.specifications?.unit || 1;
         obj.impressionMax = item.specifications?.impressions?.max || 0;
@@ -596,14 +525,6 @@ const SelectSpace = () => {
       setPagination(page);
     }
   }, [inventoryQuery.data?.docs]);
-
-  useEffect(() => {
-    handleSearch();
-    if (debouncedSearch === '') {
-      searchParams.delete('search');
-      setSearchParams(searchParams);
-    }
-  }, [debouncedSearch]);
 
   return (
     <>
@@ -627,7 +548,7 @@ const SelectSpace = () => {
           <div>
             <p className="text-slate-400">Total Price</p>
             <Group>
-              <p className="font-bold">{toIndianCurrency(getTotalPrice(watchPlace))}</p>
+              <p className="font-bold">{toIndianCurrency(memoizedCalculateTotalPrice)}</p>
               <p className="text-xs">**additional gst to be included</p>
             </Group>
           </div>

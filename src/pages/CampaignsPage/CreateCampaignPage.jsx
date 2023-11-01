@@ -16,7 +16,7 @@ import {
   useUpdateCampaign,
 } from '../../apis/queries/campaigns.queries';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
-import { serialize } from '../../utils';
+import { calculateTotalPrice, serialize } from '../../utils';
 
 const initialValues = {
   name: '',
@@ -102,7 +102,8 @@ const CreateCampaignPage = () => {
     if (formStep === 4) {
       setFormStep(4);
 
-      const totalPrice = data?.place?.reduce((acc, item) => acc + +(item.price || 0), 0);
+      const totalPrice = calculateTotalPrice(data?.place);
+
       data.price = totalPrice;
 
       data.place = data.place.map(item => ({

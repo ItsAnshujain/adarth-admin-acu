@@ -8,7 +8,7 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 import MarkerIcon from '../../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../../utils/config';
 import Places from './Places';
-import { indianMapCoordinates } from '../../../../utils';
+import { calculateTotalPrice, indianMapCoordinates } from '../../../../utils';
 
 const defaultProps = {
   center: {
@@ -38,10 +38,10 @@ const Preview = ({ data = {}, place = {} }) => {
     return tempPics;
   }, [place]);
 
-  const getTotalPrice = useMemo(() => {
-    const totalPrice = place.docs.reduce((acc, item) => acc + +(item.price || 0), 0);
-    return totalPrice;
-  }, [place]);
+  const memoizedCalculateTotalPrice = useMemo(
+    () => calculateTotalPrice(place?.docs),
+    [place?.docs.length],
+  );
 
   useEffect(() => {
     if (mapInstance && place?.docs?.length) {
@@ -114,7 +114,9 @@ const Preview = ({ data = {}, place = {} }) => {
               {data?.description}
             </Spoiler>
             <div className="flex gap-3 items-center">
-              <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
+              <p className="font-bold my-2">
+                {toIndianCurrency(+(memoizedCalculateTotalPrice || 0))}
+              </p>
 
               <Badge className="capitalize" size="lg" variant="light" radius="md" color="orange">
                 {data?.maxImpression ? `${getWord(data?.maxImpression)} Total Impressions` : 'NA'}

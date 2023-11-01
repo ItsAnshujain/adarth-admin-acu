@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Group } from '@mantine/core';
+import { Box, Group, Image } from '@mantine/core';
 import { Pie, Doughnut } from 'react-chartjs-2';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -34,6 +34,7 @@ import ProposalConvertIcon from '../../../../assets/proposal-convert.svg';
 import ProposalCreateIcon from '../../../../assets/proposal-create.svg';
 import ProposalSendIcon from '../../../../assets/proposal-send.svg';
 import OutstandingPoIcon from '../../../../assets/outstanding-po.svg';
+import ExceedChevronIcon from '../../../../assets/exceed-chevron.svg';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 
 ChartJS.register(
@@ -56,10 +57,18 @@ const salesPieConfig = {
       enabled: false,
     },
   },
+  animation: {
+    duration: 0,
+  },
 };
 
 const leadsPieConfig = {
-  options: { responsive: true },
+  options: {
+    responsive: true,
+    animation: {
+      duration: 0,
+    },
+  },
   styles: {
     backgroundColor: [
       'rgba(75, 192, 192, 1)',
@@ -78,7 +87,12 @@ const leadsPieConfig = {
 };
 
 const bookingPieConfig = {
-  options: { responsive: true },
+  options: {
+    responsive: true,
+    animation: {
+      duration: 0,
+    },
+  },
   styles: {
     backgroundColor: ['rgba(75, 192, 192, 1)', 'rgba(145, 78, 251, 1)', 'rgba(255, 144, 14 , 1)'],
     borderColor: ['rgba(75, 192, 192, 1)', 'rgba(145, 78, 251, 1)', 'rgba(255, 144, 14 , 1)'],
@@ -146,6 +160,11 @@ const ManagingSubHeader = ({ userId }) => {
     [userSales.data],
   );
 
+  const hasExceededSales = useMemo(
+    () => userSales.data?.sales > userSales.data?.salesTarget,
+    [userSales.data?.sales, userSales.data?.salesTarget],
+  );
+
   const handleUpdatedReveueByIndustry = useCallback(() => {
     const tempBarData = {
       labels: [],
@@ -196,7 +215,12 @@ const ManagingSubHeader = ({ userId }) => {
       </div>
       <article className="p-4 grid grid-cols-2 gap-4 grid-rows-2">
         <section className="min-h-44 rounded-lg border flex flex-row items-start gap-3 p-4">
-          <Box className="w-36">
+          <Box className="w-36 relative">
+            {hasExceededSales ? (
+              <div className="absolute top-7 left-[15px] transform rotate-12">
+                <Image src={ExceedChevronIcon} height={38} width={38} fit="contain" />
+              </div>
+            ) : null}
             <Doughnut options={salesPieConfig} data={revenueBreakupData} />
           </Box>
 
