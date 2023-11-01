@@ -50,6 +50,8 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
     );
   });
 
+  const handleResetTarget = () => form.setValue('salesTarget', undefined);
+
   useEffect(() => {
     if (userDetails?.salesTarget) {
       form.setValue('salesTarget', userDetails?.salesTarget);
@@ -126,27 +128,22 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
           </>
         ) : null}
         <div className="col-span-3 flex flex-col px-5">
-          <FormProvider {...form}>
-            <form className="mb-8 flex flex-row" onSubmit={onSubmit}>
-              <ControlledNumberInput
-                label="Sales Target ₹"
-                name="salesTarget"
-                withAsterisk
-                placeholder="Write..."
-                className="w-[200px] mr-3"
-                readOnly={myDetails?.role === 'supervisor'}
-                disabled={myDetails?.role === 'supervisor'}
-                rightSection={
-                  <ActionIcon
-                    onClick={() => form.setValue('salesTarget', undefined)}
-                    className="mr-3"
-                    disabled={myDetails?.role === 'supervisor'}
-                  >
-                    <XCircle className="h-4" />
-                  </ActionIcon>
-                }
-              />
-              {myDetails?.role !== 'supervisor' ? (
+          {myDetails?.role !== 'supervisor' ? (
+            <FormProvider {...form}>
+              <form className="mb-8 flex flex-row" onSubmit={onSubmit}>
+                <ControlledNumberInput
+                  label="Sales Target ₹"
+                  name="salesTarget"
+                  withAsterisk
+                  placeholder="Write..."
+                  className="w-[200px] mr-3"
+                  rightSection={
+                    <ActionIcon onClick={handleResetTarget} className="mr-3">
+                      <XCircle className="h-4" />
+                    </ActionIcon>
+                  }
+                />
+
                 <Button
                   type="submit"
                   className="primary-button self-end"
@@ -154,9 +151,9 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
                 >
                   {userDetails?.salesTarget ? 'Edit' : 'Save'}
                 </Button>
-              ) : null}
-            </form>
-          </FormProvider>
+              </form>
+            </FormProvider>
+          ) : null}
           <div className="col-span-2 grid grid-cols-2 gap-8">
             {userDetails?.docs?.map(doc => (
               <div className="col-span-1" key={uuidv4()}>
