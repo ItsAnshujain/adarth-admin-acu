@@ -343,7 +343,6 @@ const HomePage = () => {
                 <p className="text-md font-semibold">Bookings</p>
                 <Group>
                   <Box className="w-32">
-                    {console.log(updatedBookingChart.datasets?.[0].data.every(item => item === 0))}
                     {updatedBookingChart.datasets?.[0].data.every(item => item === 0) ? (
                       <p className="text-center font-bold text-md my-12">NA</p>
                     ) : (
