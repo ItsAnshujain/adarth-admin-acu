@@ -11,7 +11,7 @@ import {
   BarElement,
   Tooltip,
 } from 'chart.js';
-import { Loader, Box, Group } from '@mantine/core';
+import { Loader, Box, Group, Image } from '@mantine/core';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -26,7 +26,11 @@ import CompleteBookingIcon from '../assets/complete-booking.svg';
 import VacantSpaceIcon from '../assets/vacant-space.svg';
 import OccupiedSpaceIcon from '../assets/occupied-space.svg';
 import useUserStore from '../store/user.store';
-import { useBookingStats, useFetchBookingRevenue } from '../apis/queries/booking.queries';
+import {
+  useBookingStats,
+  useFetchBookingRevenue,
+  useUserSalesByUserId,
+} from '../apis/queries/booking.queries';
 import { useInventoryStats } from '../apis/queries/inventory.queries';
 import {
   daysInAWeek,
@@ -39,8 +43,13 @@ import {
 } from '../utils';
 import ViewByFilter from '../components/modules/reports/ViewByFilter';
 import { DATE_FORMAT } from '../utils/constants';
-import StatisticsCard from '../components/modules/home/StatisticsCard';
 import Calendar from '../components/modules/home/Calendar';
+import ExceedChevronIcon from '../assets/exceed-chevron.svg';
+import toIndianCurrency from '../utils/currencyFormat';
+import SalesStatisticsCard from '../components/modules/users/analytics/SalesStatisticsCard';
+import OwnSiteIcon from '../assets/own-site-sale.svg';
+import TradedSiteIcon from '../assets/traded-site-sale.svg';
+import BookingStatisticsCard from '../components/modules/users/analytics/BookingStatisticsCard';
 
 dayjs.extend(quarterOfYear);
 
@@ -86,6 +95,19 @@ const inventoryPieConfig = {
   },
 };
 
+const salesPieConfig = {
+  responsive: true,
+  cutout: 22,
+  plugins: {
+    tooltip: {
+      enabled: false,
+    },
+  },
+  animation: {
+    duration: 0,
+  },
+};
+
 const HomePage = () => {
   const queryClient = useQueryClient();
   const userId = useUserStore(state => state.id);
@@ -116,6 +138,12 @@ const HomePage = () => {
   const { data: bookingRevenue, isLoading: isBookingRevenueLoading } = useFetchBookingRevenue(
     serialize(queryByTime),
   );
+  const userSales = useUserSalesByUserId({
+    startDate: financialStartDate,
+    endDate: financialEndDate,
+    userId,
+  });
+
   const inventoryHealthStatus = useMemo(
     () => ({
       datasets: [
@@ -215,6 +243,37 @@ const HomePage = () => {
     }
   }, [inventoryStats.data]);
 
+  const revenueBreakupData = useMemo(
+    () => ({
+      datasets: [
+        {
+          data: userSales.data?.salesTarget ? [userSales.data.salesTarget ?? 0, 0] : [0, 1],
+          backgroundColor: ['#914EFB', '#EEEEEE'],
+          borderColor: ['#914EFB', '#EEEEEE'],
+          borderWidth: 1,
+        },
+        {
+          data: userSales.data?.sales ? [userSales.data.sales ?? 0, 0] : [0, 1],
+          backgroundColor: ['#4BC0C0', '#EEEEEE'],
+          borderColor: ['#4BC0C0', '#EEEEEE'],
+          borderWidth: 1,
+        },
+        {
+          data: [userSales.data?.totalTradedAmount ?? 0, userSales.data?.ownSiteSales ?? 0],
+          backgroundColor: ['#2938F7', '#FF900E'],
+          borderColor: ['#2938F7', '#FF900E'],
+          borderWidth: 1,
+        },
+      ],
+    }),
+    [userSales.data],
+  );
+
+  const hasExceededSales = useMemo(
+    () => userSales.data?.sales > userSales.data?.salesTarget,
+    [userSales.data?.sales, userSales.data?.salesTarget],
+  );
+
   useEffect(() => handleUpdatedBookingChart(), [bookingStats.data]);
 
   useEffect(() => handleUpdatedInventoryChart(), [inventoryStats.data]);
@@ -278,21 +337,25 @@ const HomePage = () => {
         <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
           <AreaHeader text={`Hello, ${userCachedData?.name || 'User'}`} />
 
-          <Group className="grid grid-cols-7 mt-5 mb-14">
+          <Group className="grid grid-cols-2 md:grid-cols-7 my-5">
             <article className="flex-1 col-span-3">
-              <section className="min-h-44 rounded-lg border flex flex-col gap-2 p-4 mb-4">
+              <section className="min-h-42 rounded-lg border flex flex-col gap-2 p-4 mb-4">
                 <p className="text-md font-semibold">Bookings</p>
                 <Group>
-                  <Box className="w-36">
-                    <Pie
-                      data={updatedBookingChart}
-                      options={bookingPieConfig.options}
-                      key={updatedBookingChart.id}
-                    />
+                  <Box className="w-32">
+                    {updatedBookingChart.datasets?.[0].data.every(item => item === 0) ? (
+                      <p className="text-center font-bold text-md my-12">NA</p>
+                    ) : (
+                      <Pie
+                        data={updatedBookingChart}
+                        options={bookingPieConfig.options}
+                        key={updatedBookingChart.id}
+                      />
+                    )}
                   </Box>
                   <div className="flex-1 flex flex-col gap-y-4">
-                    <Group className="grid grid-cols-2 gap-3 h-full">
-                      <StatisticsCard
+                    <Group className="grid grid-cols-3 gap-3 h-full">
+                      <BookingStatisticsCard
                         icon={OngoingBookingIcon}
                         label="Ongoing"
                         count={bookingStats.data?.Ongoing || 0}
@@ -300,7 +363,7 @@ const HomePage = () => {
                         backgroundColor="bg-purple-50"
                         className="col-span-1"
                       />
-                      <StatisticsCard
+                      <BookingStatisticsCard
                         icon={UpcomingBookingIcon}
                         label="Upcoming"
                         count={bookingStats.data?.Upcoming || 0}
@@ -308,7 +371,7 @@ const HomePage = () => {
                         backgroundColor="bg-orange-50"
                         className="col-span-1"
                       />
-                      <StatisticsCard
+                      <BookingStatisticsCard
                         icon={CompleteBookingIcon}
                         label="Completed"
                         count={bookingStats.data?.Completed || 0}
@@ -321,19 +384,23 @@ const HomePage = () => {
                 </Group>
               </section>
 
-              <section className="min-h-44 rounded-lg border flex flex-col gap-2 p-4">
+              <section className="min-h-42 rounded-lg border flex flex-col gap-2 p-4 mb-4">
                 <p className="text-md font-semibold">Inventory</p>
                 <Group>
-                  <Box className="w-36">
-                    <Pie
-                      data={updatedInventoryChart}
-                      options={inventoryPieConfig.options}
-                      key={updatedInventoryChart.id}
-                    />
+                  <Box className="w-32">
+                    {inventoryStats.data?.occupied === 0 && inventoryStats.data?.vacant === 0 ? (
+                      <p className="text-center font-bold text-md my-12">NA</p>
+                    ) : (
+                      <Pie
+                        data={updatedInventoryChart}
+                        options={inventoryPieConfig.options}
+                        key={updatedInventoryChart.id}
+                      />
+                    )}
                   </Box>
                   <div className="flex-1 flex flex-col gap-y-4">
-                    <Group className="grid grid-cols-1 gap-3 h-full">
-                      <StatisticsCard
+                    <Group className="grid grid-cols-2 gap-3 h-full">
+                      <BookingStatisticsCard
                         icon={OccupiedSpaceIcon}
                         label="Occupied"
                         count={inventoryStats.data?.occupied || 0}
@@ -341,7 +408,7 @@ const HomePage = () => {
                         backgroundColor="bg-purple-50"
                         className="col-span-1"
                       />
-                      <StatisticsCard
+                      <BookingStatisticsCard
                         icon={VacantSpaceIcon}
                         label="Vacant"
                         count={inventoryStats.data?.vacant || 0}
@@ -353,9 +420,53 @@ const HomePage = () => {
                   </div>
                 </Group>
               </section>
+
+              <section className="min-h-42 rounded-lg border flex flex-row items-start gap-3 p-4">
+                <Box className="w-32 relative">
+                  {hasExceededSales ? (
+                    <div className="absolute top-7 left-[13px] transform rotate-12">
+                      <Image src={ExceedChevronIcon} height={32} width={32} fit="contain" />
+                    </div>
+                  ) : null}
+                  <Doughnut options={salesPieConfig} data={revenueBreakupData} />
+                </Box>
+
+                <div className="flex-1 grid grid-cols-2 gap-3">
+                  <div>
+                    <Group className="flex-col items-start gap-0 mb-5">
+                      <p className="text-md font-medium">Sales Target</p>
+                      <p className="text-xl font-bold text-purple-350">
+                        {toIndianCurrency(userSales.data?.salesTarget || 0)}
+                      </p>
+                    </Group>
+                    <SalesStatisticsCard
+                      icon={OwnSiteIcon}
+                      label="Own Site"
+                      count={userSales.data?.ownSiteSales || 0}
+                      textColor="text-orange-350"
+                      backgroundColor="bg-orange-50"
+                    />
+                  </div>
+                  <div>
+                    <Group className="flex-col items-start gap-0 mb-5">
+                      <p className="text-md font-medium">Total Sales</p>
+                      <p className="text-xl font-bold text-green-350">
+                        {toIndianCurrency(userSales.data?.sales || 0)}
+                      </p>
+                    </Group>
+                    <SalesStatisticsCard
+                      icon={TradedSiteIcon}
+                      label="Traded Site"
+                      count={userSales.data?.totalTradedAmount || 0}
+                      textColor="text-blue-350"
+                      backgroundColor="bg-blue-50"
+                    />
+                  </div>
+                </div>
+              </section>
             </article>
 
-            <article className="bg-gray-50 col-span-4 h-full rounded-md">
+            <article className="bg-white col-span-4 h-full rounded-md">
               <Calendar />
             </article>
           </Group>
