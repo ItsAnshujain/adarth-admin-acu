@@ -388,7 +388,8 @@ const HomePage = () => {
                 <p className="text-md font-semibold">Inventory</p>
                 <Group>
                   <Box className="w-32">
-                    {inventoryStats.data?.occupied === 0 && inventoryStats.data?.vacant === 0 ? (
+                    {(inventoryStats.data?.occupied === 0 && inventoryStats.data?.vacant === 0) ||
+                    !inventoryStats.data ? (
                       <p className="text-center font-bold text-md my-12">NA</p>
                     ) : (
                       <Pie
