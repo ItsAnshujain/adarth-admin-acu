@@ -28,14 +28,14 @@ import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 
 const defaultValues = {
   client: {
-    companyName: 'Test',
-    name: 'Test',
+    companyName: '',
+    name: '',
     email: '',
     contactNumber: '',
     panNumber: '',
     gstNumber: '',
   },
-  campaignName: 'Test',
+  campaignName: '',
   description: '',
   place: [],
   price: 0,
