@@ -128,22 +128,29 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
           </>
         ) : null}
         <div className="col-span-3 flex flex-col px-5">
-          {myDetails?.role !== 'supervisor' ? (
-            <FormProvider {...form}>
-              <form className="mb-8 flex flex-row" onSubmit={onSubmit}>
+          <FormProvider {...form}>
+            <form className="mb-8 flex flex-row" onSubmit={onSubmit}>
+              {(myDetails?.role === 'supervisor' && userId === meId) ||
+              myDetails?.role === 'admin' ||
+              myDetails?.role === 'management' ? (
                 <ControlledNumberInput
                   label="Sales Target ₹"
                   name="salesTarget"
-                  withAsterisk
-                  placeholder="Write..."
+                  withAsterisk={myDetails?.role !== 'supervisor'}
+                  placeholder={myDetails?.role !== 'supervisor' ? 'Write...' : ''}
                   className="w-[200px] mr-3"
                   rightSection={
-                    <ActionIcon onClick={handleResetTarget} className="mr-3">
-                      <XCircle className="h-4" />
-                    </ActionIcon>
+                    myDetails?.role !== 'supervisor' ? (
+                      <ActionIcon onClick={handleResetTarget} className="mr-3">
+                        <XCircle className="h-4" />
+                      </ActionIcon>
+                    ) : null
                   }
+                  readOnly={myDetails?.role === 'supervisor'}
+                  disabled={myDetails?.role === 'supervisor'}
                 />
-
+              ) : null}
+              {myDetails?.role !== 'supervisor' ? (
                 <Button
                   type="submit"
                   className="primary-button self-end"
@@ -151,9 +158,10 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
                 >
                   {userDetails?.salesTarget ? 'Edit' : 'Save'}
                 </Button>
-              </form>
-            </FormProvider>
-          ) : null}
+              ) : null}
+            </form>
+          </FormProvider>
+
           <div className="col-span-2 grid grid-cols-2 gap-8">
             {userDetails?.docs?.map(doc => (
               <div className="col-span-1" key={uuidv4()}>
