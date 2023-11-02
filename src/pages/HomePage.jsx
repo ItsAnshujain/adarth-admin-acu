@@ -343,6 +343,7 @@ const HomePage = () => {
                 <p className="text-md font-semibold">Bookings</p>
                 <Group>
                   <Box className="w-32">
+                    {console.log(updatedBookingChart.datasets?.[0].data.every(item => item === 0))}
                     {updatedBookingChart.datasets?.[0].data.every(item => item === 0) ? (
                       <p className="text-center font-bold text-md my-12">NA</p>
                     ) : (
@@ -388,7 +389,8 @@ const HomePage = () => {
                 <p className="text-md font-semibold">Inventory</p>
                 <Group>
                   <Box className="w-32">
-                    {inventoryStats.data?.occupied === 0 && inventoryStats.data?.vacant === 0 ? (
+                    {(inventoryStats.data?.occupied === 0 && inventoryStats.data?.vacant === 0) ||
+                    !inventoryStats.data ? (
                       <p className="text-center font-bold text-md my-12">NA</p>
                     ) : (
                       <Pie
