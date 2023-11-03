@@ -39,7 +39,8 @@ const defaultValues = {
   description: '',
   place: [],
   price: 0,
-  industry: '63f9c30b1a5afbaafe11b0c1',
+  industry: '',
+  // industry: '63f9c30b1a5afbaafe11b0c1',
   displayBrands: '',
 };
 
