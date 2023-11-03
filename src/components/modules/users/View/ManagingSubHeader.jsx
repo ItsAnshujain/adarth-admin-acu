@@ -224,36 +224,39 @@ const ManagingSubHeader = ({ userId }) => {
             <Doughnut options={salesPieConfig} data={revenueBreakupData} />
           </Box>
 
-          <div className="flex-1 grid grid-cols-2 gap-3">
-            <div>
-              <Group className="flex-col items-start gap-0 mb-5">
-                <p className="text-md font-medium">Sales Target</p>
-                <p className="text-xl font-bold text-purple-350">
-                  {toIndianCurrency(userSales.data?.salesTarget || 0)}
-                </p>
-              </Group>
-              <SalesStatisticsCard
-                icon={OwnSiteIcon}
-                label="Own Site"
-                count={userSales.data?.ownSiteSales || 0}
-                textColor="text-orange-350"
-                backgroundColor="bg-orange-50"
-              />
-            </div>
-            <div>
-              <Group className="flex-col items-start gap-0 mb-5">
-                <p className="text-md font-medium">Total Sales</p>
-                <p className="text-xl font-bold text-green-350">
-                  {toIndianCurrency(userSales.data?.sales || 0)}
-                </p>
-              </Group>
-              <SalesStatisticsCard
-                icon={TradedSiteIcon}
-                label="Traded Site"
-                count={userSales.data?.totalTradedAmount || 0}
-                textColor="text-blue-350"
-                backgroundColor="bg-blue-50"
-              />
+          <div className="flex-1 flex flex-col">
+            <p className="self-end mb-2 text-xs italic">**Current Financial Year</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Group className="flex-col items-start gap-0 mb-5">
+                  <p className="text-md font-medium">Sales Target</p>
+                  <p className="text-xl font-bold text-purple-350">
+                    {toIndianCurrency(userSales.data?.salesTarget || 0)}
+                  </p>
+                </Group>
+                <SalesStatisticsCard
+                  icon={OwnSiteIcon}
+                  label="Own Site"
+                  count={userSales.data?.ownSiteSales || 0}
+                  textColor="text-orange-350"
+                  backgroundColor="bg-orange-50"
+                />
+              </div>
+              <div>
+                <Group className="flex-col items-start gap-0 mb-5">
+                  <p className="text-md font-medium">Total Sales</p>
+                  <p className="text-xl font-bold text-green-350">
+                    {toIndianCurrency(userSales.data?.sales || 0)}
+                  </p>
+                </Group>
+                <SalesStatisticsCard
+                  icon={TradedSiteIcon}
+                  label="Traded Site"
+                  count={userSales.data?.totalTradedAmount || 0}
+                  textColor="text-blue-350"
+                  backgroundColor="bg-blue-50"
+                />
+              </div>
             </div>
           </div>
         </section>
