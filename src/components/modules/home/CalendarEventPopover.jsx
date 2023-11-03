@@ -3,6 +3,7 @@ import { ColorSwatch, Group, Popover } from '@mantine/core';
 import { isArray } from 'lodash';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { v4 as uuidv4 } from 'uuid';
 import { DATE_THIRD_FORMAT } from '../../../utils/constants';
 
 const CalendarEventPopover = ({ eventInfo }) => {
@@ -35,17 +36,17 @@ const CalendarEventPopover = ({ eventInfo }) => {
           <section className="p-3 bg-white min-h-[50px] max-h-[150px] overflow-y-auto rounded-b-xl">
             <div>
               {isArray(inventoryVacancy)
-                ? inventoryVacancy?.[0]?.inventory.map(item => (
-                    <Group key={item?._id} className="flex flex-row gap-1">
+                ? inventoryVacancy?.map(item => (
+                    <Group key={uuidv4()} className="flex flex-row gap-1">
                       <Link
-                        to={`/inventory/view-details/${item?._id}`}
+                        to={`/inventory/view-details/${item?.inventory?.[0]?._id}`}
                         className="flex items-baseline gap-2"
                       >
                         <div>
                           <ColorSwatch color="#914EFB" size={10} />
                         </div>
                         <p className="text-black font-medium">
-                          {item?.basicInformation?.spaceName} will be vacant
+                          {item?.inventory?.[0].basicInformation?.spaceName} will be vacant
                         </p>
                       </Link>
                     </Group>
