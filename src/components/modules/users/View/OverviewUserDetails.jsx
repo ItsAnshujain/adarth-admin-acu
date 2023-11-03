@@ -134,11 +134,18 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
               myDetails?.role === 'admin' ||
               myDetails?.role === 'management' ? (
                 <ControlledNumberInput
-                  label="Sales Target ₹"
+                  label={
+                    <div className="flex flex-row items-start">
+                      <p>Sales Target ₹ </p>
+                      {myDetails?.role !== 'supervisor' ? (
+                        <p className="ml-1 text-red-450">*</p>
+                      ) : null}
+                      <p className="self-end text-sm italic ml-2">**Current Financial Year</p>
+                    </div>
+                  }
                   name="salesTarget"
-                  withAsterisk={myDetails?.role !== 'supervisor'}
                   placeholder={myDetails?.role !== 'supervisor' ? 'Write...' : ''}
-                  className="w-[200px] mr-3"
+                  className="w-[300px] mr-3"
                   rightSection={
                     myDetails?.role !== 'supervisor' ? (
                       <ActionIcon onClick={handleResetTarget} className="mr-3">
