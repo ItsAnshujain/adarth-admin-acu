@@ -38,7 +38,7 @@ const UploadMediaButton = ({ updateData, isActive, id, hasMedia = false }) => {
         <HoverCard.Target>
           <Button
             disabled={uploadFile.isLoading}
-            onClick={() => openRef.current()}
+            onClick={() => (isActive ? openRef.current() : null)}
             loading={uploadFile.isLoading}
             className={classNames(
               isActive ? 'bg-purple-350 cursor-pointer' : 'bg-purple-200 cursor-not-allowed',

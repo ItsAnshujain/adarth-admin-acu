@@ -128,22 +128,36 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
           </>
         ) : null}
         <div className="col-span-3 flex flex-col px-5">
-          {myDetails?.role !== 'supervisor' ? (
-            <FormProvider {...form}>
-              <form className="mb-8 flex flex-row" onSubmit={onSubmit}>
+          <FormProvider {...form}>
+            <form className="mb-8 flex flex-row" onSubmit={onSubmit}>
+              {(myDetails?.role === 'supervisor' && userId === meId) ||
+              myDetails?.role === 'admin' ||
+              myDetails?.role === 'management' ? (
                 <ControlledNumberInput
-                  label="Sales Target ₹"
-                  name="salesTarget"
-                  withAsterisk
-                  placeholder="Write..."
-                  className="w-[200px] mr-3"
-                  rightSection={
-                    <ActionIcon onClick={handleResetTarget} className="mr-3">
-                      <XCircle className="h-4" />
-                    </ActionIcon>
+                  label={
+                    <div className="flex flex-row items-start">
+                      <p>Sales Target ₹ </p>
+                      {myDetails?.role !== 'supervisor' ? (
+                        <p className="ml-1 text-red-450">*</p>
+                      ) : null}
+                      <p className="self-end text-sm italic ml-2">**Current Financial Year</p>
+                    </div>
                   }
+                  name="salesTarget"
+                  placeholder={myDetails?.role !== 'supervisor' ? 'Write...' : ''}
+                  className="w-[300px] mr-3"
+                  rightSection={
+                    myDetails?.role !== 'supervisor' ? (
+                      <ActionIcon onClick={handleResetTarget} className="mr-3">
+                        <XCircle className="h-4" />
+                      </ActionIcon>
+                    ) : null
+                  }
+                  readOnly={myDetails?.role === 'supervisor'}
+                  disabled={myDetails?.role === 'supervisor'}
                 />
-
+              ) : null}
+              {myDetails?.role !== 'supervisor' ? (
                 <Button
                   type="submit"
                   className="primary-button self-end"
@@ -151,9 +165,10 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
                 >
                   {userDetails?.salesTarget ? 'Edit' : 'Save'}
                 </Button>
-              </form>
-            </FormProvider>
-          ) : null}
+              ) : null}
+            </form>
+          </FormProvider>
+
           <div className="col-span-2 grid grid-cols-2 gap-8">
             {userDetails?.docs?.map(doc => (
               <div className="col-span-1" key={uuidv4()}>

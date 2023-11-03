@@ -56,7 +56,7 @@ const Calendar = () => {
       />
 
       <FullCalendar
-        height="100%"
+        height="75%"
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         selectable

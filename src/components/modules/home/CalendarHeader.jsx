@@ -32,7 +32,7 @@ const CalendarHeader = ({
   };
 
   return (
-    <article className="h-6 relative">
+    <article className="h-14 relative rounded-t-lg bg-gray-50">
       <div className="absolute right-[16px] top-[22px] flex gap-4">
         <Group className="flex gap-1">
           <ColorSwatch color="#914EFB" size={10} mr={4} />
@@ -47,7 +47,7 @@ const CalendarHeader = ({
           <p className="text-black text-xs">Booking Ending</p>
         </Group>
       </div>
-      <Flex className="items-center absolute left-[16px] top-[29px] bottom-0  flex gap-2">
+      <Flex className="items-center absolute left-[16px] top-[2px] bottom-0  flex gap-2">
         <ActionIcon
           onClick={() => {
             onPrevious();
