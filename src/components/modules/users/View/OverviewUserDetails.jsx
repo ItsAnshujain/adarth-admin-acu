@@ -7,6 +7,7 @@ import * as yup from 'yup';
 import { showNotification } from '@mantine/notifications';
 import { XCircle } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import PreviewCard from '../Create/PreviewCard';
 import UserImage from '../../../../assets/placeholders/user.png';
 import ControlledNumberInput from '../../../shared/FormInputs/Controlled/ControlledNumberInput';
@@ -28,6 +29,8 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
   const form = useForm({ resolver: yupResolver(schema) });
   const updateUser = useUpdateUsers();
   const meId = useUserStore(state => state.id);
+  const [salesSearchParams] = useSearchParams();
+  const isPeer = salesSearchParams.get('isPeer') === 'true';
 
   const myDetails = queryClient.getQueryData(['users-by-id', meId]);
 
@@ -130,9 +133,10 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
         <div className="col-span-3 flex flex-col px-5">
           <FormProvider {...form}>
             <form className="mb-8 flex flex-row" onSubmit={onSubmit}>
-              {(myDetails?.role === 'supervisor' && userId === meId) ||
-              myDetails?.role === 'admin' ||
-              myDetails?.role === 'management' ? (
+              {((myDetails?.role === 'supervisor' && userId === meId) ||
+                myDetails?.role === 'admin' ||
+                myDetails?.role === 'management') &&
+              !isPeer ? (
                 <ControlledNumberInput
                   label={
                     <div className="flex flex-row items-start">
@@ -157,7 +161,7 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
                   disabled={myDetails?.role === 'supervisor'}
                 />
               ) : null}
-              {myDetails?.role !== 'supervisor' ? (
+              {myDetails?.role !== 'supervisor' && !isPeer ? (
                 <Button
                   type="submit"
                   className="primary-button self-end"
