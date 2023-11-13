@@ -142,7 +142,30 @@ const SelectSpace = () => {
     [watchPlace.length, updateData],
   );
 
-  const handleSelection = selectedRows => form.setValue('place', selectedRows);
+  const handleSortRowsOnTop = (ids, rows) => {
+    setUpdatedInventoryData(() => {
+      const arr1 = [];
+      const arr2 = [];
+      rows.forEach(item => {
+        if (ids.includes(item._id)) {
+          arr1.push(item);
+        } else {
+          arr2.push(item);
+        }
+      });
+
+      return [...arr1, ...arr2];
+    });
+  };
+
+  const handleSelection = selectedRows => {
+    handleSortRowsOnTop(
+      selectedRows?.map(item => item._id),
+      updatedInventoryData,
+    );
+
+    form.setValue('place', selectedRows);
+  };
 
   const togglePreviewModal = imgSrc =>
     modals.openModal({
@@ -521,7 +544,10 @@ const SelectSpace = () => {
         finalData.push(obj);
       }
 
-      setUpdatedInventoryData(finalData);
+      handleSortRowsOnTop(
+        watchPlace?.map(item => item._id),
+        finalData,
+      );
       setPagination(page);
     }
   }, [inventoryQuery.data?.docs]);
