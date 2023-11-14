@@ -1,82 +1,68 @@
-import TextInput from '../../../shared/TextInput';
-import { useFormContext } from '../../../../context/formContext';
+import { formLabelStyles } from '../../../../utils';
+import ControlledTextInput from '../../../shared/FormInputs/Controlled/ControlledTextInput';
 
-const styles = {
-  label: {
-    fontWeight: 'bold',
-    marginBottom: 8,
-    fontSize: 16,
-    letterSpacing: '0.5px',
-  },
-  input: {
-    borderRadius: 0,
-  },
-};
-const BasicInformationForm = () => {
-  const { errors } = useFormContext();
+const BasicInformationForm = () => (
+  <div className="mt-4">
+    <p className="text-xl font-bold">Basic Information</p>
+    <article className="grid grid-cols-2 gap-8 mt-4">
+      <section className="flex flex-col gap-4">
+        <ControlledTextInput
+          label="Company Name"
+          name="client.companyName"
+          withAsterisk
+          placeholder="Write..."
+          maxLength={200}
+          classNames={formLabelStyles}
+        />
+        <ControlledTextInput
+          label="Client Email"
+          name="client.email"
+          placeholder="Write..."
+          maxLength={200}
+          classNames={formLabelStyles}
+        />
+        <ControlledTextInput
+          label="Client Pan Number"
+          name="client.panNumber"
+          placeholder="Write..."
+          maxLength={200}
+          classNames={formLabelStyles}
+        />
+        <ControlledTextInput
+          label="Brand Display Name"
+          name="displayBrands"
+          placeholder="Write..."
+          maxLength={200}
+          classNames={formLabelStyles}
+        />
+      </section>
 
-  return (
-    <div className="mt-4">
-      <p className="text-xl font-bold">Basic Information</p>
-      <div className="grid grid-cols-2 gap-8 mt-4">
-        <div className="flex flex-col gap-4">
-          <TextInput
-            styles={styles}
-            label="Company Name"
-            name="client.companyName"
-            withAsterisk
-            placeholder="Write..."
-            errors={errors}
-          />
-          <TextInput
-            styles={styles}
-            label="Client Email"
-            name="client.email"
-            placeholder="Write..."
-            errors={errors}
-          />
-          <TextInput
-            styles={styles}
-            label="Client Pan Number"
-            name="client.panNumber"
-            placeholder="Write..."
-            errors={errors}
-          />
-          <TextInput
-            styles={styles}
-            label="Brand Display Name "
-            name="displayBrands"
-            placeholder="Write..."
-            errors={errors}
-          />
-        </div>
-        <div className="flex flex-col gap-4">
-          <TextInput
-            styles={styles}
-            label="Client Name"
-            name="client.name"
-            withAsterisk
-            placeholder="Write..."
-            errors={errors}
-          />
-          <TextInput
-            styles={styles}
-            label="Client Contact Number"
-            name="client.contactNumber"
-            placeholder="Write..."
-            errors={errors}
-          />
-          <TextInput
-            styles={styles}
-            label="Client GST Number"
-            name="client.gstNumber"
-            placeholder="Write..."
-            errors={errors}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
+      <section className="flex flex-col gap-4">
+        <ControlledTextInput
+          label="Client Name"
+          name="client.name"
+          withAsterisk
+          placeholder="Write..."
+          maxLength={200}
+          classNames={formLabelStyles}
+        />
+        <ControlledTextInput
+          label="Client Contact Number"
+          name="client.contactNumber"
+          placeholder="Write..."
+          maxLength={200}
+          classNames={formLabelStyles}
+        />
+        <ControlledTextInput
+          label="Client GST Number"
+          name="client.gstNumber"
+          placeholder="Write..."
+          maxLength={200}
+          classNames={formLabelStyles}
+        />
+      </section>
+    </article>
+  </div>
+);
 
 export default BasicInformationForm;

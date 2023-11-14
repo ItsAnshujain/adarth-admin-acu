@@ -3,6 +3,7 @@ import { Button, Tabs } from '@mantine/core';
 import { yupResolver } from '@mantine/form';
 import { useQueryClient } from '@tanstack/react-query';
 import * as yup from 'yup';
+import { showNotification } from '@mantine/notifications';
 import BasicInfo from '../../components/modules/users/Create/BasicInfo';
 import Documents from '../../components/modules/users/Create/Documents';
 import useUserStore from '../../store/user.store';
@@ -95,7 +96,17 @@ const EditMyProfilePage = () => {
         delete dataObj[key];
       }
     });
-    mutateAsync({ userId, data: dataObj });
+    mutateAsync(
+      { userId, data: dataObj },
+      {
+        onSuccess: () => {
+          showNotification({
+            title: 'User updated successfully',
+            color: 'green',
+          });
+        },
+      },
+    );
   };
 
   useEffect(() => {

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Select as MantineSelect } from '@mantine/core';
 
-const Select = React.forwardRef(({ ...props }, ref) => (
+const Select = forwardRef(({ ...props }, ref) => (
   <MantineSelect
     ref={ref}
     classNames={{

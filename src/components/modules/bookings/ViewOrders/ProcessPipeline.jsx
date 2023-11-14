@@ -12,10 +12,36 @@ const ProcessPipeline = ({ bookingData }) => {
         hasRightEdge: false,
       },
       {
-        status: 'Order Confirmed',
-        date: bookingData?.paymentStatus?.Paid,
-        isSuccess: bookingData?.currentStatus?.paymentStatus?.toLowerCase() === 'paid',
-        hasRightEdge: false,
+        statusArr: [
+          {
+            status: 'Order Confirmed',
+            date: bookingData?.paymentStatus?.Paid,
+            isSuccess: bookingData?.currentStatus?.paymentStatus?.toLowerCase() === 'paid',
+            hasRightEdge: true,
+          },
+          {
+            status: 'Purchase Order',
+            date: bookingData?.purchaseOrderUpdatedAt,
+            isSuccess: bookingData?.purchaseOrder,
+            className: 'ml-[55px]',
+            hasBottomEdge: false,
+          },
+          {
+            status: 'Release Order',
+            date: bookingData?.releaseOrderUpdatedAt,
+            isSuccess: bookingData?.releaseOrder,
+            hasBottomEdge: false,
+            className: 'ml-[55px]',
+          },
+          {
+            status: 'Invoice',
+            date: bookingData?.invoiceUpdatedAt,
+            isSuccess: bookingData?.invoice,
+            hasRightEdge: false,
+            hasBottomEdge: false,
+            className: 'ml-[55px]',
+          },
+        ],
       },
       {
         statusArr: [
@@ -29,7 +55,7 @@ const ProcessPipeline = ({ bookingData }) => {
               bookingData?.currentStatus?.printingStatus?.toLowerCase() === 'completed',
           },
           {
-            status: 'Sent For Printing',
+            status: 'Printing in Progress',
             date:
               bookingData?.printingStatus?.['In Progress'] ||
               bookingData?.printingStatus?.Completed,
@@ -97,7 +123,7 @@ const ProcessPipeline = ({ bookingData }) => {
                 bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'upcoming') ||
               bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'ongoing' ||
               bookingData?.currentStatus?.campaignStatus?.toLowerCase() === 'completed',
-            hasBottomEdge: false,
+            hasBottomEdge: true,
           },
           {
             status: 'Campaign Ongoing',
@@ -118,12 +144,19 @@ const ProcessPipeline = ({ bookingData }) => {
           },
         ],
       },
+      {
+        status: 'Payment Received',
+        date: bookingData?.hasPaidUpdatedAt,
+        isSuccess: bookingData?.hasPaid,
+        hasRightEdge: false,
+        hasBottomEdge: false,
+      },
     ],
     [bookingData],
   );
 
   return (
-    <div className="pt-5">
+    <div className="pt-5 overflow-auto">
       {pipelineList.map(item => (
         <Fragment key={uuidv4()}>
           {item?.status ? (

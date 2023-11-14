@@ -109,10 +109,10 @@ const ReleaseOrder = ({
           ),
       },
       {
-        Header: 'QUANTITY',
-        accessor: 'quantity',
+        Header: 'UNIT',
+        accessor: 'unit',
         disableSortBy: true,
-        Cell: () => useMemo(() => <p className="w-[14%]">1</p>, []),
+        Cell: info => useMemo(() => <p className="w-[14%]">{info.row.original.unit || '-'}</p>, []),
       },
       {
         Header: 'RATE',

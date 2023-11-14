@@ -1,13 +1,13 @@
 import { Chip, Button } from '@mantine/core';
 import classNames from 'classnames';
 import { ChevronLeft, ChevronRight } from 'react-feather';
+import { useFormContext } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { useFormContext } from '../../../../context/formContext';
 
 const initialState = ['Basic Information', 'Order Information', 'Select Spaces'];
 
 const Header = ({ setFormStep, formStep, isLoading, isEditable }) => {
-  const { values } = useFormContext();
+  const form = useFormContext();
   const navigate = useNavigate();
   const handleBooking = () => navigate('/bookings');
   const handleBack = () => {
@@ -17,6 +17,9 @@ const Header = ({ setFormStep, formStep, isLoading, isEditable }) => {
       setFormStep(formStep - 1);
     }
   };
+
+  const place = form.getValues('place') || [];
+
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <div className="flex gap-6 relative">
@@ -64,7 +67,7 @@ const Header = ({ setFormStep, formStep, isLoading, isEditable }) => {
         <Button
           onClick={handleBack}
           className="bg-black"
-          disabled={isLoading || (formStep === 3 && values?.place.find(item => !item.unit))}
+          disabled={isLoading || (formStep === 3 && place.find(item => !item.unit))}
         >
           <ChevronLeft className="mr-2 h-4" />
           Back
@@ -78,7 +81,7 @@ const Header = ({ setFormStep, formStep, isLoading, isEditable }) => {
         {formStep === 3 ? (
           <Button
             type="submit"
-            disabled={isLoading || values?.place.find(item => !item.unit)}
+            disabled={isLoading || place.find(item => !item.unit)}
             loading={isLoading}
             className="bg-purple-450 order-3"
           >

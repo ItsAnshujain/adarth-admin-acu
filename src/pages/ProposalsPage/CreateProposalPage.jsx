@@ -64,7 +64,7 @@ const CreateProposalPage = () => {
   const [query] = useState({
     owner: 'all',
     page: 1,
-    limit: 10,
+    limit: 30,
     sortBy: 'createdAt',
     sortOrder: 'asc',
   });
@@ -158,6 +158,10 @@ const CreateProposalPage = () => {
 
       delete data.uploadType;
 
+      if (data.proposalTermsId) {
+        data.proposalTermsId = data.proposalTermsId.value;
+      }
+
       if (proposalId) {
         data = {
           ...data,
@@ -225,6 +229,10 @@ const CreateProposalPage = () => {
           })) || [],
         letterHead: proposalData?.proposal?.letterHead,
         letterFooter: proposalData?.proposal?.letterFooter,
+        proposalTermsId: {
+          label: proposalData?.proposal?.proposalTermsId?.name,
+          value: proposalData?.proposal?.proposalTermsId?._id,
+        },
       });
     }
   }, [proposalData, userData]);

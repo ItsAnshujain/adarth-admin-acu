@@ -1,12 +1,14 @@
-import { ActionIcon, Box, Button, Group, Loader } from '@mantine/core';
+import { Button, Group, Loader } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import React, { useMemo } from 'react';
-import { Edit } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useFetchOperationalCost } from '../../../../apis/queries/operationalCost.queries';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import modalConfig from '../../../../utils/modalConfig';
 import AddOperationalCostModal from './AddOperationalCostModal';
+import DeleteOperationalCostContent from '../operationalCost/DeleteOperationalCostContent';
+import OperationalCostCard from '../operationalCost/OperationalCostCard';
+// import OperationalCostMenuPopover from '../../../Popovers/OperationalCostMenuPopover';
 
 const OperationalCost = ({ inventoryDetails, isPeer }) => {
   const modals = useModals();
@@ -28,11 +30,12 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
   ) =>
     modals.openContextModal('basic', {
       title: `${costId ? 'Edit' : 'Add'} Operational Cost`,
+      modalId: 'addOperationalCost',
       innerProps: {
         modalBody: (
           <AddOperationalCostModal
             inventoryId={inventoryId}
-            onClose={id => modals.closeModal(id)}
+            onClose={() => modals.closeModal('addOperationalCost')}
             costId={costId}
             type={type}
             amount={amount}
@@ -53,6 +56,21 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
     return result;
   }, [operationaCostData]);
 
+  const toggleDeleteModal = itemId =>
+    modals.openContextModal('basic', {
+      title: '',
+      modalId: 'deleteOperationalCost',
+      innerProps: {
+        modalBody: (
+          <DeleteOperationalCostContent
+            onClose={() => modals.closeModal('deleteOperationalCost')}
+            itemId={itemId}
+          />
+        ),
+      },
+      ...modalConfig,
+    });
+
   return (
     <div>
       <p className="font-medium text-lg">View Operational Cost</p>
@@ -66,48 +84,29 @@ const OperationalCost = ({ inventoryDetails, isPeer }) => {
               Space Name: {inventoryDetails?.basicInformation?.spaceName}
             </p>
           </Group>
-          <div className="">
+          <div>
             <div className="min-h-[400px] max-h-[400px] overflow-y-auto px-3">
               {operationaCostData?.length ? (
                 operationaCostData.map(item => (
-                  <Box
+                  <OperationalCostCard
                     key={item?._id}
-                    className="py-3 border-b border-black flex justify-between pl-5 pr-10"
-                  >
-                    <div className="flex">
-                      {!isPeer ? (
-                        <ActionIcon
-                          onClick={e =>
-                            handleOperationalCost(
-                              e,
-                              item?._id,
-                              item?.type,
-                              item?.amount,
-                              item?.description,
-                              item?.year,
-                              item?.month,
-                              item?.day,
-                              item?.bookingId,
-                            )
-                          }
-                        >
-                          <Edit className="text-black" />
-                        </ActionIcon>
-                      ) : null}
-
-                      <div className="ml-3">
-                        <p className="font-medium">{item?.type?.name}</p>
-                        <p className="font-light text-sm w-[80%] mb-1 text-gray-500">
-                          {item?.description}
-                        </p>
-                        <p className="text-xs mb-1">Created at:</p>
-                        <p className="text-xs text-gray-500 font-medium">
-                          {item?.day || 'NA'}/{item?.month || 'NA'}/{item?.year}
-                        </p>
-                      </div>
-                    </div>
-                    <p>{toIndianCurrency(item?.amount)}</p>
-                  </Box>
+                    isPeer={isPeer}
+                    item={item}
+                    onEdit={e =>
+                      handleOperationalCost(
+                        e,
+                        item?._id,
+                        item?.type,
+                        item?.amount,
+                        item?.description,
+                        item?.year,
+                        item?.month,
+                        item?.day,
+                        item?.bookingId,
+                      )
+                    }
+                    onDelete={() => toggleDeleteModal(item?._id)}
+                  />
                 ))
               ) : (
                 <p className="text-center text-lg py-5">No records found</p>

@@ -315,6 +315,11 @@ const BookingsDashboardPage = () => {
         }) => useMemo(() => <p>{campaign?.incharge?.name || '-'}</p>, []),
       },
       {
+        Header: 'SALES PERSON',
+        accessor: 'salesPerson',
+        Cell: info => useMemo(() => <p>{info.row.original.salesPerson?.name || '-'}</p>, []),
+      },
+      {
         Header: 'HEALTH STATUS',
         accessor: 'campaign.avgHealth',
         Cell: ({
@@ -415,7 +420,7 @@ const BookingsDashboardPage = () => {
           ),
       },
       {
-        Header: 'DOWNLOAD UPLOADED MEDIA',
+        Header: 'DOWNLOAD ARTWORK',
         accessor: '',
         disableSortBy: true,
         Cell: ({

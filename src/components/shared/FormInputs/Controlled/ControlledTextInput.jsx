@@ -5,13 +5,20 @@ import TextInput from '../TextInput';
 const ControlledTextInput = ({ name, ...props }) => {
   const form = useFormContext();
 
-  return (
-    <TextInput
-      {...form.register(name)}
-      error={form.formState?.errors?.[name]?.message}
-      {...props}
-    />
-  );
+  const getError = () => {
+    if (name.includes('.')) {
+      const errorPart = name.split('.');
+      let error = form.formState.errors;
+      errorPart.forEach(item => {
+        if (item) error = error?.[item];
+      });
+
+      return error?.message;
+    }
+    return form.formState?.errors?.[name]?.message;
+  };
+
+  return <TextInput {...form.register(name)} error={getError()} {...props} />;
 };
 
 export default ControlledTextInput;

@@ -910,7 +910,7 @@ const CreateFinancePage = () => {
             onClose={close}
             title="Preview"
             centered
-            size="2xl"
+            size={1000}
             overlayBlur={3}
             overlayOpacity={0.55}
             radius={0}

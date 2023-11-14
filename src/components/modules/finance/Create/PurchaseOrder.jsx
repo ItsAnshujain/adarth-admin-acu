@@ -152,6 +152,12 @@ const PurchaseOrder = ({
           ),
       },
       {
+        Header: 'UNIT',
+        accessor: 'unit',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p className="w-[14%]">{info.row.original.unit || '-'}</p>, []),
+      },
+      {
         Header: 'RATE',
         accessor: 'rate',
         disableSortBy: true,

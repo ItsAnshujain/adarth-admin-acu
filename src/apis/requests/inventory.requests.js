@@ -31,3 +31,5 @@ export const shareInventory = (queries, data) =>
 
 export const fetchDistinctAdditionalTags = () =>
   http.get(urlcat('/inventory/distinct-additional-tags'));
+
+export const fetchDistinctCities = () => http.get(urlcat('/inventory/distinct-cities'));

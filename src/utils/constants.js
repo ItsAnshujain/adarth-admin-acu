@@ -1,3 +1,8 @@
+import LeadsDiscussionIcon from '../assets/leads-discussion.svg';
+import LeadsProgressIcon from '../assets/leads-progress.svg';
+import LeadsCompleteIcon from '../assets/leads-complete.svg';
+import LeadsLostIcon from '../assets/leads-lost.svg';
+
 export const SMTP_SERVICES = [
   { label: '1und1', value: '1und1' },
   { label: 'AOL', value: 'AOL' },
@@ -45,6 +50,10 @@ export const MODE_OF_PAYMENT = [
 export const DATE_FORMAT = 'YYYY-MM-DD';
 
 export const DATE_SECOND_FORMAT = 'DD MMM YYYY';
+
+export const DATE_THIRD_FORMAT = 'MMMM DD, YYYY';
+
+export const DATE_FOURTH_FORMAT = 'MMMM YYYY';
 
 export const BOOKING_PAID_STATUS = [
   { label: 'Paid', value: true },
@@ -103,3 +112,56 @@ export const OBJECT_FIT_LIST = [
 ];
 
 export const FACING_VALUE_LIST = ['single', 'double', 'triple', 'four', 'five'];
+
+export const OBJECT_FIT_LIST_V2 = [
+  { label: 'Generic Fill', value: 'fill;generic' },
+  { label: 'Generic Contain', value: 'contain;generic' },
+  { label: 'Long Shot / Close Shot - Fill', value: 'fill;longShotCloseShot' },
+  { label: 'Long Shot / Close Shot - Contain', value: 'contain;longShotCloseShot' },
+];
+
+export const LEADS_LIST = [
+  {
+    label: 'Initiate Discussion',
+    count: 0,
+    textColor: 'text-orange-350',
+    backgroundColor: 'bg-orange-50',
+    icon: LeadsDiscussionIcon,
+  },
+  {
+    label: 'In Progress',
+    count: 0,
+    textColor: 'text-purple-350',
+    backgroundColor: 'bg-purple-50',
+    icon: LeadsProgressIcon,
+  },
+  {
+    label: 'Completed',
+    count: 0,
+    textColor: 'text-green-350',
+    backgroundColor: 'bg-green-50',
+    icon: LeadsCompleteIcon,
+  },
+  {
+    label: 'Lost',
+    count: 0,
+    textColor: 'text-red-350',
+    backgroundColor: 'bg-red-100',
+    icon: LeadsLostIcon,
+  },
+];
+
+export const monthsInShort = [
+  { label: 'Jan', value: '01' },
+  { label: 'Feb', value: '02' },
+  { label: 'Mar', value: '03' },
+  { label: 'Apr', value: '04' },
+  { label: 'May', value: '05' },
+  { label: 'Jun', value: '06' },
+  { label: 'Jul', value: '07' },
+  { label: 'Aug', value: '08' },
+  { label: 'Sept', value: '09' },
+  { label: 'Oct', value: '10' },
+  { label: 'Nov', value: '11' },
+  { label: 'Dec', value: '12' },
+];

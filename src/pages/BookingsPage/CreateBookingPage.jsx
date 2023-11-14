@@ -1,25 +1,32 @@
-import { useEffect, useState } from 'react';
-import { yupResolver } from '@mantine/form';
+import { useCallback, useEffect, useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import dayjs from 'dayjs';
 import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import { FormProvider, useForm } from 'react-hook-form';
 import BasicInformationForm from '../../components/modules/bookings/Create/BasicInformationForm';
 import SelectSpaces from '../../components/modules/bookings/Create/SelectSpaces';
 import OrderInformationForm from '../../components/modules/bookings/Create/OrderInformationForm';
 import SuccessModal from '../../components/shared/Modal';
 import Header from '../../components/modules/bookings/Create/Header';
-import { FormProvider, useForm } from '../../context/formContext';
 import {
   useBookingById,
   useCreateBookings,
   useUpdateBooking,
 } from '../../apis/queries/booking.queries';
-import { gstRegexMatch, panRegexMatch, isValidURL } from '../../utils';
+import {
+  gstRegexMatch,
+  panRegexMatch,
+  isValidURL,
+  serialize,
+  calculateTotalPrice,
+} from '../../utils';
+import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 
-const initialValues = {
+const defaultValues = {
   client: {
     companyName: '',
     name: '',
@@ -33,6 +40,7 @@ const initialValues = {
   place: [],
   price: 0,
   industry: '',
+  // industry: '63f9c30b1a5afbaafe11b0c1',
   displayBrands: '',
 };
 
@@ -72,23 +80,43 @@ const campaignInformationSchema = yup.object({
 
 const schemas = [basicInformationSchema, campaignInformationSchema, yup.object()];
 
+const proposalByIdQuery = {
+  owner: 'all',
+  page: 1,
+  limit: 10,
+  sortBy: 'createdAt',
+  sortOrder: 'asc',
+};
+
 const CreateBookingPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { id: bookingId } = useParams();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  const [searchParams] = useSearchParams(proposalByIdQuery);
+
   const [formStep, setFormStep] = useState(1);
-  const form = useForm({ validate: yupResolver(schemas[formStep - 1]), initialValues });
-  const { mutateAsync: createBooking, isLoading } = useCreateBookings();
-  const update = useUpdateBooking();
+  const form = useForm({ resolver: yupResolver(schemas[formStep - 1]), defaultValues });
+  const createBooking = useCreateBookings();
+  const updateBooking = useUpdateBooking();
   const bookingById = useBookingById(bookingId, !!bookingId);
 
-  const handleSubmit = async formData => {
+  const proposalId = searchParams.get('proposalId');
+  const proposalLimit = searchParams.get('proposalLimit');
+  const proposalById = useFetchProposalById(
+    `${proposalId}?${serialize({ ...proposalByIdQuery, limit: proposalLimit })}`,
+    !!proposalId,
+  );
+
+  const watchPlace = form.watch('place') || [];
+
+  const handleSubmit = form.handleSubmit(async formData => {
     setFormStep(prevState => prevState + 1);
     if (formStep === 3) {
       const data = { ...formData };
+
       setFormStep(3);
-      if (!form.values?.place?.length) {
+      if (!watchPlace?.length) {
         showNotification({
           title: 'Please select atleast one place to continue',
           color: 'blue',
@@ -136,7 +164,7 @@ const CreateBookingPage = () => {
         return;
       }
 
-      data.place = form.values?.place?.map(item => ({
+      data.place = watchPlace?.map(item => ({
         id: item._id,
         price: +item.price,
         media: isValidURL(item.media) ? item.media : undefined,
@@ -179,7 +207,7 @@ const CreateBookingPage = () => {
         data.displayBrands = [data.displayBrands];
       }
 
-      const totalPrice = form.values?.place?.reduce((acc, item) => acc + +(item.price || 0), 0);
+      const totalPrice = calculateTotalPrice(watchPlace);
       const gstCalculation = totalPrice * 0.18;
       data.price = totalPrice + gstCalculation;
 
@@ -196,7 +224,19 @@ const CreateBookingPage = () => {
       });
 
       if (bookingId) {
-        update.mutate(
+        // TODO: remove after testing
+        // eslint-disable-next-line no-console
+        console.log({
+          id: bookingId,
+          data: {
+            ...data,
+            ...totalImpressionAndHealth,
+            startDate: minDate,
+            endDate: maxDate,
+          },
+        });
+        // return;
+        updateBooking.mutate(
           {
             id: bookingId,
             data: {
@@ -217,12 +257,23 @@ const CreateBookingPage = () => {
           },
         );
       } else {
-        await createBooking(
+        // TODO: remove after testing
+        // eslint-disable-next-line no-console
+        console.log({
+          ...data,
+          ...totalImpressionAndHealth,
+          startDate: minDate,
+          endDate: maxDate,
+          proposalId: proposalId || null,
+        });
+        // return;
+        createBooking.mutate(
           {
             ...data,
             ...totalImpressionAndHealth,
             startDate: minDate,
             endDate: maxDate,
+            proposalId: proposalId || null,
           },
           {
             onSuccess: () => {
@@ -236,23 +287,26 @@ const CreateBookingPage = () => {
         );
       }
     }
-  };
+  });
 
-  const getForm = () =>
-    formStep === 1 ? (
-      <BasicInformationForm />
-    ) : formStep === 2 ? (
-      <OrderInformationForm />
-    ) : (
-      <SelectSpaces />
-    );
+  const getForm = useCallback(
+    () =>
+      formStep === 1 ? (
+        <BasicInformationForm />
+      ) : formStep === 2 ? (
+        <OrderInformationForm />
+      ) : (
+        <SelectSpaces />
+      ),
+    [formStep],
+  );
 
   useEffect(() => {
     if (bookingById.data) {
       const { client, displayBrands, campaign } = bookingById.data;
 
-      form.setValues({
-        ...form.values,
+      form.reset({
+        // ...form.values,
         client: {
           companyName: client?.companyName || '',
           name: client?.name || '',
@@ -288,14 +342,38 @@ const CreateBookingPage = () => {
     }
   }, [bookingById.data]);
 
+  useEffect(() => {
+    if (proposalById.data) {
+      form.reset({
+        // ...form.values,
+        campaignName: proposalById.data?.proposal?.name || '',
+        description: proposalById.data?.proposal?.description || '',
+        place: proposalById.data?.inventories.docs.map(item => ({
+          _id: item._id,
+          price: item.price,
+          media: isValidURL(item.media) ? item.media : undefined,
+          startDate: item.startDate,
+          endDate: item.endDate,
+          tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
+          unit: item?.bookedUnits,
+          availableUnit: item?.remainingUnits,
+          initialUnit: item?.bookedUnits || 0,
+          impressionMax: item?.specifications?.impressions?.max || 0,
+          impressionMin: item?.specifications?.impressions?.min,
+          health: item?.specifications?.health || 0,
+        })),
+      });
+    }
+  }, [proposalById.data]);
+
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
-      <FormProvider form={form}>
-        <form onSubmit={form.onSubmit(handleSubmit)}>
+      <FormProvider {...form}>
+        <form onSubmit={handleSubmit}>
           <Header
             setFormStep={setFormStep}
             formStep={formStep}
-            isLoading={isLoading || update.isLoading}
+            isLoading={createBooking.isLoading || updateBooking.isLoading}
             isEditable={!!bookingId}
           />
           {getForm()}

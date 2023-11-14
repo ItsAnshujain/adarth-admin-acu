@@ -510,3 +510,14 @@ export const timeLegend = {
   quarter: 'Months',
   month: 'Months',
 };
+
+export const formLabelStyles = {
+  label: 'font-bold text-primary text-base mb-2',
+  input: 'border-gray-450',
+};
+
+export const calculateTotalPrice = (option = []) => {
+  if (!option.length) return 0;
+  const totalPrice = option.reduce((acc, item) => acc + +(item.price || 0), 0);
+  return totalPrice;
+};

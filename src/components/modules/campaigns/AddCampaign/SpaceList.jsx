@@ -13,6 +13,7 @@ import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import { useFormContext } from '../../../../context/formContext';
 import {
+  calculateTotalPrice,
   categoryColors,
   currentDate,
   generateSlNo,
@@ -57,7 +58,7 @@ const SpaceList = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
     limit: 20,
-    sortBy: 'basicInformation.spaceName',
+    sortBy: 'createdAt',
     sortOrder: 'desc',
     isUnderMaintenance: false,
     isActive: true,
@@ -67,13 +68,7 @@ const SpaceList = () => {
   const limit = searchParams.get('limit');
   const modals = useModals();
 
-  const getTotalPrice = useCallback(
-    (places = []) => {
-      const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
-      return totalPrice;
-    },
-    [values?.place],
-  );
+  const getTotalPrice = useCallback(() => calculateTotalPrice(values?.place), [values?.place]);
 
   const toggleFilter = () => setShowFilter(!showFilter);
 

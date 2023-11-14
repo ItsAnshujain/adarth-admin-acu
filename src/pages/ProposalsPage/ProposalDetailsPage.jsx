@@ -393,11 +393,15 @@ const ProposalDetailsPage = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
-      <Header isPeer={proposalData?.proposal?.isPeer} />
+      <Header
+        isPeer={proposalData?.proposal?.isPeer}
+        bookingId={proposalData?.proposal?.bookingId}
+      />
       <Details
         proposalData={proposalData?.proposal}
         isProposalDataLoading={isProposalDataLoading}
         inventoryData={proposalData?.inventories}
+        proposalId={proposalId}
       />
       <div className="flex justify-between mt-4">
         <Text size="xl" weight="bolder">

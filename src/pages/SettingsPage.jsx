@@ -7,7 +7,7 @@ import NotificationSettings from '../components/modules/settings/Notification';
 import ChangePassword from '../components/modules/settings/ChangePassword';
 import DeleteAccount from '../components/modules/settings/DeleteAccount';
 import SignatureAndLetterhead from '../components/modules/settings/SignatureAndLetterhead';
-import SmtpSetup from '../components/modules/settings/SmtpSetup';
+import AddSmtpSetupForm from '../components/modules/settings/AddSmtpSetupForm';
 
 const SettingsPage = () => {
   const [tabs, setTabs] = useState(0);
@@ -22,7 +22,7 @@ const SettingsPage = () => {
     ) : tabs === 2 ? (
       <SignatureAndLetterhead />
     ) : tabs === 3 ? (
-      <SmtpSetup />
+      <AddSmtpSetupForm />
     ) : (
       <DeleteAccount />
     );

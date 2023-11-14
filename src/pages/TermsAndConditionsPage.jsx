@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import shallow from 'zustand/shallow';
 import { useDisclosure } from '@mantine/hooks';
+import { showNotification } from '@mantine/notifications';
 import { FormProvider, useForm } from '../context/formContext';
 import { useUpdateUsers } from '../apis/queries/users.queries';
 import useUserStore from '../store/user.store';
@@ -30,6 +31,10 @@ const TermsAndConditionsPage = () => {
       { userId, data },
       {
         onSuccess: () => {
+          showNotification({
+            title: 'User updated successfully',
+            color: 'green',
+          });
           navigate('/home');
           setHasAcceptedTerms(true);
         },

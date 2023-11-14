@@ -1,35 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Button,
-  Image,
-  NumberInput,
-  Progress,
-  Badge,
-  Loader,
-  Chip,
-  HoverCard,
-  Group,
-  Tooltip,
-} from '@mantine/core';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button, Image, NumberInput, Loader, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
-import classNames from 'classnames';
-import { Dropzone } from '@mantine/dropzone';
 import { useDebouncedValue } from '@mantine/hooks';
-import { v4 as uuidv4 } from 'uuid';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { useModals } from '@mantine/modals';
-import { getWord } from 'num-count';
 import shallow from 'zustand/shallow';
+import { useFormContext } from 'react-hook-form';
 import Search from '../../../Search';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
-import upload from '../../../../assets/upload.svg';
-import { useFormContext } from '../../../../context/formContext';
 import {
-  categoryColors,
+  calculateTotalPrice,
   currentDate,
   debounce,
   generateSlNo,
@@ -37,10 +21,7 @@ import {
   getDate,
   getEveryDayUnits,
   getOccupiedState,
-  stringToColour,
-  supportedTypes,
 } from '../../../../utils';
-import { useUploadFile } from '../../../../apis/queries/upload.queries';
 import Filter from '../../inventory/Filter';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../../../DateRangeSelector';
@@ -48,6 +29,13 @@ import modalConfig from '../../../../utils/modalConfig';
 import RowsPerPage from '../../../RowsPerPage';
 import useLayoutView from '../../../../store/layout.store';
 import SpaceNamePhotoContent from '../../inventory/SpaceNamePhotoContent';
+import AdditionalTagsContent from '../../inventory/AdditionalTagsContent';
+import HealthStatusContent from '../../inventory/HealthStatusContent';
+import CategoryContent from '../../inventory/CategoryContent';
+import SubCategoryContent from '../../inventory/SubCategoryContent';
+import ImpressionContent from '../../inventory/ImpressionContent';
+import UploadMediaContent from '../../inventory/UploadMediaContent';
+import DimensionContent from '../../inventory/DimensionContent';
 
 dayjs.extend(isBetween);
 
@@ -61,91 +49,10 @@ const updatedModalConfig = {
   },
 };
 
-const updatedSupportedTypes = [...supportedTypes, 'MP4'];
-
-const styles = {
-  padding: 0,
-  border: 'none',
-};
-
-const UploadButton = ({ updateData, isActive, id, hasMedia = false }) => {
-  const openRef = useRef(null);
-  const { mutateAsync: uploadMedia, isLoading } = useUploadFile();
-  const handleUpload = async params => {
-    const formData = new FormData();
-    formData.append('files', params?.[0]);
-    const res = await uploadMedia(formData);
-
-    if (res?.[0].Location) {
-      updateData('media', res[0].Location, id);
-    }
-  };
-
-  return (
-    <>
-      <Dropzone
-        style={styles}
-        onDrop={handleUpload}
-        multiple={false}
-        disabled={!isActive || isLoading}
-        openRef={openRef}
-        maxSize={5000000}
-      >
-        {/* children */}
-      </Dropzone>
-      <HoverCard openDelay={1000}>
-        <HoverCard.Target>
-          <Button
-            disabled={isLoading}
-            onClick={() => openRef.current()}
-            loading={isLoading}
-            className={classNames(
-              isActive ? 'bg-purple-350 cursor-pointer' : 'bg-purple-200 cursor-not-allowed',
-              'py-1 px-2 h-[70%] flex items-center gap-2 text-white rounded-md',
-            )}
-          >
-            {hasMedia ? (
-              <>
-                <Chip
-                  classNames={{ checkIcon: 'text-white', label: 'bg-transparent' }}
-                  checked
-                  variant="filled"
-                  color="green"
-                  radius="lg"
-                  size="xs"
-                />
-                {isLoading ? 'Uploading' : 'Uploaded'}
-              </>
-            ) : isLoading ? (
-              'Uploading'
-            ) : (
-              'Upload'
-            )}
-            <img src={upload} alt="Upload" className="ml-2" />
-          </Button>
-        </HoverCard.Target>
-        <HoverCard.Dropdown>
-          <div className="text-sm flex flex-col">
-            <span className="font-bold text-gray-500">Supported types</span>
-            <div className="mt-1">
-              {updatedSupportedTypes.map(item => (
-                <Badge key={uuidv4()} className="mr-2">
-                  {item}
-                </Badge>
-              ))}
-            </div>
-            <p className="mt-1 font-bold text-gray-500">Media size cannot be more than 5MB</p>
-          </div>
-        </HoverCard.Dropdown>
-      </HoverCard>
-    </>
-  );
-};
-
 const SelectSpace = () => {
   const modals = useModals();
   const { id: bookingId } = useParams();
-  const { setFieldValue, values } = useFormContext();
+  const form = useFormContext();
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
@@ -161,25 +68,22 @@ const SelectSpace = () => {
     limit: activeLayout.inventoryLimit || 20,
     page: 1,
     sortOrder: 'desc',
-    sortBy: 'basicInformation.spaceName',
+    sortBy: 'createdAt',
     isUnderMaintenance: false,
     isActive: true,
   });
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
-  const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
+  const inventoryQuery = useFetchInventory(searchParams.toString());
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
-  const getTotalPrice = (places = []) => {
-    const totalPrice = places.reduce((acc, item) => acc + +(item.price || 0), 0);
-    return totalPrice;
-  };
+  const watchPlace = form.watch('place') || [];
 
-  const updateData = debounce((key, val, id) => {
+  const updateData = debounce((key, val, id, inputId) => {
     if (key === 'dateRange') {
       let availableUnit = 0;
-      const hasChangedUnit = values.place.find(item => item._id === id)?.hasChangedUnit;
+      const hasChangedUnit = watchPlace.find(item => item._id === id)?.hasChangedUnit;
       setUpdatedInventoryData(prev => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
@@ -195,9 +99,9 @@ const SelectSpace = () => {
         return newList;
       });
 
-      setFieldValue(
+      form.setValue(
         'place',
-        values.place.map(item =>
+        watchPlace.map(item =>
           item._id === id
             ? {
                 ...item,
@@ -218,18 +122,27 @@ const SelectSpace = () => {
         ),
       );
 
-      setFieldValue(
+      form.setValue(
         'place',
-        values.place.map(item =>
+        watchPlace.map(item =>
           item._id === id
             ? { ...item, [key]: val, ...(key === 'unit' ? { hasChangedUnit: true } : {}) }
             : item,
         ),
       );
+
+      if (inputId) {
+        setTimeout(() => document.querySelector(`#${inputId}`)?.focus());
+      }
     }
   }, 500);
 
-  const handleSelection = selectedRows => setFieldValue('place', selectedRows);
+  const memoizedCalculateTotalPrice = useMemo(
+    () => calculateTotalPrice(watchPlace),
+    [watchPlace.length, updateData],
+  );
+
+  const handleSelection = selectedRows => form.setValue('place', selectedRows);
 
   const togglePreviewModal = imgSrc =>
     modals.openModal({
@@ -240,145 +153,122 @@ const SelectSpace = () => {
       ...updatedModalConfig,
     });
 
+  // Table Cell
+  const RenderSerialNumberCell = useCallback(
+    ({ row }) => generateSlNo(row.index, pages, limit),
+    [pages, limit],
+  );
+
+  const RenderNameCell = useCallback(({ row }) => {
+    const { photo, spaceName, isUnderMaintenance, bookingRange, originalUnit, _id } = row.original;
+    const unitLeft = getAvailableUnits(bookingRange, currentDate, currentDate, originalUnit);
+    const occupiedState = getOccupiedState(unitLeft, originalUnit);
+
+    return (
+      <SpaceNamePhotoContent
+        id={_id}
+        spaceName={spaceName}
+        spacePhoto={photo}
+        occupiedStateLabel={occupiedState}
+        isUnderMaintenance={isUnderMaintenance}
+        togglePreviewModal={togglePreviewModal}
+        isTargetBlank
+      />
+    );
+  }, []);
+
+  const RenderFaciaTowardsCell = useCallback(({ row }) => row.original.faciaTowards || '-', []);
+
+  const RenderCityCell = useCallback(({ row }) => row.original.location || '-', []);
+
+  const RenderAdditionalTagsCell = useCallback(
+    ({ row }) => <AdditionalTagsContent list={row.original.additionalTags || []} />,
+    [],
+  );
+
+  const RenderCategoryCell = useCallback(
+    ({ row }) => <CategoryContent category={row.original.category} />,
+    [],
+  );
+
+  const RenderSubCategoryCell = useCallback(
+    ({ row }) => <SubCategoryContent subCategory={row.original.subCategory} />,
+    [],
+  );
+
+  const RenderDimensionCell = useCallback(
+    ({ row }) => <DimensionContent list={row.original.dimension} />,
+    [],
+  );
+
+  const RenderMediaOwnerCell = useCallback(({ row }) => row.original.mediaOwner || '-', []);
+
+  const RenderPeerCell = useCallback(({ row }) => row.original.peer || '-', []);
+
+  const RenderInventoryIdCell = useCallback(({ row }) => row.original.inventoryId || '-', []);
+
+  const RenderMediaTypeCell = useCallback(({ row }) => row.original.mediaType || '-', []);
+
+  const RenderHealthStatusCell = useCallback(
+    ({ row }) => <HealthStatusContent health={row.original.health || 0} />,
+    [],
+  );
+
+  const RenderImpressionCell = useCallback(
+    ({ row }) => <ImpressionContent impressionMax={row.original.impressionMax || 0} />,
+    [],
+  );
+
+  const RenderUploadMediaCell = useCallback(
+    ({ row }) => <UploadMediaContent id={row.original._id} updateData={updateData} />,
+    [updateData],
+  );
+
   const COLUMNS = useMemo(
     () => [
       {
         Header: '#',
         accessor: 'id',
         disableSortBy: true,
-        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, pages, limit)}</p>, []),
+        Cell: RenderSerialNumberCell,
       },
       {
         Header: 'SPACE NAME & PHOTO',
         accessor: 'basicInformation.spaceName',
-        Cell: info =>
-          useMemo(() => {
-            const { photo, spaceName, isUnderMaintenance, bookingRange, originalUnit, _id } =
-              info.row.original;
-
-            const unitLeft = getAvailableUnits(
-              bookingRange,
-              currentDate,
-              currentDate,
-              originalUnit,
-            );
-            const occupiedState = getOccupiedState(unitLeft, originalUnit);
-
-            return (
-              <SpaceNamePhotoContent
-                id={_id}
-                spaceName={spaceName}
-                spacePhoto={photo}
-                occupiedStateLabel={occupiedState}
-                isUnderMaintenance={isUnderMaintenance}
-                togglePreviewModal={togglePreviewModal}
-                isTargetBlank
-              />
-            );
-          }, [info.row.original.isUnderMaintenance]),
+        Cell: RenderNameCell,
       },
       {
         Header: 'FACIA TOWARDS',
         accessor: 'location.faciaTowards',
         disableSortBy: true,
-        Cell: info => useMemo(() => <p>{info.row.original.faciaTowards || '-'}</p>, []),
+        Cell: RenderFaciaTowardsCell,
       },
       {
         Header: 'CITY',
         accessor: 'location.city',
-        Cell: ({
-          row: {
-            original: { location },
-          },
-        }) => useMemo(() => <p>{location || '-'}</p>, []),
+        Cell: RenderCityCell,
       },
       {
         Header: 'ADDITIONAL TAGS',
         accessor: 'specifications.additionalTags',
         disableSortBy: true,
-        Cell: info =>
-          useMemo(
-            () => (
-              <div className="flex gap-x-2">
-                {info.row.original.additionalTags?.length
-                  ? info.row.original.additionalTags.map(
-                      (item, index) =>
-                        index < 2 && (
-                          <Badge
-                            key={uuidv4()}
-                            size="lg"
-                            className="capitalize w-fit"
-                            title={item}
-                            variant="outline"
-                            color="cyan"
-                            radius="xs"
-                          >
-                            {item}
-                          </Badge>
-                        ),
-                    )
-                  : '-'}
-              </div>
-            ),
-            [],
-          ),
+        Cell: RenderAdditionalTagsCell,
       },
       {
         Header: 'CATEGORY',
         accessor: 'basicInformation.category.name',
-        Cell: ({
-          row: {
-            original: { category },
-          },
-        }) =>
-          useMemo(() => {
-            const colorType = Object.keys(categoryColors).find(
-              key => categoryColors[key] === category,
-            );
-
-            return (
-              <div>
-                {category ? (
-                  <Badge color={colorType || 'gray'} size="lg" className="capitalize">
-                    {category}
-                  </Badge>
-                ) : (
-                  <span>-</span>
-                )}
-              </div>
-            );
-          }, []),
+        Cell: RenderCategoryCell,
       },
       {
         Header: 'SUB CATEGORY',
         accessor: 'basicInformation.subCategory.name',
-        Cell: info =>
-          useMemo(
-            () =>
-              info.row.original.subCategory ? (
-                <p
-                  className="h-6 px-3 flex items-center rounded-xl text-white font-medium text-[13px] capitalize"
-                  style={{
-                    background: stringToColour(info.row.original.subCategory),
-                  }}
-                >
-                  {info.row.original.subCategory}
-                </p>
-              ) : (
-                '-'
-              ),
-            [],
-          ),
+        Cell: RenderSubCategoryCell,
       },
       {
         Header: 'DIMENSION (WxH)',
         accessor: 'specifications.size.min',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { dimension },
-          },
-        }) => useMemo(() => <div className="flex gap-x-2">{dimension}</div>, []),
+        Cell: RenderDimensionCell,
       },
       {
         Header: 'OCCUPANCY DATE',
@@ -391,7 +281,7 @@ const SelectSpace = () => {
         }) =>
           useMemo(() => {
             const isDisabled =
-              values?.place?.some(item => item._id === _id) && (!startDate || !endDate);
+              watchPlace?.some(item => item._id === _id) && (!startDate || !endDate);
             const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
 
             return (
@@ -415,11 +305,11 @@ const SelectSpace = () => {
           },
         }) =>
           useMemo(() => {
-            const isDisabled = !values?.place?.some(
+            const isDisabled = !watchPlace?.some(
               item => item._id === _id && item.startDate !== null && item.endDate !== null,
             );
             const unitLeft = getAvailableUnits(bookingRange, startDate, endDate, originalUnit);
-            const data = values?.place ? values.place.find(item => item._id === _id) : {};
+            const data = watchPlace ? watchPlace.find(item => item._id === _id) : {};
             const isExceeded =
               data?.unit > (bookingId ? unitLeft + (data?.initialUnit || 0) : data?.availableUnit);
 
@@ -440,10 +330,11 @@ const SelectSpace = () => {
                 withArrow
               >
                 <NumberInput
+                  id={`unit-${_id}`}
                   hideControls
                   defaultValue={!data?.hasChangedUnit ? Number(data?.unit || 0) : unit}
                   min={1}
-                  onChange={e => updateData('unit', e, _id)}
+                  onChange={e => updateData('unit', e, _id, `unit-${_id}`)}
                   className="w-[100px]"
                   disabled={isDisabled}
                   error={(data?.hasChangedUnit && isExceeded) || !unit}
@@ -459,9 +350,17 @@ const SelectSpace = () => {
           useMemo(
             () => (
               <NumberInput
+                id={`tradedAmount-${info.row.original._id}`}
                 hideControls
                 defaultValue={+(info.row.original.tradedAmount || 0)}
-                onChange={e => updateData('tradedAmount', e, info.row.original._id)}
+                onChange={e =>
+                  updateData(
+                    'tradedAmount',
+                    e,
+                    info.row.original._id,
+                    `tradedAmount-${info.row.original._id}`,
+                  )
+                }
                 disabled={info.row.original.peer === '-'}
               />
             ),
@@ -478,13 +377,14 @@ const SelectSpace = () => {
         }) =>
           useMemo(() => {
             const isPriceZero =
-              values?.place?.some(item => item._id === _id) && (price === 0 || !price);
+              watchPlace?.some(item => item._id === _id) && (price === 0 || !price);
 
             return (
               <NumberInput
+                id={`price-${_id}`}
                 hideControls
                 defaultValue={+(price || 0)}
-                onChange={e => updateData('price', e, _id)}
+                onChange={e => updateData('price', e, _id, `price-${_id}`)}
                 error={isPriceZero}
               />
             );
@@ -493,105 +393,57 @@ const SelectSpace = () => {
       {
         Header: 'MEDIA OWNER NAME',
         accessor: 'basicInformation.mediaOwner.name',
-        Cell: ({
-          row: {
-            original: { mediaOwner },
-          },
-        }) => useMemo(() => <p className="w-fit">{mediaOwner}</p>, []),
+        Cell: RenderMediaOwnerCell,
       },
       {
         Header: 'PEER',
         accessor: 'basicInformation.peerMediaOwner',
-        Cell: ({
-          row: {
-            original: { peer },
-          },
-        }) => useMemo(() => <p className="w-fit">{peer}</p>, []),
+        Cell: RenderPeerCell,
       },
       {
         Header: 'INVENTORY ID',
         accessor: 'inventoryId',
-        Cell: info => useMemo(() => <p>{info.row.original.inventoryId || '-'}</p>, []),
+        Cell: RenderInventoryIdCell,
       },
       {
         Header: 'MEDIA TYPE',
         accessor: 'basicInformation.mediaType.name',
-        Cell: ({
-          row: {
-            original: { mediaType },
-          },
-        }) => useMemo(() => <p>{mediaType || '-'}</p>),
+        Cell: RenderMediaTypeCell,
       },
       {
         Header: 'HEALTH STATUS',
         accessor: 'specifications.health',
-        Cell: ({ row: { original } }) =>
-          useMemo(
-            () => (
-              <div className="w-24">
-                <Progress
-                  sections={[
-                    { value: original.health, color: 'green' },
-                    { value: 100 - original.health, color: 'red' },
-                  ]}
-                />
-              </div>
-            ),
-            [],
-          ),
+        Cell: RenderHealthStatusCell,
       },
       {
         Header: 'IMPRESSION',
         accessor: 'specifications.impressions.max',
-        Cell: ({
-          row: {
-            original: { impressionMax },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <p className="capitalize w-32">{impressionMax ? getWord(impressionMax) : 'NA'}</p>
-            ),
-            [],
-          ),
+        Cell: RenderImpressionCell,
       },
       {
         Header: 'UPLOAD MEDIA',
         accessor: '',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <UploadButton
-                updateData={updateData}
-                isActive={values?.place?.find(item => item._id === _id)}
-                hasMedia={values?.place?.find(item => (item._id === _id ? !!item?.media : false))}
-                id={_id}
-              />
-            ),
-            [],
-          ),
+        Cell: RenderUploadMediaCell,
       },
       {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id },
-          },
-        }) =>
+        Cell: info =>
           useMemo(
-            () => <SpacesMenuPopover itemId={_id} enableDelete={false} openInNewWindow />,
+            () => (
+              <SpacesMenuPopover
+                itemId={info.row.original._id}
+                enableDelete={false}
+                openInNewWindow
+              />
+            ),
             [],
           ),
       },
     ],
-    [updatedInventoryData, values?.place],
+    [updatedInventoryData, watchPlace.length],
   );
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -625,12 +477,20 @@ const SelectSpace = () => {
   };
 
   useEffect(() => {
-    if (inventoryData) {
-      const { docs, ...page } = inventoryData;
+    handleSearch();
+    if (debouncedSearch === '') {
+      searchParams.delete('search');
+      setSearchParams(searchParams);
+    }
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+    if (inventoryQuery.data?.docs) {
+      const { docs, ...page } = inventoryQuery.data;
       const finalData = [];
 
       for (const item of docs) {
-        const selectionItem = values?.place?.find(pl => pl._id === item._id);
+        const selectionItem = watchPlace?.find(pl => pl._id === item._id);
 
         const obj = {};
         obj.photo = item.basicInformation.spacePhoto;
@@ -643,18 +503,7 @@ const SelectSpace = () => {
         obj.subCategory = item?.basicInformation?.subCategory?.name;
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
-        obj.dimension = item.specifications?.size?.length ? (
-          <p>
-            {item.specifications.size
-              .map((ele, index) =>
-                index < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
-              )
-              .filter(ele => ele !== null)
-              .join(', ')}
-          </p>
-        ) : (
-          '-'
-        );
+        obj.dimension = item.specifications?.size;
         obj.originalUnit = item?.specifications?.unit || 1;
         obj.unit = item?.specifications?.unit || 1;
         obj.impressionMax = item.specifications?.impressions?.max || 0;
@@ -675,15 +524,7 @@ const SelectSpace = () => {
       setUpdatedInventoryData(finalData);
       setPagination(page);
     }
-  }, [inventoryData]);
-
-  useEffect(() => {
-    handleSearch();
-    if (debouncedSearch === '') {
-      searchParams.delete('search');
-      setSearchParams(searchParams);
-    }
-  }, [debouncedSearch]);
+  }, [inventoryQuery.data?.docs]);
 
   return (
     <>
@@ -702,12 +543,12 @@ const SelectSpace = () => {
         <div className="flex gap-4">
           <div>
             <p className="text-slate-400">Selected Places</p>
-            <p className="font-bold">{values?.place?.length}</p>
+            <p className="font-bold">{watchPlace?.length}</p>
           </div>
           <div>
             <p className="text-slate-400">Total Price</p>
             <Group>
-              <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
+              <p className="font-bold">{toIndianCurrency(memoizedCalculateTotalPrice)}</p>
               <p className="text-xs">**additional gst to be included</p>
             </Group>
           </div>
@@ -723,9 +564,9 @@ const SelectSpace = () => {
             />
             <p className="text-purple-450 text-sm">
               Total Places{' '}
-              {inventoryData?.totalDocs ? (
+              {inventoryQuery.data?.totalDocs ? (
                 <span className="bg-purple-450 text-white py-1 px-2 rounded-full ml-2">
-                  {inventoryData.totalDocs}
+                  {inventoryQuery.data?.totalDocs}
                 </span>
               ) : null}
             </p>
@@ -733,23 +574,23 @@ const SelectSpace = () => {
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
-      {isLoading ? (
+      {inventoryQuery.isLoading ? (
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
         </div>
       ) : null}
-      {!inventoryData?.docs?.length && !isLoading ? (
+      {!inventoryQuery.data?.docs?.length && !inventoryQuery.isLoading ? (
         <div className="w-full min-h-[400px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
         </div>
       ) : null}
-      {inventoryData?.docs?.length ? (
+      {inventoryQuery.data?.docs?.length ? (
         <Table
           data={updatedInventoryData}
           COLUMNS={COLUMNS}
           allowRowsSelect
           setSelectedFlatRows={handleSelection}
-          selectedRowData={values?.place}
+          selectedRowData={watchPlace}
           handleSorting={handleSortByColumn}
           activePage={pagination.page}
           totalPages={pagination.totalPages}

@@ -11,7 +11,10 @@ import {
 import { useSearchParams } from 'react-router-dom';
 import { serialize } from '../../../utils';
 import { useFetchMasters } from '../../../apis/queries/masters.queries';
-import { useDistinctAdditionalTags } from '../../../apis/queries/inventory.queries';
+import {
+  useDistinctAdditionalTags,
+  useDistinctCities,
+} from '../../../apis/queries/inventory.queries';
 
 const inititalFilterData = {
   'owner': {
@@ -56,6 +59,7 @@ const defaultValue = {
   demographic: [],
   audience: [],
   additionalTags: [],
+  cities: [],
 };
 
 const Filter = ({ isOpened, setShowFilter }) => {
@@ -88,6 +92,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const demographic = searchParams.get('demographic');
   const audience = searchParams.get('audience');
   const additionalTags = searchParams.get('additionalTags');
+  const cities = searchParams.get('cities');
 
   const { data: categoryData, isLoading: isCategoryLoading } = useFetchMasters(
     serialize({ type: 'category', parentId: null, limit: 100, page: 1 }),
@@ -115,6 +120,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
     serialize({ type: 'audience', parentId: null, limit: 100, page: 1 }),
   );
   const additionalTagsQuery = useDistinctAdditionalTags();
+  const distinctCityQuery = useDistinctCities();
 
   const handleCheckedValues = (filterValues, filterKey) => {
     setFilterOptions(prevState => ({ ...prevState, [filterKey]: filterValues }));
@@ -170,10 +176,12 @@ const Filter = ({ isOpened, setShowFilter }) => {
       filterOptions.tags,
       filterOptions.demographic,
       filterOptions.audience,
+      filterOptions.additionalTags,
+      filterOptions.cities,
     ],
   );
 
-  const renderAdditionalTags = useCallback(
+  const renderAdditionalTagsAndCities = useCallback(
     (data, filterKey) =>
       data?.map(item => (
         <div className="flex gap-2 mb-2" key={item}>
@@ -185,7 +193,20 @@ const Filter = ({ isOpened, setShowFilter }) => {
           />
         </div>
       )),
-    [filterOptions.additionalTags],
+    [
+      filterOptions.owner,
+      filterOptions.category,
+      filterOptions.subCategory,
+      filterOptions.mediaType,
+      filterOptions.tier,
+      filterOptions.zone,
+      filterOptions.facing,
+      filterOptions.tags,
+      filterOptions.demographic,
+      filterOptions.audience,
+      filterOptions.additionalTags,
+      filterOptions.cities,
+    ],
   );
 
   const handleNavigationByFilter = () => {
@@ -302,6 +323,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       demographic: demographic?.split(',') || [],
       audience: audience?.split(',') || [],
       additionalTags: additionalTags?.split(',') || [],
+      cities: cities?.split(',') || [],
     }));
   }, [searchParams]);
 
@@ -377,10 +399,21 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
           <Accordion.Item value="city" className="mb-4 rounded-xl border">
             <Accordion.Control>
-              <p className="text-lg">Cities</p>
+              <p className="text-lg">Tier</p>
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">{renderDynamicOptionsArr(inititalFilterData.tier, 'tier')}</div>
+            </Accordion.Panel>
+          </Accordion.Item>
+
+          <Accordion.Item value="cities" className="mb-4 rounded-xl border">
+            <Accordion.Control disabled={isAudienceLoading}>
+              <p className="text-lg">Cities</p>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <div className="mt-2 h-[300px] overflow-y-auto">
+                {renderAdditionalTagsAndCities(distinctCityQuery.data, 'cities')}
+              </div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -648,7 +681,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderAdditionalTags(additionalTagsQuery.data, 'additionalTags')}
+                {renderAdditionalTagsAndCities(additionalTagsQuery.data, 'additionalTags')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
