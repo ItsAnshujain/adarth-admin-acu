@@ -271,12 +271,12 @@ const BookingsDashboardPage = () => {
             () => (
               <p className="w-[200px]">
                 {currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
-                  ? 'Printing upcoming'
+                  ? 'Upcoming'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
-                  ? 'Printing in progress'
+                  ? 'In progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
-                  ? 'Printing completed'
-                  : 'Printing upcoming'}
+                  ? 'Completed'
+                  : 'Upcoming'}
               </p>
             ),
             [],
@@ -294,12 +294,12 @@ const BookingsDashboardPage = () => {
             () => (
               <p className="w-[200px]">
                 {currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
-                  ? 'Mounting upcoming'
+                  ? 'Upcoming'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('in progress')
-                  ? 'Mounting in progress'
+                  ? 'In progress'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
-                  ? 'Mounting completed'
-                  : 'Mounting upcoming'}
+                  ? 'Completed'
+                  : 'Upcoming'}
               </p>
             ),
             [],

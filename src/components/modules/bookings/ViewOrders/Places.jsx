@@ -185,7 +185,7 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
       <div className="flex flex-col w-full">
         <div className="flex justify-between items-center w-full mb-2">
           <Text
-            className="font-bold text-ellipsis flex-1 "
+            className="font-bold text-ellipsis flex-1"
             lineClamp={2}
             title={data?.basicInformation?.spaceName}
           >
@@ -227,12 +227,12 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
                         radius="lg"
                         size="xs"
                       />
-                      {isLoading ? 'Uploading' : 'Uploaded'}
+                      {isLoading ? 'Uploading Artwork' : 'Uploaded Artwork'}
                     </>
                   ) : isLoading ? (
-                    'Uploading'
+                    'Uploading Artwork'
                   ) : (
-                    'Upload'
+                    'Upload Artwork'
                   )}
                 </Button>
               </HoverCard.Target>
