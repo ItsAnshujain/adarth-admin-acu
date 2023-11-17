@@ -433,11 +433,11 @@ const SelectSpace = () => {
         accessor: 'basicInformation.mediaType.name',
         Cell: RenderMediaTypeCell,
       },
-      {
-        Header: 'HEALTH STATUS',
-        accessor: 'specifications.health',
-        Cell: RenderHealthStatusCell,
-      },
+      // {
+      //   Header: 'HEALTH STATUS',
+      //   accessor: 'specifications.health',
+      //   Cell: RenderHealthStatusCell,
+      // },
       {
         Header: 'IMPRESSION',
         accessor: 'specifications.impressions.max',

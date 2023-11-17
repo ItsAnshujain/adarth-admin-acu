@@ -418,28 +418,28 @@ const Spaces = () => {
           },
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
-      {
-        Header: 'HEALTH STATUS',
-        accessor: 'specifications.health',
-        Cell: ({
-          row: {
-            original: { health },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div className="w-24">
-                <Progress
-                  sections={[
-                    { value: health, color: 'green' },
-                    { value: 100 - (health || 0), color: 'red' },
-                  ]}
-                />
-              </div>
-            ),
-            [],
-          ),
-      },
+      // {
+      //   Header: 'HEALTH STATUS',
+      //   accessor: 'specifications.health',
+      //   Cell: ({
+      //     row: {
+      //       original: { health },
+      //     },
+      //   }) =>
+      //     useMemo(
+      //       () => (
+      //         <div className="w-24">
+      //           <Progress
+      //             sections={[
+      //               { value: health, color: 'green' },
+      //               { value: 100 - (health || 0), color: 'red' },
+      //             ]}
+      //           />
+      //         </div>
+      //       ),
+      //       [],
+      //     ),
+      // },
       {
         Header: 'IMPRESSION',
         accessor: 'specifications.impressions.max',
