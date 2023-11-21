@@ -135,7 +135,7 @@ const Booking = ({ inventoryId }) => {
                   ? 'In progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Completed'
-                  : '-'}
+                  : 'Upcoming'}
               </p>
             ),
             [],
@@ -169,7 +169,7 @@ const Booking = ({ inventoryId }) => {
                   ? 'In progress'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                   ? 'Completed'
-                  : '-'}
+                  : 'Upcoming'}
               </p>
             ),
             [],

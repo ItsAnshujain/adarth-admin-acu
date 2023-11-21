@@ -346,7 +346,7 @@ const SalesViewTable = ({ data: bookingData, isLoading, activeChildTab }) => {
                   ? 'In progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Completed'
-                  : '-'}
+                  : 'Upcoming'}
               </p>
             ),
             [],
@@ -369,7 +369,7 @@ const SalesViewTable = ({ data: bookingData, isLoading, activeChildTab }) => {
                   ? 'In progress'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                   ? 'Completed'
-                  : '-'}
+                  : 'Upcoming'}
               </p>
             ),
             [],
