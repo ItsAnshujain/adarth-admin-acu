@@ -68,7 +68,7 @@ const OrderInformationCard = () => {
               ? 'In progress'
               : bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
               ? 'Completed'
-              : '-'}
+              : 'Upcoming'}
           </p>
         </div>
         <div>
@@ -84,7 +84,7 @@ const OrderInformationCard = () => {
               ? 'In progress'
               : bookingData?.currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
               ? 'Completed'
-              : '-'}
+              : 'Upcoming'}
           </p>
         </div>
       </div>

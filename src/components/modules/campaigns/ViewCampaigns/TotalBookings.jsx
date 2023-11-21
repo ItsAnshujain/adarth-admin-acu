@@ -100,7 +100,7 @@ const TotalBookings = ({ campaignId }) => {
                   ? 'In progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
                   ? 'Completed'
-                  : '-'}
+                  : 'Upcoming'}
               </p>
             ),
             [],
@@ -134,7 +134,7 @@ const TotalBookings = ({ campaignId }) => {
                   ? 'In progress'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
                   ? 'Completed'
-                  : '-'}
+                  : 'Upcoming'}
               </p>
             ),
             [],
