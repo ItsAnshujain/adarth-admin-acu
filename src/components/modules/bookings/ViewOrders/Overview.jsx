@@ -243,7 +243,7 @@ const Overview = ({ bookingData = {}, isLoading }) => {
             <p className="text-slate-400 text-sm">All the details regarding the campaign</p>
             <div className="p-4 py-6 grid grid-cols-2 grid-rows-2 border rounded-md gap-y-4 mt-2">
               <div>
-                <p className="text-slate-400 text-sm">Total Uploaded Media</p>
+                <p className="text-slate-400 text-sm">Total Uploaded Artwork</p>
                 <p>{bookingData?.campaign?.medias?.length ?? <NoData type="na" />}</p>
               </div>
               <div>

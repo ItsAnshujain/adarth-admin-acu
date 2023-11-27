@@ -61,14 +61,14 @@ const OrderInformationCard = () => {
         </div>
         <div>
           <p className="text-slate-400">Printing Status</p>
-          <p className="font-bold capitalize">
+          <p className="font-bold">
             {bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
-              ? 'Printing upcoming'
+              ? 'Upcoming'
               : bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
-              ? 'Printing in progress'
+              ? 'In progress'
               : bookingData?.currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
-              ? 'Printing completed'
-              : '-'}
+              ? 'Completed'
+              : 'Upcoming'}
           </p>
         </div>
         <div>
@@ -77,14 +77,14 @@ const OrderInformationCard = () => {
         </div>
         <div>
           <p className="text-slate-400">Mounting Status</p>
-          <p className="font-bold capitalize">
+          <p className="font-bold">
             {bookingData?.currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
-              ? 'Mounting upcoming'
+              ? 'Upcoming'
               : bookingData?.currentStatus?.mountingStatus?.toLowerCase()?.includes('in progress')
-              ? 'Mounting in progress'
+              ? 'In progress'
               : bookingData?.currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
-              ? 'Mounting completed'
-              : '-'}
+              ? 'Completed'
+              : 'Upcoming'}
           </p>
         </div>
       </div>

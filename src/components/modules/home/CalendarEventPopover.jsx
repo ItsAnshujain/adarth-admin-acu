@@ -37,18 +37,35 @@ const CalendarEventPopover = ({ eventInfo }) => {
             <div>
               {isArray(inventoryVacancy)
                 ? inventoryVacancy?.map(item => (
-                    <Group key={uuidv4()} className="flex flex-row gap-1">
-                      <Link
-                        to={`/inventory/view-details/${item?.inventory?.[0]?._id}`}
-                        className="flex items-baseline gap-2"
-                      >
-                        <div>
-                          <ColorSwatch color="#914EFB" size={10} />
-                        </div>
-                        <p className="text-black font-medium">
-                          {item?.inventory?.[0].basicInformation?.spaceName} will be vacant
-                        </p>
-                      </Link>
+                    <Group key={uuidv4()} className="flex flex-row gap-1 flex-wrap items-start">
+                      <div className="mt-2 mr-1">
+                        <ColorSwatch color="#914EFB" size={10} />
+                      </div>
+                      <div className="flex flex-1 flex-wrap gap-x-1">
+                        <Link
+                          to={`/inventory/view-details/${item?.inventory?.[0]?._id}`}
+                          className="flex items-baseline gap-2"
+                        >
+                          <p
+                            className="text-black font-medium max-w-[240px] text-ellipsis whitespace-nowrap overflow-x-hidden"
+                            title={item?.inventory?.[0].basicInformation?.spaceName}
+                          >
+                            {item?.inventory?.[0].basicInformation?.spaceName}
+                          </p>
+                        </Link>
+                        <p>will be vacant for </p>
+                        <Link
+                          to={`/bookings/view-details/${item?.bookingId}`}
+                          className="flex items-baseline gap-2"
+                        >
+                          <p
+                            className="text-black font-medium max-w-[240px] text-ellipsis whitespace-nowrap overflow-x-hidden"
+                            title={item?.campaignName}
+                          >
+                            {item?.campaignName}
+                          </p>
+                        </Link>
+                      </div>
                     </Group>
                   ))
                 : null}
@@ -57,18 +74,24 @@ const CalendarEventPopover = ({ eventInfo }) => {
             <div>
               {isArray(bookingStarting)
                 ? bookingStarting?.map(item => (
-                    <Group key={item?._id} className="flex flex-row gap-1">
-                      <Link
-                        to={`/bookings/view-details/${item?._id}`}
-                        className="flex items-baseline gap-2"
-                      >
-                        <div>
-                          <ColorSwatch color="#28B446" size={10} />
-                        </div>
-                        <p className="text-black font-medium">
-                          {item?.campaign?.name} campaign starting
-                        </p>
-                      </Link>
+                    <Group key={item?._id} className="flex flex-row gap-1 flex-wrap items-start">
+                      <div className="mt-2 mr-1">
+                        <ColorSwatch color="#28B446" size={10} />
+                      </div>
+                      <div className="flex flex-1 flex-wrap gap-x-1">
+                        <Link
+                          to={`/bookings/view-details/${item?._id}`}
+                          className="flex items-baseline gap-2"
+                        >
+                          <p
+                            className="text-black font-medium max-w-[240px] text-ellipsis whitespace-nowrap overflow-x-hidden"
+                            title={item?.campaign?.name}
+                          >
+                            {item?.campaign?.name}
+                          </p>
+                        </Link>
+                        <p>campaign starting</p>
+                      </div>
                     </Group>
                   ))
                 : null}
@@ -77,18 +100,24 @@ const CalendarEventPopover = ({ eventInfo }) => {
             <div>
               {isArray(bookingEnding)
                 ? bookingEnding?.map(item => (
-                    <Group key={item?._id} className="flex flex-row gap-1">
-                      <Link
-                        to={`/bookings/view-details/${item?._id}`}
-                        className="flex items-baseline gap-2"
-                      >
-                        <div>
-                          <ColorSwatch color="#FD3434" size={10} />
-                        </div>
-                        <p className="text-black font-medium">
-                          {item?.campaign?.name} campaign ending
-                        </p>
-                      </Link>
+                    <Group key={item?._id} className="flex flex-row gap-1 flex-wrap items-start">
+                      <div className="mt-2 mr-1">
+                        <ColorSwatch color="#FD3434" size={10} />
+                      </div>
+                      <div className="flex flex-1 flex-wrap gap-x-1">
+                        <Link
+                          to={`/bookings/view-details/${item?._id}`}
+                          className="flex items-baseline gap-2"
+                        >
+                          <p
+                            className="text-black font-medium max-w-[240px] text-ellipsis whitespace-nowrap overflow-x-hidden"
+                            title={item?.campaign?.name}
+                          >
+                            {item?.campaign?.name}
+                          </p>
+                        </Link>
+                        <p>campaign ending</p>
+                      </div>
                     </Group>
                   ))
                 : null}

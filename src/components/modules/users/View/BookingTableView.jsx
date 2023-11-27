@@ -256,12 +256,12 @@ const BookingTableView = ({ data: bookingData, isLoading, activeChildTab }) => {
             () => (
               <p className="w-[200px]">
                 {currentStatus?.printingStatus?.toLowerCase()?.includes('upcoming')
-                  ? 'Printing upcoming'
+                  ? 'Upcoming'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('in progress')
-                  ? 'Printing in progress'
+                  ? 'In progress'
                   : currentStatus?.printingStatus?.toLowerCase()?.includes('completed')
-                  ? 'Printing completed'
-                  : '-'}
+                  ? 'Completed'
+                  : 'Upcoming'}
               </p>
             ),
             [],
@@ -279,12 +279,12 @@ const BookingTableView = ({ data: bookingData, isLoading, activeChildTab }) => {
             () => (
               <p className="w-[200px]">
                 {currentStatus?.mountingStatus?.toLowerCase()?.includes('upcoming')
-                  ? 'Mounting upcoming'
+                  ? 'Upcoming'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('in progress')
-                  ? 'Mounting in progress'
+                  ? 'In progress'
                   : currentStatus?.mountingStatus?.toLowerCase()?.includes('completed')
-                  ? 'Mounting completed'
-                  : '-'}
+                  ? 'Completed'
+                  : 'Upcoming'}
               </p>
             ),
             [],
@@ -304,28 +304,28 @@ const BookingTableView = ({ data: bookingData, isLoading, activeChildTab }) => {
         accessor: 'salesPerson',
         Cell: info => useMemo(() => <p>{info.row.original.salesPerson?.name || '-'}</p>, []),
       },
-      {
-        Header: 'HEALTH STATUS',
-        accessor: 'campaign.avgHealth',
-        Cell: ({
-          row: {
-            original: { campaign },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div className="w-24">
-                <Progress
-                  sections={[
-                    { value: campaign?.avgHealth, color: 'green' },
-                    { value: 100 - (campaign?.avgHealth || 0), color: 'red' },
-                  ]}
-                />
-              </div>
-            ),
-            [],
-          ),
-      },
+      // {
+      //   Header: 'HEALTH STATUS',
+      //   accessor: 'campaign.avgHealth',
+      //   Cell: ({
+      //     row: {
+      //       original: { campaign },
+      //     },
+      //   }) =>
+      //     useMemo(
+      //       () => (
+      //         <div className="w-24">
+      //           <Progress
+      //             sections={[
+      //               { value: campaign?.avgHealth, color: 'green' },
+      //               { value: 100 - (campaign?.avgHealth || 0), color: 'red' },
+      //             ]}
+      //           />
+      //         </div>
+      //       ),
+      //       [],
+      //     ),
+      // },
       {
         Header: 'PAYMENT STATUS',
         accessor: 'hasPaid',

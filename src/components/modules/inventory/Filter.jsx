@@ -94,29 +94,27 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const additionalTags = searchParams.get('additionalTags');
   const cities = searchParams.get('cities');
 
-  const { data: categoryData, isLoading: isCategoryLoading } = useFetchMasters(
+  const categoryQuery = useFetchMasters(
     serialize({ type: 'category', parentId: null, limit: 100, page: 1 }),
   );
-  const { data: subCategoryData, isLoading: isSubCategoryLoading } = useFetchMasters(
+  const subCategoryQuery = useFetchMasters(
     serialize({ parentId: filterOptions.category?.join(','), limit: 100, page: 1 }),
     !!filterOptions.category.length > 0,
   );
-  const { data: mediaTypeData, isLoading: isMediaTypeLoading } = useFetchMasters(
+  const mediaTypeQuery = useFetchMasters(
     serialize({ type: 'media_type', parentId: null, limit: 100, page: 1 }),
   );
-  const { data: zoneData, isLoading: isZoneLoading } = useFetchMasters(
+  const zoneQuery = useFetchMasters(
     serialize({ type: 'zone', parentId: null, limit: 100, page: 1 }),
   );
-  const { data: tagData, isLoading: isTagLoading } = useFetchMasters(
-    serialize({ type: 'tag', parentId: null, limit: 100, page: 1 }),
-  );
-  const { data: facingData, isLoading: isFacingLoading } = useFetchMasters(
+  const tagQuery = useFetchMasters(serialize({ type: 'tag', parentId: null, limit: 100, page: 1 }));
+  const facingQuery = useFetchMasters(
     serialize({ type: 'facing', parentId: null, limit: 100, page: 1 }),
   );
-  const { data: demographicsData, isLoading: isDemographicsDataLoading } = useFetchMasters(
+  const demographicsQuery = useFetchMasters(
     serialize({ type: 'demographic', parentId: null, limit: 100, page: 1 }),
   );
-  const { data: audienceData, isLoading: isAudienceLoading } = useFetchMasters(
+  const audienceQuery = useFetchMasters(
     serialize({ type: 'audience', parentId: null, limit: 100, page: 1 }),
   );
   const additionalTagsQuery = useDistinctAdditionalTags();
@@ -367,32 +365,34 @@ const Filter = ({ isOpened, setShowFilter }) => {
           </Accordion.Item>
 
           <Accordion.Item value="category" className="mb-4 rounded-xl border">
-            <Accordion.Control disabled={isCategoryLoading}>
+            <Accordion.Control disabled={categoryQuery.isLoading}>
               <p className="text-lg">Category</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicOptionsArr(categoryData?.docs, 'category')}</div>
+              <div className="mt-2">
+                {renderDynamicOptionsArr(categoryQuery.data?.docs, 'category')}
+              </div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="subCategory" className="mb-4 rounded-xl border">
-            <Accordion.Control disabled={isSubCategoryLoading}>
+            <Accordion.Control disabled={subCategoryQuery.isLoading}>
               <p className="text-lg">Sub Category</p>
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderDynamicOptionsArr(subCategoryData?.docs, 'subCategory')}
+                {renderDynamicOptionsArr(subCategoryQuery.data?.docs, 'subCategory')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="mediaType" className="mb-4 rounded-xl border">
-            <Accordion.Control disabled={isMediaTypeLoading}>
+            <Accordion.Control disabled={mediaTypeQuery.isLoading}>
               <p className="text-lg">Media Type</p>
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderDynamicOptionsArr(mediaTypeData?.docs, 'mediaType')}
+                {renderDynamicOptionsArr(mediaTypeQuery.data?.docs, 'mediaType')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
@@ -407,7 +407,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
           </Accordion.Item>
 
           <Accordion.Item value="cities" className="mb-4 rounded-xl border">
-            <Accordion.Control disabled={isAudienceLoading}>
+            <Accordion.Control disabled={distinctCityQuery.isLoading}>
               <p className="text-lg">Cities</p>
             </Accordion.Control>
             <Accordion.Panel>
@@ -577,11 +577,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
           </Accordion.Item>
 
           <Accordion.Item value="zone" className="mb-4 rounded-xl border">
-            <Accordion.Control disabled={isZoneLoading}>
+            <Accordion.Control disabled={zoneQuery.isLoading}>
               <p className="text-lg">Zone</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicOptionsArr(zoneData?.docs, 'zone')}</div>
+              <div className="mt-2">{renderDynamicOptionsArr(zoneQuery.data?.docs, 'zone')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -638,45 +638,49 @@ const Filter = ({ isOpened, setShowFilter }) => {
           </Accordion.Item>
 
           <Accordion.Item value="facing" className="mb-4 rounded-xl border">
-            <Accordion.Control disabled={isFacingLoading}>
+            <Accordion.Control disabled={facingQuery.isLoading}>
               <p className="text-lg">Facing</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicOptionsArr(facingData?.docs, 'facing')}</div>
+              <div className="mt-2">
+                {renderDynamicOptionsArr(facingQuery.data?.docs, 'facing')}
+              </div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="tags" className="mb-4 rounded-xl border">
-            <Accordion.Control disabled={isTagLoading}>
+            <Accordion.Control disabled={tagQuery.isLoading}>
               <p className="text-lg">Tags</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicOptionsArr(tagData?.docs, 'tags')}</div>
+              <div className="mt-2">{renderDynamicOptionsArr(tagQuery.data?.docs, 'tags')}</div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="demographics" className="mb-4 rounded-xl border">
-            <Accordion.Control disabled={isDemographicsDataLoading}>
+            <Accordion.Control disabled={demographicsQuery.isLoading}>
               <p className="text-lg">Demographics</p>
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderDynamicOptionsArr(demographicsData?.docs, 'demographic')}
+                {renderDynamicOptionsArr(demographicsQuery.data?.docs, 'demographic')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="audience" className="mb-4 rounded-xl border">
-            <Accordion.Control disabled={isAudienceLoading}>
+            <Accordion.Control disabled={audienceQuery.isLoading}>
               <p className="text-lg">Audience</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderDynamicOptionsArr(audienceData?.docs, 'audience')}</div>
+              <div className="mt-2">
+                {renderDynamicOptionsArr(audienceQuery.data?.docs, 'audience')}
+              </div>
             </Accordion.Panel>
           </Accordion.Item>
 
           <Accordion.Item value="additionalTags" className="mb-4 rounded-xl border">
-            <Accordion.Control disabled={isAudienceLoading}>
+            <Accordion.Control disabled={additionalTagsQuery.isLoading}>
               <p className="text-lg">Additional Tags</p>
             </Accordion.Control>
             <Accordion.Panel>
