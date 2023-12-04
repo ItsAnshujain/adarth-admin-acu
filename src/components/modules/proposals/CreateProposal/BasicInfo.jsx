@@ -170,7 +170,7 @@ const BasicInfo = ({ proposalId, userData }) => {
       </div>
       <Radio.Group
         name="uploadType"
-        label="Upload exsiting Letter Header/Footer or add new one for this proposal"
+        label="Upload existing Letter Header/Footer or add new one for this proposal"
         withAsterisk
         styles={styles}
         {...getInputProps('uploadType')}
