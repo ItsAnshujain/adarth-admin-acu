@@ -159,6 +159,8 @@ const ShareContent = ({ searchParamQueries, onClose }) => {
 
     data.format = activeFileType.join(',');
     data.shareVia = activeShare;
+    data.aspectRatio = 'fill';
+    data.templateType = 'generic';
 
     if (watchAspectRatio) {
       const aspectRatio = watchAspectRatio.split(';')[0];
