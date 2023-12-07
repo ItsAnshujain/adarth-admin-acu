@@ -80,7 +80,7 @@ const UsersDashboardPage = () => {
         ) : null}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 md:gap-4 relative mb-20">
           {userData?.docs?.map(user => (
-            <Link to={`view-details/${user?._id}?isPeer=${filter === 'peer'}`} key={user?._id}>
+            <Link to={`view-details/${user?._id}`} key={user?._id}>
               <Card {...user} />
             </Link>
           ))}

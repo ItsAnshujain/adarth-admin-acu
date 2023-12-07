@@ -81,16 +81,16 @@ const Filter = ({
   const type = searchParams.get('type');
   const doNotHaveFinance = searchParams.get('doNotHaveFinance');
 
-  const { data: campaignStatusData } = useFetchMasters(
+  const campaignStatusQuery = useFetchMasters(
     serialize({ type: 'booking_campaign_status', parentId: null, page: 1, limit: 100 }),
   );
-  const { data: paymentStatusData } = useFetchMasters(
+  const paymentStatusQuery = useFetchMasters(
     serialize({ type: 'payment_status', parentId: null, page: 1, limit: 100 }),
   );
-  const { data: printingStatusData } = useFetchMasters(
+  const printingStatusQuery = useFetchMasters(
     serialize({ type: 'printing_status', parentId: null, page: 1, limit: 100 }),
   );
-  const { data: mountingStatusData } = useFetchMasters(
+  const mountingStatusQuery = useFetchMasters(
     serialize({ type: 'mounting_status', parentId: null, page: 1, limit: 100 }),
   );
 
@@ -175,18 +175,35 @@ const Filter = ({
           />
         </div>
       )),
-    [filterOptions.doNotHaveFinance],
+    [filterOptions],
   );
 
   const handleNavigationByFilter = () => {
+    const filterKeys = [
+      'type',
+      'hasPaid',
+      'paymentStatus',
+      'printingStatus',
+      'mountingStatus',
+      'campaignStatus',
+    ];
+
     Object.keys(filterOptions).forEach(item => {
       searchParams.delete(item);
     });
 
     searchParams.set('page', 1);
+    filterKeys.forEach(key => {
+      const value = filterOptions[key];
+      if (value !== '') {
+        searchParams.set(key, value);
+      }
+    });
     Object.keys(filterOptions).forEach(key => {
-      if (filterOptions[key].length && Array.isArray(filterOptions[key])) {
-        searchParams.append(key, filterOptions[key].join(','));
+      const value = filterOptions[key];
+
+      if (Array.isArray(value) && value.length) {
+        searchParams.append(key, value.join(','));
       }
     });
     setSearchParams(searchParams);
@@ -342,9 +359,14 @@ const Filter = ({
               className="border-solid border-2 rounded-xl mb-2 p-1"
               value="campaignStatus"
             >
-              <Accordion.Control className="hover:bg-white">Campaign Status</Accordion.Control>
+              <Accordion.Control
+                className="hover:bg-white"
+                disabled={campaignStatusQuery.isLoading}
+              >
+                Campaign Status
+              </Accordion.Control>
               <Accordion.Panel>
-                {renderDynamicOptions(campaignStatusData?.docs, 'campaignStatus')}
+                {renderDynamicOptions(campaignStatusQuery.data?.docs, 'campaignStatus')}
               </Accordion.Panel>
             </Accordion.Item>
           ) : null}
@@ -353,9 +375,11 @@ const Filter = ({
             className="border-solid border-2 rounded-xl mb-2 p-1"
             value="mountingStatus"
           >
-            <Accordion.Control className="hover:bg-white">Mounting Status</Accordion.Control>
+            <Accordion.Control className="hover:bg-white" disabled={mountingStatusQuery.isLoading}>
+              Mounting Status
+            </Accordion.Control>
             <Accordion.Panel>
-              {renderDynamicOptions(mountingStatusData?.docs, 'mountingStatus')}
+              {renderDynamicOptions(mountingStatusQuery.data?.docs, 'mountingStatus')}
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -363,9 +387,11 @@ const Filter = ({
             className="border-solid border-2 rounded-xl mb-2 p-1"
             value="printingStatus"
           >
-            <Accordion.Control className="hover:bg-white">Printing Status</Accordion.Control>
+            <Accordion.Control className="hover:bg-white" disabled={printingStatusQuery.isLoading}>
+              Printing Status
+            </Accordion.Control>
             <Accordion.Panel>
-              {renderDynamicOptions(printingStatusData?.docs, 'printingStatus')}
+              {renderDynamicOptions(printingStatusQuery.data?.docs, 'printingStatus')}
             </Accordion.Panel>
           </Accordion.Item>
 
@@ -373,12 +399,12 @@ const Filter = ({
             className="border-solid border-2 rounded-xl mb-2 p-1"
             value="paymentStatus"
           >
-            <Accordion.Control className="hover:bg-white">
+            <Accordion.Control className="hover:bg-white" disabled={paymentStatusQuery.isLoading}>
               Booking Confirmation Status
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderBookingConfirmationStatus(paymentStatusData?.docs, 'paymentStatus')}
+                {renderBookingConfirmationStatus(paymentStatusQuery.data?.docs, 'paymentStatus')}
               </div>
             </Accordion.Panel>
           </Accordion.Item>

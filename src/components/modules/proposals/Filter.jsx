@@ -30,7 +30,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const totalPlacesMin = searchParams.get('totalPlacesMin');
   const totalPlacesMax = searchParams.get('totalPlacesMax');
 
-  const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
+  const proposalQuery = useFetchMasters(
     serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
   );
 
@@ -45,7 +45,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
     setStatusArr(tempArr);
   };
 
-  const renderStatus = useCallback(
+  const renderDynamicOptionsArr = useCallback(
     data =>
       data?.map(item => (
         <div className="flex gap-2 mb-2" key={item?._id}>
@@ -147,11 +147,11 @@ const Filter = ({ isOpened, setShowFilter }) => {
       <div className="flex text-gray-400 flex-col gap-4">
         <Accordion>
           <Accordion.Item value="status" className="mb-4 rounded-xl border">
-            <Accordion.Control disabled={isProposalStatusLoading}>
+            <Accordion.Control disabled={proposalQuery.isLoading}>
               <p className="text-lg">Status</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderStatus(proposalStatusData?.docs)}</div>
+              <div className="mt-2">{renderDynamicOptionsArr(proposalQuery.data?.docs)}</div>
             </Accordion.Panel>
           </Accordion.Item>
 

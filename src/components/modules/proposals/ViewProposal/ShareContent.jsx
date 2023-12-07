@@ -78,7 +78,7 @@ const initialCopyLinkValues = {
 
 const emailSchema = yup.object({
   name: yup.string().trim().required('Name is required'),
-  to: yup.string().trim().required('Email is required').email('Email must be valid'),
+  to: yup.string().trim().required('Email is required'),
 });
 
 const whatsAppSchema = yup.object({
@@ -159,6 +159,8 @@ const ShareContent = ({ id, onClose }) => {
 
     data.format = activeFileType.join(',');
     data.shareVia = activeShare;
+    data.aspectRatio = 'fill';
+    data.templateType = 'generic';
 
     if (watchAspectRatio) {
       const aspectRatio = watchAspectRatio.split(';')[0];
@@ -167,7 +169,28 @@ const ShareContent = ({ id, onClose }) => {
       data.templateType = templateType;
     }
 
-    const res = await shareProposal.mutateAsync(
+    if (activeShare === 'email' && data.to.includes(',')) {
+      let emails = data.to.split(',');
+      emails = emails.map(email =>
+        email.trim() && validator.isEmail(email.trim()) ? email.trim() : false,
+      );
+      if (emails.includes(false)) {
+        showNotification({
+          title: 'Please enter valid email addresses',
+          message: 'One of your email address is invalid',
+        });
+        return;
+      }
+      data.to = emails.join(',');
+    } else if (activeShare === 'email' && !validator.isEmail(data.to)) {
+      showNotification({
+        title: 'Invalid Email',
+      });
+
+      return;
+    }
+
+    const response = await shareProposal.mutateAsync(
       { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
       {
         onSuccess: () => {
@@ -185,8 +208,8 @@ const ShareContent = ({ id, onClose }) => {
         },
       },
     );
-    if (activeShare === 'copy_link' && res?.link?.messageText) {
-      navigator.clipboard.writeText(res?.link?.messageText);
+    if (activeShare === 'copy_link' && response?.link?.messageText) {
+      navigator.clipboard.writeText(response?.link?.messageText);
       showNotification({
         title: 'Link Copied',
         color: 'blue',

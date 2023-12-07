@@ -296,24 +296,24 @@ const InventoryDashboardPage = () => {
         Cell: info =>
           useMemo(() => <p>{info.row.original.basicInformation?.mediaType?.name || '-'}</p>),
       },
-      {
-        Header: 'HEALTH STATUS',
-        accessor: 'specifications.health',
-        Cell: info =>
-          useMemo(
-            () => (
-              <div className="w-24">
-                <Progress
-                  sections={[
-                    { value: info.row.original.specifications?.health, color: 'green' },
-                    { value: 100 - (info.row.original.specifications?.health || 0), color: 'red' },
-                  ]}
-                />
-              </div>
-            ),
-            [],
-          ),
-      },
+      // {
+      //   Header: 'HEALTH STATUS',
+      //   accessor: 'specifications.health',
+      //   Cell: info =>
+      //     useMemo(
+      //       () => (
+      //         <div className="w-24">
+      //           <Progress
+      //             sections={[
+      //               { value: info.row.original.specifications?.health, color: 'green' },
+      //               { value: 100 - (info.row.original.specifications?.health || 0), color: 'red' },
+      //             ]}
+      //           />
+      //         </div>
+      //       ),
+      //       [],
+      //     ),
+      // },
       {
         Header: 'IMPRESSION',
         accessor: 'specifications.impressions.max',

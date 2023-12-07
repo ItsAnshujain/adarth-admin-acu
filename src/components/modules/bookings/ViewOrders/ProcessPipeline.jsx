@@ -46,7 +46,7 @@ const ProcessPipeline = ({ bookingData }) => {
       {
         statusArr: [
           {
-            status: 'Media Received',
+            status: 'Artwork Received',
             date: bookingData?.printingStatus?.Upcoming || bookingData?.paymentStatus?.Paid,
             isSuccess:
               (bookingData?.currentStatus?.paymentStatus?.toLowerCase() === 'paid' &&

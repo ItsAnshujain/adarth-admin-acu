@@ -7,7 +7,6 @@ import * as yup from 'yup';
 import { showNotification } from '@mantine/notifications';
 import { XCircle } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
-import { useSearchParams } from 'react-router-dom';
 import PreviewCard from '../Create/PreviewCard';
 import UserImage from '../../../../assets/placeholders/user.png';
 import ControlledNumberInput from '../../../shared/FormInputs/Controlled/ControlledNumberInput';
@@ -29,10 +28,9 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
   const form = useForm({ resolver: yupResolver(schema) });
   const updateUser = useUpdateUsers();
   const meId = useUserStore(state => state.id);
-  const [salesSearchParams] = useSearchParams();
-  const isPeer = salesSearchParams.get('isPeer') === 'true';
 
   const myDetails = queryClient.getQueryData(['users-by-id', meId]);
+  const isPeer = myDetails?.peer?.includes(userId);
 
   const onSubmit = form.handleSubmit(async formData => {
     updateUser.mutate(

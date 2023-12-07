@@ -49,7 +49,7 @@ import toIndianCurrency from '../utils/currencyFormat';
 import SalesStatisticsCard from '../components/modules/users/analytics/SalesStatisticsCard';
 import OwnSiteIcon from '../assets/own-site-sale.svg';
 import TradedSiteIcon from '../assets/traded-site-sale.svg';
-import BookingStatisticsCard from '../components/modules/users/analytics/BookingStatisticsCard';
+import StatisticsCard from '../components/modules/home/StatisticsCard';
 
 dayjs.extend(quarterOfYear);
 
@@ -66,12 +66,6 @@ ChartJS.register(
 );
 
 const options = { responsive: true };
-
-// Doughnut
-const config = {
-  type: 'line',
-  options: { responsive: true },
-};
 
 const bookingPieConfig = {
   options: {
@@ -143,20 +137,6 @@ const HomePage = () => {
     endDate: financialEndDate,
     userId,
   });
-
-  const inventoryHealthStatus = useMemo(
-    () => ({
-      datasets: [
-        {
-          data: [inventoryStats.data?.unHealthy ?? 0, inventoryStats.data?.healthy ?? 0],
-          backgroundColor: ['#FF900E', '#914EFB'],
-          borderColor: ['#FF900E', '#914EFB'],
-          borderWidth: 1,
-        },
-      ],
-    }),
-    [inventoryStats.data],
-  );
 
   const handleViewBy = viewType => {
     if (viewType === 'reset' || viewType === 'year') {
@@ -339,10 +319,10 @@ const HomePage = () => {
 
           <Group className="grid grid-cols-2 md:grid-cols-7 my-5">
             <article className="flex-1 col-span-3">
-              <section className="min-h-42 rounded-lg border flex flex-col gap-2 p-4 mb-4">
+              <section className="min-h-44 rounded-lg border flex flex-col gap-2 p-4 mb-4">
                 <p className="text-md font-semibold">Bookings</p>
                 <Group>
-                  <Box className="w-32">
+                  <Box className="w-36">
                     {updatedBookingChart.datasets?.[0].data.every(item => item === 0) ? (
                       <p className="text-center font-bold text-md my-12">NA</p>
                     ) : (
@@ -354,8 +334,8 @@ const HomePage = () => {
                     )}
                   </Box>
                   <div className="flex-1 flex flex-col gap-y-4">
-                    <Group className="grid grid-cols-3 gap-3 h-full">
-                      <BookingStatisticsCard
+                    <Group className="grid grid-cols-2 gap-3 h-full">
+                      <StatisticsCard
                         icon={OngoingBookingIcon}
                         label="Ongoing"
                         count={bookingStats.data?.Ongoing || 0}
@@ -363,7 +343,7 @@ const HomePage = () => {
                         backgroundColor="bg-purple-50"
                         className="col-span-1"
                       />
-                      <BookingStatisticsCard
+                      <StatisticsCard
                         icon={UpcomingBookingIcon}
                         label="Upcoming"
                         count={bookingStats.data?.Upcoming || 0}
@@ -371,7 +351,7 @@ const HomePage = () => {
                         backgroundColor="bg-orange-50"
                         className="col-span-1"
                       />
-                      <BookingStatisticsCard
+                      <StatisticsCard
                         icon={CompleteBookingIcon}
                         label="Completed"
                         count={bookingStats.data?.Completed || 0}
@@ -384,10 +364,10 @@ const HomePage = () => {
                 </Group>
               </section>
 
-              <section className="min-h-42 rounded-lg border flex flex-col gap-2 p-4 mb-4">
+              <section className="min-h-44 rounded-lg border flex flex-col gap-2 p-4 mb-4">
                 <p className="text-md font-semibold">Inventory</p>
                 <Group>
-                  <Box className="w-32">
+                  <Box className="w-36">
                     {(inventoryStats.data?.occupied === 0 && inventoryStats.data?.vacant === 0) ||
                     !inventoryStats.data ? (
                       <p className="text-center font-bold text-md my-12">NA</p>
@@ -400,8 +380,8 @@ const HomePage = () => {
                     )}
                   </Box>
                   <div className="flex-1 flex flex-col gap-y-4">
-                    <Group className="grid grid-cols-2 gap-3 h-full">
-                      <BookingStatisticsCard
+                    <Group className="grid grid-cols-1 gap-3 h-full">
+                      <StatisticsCard
                         icon={OccupiedSpaceIcon}
                         label="Occupied"
                         count={inventoryStats.data?.occupied || 0}
@@ -409,7 +389,7 @@ const HomePage = () => {
                         backgroundColor="bg-purple-50"
                         className="col-span-1"
                       />
-                      <BookingStatisticsCard
+                      <StatisticsCard
                         icon={VacantSpaceIcon}
                         label="Vacant"
                         count={inventoryStats.data?.vacant || 0}
@@ -421,50 +401,6 @@ const HomePage = () => {
                   </div>
                 </Group>
               </section>
-
-              <section className="min-h-42 rounded-lg border flex flex-row items-start gap-3 p-4">
-                <Box className="w-32 relative">
-                  {hasExceededSales ? (
-                    <div className="absolute top-7 left-[13px] transform rotate-12">
-                      <Image src={ExceedChevronIcon} height={32} width={32} fit="contain" />
-                    </div>
-                  ) : null}
-                  <Doughnut options={salesPieConfig} data={revenueBreakupData} />
-                </Box>
-
-                <div className="flex-1 grid grid-cols-2 gap-3">
-                  <div>
-                    <Group className="flex-col items-start gap-0 mb-5">
-                      <p className="text-md font-medium">Sales Target</p>
-                      <p className="text-xl font-bold text-purple-350">
-                        {toIndianCurrency(userSales.data?.salesTarget || 0)}
-                      </p>
-                    </Group>
-                    <SalesStatisticsCard
-                      icon={OwnSiteIcon}
-                      label="Own Site"
-                      count={userSales.data?.ownSiteSales || 0}
-                      textColor="text-orange-350"
-                      backgroundColor="bg-orange-50"
-                    />
-                  </div>
-                  <div>
-                    <Group className="flex-col items-start gap-0 mb-5">
-                      <p className="text-md font-medium">Total Sales</p>
-                      <p className="text-xl font-bold text-green-350">
-                        {toIndianCurrency(userSales.data?.sales || 0)}
-                      </p>
-                    </Group>
-                    <SalesStatisticsCard
-                      icon={TradedSiteIcon}
-                      label="Traded Site"
-                      count={userSales.data?.totalTradedAmount || 0}
-                      textColor="text-blue-350"
-                      backgroundColor="bg-blue-50"
-                    />
-                  </div>
-                </div>
-              </section>
             </article>
 
             <article className="bg-white col-span-4 h-full rounded-md">
@@ -472,8 +408,8 @@ const HomePage = () => {
             </article>
           </Group>
 
-          <div className="flex flex-col items-start gap-4 md:flex-row">
-            <div className="w-full md:w-[68%]">
+          <article className="grid grid-cols-9 gap-4 mb-5">
+            <section className="min-h-36 flex flex-col gap-3 col-span-5">
               <div className="flex justify-between items-center">
                 <p className="font-bold">Revenue Graph</p>
                 <ViewByFilter handleViewBy={handleViewBy} />
@@ -489,38 +425,52 @@ const HomePage = () => {
                   <p className="text-center">{timeLegend[queryByTime.groupBy]} &gt;</p>
                 </div>
               )}
-            </div>
-            <div className="flex gap-4 p-4 border rounded-md items-center justify-center flex-1">
-              <div className="w-32">
-                {inventoryStats.isLoading ? (
-                  <Loader className="mx-auto" />
-                ) : inventoryStats.data?.healthy === 0 && inventoryStats.data?.unHealthy === 0 ? (
-                  <p className="text-center">NA</p>
-                ) : (
-                  <Doughnut options={config.options} data={inventoryHealthStatus} />
-                )}
-              </div>
-              <div>
-                <p className="font-medium text-center">Health Status of Inventory</p>
-                <div className="flex gap-8 mt-6 flex-row">
-                  <div className="flex gap-2 items-center">
-                    <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
-                    <div>
-                      <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
-                      <p className="font-bold text-lg">{inventoryStats.data?.healthy || 0}</p>
-                    </div>
+            </section>
+
+            <section className="rounded-lg border flex flex-row items-start gap-3 p-4 col-span-4 h-[200px]">
+              <Box className="w-36 relative">
+                {hasExceededSales ? (
+                  <div className="absolute top-7 left-[16px] transform rotate-12">
+                    <Image src={ExceedChevronIcon} height={36} width={36} fit="contain" />
                   </div>
-                  <div className="flex gap-2 items-center">
-                    <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
-                    <div>
-                      <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
-                      <p className="font-bold text-lg">{inventoryStats.data?.unHealthy || 0}</p>
-                    </div>
-                  </div>
+                ) : null}
+                <Doughnut options={salesPieConfig} data={revenueBreakupData} />
+              </Box>
+
+              <div className="flex-1 grid grid-cols-2 gap-3">
+                <div>
+                  <Group className="flex-col items-start gap-0 mb-5">
+                    <p className="text-md font-medium">Sales Target</p>
+                    <p className="text-xl font-bold text-purple-350">
+                      {toIndianCurrency(userSales.data?.salesTarget || 0)}
+                    </p>
+                  </Group>
+                  <SalesStatisticsCard
+                    icon={OwnSiteIcon}
+                    label="Own Site"
+                    count={userSales.data?.ownSiteSales || 0}
+                    textColor="text-orange-350"
+                    backgroundColor="bg-orange-50"
+                  />
+                </div>
+                <div>
+                  <Group className="flex-col items-start gap-0 mb-5">
+                    <p className="text-md font-medium">Total Sales</p>
+                    <p className="text-xl font-bold text-green-350">
+                      {toIndianCurrency(userSales.data?.sales || 0)}
+                    </p>
+                  </Group>
+                  <SalesStatisticsCard
+                    icon={TradedSiteIcon}
+                    label="Traded Site"
+                    count={userSales.data?.totalTradedAmount || 0}
+                    textColor="text-blue-350"
+                    backgroundColor="bg-blue-50"
+                  />
                 </div>
               </div>
-            </div>
-          </div>
+            </section>
+          </article>
         </div>
       </div>
     </div>
