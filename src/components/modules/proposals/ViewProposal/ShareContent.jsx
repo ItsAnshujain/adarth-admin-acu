@@ -159,6 +159,8 @@ const ShareContent = ({ id, onClose }) => {
 
     data.format = activeFileType.join(',');
     data.shareVia = activeShare;
+    data.aspectRatio = 'fill';
+    data.templateType = 'generic';
 
     if (watchAspectRatio) {
       const aspectRatio = watchAspectRatio.split(';')[0];
@@ -188,7 +190,7 @@ const ShareContent = ({ id, onClose }) => {
       return;
     }
 
-    const res = await shareProposal.mutateAsync(
+    const response = await shareProposal.mutateAsync(
       { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
       {
         onSuccess: () => {
@@ -206,8 +208,8 @@ const ShareContent = ({ id, onClose }) => {
         },
       },
     );
-    if (activeShare === 'copy_link' && res?.link?.messageText) {
-      navigator.clipboard.writeText(res?.link?.messageText);
+    if (activeShare === 'copy_link' && response?.link?.messageText) {
+      navigator.clipboard.writeText(response?.link?.messageText);
       showNotification({
         title: 'Link Copied',
         color: 'blue',
