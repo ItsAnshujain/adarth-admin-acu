@@ -4,10 +4,10 @@ import { useFormContext } from '../../../../context/formContext';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import { debounce, getAddressByLatLng, serialize, tierList } from '../../../../utils';
 import AutoCompleteLocationInput from '../../../AutoCompleteLocationInput';
-import NativeSelect from '../../../shared/NativeSelect';
 import NumberInput from '../../../shared/NumberInput';
 import TextInput from '../../../shared/TextInput';
 import MapView from './MapView';
+import Select from '../../../shared/Select';
 
 const styles = {
   label: {
@@ -100,7 +100,7 @@ const LocationForm = () => {
             className="mb-7"
             precision={6}
           />
-          <NativeSelect
+          <Select
             label="Zone"
             name="location.zone"
             withAsterisk
@@ -110,15 +110,15 @@ const LocationForm = () => {
             disabled={isZoneLoading}
             options={
               isZoneLoaded
-                ? zoneData.docs.map(category => ({
-                    label: category.name,
-                    value: category._id,
+                ? zoneData.docs.map(zone => ({
+                    label: zone.name,
+                    value: zone._id,
                   }))
                 : []
             }
             className="mb-7"
           />
-          <NativeSelect
+          <Select
             label="Facing"
             name="location.facing"
             withAsterisk
@@ -128,9 +128,9 @@ const LocationForm = () => {
             disabled={isFacingLoading}
             options={
               isFacingLoaded
-                ? facingData.docs.map(category => ({
-                    label: category.name,
-                    value: category._id,
+                ? facingData.docs.map(facing => ({
+                    label: facing.name,
+                    value: facing._id,
                   }))
                 : []
             }
@@ -177,14 +177,13 @@ const LocationForm = () => {
             placeholder="Write..."
             className="mb-7"
           />
-          <NativeSelect
+          <Select
             label="Tier"
             name="location.tier"
             withAsterisk
             styles={styles}
             errors={errors}
             placeholder="Select..."
-            disabled={isFacingLoading}
             options={tierList}
             className="mb-7"
           />

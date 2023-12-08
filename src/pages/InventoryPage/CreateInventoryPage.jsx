@@ -58,10 +58,10 @@ const initialValues = {
     address: '',
     city: '',
     state: '',
-    zone: '',
+    zone: { label: '', value: '' },
     landmark: '',
-    facing: '',
-    tier: '',
+    facing: { label: '', value: '' },
+    tier: { label: '', value: '' },
   },
 };
 
@@ -170,10 +170,25 @@ const locationValues = yup.object({
         return stringVal.length === 6;
       })
       .positive('Zip must be a positive number'),
-    zone: yup.string().trim().required('Zone is required'),
+    zone: yup
+      .object({
+        label: yup.string().trim(),
+        value: yup.string().trim(),
+      })
+      .test('zone', 'Zone is required', obj => obj.value !== ''),
     landmark: yup.string().trim(),
-    facing: yup.string().trim().required('Facing is required'),
-    tier: yup.string().trim().required('Tier is required'),
+    facing: yup
+      .object({
+        label: yup.string().trim(),
+        value: yup.string().trim(),
+      })
+      .test('facing', 'Facing is required', obj => obj.value !== ''),
+    tier: yup
+      .object({
+        label: yup.string().trim(),
+        value: yup.string().trim(),
+      })
+      .test('tier', 'Tier is required', obj => obj.value !== ''),
     faciaTowards: yup.string().trim(),
   }),
 });
@@ -239,6 +254,12 @@ const CreateInventoryPage = () => {
           height: item?.height,
           width: item?.width,
         })),
+      },
+      location: {
+        ...formData.location,
+        zone: formData?.location?.zone?.value,
+        facing: formData?.location?.facing?.value,
+        tier: formData?.location?.tier?.value,
       },
       company: formData?.basicInformation?.mediaOwner?.label,
     };
@@ -361,10 +382,16 @@ const CreateInventoryPage = () => {
           city: location?.city || '',
           state: location?.state || '',
           zip: location?.zip ? parseInt(location.zip, 10) : undefined,
-          zone: location?.zone || '',
+          zone: {
+            label: location?.zone?.name || '',
+            value: location?.zone?._id || '',
+          },
           landmark: location?.landmark || '',
-          facing: location?.facing || '',
-          tier: location?.tier || '',
+          facing: {
+            label: location?.facing?.name || '',
+            value: location?.facing?._id || '',
+          },
+          tier: { label: location?.tier || '', value: location?.tier || '' },
           faciaTowards: location?.faciaTowards || undefined,
         },
       });

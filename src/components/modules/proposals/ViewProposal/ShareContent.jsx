@@ -18,7 +18,7 @@ import ControlledSelect from '../../../shared/FormInputs/Controlled/ControlledSe
 import DownloadIcon from '../../../../assets/download-cloud.svg';
 
 const placeHolders = {
-  email: 'Email Address',
+  email: 'To: Email Address',
   whatsapp: 'WhatsApp Number',
   message: 'Phone Number',
 };
@@ -54,6 +54,7 @@ const initialEmailValues = {
   shareVia: 'email',
   name: '',
   to: '',
+  cc: '',
 };
 
 const initialWhatsAppValues = {
@@ -177,14 +178,35 @@ const ShareContent = ({ id, onClose }) => {
       if (emails.includes(false)) {
         showNotification({
           title: 'Please enter valid email addresses',
-          message: 'One of your email address is invalid',
+          message: 'One of your email address in To is invalid',
         });
         return;
       }
       data.to = emails.join(',');
     } else if (activeShare === 'email' && !validator.isEmail(data.to)) {
       showNotification({
-        title: 'Invalid Email',
+        title: 'Invalid Email in To',
+      });
+
+      return;
+    }
+
+    if (activeShare === 'email' && data.cc.includes(',')) {
+      let emails = data.cc.split(',');
+      emails = emails.map(email =>
+        email.trim() && validator.isEmail(email.trim()) ? email.trim() : false,
+      );
+      if (emails.includes(false)) {
+        showNotification({
+          title: 'Please enter valid email addresses',
+          message: 'One of your email address in cc is invalid',
+        });
+        return;
+      }
+      data.cc = emails.join(',');
+    } else if (activeShare === 'email' && data.cc && !validator.isEmail(data.cc)) {
+      showNotification({
+        title: 'Invalid Email in cc',
       });
 
       return;
@@ -359,6 +381,14 @@ const ShareContent = ({ id, onClose }) => {
                     <ControlledTextInput
                       name="to"
                       placeholder={placeHolders[activeShare]}
+                      maxLength={200}
+                      className="mb-2"
+                    />
+                  ) : null}
+                  {activeShare === 'email' ? (
+                    <ControlledTextInput
+                      name="cc"
+                      placeholder="cc: Email Address"
                       maxLength={200}
                     />
                   ) : null}
