@@ -21,10 +21,11 @@ const ViewRte = ({ data }) => {
       if (lexicalJson && !isEmpty(lexicalJson)) {
         const newEditorState = editor.parseEditorState(lexicalJson);
         editor.setEditorState(newEditorState);
+        // eslint-disable-next-line no-unused-vars
         const res = htmlConverter(editor);
         // TODO: remove after fixing html converter
         // eslint-disable-next-line no-console
-        console.log(res);
+        // console.log(res);
       }
     }, [editor, lexicalJson]);
 
