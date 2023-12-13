@@ -388,7 +388,7 @@ const ShareContent = ({ id, onClose }) => {
                   {activeShare === 'email' ? (
                     <ControlledTextInput
                       name="cc"
-                      placeholder="cc: Email Address"
+                      placeholder="Cc: Email Address"
                       maxLength={200}
                     />
                   ) : null}
