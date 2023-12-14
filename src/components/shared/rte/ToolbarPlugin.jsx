@@ -25,7 +25,7 @@ import {
   COMMAND_PRIORITY_LOW,
   $getRoot,
   $isElementNode,
-  // $createTextNode,
+  $createParagraphNode,
 } from 'lexical';
 import {
   $isListNode,
@@ -123,7 +123,7 @@ const ToolbarPlugin = ({ lexicalJson }) => {
     const root = $getRoot();
     const lastNode = root.getLastChild();
     if (!$isElementNode(lastNode)) {
-      // lastNode.insertAfter($createTextNode());
+      lastNode.insertAfter($createParagraphNode());
     }
     root.select(0, root.getChildrenSize());
 
