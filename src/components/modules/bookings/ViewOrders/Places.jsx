@@ -320,10 +320,6 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
                 }
               />
             </div>
-            <div>
-              <p className="mb-2 text-sm font-light text-slate-400">Health Status</p>
-              <p>{`${data?.health || 0}%` || <NoData type="na" />}</p>
-            </div>
           </div>
           <div>
             <div className="mb-4">

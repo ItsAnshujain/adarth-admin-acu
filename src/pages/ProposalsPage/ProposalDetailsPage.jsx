@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Badge, Button, Image, Loader, Progress, Text } from '@mantine/core';
+import { Badge, Button, Image, Loader, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
@@ -291,28 +291,6 @@ const ProposalDetailsPage = () => {
           },
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
-      // {
-      //   Header: 'HEALTH STATUS',
-      //   accessor: 'health',
-      //   Cell: ({
-      //     row: {
-      //       original: { health },
-      //     },
-      //   }) =>
-      //     useMemo(
-      //       () => (
-      //         <div className="w-24">
-      //           <Progress
-      //             sections={[
-      //               { value: health, color: 'green' },
-      //               { value: 100 - (health || 0), color: 'red' },
-      //             ]}
-      //           />
-      //         </div>
-      //       ),
-      //       [],
-      //     ),
-      // },
       {
         Header: 'IMPRESSION',
         accessor: 'impressions.max',

@@ -12,7 +12,7 @@ import {
   ArcElement,
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
-import { Badge, Image, Loader, Progress, Tabs, Text } from '@mantine/core';
+import { Badge, Image, Loader, Tabs, Text } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
@@ -349,28 +349,6 @@ const InventoryReportsPage = () => {
         ),
     },
     {
-      Header: 'HEALTH STATUS',
-      accessor: 'specifications.health',
-      Cell: ({
-        row: {
-          original: { specifications },
-        },
-      }) =>
-        useMemo(
-          () => (
-            <div className="w-24">
-              <Progress
-                sections={[
-                  { value: specifications?.health, color: 'green' },
-                  { value: 100 - (specifications?.health || 0), color: 'red' },
-                ]}
-              />
-            </div>
-          ),
-          [],
-        ),
-    },
-    {
       Header: 'CITY',
       accessor: 'location.city',
       Cell: ({
@@ -520,29 +498,6 @@ const InventoryReportsPage = () => {
                 ? `${getWord(specifications.impressions.max)}+`
                 : 'NA'}
             </p>
-          ),
-          [],
-        ),
-    },
-    {
-      Header: 'HEALTH STATUS',
-      accessor: 'specifications.health',
-      disableSortBy: true,
-      Cell: ({
-        row: {
-          original: { specifications },
-        },
-      }) =>
-        useMemo(
-          () => (
-            <div className="w-24">
-              <Progress
-                sections={[
-                  { value: specifications?.health, color: 'green' },
-                  { value: 100 - (specifications?.health || 0), color: 'red' },
-                ]}
-              />
-            </div>
           ),
           [],
         ),

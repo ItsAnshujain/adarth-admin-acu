@@ -131,16 +131,12 @@ const CreateBookingPage = () => {
         (acc, item) => ({
           maxImpression: acc.maxImpression + item.impressionMax,
           minImpression: acc.minImpression + item.impressionMin,
-          healthStatus: acc.healthStatus + item.health,
         }),
         {
           maxImpression: 0,
           minImpression: 0,
-          healthStatus: 0,
         },
       );
-
-      totalImpressionAndHealth.healthStatus /= data.place.length;
 
       if (data.place.some(item => !(item.startDate || item.endDate))) {
         showNotification({
@@ -224,18 +220,6 @@ const CreateBookingPage = () => {
       });
 
       if (bookingId) {
-        // TODO: remove after testing
-        // eslint-disable-next-line no-console
-        console.log({
-          id: bookingId,
-          data: {
-            ...data,
-            ...totalImpressionAndHealth,
-            startDate: minDate,
-            endDate: maxDate,
-          },
-        });
-        // return;
         updateBooking.mutate(
           {
             id: bookingId,
@@ -257,16 +241,6 @@ const CreateBookingPage = () => {
           },
         );
       } else {
-        // TODO: remove after testing
-        // eslint-disable-next-line no-console
-        console.log({
-          ...data,
-          ...totalImpressionAndHealth,
-          startDate: minDate,
-          endDate: maxDate,
-          proposalId: proposalId || null,
-        });
-        // return;
         createBooking.mutate(
           {
             ...data,
@@ -333,7 +307,6 @@ const CreateBookingPage = () => {
             initialUnit: item?.unit || 0,
             impressionMax: item?.specifications?.impressions?.max || 0,
             impressionMin: item?.specifications?.impressions?.min,
-            health: item?.specifications?.health || 0,
           })) || [],
         industry: campaign?.industry?._id || '',
         displayBrands: displayBrands?.[0] || '',
@@ -360,7 +333,6 @@ const CreateBookingPage = () => {
           initialUnit: item?.bookedUnits || 0,
           impressionMax: item?.specifications?.impressions?.max || 0,
           impressionMin: item?.specifications?.impressions?.min,
-          health: item?.specifications?.health || 0,
         })),
       });
     }
