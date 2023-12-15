@@ -74,7 +74,7 @@ const FileUpload = () => {
       </div>
       <Group className="ml-5 mt-3 mb-5 flex justify-center">
         <a
-          href="https://adarth-assets-dev.s3.ap-south-1.amazonaws.com/bulk_upload_sample.csv"
+          href="https://adarth-assets-dev.s3.ap-south-1.amazonaws.com/sample_bulk_upload.csv"
           className="text-purple-450 cursor-pointer font-medium"
           target="_blank"
           download

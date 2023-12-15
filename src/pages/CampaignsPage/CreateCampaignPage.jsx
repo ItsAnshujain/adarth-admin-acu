@@ -22,14 +22,12 @@ const initialValues = {
   name: '',
   description: '',
   price: null,
-  healthStatus: null,
   createStatus: '',
   isFeatured: false,
   previousBrands: [],
   minImpression: 0,
   maxImpression: 0,
   tags: [],
-  healthTag: '',
   place: [],
   thumbnail: '',
   thumbnailId: '',
@@ -110,8 +108,6 @@ const CreateCampaignPage = () => {
         id: item._id,
         price: item.price,
       }));
-
-      data.healthStatus = +data.healthStatus || 0;
 
       if (submitType === 'publish') {
         const statusId = campaignStatus?.docs?.find(

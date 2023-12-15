@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import { FormProvider, useForm } from 'react-hook-form';
 import whatsapp from '../../../../assets/whatsapp.svg';
 import { useShareProposal } from '../../../../apis/queries/proposal.queries';
+import { useShareInventory } from '../../../../apis/queries/inventory.queries';
 import { downloadPdf, serialize } from '../../../../utils';
 import { OBJECT_FIT_LIST_V2, FILE_TYPE_LIST } from '../../../../utils/constants';
 import ControlledTextInput from '../../../shared/FormInputs/Controlled/ControlledTextInput';
@@ -18,7 +19,7 @@ import ControlledSelect from '../../../shared/FormInputs/Controlled/ControlledSe
 import DownloadIcon from '../../../../assets/download-cloud.svg';
 
 const placeHolders = {
-  email: 'Email Address',
+  email: 'To: Email Address',
   whatsapp: 'WhatsApp Number',
   message: 'Phone Number',
 };
@@ -54,6 +55,7 @@ const initialEmailValues = {
   shareVia: 'email',
   name: '',
   to: '',
+  cc: '',
 };
 
 const initialWhatsAppValues = {
@@ -122,7 +124,7 @@ const schemas = {
   download: downloadLinkSchema,
 };
 
-const ShareContent = ({ id, onClose }) => {
+const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
   const [activeFileType, setActiveFileType] = useState([]);
   const [activeShare, setActiveShare] = useState('');
   const [loaderType, setLoaderType] = useState(-1);
@@ -133,6 +135,7 @@ const ShareContent = ({ id, onClose }) => {
   });
 
   const shareProposal = useShareProposal();
+  const shareInventory = useShareInventory();
 
   const handleActiveFileType = value => {
     let tempArr = [...activeFileType]; // TODO: use immmer
@@ -177,43 +180,99 @@ const ShareContent = ({ id, onClose }) => {
       if (emails.includes(false)) {
         showNotification({
           title: 'Please enter valid email addresses',
-          message: 'One of your email address is invalid',
+          message: 'One of your email address in To is invalid',
         });
         return;
       }
       data.to = emails.join(',');
     } else if (activeShare === 'email' && !validator.isEmail(data.to)) {
       showNotification({
-        title: 'Invalid Email',
+        title: 'Invalid Email in To',
       });
 
       return;
     }
 
-    const response = await shareProposal.mutateAsync(
-      { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
-      {
-        onSuccess: () => {
-          setActiveFileType([]);
-          if (data.shareVia !== 'copy_link') {
-            showNotification({
-              title: 'Proposal has been shared successfully',
-              color: 'green',
-            });
-          }
-
-          form.reset();
-          setActiveShare('');
-          onClose();
-        },
-      },
-    );
-    if (activeShare === 'copy_link' && response?.link?.messageText) {
-      navigator.clipboard.writeText(response?.link?.messageText);
+    if (activeShare === 'email' && data.cc.includes(',')) {
+      let emails = data.cc.split(',');
+      emails = emails.map(email =>
+        email.trim() && validator.isEmail(email.trim()) ? email.trim() : false,
+      );
+      if (emails.includes(false)) {
+        showNotification({
+          title: 'Please enter valid email addresses',
+          message: 'One of your email address in cc is invalid',
+        });
+        return;
+      }
+      data.cc = emails.join(',');
+    } else if (activeShare === 'email' && data.cc && !validator.isEmail(data.cc)) {
       showNotification({
-        title: 'Link Copied',
-        color: 'blue',
+        title: 'Invalid Email in cc',
       });
+
+      return;
+    }
+
+    if (shareType === 'proposal') {
+      const proposalResponse = await shareProposal.mutateAsync(
+        { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
+        {
+          onSuccess: () => {
+            setActiveFileType([]);
+            if (data.shareVia !== 'copy_link') {
+              showNotification({
+                title: 'Proposal has been shared successfully',
+                color: 'green',
+              });
+            }
+
+            form.reset();
+            setActiveShare('');
+            onClose();
+          },
+        },
+      );
+      if (activeShare === 'copy_link' && proposalResponse?.link?.messageText) {
+        navigator.clipboard.writeText(proposalResponse?.link?.messageText);
+        showNotification({
+          title: 'Link Copied',
+          color: 'blue',
+        });
+      }
+    }
+
+    if (shareType === 'inventory') {
+      const params = {};
+      searchParamQueries.forEach((value, key) => {
+        params[key] = value;
+      });
+
+      const inventoryResponse = await shareInventory.mutateAsync(
+        { queries: serialize({ ...params, utcOffset: dayjs().utcOffset() }), data },
+        {
+          onSuccess: () => {
+            setActiveFileType([]);
+            if (data.shareVia !== 'copy_link') {
+              showNotification({
+                title: 'Inventories have been shared successfully',
+                color: 'green',
+              });
+            }
+
+            form.reset();
+            setActiveShare('');
+            onClose();
+          },
+        },
+      );
+      if (activeShare === 'copy_link' && inventoryResponse?.proposalShare?.messageText) {
+        navigator.clipboard.writeText(inventoryResponse?.proposalShare?.messageText);
+        showNotification({
+          title: 'Link Copied',
+          color: 'blue',
+        });
+      }
     }
   });
 
@@ -252,25 +311,55 @@ const ShareContent = ({ id, onClose }) => {
       data.templateType = templateType;
     }
 
-    const res = await shareProposal.mutateAsync(
-      { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
-      {
-        onSuccess: () => {
-          setActiveFileType([]);
-          onClose();
-          setLoaderType(-1);
+    if (shareType === 'proposal') {
+      const proposalResponse = await shareProposal.mutateAsync(
+        { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
+        {
+          onSuccess: () => {
+            setActiveFileType([]);
+            onClose();
+            setLoaderType(-1);
+          },
+          onError: () => {
+            setLoaderType(-1);
+          },
         },
-        onError: () => {
-          setLoaderType(-1);
-        },
-      },
-    );
-    if (res?.link?.[data.format]) {
-      downloadPdf(res.link[data.format]);
-      showNotification({
-        title: 'Download successful',
-        color: 'green',
+      );
+      if (proposalResponse?.link?.[data.format]) {
+        downloadPdf(proposalResponse.link[data.format]);
+        showNotification({
+          title: 'Download successful',
+          color: 'green',
+        });
+      }
+    }
+
+    if (shareType === 'inventory') {
+      const params = {};
+      searchParamQueries.forEach((value, key) => {
+        params[key] = value;
       });
+
+      const inventoryResponse = await shareInventory.mutateAsync(
+        { queries: serialize({ ...params, utcOffset: dayjs().utcOffset() }), data },
+        {
+          onSuccess: () => {
+            setActiveFileType([]);
+            onClose();
+            setLoaderType(-1);
+          },
+          onError: () => {
+            setLoaderType(-1);
+          },
+        },
+      );
+      if (inventoryResponse?.proposalShare?.[data.format]) {
+        downloadPdf(inventoryResponse.proposalShare[data.format]);
+        showNotification({
+          title: 'Download successful',
+          color: 'green',
+        });
+      }
     }
   };
 
@@ -316,13 +405,17 @@ const ShareContent = ({ id, onClose }) => {
             className="primary-button font-medium text-base mt-2 w-full"
             onClick={handleDownload}
             loading={loaderType === 'download'}
-            disabled={shareProposal.isLoading}
+            disabled={shareProposal.isLoading || shareInventory.isLoading}
             leftIcon={
               <Image src={DownloadIcon} alt="download" height={24} width={24} fit="contain" />
             }
           >
             Download
           </Button>
+          {/* TODO: uncomment on next commit */}
+          {/* <p className="mt-2 text-sm text-red-450">
+            *Only one file type can be selected before downloading
+          </p> */}
 
           <div className="mt-5">
             <p className="font-medium text-xl mb-2">Share via:</p>
@@ -360,6 +453,14 @@ const ShareContent = ({ id, onClose }) => {
                       name="to"
                       placeholder={placeHolders[activeShare]}
                       maxLength={200}
+                      className="mb-2"
+                    />
+                  ) : null}
+                  {activeShare === 'email' ? (
+                    <ControlledTextInput
+                      name="cc"
+                      placeholder="Cc: Email Address"
+                      maxLength={200}
                     />
                   ) : null}
                   {activeShare === 'email' ? (
@@ -370,8 +471,11 @@ const ShareContent = ({ id, onClose }) => {
                   <Button
                     className="secondary-button font-medium text-base mt-2 w-full"
                     type="submit"
-                    loading={loaderType !== 'download' && shareProposal.isLoading}
-                    disabled={shareProposal.isLoading}
+                    loading={
+                      loaderType !== 'download' &&
+                      (shareProposal.isLoading || shareInventory.isLoading)
+                    }
+                    disabled={shareProposal.isLoading || shareInventory.isLoading}
                   >
                     {activeShare === 'copy_link' ? 'Copy' : 'Send'}
                   </Button>
