@@ -5,7 +5,6 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
-import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -290,23 +289,6 @@ const ProposalDetailsPage = () => {
             original: { mediaType },
           },
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
-      },
-      {
-        Header: 'IMPRESSION',
-        accessor: 'impressions.max',
-        Cell: ({
-          row: {
-            original: { impressions },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <p className="capitalize w-32">
-                {impressions?.max ? getWord(impressions.max) : 'NA'}
-              </p>
-            ),
-            [],
-          ),
       },
       {
         Header: 'ACTION',

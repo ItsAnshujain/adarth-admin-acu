@@ -6,7 +6,6 @@ import dayjs from 'dayjs';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
 import Search from '../../Search';
@@ -409,19 +408,6 @@ const Spaces = () => {
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
-        Header: 'IMPRESSION',
-        accessor: 'specifications.impressions.max',
-        Cell: ({
-          row: {
-            original: { impressions },
-          },
-        }) =>
-          useMemo(
-            () => <p className="capitalize w-32">{impressions ? getWord(impressions) : 'NA'}</p>,
-            [],
-          ),
-      },
-      {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
@@ -510,7 +496,6 @@ const Spaces = () => {
         ) : (
           '-'
         );
-        obj.impressions = item?.specifications?.impressions?.max;
         obj.location = item?.location?.city;
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.mediaType = item?.basicInformation?.mediaType?.name;

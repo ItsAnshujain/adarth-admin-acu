@@ -16,7 +16,6 @@ import { Badge, Image, Loader, Tabs, Text } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
-import { getWord } from 'num-count';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { useDebouncedValue } from '@mantine/hooks';
 import classNames from 'classnames';
@@ -332,23 +331,6 @@ const InventoryReportsPage = () => {
       }) => useMemo(() => <p>{specifications?.unit || '-'}</p>, []),
     },
     {
-      Header: 'IMPRESSION',
-      accessor: 'specifications.impressions.max',
-      Cell: ({
-        row: {
-          original: { specifications },
-        },
-      }) =>
-        useMemo(
-          () => (
-            <p className="capitalize w-32">
-              {specifications?.impressions?.max ? getWord(specifications.impressions.max) : 'NA'}
-            </p>
-          ),
-          [],
-        ),
-    },
-    {
       Header: 'CITY',
       accessor: 'location.city',
       Cell: ({
@@ -481,26 +463,6 @@ const InventoryReportsPage = () => {
           original: { specifications },
         },
       }) => useMemo(() => <p>{specifications?.unit || '-'}</p>, []),
-    },
-    {
-      Header: 'IMPRESSION',
-      accessor: 'specifications.impressions.max',
-      disableSortBy: true,
-      Cell: ({
-        row: {
-          original: { specifications },
-        },
-      }) =>
-        useMemo(
-          () => (
-            <p className="capitalize w-32">
-              {specifications?.impressions?.max
-                ? `${getWord(specifications.impressions.max)}+`
-                : 'NA'}
-            </p>
-          ),
-          [],
-        ),
     },
     {
       Header: 'CITY',

@@ -4,7 +4,6 @@ import { ChevronDown } from 'react-feather';
 import { useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { v4 as uuidv4 } from 'uuid';
-import { getWord } from 'num-count';
 import { useModals } from '@mantine/modals';
 import Filter from '../../inventory/Filter';
 import Search from '../../../Search';
@@ -256,19 +255,6 @@ const SpaceList = () => {
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
-        Header: 'IMPRESSION',
-        accessor: 'specifications.impressions.max',
-        Cell: ({
-          row: {
-            original: { impression },
-          },
-        }) =>
-          useMemo(
-            () => <p className="capitalize w-32">{impression ? getWord(impression) : 'NA'}</p>,
-            [],
-          ),
-      },
-      {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
@@ -313,7 +299,6 @@ const SpaceList = () => {
         mediaType,
         dimension,
         illuminations,
-        impression,
         unit,
         resolutions,
       }) => ({
@@ -326,7 +311,6 @@ const SpaceList = () => {
         mediaType,
         dimension,
         illuminations,
-        impression,
         unit,
         resolutions,
       }),
@@ -382,7 +366,6 @@ const SpaceList = () => {
           '-'
         );
         obj.unit = item?.specifications?.unit || '-';
-        obj.impression = item?.specifications?.impressions?.max || 0;
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.location = item?.location;
         obj.mediaType = item?.basicInformation?.mediaType?.name;

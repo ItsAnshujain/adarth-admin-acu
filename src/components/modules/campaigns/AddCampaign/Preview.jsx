@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import GoogleMapReact from 'google-map-react';
-import { BackgroundImage, Badge, Center, Image, Pagination, Spoiler, Text } from '@mantine/core';
+import { BackgroundImage, Center, Image, Pagination, Spoiler, Text } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { getWord } from 'num-count';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import MarkerIcon from '../../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../../utils/config';
@@ -117,10 +116,6 @@ const Preview = ({ data = {}, place = {} }) => {
               <p className="font-bold my-2">
                 {toIndianCurrency(+(memoizedCalculateTotalPrice || 0))}
               </p>
-
-              <Badge className="capitalize" size="lg" variant="light" radius="md" color="orange">
-                {data?.maxImpression ? `${getWord(data?.maxImpression)} Total Impressions` : 'NA'}
-              </Badge>
             </div>
           </div>
         </div>
