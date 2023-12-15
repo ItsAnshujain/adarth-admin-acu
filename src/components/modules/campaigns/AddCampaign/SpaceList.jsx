@@ -255,6 +255,11 @@ const SpaceList = () => {
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
+        Header: 'FACING',
+        accessor: 'location.facing',
+        Cell: info => useMemo(() => <p>{info.row.original.facing || '-'}</p>),
+      },
+      {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
@@ -372,6 +377,7 @@ const SpaceList = () => {
         obj.price = item?.basicInformation?.price;
         obj.landlord_name = item?.basicInformation?.mediaOwner?.name;
         obj.illuminations = item?.specifications?.illuminations?.name;
+        obj.facing = item?.location?.facing?.name;
         obj.resolutions = item?.specifications?.resolutions;
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
 

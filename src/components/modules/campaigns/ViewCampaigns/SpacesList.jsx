@@ -147,6 +147,11 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
           ),
       },
       {
+        Header: 'FACING',
+        accessor: 'location.facing',
+        Cell: info => useMemo(() => <p>{info.row.original.location?.facing?.name || '-'}</p>),
+      },
+      {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,

@@ -422,6 +422,11 @@ const SelectSpace = () => {
         Cell: RenderMediaTypeCell,
       },
       {
+        Header: 'FACING',
+        accessor: 'location.facing',
+        Cell: info => useMemo(() => <p>{info.row.original.facing || '-'}</p>),
+      },
+      {
         Header: 'UPLOAD MEDIA',
         accessor: '',
         disableSortBy: true,
@@ -513,6 +518,7 @@ const SelectSpace = () => {
         obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
         obj.tradedAmount = selectionItem?.tradedAmount ?? 0;
         obj.campaigns = item?.campaigns;
+        obj.facing = item?.location?.facing?.name;
         obj.startDate = getDate(selectionItem, item, 'startDate');
         obj.endDate = getDate(selectionItem, item, 'endDate');
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];

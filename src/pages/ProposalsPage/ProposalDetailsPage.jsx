@@ -291,6 +291,11 @@ const ProposalDetailsPage = () => {
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
+        Header: 'FACING',
+        accessor: 'facing',
+        Cell: info => useMemo(() => <p>{info.row.original.facing || '-'}</p>),
+      },
+      {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,

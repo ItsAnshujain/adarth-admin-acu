@@ -408,6 +408,11 @@ const Spaces = () => {
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
+        Header: 'FACING',
+        accessor: 'location.facing',
+        Cell: info => useMemo(() => <p>{info.row.original.facing || '-'}</p>),
+      },
+      {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
@@ -501,6 +506,7 @@ const Spaces = () => {
         obj.mediaType = item?.basicInformation?.mediaType?.name;
         obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
+        obj.facing = item?.location?.facing?.name;
         obj.startDate = getDate(selectionItem, item, 'startDate');
         obj.endDate = getDate(selectionItem, item, 'endDate');
         finalData.push(obj);
