@@ -39,7 +39,7 @@ import ExportIcon from '../../assets/export.png';
 import RoleBased from '../../components/RoleBased';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
 import ViewByFilter from '../../components/modules/inventory/ViewByFilter';
-import ShareContent from '../../components/modules/inventory/ShareContent';
+import ShareContent from '../../components/modules/proposals/ViewProposal/ShareContent';
 import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
 
 dayjs.extend(isBetween);
@@ -427,6 +427,7 @@ const InventoryDashboardPage = () => {
       title: 'Share and Download Option',
       children: (
         <ShareContent
+          shareType="inventory"
           searchParamQueries={searchParams}
           onClose={() => modals.closeModal('shareInventoryOption')}
         />
