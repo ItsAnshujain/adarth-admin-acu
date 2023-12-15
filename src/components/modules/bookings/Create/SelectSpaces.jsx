@@ -30,7 +30,6 @@ import RowsPerPage from '../../../RowsPerPage';
 import useLayoutView from '../../../../store/layout.store';
 import SpaceNamePhotoContent from '../../inventory/SpaceNamePhotoContent';
 import AdditionalTagsContent from '../../inventory/AdditionalTagsContent';
-import HealthStatusContent from '../../inventory/HealthStatusContent';
 import CategoryContent from '../../inventory/CategoryContent';
 import SubCategoryContent from '../../inventory/SubCategoryContent';
 import ImpressionContent from '../../inventory/ImpressionContent';
@@ -232,11 +231,6 @@ const SelectSpace = () => {
 
   const RenderMediaTypeCell = useCallback(({ row }) => row.original.mediaType || '-', []);
 
-  const RenderHealthStatusCell = useCallback(
-    ({ row }) => <HealthStatusContent health={row.original.health || 0} />,
-    [],
-  );
-
   const RenderImpressionCell = useCallback(
     ({ row }) => <ImpressionContent impressionMax={row.original.impressionMax || 0} />,
     [],
@@ -433,11 +427,6 @@ const SelectSpace = () => {
         accessor: 'basicInformation.mediaType.name',
         Cell: RenderMediaTypeCell,
       },
-      // {
-      //   Header: 'HEALTH STATUS',
-      //   accessor: 'specifications.health',
-      //   Cell: RenderHealthStatusCell,
-      // },
       {
         Header: 'IMPRESSION',
         accessor: 'specifications.impressions.max',
@@ -531,7 +520,6 @@ const SelectSpace = () => {
         obj.unit = item?.specifications?.unit || 1;
         obj.impressionMax = item.specifications?.impressions?.max || 0;
         obj.impressionMin = item.specifications?.impressions?.min || 0;
-        obj.health = item?.specifications?.health ?? 0;
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.location = item?.location?.city;
         obj.mediaType = item.basicInformation?.mediaType?.name;

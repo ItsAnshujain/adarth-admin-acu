@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Group, Image, Loader, Progress } from '@mantine/core';
+import { Badge, Button, Group, Image, Loader } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
@@ -35,17 +35,6 @@ const updatedModalConfig = {
     close: 'mr-4',
   },
 };
-
-const getHealthTag = score =>
-  score >= 80
-    ? 'Best'
-    : score < 80 && score >= 50
-    ? 'Good'
-    : score < 50 && score >= 30
-    ? 'Average'
-    : score < 30
-    ? 'Bad'
-    : 'Not yet selected';
 
 const SpaceList = () => {
   const { setFieldValue, values } = useFormContext();
@@ -267,24 +256,6 @@ const SpaceList = () => {
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
       {
-        Header: 'HEALTH STATUS',
-        accessor: 'specifications.health',
-        Cell: ({ row: { original } }) =>
-          useMemo(
-            () => (
-              <div className="w-24">
-                <Progress
-                  sections={[
-                    { value: original.health, color: 'green' },
-                    { value: 100 - original.health, color: 'red' },
-                  ]}
-                />
-              </div>
-            ),
-            [],
-          ),
-      },
-      {
         Header: 'IMPRESSION',
         accessor: 'specifications.impressions.max',
         Cell: ({
@@ -331,12 +302,6 @@ const SpaceList = () => {
     setSearchParams(searchParams);
   };
   const handleSelection = selectedRows => {
-    const avgHealth = selectedRows.reduce(
-      (acc, item) => acc + (item?.health ? +item.health : 0),
-      0,
-    );
-    const healthPercent = Math.floor((avgHealth / (selectedRows.length * 100)) * 100);
-
     const formData = selectedRows.map(
       ({
         _id,
@@ -349,7 +314,6 @@ const SpaceList = () => {
         dimension,
         illuminations,
         impression,
-        health,
         unit,
         resolutions,
       }) => ({
@@ -363,14 +327,11 @@ const SpaceList = () => {
         dimension,
         illuminations,
         impression,
-        health,
         unit,
         resolutions,
       }),
     );
 
-    setFieldValue('healthStatus', healthPercent);
-    setFieldValue('healthTag', getHealthTag(healthPercent));
     setFieldValue('place', formData);
   };
 
@@ -422,7 +383,6 @@ const SpaceList = () => {
         );
         obj.unit = item?.specifications?.unit || '-';
         obj.impression = item?.specifications?.impressions?.max || 0;
-        obj.health = item?.specifications?.health;
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.location = item?.location;
         obj.mediaType = item?.basicInformation?.mediaType?.name;
@@ -464,10 +424,6 @@ const SpaceList = () => {
           <div>
             <p className="text-slate-400">Total Price</p>
             <p className="font-bold">{toIndianCurrency(getTotalPrice(values?.place))}</p>
-          </div>
-          <div>
-            <p className="text-slate-400">Health Status</p>
-            <p className="font-bold">{values?.healthTag || 'NA'}</p>
           </div>
         </div>
         <div className="flex justify-between mb-4 items-center">

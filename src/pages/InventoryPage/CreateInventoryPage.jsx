@@ -43,7 +43,6 @@ const initialValues = {
         key: uuidv4(),
       },
     ],
-    health: null,
     impressions: {
       min: 0,
       max: 0,
@@ -135,11 +134,6 @@ const specificationsValues = yup.object({
       .required('Unit is required'),
     resolutions: yup.string().trim(),
     size: yup.array(),
-    health: yup
-      .number()
-      .min(0, 'Health Status must be greater than or equal to 0')
-      .max(100, 'Health Status must be less than or equal to 100')
-      .nullable(true),
     impressions: yup.object({
       min: yup.number(),
       max: yup.number(),
@@ -355,7 +349,6 @@ const CreateInventoryPage = () => {
             value: specifications?.illuminations?._id || '',
           },
           unit: specifications?.unit ? parseInt(specifications.unit, 10) : null,
-          health: specifications?.health ? parseInt(specifications.health, 10) : null,
           impressions: {
             max: specifications?.impressions?.max
               ? parseInt(specifications.impressions.max, 10)

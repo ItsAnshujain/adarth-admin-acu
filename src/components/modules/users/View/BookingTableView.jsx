@@ -1,7 +1,7 @@
 import { useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Button, Group, Loader, Progress, Select, Text } from '@mantine/core';
+import { Button, Group, Loader, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { Link, useSearchParams } from 'react-router-dom';

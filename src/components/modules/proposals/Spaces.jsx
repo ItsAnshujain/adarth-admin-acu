@@ -1,15 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import {
-  Text,
-  Button,
-  Progress,
-  Image,
-  NumberInput,
-  Badge,
-  Loader,
-  Group,
-  Tooltip,
-} from '@mantine/core';
+import { Text, Button, Image, NumberInput, Badge, Loader, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
@@ -418,28 +408,6 @@ const Spaces = () => {
           },
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
-      // {
-      //   Header: 'HEALTH STATUS',
-      //   accessor: 'specifications.health',
-      //   Cell: ({
-      //     row: {
-      //       original: { health },
-      //     },
-      //   }) =>
-      //     useMemo(
-      //       () => (
-      //         <div className="w-24">
-      //           <Progress
-      //             sections={[
-      //               { value: health, color: 'green' },
-      //               { value: 100 - (health || 0), color: 'red' },
-      //             ]}
-      //           />
-      //         </div>
-      //       ),
-      //       [],
-      //     ),
-      // },
       {
         Header: 'IMPRESSION',
         accessor: 'specifications.impressions.max',
@@ -543,7 +511,6 @@ const Spaces = () => {
           '-'
         );
         obj.impressions = item?.specifications?.impressions?.max;
-        obj.health = item?.specifications?.health;
         obj.location = item?.location?.city;
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.mediaType = item?.basicInformation?.mediaType?.name;
