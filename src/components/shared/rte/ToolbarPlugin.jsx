@@ -21,11 +21,6 @@ import {
   $getSelection,
   $isRangeSelection,
   FORMAT_ELEMENT_COMMAND,
-  KEY_DOWN_COMMAND,
-  COMMAND_PRIORITY_LOW,
-  $getRoot,
-  $isElementNode,
-  $createParagraphNode,
 } from 'lexical';
 import {
   $isListNode,
@@ -40,7 +35,6 @@ import { $isHeadingNode } from '@lexical/rich-text';
 import { $getNearestNodeOfType, mergeRegister } from '@lexical/utils';
 import { $isCodeNode, getDefaultCodeLanguage } from '@lexical/code';
 import { isEmpty } from 'lodash';
-import { CAN_USE_DOM } from './canUseDOM';
 
 const LowPriority = 1;
 
@@ -105,50 +99,6 @@ const ToolbarPlugin = ({ lexicalJson }) => {
       setIsRTL($isParentElementRTL(selection));
     }
   }, [editor]);
-
-  const IS_APPLE = CAN_USE_DOM && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
-
-  function controlOrMeta(metaKey, ctrlKey) {
-    if (IS_APPLE) {
-      return metaKey;
-    }
-    return ctrlKey;
-  }
-
-  function isSelectAll(keyCode, metaKey, ctrlKey) {
-    return keyCode === 65 && controlOrMeta(metaKey, ctrlKey);
-  }
-
-  function $selectAll() {
-    const root = $getRoot();
-    const lastNode = root.getLastChild();
-    if (!$isElementNode(lastNode)) {
-      lastNode.insertAfter($createParagraphNode());
-    }
-    root.select(0, root.getChildrenSize());
-
-    const rootElement = editor.getRootElement();
-    rootElement.focus({
-      preventScroll: true,
-    });
-  }
-
-  editor.registerCommand(
-    KEY_DOWN_COMMAND,
-    event => {
-      const { keyCode, ctrlKey, metaKey } = event;
-      if (isSelectAll(keyCode, metaKey, ctrlKey)) {
-        event.preventDefault();
-        editor.update(() => {
-          $selectAll(editor);
-        });
-        return true;
-      }
-
-      return false;
-    },
-    COMMAND_PRIORITY_LOW,
-  );
 
   useEffect(
     () =>
