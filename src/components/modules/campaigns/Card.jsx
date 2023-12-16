@@ -1,7 +1,6 @@
 import { Image, Text, Badge, Card as MantineCard } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
-import { getWord } from 'num-count';
 import toIndianCurrency from '../../../utils/currencyFormat';
 
 const Card = ({
@@ -12,7 +11,6 @@ const Card = ({
   place = [],
   price = 0,
   isFeatured,
-  maxImpression,
   onPreview,
 }) => (
   <MantineCard className="flex flex-col drop-shadow-md bg-white w-[270px]">
@@ -50,12 +48,6 @@ const Card = ({
           <div>
             <p className="text-sm text-gray-400 mb-2">No of Media</p>
             <p className="text-sm">{place.length || 0}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-400 mb-2">Impressions</p>
-            <p className="capitalize font-medium">
-              {maxImpression ? getWord(maxImpression) : 'NA'}
-            </p>
           </div>
         </div>
         <p className="font-extrabold text-lg">{price ? toIndianCurrency(price) : 0}</p>

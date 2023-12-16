@@ -1,21 +1,11 @@
 import React, { useMemo, useEffect, useState, useCallback } from 'react';
 import GoogleMapReact from 'google-map-react';
-import {
-  BackgroundImage,
-  Badge,
-  Center,
-  Image,
-  Pagination,
-  Skeleton,
-  Spoiler,
-  Text,
-} from '@mantine/core';
+import { BackgroundImage, Center, Image, Pagination, Skeleton, Spoiler, Text } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
 import { useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
 import { useModals } from '@mantine/modals';
-import { getWord } from 'num-count';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import MarkerIcon from '../../../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../../../utils/config';
@@ -209,11 +199,6 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
             </Spoiler>
             <div className="flex gap-3 items-center">
               <p className="font-bold my-2">{toIndianCurrency(+(getTotalPrice || 0))}</p>
-              <Badge className="capitalize" size="lg" variant="light" radius="md" color="orange">
-                {campaignData?.maxImpression
-                  ? `${getWord(campaignData?.maxImpression)} Total Impressions`
-                  : 'NA'}
-              </Badge>
             </div>
           </div>
         </div>

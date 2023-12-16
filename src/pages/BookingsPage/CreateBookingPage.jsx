@@ -305,8 +305,6 @@ const CreateBookingPage = () => {
                 ? item.specifications.unit - item.unit
                 : item.unit,
             initialUnit: item?.unit || 0,
-            impressionMax: item?.specifications?.impressions?.max || 0,
-            impressionMin: item?.specifications?.impressions?.min,
           })) || [],
         industry: campaign?.industry?._id || '',
         displayBrands: displayBrands?.[0] || '',
@@ -331,8 +329,6 @@ const CreateBookingPage = () => {
           unit: item?.bookedUnits,
           availableUnit: item?.remainingUnits,
           initialUnit: item?.bookedUnits || 0,
-          impressionMax: item?.specifications?.impressions?.max || 0,
-          impressionMin: item?.specifications?.impressions?.min,
         })),
       });
     }

@@ -6,7 +6,6 @@ import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
-import { getWord } from 'num-count';
 import layers from '../../../../assets/layers.svg';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import MapView from '../CreateSpace/MapView';
@@ -372,14 +371,6 @@ const BasicInfo = ({
                         '-'
                       )}
                     </div>
-                    <Text color="gray" size="xs" weight="300">
-                      Impressions
-                    </Text>
-                    <Text className="mb-4">
-                      {inventoryDetails?.specifications?.impressions?.max
-                        ? getWord(inventoryDetails.specifications.impressions.max)
-                        : 'NA'}
-                    </Text>
                     <Text color="gray" size="xs" weight="300">
                       Resolution
                     </Text>
