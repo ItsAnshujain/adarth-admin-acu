@@ -115,20 +115,6 @@ const CampaignReportsPage = () => {
     }
   };
 
-  const healthStatusData = useMemo(
-    () => ({
-      datasets: [
-        {
-          data: [stats?.unhealthy ?? 0, stats?.healthy ?? 0],
-          backgroundColor: ['#FF900E', '#914EFB'],
-          borderColor: ['#FF900E', '#914EFB'],
-          borderWidth: 1,
-        },
-      ],
-    }),
-    [stats],
-  );
-
   const printStatusData = useMemo(
     () => ({
       datasets: [
@@ -313,11 +299,7 @@ const CampaignReportsPage = () => {
       />
 
       <div id="campaign-pdf">
-        <CampaignStatsContent
-          isStatsLoading={isStatsLoading}
-          healthStatusData={healthStatusData}
-          stats={stats}
-        />
+        <CampaignStatsContent stats={stats} />
         <div className="flex gap-4">
           <div className="w-2/3">
             <div className="flex justify-between items-center">

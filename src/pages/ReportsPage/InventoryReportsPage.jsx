@@ -11,7 +11,7 @@ import {
   PointElement,
   ArcElement,
 } from 'chart.js';
-import { Line, Doughnut } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import { Badge, Image, Loader, Tabs, Text } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -81,11 +81,6 @@ const updatedModalConfig = {
 const options = {
   responsive: true,
   maintainAspectRatio: false,
-};
-
-const config = {
-  type: 'line',
-  options: { responsive: true },
 };
 
 const unwantedQueriesForReveueGraph = [
@@ -201,20 +196,6 @@ const InventoryReportsPage = () => {
       ),
       ...updatedModalConfig,
     });
-
-  const inventoryHealthStatus = useMemo(
-    () => ({
-      datasets: [
-        {
-          data: [inventoryStats?.unHealthy ?? 0, inventoryStats?.healthy ?? 0],
-          backgroundColor: ['#FF900E', '#914EFB'],
-          borderColor: ['#FF900E', '#914EFB'],
-          borderWidth: 1,
-        },
-      ],
-    }),
-    [inventoryStats],
-  );
 
   const inventoryColumn = [
     {
@@ -679,7 +660,7 @@ const InventoryReportsPage = () => {
           inventoryStats={inventoryStats}
         />
         <div className="flex w-full gap-4">
-          <div className="w-[70%]">
+          <div className="w-full">
             <div className="flex justify-between">
               <p className="font-bold">Revenue Graph</p>
               {share !== 'report' ? <ViewByFilter handleViewBy={handleViewBy} /> : null}
@@ -697,37 +678,6 @@ const InventoryReportsPage = () => {
                 />
               </div>
             )}
-          </div>
-
-          <div className="w-[30%] flex gap-8 h-[50%] p-4 border items-center rounded-md">
-            <div className="w-32">
-              {isInventoryStatsLoading ? (
-                <Loader className="mx-auto" />
-              ) : inventoryStats?.healthy === 0 && inventoryStats?.unHealthy === 0 ? (
-                <p className="text-center">NA</p>
-              ) : (
-                <Doughnut options={config.options} data={inventoryHealthStatus} />
-              )}
-            </div>
-            <div className="flex flex-col">
-              <p className="font-medium">Health Status</p>
-              <div className="flex flex-col gap-8 mt-4">
-                <div className="flex gap-2 items-center">
-                  <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
-                  <div>
-                    <p className="my-2 text-xs font-light text-slate-400">Healthy</p>
-                    <p className="font-bold text-lg">{inventoryStats?.healthy ?? 0}</p>
-                  </div>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
-                  <div>
-                    <p className="my-2 text-xs font-light text-slate-400">Unhealthy</p>
-                    <p className="font-bold text-lg">{inventoryStats?.unHealthy ?? 0}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
         <div className="flex justify-between gap-4 flex-wrap my-5">

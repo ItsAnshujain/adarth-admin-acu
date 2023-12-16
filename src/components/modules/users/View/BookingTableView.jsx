@@ -304,28 +304,6 @@ const BookingTableView = ({ data: bookingData, isLoading, activeChildTab }) => {
         accessor: 'salesPerson',
         Cell: info => useMemo(() => <p>{info.row.original.salesPerson?.name || '-'}</p>, []),
       },
-      // {
-      //   Header: 'HEALTH STATUS',
-      //   accessor: 'campaign.avgHealth',
-      //   Cell: ({
-      //     row: {
-      //       original: { campaign },
-      //     },
-      //   }) =>
-      //     useMemo(
-      //       () => (
-      //         <div className="w-24">
-      //           <Progress
-      //             sections={[
-      //               { value: campaign?.avgHealth, color: 'green' },
-      //               { value: 100 - (campaign?.avgHealth || 0), color: 'red' },
-      //             ]}
-      //           />
-      //         </div>
-      //       ),
-      //       [],
-      //     ),
-      // },
       {
         Header: 'PAYMENT STATUS',
         accessor: 'hasPaid',
