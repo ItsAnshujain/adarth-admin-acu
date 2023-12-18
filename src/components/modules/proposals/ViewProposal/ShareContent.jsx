@@ -412,10 +412,9 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
           >
             Download
           </Button>
-          {/* TODO: uncomment on next commit */}
-          {/* <p className="mt-2 text-sm text-red-450">
+          <p className="mt-2 text-sm text-red-450">
             *Only one file type can be selected before downloading
-          </p> */}
+          </p>
 
           <div className="mt-5">
             <p className="font-medium text-xl mb-2">Share via:</p>

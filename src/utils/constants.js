@@ -91,9 +91,9 @@ export const MONTH_LIST = [
 ];
 
 export const FILE_TYPE_LIST = [
-  { name: 'PPT', _id: 'ppt' },
-  { name: 'PDF', _id: 'pdf' },
-  { name: 'EXCEL', _id: 'excel' },
+  { name: 'PPT', _id: 'PPT' },
+  { name: 'PDF', _id: 'PDF' },
+  { name: 'EXCEL', _id: 'Excel' },
 ];
 
 export const OBJECT_FIT_LIST = [
