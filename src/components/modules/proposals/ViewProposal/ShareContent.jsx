@@ -413,7 +413,7 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
             Download
           </Button>
           <p className="mt-2 text-sm text-red-450">
-            *Only one file type can be selected before downloading
+            *You can choose only one file format when downloading
           </p>
 
           <div className="mt-5">
