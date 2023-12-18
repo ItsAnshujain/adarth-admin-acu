@@ -32,7 +32,6 @@ import SpaceNamePhotoContent from '../../inventory/SpaceNamePhotoContent';
 import AdditionalTagsContent from '../../inventory/AdditionalTagsContent';
 import CategoryContent from '../../inventory/CategoryContent';
 import SubCategoryContent from '../../inventory/SubCategoryContent';
-import ImpressionContent from '../../inventory/ImpressionContent';
 import UploadMediaContent from '../../inventory/UploadMediaContent';
 import DimensionContent from '../../inventory/DimensionContent';
 
@@ -231,11 +230,6 @@ const SelectSpace = () => {
 
   const RenderMediaTypeCell = useCallback(({ row }) => row.original.mediaType || '-', []);
 
-  const RenderImpressionCell = useCallback(
-    ({ row }) => <ImpressionContent impressionMax={row.original.impressionMax || 0} />,
-    [],
-  );
-
   const RenderUploadMediaCell = useCallback(
     ({ row }) => <UploadMediaContent id={row.original._id} updateData={updateData} />,
     [updateData],
@@ -428,9 +422,9 @@ const SelectSpace = () => {
         Cell: RenderMediaTypeCell,
       },
       {
-        Header: 'IMPRESSION',
-        accessor: 'specifications.impressions.max',
-        Cell: RenderImpressionCell,
+        Header: 'FACING',
+        accessor: 'location.facing',
+        Cell: info => useMemo(() => <p>{info.row.original.facing || '-'}</p>),
       },
       {
         Header: 'UPLOAD MEDIA',
@@ -518,14 +512,13 @@ const SelectSpace = () => {
         obj.dimension = item.specifications?.size;
         obj.originalUnit = item?.specifications?.unit || 1;
         obj.unit = item?.specifications?.unit || 1;
-        obj.impressionMax = item.specifications?.impressions?.max || 0;
-        obj.impressionMin = item.specifications?.impressions?.min || 0;
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.location = item?.location?.city;
         obj.mediaType = item.basicInformation?.mediaType?.name;
         obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
         obj.tradedAmount = selectionItem?.tradedAmount ?? 0;
         obj.campaigns = item?.campaigns;
+        obj.facing = item?.location?.facing?.name;
         obj.startDate = getDate(selectionItem, item, 'startDate');
         obj.endDate = getDate(selectionItem, item, 'endDate');
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];

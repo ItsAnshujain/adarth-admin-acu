@@ -205,13 +205,13 @@ const CampaignFilter = ({ isOpened, onClose = () => {} }) => {
             setQuery={setQuery}
             state={state}
           />
-          <MinMaxField
+          {/* <MinMaxField
             label="Health Status"
             minKey="healthMin"
             maxKey="healthMax"
             setQuery={setQuery}
             state={state}
-          />
+          /> */}
           <MinMaxField
             label="Total Spaces"
             minKey="totalSpacesMin"

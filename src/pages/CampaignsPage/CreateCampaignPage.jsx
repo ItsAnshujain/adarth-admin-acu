@@ -179,7 +179,6 @@ const CreateCampaignPage = () => {
           illuminations: inventoryObj?.specifications?.illuminations,
           resolutions: inventoryObj?.specifications?.resolutions,
           unit: inventoryObj?.specifications?.unit,
-          impression: inventoryObj?.specifications?.impressions?.max,
           _id: inventoryObj?._id,
         })),
       });

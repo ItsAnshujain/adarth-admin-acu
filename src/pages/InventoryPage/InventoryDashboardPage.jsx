@@ -7,7 +7,6 @@ import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
-import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
 import Table from '../../components/Table/Table';
@@ -297,19 +296,9 @@ const InventoryDashboardPage = () => {
           useMemo(() => <p>{info.row.original.basicInformation?.mediaType?.name || '-'}</p>),
       },
       {
-        Header: 'IMPRESSION',
-        accessor: 'specifications.impressions.max',
-        Cell: info =>
-          useMemo(
-            () => (
-              <p className="capitalize w-32">
-                {info.row.original.specifications?.impressions?.max
-                  ? getWord(info.row.original.specifications.impressions.max)
-                  : 'NA'}
-              </p>
-            ),
-            [],
-          ),
+        Header: 'FACING',
+        accessor: 'location.facing',
+        Cell: info => useMemo(() => <p>{info.row.original.location?.facing?.name || '-'}</p>),
       },
       {
         Header: 'ACTION',
