@@ -6,7 +6,6 @@ import dayjs from 'dayjs';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Book, ChevronLeft, ChevronRight, Key } from 'react-feather';
-import { getWord } from 'num-count';
 import { Link } from 'react-router-dom';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import modalConfig from '../../../../utils/modalConfig';
@@ -193,14 +192,6 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
                     Total Spaces
                   </Text>
                   <div className="flex flex-wrap">{renderSpacesByCategories}</div>
-                </div>
-                <div>
-                  <Text color="grey" weight="400">
-                    Expected Impressions
-                  </Text>
-                  <Text weight="bolder">
-                    {proposalData?.totalImpression ? getWord(proposalData?.totalImpression) : 'NA'}
-                  </Text>
                 </div>
               </div>
               <div className="grid grid-cols-2 mb-3">

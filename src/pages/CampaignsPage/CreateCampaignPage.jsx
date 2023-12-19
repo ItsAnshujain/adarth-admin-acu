@@ -22,14 +22,12 @@ const initialValues = {
   name: '',
   description: '',
   price: null,
-  healthStatus: null,
   createStatus: '',
   isFeatured: false,
   previousBrands: [],
   minImpression: 0,
   maxImpression: 0,
   tags: [],
-  healthTag: '',
   place: [],
   thumbnail: '',
   thumbnailId: '',
@@ -111,8 +109,6 @@ const CreateCampaignPage = () => {
         price: item.price,
       }));
 
-      data.healthStatus = +data.healthStatus || 0;
-
       if (submitType === 'publish') {
         const statusId = campaignStatus?.docs?.find(
           item => item?.name?.toLowerCase() === 'published',
@@ -183,7 +179,6 @@ const CreateCampaignPage = () => {
           illuminations: inventoryObj?.specifications?.illuminations,
           resolutions: inventoryObj?.specifications?.resolutions,
           unit: inventoryObj?.specifications?.unit,
-          impression: inventoryObj?.specifications?.impressions?.max,
           _id: inventoryObj?._id,
         })),
       });

@@ -15,7 +15,13 @@ const Header = ({ isPeer, bookingId }) => {
     modals.openModal({
       modalId: 'shareProposalOption',
       title: 'Share and Download Option',
-      children: <ShareContent id={id} onClose={() => modals.closeModal('shareProposalOption')} />,
+      children: (
+        <ShareContent
+          shareType="proposal"
+          id={id}
+          onClose={() => modals.closeModal('shareProposalOption')}
+        />
+      ),
       ...modalConfig,
     });
   };

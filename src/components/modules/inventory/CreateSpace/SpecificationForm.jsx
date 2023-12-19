@@ -180,14 +180,6 @@ const SpecificationForm = () => {
       </div>
       <div>
         <div className="grid grid-cols-2 gap-y-4 gap-x-8">
-          <NumberInput
-            label="Health Status"
-            name="specifications.health"
-            styles={styles}
-            errors={errors}
-            placeholder="Write..."
-            className="mb-7"
-          />
           <MultiSelect
             label="Additional Tags"
             name="specifications.additionalTags"
@@ -198,6 +190,7 @@ const SpecificationForm = () => {
             getCreateLabel={tag => `+ Create ${tag}`}
             onCreate={createAdditionalTag}
             styles={multiSelectStyles}
+            className="mb-7"
           />
         </div>
         <p className="font-bold">Impressions</p>

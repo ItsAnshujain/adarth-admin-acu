@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useState } from 'react';
-import { NativeSelect, Progress, Image, Loader, Text, Box } from '@mantine/core';
+import { NativeSelect, Image, Loader, Text, Box } from '@mantine/core';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ChevronDown } from 'react-feather';
 import { useQueryClient } from '@tanstack/react-query';
@@ -152,28 +152,6 @@ const CampaignsDashboardPage = () => {
               >
                 {isFeatured ? 'Featured' : type}
               </p>
-            ),
-            [],
-          ),
-      },
-      {
-        Header: 'HEALTH STATUS',
-        accessor: 'healthStatus',
-        Cell: ({
-          row: {
-            original: { healthStatus },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <div className="w-24">
-                <Progress
-                  sections={[
-                    { value: healthStatus, color: 'green' },
-                    { value: 100 - (healthStatus || 0), color: 'red' },
-                  ]}
-                />
-              </div>
             ),
             [],
           ),

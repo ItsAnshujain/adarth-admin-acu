@@ -4,7 +4,7 @@ import Sidebar from '../../components/Sidebar';
 
 const FinancePage = () => (
   <div>
-    <Header title="Finance" />
+    <Header title="Finances" />
     <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
       <Sidebar />
       <Outlet />

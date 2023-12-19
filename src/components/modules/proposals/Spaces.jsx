@@ -1,22 +1,11 @@
 import { useMemo, useState, useEffect } from 'react';
-import {
-  Text,
-  Button,
-  Progress,
-  Image,
-  NumberInput,
-  Badge,
-  Loader,
-  Group,
-  Tooltip,
-} from '@mantine/core';
+import { Text, Button, Image, NumberInput, Badge, Loader, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
 import Search from '../../Search';
@@ -418,40 +407,10 @@ const Spaces = () => {
           },
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
-      // {
-      //   Header: 'HEALTH STATUS',
-      //   accessor: 'specifications.health',
-      //   Cell: ({
-      //     row: {
-      //       original: { health },
-      //     },
-      //   }) =>
-      //     useMemo(
-      //       () => (
-      //         <div className="w-24">
-      //           <Progress
-      //             sections={[
-      //               { value: health, color: 'green' },
-      //               { value: 100 - (health || 0), color: 'red' },
-      //             ]}
-      //           />
-      //         </div>
-      //       ),
-      //       [],
-      //     ),
-      // },
       {
-        Header: 'IMPRESSION',
-        accessor: 'specifications.impressions.max',
-        Cell: ({
-          row: {
-            original: { impressions },
-          },
-        }) =>
-          useMemo(
-            () => <p className="capitalize w-32">{impressions ? getWord(impressions) : 'NA'}</p>,
-            [],
-          ),
+        Header: 'FACING',
+        accessor: 'location.facing',
+        Cell: info => useMemo(() => <p>{info.row.original.facing || '-'}</p>),
       },
       {
         Header: 'ACTION',
@@ -542,13 +501,12 @@ const Spaces = () => {
         ) : (
           '-'
         );
-        obj.impressions = item?.specifications?.impressions?.max;
-        obj.health = item?.specifications?.health;
         obj.location = item?.location?.city;
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.mediaType = item?.basicInformation?.mediaType?.name;
         obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
+        obj.facing = item?.location?.facing?.name;
         obj.startDate = getDate(selectionItem, item, 'startDate');
         obj.endDate = getDate(selectionItem, item, 'endDate');
         finalData.push(obj);

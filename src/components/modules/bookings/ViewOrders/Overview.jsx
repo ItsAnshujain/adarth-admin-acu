@@ -17,7 +17,6 @@ import ReactPlayer from 'react-player';
 import { useModals } from '@mantine/modals';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
-import { getWord } from 'num-count';
 import Places from './Places';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import MarkerIcon from '../../../../assets/pin.svg';
@@ -83,20 +82,6 @@ const Overview = ({ bookingData = {}, isLoading }) => {
       return uniqueNamesArr;
     }
     return initialCity;
-  }, [bookingData?.campaign?.spaces]);
-
-  const calcutateTotalImpressions = useMemo(() => {
-    const initialImpressions = 0;
-    if (bookingData?.campaign?.spaces?.length > 0) {
-      return bookingData?.campaign?.spaces
-        .map(item =>
-          item?.specifications?.impressions
-            ? Number.parseInt(item.specifications.impressions.max, 10)
-            : 0,
-        )
-        .reduce((previousValue, currentValue) => previousValue + currentValue, initialImpressions);
-    }
-    return initialImpressions;
   }, [bookingData?.campaign?.spaces]);
 
   const toggleImagePreviewModal = imgIndex =>
@@ -245,14 +230,6 @@ const Overview = ({ bookingData = {}, isLoading }) => {
               <div>
                 <p className="text-slate-400 text-sm">Total Uploaded Artwork</p>
                 <p>{bookingData?.campaign?.medias?.length ?? <NoData type="na" />}</p>
-              </div>
-              <div>
-                <p className="text-slate-400 text-sm">Impressions</p>
-                <p>
-                  {calcutateTotalImpressions && !Number.isNaN(calcutateTotalImpressions)
-                    ? getWord(calcutateTotalImpressions)
-                    : 'NA'}{' '}
-                </p>
               </div>
               <div>
                 <p className="text-slate-400 text-sm">Number of Locations</p>

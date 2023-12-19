@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
-import { ActionIcon, Badge, Button, Image, Loader, Progress } from '@mantine/core';
+import { ActionIcon, Badge, Button, Image, Loader } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
-import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
 import Table from '../../components/Table/Table';
@@ -39,7 +38,7 @@ import ExportIcon from '../../assets/export.png';
 import RoleBased from '../../components/RoleBased';
 import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
 import ViewByFilter from '../../components/modules/inventory/ViewByFilter';
-import ShareContent from '../../components/modules/inventory/ShareContent';
+import ShareContent from '../../components/modules/proposals/ViewProposal/ShareContent';
 import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
 
 dayjs.extend(isBetween);
@@ -296,38 +295,10 @@ const InventoryDashboardPage = () => {
         Cell: info =>
           useMemo(() => <p>{info.row.original.basicInformation?.mediaType?.name || '-'}</p>),
       },
-      // {
-      //   Header: 'HEALTH STATUS',
-      //   accessor: 'specifications.health',
-      //   Cell: info =>
-      //     useMemo(
-      //       () => (
-      //         <div className="w-24">
-      //           <Progress
-      //             sections={[
-      //               { value: info.row.original.specifications?.health, color: 'green' },
-      //               { value: 100 - (info.row.original.specifications?.health || 0), color: 'red' },
-      //             ]}
-      //           />
-      //         </div>
-      //       ),
-      //       [],
-      //     ),
-      // },
       {
-        Header: 'IMPRESSION',
-        accessor: 'specifications.impressions.max',
-        Cell: info =>
-          useMemo(
-            () => (
-              <p className="capitalize w-32">
-                {info.row.original.specifications?.impressions?.max
-                  ? getWord(info.row.original.specifications.impressions.max)
-                  : 'NA'}
-              </p>
-            ),
-            [],
-          ),
+        Header: 'FACING',
+        accessor: 'location.facing',
+        Cell: info => useMemo(() => <p>{info.row.original.location?.facing?.name || '-'}</p>),
       },
       {
         Header: 'ACTION',
@@ -445,6 +416,7 @@ const InventoryDashboardPage = () => {
       title: 'Share and Download Option',
       children: (
         <ShareContent
+          shareType="inventory"
           searchParamQueries={searchParams}
           onClose={() => modals.closeModal('shareInventoryOption')}
         />

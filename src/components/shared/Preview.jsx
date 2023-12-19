@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Badge, Image, Text, BackgroundImage, Center, Spoiler } from '@mantine/core';
 import { v4 as uuidv4 } from 'uuid';
-import { getWord } from 'num-count';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { useFormContext } from '../../context/formContext';
 
@@ -205,12 +204,6 @@ const Preview = () => {
                         '-'
                       )}
                     </div>
-                    <p className=" text-slate-400 text-md font-light">Impressions</p>
-                    <p className="mb-4">
-                      {values?.specifications?.impressions?.max
-                        ? getWord(values.specifications.impressions?.max)
-                        : 'NA'}
-                    </p>
                     <p className="text-slate-400 text-md font-light">Resolution</p>
                     <p>{values?.specifications?.resolutions || 'NA'}</p>
                   </div>

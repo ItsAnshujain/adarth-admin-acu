@@ -11,7 +11,7 @@ const InventoryPage = () => {
   } else if (pathname.includes('create')) {
     headerTitle = 'Create Spaces';
   } else {
-    headerTitle = 'Inventory';
+    headerTitle = 'Inventories';
   }
 
   return (

@@ -2,7 +2,7 @@ import { useDebouncedValue } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Progress, Loader, Button, Select, Text } from '@mantine/core';
+import { Loader, Button, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import multiDownload from 'multi-download';
@@ -319,28 +319,6 @@ const BookingsDashboardPage = () => {
         accessor: 'salesPerson',
         Cell: info => useMemo(() => <p>{info.row.original.salesPerson?.name || '-'}</p>, []),
       },
-      // {
-      //   Header: 'HEALTH STATUS',
-      //   accessor: 'campaign.avgHealth',
-      //   Cell: ({
-      //     row: {
-      //       original: { campaign },
-      //     },
-      //   }) =>
-      //     useMemo(
-      //       () => (
-      //         <div className="w-24">
-      //           <Progress
-      //             sections={[
-      //               { value: campaign?.avgHealth, color: 'green' },
-      //               { value: 100 - (campaign?.avgHealth || 0), color: 'red' },
-      //             ]}
-      //           />
-      //         </div>
-      //       ),
-      //       [],
-      //     ),
-      // },
       {
         Header: 'PAYMENT STATUS',
         accessor: 'hasPaid',

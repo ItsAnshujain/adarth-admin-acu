@@ -1,11 +1,10 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Badge, Button, Image, Loader, Progress, Text } from '@mantine/core';
+import { Badge, Button, Image, Loader, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
-import { getWord } from 'num-count';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
 import RowsPerPage from '../../components/RowsPerPage';
@@ -291,44 +290,10 @@ const ProposalDetailsPage = () => {
           },
         }) => useMemo(() => <p>{mediaType || '-'}</p>),
       },
-      // {
-      //   Header: 'HEALTH STATUS',
-      //   accessor: 'health',
-      //   Cell: ({
-      //     row: {
-      //       original: { health },
-      //     },
-      //   }) =>
-      //     useMemo(
-      //       () => (
-      //         <div className="w-24">
-      //           <Progress
-      //             sections={[
-      //               { value: health, color: 'green' },
-      //               { value: 100 - (health || 0), color: 'red' },
-      //             ]}
-      //           />
-      //         </div>
-      //       ),
-      //       [],
-      //     ),
-      // },
       {
-        Header: 'IMPRESSION',
-        accessor: 'impressions.max',
-        Cell: ({
-          row: {
-            original: { impressions },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <p className="capitalize w-32">
-                {impressions?.max ? getWord(impressions.max) : 'NA'}
-              </p>
-            ),
-            [],
-          ),
+        Header: 'FACING',
+        accessor: 'facing',
+        Cell: info => useMemo(() => <p>{info.row.original.facing || '-'}</p>),
       },
       {
         Header: 'ACTION',

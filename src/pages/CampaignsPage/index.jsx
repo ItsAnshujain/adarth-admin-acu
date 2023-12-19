@@ -11,7 +11,7 @@ const CampaignsPage = () => {
   } else if (pathname.includes('create')) {
     headerTitle = 'Create Campaign';
   } else {
-    headerTitle = 'Campaign';
+    headerTitle = 'Campaigns';
   }
 
   return (
