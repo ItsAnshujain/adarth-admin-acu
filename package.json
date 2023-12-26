@@ -11,7 +11,8 @@
     "prettier": "prettier --write \"**/*.{js,jsx,scss}\"",
     "cm": "cz",
     "prepare": "husky install",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "clean": "rimraf node_modules packages/*/node_modules apps/*/node_modules packages/*/node_modules apps/*/.next apps/*/.turbo"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.9",
@@ -81,7 +82,7 @@
     "babel-loader": "^8.2.5",
     "commitizen": "^4.2.5",
     "commitlint": "^17.1.2",
-    "commitlint-config-gitmoji": "^2.2.5",
+    "commitlint-config-gitmoji": "^2.3.1",
     "cross-env": "^7.0.3",
     "cz-customizable": "^7.0.0",
     "eslint": "^8.23.1",

@@ -74,7 +74,7 @@ const Spaces = () => {
 
   const toggleFilter = () => setShowFilter(!showFilter);
 
-  const updateData = debounce((key, val, id) => {
+  const updateData = debounce((key, val, id, inputId) => {
     if (key === 'dateRange') {
       let availableUnit = 0;
       const hasChangedUnit = values.spaces.find(item => item._id === id)?.hasChangedUnit;
@@ -124,6 +124,9 @@ const Spaces = () => {
             : item,
         ),
       );
+      if (inputId) {
+        setTimeout(() => document.querySelector(`#${inputId}`)?.focus());
+      }
     }
   }, 500);
 
@@ -294,10 +297,11 @@ const Spaces = () => {
           useMemo(
             () => (
               <NumberInput
+                id={`unit-${_id}`}
                 defaultValue={+(price || 0)}
                 className="w-40"
                 hideControls
-                onChange={e => updateData('price', e, _id)}
+                onChange={e => updateData('price', e, _id, `unit-${_id}`)}
               />
             ),
             [],
