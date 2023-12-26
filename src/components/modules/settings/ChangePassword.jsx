@@ -1,24 +1,9 @@
 import { Button } from '@mantine/core';
-import { yupResolver } from '@mantine/form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { FormProvider, useForm } from '../../../context/formContext';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useChangePassword } from '../../../apis/queries/settings.queries';
-import PasswordInput from '../../shared/PasswordInput';
-
-const styles = {
-  label: {
-    color: 'grey',
-    marginBottom: '4px',
-    fontWeight: '100',
-    fontSize: '16px',
-  },
-};
-
-const initialValues = {
-  confirmPassword: '',
-  password: '',
-  oldPassword: '',
-};
+import ControlledPasswordInput from '../../shared/FormInputs/Controlled/ControlledPasswordInput';
 
 const schema = yup.object({
   oldPassword: yup.string().trim().required('Current Password is required'),
@@ -36,56 +21,48 @@ const schema = yup.object({
 });
 
 const ChangePassword = () => {
-  const form = useForm({ validate: yupResolver(schema), initialValues });
+  const form = useForm({ resolver: yupResolver(schema) });
 
-  const { mutateAsync, isLoading } = useChangePassword();
+  const changePassword = useChangePassword();
 
-  const onSubmitHandler = formData => {
-    mutateAsync({ ...formData }, { onSuccess: () => form.reset() });
-  };
+  const onSubmit = form.handleSubmit(formData => {
+    changePassword.mutate({ ...formData }, { onSuccess: () => form.reset() });
+  });
+
   return (
     <div className="pl-5 pr-7 mt-4">
       <p className="font-bold text-xl mb-3">Change Password</p>
       <p className="font-medium text-slate-400 text-sm mt-1 mb-3">
         Please fill the below details to change your password
       </p>
-      <FormProvider form={form}>
-        <form onSubmit={form.onSubmit(onSubmitHandler)}>
+      <FormProvider {...form}>
+        <form onSubmit={onSubmit}>
           <div className="flex gap-4 flex-col">
-            <PasswordInput
+            <ControlledPasswordInput
               label="Current Password"
               name="oldPassword"
               withAsterisk
-              size="md"
               placeholder="Your Current Password"
-              styles={styles}
-              errors={form.errors}
               className="md:w-4/12"
             />
-            <PasswordInput
+            <ControlledPasswordInput
               label="New Password"
               name="password"
               withAsterisk
-              size="md"
               placeholder="Your New Password"
-              styles={styles}
-              errors={form.errors}
               className="md:w-4/12"
             />
-            <PasswordInput
+            <ControlledPasswordInput
               label="Confirm Password"
               name="confirmPassword"
               withAsterisk
-              size="md"
               placeholder="Confirm New Password"
-              styles={styles}
-              errors={form.errors}
               className="md:w-4/12"
             />
           </div>
           <Button
-            disabled={isLoading}
-            loading={isLoading}
+            disabled={changePassword.isLoading}
+            loading={changePassword.isLoading}
             type="submit"
             className="py-2 px-8 rounded bg-purple-450 text-white mt-4 "
           >
