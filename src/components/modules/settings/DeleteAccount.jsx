@@ -11,10 +11,11 @@ const DeleteAccount = () => {
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
       title: 'Delete your account',
+      modalId: 'deleteAccount',
       innerProps: {
         modalBody: (
           <TwoStepDeleteAccountContent
-            onClickCancel={idd => modals.closeModal(idd)}
+            onClickCancel={() => modals.closeModal('deleteAccount')}
             navigate={navigate}
           />
         ),
