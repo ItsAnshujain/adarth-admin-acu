@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Group, Image } from '@mantine/core';
+import { Box, Group } from '@mantine/core';
 import { Pie, Doughnut } from 'react-chartjs-2';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -34,7 +34,6 @@ import ProposalConvertIcon from '../../../../assets/proposal-convert.svg';
 import ProposalCreateIcon from '../../../../assets/proposal-create.svg';
 import ProposalSendIcon from '../../../../assets/proposal-send.svg';
 import OutstandingPoIcon from '../../../../assets/outstanding-po.svg';
-import ExceedChevronIcon from '../../../../assets/exceed-chevron.svg';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 
 ChartJS.register(
@@ -160,10 +159,11 @@ const ManagingSubHeader = ({ userId }) => {
     [userSales.data],
   );
 
-  const hasExceededSales = useMemo(
-    () => userSales.data?.sales > userSales.data?.salesTarget,
-    [userSales.data?.sales, userSales.data?.salesTarget],
-  );
+  // Uncomment to check exceeded sales
+  // const hasExceededSales = useMemo(
+  //   () => userSales.data?.sales > userSales.data?.salesTarget,
+  //   [userSales.data?.sales, userSales.data?.salesTarget],
+  // );
 
   const handleUpdatedReveueByIndustry = useCallback(() => {
     const tempBarData = {
@@ -216,11 +216,12 @@ const ManagingSubHeader = ({ userId }) => {
       <article className="p-4 grid grid-cols-2 gap-4 grid-rows-2">
         <section className="min-h-44 rounded-lg border flex flex-row items-start gap-3 p-4">
           <Box className="w-36 relative">
-            {hasExceededSales ? (
+            {/* Uncomment for exceeded sales */}
+            {/* {hasExceededSales ? (
               <div className="absolute top-7 left-[15px] transform rotate-12">
                 <Image src={ExceedChevronIcon} height={38} width={38} fit="contain" />
               </div>
-            ) : null}
+            ) : null} */}
             {userSales.data?.salesTarget <= 0 ? (
               <p className="text-center font-bold text-md my-14">NA</p>
             ) : (
