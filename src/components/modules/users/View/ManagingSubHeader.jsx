@@ -101,6 +101,7 @@ const bookingPieConfig = {
 };
 
 const ManagingSubHeader = ({ userId }) => {
+  const [showChartArrow, setShowChartArrow] = useState(true);
   const [updatedIndustry, setUpdatedIndustry] = useState({
     id: uuidv4(),
     labels: [],
@@ -216,7 +217,7 @@ const ManagingSubHeader = ({ userId }) => {
       <article className="p-4 grid grid-cols-2 gap-4 grid-rows-2">
         <section className="min-h-44 rounded-lg border flex flex-row items-start gap-3 p-4">
           <Box className="w-36 relative">
-            {hasExceededSales ? (
+            {hasExceededSales && showChartArrow ? (
               <div className="absolute top-7 left-[15px] transform rotate-12">
                 <Image src={ExceedChevronIcon} height={38} width={38} fit="contain" />
               </div>
@@ -224,7 +225,12 @@ const ManagingSubHeader = ({ userId }) => {
             {userSales.data?.salesTarget <= 0 ? (
               <p className="text-center font-bold text-md my-14">NA</p>
             ) : (
-              <Doughnut options={salesPieConfig} data={revenueBreakupData} />
+              <Doughnut
+                options={salesPieConfig}
+                data={revenueBreakupData}
+                onMouseEnter={() => setShowChartArrow(false)}
+                onMouseLeave={() => setShowChartArrow(true)}
+              />
             )}
           </Box>
 

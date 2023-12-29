@@ -104,6 +104,7 @@ const salesPieConfig = {
 
 const HomePage = () => {
   const queryClient = useQueryClient();
+  const [showChartArrow, setShowChartArrow] = useState(true);
   const userId = useUserStore(state => state.id);
   const userCachedData = queryClient.getQueryData(['users-by-id', userId]);
 
@@ -429,7 +430,7 @@ const HomePage = () => {
 
             <section className="rounded-lg border flex flex-row items-start gap-3 p-4 col-span-4 h-[200px]">
               <Box className="w-36 relative">
-                {hasExceededSales ? (
+                {hasExceededSales && showChartArrow ? (
                   <div className="absolute top-7 left-[16px] transform rotate-12">
                     <Image src={ExceedChevronIcon} height={36} width={36} fit="contain" />
                   </div>
@@ -437,7 +438,12 @@ const HomePage = () => {
                 {userSales.data?.salesTarget <= 0 ? (
                   <p className="text-center font-bold text-md my-14">NA</p>
                 ) : (
-                  <Doughnut options={salesPieConfig} data={revenueBreakupData} />
+                  <Doughnut
+                    options={salesPieConfig}
+                    data={revenueBreakupData}
+                    onMouseEnter={() => setShowChartArrow(false)}
+                    onMouseLeave={() => setShowChartArrow(true)}
+                  />
                 )}
               </Box>
 
