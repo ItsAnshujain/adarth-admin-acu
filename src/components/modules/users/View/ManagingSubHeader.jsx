@@ -125,7 +125,6 @@ const ManagingSubHeader = ({ userId }) => {
       },
     ],
   });
-
   const bookingStatsByIncharge = useBookingStatByIncharge(serialize({ inCharge: userId }));
   const userSales = useUserSalesByUserId({
     startDate: financialStartDate,
@@ -208,7 +207,6 @@ const ManagingSubHeader = ({ userId }) => {
   useEffect(() => handleUpdatedReveueByIndustry(), [revenueDataByIndustryQuery.data]);
 
   useEffect(() => handleUpdatedBookingChart(), [bookingStatsByIncharge.data]);
-
   return (
     <div>
       <div className="h-20 border-b flex justify-between items-center px-5">
@@ -217,7 +215,10 @@ const ManagingSubHeader = ({ userId }) => {
       <article className="p-4 grid grid-cols-2 gap-4 grid-rows-2">
         <section className="min-h-44 rounded-lg border flex flex-row items-start gap-3 p-4">
           <Box className="w-36 relative">
-            {hasExceededSales && showChartArrow ? (
+            {userSales.data?.sales > 0 &&
+            userSales.data?.salesTarget > 0 &&
+            hasExceededSales &&
+            showChartArrow ? (
               <div className="absolute top-7 left-[15px] transform rotate-12">
                 <Image src={ExceedChevronIcon} height={38} width={38} fit="contain" />
               </div>

@@ -430,7 +430,10 @@ const HomePage = () => {
 
             <section className="rounded-lg border flex flex-row items-start gap-3 p-4 col-span-4 h-[200px]">
               <Box className="w-36 relative">
-                {hasExceededSales && showChartArrow ? (
+                {userSales.data?.sales > 0 &&
+                userSales.data?.salesTarget > 0 &&
+                hasExceededSales &&
+                showChartArrow ? (
                   <div className="absolute top-7 left-[16px] transform rotate-12">
                     <Image src={ExceedChevronIcon} height={36} width={36} fit="contain" />
                   </div>
