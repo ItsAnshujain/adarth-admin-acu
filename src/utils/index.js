@@ -279,8 +279,8 @@ export const dateByQuarter = {
 };
 
 // financial year
-export const financialStartDate = `${dayjs().year()}-04-01`;
-export const financialEndDate = `${dayjs().year() + 1}-03-31`;
+export const financialStartDate = `${dayjs().year() - 1}-04-01`;
+export const financialEndDate = `${dayjs().year()}-03-31`;
 
 export const checkCampaignStats = (currentStatus, item) => {
   const campaignStats = {
