@@ -55,6 +55,7 @@ const Spaces = () => {
     }),
     shallow,
   );
+  const selectedInventoryIds = useMemo(() => values.spaces.map(space => space._id));
   const [searchParams, setSearchParams] = useSearchParams({
     limit: activeLayout.inventoryLimit || 20,
     page: 1,
@@ -62,6 +63,7 @@ const Spaces = () => {
     sortBy: 'createdAt',
     isUnderMaintenance: false,
     isActive: true,
+    ids: selectedInventoryIds,
   });
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
