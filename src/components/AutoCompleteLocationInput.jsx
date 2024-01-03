@@ -10,6 +10,7 @@ const AutoCompleteLocationInput = ({
   longitudeKeyName = '',
   cityKeyName = '',
   stateKeyName = '',
+  zipCodeName = '',
 }) => {
   const { setFieldValue, errors, values } = useFormContext();
   const getLatLong = async address => {
@@ -20,12 +21,25 @@ const AutoCompleteLocationInput = ({
   const onChangeHandler = async e => {
     if (e) {
       const res = await getLatLong(e.label);
+      const detailedAddress = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${res?.lat},${res?.lng}&sensor=true&key=${GOOGLE_MAPS_API_KEY}`,
+      );
+      const detailedAddressRes = await detailedAddress.json();
+      const postalCodeComponent = detailedAddressRes.results[0].address_components.find(component =>
+        component.types.includes('postal_code'),
+      );
+
       setFieldValue(addressKeyName, e.label);
       setFieldValue(latitudeKeyName, res?.lat);
       setFieldValue(longitudeKeyName, res?.lng);
+
       if (e.value.terms.length) {
         setFieldValue(cityKeyName, e.value.terms[e.value.terms.length - 3].value);
         setFieldValue(stateKeyName, e.value.terms[e.value.terms.length - 2].value);
+      }
+
+      if (postalCodeComponent && postalCodeComponent.long_name) {
+        setFieldValue(zipCodeName, Number(postalCodeComponent.long_name));
       }
     } else {
       setFieldValue(addressKeyName, '');
