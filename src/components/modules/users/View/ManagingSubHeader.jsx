@@ -22,7 +22,7 @@ import {
   useUserSalesByUserId,
 } from '../../../../apis/queries/booking.queries';
 import { LEADS_LIST } from '../../../../utils/constants';
-import { serialize, financialEndDate, financialStartDate } from '../../../../utils';
+import { serialize, financialEndDate, financialStartDate, formatDate } from '../../../../utils';
 import SalesStatisticsCard from '../analytics/SalesStatisticsCard';
 import BookingStatisticsCard from '../analytics/BookingStatisticsCard';
 import LeadsStatisticsCard from '../analytics/LeadsStatisticsCard';
@@ -127,8 +127,8 @@ const ManagingSubHeader = ({ userId }) => {
   });
   const bookingStatsByIncharge = useBookingStatByIncharge(serialize({ inCharge: userId }));
   const userSales = useUserSalesByUserId({
-    startDate: financialStartDate,
-    endDate: financialEndDate,
+    startDate: formatDate(financialStartDate),
+    endDate: formatDate(financialEndDate),
     userId,
   });
 
