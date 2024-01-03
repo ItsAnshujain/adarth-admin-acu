@@ -30,7 +30,7 @@ const SpaceNamePhotoContent = ({
         className="text-purple-450 font-medium px-2"
         target={isTargetBlank ? '_blank' : '_self'}
       >
-        <Text className="overflow-hidden text-ellipsis underline" lineClamp={1} title={spaceName}>
+        <Text className="overflow-hidden text-ellipsis" lineClamp={1} title={spaceName}>
           {spaceName}
         </Text>
       </Link>
