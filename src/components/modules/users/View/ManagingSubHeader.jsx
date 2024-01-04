@@ -54,7 +54,7 @@ const salesPieConfig = {
   cutout: 22,
   plugins: {
     tooltip: {
-      enabled: false,
+      enabled: true,
     },
   },
   animation: {
@@ -101,6 +101,7 @@ const bookingPieConfig = {
 };
 
 const ManagingSubHeader = ({ userId }) => {
+  const [showChartArrow, setShowChartArrow] = useState(true);
   const [updatedIndustry, setUpdatedIndustry] = useState({
     id: uuidv4(),
     labels: [],
@@ -124,7 +125,6 @@ const ManagingSubHeader = ({ userId }) => {
       },
     ],
   });
-
   const bookingStatsByIncharge = useBookingStatByIncharge(serialize({ inCharge: userId }));
   const userSales = useUserSalesByUserId({
     startDate: financialStartDate,
@@ -138,13 +138,13 @@ const ManagingSubHeader = ({ userId }) => {
     () => ({
       datasets: [
         {
-          data: userSales.data?.salesTarget ? [userSales.data.salesTarget ?? 0, 0] : [0, 1],
+          data: userSales.data?.salesTarget ? [userSales.data.salesTarget ?? 0, 0] : [0, 0],
           backgroundColor: ['#914EFB', '#EEEEEE'],
           borderColor: ['#914EFB', '#EEEEEE'],
           borderWidth: 1,
         },
         {
-          data: userSales.data?.sales ? [userSales.data.sales ?? 0, 0] : [0, 1],
+          data: userSales.data?.sales ? [userSales.data.sales ?? 0, 0] : [0, 0],
           backgroundColor: ['#4BC0C0', '#EEEEEE'],
           borderColor: ['#4BC0C0', '#EEEEEE'],
           borderWidth: 1,
@@ -177,10 +177,10 @@ const ManagingSubHeader = ({ userId }) => {
       ],
     };
     if (revenueDataByIndustryQuery.data) {
-      tempBarData.datasets[0].data[0] = 1;
-      tempBarData.datasets[0].data[1] = 1;
-      tempBarData.datasets[0].data[2] = 1;
-      tempBarData.datasets[0].data[3] = 1;
+      tempBarData.datasets[0].data[0] = 0;
+      tempBarData.datasets[0].data[0] = 0;
+      tempBarData.datasets[0].data[2] = 0;
+      tempBarData.datasets[0].data[3] = 0;
       setUpdatedIndustry(tempBarData);
     }
   }, [revenueDataByIndustryQuery.data]);
@@ -207,7 +207,6 @@ const ManagingSubHeader = ({ userId }) => {
   useEffect(() => handleUpdatedReveueByIndustry(), [revenueDataByIndustryQuery.data]);
 
   useEffect(() => handleUpdatedBookingChart(), [bookingStatsByIncharge.data]);
-
   return (
     <div>
       <div className="h-20 border-b flex justify-between items-center px-5">
@@ -216,12 +215,24 @@ const ManagingSubHeader = ({ userId }) => {
       <article className="p-4 grid grid-cols-2 gap-4 grid-rows-2">
         <section className="min-h-44 rounded-lg border flex flex-row items-start gap-3 p-4">
           <Box className="w-36 relative">
-            {hasExceededSales ? (
+            {userSales.data?.sales > 0 &&
+            userSales.data?.salesTarget > 0 &&
+            hasExceededSales &&
+            showChartArrow ? (
               <div className="absolute top-7 left-[15px] transform rotate-12">
                 <Image src={ExceedChevronIcon} height={38} width={38} fit="contain" />
               </div>
             ) : null}
-            <Doughnut options={salesPieConfig} data={revenueBreakupData} />
+            {userSales.data?.salesTarget <= 0 ? (
+              <p className="text-center font-bold text-md my-14">NA</p>
+            ) : (
+              <Doughnut
+                options={salesPieConfig}
+                data={revenueBreakupData}
+                onMouseEnter={() => setShowChartArrow(false)}
+                onMouseLeave={() => setShowChartArrow(true)}
+              />
+            )}
           </Box>
 
           <div className="flex-1 flex flex-col">
@@ -263,7 +274,15 @@ const ManagingSubHeader = ({ userId }) => {
 
         <section className="min-h-44 rounded-lg border flex flex-row items-start gap-3 p-4">
           <Box className="w-36">
-            <Pie data={updatedIndustry} options={leadsPieConfig.options} key={updatedIndustry.id} />
+            {updatedIndustry.datasets?.[0].data.every(item => item === 0) ? (
+              <p className="text-center font-bold text-md my-14">NA</p>
+            ) : (
+              <Pie
+                data={updatedIndustry}
+                options={leadsPieConfig.options}
+                key={updatedIndustry.id}
+              />
+            )}
           </Box>
           <div className="flex-1 flex flex-col gap-y-4">
             <p className="text-md font-medium">Leads</p>
