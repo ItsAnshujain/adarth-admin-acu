@@ -2,14 +2,14 @@ import { Button, Divider, Text } from '@mantine/core';
 import React, { useState, useEffect } from 'react';
 import shallow from 'zustand/shallow';
 import * as yup from 'yup';
-import { yupResolver } from '@mantine/form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import randomWords from 'random-words';
 import { showNotification } from '@mantine/notifications';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useDeleteAccount } from '../../../apis/queries/settings.queries';
 import useUserStore from '../../../store/user.store';
-import { useForm, FormProvider } from '../../../context/formContext';
-import PasswordInput from '../../shared/PasswordInput';
-import TextInput from '../../shared/TextInput';
+import ControlledPasswordInput from '../../shared/FormInputs/Controlled/ControlledPasswordInput';
+import ControlledTextInput from '../../shared/FormInputs/Controlled/ControlledTextInput';
 
 const schema = yup.object({
   randomText: yup.string().trim().required('Field is required'),
@@ -21,11 +21,6 @@ const schema = yup.object({
     .required('Password is required'),
 });
 
-const initialValues = {
-  randomText: '',
-  password: '',
-};
-
 const TwoStepDeleteAccountContent = ({ onClickCancel = () => {}, navigate }) => {
   const { setToken, setId, id } = useUserStore(
     state => ({
@@ -36,12 +31,12 @@ const TwoStepDeleteAccountContent = ({ onClickCancel = () => {}, navigate }) => 
     shallow,
   );
   const [currentStep, setCurrentStep] = useState(1);
-  const { mutateAsync, isLoading } = useDeleteAccount();
+  const deleteAccount = useDeleteAccount();
 
-  const form = useForm({ validate: yupResolver(schema), initialValues });
+  const form = useForm({ resolver: yupResolver(schema) });
   const [typeWord, setTypeWord] = useState('');
 
-  const handleAccountDelete = formData => {
+  const handleAccountDelete = form.handleSubmit(formData => {
     const data = { ...formData };
     if (data.randomText?.toLowerCase() !== typeWord?.toLowerCase()) {
       showNotification({
@@ -53,7 +48,7 @@ const TwoStepDeleteAccountContent = ({ onClickCancel = () => {}, navigate }) => 
     }
 
     delete data.randomText;
-    mutateAsync(
+    deleteAccount.mutate(
       { userId: id, data },
       {
         onSuccess: () => {
@@ -65,7 +60,7 @@ const TwoStepDeleteAccountContent = ({ onClickCancel = () => {}, navigate }) => 
         },
       },
     );
-  };
+  });
 
   useEffect(() => {
     if (currentStep === 2) {
@@ -96,28 +91,28 @@ const TwoStepDeleteAccountContent = ({ onClickCancel = () => {}, navigate }) => 
         </div>
       ) : currentStep === 2 ? (
         <div className="px-4 py-5">
-          <FormProvider form={form}>
-            <form onSubmit={form.onSubmit(handleAccountDelete)}>
+          <FormProvider {...form}>
+            <form onSubmit={handleAccountDelete}>
               <Text size="md" mb={16}>
                 Please enter <span className="capitalize font-medium">{`"${typeWord}"`}</span> and
                 your password to confirm that you wish to close your account.
               </Text>
               <div className="mb-10">
-                <TextInput
+                <ControlledTextInput
                   name="randomText"
                   label="Type the text:"
-                  disabled={isLoading}
+                  disabled={deleteAccount.isLoading}
+                  withAsterisk
                   placeholder="Write..."
-                  errors={form.errors}
-                  mb={10}
+                  className="mb-4"
                   autoComplete="off"
                 />
-                <PasswordInput
+                <ControlledPasswordInput
                   name="password"
                   label="Enter your password:"
-                  disabled={isLoading}
+                  disabled={deleteAccount.isLoading}
+                  withAsterisk
                   placeholder="Your Password"
-                  errors={form.errors}
                   autoComplete="new-password"
                 />
               </div>
@@ -130,8 +125,8 @@ const TwoStepDeleteAccountContent = ({ onClickCancel = () => {}, navigate }) => 
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isLoading}
-                  loading={isLoading}
+                  disabled={deleteAccount.isLoading}
+                  loading={deleteAccount.isLoading}
                   className="bg-red-450 text-white rounded-md text-sm"
                 >
                   Delete Account
