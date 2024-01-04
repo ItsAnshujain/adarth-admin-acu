@@ -22,7 +22,7 @@ import {
   useUserSalesByUserId,
 } from '../../../../apis/queries/booking.queries';
 import { LEADS_LIST } from '../../../../utils/constants';
-import { serialize, financialEndDate, financialStartDate } from '../../../../utils';
+import { serialize, financialEndDate, financialStartDate, formatDate } from '../../../../utils';
 import SalesStatisticsCard from '../analytics/SalesStatisticsCard';
 import BookingStatisticsCard from '../analytics/BookingStatisticsCard';
 import LeadsStatisticsCard from '../analytics/LeadsStatisticsCard';
@@ -101,6 +101,7 @@ const bookingPieConfig = {
 };
 
 const ManagingSubHeader = ({ userId }) => {
+  const [showChartArrow, setShowChartArrow] = useState(true);
   const [updatedIndustry, setUpdatedIndustry] = useState({
     id: uuidv4(),
     labels: [],
@@ -124,11 +125,10 @@ const ManagingSubHeader = ({ userId }) => {
       },
     ],
   });
-
   const bookingStatsByIncharge = useBookingStatByIncharge(serialize({ inCharge: userId }));
   const userSales = useUserSalesByUserId({
-    startDate: financialStartDate,
-    endDate: financialEndDate,
+    startDate: formatDate(financialStartDate),
+    endDate: formatDate(financialEndDate),
     userId,
   });
 
@@ -207,7 +207,6 @@ const ManagingSubHeader = ({ userId }) => {
   useEffect(() => handleUpdatedReveueByIndustry(), [revenueDataByIndustryQuery.data]);
 
   useEffect(() => handleUpdatedBookingChart(), [bookingStatsByIncharge.data]);
-
   return (
     <div>
       <div className="h-20 border-b flex justify-between items-center px-5">
@@ -216,7 +215,10 @@ const ManagingSubHeader = ({ userId }) => {
       <article className="p-4 grid grid-cols-2 gap-4 grid-rows-2">
         <section className="min-h-44 rounded-lg border flex flex-row items-start gap-3 p-4">
           <Box className="w-36 relative">
-            {hasExceededSales ? (
+            {userSales.data?.sales > 0 &&
+            userSales.data?.salesTarget > 0 &&
+            hasExceededSales &&
+            showChartArrow ? (
               <div className="absolute top-7 left-[15px] transform rotate-12">
                 <Image src={ExceedChevronIcon} height={38} width={38} fit="contain" />
               </div>
@@ -224,7 +226,12 @@ const ManagingSubHeader = ({ userId }) => {
             {userSales.data?.salesTarget <= 0 ? (
               <p className="text-center font-bold text-md my-14">NA</p>
             ) : (
-              <Doughnut options={salesPieConfig} data={revenueBreakupData} />
+              <Doughnut
+                options={salesPieConfig}
+                data={revenueBreakupData}
+                onMouseEnter={() => setShowChartArrow(false)}
+                onMouseLeave={() => setShowChartArrow(true)}
+              />
             )}
           </Box>
 

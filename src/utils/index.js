@@ -279,8 +279,25 @@ export const dateByQuarter = {
 };
 
 // financial year
-export const financialStartDate = `${dayjs().year()}-04-01`;
-export const financialEndDate = `${dayjs().year() + 1}-03-31`;
+export const financialStartDate = new Date(
+  new Date().getFullYear() - (new Date().getMonth() < 3 ? 1 : 0),
+  3,
+  1,
+);
+export const financialEndDate = new Date(financialStartDate.getFullYear() + 1, 2, 31);
+
+// Format's date in YYYY-MM-DD format
+export const formatDate = date => {
+  let day = date.getDate();
+  let month = date.getMonth() + 1; // Month is zero-based
+  const year = date.getFullYear();
+
+  // Add leading zeros if needed
+  day = day < 10 ? `0${day}` : day;
+  month = month < 10 ? `0${month}` : month;
+
+  return `${year}-${month}-${day}`;
+};
 
 export const checkCampaignStats = (currentStatus, item) => {
   const campaignStats = {
