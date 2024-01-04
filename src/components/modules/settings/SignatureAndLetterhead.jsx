@@ -22,11 +22,11 @@ const initialValues = {
 };
 
 const schema = yup.object({
-  signature: yup.string().trim().required('Signature is required'),
-  letterHead: yup.string().trim().required('Letter Head is required'),
-  letterFooter: yup.string().trim().required('Letter Footer is required'),
-  proposalHead: yup.string().trim().required('Proposal Letter Head is required'),
-  proposalFooter: yup.string().trim().required('Proposal Letter Footer is required'),
+  signature: yup.string().trim(),
+  letterHead: yup.string().trim(),
+  letterFooter: yup.string().trim(),
+  proposalHead: yup.string().trim(),
+  proposalFooter: yup.string().trim(),
 });
 
 const SignatureAndLetterhead = () => {
