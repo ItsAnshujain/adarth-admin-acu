@@ -374,14 +374,7 @@ const BasicInfo = ({
                     <Text color="gray" size="xs" weight="300">
                       Resolution
                     </Text>
-                    <Text className="mb-4">
-                      {inventoryDetails?.specifications?.resolutions || 'NA'}
-                    </Text>
-
-                    <Text color="gray" size="xs" weight="300">
-                      Facing
-                    </Text>
-                    <Text>{inventoryDetails?.location?.facing?.name || 'NA'}</Text>
+                    <Text>{inventoryDetails?.specifications?.resolutions || 'NA'}</Text>
                   </div>
                   <div>
                     <Text color="gray" size="xs" weight="300">
@@ -394,7 +387,6 @@ const BasicInfo = ({
                     <Text className="mb-4">
                       {inventoryDetails?.basicInformation?.mediaType?.name || 'NA'}
                     </Text>
-
                     <Text color="gray" size="xs" weight="300">
                       Illumination
                     </Text>
