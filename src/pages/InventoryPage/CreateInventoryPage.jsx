@@ -43,7 +43,10 @@ const initialValues = {
         key: uuidv4(),
       },
     ],
-
+    impressions: {
+      min: 0,
+      max: 0,
+    },
     previousBrands: [],
     tags: [],
     additionalTags: [],
@@ -131,7 +134,10 @@ const specificationsValues = yup.object({
       .required('Unit is required'),
     resolutions: yup.string().trim(),
     size: yup.array(),
-
+    impressions: yup.object({
+      min: yup.number(),
+      max: yup.number(),
+    }),
     previousBrands: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
     tags: yup.array().of(yup.object({ label: yup.string(), value: yup.string() })),
     additionalTags: yup.array(),
@@ -343,7 +349,14 @@ const CreateInventoryPage = () => {
             value: specifications?.illuminations?._id || '',
           },
           unit: specifications?.unit ? parseInt(specifications.unit, 10) : null,
-
+          impressions: {
+            max: specifications?.impressions?.max
+              ? parseInt(specifications.impressions.max, 10)
+              : 0,
+            min: specifications?.impressions?.min
+              ? parseInt(specifications.impressions.min, 10)
+              : 0,
+          },
           resolutions: specifications?.resolutions || '',
           size: Array.isArray(specifications?.size)
             ? specifications?.size?.map(item => ({

@@ -193,7 +193,31 @@ const SpecificationForm = () => {
             className="mb-7"
           />
         </div>
-
+        <p className="font-bold">Impressions</p>
+        <div className="flex gap-4 items-start">
+          <div>
+            <NumberInput name="specifications.impressions.min" errors={errors} className="w-24" />
+            <p className="text-slate-400">Min</p>
+          </div>
+          <RangeSlider
+            onChangeEnd={val => {
+              setFieldValue('specifications.impressions.min', val[0]);
+              setFieldValue('specifications.impressions.max', val[1]);
+            }}
+            styles={sliderStyle}
+            className="pt-4 flex-auto"
+            min={0}
+            max={1800000}
+            value={[
+              values?.specifications?.impressions?.min || 0,
+              values?.specifications?.impressions?.max || 1800000,
+            ]}
+          />
+          <div>
+            <NumberInput name="specifications.impressions.max" errors={errors} className="w-24" />
+            <p className="text-right text-slate-400">Max</p>
+          </div>
+        </div>
         <AsyncMultiSelect
           label="Previous brands"
           name="specifications.previousBrands"
