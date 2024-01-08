@@ -62,6 +62,10 @@ const SelectSpace = () => {
     }),
     shallow,
   );
+  const watchPlace = form.watch('place') || [];
+
+  const selectedInventoryIds = useMemo(() => watchPlace.map(space => space._id));
+
   const [searchParams, setSearchParams] = useSearchParams({
     limit: activeLayout.inventoryLimit || 20,
     page: 1,
@@ -69,14 +73,13 @@ const SelectSpace = () => {
     sortBy: 'createdAt',
     isUnderMaintenance: false,
     isActive: true,
+    ids: selectedInventoryIds,
   });
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
   const inventoryQuery = useFetchInventory(searchParams.toString());
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
-
-  const watchPlace = form.watch('place') || [];
 
   const updateData = debounce((key, val, id, inputId) => {
     if (key === 'dateRange') {
