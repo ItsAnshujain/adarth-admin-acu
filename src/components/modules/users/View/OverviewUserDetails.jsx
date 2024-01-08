@@ -130,7 +130,7 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
         ) : null}
         <div className="col-span-3 flex flex-col px-5">
           <FormProvider {...form}>
-            <form className="mb-8 flex flex-row" onSubmit={onSubmit}>
+            <form className="mb-8 relative" onSubmit={onSubmit}>
               {((myDetails?.role === 'supervisor' && userId === meId) ||
                 myDetails?.role === 'admin' ||
                 myDetails?.role === 'management') &&
@@ -162,7 +162,7 @@ const OverviewUserDetails = ({ userDetails, isUserDetailsLoading = false, userId
               {myDetails?.role !== 'supervisor' && !isPeer ? (
                 <Button
                   type="submit"
-                  className="primary-button self-end"
+                  className="primary-button self-end static md:absolute top-8 left-96"
                   loading={updateUser.isLoading}
                 >
                   {userDetails?.salesTarget ? 'Edit' : 'Save'}
