@@ -128,6 +128,7 @@ const BasicInfo = ({ proposalId, userData }) => {
     return temp;
   }, [proposalTermsQuery.data?.docs]);
 
+  console.log(userData);
   return (
     <div className="flex gap-4 pt-4 flex-col">
       <Text size="md" weight="bold">
@@ -186,7 +187,7 @@ const BasicInfo = ({ proposalId, userData }) => {
               ),
               radio: 'cursor-pointer',
             }}
-            disabled={!(userData?.proposalHead && userData?.proposalFooter)}
+            disabled={!userData?.proposalHead && !userData?.proposalFooter}
           />
           <Radio
             value="new"

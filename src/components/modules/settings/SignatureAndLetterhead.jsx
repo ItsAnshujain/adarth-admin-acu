@@ -14,6 +14,7 @@ import { FormProvider, useForm } from '../../../context/formContext';
 import trash from '../../../assets/trash.svg';
 import { useUpdateUsers } from '../../../apis/queries/users.queries';
 import useUserStore from '../../../store/user.store';
+import { useRemoveSettings } from '../../../apis/queries/settings.queries';
 
 const initialValues = {
   signature: '',
@@ -39,6 +40,7 @@ const SignatureAndLetterhead = () => {
   const userId = useUserStore(state => state.id);
   const userData = queryClient.getQueryData(['users-by-id', userId]);
   const [activeImage, setActiveImage] = useState();
+  const removeSettingsHandler = useRemoveSettings();
 
   const onHandleDrop = async (params, key) => {
     const isValidResolution = await validateImageResolution(
@@ -99,11 +101,19 @@ const SignatureAndLetterhead = () => {
 
   const handleSubmit = formData => {
     const data = { ...formData };
+    const removedData = [];
     Object.keys(data).forEach(key => {
       if (data[key] === '') {
+        removedData.push(key);
         delete data[key];
       }
     });
+
+    console.log('removedData', removedData);
+
+    if (removedData.length > 0) {
+      removeSettingsHandler.mutateAsync({ userId, data: removedData });
+    }
 
     updateUser(
       { userId, data },
