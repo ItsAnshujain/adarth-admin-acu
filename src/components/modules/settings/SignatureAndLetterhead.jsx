@@ -109,23 +109,11 @@ const SignatureAndLetterhead = () => {
       }
     });
 
-    console.log('removedData', removedData);
-
     if (removedData.length > 0) {
       removeSettingsHandler.mutateAsync({ userId, data: removedData });
     }
 
-    updateUser(
-      { userId, data },
-      {
-        onSuccess: () => {
-          showNotification({
-            title: 'User updated successfully',
-            color: 'green',
-          });
-        },
-      },
-    );
+    updateUser({ userId, data });
   };
 
   useEffect(() => {
