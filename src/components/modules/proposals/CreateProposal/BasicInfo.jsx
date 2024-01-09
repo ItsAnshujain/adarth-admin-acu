@@ -128,7 +128,6 @@ const BasicInfo = ({ proposalId, userData }) => {
     return temp;
   }, [proposalTermsQuery.data?.docs]);
 
-  console.log(userData);
   return (
     <div className="flex gap-4 pt-4 flex-col">
       <Text size="md" weight="bold">
