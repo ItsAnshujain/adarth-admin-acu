@@ -227,8 +227,12 @@ const CreateProposalPage = () => {
             availableUnit: item?.remainingUnits,
             initialUnit: item?.bookedUnits || 0,
           })) || [],
-        letterHead: proposalData?.proposal?.letterHead,
-        letterFooter: proposalData?.proposal?.letterFooter,
+        letterHead: userData?.proposalHead
+          ? userData?.proposalHead
+          : proposalData?.proposal?.letterHead,
+        letterFooter: userData?.proposalFooter
+          ? userData?.proposalFooter
+          : proposalData?.proposal?.letterFooter,
         proposalTermsId: {
           label: proposalData?.proposal?.proposalTermsId?.name,
           value: proposalData?.proposal?.proposalTermsId?._id,
