@@ -48,7 +48,7 @@ const schema = yup.object({
     .trim()
     .when('uploadType', {
       is: val => val === 'new',
-      then: yup.string().trim().required('Letter Footer is Required'),
+      then: yup.string().nullable().trim().required('Letter Footer is Required'),
       otherwise: yup.string().trim(),
     }),
 });

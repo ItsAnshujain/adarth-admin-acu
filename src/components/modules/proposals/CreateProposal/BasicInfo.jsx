@@ -186,7 +186,7 @@ const BasicInfo = ({ proposalId, userData }) => {
               ),
               radio: 'cursor-pointer',
             }}
-            disabled={!(userData?.proposalHead && userData?.proposalFooter)}
+            disabled={!userData?.proposalHead && !userData?.proposalFooter}
           />
           <Radio
             value="new"
