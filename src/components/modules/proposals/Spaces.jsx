@@ -63,7 +63,7 @@ const Spaces = () => {
     sortBy: 'createdAt',
     isUnderMaintenance: false,
     isActive: true,
-    ids: selectedInventoryIds,
+    ids: selectedInventoryIds.join(','),
   });
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
