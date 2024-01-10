@@ -35,22 +35,8 @@ const schema = yup.object({
   name: yup.string().trim().required('Name is required'),
   description: yup.string().trim(),
   status: yup.string().trim(),
-  letterHead: yup
-    .string()
-    .trim()
-    .when('uploadType', {
-      is: val => val === 'new',
-      then: yup.string().trim().required('Letter Head is Required'),
-      otherwise: yup.string().trim(),
-    }),
-  letterFooter: yup
-    .string()
-    .trim()
-    .when('uploadType', {
-      is: val => val === 'new',
-      then: yup.string().trim().required('Letter Footer is Required'),
-      otherwise: yup.string().trim(),
-    }),
+  letterHead: yup.string().trim().nullable(),
+  letterFooter: yup.string().trim().nullable(),
 });
 
 const CreateProposalPage = () => {

@@ -73,7 +73,7 @@ const SelectSpace = () => {
     sortBy: 'createdAt',
     isUnderMaintenance: false,
     isActive: true,
-    ids: selectedInventoryIds,
+    ids: selectedInventoryIds.join(','),
   });
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');

@@ -1,6 +1,11 @@
 import { showNotification } from '@mantine/notifications';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { changePassword, deleteAccount, updateNotification } from '../requests/settings.requests';
+import {
+  changePassword,
+  deleteAccount,
+  removeSettings,
+  updateNotification,
+} from '../requests/settings.requests';
 
 export const useChangePassword = () =>
   useMutation(
@@ -69,6 +74,24 @@ export const useDeleteAccount = () =>
           color: 'green',
         });
       },
+      onError: err => {
+        showNotification({
+          title: 'Error',
+          message: err?.message,
+          autoClose: 3000,
+          color: 'red',
+        });
+      },
+    },
+  );
+
+export const useRemoveSettings = () =>
+  useMutation(
+    async ({ userId, data }) => {
+      const res = await removeSettings(userId, data);
+      return res;
+    },
+    {
       onError: err => {
         showNotification({
           title: 'Error',

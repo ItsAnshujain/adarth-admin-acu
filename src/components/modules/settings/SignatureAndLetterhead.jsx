@@ -14,6 +14,7 @@ import { FormProvider, useForm } from '../../../context/formContext';
 import trash from '../../../assets/trash.svg';
 import { useUpdateUsers } from '../../../apis/queries/users.queries';
 import useUserStore from '../../../store/user.store';
+import { useRemoveSettings } from '../../../apis/queries/settings.queries';
 
 const initialValues = {
   signature: '',
@@ -22,11 +23,11 @@ const initialValues = {
 };
 
 const schema = yup.object({
-  signature: yup.string().trim().required('Signature is required'),
-  letterHead: yup.string().trim().required('Letter Head is required'),
-  letterFooter: yup.string().trim().required('Letter Footer is required'),
-  proposalHead: yup.string().trim().required('Proposal Letter Head is required'),
-  proposalFooter: yup.string().trim().required('Proposal Letter Footer is required'),
+  signature: yup.string().trim(),
+  letterHead: yup.string().trim(),
+  letterFooter: yup.string().trim(),
+  proposalHead: yup.string().trim(),
+  proposalFooter: yup.string().trim(),
 });
 
 const SignatureAndLetterhead = () => {
@@ -39,6 +40,7 @@ const SignatureAndLetterhead = () => {
   const userId = useUserStore(state => state.id);
   const userData = queryClient.getQueryData(['users-by-id', userId]);
   const [activeImage, setActiveImage] = useState();
+  const removeSettingsHandler = useRemoveSettings();
 
   const onHandleDrop = async (params, key) => {
     const isValidResolution = await validateImageResolution(
@@ -90,6 +92,8 @@ const SignatureAndLetterhead = () => {
     e.stopPropagation();
     setActiveImage(key);
 
+    removeSettingsHandler.mutateAsync({ userId, data: [key] });
+
     if (form.values[key]) {
       await deleteFile(form.values[key].split('/').at(-1), {
         onSuccess: () => form.setFieldValue(key, ''),
@@ -99,18 +103,17 @@ const SignatureAndLetterhead = () => {
 
   const handleSubmit = formData => {
     const data = { ...formData };
-    Object.keys(data).forEach(key => {
-      if (data[key] === '') {
-        delete data[key];
+    Object.keys(data).forEach(formKey => {
+      if (data[formKey] === '') {
+        delete data[formKey];
       }
     });
-
     updateUser(
       { userId, data },
       {
         onSuccess: () => {
           showNotification({
-            title: 'User updated successfully',
+            title: 'Settings updated successfully',
             color: 'green',
           });
         },
@@ -491,7 +494,7 @@ const SignatureAndLetterhead = () => {
               loading={isUserUpdateLoading}
               disabled={isUploadLoading || isUserUpdateLoading}
             >
-              Upload
+              Save
             </Button>
           </section>
         </form>
