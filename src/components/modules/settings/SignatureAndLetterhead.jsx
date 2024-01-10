@@ -92,6 +92,8 @@ const SignatureAndLetterhead = () => {
     e.stopPropagation();
     setActiveImage(key);
 
+    removeSettingsHandler.mutateAsync({ userId, data: [key] });
+
     if (form.values[key]) {
       await deleteFile(form.values[key].split('/').at(-1), {
         onSuccess: () => form.setFieldValue(key, ''),
@@ -101,18 +103,11 @@ const SignatureAndLetterhead = () => {
 
   const handleSubmit = formData => {
     const data = { ...formData };
-    const removedData = [];
-    Object.keys(data).forEach(key => {
-      if (data[key] === '') {
-        removedData.push(key);
-        delete data[key];
+    Object.keys(data).forEach(formKey => {
+      if (data[formKey] === '') {
+        delete data[formKey];
       }
     });
-
-    if (removedData.length > 0) {
-      removeSettingsHandler.mutateAsync({ userId, data: removedData });
-    }
-
     updateUser(
       { userId, data },
       {
