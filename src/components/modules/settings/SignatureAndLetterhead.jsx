@@ -113,7 +113,17 @@ const SignatureAndLetterhead = () => {
       removeSettingsHandler.mutateAsync({ userId, data: removedData });
     }
 
-    updateUser({ userId, data });
+    updateUser(
+      { userId, data },
+      {
+        onSuccess: () => {
+          showNotification({
+            title: 'Settings updated successfully',
+            color: 'green',
+          });
+        },
+      },
+    );
   };
 
   useEffect(() => {
@@ -489,7 +499,7 @@ const SignatureAndLetterhead = () => {
               loading={isUserUpdateLoading}
               disabled={isUploadLoading || isUserUpdateLoading}
             >
-              Upload
+              Save
             </Button>
           </section>
         </form>
