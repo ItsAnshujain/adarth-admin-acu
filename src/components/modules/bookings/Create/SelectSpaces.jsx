@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Image, NumberInput, Loader, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { useModals } from '@mantine/modals';
@@ -34,6 +34,7 @@ import CategoryContent from '../../inventory/CategoryContent';
 import SubCategoryContent from '../../inventory/SubCategoryContent';
 import UploadMediaContent from '../../inventory/UploadMediaContent';
 import DimensionContent from '../../inventory/DimensionContent';
+import AddEditPriceDrawer from './AddEditPriceDrawer';
 
 dayjs.extend(isBetween);
 
@@ -63,7 +64,7 @@ const SelectSpace = () => {
     shallow,
   );
   const watchPlace = form.watch('place') || [];
-
+  const [drawerOpened, drawerActions] = useDisclosure();
   const selectedInventoryIds = useMemo(() => watchPlace.map(space => space._id));
 
   const [searchParams, setSearchParams] = useSearchParams({
@@ -229,6 +230,8 @@ const SelectSpace = () => {
 
   const RenderPeerCell = useCallback(({ row }) => row.original.peer || '-', []);
 
+  const RenderTotalPriceCell = useCallback(({ row }) => row.original.price || '-', []);
+
   const RenderInventoryIdCell = useCallback(({ row }) => row.original.inventoryId || '-', []);
 
   const RenderMediaTypeCell = useCallback(({ row }) => row.original.mediaType || '-', []);
@@ -382,27 +385,18 @@ const SelectSpace = () => {
           ),
       },
       {
-        Header: 'PRICING',
+        Header: 'PRICE',
+        Cell: () =>
+          useMemo(() => (
+            <Button onClick={drawerActions.open} className="bg-purple-450 order-3" size="xs">
+              Add Price
+            </Button>
+          )),
+      },
+      {
+        Header: 'TOTAL PRICE',
         accessor: 'basicInformation.price',
-        Cell: ({
-          row: {
-            original: { price, _id },
-          },
-        }) =>
-          useMemo(() => {
-            const isPriceZero =
-              watchPlace?.some(item => item._id === _id) && (price === 0 || !price);
-
-            return (
-              <NumberInput
-                id={`price-${_id}`}
-                hideControls
-                defaultValue={+(price || 0)}
-                onChange={e => updateData('price', e, _id, `price-${_id}`)}
-                error={isPriceZero}
-              />
-            );
-          }, []),
+        Cell: RenderTotalPriceCell,
       },
       {
         Header: 'MEDIA OWNER NAME',
@@ -543,9 +537,12 @@ const SelectSpace = () => {
           <div>
             <p className="text-lg font-bold">Select Place for Order</p>
           </div>
-          <div>
+          <div className="flex items-center">
+            <Button className="bg-black mr-1" onClick={drawerActions.open}>
+              Add Price
+            </Button>
             <Button onClick={toggleFilter} variant="default">
-              <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
+              <ChevronDown size={16} className="mr-1" /> Filter
             </Button>
             {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
           </div>
@@ -607,6 +604,7 @@ const SelectSpace = () => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
       ) : null}
+      <AddEditPriceDrawer isOpened={drawerOpened} onClose={drawerActions.close} />
     </>
   );
 };
