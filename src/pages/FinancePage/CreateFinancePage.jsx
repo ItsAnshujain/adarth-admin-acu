@@ -505,10 +505,11 @@ const CreateFinancePage = () => {
   const toggleAddItemModal = item =>
     modals.openContextModal('basic', {
       title: 'Manual Entry',
+      modalId: 'manualEntry',
       innerProps: {
         modalBody: (
           <AddManualEntryForm
-            onClose={() => modals.closeModal()}
+            onClose={() => modals.closeModal('manualEntry')}
             setAddSpaceItem={setAddSpaceItem}
             addSpaceItem={addSpaceItem}
             item={item}
@@ -896,7 +897,6 @@ const CreateFinancePage = () => {
                 });
                 return;
               }
-
               toggleAddItemModal(data);
             }}
             bookingIdFromFinance={bookingIdFromFinance}

@@ -4,6 +4,7 @@ import React, { useEffect, useMemo } from 'react';
 import * as yup from 'yup';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
+import { showNotification } from '@mantine/notifications';
 import DatePicker from '../../shared/DatePicker';
 import NumberInput from '../../shared/NumberInput';
 import TextInput from '../../shared/TextInput';
@@ -484,6 +485,43 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
           disabled
         />
       </div>
+      <div className="grid grid-cols-2 gap-x-4">
+        <NumberInput
+          label="Display Cost Discount"
+          name="displayCostDiscount"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          min={0}
+          // max={calculatedData?.initTotal?.display}
+        />
+        <NumberInput
+          label="Printing Cost Discount"
+          name="printingCostDiscount"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          min={0}
+          // max={calculatedData?.initTotal?.printing}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-x-4">
+        <NumberInput
+          label="Mounting Cost Discount"
+          name="mountingCostDiscount"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          min={0}
+          // max={calculatedData?.initTotal?.mounting}
+        />
+      </div>
     </>
   );
 };
@@ -505,6 +543,7 @@ const ManualEntryContent = ({
 }) => {
   const form = useForm({ validate: yupResolver(schema[type]), initialValues: initialValues[type] });
   const ManualEntries = contents[type] ?? <div />;
+
   const onSubmit = async formData => {
     if (item) {
       const tempArr = [...addSpaceItem];
@@ -516,6 +555,10 @@ const ManualEntryContent = ({
       });
       setAddSpaceItem(res);
       onClose();
+      showNotification({
+        title: 'Item updated successfully',
+        color: 'green',
+      });
       return;
     }
     setAddSpaceItem(prevState => [...prevState, { ...formData, itemId: uuidv4() }]);
@@ -548,6 +591,9 @@ const ManualEntryContent = ({
         })),
         unit: item?.unit,
         facing: { label: item?.facing?.label, value: item?.facing?.value },
+        displayCostDiscount: item.displayCostDiscount,
+        mountingCostDiscount: item.mountingCostDiscount,
+        printingCostDiscount: item.printingCostDiscount,
       });
     }
   }, [item]);
