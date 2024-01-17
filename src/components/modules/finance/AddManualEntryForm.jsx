@@ -239,6 +239,7 @@ const PurchaseAndInvoiceContent = ({ type }) => {
             className="mb-4"
             min={0}
             hideControls
+            precision={2}
           />
         ) : null}
       </div>
@@ -252,6 +253,7 @@ const PurchaseAndInvoiceContent = ({ type }) => {
           size="md"
           className="mb-4"
           hideControls
+          precision={2}
         />
         <NumberInput
           label="Rate"
@@ -262,6 +264,7 @@ const PurchaseAndInvoiceContent = ({ type }) => {
           size="md"
           className="mb-4"
           hideControls
+          precision={2}
         />
         <NumberInput
           label="Total Amount"
@@ -273,6 +276,7 @@ const PurchaseAndInvoiceContent = ({ type }) => {
           hideControls
           readOnly
           disabled
+          precision={2}
         />
       </div>
     </>

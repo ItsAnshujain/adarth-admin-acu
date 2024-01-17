@@ -1,5 +1,5 @@
 import { Group, Text } from '@mantine/core';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ToWords } from 'to-words';
 import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../../utils/currencyFormat';
@@ -7,6 +7,10 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookingId }) => {
   const toWords = new ToWords();
 
+  const memoizedTotalPrice = useMemo(
+    () => Number((totalPrice + totalPrice * 0.18).toFixed(2)),
+    [totalPrice],
+  );
   return (
     <div className="px-5">
       <div className="max-h-[500px] overflow-y-auto">
@@ -205,18 +209,14 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
             </div>
             <div className="flex justify-end">
               <p className="text-lg font-bold">Total:</p>
-              <p className="text-lg ml-2">
-                {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
-              </p>
+              <p className="text-lg ml-2">{toIndianCurrency(memoizedTotalPrice) || 0}</p>
             </div>
           </section>
         </article>
 
         <article className="my-3 p-5 bg-gray-100 flex mb-1">
           <p className="text-lg font-bold">Amount Chargeable (in words):</p>
-          <p className="text-lg ml-2">
-            {(totalPrice && toWords.convert(Math.round(totalPrice + totalPrice * 0.18))) || 0}
-          </p>
+          <p className="text-lg ml-2">{(totalPrice && toWords.convert(memoizedTotalPrice)) || 0}</p>
         </article>
 
         <article className="my-3">
