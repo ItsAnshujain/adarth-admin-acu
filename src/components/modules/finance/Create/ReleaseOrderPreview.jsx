@@ -1,5 +1,5 @@
 import { Group, Text } from '@mantine/core';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ToWords } from 'to-words';
 import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../../utils/currencyFormat';
@@ -7,6 +7,11 @@ import ROCalculatedTable from './ROCalculatedTable';
 
 const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, hasBookingId }) => {
   const toWords = new ToWords();
+
+  const memoizedTotalPrice = useMemo(
+    () => Number((totalPrice + totalPrice * 0.18).toFixed(2)),
+    [totalPrice],
+  );
 
   return (
     <div className="px-5">
@@ -97,7 +102,7 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                       </div>
                       <div>
                         <p>Total Amount:</p>
-                        <p>{item?.campaignPrice}</p>
+                        <p>{item?.campaignPrice.toFixed(2)}</p>
                       </div>
                     </Group>
                   </div>
@@ -157,19 +162,19 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                       </div>
                       <div>
                         <p>Area:</p>
-                        <Text>{item?.area}</Text>
+                        <Text>{item?.area.toFixed(2)}</Text>
                       </div>
                       <div>
                         <p>Display Cost:</p>
-                        <Text>{item?.displayCost}</Text>
+                        <Text>{item?.displayCost.toFixed(2)}</Text>
                       </div>
                       <div>
                         <p>Printing Cost:</p>
-                        <Text>{item?.printingCost}</Text>
+                        <Text>{item?.printingCost.toFixed(2)}</Text>
                       </div>
                       <div>
                         <p>Mounting Cost:</p>
-                        <Text>{item?.mountingCost}</Text>
+                        <Text>{item?.mountingCost.toFixed(2)}</Text>
                       </div>
                     </Group>
                   </div>
@@ -186,9 +191,7 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                 </div>
                 <div className="flex justify-end">
                   <p className="text-lg font-bold">Total:</p>
-                  <p className="text-lg ml-2">
-                    {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
-                  </p>
+                  <p className="text-lg ml-2">{toIndianCurrency(memoizedTotalPrice) || 0}</p>
                 </div>
               </>
             ) : null}
@@ -208,7 +211,7 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
               <p className="text-lg ml-2">
                 {previewData?.grandTotalInWords
                   ? previewData?.grandTotalInWords
-                  : totalPrice && toWords.convert(Math.round(totalPrice + totalPrice * 0.18))}
+                  : totalPrice && toWords.convert(memoizedTotalPrice)}
               </p>
             </div>
             <p className="text-lg">
