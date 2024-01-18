@@ -379,6 +379,7 @@ const ReleaseOrder = ({
         printing: 0,
         mounting: 0,
       },
+      printingGstPercentage: 0,
       mountingGstPercentage: 0,
       grandTotal: 0,
       grandTotalInWords: '',
@@ -415,9 +416,16 @@ const ReleaseOrder = ({
     );
 
     tempInitialTotal.mountingGstPercentage = values.mountingGstPercentage;
+    tempInitialTotal.printingGstPercentage = values.printingGstPercentage;
 
     tempInitialTotal.gst.display = Math.round(tempInitialTotal.subTotal.display * 0.18);
-    tempInitialTotal.gst.printing = Math.round(tempInitialTotal.subTotal.printing * 0.18);
+    tempInitialTotal.gst.printing =
+      values.printingGstPercentage > 0
+        ? Math.round(
+            tempInitialTotal.subTotal.printing * (tempInitialTotal.printingGstPercentage / 100),
+          )
+        : Math.round(tempInitialTotal.subTotal.printing * 0.18);
+
     tempInitialTotal.gst.mounting =
       values.mountingGstPercentage > 0
         ? Math.round(
@@ -598,7 +606,7 @@ const ReleaseOrder = ({
         </Group>
 
         {!bookingIdFromFinance ? (
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-4 gap-4 mb-4">
             <NumberInput
               styles={styles}
               label="Printing ft&sup2; Cost"
@@ -607,6 +615,16 @@ const ReleaseOrder = ({
               placeholder="Write..."
               min={0}
               precision={2}
+            />
+            <NumberInput
+              styles={styles}
+              label="Printing GST %"
+              name="printingGstPercentage"
+              placeholder="Write..."
+              min={0}
+              precision={2}
+              max={100}
+              withAsterisk
             />
             <NumberInput
               styles={styles}
@@ -619,7 +637,7 @@ const ReleaseOrder = ({
             />
             <NumberInput
               styles={styles}
-              label="Mounting GST Charges in %"
+              label="Mounting GST %"
               name="mountingGstPercentage"
               placeholder="Write..."
               min={0}

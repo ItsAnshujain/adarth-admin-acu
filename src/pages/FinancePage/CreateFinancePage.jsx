@@ -680,14 +680,13 @@ const CreateFinancePage = () => {
           index,
           name: item.name,
           location: item.location,
-          hsn: item.hsn,
           descriptionOfGoodsAndServices: item.name,
           startDate: item.startDate, //
           endDate: item.endDate, //
           category: item.category.value,
           dimensions: item.size.map(size => `${size.height}x${size.width}`),
-          unit: item.unit,
-          facing: item.facing.value,
+          unit: item.unit.toString(),
+          facing: item.facing.value.toString(),
           city: item.city,
           state: item.state,
           areaInSqFt: item.area,
