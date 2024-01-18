@@ -783,7 +783,7 @@ const CreateFinancePage = () => {
         }
         data.subTotal = calculateManualTotalPrice;
         data.gst = +(data.subTotal * 0.18).toFixed(2);
-        data.total = Math.round(data.subTotal + data.gst);
+        data.total = data.subTotal + data.gst;
         data.taxInWords = toWords.convert(data.gst);
         data.totalInWords = toWords.convert(data.total);
         if (submitType === 'preview') {
