@@ -3,7 +3,6 @@ import { yupResolver } from '@mantine/form';
 import React, { useEffect, useMemo } from 'react';
 import * as yup from 'yup';
 import { v4 as uuidv4 } from 'uuid';
-import classNames from 'classnames';
 import DatePicker from '../../shared/DatePicker';
 import NumberInput from '../../shared/NumberInput';
 import TextInput from '../../shared/TextInput';
@@ -13,6 +12,7 @@ import { useFetchMasters } from '../../../apis/queries/masters.queries';
 import { serialize } from '../../../utils';
 import Select from '../../shared/Select';
 import { FACING_VALUE_LIST } from '../../../utils/constants';
+import TextareaInput from '../../shared/TextareaInput';
 
 const query = {
   parentId: null,
@@ -25,46 +25,12 @@ const query = {
 const initialPurchaseValues = {
   name: '',
   location: '',
-  titleDate: '',
-  dueOn: '',
+  startDate: '',
+  endDate: '',
   quantity: null,
-  rate: null,
-  price: null,
-};
-
-const purchaseSchema = yup.object({
-  name: yup.string().trim().required('Description is required'),
-  location: yup.string().trim().required('Location is required'),
-  titleDate: yup.string().trim().required('Date is required'),
-  dueOn: yup.string().trim().required('Due On Date is required'),
-  quantity: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Quantity is required'),
-  rate: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Rate is required'),
-  price: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Pricing is required'),
-});
-
-const initialReleaseValues = {
   city: '',
-  location: '',
-  media: '',
-  area: null,
-  displayCost: null,
-  printingCost: 0,
-  mountingCost: 0,
+  state: '',
+  unit: 0,
   size: [
     {
       height: null,
@@ -72,33 +38,42 @@ const initialReleaseValues = {
       key: uuidv4(),
     },
   ],
-  unit: null,
-  facing: { label: '', value: '' },
+  width: null,
+  facing: {
+    value: '',
+    label: '',
+  },
+  category: {
+    value: '',
+    label: '',
+  },
 };
 
-const releaseSchema = yup.object({
-  city: yup.string().trim().required('City is required'),
+const purchaseSchema = yup.object({
+  name: yup.string().trim().required('Description is required'),
   location: yup.string().trim().required('Location is required'),
-  media: yup.string().trim().required('Media is required'),
-  area: yup
-    .number()
-    .min(0, 'Must be greater than or equal to 0')
-    .typeError('Must be a number')
-    .nullable(),
-  displayCost: yup
+  startDate: yup.string().trim().required('Start Date is required'),
+  endDate: yup.string().trim().required('End Date is required'),
+  city: yup.string().trim().required('City is required'),
+  state: yup.string().trim().required('State is required'),
+  unit: yup
     .number()
     .positive('Must be a positive number')
     .typeError('Must be a number')
     .nullable()
-    .required('Display Cost is required'),
-  printingCost: yup
-    .number()
-    .min(0, 'Must be greater than or equal to 0')
-    .typeError('Must be a number'),
-  mountingCost: yup
-    .number()
-    .min(0, 'Must be greater than or equal to 0')
-    .typeError('Must be a number'),
+    .required('Unit is required'),
+  category: yup
+    .object({
+      label: yup.string().trim(),
+      value: yup.string().trim(),
+    })
+    .test('category', 'Category is required', obj => obj.value !== ''),
+  facing: yup
+    .object({
+      label: yup.string().trim(),
+      value: yup.string().trim(),
+    })
+    .test('facing', 'Facing is required', obj => obj.value !== ''),
   size: yup.array().of(
     yup.object({
       height: yup
@@ -115,53 +90,176 @@ const releaseSchema = yup.object({
         .required('Width is required'),
     }),
   ),
+  displayCost: yup
+    .number()
+    .positive('Must be a positive number')
+    .typeError('Must be a number')
+    .nullable()
+    .required('Display Cost is required'),
+  printingCost: yup
+    .number()
+    .min(0, 'Must be greater than or equal to 0')
+    .typeError('Must be a number'),
+  mountingCost: yup
+    .number()
+    .min(0, 'Must be greater than or equal to 0')
+    .typeError('Must be a number'),
+  hsn: yup.number(),
+});
+
+const initialReleaseValues = {
+  name: '',
+  location: '',
+  startDate: '',
+  endDate: '',
+  quantity: null,
+  city: '',
+  state: '',
+  unit: 0,
+  size: [
+    {
+      height: null,
+      width: null,
+      key: uuidv4(),
+    },
+  ],
+  width: null,
+  facing: {
+    value: '',
+    label: '',
+  },
+  category: {
+    value: '',
+    label: '',
+  },
+};
+
+const releaseSchema = yup.object({
+  name: yup.string().trim().required('Description is required'),
+  location: yup.string().trim().required('Location is required'),
+  startDate: yup.string().trim().required('Start Date is required'),
+  endDate: yup.string().trim().required('End Date is required'),
+  city: yup.string().trim().required('City is required'),
+  state: yup.string().trim().required('State is required'),
   unit: yup
     .number()
     .positive('Must be a positive number')
     .typeError('Must be a number')
     .nullable()
     .required('Unit is required'),
+  category: yup
+    .object({
+      label: yup.string().trim(),
+      value: yup.string().trim(),
+    })
+    .test('category', 'Category is required', obj => obj.value !== ''),
   facing: yup
     .object({
       label: yup.string().trim(),
       value: yup.string().trim(),
     })
     .test('facing', 'Facing is required', obj => obj.value !== ''),
+  size: yup.array().of(
+    yup.object({
+      height: yup
+        .number()
+        .positive('Must be a positive number')
+        .typeError('Must be a number')
+        .nullable()
+        .required('Height is required'),
+      width: yup
+        .number()
+        .positive('Must be a positive number')
+        .typeError('Must be a number')
+        .nullable()
+        .required('Width is required'),
+    }),
+  ),
+  displayCost: yup
+    .number()
+    .positive('Must be a positive number')
+    .typeError('Must be a number')
+    .nullable()
+    .required('Display Cost is required'),
+  printingCost: yup
+    .number()
+    .min(0, 'Must be greater than or equal to 0')
+    .typeError('Must be a number'),
+  mountingCost: yup
+    .number()
+    .min(0, 'Must be greater than or equal to 0')
+    .typeError('Must be a number'),
+  hsn: yup.number(),
 });
 
 const initialInvoiceValues = {
   name: '',
   location: '',
-  titleDate: '',
-  dueOn: '',
+  startDate: '',
+  endDate: '',
   quantity: null,
-  rate: null,
-  price: null,
+  city: '',
+  state: '',
+  unit: 0,
+  size: [
+    {
+      height: null,
+      width: null,
+      key: uuidv4(),
+    },
+  ],
+  width: null,
+  facing: {
+    value: '',
+    label: '',
+  },
+  category: {
+    value: '',
+    label: '',
+  },
 };
 
 const invoiceSchema = yup.object({
   name: yup.string().trim().required('Description is required'),
   location: yup.string().trim().required('Location is required'),
-  titleDate: yup.string().trim().required('Date is required'),
-  dueOn: yup.string().trim().required('Due On Date is required'),
-  quantity: yup
+  startDate: yup.string().trim().required('Start Date is required'),
+  endDate: yup.string().trim().required('End Date is required'),
+  city: yup.string().trim().required('City is required'),
+  state: yup.string().trim().required('State is required'),
+  unit: yup
     .number()
     .positive('Must be a positive number')
     .typeError('Must be a number')
     .nullable()
-    .required('Quantity is required'),
-  rate: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Rate is required'),
-  price: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Pricing is required'),
+    .required('Unit is required'),
+  category: yup
+    .object({
+      label: yup.string().trim(),
+      value: yup.string().trim(),
+    })
+    .test('category', 'Category is required', obj => obj.value !== ''),
+  facing: yup
+    .object({
+      label: yup.string().trim(),
+      value: yup.string().trim(),
+    })
+    .test('facing', 'Facing is required', obj => obj.value !== ''),
+  size: yup.array().of(
+    yup.object({
+      height: yup
+        .number()
+        .positive('Must be a positive number')
+        .typeError('Must be a number')
+        .nullable()
+        .required('Height is required'),
+      width: yup
+        .number()
+        .positive('Must be a positive number')
+        .typeError('Must be a number')
+        .nullable()
+        .required('Width is required'),
+    }),
+  ),
   hsn: yup.number(),
 });
 
@@ -177,114 +275,14 @@ const schema = {
   invoice: invoiceSchema,
 };
 
-const PurchaseAndInvoiceContent = ({ type }) => {
-  const { values, errors, setFieldValue } = useFormContext();
-
-  useEffect(() => {
-    setFieldValue('price', values.quantity * values.rate);
-  }, [values.quantity, values.rate]);
-
-  return (
-    <>
-      <div className="grid grid-cols-2 gap-x-4">
-        <TextInput
-          label="Description of Goods and Services"
-          name="name"
-          withAsterisk
-          errors={errors}
-          placeholder="Write..."
-          size="md"
-          className="mb-4"
-        />
-        <TextInput
-          label="Location"
-          name="location"
-          withAsterisk
-          errors={errors}
-          placeholder="Write..."
-          size="md"
-          className="mb-4"
-        />
-      </div>
-      <div
-        className={classNames('grid gap-x-4', type === 'invoice' ? ' grid-cols-3' : 'grid-cols-2')}
-      >
-        <DatePicker
-          label="Date"
-          name="titleDate"
-          withAsterisk
-          placeholder="DD/MM/YYYY"
-          minDate={new Date()}
-          errors={errors}
-          size="md"
-          className="mb-4"
-        />
-        <DatePicker
-          label="Due On"
-          name="dueOn"
-          withAsterisk
-          placeholder="DD/MM/YYYY"
-          minDate={new Date()}
-          errors={errors}
-          size="md"
-          className="mb-4"
-        />
-        {type === 'invoice' ? (
-          <NumberInput
-            label="HSN"
-            name="hsn"
-            errors={errors}
-            placeholder="Write..."
-            size="md"
-            className="mb-4"
-            min={0}
-            hideControls
-            precision={2}
-          />
-        ) : null}
-      </div>
-      <div className="grid grid-cols-3 gap-x-4">
-        <NumberInput
-          label="Quantity"
-          name="quantity"
-          withAsterisk
-          errors={errors}
-          placeholder="Write..."
-          size="md"
-          className="mb-4"
-          hideControls
-          precision={2}
-        />
-        <NumberInput
-          label="Rate"
-          name="rate"
-          withAsterisk
-          errors={errors}
-          placeholder="Write..."
-          size="md"
-          className="mb-4"
-          hideControls
-          precision={2}
-        />
-        <NumberInput
-          label="Total Amount"
-          name="price"
-          errors={errors}
-          placeholder="Write..."
-          size="md"
-          className="mb-4"
-          hideControls
-          readOnly
-          disabled
-          precision={2}
-        />
-      </div>
-    </>
-  );
-};
-
-const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
-  const { errors, values, setFieldValue, setValues, insertListItem, removeListItem } =
+const PurchaseAndInvoiceContent = ({
+  type,
+  mountingSqftCost,
+  printingSqftCost,
+  mountingCostGst,
+  printingCostGst,
+}) => {
+  const { values, errors, setValues, setFieldValue, insertListItem, removeListItem } =
     useFormContext();
 
   const {
@@ -292,6 +290,12 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
     isLoading: isFacingLoading,
     isSuccess: isFacingLoaded,
   } = useFetchMasters(serialize({ type: 'facing', ...query }));
+
+  const {
+    data: categoryData,
+    isLoading: isCategoryLoading,
+    isSuccess: isCategoryLoaded,
+  } = useFetchMasters(serialize({ type: 'category', ...query }));
 
   const getFacingValue = (facing = 'single') => {
     const facingIndex = FACING_VALUE_LIST.findIndex(item => facing.toLowerCase().includes(item));
@@ -309,11 +313,29 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
     return [];
   }, [facingData, isFacingLoaded]);
 
+  const memoizedCategoryData = useMemo(() => {
+    if (isCategoryLoaded) {
+      return categoryData.docs.map(category => ({
+        label: category.name,
+        value: category._id,
+      }));
+    }
+    return [];
+  }, [categoryData, isCategoryLoaded]);
+
   useEffect(() => {
+    const totalPrintingCost = printingSqftCost * values.area;
+    const totalMountingCost = mountingSqftCost * values.area;
+    const totalPrintingCostWithGst =
+      totalPrintingCost + (totalPrintingCost * printingCostGst) / 100;
+    const totalMountingCostWithGst =
+      totalPrintingCost + (totalMountingCost * mountingCostGst) / 100;
+
     setValues({
       ...values,
-      printingCost: printingSqftCost * values.area,
-      mountingCost: mountingSqftCost * values.area,
+      printingCost: totalPrintingCostWithGst,
+      mountingCost: totalMountingCostWithGst,
+      displayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
     });
   }, [values.area, mountingSqftCost, printingSqftCost]);
 
@@ -345,8 +367,8 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
           className="mb-4"
         />
         <TextInput
-          label="Location"
-          name="location"
+          label="State"
+          name="state"
           withAsterisk
           errors={errors}
           placeholder="Write..."
@@ -356,78 +378,63 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
       </div>
       <div className="grid grid-cols-2 gap-x-4">
         <TextInput
-          label="Media"
-          name="media"
+          label="Location"
+          name="location"
           withAsterisk
           errors={errors}
           placeholder="Write..."
           size="md"
           className="mb-4"
         />
-
-        <div className="max-h-[240px] overflow-y-scroll mb-2">
-          {values.size?.map((item, index) => (
-            <div key={item?.key} className="grid grid-cols-2 gap-4 relative">
-              {index !== 0 ? (
-                <ActionIcon
-                  className="absolute right-0"
-                  onClick={() => removeListItem('size', index)}
-                >
-                  <Image src={TrashIcon} height={15} width={15} />
-                </ActionIcon>
-              ) : null}
-              <div>
-                <p className="mt-[2px] font-medium text-[15px]">
-                  Width <span className="text-red-450">*</span>{' '}
-                  <span className="text-xs text-gray-500">(in ft)</span>
-                </p>
-                <NumberInput
-                  name={`size.${index}.width`}
-                  withAsterisk
-                  errors={errors}
-                  placeholder="Write..."
-                  size="md"
-                  className="mb-4"
-                  precision={2}
-                />
-              </div>
-              <div>
-                <p className="mt-[2px] font-medium text-[15px]">
-                  Height <span className="text-red-450">*</span>{' '}
-                  <span className="text-xs text-gray-500">(in ft)</span>
-                </p>
-                <NumberInput
-                  name={`size.${index}.height`}
-                  withAsterisk
-                  errors={errors}
-                  placeholder="Write..."
-                  size="md"
-                  className="mb-4"
-                  precision={2}
-                />
-              </div>
-            </div>
-          ))}
-
-          <Button
-            className="secondary-button mb-2"
-            onClick={() => insertListItem('size', { height: '', width: '', key: uuidv4() })}
-          >
-            Add More
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-x-4">
         <NumberInput
           label="Unit"
           name="unit"
-          withAsterisk
           errors={errors}
           placeholder="Write..."
           size="md"
           className="mb-4"
+          min={0}
           hideControls
+          precision={2}
+          withAsterisk
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-x-4">
+        <DatePicker
+          label="Start Date"
+          name="startDate"
+          withAsterisk
+          placeholder="DD/MM/YYYY"
+          minDate={new Date()}
+          errors={errors}
+          size="md"
+          className="mb-4"
+        />
+        <DatePicker
+          label="End Date"
+          name="endDate"
+          withAsterisk
+          placeholder="DD/MM/YYYY"
+          minDate={new Date()}
+          errors={errors}
+          size="md"
+          className="mb-4"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-x-4">
+        <Select
+          label="Category"
+          name="category"
+          withAsterisk
+          errors={errors}
+          placeholder="Select..."
+          size="md"
+          disabled={isCategoryLoading}
+          classNames={{ label: 'font-medium mb-0' }}
+          options={memoizedCategoryData}
+          className="mb-4"
         />
         <Select
           label="Facing"
@@ -443,34 +450,93 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4">
+      {type === 'invoice' ? (
         <NumberInput
-          label="Area"
-          name="area"
+          label="HSN"
+          name="hsn"
           errors={errors}
           placeholder="Write..."
           size="md"
           className="mb-4"
-          hideControls
-          readOnly
-          disabled
-          precision={2}
-        />
-        <NumberInput
-          label="Total Display Cost/Month"
-          name="displayCost"
-          withAsterisk
-          errors={errors}
-          placeholder="Write..."
-          size="md"
-          className="mb-4"
+          min={0}
           hideControls
           precision={2}
         />
+      ) : null}
+
+      <div className="max-h-[240px] overflow-y-scroll mb-2">
+        <div className="flex gap-4">
+          <div className="flex flex-col">
+            {values.size?.map((item, index) => (
+              <div key={item?.key} className="grid grid-cols-2 gap-4 relative">
+                {index !== 0 ? (
+                  <ActionIcon
+                    className="absolute right-0"
+                    onClick={() => removeListItem('size', index)}
+                  >
+                    <Image src={TrashIcon} height={15} width={15} />
+                  </ActionIcon>
+                ) : null}
+                <div>
+                  <p className="mt-[2px] font-medium text-[15px]">
+                    Width (in ft) <span className="text-red-450">*</span>{' '}
+                  </p>
+                  <NumberInput
+                    name={`size.${index}.width`}
+                    withAsterisk
+                    errors={errors}
+                    placeholder="Write..."
+                    size="md"
+                    className="mb-4"
+                    precision={2}
+                  />
+                </div>
+                <div>
+                  <p className="mt-[2px] font-medium text-[15px]">
+                    Height (in ft) <span className="text-red-450">*</span>{' '}
+                  </p>
+                  <NumberInput
+                    name={`size.${index}.height`}
+                    withAsterisk
+                    errors={errors}
+                    placeholder="Write..."
+                    size="md"
+                    className="mb-4"
+                    precision={2}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="w-full">
+            <p className="mt-[2px] font-medium text-[15px]">
+              Area (in sq.ft.) <span className="text-red-450">*</span>{' '}
+            </p>
+            <NumberInput
+              name="area"
+              errors={errors}
+              placeholder="Write..."
+              size="md"
+              className="mb-4"
+              hideControls
+              readOnly
+              disabled
+              precision={2}
+            />
+          </div>
+        </div>
+
+        <Button
+          className="secondary-button mb-2"
+          onClick={() => insertListItem('size', { height: '', width: '', key: uuidv4() })}
+        >
+          Add More
+        </Button>
       </div>
-      <div className="grid grid-cols-2 gap-x-4">
+
+      <div className="grid grid-cols-2  gap-4">
         <NumberInput
-          label="Printing Cost"
+          label="Total Printing Cost"
           name="printingCost"
           errors={errors}
           placeholder="Write..."
@@ -482,7 +548,7 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
           precision={2}
         />
         <NumberInput
-          label="Mounting Cost"
+          label="Total Mounting Cost"
           name="mountingCost"
           errors={errors}
           placeholder="Write..."
@@ -494,6 +560,313 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
           precision={2}
         />
       </div>
+
+      <NumberInput
+        label="Total Display Cost/Month"
+        name="displayCost"
+        errors={errors}
+        placeholder="Write..."
+        size="md"
+        className="mb-4"
+        hideControls
+        readOnly
+        disabled
+        precision={2}
+      />
+
+      <TextareaInput
+        label="Description of Goods and Services"
+        name="name"
+        withAsterisk
+        errors={errors}
+        placeholder="Write..."
+        size="md"
+        className="mb-4"
+      />
+    </>
+  );
+};
+
+const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
+  const { errors, values, setFieldValue, setValues, insertListItem, removeListItem } =
+    useFormContext();
+  const {
+    data: facingData,
+    isLoading: isFacingLoading,
+    isSuccess: isFacingLoaded,
+  } = useFetchMasters(serialize({ type: 'facing', ...query }));
+
+  const {
+    data: categoryData,
+    isLoading: isCategoryLoading,
+    isSuccess: isCategoryLoaded,
+  } = useFetchMasters(serialize({ type: 'category', ...query }));
+
+  const getFacingValue = (facing = 'single') => {
+    const facingIndex = FACING_VALUE_LIST.findIndex(item => facing.toLowerCase().includes(item));
+
+    return facingIndex + 1;
+  };
+
+  const memoizedFacingData = useMemo(() => {
+    if (isFacingLoaded) {
+      return facingData.docs.map(category => ({
+        label: category.name,
+        value: getFacingValue(category.name),
+      }));
+    }
+    return [];
+  }, [facingData, isFacingLoaded]);
+
+  const memoizedCategoryData = useMemo(() => {
+    if (isCategoryLoaded) {
+      return categoryData.docs.map(category => ({
+        label: category.name,
+        value: category._id,
+      }));
+    }
+    return [];
+  }, [categoryData, isCategoryLoaded]);
+
+  useEffect(() => {
+    setValues({
+      ...values,
+      printingCost: printingSqftCost * values.area,
+      mountingCost: mountingSqftCost * values.area,
+      displayCost: printingSqftCost * values.area + mountingSqftCost * values.area,
+    });
+  }, [values.area, mountingSqftCost, printingSqftCost]);
+
+  const calculateHeightWidth = useMemo(() => {
+    const total = values.size?.reduce((acc, item) => {
+      if (item?.width && item?.height) {
+        return acc + item.width * item.height;
+      }
+      return acc;
+    }, 0);
+
+    return total || 0;
+  }, [values.size]);
+
+  useEffect(() => {
+    setFieldValue('area', calculateHeightWidth * (values.unit || 0) * (values.facing?.value || 0));
+  }, [calculateHeightWidth, values.unit, values.facing?.value]);
+
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-x-4">
+        <TextInput
+          label="City"
+          name="city"
+          withAsterisk
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+        />
+        <TextInput
+          label="State"
+          name="state"
+          withAsterisk
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-x-4">
+        <TextInput
+          label="Location"
+          name="location"
+          withAsterisk
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+        />
+        <NumberInput
+          label="Unit"
+          name="unit"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          min={0}
+          hideControls
+          precision={2}
+          withAsterisk
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-x-4">
+        <DatePicker
+          label="Start Date"
+          name="startDate"
+          withAsterisk
+          placeholder="DD/MM/YYYY"
+          minDate={new Date()}
+          errors={errors}
+          size="md"
+          className="mb-4"
+        />
+        <DatePicker
+          label="End Date"
+          name="endDate"
+          withAsterisk
+          placeholder="DD/MM/YYYY"
+          minDate={new Date()}
+          errors={errors}
+          size="md"
+          className="mb-4"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-x-4">
+        <Select
+          label="Category"
+          name="category"
+          withAsterisk
+          errors={errors}
+          placeholder="Select..."
+          size="md"
+          disabled={isCategoryLoading}
+          classNames={{ label: 'font-medium mb-0' }}
+          options={memoizedCategoryData}
+          className="mb-4"
+        />
+        <Select
+          label="Facing"
+          name="facing"
+          withAsterisk
+          errors={errors}
+          placeholder="Select..."
+          size="md"
+          disabled={isFacingLoading}
+          classNames={{ label: 'font-medium mb-0' }}
+          options={memoizedFacingData}
+          className="mb-4"
+        />
+      </div>
+
+      <div className="max-h-[240px] overflow-y-scroll mb-2">
+        <div className="flex gap-4">
+          <div className="flex flex-col">
+            {values.size?.map((item, index) => (
+              <div key={item?.key} className="grid grid-cols-2 gap-4 relative">
+                {index !== 0 ? (
+                  <ActionIcon
+                    className="absolute right-0"
+                    onClick={() => removeListItem('size', index)}
+                  >
+                    <Image src={TrashIcon} height={15} width={15} />
+                  </ActionIcon>
+                ) : null}
+                <div>
+                  <p className="mt-[2px] font-medium text-[15px]">
+                    Width (in ft) <span className="text-red-450">*</span>{' '}
+                  </p>
+                  <NumberInput
+                    name={`size.${index}.width`}
+                    withAsterisk
+                    errors={errors}
+                    placeholder="Write..."
+                    size="md"
+                    className="mb-4"
+                    precision={2}
+                  />
+                </div>
+                <div>
+                  <p className="mt-[2px] font-medium text-[15px]">
+                    Height (in ft) <span className="text-red-450">*</span>{' '}
+                  </p>
+                  <NumberInput
+                    name={`size.${index}.height`}
+                    withAsterisk
+                    errors={errors}
+                    placeholder="Write..."
+                    size="md"
+                    className="mb-4"
+                    precision={2}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="w-full">
+            <p className="mt-[2px] font-medium text-[15px]">
+              Area (in sq.ft.) <span className="text-red-450">*</span>{' '}
+            </p>
+            <NumberInput
+              name="area"
+              errors={errors}
+              placeholder="Write..."
+              size="md"
+              className="mb-4"
+              hideControls
+              readOnly
+              disabled
+              precision={2}
+            />
+          </div>
+        </div>
+
+        <Button
+          className="secondary-button mb-2"
+          onClick={() => insertListItem('size', { height: '', width: '', key: uuidv4() })}
+        >
+          Add More
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2  gap-4">
+        <NumberInput
+          label="Total Printing Cost"
+          name="printingCost"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          readOnly
+          disabled
+          precision={2}
+        />
+        <NumberInput
+          label="Total Mounting Cost"
+          name="mountingCost"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          readOnly
+          disabled
+          precision={2}
+        />
+      </div>
+
+      <NumberInput
+        label="Total Display Cost/Month"
+        name="displayCost"
+        errors={errors}
+        placeholder="Write..."
+        size="md"
+        className="mb-4"
+        hideControls
+        readOnly
+        disabled
+        precision={2}
+      />
+
+      <TextareaInput
+        label="Description of Goods and Services"
+        name="name"
+        withAsterisk
+        errors={errors}
+        placeholder="Write..."
+        size="md"
+        className="mb-4"
+      />
     </>
   );
 };
@@ -512,6 +885,8 @@ const ManualEntryContent = ({
   type,
   mountingSqftCost,
   printingSqftCost,
+  mountingGstPercentage,
+  printingGstPercentage,
 }) => {
   const form = useForm({ validate: yupResolver(schema[type]), initialValues: initialValues[type] });
   const ManualEntries = contents[type] ?? <div />;
@@ -537,8 +912,8 @@ const ManualEntryContent = ({
       form.setValues({
         name: item?.name,
         location: item?.location,
-        titleDate: item?.titleDate,
-        dueOn: item?.dueOn,
+        startDate: item?.startDate,
+        endDate: item?.endDate,
         quantity: item?.quantity,
         rate: item?.rate,
         price: item?.price,
@@ -552,6 +927,8 @@ const ManualEntryContent = ({
         printingCost: item?.printingCost,
         width: item?.width,
         hsn: item?.hsn,
+        state: item?.state,
+        category: item.category,
         size: item?.size?.map(ele => ({
           height: ele?.height,
           width: ele?.width,
@@ -568,6 +945,8 @@ const ManualEntryContent = ({
         <ManualEntries
           mountingSqftCost={mountingSqftCost}
           printingSqftCost={printingSqftCost}
+          mountingCostGst={mountingGstPercentage}
+          printingCostGst={printingGstPercentage}
           type={type}
         />
         <Group position="right">
