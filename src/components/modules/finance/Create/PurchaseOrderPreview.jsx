@@ -128,41 +128,40 @@ const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, has
                   </div>
                 ))
               : previewData?.spaces?.map((item, index) => (
-                  <div className="grid grid-cols-2" key={uuidv4()}>
-                    <Group>
+                  <Group className="grid grid-cols-7" key={uuidv4()}>
+                    <div className="flex items-center gap-4">
                       <p className="text-lg">{index + 1}</p>
                       <div>
-                        <Text
-                          className="overflow-hidden text-ellipsis max-w-[280px]"
-                          lineClamp={1}
-                          title={item?.name}
-                        >
-                          {item?.name}
-                        </Text>
-                        <Text
-                          className="overflow-hidden text-ellipsis max-w-[180px]"
-                          lineClamp={1}
-                          title={item?.location}
-                        >
-                          {item?.location}
-                        </Text>
+                        <p>City:</p>
+                        <p>{item?.city || '-'}</p>
                       </div>
-                    </Group>
-                    <Group className="grid grid-cols-3">
-                      <div>
-                        <p>Quantity:</p>
-                        <p>{item?.quantity}</p>
-                      </div>
-                      <div>
-                        <p>Rate:</p>
-                        <p>{item?.rate}</p>
-                      </div>
-                      <div>
-                        <p>Total Amount:</p>
-                        <p>{item?.price.toFixed(2)}</p>
-                      </div>
-                    </Group>
-                  </div>
+                    </div>
+                    <div>
+                      <p>Location:</p>
+                      <p>{item?.location || '-'}</p>
+                    </div>
+
+                    <div>
+                      <p>Dimension:</p>
+                      <p>{`${item?.dimensions?.[0]?.height}x${item?.dimensions?.[0]?.width}`}</p>
+                    </div>
+                    <div>
+                      <p>Area:</p>
+                      <p>{item?.areaInSqFt}</p>
+                    </div>
+                    <div>
+                      <p>Total Display Cost/Month:</p>
+                      <p>{toIndianCurrency(item?.totalDisplayCost)}</p>
+                    </div>
+                    <div>
+                      <p>Printing Cost:</p>
+                      <p>{toIndianCurrency(item?.totalPrintingCost)}</p>
+                    </div>
+                    <div>
+                      <p>Mounting Cost:</p>
+                      <p>{toIndianCurrency(item?.totalMountingCost)}</p>
+                    </div>
+                  </Group>
                 ))}
             <div className="flex justify-end">
               <p className="text-lg font-bold">Amount:</p>
