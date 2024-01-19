@@ -48,6 +48,11 @@ const Invoice = ({
     setAddSpaceItem(addSpaceItem?.filter(item => item.itemId !== spaceId));
   };
 
+  const memoizedTotalPrice = useMemo(
+    () => Number((totalPrice + totalPrice * 0.18).toFixed(2)),
+    [totalPrice],
+  );
+
   const COLUMNS = useMemo(
     () => [
       {
@@ -251,7 +256,7 @@ const Invoice = ({
           row: {
             original: { rate },
           },
-        }) => useMemo(() => <p>{rate ? toIndianCurrency(Number.parseInt(rate, 10)) : 0}</p>, []),
+        }) => useMemo(() => <p>{rate ? toIndianCurrency(rate) : 0}</p>, []),
       },
       {
         Header: 'TOTAL AMOUNT',
@@ -261,7 +266,7 @@ const Invoice = ({
           row: {
             original: { price },
           },
-        }) => useMemo(() => <p>{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>, []),
+        }) => useMemo(() => <p>{price ? toIndianCurrency(price, 10) : 0}</p>, []),
       },
       {
         Header: 'ACTION',
@@ -575,9 +580,7 @@ const Invoice = ({
               </div>
               <div className="flex justify-end">
                 <p className="text-lg font-bold">Total:</p>
-                <p className="text-lg ml-2">
-                  {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
-                </p>
+                <p className="text-lg ml-2">{toIndianCurrency(memoizedTotalPrice) || 0}</p>
               </div>
             </div>
           </>
@@ -593,7 +596,7 @@ const Invoice = ({
           label="Amount Chargeable (in words)"
           name="amountChargeable"
           placeholder="Write..."
-          value={toWords.convert(Math.round(totalPrice + totalPrice * 0.18))}
+          value={toWords.convert(memoizedTotalPrice)}
           readOnly
           disabled
         />
