@@ -270,6 +270,7 @@ const initialReleaseValues = {
   printingSqftCost: 0,
   mountingSqftCost: 0,
   mountingGstPercentage: 0,
+  printingGstPercentage: 0,
   forMonths: 3,
 };
 
@@ -482,7 +483,7 @@ const CreateFinancePage = () => {
     const initialPrice = 0;
     if (addSpaceItem.length) {
       return addSpaceItem
-        .map(item => (item?.price ? Number(item.price) : 0))
+        .map(item => (item?.displayCost ? Number(item.displayCost) : 0))
         .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
     }
     return initialPrice;
@@ -516,6 +517,8 @@ const CreateFinancePage = () => {
             type={type}
             mountingSqftCost={form.values.mountingSqftCost}
             printingSqftCost={form.values.printingSqftCost}
+            mountingGstPercentage={form.values.mountingGstPercentage}
+            printingGstPercentage={form.values.printingGstPercentage}
           />
         ),
       },
@@ -573,14 +576,24 @@ const CreateFinancePage = () => {
         }
       } else {
         data.spaces = addSpaceItem?.map((item, index) => ({
+          index,
           name: item.name,
           location: item.location,
-          titleDate: item.titleDate,
-          dueOn: item.dueOn,
-          quantity: item.quantity,
-          rate: item.rate,
-          price: item.price,
-          index,
+          hsn: item.hsn,
+          descriptionOfGoodsAndServices: item.name,
+          startDate: item.startDate, //
+          endDate: item.endDate, //
+          category: item.category.value,
+          dimensions: item.size.map(size => `${size.height}x${size.width}`),
+          unit: item.unit,
+          facing: item.facing.value,
+          city: item.city,
+          state: item.state,
+          areaInSqFt: item.area,
+          totalDisplayCost: item.displayCost,
+          totalPrintingCost: item.printingCost,
+          totalMountingCost: item.mountingCost,
+          price: item.displayCost,
         }));
 
         if (!data.spaces.length) {
@@ -663,17 +676,24 @@ const CreateFinancePage = () => {
         }
       } else {
         data.spaces = addSpaceItem?.map((item, index) => ({
-          location: item.location,
-          area: item.area,
-          city: item.city,
-          displayCost: item.displayCost,
-          height: item.height,
-          media: item.media,
-          mountingCost: item.mountingCost,
-          printingCost: item.printingCost,
-          width: item.width,
           index,
-          size: item.size,
+          name: item.name,
+          location: item.location,
+          hsn: item.hsn,
+          descriptionOfGoodsAndServices: item.name,
+          startDate: item.startDate, //
+          endDate: item.endDate, //
+          category: item.category.value,
+          dimensions: item.size.map(size => `${size.height}x${size.width}`),
+          unit: item.unit,
+          facing: item.facing.value,
+          city: item.city,
+          state: item.state,
+          areaInSqFt: item.area,
+          totalDisplayCost: item.displayCost,
+          totalPrintingCost: item.printingCost,
+          totalMountingCost: item.mountingCost,
+          price: item.displayCost,
         }));
 
         if (!data.spaces.length) {
@@ -686,19 +706,6 @@ const CreateFinancePage = () => {
           open();
           setPreviewData({ ...data, ...updatedForm });
         } else if (submitType === 'save') {
-          data.spaces = addSpaceItem?.map((item, index) => ({
-            location: item.location,
-            area: item.area,
-            city: item.city,
-            displayCost: item.displayCost,
-            height: item.size?.[0]?.height,
-            media: item.media,
-            mountingCost: item.mountingCost,
-            printingCost: item.printingCost,
-            width: item.size?.[0]?.width,
-            index,
-          }));
-
           const finalData = { ...data, ...updatedForm };
           if (finalData.mountingGst === 0 || finalData.mountingGst === 18) {
             delete finalData.mountingGst;
@@ -764,15 +771,24 @@ const CreateFinancePage = () => {
         }
       } else {
         data.spaces = addSpaceItem?.map((item, index) => ({
+          index,
           name: item.name,
           location: item.location,
-          titleDate: item.titleDate,
-          dueOn: item.dueOn,
-          quantity: item.quantity,
-          rate: item.rate,
-          price: item.price,
-          index,
-          hsn: item?.hsn ? item.hsn.toString() : '',
+          hsn: item.hsn.toString(),
+          descriptionOfGoodsAndServices: item.name,
+          startDate: item.startDate, //
+          endDate: item.endDate, //
+          category: item.category.value,
+          dimensions: item.size.map(size => `${size.height}x${size.width}`),
+          unit: item.unit.toString(),
+          facing: item.facing.value.toString(),
+          city: item.city,
+          state: item.state,
+          areaInSqFt: item.area,
+          totalDisplayCost: item.displayCost,
+          totalPrintingCost: item.printingCost,
+          totalMountingCost: item.mountingCost,
+          price: item.displayCost,
         }));
 
         if (!data.spaces.length) {
@@ -786,6 +802,8 @@ const CreateFinancePage = () => {
         data.total = data.subTotal + data.gst;
         data.taxInWords = toWords.convert(data.gst);
         data.totalInWords = toWords.convert(data.total);
+        data.printingCostPerSqft = data.printingSqftCost;
+        data.mountingCostPerSqft = data.mountingSqftCost;
         if (submitType === 'preview') {
           open();
           setPreviewData(data);
@@ -887,12 +905,18 @@ const CreateFinancePage = () => {
             }
             onClickAddItems={data => {
               if (
-                type === 'release' &&
-                (form.values.printingSqftCost === 0 || form.values.printingSqftCost === 0)
+                !form.values.printingSqftCost ||
+                !form.values.mountingSqftCost ||
+                !form.values.printingGstPercentage ||
+                !form.values.mountingGstPercentage ||
+                form.values.printingSqftCost === 0 ||
+                form.values.mountingSqftCost === 0 ||
+                form.values.printingGstPercentage === 0 ||
+                form.values.mountingGstPercentage === 0
               ) {
                 showNotification({
                   title:
-                    'Please select printing ft² cost and mounting ft² cost before adding items',
+                    'Please select printing ft² cost, printing gst %, mounting ft² and mounting gst % cost before adding items',
                   color: 'blue',
                 });
                 return;
