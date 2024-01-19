@@ -890,6 +890,7 @@ const ManualEntryContent = ({
 }) => {
   const form = useForm({ validate: yupResolver(schema[type]), initialValues: initialValues[type] });
   const ManualEntries = contents[type] ?? <div />;
+
   const onSubmit = async formData => {
     if (item) {
       const tempArr = [...addSpaceItem];
@@ -901,6 +902,10 @@ const ManualEntryContent = ({
       });
       setAddSpaceItem(res);
       onClose();
+      showNotification({
+        title: 'Item updated successfully',
+        color: 'green',
+      });
       return;
     }
     setAddSpaceItem(prevState => [...prevState, { ...formData, itemId: uuidv4() }]);
@@ -935,6 +940,9 @@ const ManualEntryContent = ({
         })),
         unit: item?.unit,
         facing: { label: item?.facing?.label, value: item?.facing?.value },
+        displayCostDiscount: item.displayCostDiscount,
+        mountingCostDiscount: item.mountingCostDiscount,
+        printingCostDiscount: item.printingCostDiscount,
       });
     }
   }, [item]);

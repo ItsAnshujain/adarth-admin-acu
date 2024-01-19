@@ -41,7 +41,6 @@ const ReleaseOrder = ({
   const handleDeleteSpaceItem = spaceId => {
     setAddSpaceItem(addSpaceItem?.filter(item => item.itemId !== spaceId));
   };
-
   const COLUMNS = useMemo(
     () => [
       {
@@ -203,6 +202,7 @@ const ReleaseOrder = ({
             () => (
               <Text
                 className="overflow-hidden text-ellipsis max-w-[180px]"
+                original
                 lineClamp={1}
                 title={media}
               >
@@ -295,6 +295,9 @@ const ReleaseOrder = ({
               size,
               unit,
               facing,
+              displayCostDiscount,
+              mountingCostDiscount,
+              printingCostDiscount,
             },
           },
         }) =>
@@ -311,7 +314,7 @@ const ReleaseOrder = ({
                   <Menu.Item
                     className="cursor-pointer flex items-center gap-1"
                     icon={<Edit2 className="h-4" />}
-                    onClick={() =>
+                    onClick={() => {
                       onClickAddItems({
                         area,
                         city,
@@ -324,8 +327,11 @@ const ReleaseOrder = ({
                         size,
                         unit,
                         facing,
-                      })
-                    }
+                        displayCostDiscount,
+                        mountingCostDiscount,
+                        printingCostDiscount,
+                      });
+                    }}
                   >
                     <span className="ml-1">Edit</span>
                   </Menu.Item>
@@ -383,17 +389,16 @@ const ReleaseOrder = ({
       grandTotal: 0,
       grandTotalInWords: '',
     };
-
     if (addSpaceItem?.length) {
       addSpaceItem.forEach(item => {
         if (item?.displayCost) {
-          tempInitialTotal.initTotal.display += item.displayCost || 0;
+          tempInitialTotal.initTotal.display += item.displayCost - item.displayCostDiscount || 0;
         }
         if (item?.printingCost) {
-          tempInitialTotal.initTotal.printing += item.printingCost || 0;
+          tempInitialTotal.initTotal.printing += item.printingCost - item.printingCostDiscount || 0;
         }
         if (item?.mountingCost) {
-          tempInitialTotal.initTotal.mounting += item.mountingCost || 0;
+          tempInitialTotal.initTotal.mounting += item.mountingCost - item.mountingCostDiscount || 0;
         }
       });
     }
@@ -638,6 +643,7 @@ const ReleaseOrder = ({
               min={0}
               precision={2}
               max={calculatedData?.initTotal?.display}
+              value={calculatedData.discount.display}
             />
             <NumberInput
               styles={styles}
@@ -647,6 +653,7 @@ const ReleaseOrder = ({
               min={0}
               precision={2}
               max={calculatedData?.initTotal?.printing}
+              value={calculatedData.discount.printing}
             />
             <NumberInput
               styles={styles}
@@ -656,6 +663,7 @@ const ReleaseOrder = ({
               min={0}
               precision={2}
               max={calculatedData?.initTotal?.mounting}
+              value={calculatedData.discount.mounting}
             />
           </div>
         ) : null}
