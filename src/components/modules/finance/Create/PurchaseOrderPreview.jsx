@@ -1,11 +1,16 @@
 import { Group, Text } from '@mantine/core';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ToWords } from 'to-words';
 import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 
 const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, hasBookingId }) => {
   const toWords = new ToWords();
+
+  const memoizedTotalPrice = useMemo(
+    () => Number((totalPrice + totalPrice * 0.18).toFixed(2)),
+    [totalPrice],
+  );
 
   return (
     <div className="px-5">
@@ -154,7 +159,7 @@ const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, has
                       </div>
                       <div>
                         <p>Total Amount:</p>
-                        <p>{item?.price}</p>
+                        <p>{item?.price.toFixed(2)}</p>
                       </div>
                     </Group>
                   </div>
@@ -169,9 +174,7 @@ const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, has
             </div>
             <div className="flex justify-end">
               <p className="text-lg font-bold">Total:</p>
-              <p className="text-lg ml-2">
-                {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
-              </p>
+              <p className="text-lg ml-2">{toIndianCurrency(memoizedTotalPrice) || 0}</p>
             </div>
           </section>
         </article>
@@ -181,7 +184,7 @@ const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, has
             <div className="flex mb-1">
               <p className="text-lg font-bold">Amount Chargeable (in words):</p>
               <p className="text-lg ml-2">
-                {(totalPrice && toWords.convert(Math.round(totalPrice + totalPrice * 0.18))) || 0}
+                {(totalPrice && toWords.convert(memoizedTotalPrice)) || 0}
               </p>
             </div>
           </section>

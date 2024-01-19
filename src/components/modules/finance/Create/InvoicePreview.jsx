@@ -194,7 +194,7 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
                       </div>
                       <div>
                         <p>Total Amount:</p>
-                        <p>{item?.price}</p>
+                        <p>{item?.price.toFixed(2)}</p>
                       </div>
                     </Group>
                   </div>

@@ -241,6 +241,11 @@ const ReleaseOrder = ({
         Header: 'AREA',
         accessor: 'area',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { area },
+          },
+        }) => useMemo(() => <p>{area.toFixed(2)}</p>, []),
       },
       {
         Header: 'TOTAL DISPLAY COST/MONTH',
@@ -250,7 +255,7 @@ const ReleaseOrder = ({
           row: {
             original: { displayCost },
           },
-        }) => useMemo(() => <p>{displayCost}</p>, []),
+        }) => useMemo(() => <p>{displayCost.toFixed(2)}</p>, []),
       },
       {
         Header: 'PRINTING COST',
@@ -260,7 +265,7 @@ const ReleaseOrder = ({
           row: {
             original: { printingCost },
           },
-        }) => useMemo(() => <p>{printingCost}</p>, []),
+        }) => useMemo(() => <p>{printingCost.toFixed(2)}</p>, []),
       },
       {
         Header: 'MOUNTING COST',
@@ -270,7 +275,7 @@ const ReleaseOrder = ({
           row: {
             original: { mountingCost },
           },
-        }) => useMemo(() => <p>{mountingCost}</p>, []),
+        }) => useMemo(() => <p>{mountingCost.toFixed(2)}</p>, []),
       },
       {
         Header: 'ACTION',
@@ -440,10 +445,12 @@ const ReleaseOrder = ({
       tempInitialTotal.threeMonthTotal.display +
       tempInitialTotal.threeMonthTotal.printing +
       tempInitialTotal.threeMonthTotal.mounting;
-
     tempInitialTotal.grandTotalInWords = toWords.convert(
-      !Number.isNaN(tempInitialTotal.grandTotal) ? Math.round(tempInitialTotal.grandTotal) : 0,
+      !Number.isNaN(tempInitialTotal.grandTotal)
+        ? Number(tempInitialTotal.grandTotal.toFixed(2))
+        : 0,
     );
+
     return tempInitialTotal;
   }, [addSpaceItem, values.discount, values.forMonths]);
 
@@ -460,6 +467,11 @@ const ReleaseOrder = ({
       })),
     );
   }, [values.printingSqftCost, values.mountingSqftCost]);
+
+  const memoizedTotalPrice = useMemo(
+    () => Number((totalPrice + totalPrice * 0.18).toFixed(2)),
+    [totalPrice],
+  );
 
   return (
     <div>
@@ -599,6 +611,7 @@ const ReleaseOrder = ({
               withAsterisk
               placeholder="Write..."
               min={0}
+              precision={2}
             />
             <NumberInput
               styles={styles}
@@ -607,6 +620,7 @@ const ReleaseOrder = ({
               withAsterisk
               placeholder="Write..."
               min={0}
+              precision={2}
             />
             <NumberInput
               styles={styles}
@@ -614,6 +628,7 @@ const ReleaseOrder = ({
               name="mountingGstPercentage"
               placeholder="Write..."
               min={0}
+              precision={2}
               max={100}
             />
           </div>
@@ -626,6 +641,7 @@ const ReleaseOrder = ({
               name="discount.display"
               placeholder="Write..."
               min={0}
+              precision={2}
               max={calculatedData?.initTotal?.display}
               value={calculatedData.discount.display}
             />
@@ -635,6 +651,7 @@ const ReleaseOrder = ({
               name="discount.printing"
               placeholder="Write..."
               min={0}
+              precision={2}
               max={calculatedData?.initTotal?.printing}
               value={calculatedData.discount.printing}
             />
@@ -644,6 +661,7 @@ const ReleaseOrder = ({
               name="discount.mounting"
               placeholder="Write..."
               min={0}
+              precision={2}
               max={calculatedData?.initTotal?.mounting}
               value={calculatedData.discount.mounting}
             />
@@ -673,9 +691,7 @@ const ReleaseOrder = ({
                 </div>
                 <div className="flex justify-end">
                   <p className="text-lg font-bold">Total:</p>
-                  <p className="text-lg ml-2">
-                    {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
-                  </p>
+                  <p className="text-lg ml-2">{toIndianCurrency(memoizedTotalPrice) || 0}</p>
                 </div>
               </div>
             )}
@@ -694,7 +710,7 @@ const ReleaseOrder = ({
           placeholder="Write..."
           value={
             bookingIdFromFinance
-              ? toWords.convert(Math.round(totalPrice + totalPrice * 0.18))
+              ? toWords.convert(memoizedTotalPrice)
               : calculatedData?.grandTotalInWords
               ? calculatedData.grandTotalInWords
               : ''

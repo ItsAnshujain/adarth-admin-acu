@@ -389,6 +389,7 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
                   placeholder="Write..."
                   size="md"
                   className="mb-4"
+                  precision={2}
                 />
               </div>
               <div>
@@ -403,6 +404,7 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
                   placeholder="Write..."
                   size="md"
                   className="mb-4"
+                  precision={2}
                 />
               </div>
             </div>
@@ -453,6 +455,7 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
           hideControls
           readOnly
           disabled
+          precision={2}
         />
         <NumberInput
           label="Total Display Cost/Month"
@@ -463,6 +466,7 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
           size="md"
           className="mb-4"
           hideControls
+          precision={2}
         />
       </div>
       <div className="grid grid-cols-2 gap-x-4">
@@ -476,6 +480,7 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
           hideControls
           readOnly
           disabled
+          precision={2}
         />
         <NumberInput
           label="Mounting Cost"
@@ -487,6 +492,7 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
           hideControls
           readOnly
           disabled
+          precision={2}
         />
       </div>
       <div className="grid grid-cols-2 gap-x-4">
