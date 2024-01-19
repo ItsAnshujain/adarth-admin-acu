@@ -579,14 +579,13 @@ const CreateFinancePage = () => {
           index,
           name: item.name,
           location: item.location,
-          hsn: item.hsn,
           descriptionOfGoodsAndServices: item.name,
           startDate: item.startDate, //
           endDate: item.endDate, //
           category: item.category.value,
           dimensions: item.size.map(size => `${size.height}x${size.width}`),
-          unit: item.unit,
-          facing: item.facing.value,
+          unit: item.unit.toString(),
+          facing: item.facing.value.toString(),
           city: item.city,
           state: item.state,
           areaInSqFt: item.area,
@@ -606,6 +605,8 @@ const CreateFinancePage = () => {
         data.gst = +(data.subTotal * 0.18).toFixed(2);
         data.total = data.subTotal + data.gst;
         data.totalInWords = toWords.convert(data.total);
+        data.printingCostPerSqft = data.printingSqftCost;
+        data.mountingCostPerSqft = data.mountingSqftCost;
         if (submitType === 'preview') {
           open();
           setPreviewData(data);
