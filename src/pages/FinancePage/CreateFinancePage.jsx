@@ -583,9 +583,9 @@ const CreateFinancePage = () => {
           startDate: item.startDate, //
           endDate: item.endDate, //
           category: item.category.value,
-          dimensions: item.size.map(size => `${size.height}x${size.width}`),
-          unit: item.unit.toString(),
-          facing: item.facing.value.toString(),
+          dimensions: item.size,
+          unit: item.unit,
+          facing: item.facing.label,
           city: item.city,
           state: item.state,
           areaInSqFt: item.area,
@@ -680,20 +680,22 @@ const CreateFinancePage = () => {
           index,
           name: item.name,
           location: item.location,
-          hsn: item.hsn,
           descriptionOfGoodsAndServices: item.name,
           startDate: item.startDate, //
           endDate: item.endDate, //
           category: item.category.value,
-          dimensions: item.size.map(size => `${size.height}x${size.width}`),
+          dimensions: item.size,
           unit: item.unit,
-          facing: item.facing.value,
+          facing: item.facing.label,
           city: item.city,
           state: item.state,
           areaInSqFt: item.area,
-          totalDisplayCost: item.displayCost,
-          totalPrintingCost: item.printingCost,
-          totalMountingCost: item.mountingCost,
+          displayCost: item.displayCost,
+          printingCost: item.printingCost,
+          mountingCost: item.mountingCost,
+          totalDisplayCost: item.totalDisplayCost,
+          totalPrintingCost: item.totalPrintingCost,
+          totalMountingCost: item.totalMountingCost,
           price: item.displayCost,
         }));
 
@@ -703,10 +705,40 @@ const CreateFinancePage = () => {
           });
           return;
         }
+
+        data.subTotal = calculateManualTotalPrice;
+        data.gst = +(data.subTotal * 0.18).toFixed(2);
+        data.total = data.subTotal + data.gst;
+        data.taxInWords = toWords.convert(data.gst);
+        data.totalInWords = toWords.convert(data.total);
+        data.printingCostPerSqft = data.printingSqftCost;
+        data.mountingCostPerSqft = data.mountingSqftCost;
         if (submitType === 'preview') {
           open();
           setPreviewData({ ...data, ...updatedForm });
         } else if (submitType === 'save') {
+          data.spaces = addSpaceItem?.map((item, index) => ({
+            index,
+            name: item.name,
+            location: item.location,
+            descriptionOfGoodsAndServices: item.name,
+            startDate: item.startDate, //
+            endDate: item.endDate, //
+            category: item.category.value,
+            dimensions: item.size,
+            unit: item.unit,
+            facing: item.facing.label,
+            city: item.city,
+            state: item.state,
+            areaInSqFt: item.area,
+            displayCost: item.displayCost,
+            printingCost: item.printingCost,
+            mountingCost: item.mountingCost,
+            totalDisplayCost: item.totalDisplayCost,
+            totalPrintingCost: item.totalPrintingCost,
+            totalMountingCost: item.totalMountingCost,
+            price: item.displayCost,
+          }));
           const finalData = { ...data, ...updatedForm };
           if (finalData.mountingGst === 0 || finalData.mountingGst === 18) {
             delete finalData.mountingGst;
@@ -780,9 +812,9 @@ const CreateFinancePage = () => {
           startDate: item.startDate, //
           endDate: item.endDate, //
           category: item.category.value,
-          dimensions: item.size.map(size => `${size.height}x${size.width}`),
-          unit: item.unit.toString(),
-          facing: item.facing.value.toString(),
+          dimensions: item.size,
+          unit: item.unit,
+          facing: item.facing.label,
           city: item.city,
           state: item.state,
           areaInSqFt: item.area,

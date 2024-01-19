@@ -13,6 +13,8 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
     [totalPrice],
   );
 
+  console.log(previewData);
+
   return (
     <div className="px-5">
       <div className="max-h-[500px] overflow-y-auto">
@@ -131,24 +133,15 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                           {item?.location}
                         </Text>
                       </div>
-                      <div>
-                        <p>Media:</p>
-                        <Text
-                          className="overflow-hidden text-ellipsis max-w-[180px]"
-                          lineClamp={1}
-                          title={item?.media}
-                        >
-                          {item?.media}
-                        </Text>
-                      </div>
+
                       <div>
                         <p>
                           Dimensions <span className="text-sm">(WxH)</span>:
                         </p>
                         <div className="flex gap-x-2">
-                          {item?.size?.length ? (
+                          {item?.dimensions?.length ? (
                             <p>
-                              {item.size
+                              {item.dimensions
                                 .map((ele, idx) =>
                                   idx < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
                                 )
@@ -162,19 +155,19 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                       </div>
                       <div>
                         <p>Area:</p>
-                        <Text>{item?.area.toFixed(2)}</Text>
+                        <Text>{item?.areaInSqFt.toFixed(2)}</Text>
                       </div>
                       <div>
                         <p>Display Cost:</p>
-                        <Text>{item?.displayCost.toFixed(2)}</Text>
+                        <Text>{item?.totalDisplayCost.toFixed(2)}</Text>
                       </div>
                       <div>
                         <p>Printing Cost:</p>
-                        <Text>{item?.printingCost.toFixed(2)}</Text>
+                        <Text>{item?.totalPrintingCost.toFixed(2)}</Text>
                       </div>
                       <div>
                         <p>Mounting Cost:</p>
-                        <Text>{item?.mountingCost.toFixed(2)}</Text>
+                        <Text>{item?.totalMountingCost.toFixed(2)}</Text>
                       </div>
                     </Group>
                   </div>
