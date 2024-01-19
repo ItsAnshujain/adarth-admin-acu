@@ -226,7 +226,7 @@ const Invoice = ({
           row: {
             original: { area },
           },
-        }) => useMemo(() => <p>{area || '-'}</p>, []),
+        }) => useMemo(() => <p>{area.toFixed(2) || '-'}</p>, []),
       },
       {
         Header: 'TOTAL DISPLAY COST/MONTH',
@@ -236,7 +236,7 @@ const Invoice = ({
           row: {
             original: { displayCost },
           },
-        }) => useMemo(() => <p>{displayCost || '-'}</p>, []),
+        }) => useMemo(() => <p>{displayCost.toFixed(2) || '-'}</p>, []),
       },
       {
         Header: 'PRINTING COST',
@@ -246,7 +246,7 @@ const Invoice = ({
           row: {
             original: { printingCost },
           },
-        }) => useMemo(() => <p>{printingCost || '-'}</p>, []),
+        }) => useMemo(() => <p>{printingCost.toFixed(2) || '-'}</p>, []),
       },
       {
         Header: 'MOUNTING COST',
@@ -256,7 +256,7 @@ const Invoice = ({
           row: {
             original: { mountingCost },
           },
-        }) => useMemo(() => <p>{mountingCost || '-'}</p>, []),
+        }) => useMemo(() => <p>{mountingCost.toFixed(2) || '-'}</p>, []),
       },
       {
         Header: 'ACTION',
