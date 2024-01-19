@@ -333,8 +333,10 @@ const PurchaseAndInvoiceContent = ({
 
     setValues({
       ...values,
-      printingCost: totalPrintingCostWithGst,
-      mountingCost: totalMountingCostWithGst,
+      printingCost: totalPrintingCost,
+      mountingCost: totalMountingCost,
+      totalPrintingCost: totalPrintingCostWithGst,
+      totalMountingCost: totalMountingCostWithGst,
       displayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
     });
   }, [values.area, mountingSqftCost, printingSqftCost]);
@@ -587,7 +589,12 @@ const PurchaseAndInvoiceContent = ({
   );
 };
 
-const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
+const ReleaseContent = ({
+  mountingSqftCost,
+  printingSqftCost,
+  mountingCostGst,
+  printingCostGst,
+}) => {
   const { errors, values, setFieldValue, setValues, insertListItem, removeListItem } =
     useFormContext();
   const {
@@ -629,11 +636,21 @@ const ReleaseContent = ({ mountingSqftCost, printingSqftCost }) => {
   }, [categoryData, isCategoryLoaded]);
 
   useEffect(() => {
+    const totalPrintingCost = printingSqftCost * values.area;
+    const totalMountingCost = mountingSqftCost * values.area;
+    const totalPrintingCostWithGst =
+      totalPrintingCost + (totalPrintingCost * printingCostGst) / 100;
+    const totalMountingCostWithGst =
+      totalPrintingCost + (totalMountingCost * mountingCostGst) / 100;
+
     setValues({
       ...values,
-      printingCost: printingSqftCost * values.area,
-      mountingCost: mountingSqftCost * values.area,
-      displayCost: printingSqftCost * values.area + mountingSqftCost * values.area,
+      printingCost: totalPrintingCost,
+      mountingCost: totalMountingCost,
+      totalPrintingCost: totalPrintingCostWithGst,
+      totalMountingCost: totalMountingCostWithGst,
+      displayCost: totalPrintingCost + totalMountingCost,
+      totalDisplayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
     });
   }, [values.area, mountingSqftCost, printingSqftCost]);
 

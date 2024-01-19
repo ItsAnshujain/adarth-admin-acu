@@ -13,6 +13,8 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
     [totalPrice],
   );
 
+  console.log(previewData);
+
   return (
     <div className="px-5">
       <div className="max-h-[500px] overflow-y-auto">
@@ -137,9 +139,9 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                           Dimensions <span className="text-sm">(WxH)</span>:
                         </p>
                         <div className="flex gap-x-2">
-                          {item?.size?.length ? (
+                          {item?.dimensions?.length ? (
                             <p>
-                              {item.size
+                              {item.dimensions
                                 .map((ele, idx) =>
                                   idx < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
                                 )
