@@ -1,8 +1,8 @@
 import { Button } from '@mantine/core';
 import React from 'react';
 
-const ConfirmContent = ({ onCancel, onConfirm, loading, description }) => (
-  <article>
+const ConfirmContent = ({ onCancel, onConfirm, loading, description, classNames }) => (
+  <article className={classNames}>
     {description || (
       <h3 className="mb-6 text-base text-primary">Are you sure you want to delete?</h3>
     )}

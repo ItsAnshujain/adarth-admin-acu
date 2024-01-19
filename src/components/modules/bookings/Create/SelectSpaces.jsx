@@ -325,18 +325,17 @@ const SelectSpace = () => {
             const unitLeft = getAvailableUnits(bookingRange, startDate, endDate, originalUnit);
             const data = watchPlace ? watchPlace.find(item => item._id === _id) : {};
             const isExceeded =
-              data?.unit > (bookingId ? unitLeft + (data?.initialUnit || 0) : data?.availableUnit);
-
+              data?.unit > (bookingId ? unitLeft + (data?.initialUnit || 0) : unitLeft);
             return (
               <Tooltip
                 label={
-                  data?.hasChangedUnit && isExceeded
+                  isExceeded
                     ? 'Exceeded maximum units available for selected date range'
                     : !unit
                     ? 'Field cannot be empty'
                     : null
                 }
-                opened={(data?.hasChangedUnit && isExceeded) || !unit}
+                opened={isExceeded || !unit}
                 transition="slide-left"
                 position="right"
                 color="red"
@@ -351,7 +350,7 @@ const SelectSpace = () => {
                   onChange={e => updateData('unit', e, _id, `unit-${_id}`)}
                   className="w-[100px]"
                   disabled={isDisabled}
-                  error={(data?.hasChangedUnit && isExceeded) || !unit}
+                  error={isExceeded || !unit}
                 />
               </Tooltip>
             );

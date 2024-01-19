@@ -97,7 +97,7 @@ const ROCalculatedTable = ({ calculatedData, isEditable = true }) => {
         {calculatedData?.mountingGstPercentage && calculatedData.mountingGstPercentage !== 18 ? (
           <section className="bg-gray-100 grid grid-cols-4 mb-2 border border-gray-200 py-1">
             <p className="text-center font-medium">
-              Manual GST {calculatedData.mountingGstPercentage}%:{' '}
+              Mounting GST {calculatedData.mountingGstPercentage}%:{' '}
             </p>
             <p className="bg-gray-100 text-center border-x-2 border-gray-200">-</p>
             <p className="bg-gray-100 text-center border-r-2 border-gray-200">-</p>
