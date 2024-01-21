@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import { useModals } from '@mantine/modals';
 import shallow from 'zustand/shallow';
 import { useFormContext } from 'react-hook-form';
+import { showNotification } from '@mantine/notifications';
 import Search from '../../../Search';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
@@ -241,6 +242,21 @@ const SelectSpace = () => {
     [updateData],
   );
 
+  const onClickAddPrice = () => {
+    if (!watchPlace?.length) {
+      showNotification({
+        title: 'Please select atleast one place to add price',
+        color: 'blue',
+      });
+    } else if (watchPlace.some(item => !(item.startDate || item.endDate))) {
+      showNotification({
+        title: 'Please select the occupancy date to add price',
+        color: 'blue',
+      });
+    } else {
+      drawerActions.open();
+    }
+  };
   const COLUMNS = useMemo(
     () => [
       {
@@ -386,12 +402,18 @@ const SelectSpace = () => {
       },
       {
         Header: 'PRICE',
-        Cell: () =>
-          useMemo(() => (
-            <Button onClick={drawerActions.open} className="bg-purple-450 order-3" size="xs">
-              Add Price
-            </Button>
-          )),
+        Cell: info =>
+          useMemo(() =>
+            info.row.original.priceChanged ? (
+              <Button onClick={onClickAddPrice} className="bg-purple-450 order-3" size="xs">
+                Edit Price
+              </Button>
+            ) : (
+              <Button onClick={onClickAddPrice} className="bg-purple-450 order-3" size="xs">
+                Add Price
+              </Button>
+            ),
+          ),
       },
       {
         Header: 'TOTAL PRICE',
@@ -446,7 +468,7 @@ const SelectSpace = () => {
           ),
       },
     ],
-    [updatedInventoryData, watchPlace.length],
+    [updatedInventoryData, watchPlace],
   );
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -604,7 +626,11 @@ const SelectSpace = () => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
       ) : null}
-      <AddEditPriceDrawer isOpened={drawerOpened} onClose={drawerActions.close} />
+      <AddEditPriceDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        selectedInventories={watchPlace}
+      />
     </>
   );
 };

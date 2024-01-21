@@ -4,7 +4,7 @@ import { ChevronDown } from 'react-feather';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
@@ -31,6 +31,7 @@ import RowsPerPage from '../../RowsPerPage';
 import modalConfig from '../../../utils/modalConfig';
 import useLayoutView from '../../../store/layout.store';
 import SpaceNamePhotoContent from '../inventory/SpaceNamePhotoContent';
+import AddEditPriceDrawer from '../bookings/Create/AddEditPriceDrawer';
 
 dayjs.extend(isBetween);
 
@@ -48,6 +49,7 @@ const Spaces = () => {
   const modals = useModals();
   const { id: proposalId } = useParams();
   const { values, setFieldValue } = useFormContext();
+  const [drawerOpened, drawerActions] = useDisclosure();
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
       activeLayout: state.activeLayout,
@@ -287,6 +289,15 @@ const Spaces = () => {
             original: { dimension },
           },
         }) => useMemo(() => <div className="flex gap-x-2">{dimension}</div>, []),
+      },
+      {
+        Header: 'PRICE',
+        Cell: () =>
+          useMemo(() => (
+            <Button onClick={drawerActions.open} className="bg-purple-450 order-3" size="xs">
+              Add Price
+            </Button>
+          )),
       },
       {
         Header: 'PRICING',
@@ -538,9 +549,12 @@ const Spaces = () => {
             Select Place for Proposal
           </Text>
           <div className="flex items-center gap-2">
-            <div className="mr-2">
+            <div className="flex items-center">
+              <Button className="bg-black mr-1" onClick={drawerActions.open}>
+                Add Price
+              </Button>
               <Button onClick={toggleFilter} variant="default">
-                <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
+                <ChevronDown size={16} className="mr-1" /> Filter
               </Button>
               {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
             </div>
@@ -600,6 +614,7 @@ const Spaces = () => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
       ) : null}
+      <AddEditPriceDrawer isOpened={drawerOpened} onClose={drawerActions.close} />
     </>
   );
 };
