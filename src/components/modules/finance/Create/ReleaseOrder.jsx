@@ -651,7 +651,7 @@ const ReleaseOrder = ({
             />
           </div>
         ) : null}
-        {!bookingIdFromFinance && addSpaceItem?.length ? (
+        {!bookingIdFromFinance ? (
           <div className="grid grid-cols-3 gap-4 mb-4">
             <NumberInput
               styles={styles}

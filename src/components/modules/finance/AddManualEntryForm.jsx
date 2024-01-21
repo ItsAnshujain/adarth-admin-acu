@@ -540,7 +540,7 @@ const PurchaseAndInvoiceContent = ({
       <div className="grid grid-cols-2  gap-4">
         <NumberInput
           label="Total Printing Cost"
-          name="printingCost"
+          name="totalPrintingCost"
           errors={errors}
           placeholder="Write..."
           size="md"
@@ -552,7 +552,7 @@ const PurchaseAndInvoiceContent = ({
         />
         <NumberInput
           label="Total Mounting Cost"
-          name="mountingCost"
+          name="totalMountingCost"
           errors={errors}
           placeholder="Write..."
           size="md"

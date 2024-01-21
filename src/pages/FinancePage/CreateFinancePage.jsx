@@ -938,14 +938,10 @@ const CreateFinancePage = () => {
             }
             onClickAddItems={data => {
               if (
-                !form.values.printingSqftCost ||
-                !form.values.mountingSqftCost ||
-                !form.values.printingGstPercentage ||
-                !form.values.mountingGstPercentage ||
-                form.values.printingSqftCost === 0 ||
-                form.values.mountingSqftCost === 0 ||
-                form.values.printingGstPercentage === 0 ||
-                form.values.mountingGstPercentage === 0
+                (!form.values.printingSqftCost && form.values.printingSqftCost !== 0) ||
+                (!form.values.mountingSqftCost && form.values.mountingSqftCost !== 0) ||
+                (!form.values.printingGstPercentage && form.values.printingGstPercentage !== 0) ||
+                (!form.values.mountingGstPercentage && form.values.mountingGstPercentage !== 0)
               ) {
                 showNotification({
                   title:
