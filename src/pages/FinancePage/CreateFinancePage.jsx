@@ -482,8 +482,9 @@ const CreateFinancePage = () => {
   const calculateManualTotalPrice = useMemo(() => {
     const initialPrice = 0;
     if (addSpaceItem.length) {
+      console.log(addSpaceItem);
       return addSpaceItem
-        .map(item => (item?.displayCost ? Number(item.displayCost) : 0))
+        .map(item => (item?.totalDisplayCost ? Number(item.totalDisplayCost) : 0))
         .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
     }
     return initialPrice;
@@ -818,10 +819,10 @@ const CreateFinancePage = () => {
           city: item.city,
           state: item.state,
           areaInSqFt: item.area,
-          totalDisplayCost: item.displayCost,
+          totalDisplayCost: item.totalDisplayCost,
           totalPrintingCost: item.printingCost,
           totalMountingCost: item.mountingCost,
-          price: item.displayCost,
+          price: item.totalDisplayCost / item.unit,
         }));
 
         if (!data.spaces.length) {

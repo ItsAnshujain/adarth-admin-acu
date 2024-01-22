@@ -324,13 +324,32 @@ const PurchaseAndInvoiceContent = ({
     return [];
   }, [categoryData, isCategoryLoaded]);
 
+  const calculateTotalMonths = (startDate, endDate) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const yearDiff = end.getFullYear() - start.getFullYear();
+    const monthDiff = end.getMonth() - start.getMonth();
+    const dayDiff = end.getDate() - start.getDate() + 1;
+
+    const totalMonths = yearDiff * 12 + monthDiff;
+
+    const fractionOfMonth = dayDiff / new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate();
+
+    return totalMonths + fractionOfMonth;
+  };
+  const totalMonths = useMemo(
+    () => calculateTotalMonths(values.startDate, values.endDate),
+    [values.startDate, values.endDate],
+  );
+
   useEffect(() => {
     const totalPrintingCost = printingSqftCost * values.area;
     const totalMountingCost = mountingSqftCost * values.area;
     const totalPrintingCostWithGst =
-      totalPrintingCost + (totalPrintingCost * printingCostGst) / 100;
+      totalPrintingCost + totalPrintingCost * (printingCostGst / 100);
     const totalMountingCostWithGst =
-      totalPrintingCost + (totalMountingCost * mountingCostGst) / 100;
+      totalPrintingCost + totalMountingCost * (mountingCostGst / 100);
 
     setValues({
       ...values,
@@ -338,7 +357,8 @@ const PurchaseAndInvoiceContent = ({
       mountingCost: totalMountingCost,
       totalPrintingCost: totalPrintingCostWithGst,
       totalMountingCost: totalMountingCostWithGst,
-      displayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
+      displayCost: (totalPrintingCost + totalMountingCost) / totalMonths,
+      totalDisplayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
     });
   }, [values.area, mountingSqftCost, printingSqftCost]);
 
@@ -914,7 +934,10 @@ const ManualEntryContent = ({
       const tempArr = [...addSpaceItem];
       const res = tempArr.map(ele => {
         if (ele.itemId === item.itemId) {
-          return { ...formData, itemId: item.itemId };
+          return {
+            ...formData,
+            itemId: item.itemId,
+          };
         }
         return ele;
       });
