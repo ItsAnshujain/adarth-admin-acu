@@ -393,7 +393,8 @@ const ReleaseOrder = ({
     if (addSpaceItem?.length) {
       addSpaceItem.forEach(item => {
         if (item?.displayCost) {
-          tempInitialTotal.initTotal.display += item.displayCost - item.displayCostDiscount || 0;
+          tempInitialTotal.initTotal.display +=
+            item.totalDisplayCost - item.displayCostDiscount || 0;
         }
         if (item?.printingCost) {
           tempInitialTotal.initTotal.printing += item.printingCost - item.printingCostDiscount || 0;
@@ -614,7 +615,7 @@ const ReleaseOrder = ({
           <div className="grid grid-cols-4 gap-4 mb-4">
             <NumberInput
               styles={styles}
-              label="Printing ft&sup2; Cost"
+              label="Printing/ ft&sup2; Cost"
               name="printingSqftCost"
               withAsterisk
               placeholder="Write..."
@@ -633,7 +634,7 @@ const ReleaseOrder = ({
             />
             <NumberInput
               styles={styles}
-              label="Mounting ft&sup2; Cost"
+              label="Mounting/ ft&sup2; Cost"
               name="mountingSqftCost"
               withAsterisk
               placeholder="Write..."

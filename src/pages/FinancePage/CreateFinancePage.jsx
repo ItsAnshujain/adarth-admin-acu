@@ -482,7 +482,6 @@ const CreateFinancePage = () => {
   const calculateManualTotalPrice = useMemo(() => {
     const initialPrice = 0;
     if (addSpaceItem.length) {
-      console.log(addSpaceItem);
       return addSpaceItem
         .map(item => (item?.totalDisplayCost ? Number(item.totalDisplayCost) : 0))
         .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
@@ -590,10 +589,11 @@ const CreateFinancePage = () => {
           city: item.city,
           state: item.state,
           areaInSqFt: item.area,
-          totalDisplayCost: item.displayCost,
+          displayCost: item.displayCost,
+          totalDisplayCost: item.totalDisplayCost,
           totalPrintingCost: item.printingCost,
           totalMountingCost: item.mountingCost,
-          price: item.displayCost,
+          price: item.totalDisplayCost / item.unit,
         }));
 
         if (!data.spaces.length) {
@@ -697,7 +697,7 @@ const CreateFinancePage = () => {
           totalDisplayCost: item.totalDisplayCost,
           totalPrintingCost: item.totalPrintingCost,
           totalMountingCost: item.totalMountingCost,
-          price: item.displayCost,
+          price: item.totalDisplayCost / item.unit,
         }));
 
         if (!data.spaces.length) {
@@ -738,7 +738,7 @@ const CreateFinancePage = () => {
             totalDisplayCost: item.totalDisplayCost,
             totalPrintingCost: item.totalPrintingCost,
             totalMountingCost: item.totalMountingCost,
-            price: item.displayCost,
+            price: item.totalDisplayCost / item.unit,
           }));
           const finalData = { ...data, ...updatedForm };
           if (finalData.mountingGst === 0 || finalData.mountingGst === 18) {
@@ -946,7 +946,7 @@ const CreateFinancePage = () => {
               ) {
                 showNotification({
                   title:
-                    'Please select printing ft² cost, printing gst %, mounting ft² and mounting gst % cost before adding items',
+                    'Please select printing/ ft² cost, printing gst %, mounting/ ft² and mounting gst % cost before adding items',
                   color: 'blue',
                 });
                 return;

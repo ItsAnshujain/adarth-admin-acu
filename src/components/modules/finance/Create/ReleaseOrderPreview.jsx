@@ -13,8 +13,6 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
     [totalPrice],
   );
 
-  console.log(previewData);
-
   return (
     <div className="px-5">
       <div className="max-h-[500px] overflow-y-auto">
@@ -112,7 +110,7 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
               : previewData?.spaces?.map((item, index) => (
                   <div className="flex justify-between items-center" key={uuidv4()}>
                     <p className="text-lg mr-2">{index + 1}</p>
-                    <Group className="grid grid-cols-8 gap-2">
+                    <Group className="grid grid-cols-7 gap-2">
                       <div>
                         <p>City:</p>
                         <Text

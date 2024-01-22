@@ -585,7 +585,7 @@ const Invoice = ({
           <div className="grid grid-cols-4 gap-4 mb-4">
             <NumberInput
               styles={styles}
-              label="Printing ft&sup2; Cost"
+              label="Printing/ ft&sup2; Cost"
               name="printingSqftCost"
               withAsterisk
               placeholder="Write..."
@@ -604,7 +604,7 @@ const Invoice = ({
             />
             <NumberInput
               styles={styles}
-              label="Mounting ft&sup2; Cost"
+              label="Mounting/ ft&sup2; Cost"
               name="mountingSqftCost"
               withAsterisk
               placeholder="Write..."

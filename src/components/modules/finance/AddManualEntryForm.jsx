@@ -10,7 +10,7 @@ import TextInput from '../../shared/TextInput';
 import { FormProvider, useForm, useFormContext } from '../../../context/formContext';
 import TrashIcon from '../../../assets/trash.svg';
 import { useFetchMasters } from '../../../apis/queries/masters.queries';
-import { serialize } from '../../../utils';
+import { calculateTotalMonths, serialize } from '../../../utils';
 import Select from '../../shared/Select';
 import { FACING_VALUE_LIST } from '../../../utils/constants';
 import TextareaInput from '../../shared/TextareaInput';
@@ -324,20 +324,6 @@ const PurchaseAndInvoiceContent = ({
     return [];
   }, [categoryData, isCategoryLoaded]);
 
-  const calculateTotalMonths = (startDate, endDate) => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    const yearDiff = end.getFullYear() - start.getFullYear();
-    const monthDiff = end.getMonth() - start.getMonth();
-    const dayDiff = end.getDate() - start.getDate() + 1;
-
-    const totalMonths = yearDiff * 12 + monthDiff;
-
-    const fractionOfMonth = dayDiff / new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate();
-
-    return totalMonths + fractionOfMonth;
-  };
   const totalMonths = useMemo(
     () => calculateTotalMonths(values.startDate, values.endDate),
     [values.startDate, values.endDate],
@@ -656,6 +642,11 @@ const ReleaseContent = ({
     return [];
   }, [categoryData, isCategoryLoaded]);
 
+  const totalMonths = useMemo(
+    () => calculateTotalMonths(values.startDate, values.endDate),
+    [values.startDate, values.endDate],
+  );
+
   useEffect(() => {
     const totalPrintingCost = printingSqftCost * values.area;
     const totalMountingCost = mountingSqftCost * values.area;
@@ -670,7 +661,7 @@ const ReleaseContent = ({
       mountingCost: totalMountingCost,
       totalPrintingCost: totalPrintingCostWithGst,
       totalMountingCost: totalMountingCostWithGst,
-      displayCost: totalPrintingCost + totalMountingCost,
+      displayCost: (totalPrintingCost + totalMountingCost) / totalMonths,
       totalDisplayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
     });
   }, [values.area, mountingSqftCost, printingSqftCost]);
@@ -883,18 +874,52 @@ const ReleaseContent = ({
         />
       </div>
 
-      <NumberInput
-        label="Total Display Cost/Month"
-        name="displayCost"
-        errors={errors}
-        placeholder="Write..."
-        size="md"
-        className="mb-4"
-        hideControls
-        readOnly
-        disabled
-        precision={2}
-      />
+      <div className="grid grid-cols-2  gap-4">
+        <NumberInput
+          label="Total Display Cost/Month"
+          name="displayCost"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          readOnly
+          disabled
+          precision={2}
+        />
+        <NumberInput
+          label="Total Display Cost Discount"
+          name="displayCostDiscount"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          precision={2}
+        />
+      </div>
+      <div className="grid grid-cols-2  gap-4">
+        <NumberInput
+          label="Printing Cost/Month"
+          name="printingCostDiscount"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          precision={2}
+        />
+        <NumberInput
+          label="Mounting Cost Discount"
+          name="mountingCostDiscount"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          precision={2}
+        />
+      </div>
 
       <TextareaInput
         label="Description of Goods and Services"
