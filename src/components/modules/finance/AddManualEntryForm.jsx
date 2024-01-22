@@ -32,6 +32,7 @@ const initialPurchaseValues = {
   city: '',
   state: '',
   unit: 0,
+  displayCostPerMonth: 0,
   size: [
     {
       height: null,
@@ -91,12 +92,12 @@ const purchaseSchema = yup.object({
         .required('Width is required'),
     }),
   ),
-  displayCost: yup
+  displayCostPerMonth: yup
     .number()
     .positive('Must be a positive number')
     .typeError('Must be a number')
     .nullable()
-    .required('Display Cost is required'),
+    .required('Display Cost/Month is required'),
   printingCost: yup
     .number()
     .min(0, 'Must be greater than or equal to 0')
@@ -117,6 +118,7 @@ const initialReleaseValues = {
   city: '',
   state: '',
   unit: 0,
+  displayCostPerMonth: 0,
   size: [
     {
       height: null,
@@ -176,12 +178,12 @@ const releaseSchema = yup.object({
         .required('Width is required'),
     }),
   ),
-  displayCost: yup
+  displayCostPerMonth: yup
     .number()
     .positive('Must be a positive number')
     .typeError('Must be a number')
     .nullable()
-    .required('Display Cost is required'),
+    .required('Display Cost/ Month is required'),
   printingCost: yup
     .number()
     .min(0, 'Must be greater than or equal to 0')
@@ -202,6 +204,7 @@ const initialInvoiceValues = {
   city: '',
   state: '',
   unit: 0,
+  displayCostPerMonth: 0,
   size: [
     {
       height: null,
@@ -343,10 +346,11 @@ const PurchaseAndInvoiceContent = ({
       mountingCost: totalMountingCost,
       totalPrintingCost: totalPrintingCostWithGst,
       totalMountingCost: totalMountingCostWithGst,
-      displayCost: (totalPrintingCost + totalMountingCost) / totalMonths,
-      totalDisplayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
+      totalDisplayCost: values.displayCostPerMonth * totalMonths,
+      // displayCost: (totalPrintingCost + totalMountingCost) / totalMonths,
+      // totalDisplayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
     });
-  }, [values.area, mountingSqftCost, printingSqftCost]);
+  }, [values.area, mountingSqftCost, printingSqftCost, values.displayCostPerMonth]);
 
   const calculateHeightWidth = useMemo(() => {
     const total = values.size?.reduce((acc, item) => {
@@ -572,14 +576,12 @@ const PurchaseAndInvoiceContent = ({
 
       <NumberInput
         label="Total Display Cost/Month"
-        name="displayCost"
+        name="displayCostPerMonth"
         errors={errors}
         placeholder="Write..."
         size="md"
         className="mb-4"
         hideControls
-        readOnly
-        disabled
         precision={2}
       />
 
@@ -661,10 +663,9 @@ const ReleaseContent = ({
       mountingCost: totalMountingCost,
       totalPrintingCost: totalPrintingCostWithGst,
       totalMountingCost: totalMountingCostWithGst,
-      displayCost: (totalPrintingCost + totalMountingCost) / totalMonths,
-      totalDisplayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
+      totalDisplayCost: values.displayCostPerMonth * totalMonths,
     });
-  }, [values.area, mountingSqftCost, printingSqftCost]);
+  }, [values.area, mountingSqftCost, printingSqftCost, values.displayCostPerMonth]);
 
   const calculateHeightWidth = useMemo(() => {
     const total = values.size?.reduce((acc, item) => {
@@ -877,14 +878,12 @@ const ReleaseContent = ({
       <div className="grid grid-cols-2  gap-4">
         <NumberInput
           label="Total Display Cost/Month"
-          name="displayCost"
+          name="displayCostPerMonth"
           errors={errors}
           placeholder="Write..."
           size="md"
           className="mb-4"
           hideControls
-          readOnly
-          disabled
           precision={2}
         />
         <NumberInput
@@ -900,7 +899,7 @@ const ReleaseContent = ({
       </div>
       <div className="grid grid-cols-2  gap-4">
         <NumberInput
-          label="Printing Cost/Month"
+          label="Printing Cost Discount"
           name="printingCostDiscount"
           errors={errors}
           placeholder="Write..."
@@ -990,7 +989,7 @@ const ManualEntryContent = ({
         price: item?.price,
         area: item?.area,
         city: item?.city,
-        displayCost: item?.displayCost,
+        displayCostPerMonth: item?.displayCostPerMonth,
         height: item?.height,
         itemId: item?.itemId,
         media: item?.media,

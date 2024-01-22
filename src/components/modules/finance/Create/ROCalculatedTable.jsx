@@ -8,7 +8,7 @@ import NumberInput from '../../../shared/NumberInput';
 const ROCalculatedTable = ({ calculatedData, isEditable = true }) => {
   const [isMonth, setIsMonth] = useState(false);
   const { values } = useFormContext();
-
+  console.log(calculatedData);
   return (
     <Group position="right" className="mt-2">
       <article className="w-[700px]">

@@ -253,9 +253,9 @@ const ReleaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { displayCost },
+            original: { displayCostPerMonth },
           },
-        }) => useMemo(() => <p>{displayCost.toFixed(2)}</p>, []),
+        }) => useMemo(() => <p>{displayCostPerMonth.toFixed(2)}</p>, []),
       },
       {
         Header: 'PRINTING COST',
@@ -392,7 +392,7 @@ const ReleaseOrder = ({
     };
     if (addSpaceItem?.length) {
       addSpaceItem.forEach(item => {
-        if (item?.displayCost) {
+        if (item?.totalDisplayCost) {
           tempInitialTotal.initTotal.display +=
             item.totalDisplayCost - item.displayCostDiscount || 0;
         }

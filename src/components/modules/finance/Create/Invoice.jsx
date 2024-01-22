@@ -234,9 +234,9 @@ const Invoice = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { displayCost },
+            original: { displayCostPerMonth },
           },
-        }) => useMemo(() => <p>{displayCost.toFixed(2) || '-'}</p>, []),
+        }) => useMemo(() => <p>{displayCostPerMonth.toFixed(2) || '-'}</p>, []),
       },
       {
         Header: 'PRINTING COST',
