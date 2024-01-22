@@ -1,6 +1,6 @@
 import { Carousel } from '@mantine/carousel';
 import { Button, Checkbox, Divider, Drawer } from '@mantine/core';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import * as yup from 'yup';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
@@ -103,14 +103,15 @@ const AddEditPriceDrawer = ({
   onClose,
   selectedInventories,
   styles = {},
-  area = 100,
+  selectedInventoryId,
 }) => {
   const formContext = useFormContext();
   const form = useForm({
     resolver: yupResolver(schema),
     defaultValues,
   });
-  const [activeSlide, setActiveSlide] = useState(0);
+  const [activeSlide, setActiveSlide] = useState();
+
   const watchDisplayCostPerMonth = form.watch('displayCostPerMonth');
   const watchDisplayCostPerSqFt = form.watch('displayCostPerSqFt');
   const watchDisplayCostGstPercentage = form.watch('displayCostGstPercentage');
@@ -135,15 +136,14 @@ const AddEditPriceDrawer = ({
     return totalMonths + fractionOfMonth;
   };
 
-  const totalMonths = useMemo(
-    () =>
-      calculateTotalMonths(selectedInventories?.[0]?.startDate, selectedInventories?.[0]?.endDate),
-    [selectedInventories?.[0]?.startDate, selectedInventories?.[0]?.endDate],
-  );
-
   const selectedInventory = useMemo(
     () => selectedInventories[activeSlide || 0],
     [selectedInventories, activeSlide],
+  );
+
+  const totalMonths = useMemo(
+    () => calculateTotalMonths(selectedInventory?.startDate, selectedInventory?.endDate),
+    [selectedInventory?.startDate, selectedInventory?.endDate],
   );
 
   const totalArea = useMemo(
@@ -152,7 +152,7 @@ const AddEditPriceDrawer = ({
         (accumulator, dimension) => accumulator + dimension.height * dimension.width,
         0,
       ) || 0,
-    [selectedInventory],
+    [selectedInventory?.dimension],
   );
 
   const totalPrice = useMemo(() => {
@@ -176,8 +176,37 @@ const AddEditPriceDrawer = ({
     );
   }, [form.watch()]);
 
+  const onChangeDisplayCostPerMonth = useCallback(() => {
+    const displayCostPerMonth = watchDisplayCostPerMonth * totalMonths || 0;
+    form.setValue(
+      'totalDisplayCost',
+      displayCostPerMonth + displayCostPerMonth * ((watchDisplayCostGstPercentage || 0) / 100),
+    );
+    form.setValue('displayCostPerSqFt', (watchDisplayCostPerMonth || 0) / totalArea);
+  }, [watchDisplayCostPerMonth, watchDisplayCostGstPercentage]);
+
+  const onChangeDisplayCostPerSqFt = useCallback(() => {
+    const displayCostPerSqFt = watchDisplayCostPerSqFt * totalArea || 0;
+
+    form.setValue(
+      'totalDisplayCost',
+      displayCostPerSqFt + displayCostPerSqFt * ((watchDisplayCostGstPercentage || 0) / 100),
+    );
+    form.setValue('displayCostPerMonth', (watchDisplayCostPerSqFt || 0) * totalArea);
+  }, [watchDisplayCostPerSqFt, watchDisplayCostGstPercentage]);
+
+  const onChangeDisplayCostPercentage = useCallback(() => {
+    const displayCostPerSqFt = watchDisplayCostPerSqFt * totalArea || 0;
+
+    form.setValue(
+      'totalDisplayCost',
+      displayCostPerSqFt + displayCostPerSqFt * ((watchDisplayCostGstPercentage || 0) / 100),
+    );
+    form.setValue('displayCostPerMonth', (watchDisplayCostPerSqFt || 0) * totalArea);
+  }, [watchDisplayCostPerSqFt, watchDisplayCostPerMonth, watchDisplayCostGstPercentage]);
+
   useEffect(() => {
-    const printingCost = (watchPrintingCostPerSqft * area * totalMonths || 0) / area;
+    const printingCost = (watchPrintingCostPerSqft * totalArea) / totalMonths || 0;
     form.setValue(
       'totalPrintingCost',
       printingCost + printingCost * ((watchPrintingGstPercentage || 0) / 100),
@@ -185,39 +214,19 @@ const AddEditPriceDrawer = ({
   }, [watchPrintingCostPerSqft, watchPrintingGstPercentage]);
 
   useEffect(() => {
-    const mountingCost = (watchMountingCostPerSqft * area * totalMonths || 0) / area;
+    const mountingCost = (watchMountingCostPerSqft * totalArea) / totalMonths || 0;
     form.setValue(
       'totalMountingCost',
       mountingCost + mountingCost * ((watchMountingGstPercentage || 0) / 100),
     );
   }, [watchMountingCostPerSqft, watchMountingGstPercentage]);
 
-  useEffect(() => {
-    const displayCostPerMonth = watchDisplayCostPerMonth * totalMonths || 0;
-
-    form.setValue(
-      'totalDisplayCost',
-      displayCostPerMonth + displayCostPerMonth * ((watchDisplayCostGstPercentage || 0) / 100),
-    );
-    form.setValue('displayCostPerSqFt', (watchDisplayCostPerMonth || 0) / area);
-  }, [watchDisplayCostPerMonth, watchDisplayCostGstPercentage]);
-
-  useEffect(() => {
-    const displayCostPerSqFt = watchDisplayCostPerSqFt * area || 0;
-
-    form.setValue(
-      'totalDisplayCost',
-      displayCostPerSqFt + displayCostPerSqFt * ((watchDisplayCostGstPercentage || 0) / 100),
-    );
-    form.setValue('displayCostPerMonth', (watchDisplayCostPerSqFt || 0) * area);
-  }, [watchDisplayCostPerSqFt, watchDisplayCostGstPercentage]);
-
   const onSubmit = async formData => {
     const watchPlace = formContext.watch('place');
     formContext.setValue(
       'place',
-      watchPlace.map(place =>
-        place._id === selectedInventory._id
+      watchPlace?.map(place =>
+        place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)
           ? {
               ...place,
               displayCostPerMonth: formData.displayCostPerMonth,
@@ -236,12 +245,14 @@ const AddEditPriceDrawer = ({
               oneTimeInstallationCost: formData.oneTimeInstallationCost,
               monthlyAdditionalCost: formData.monthlyAdditionalCost,
               otherCharges: formData.otherCharges,
+              tradedAmount: formData.tradedAmount,
               subjectToExtension: true,
               price: totalPrice,
               totalArea,
               discountOn: '',
               discountedDisplayCost: 0,
               discountedTotalPrice: 0,
+
               priceChanged: true,
             }
           : place,
@@ -251,7 +262,7 @@ const AddEditPriceDrawer = ({
     form.reset();
   };
   useEffect(() => {
-    if (selectedInventory.priceChanged) {
+    if (selectedInventory?.company || selectedInventory?.priceChanged) {
       form.reset({
         displayCostPerMonth: selectedInventory.displayCostPerMonth,
         totalDisplayCost: selectedInventory.totalDisplayCost,
@@ -269,11 +280,20 @@ const AddEditPriceDrawer = ({
         oneTimeInstallationCost: selectedInventory.oneTimeInstallationCost,
         monthlyAdditionalCost: selectedInventory.monthlyAdditionalCost,
         otherCharges: selectedInventory.otherCharges,
+        tradedAmount: selectedInventory.tradedAmount,
       });
     } else {
       form.reset(defaultValues);
     }
   }, [selectedInventory, activeSlide]);
+
+  useEffect(() => {
+    const currentIndex = selectedInventories.findIndex(inv => inv?._id === selectedInventoryId);
+    if (currentIndex >= 0) {
+      const itemToMove = selectedInventories.splice(currentIndex, 1)[0];
+      selectedInventories.unshift(itemToMove);
+    }
+  }, [selectedInventoryId]);
 
   return (
     <Drawer
@@ -281,9 +301,6 @@ const AddEditPriceDrawer = ({
       overlayOpacity={0.1}
       overlayBlur={0}
       size="xl"
-      transition="slide-left"
-      transitionDuration={500}
-      transitionTimingFunction="ease-in-out"
       position="right"
       opened={isOpened}
       styles={styles}
@@ -291,49 +308,51 @@ const AddEditPriceDrawer = ({
       onClose={onClose}
       classNames={{
         title: 'text-xl font-semibold',
-        header: 'px-6 pt-4',
+        header: 'px-6 pt-2 z-20 h-20 sticky top-0 bg-white',
         closeButton: 'text-black',
       }}
     >
-      <Divider className="my-4" />
-      <Carousel
-        align="center"
-        height={170}
-        loop
-        controlsOffset="lg"
-        initialSlide={0}
-        nextControlIcon={<ChevronRight size={25} className="rounded-full" />}
-        previousControlIcon={<ChevronLeft size={25} className="rounded-full" />}
-        classNames={{
-          controls: 'bg-none',
-          control: 'border-none',
-        }}
-        onSlideChange={setActiveSlide}
-      >
-        {selectedInventories.map(inventory => (
-          <Carousel.Slide>
-            <div className="bg-gray-200 h-full rounded-lg p-4 w-3/4 m-auto flex flex-col g">
-              <div className="text-xl">{inventory.spaceName}</div>
-              <div className="text-lg text-gray-400">
-                City <span className="text-black">{inventory.location}</span>
+      <div className="sticky top-16 bg-white z-10">
+        <Divider className="pt-4" />
+        <Carousel
+          align="center"
+          height={170}
+          loop
+          controlsOffset="lg"
+          initialSlide={0}
+          nextControlIcon={<ChevronRight size={25} className="rounded-full" />}
+          previousControlIcon={<ChevronLeft size={25} className="rounded-full" />}
+          classNames={{
+            controls: 'bg-none',
+            control: 'border-none',
+          }}
+          onSlideChange={setActiveSlide}
+        >
+          {selectedInventories?.map(inventory => (
+            <Carousel.Slide>
+              <div className="bg-gray-200 h-full rounded-lg p-4 w-3/4 m-auto flex flex-col g">
+                <div className="text-xl">{inventory.spaceName}</div>
+                <div className="text-lg text-gray-400">
+                  City <span className="text-black">{inventory.location}</span>
+                </div>
+                <div className="text-lg text-gray-400">
+                  Dimension{' '}
+                  <span className="text-black">
+                    {inventory.dimension
+                      ?.map(dimension => `${dimension.height}ft x ${dimension.width}ft`)
+                      .join(',')}
+                  </span>
+                  <div className="text-lg text-gray-400 p-0 m-0">(WxH)</div>
+                </div>
+                <div className="text-lg text-gray-400">
+                  Area <span className="text-black">{totalArea} sq.ft.</span>
+                </div>
               </div>
-              <div className="text-lg text-gray-400">
-                Dimension{' '}
-                <span className="text-black">
-                  {inventory.dimension
-                    .map(dimension => `${dimension.height}ft x ${dimension.width}ft`)
-                    .join(',')}
-                </span>
-                <div className="text-lg text-gray-400 p-0 m-0">(WxH)</div>
-              </div>
-              <div className="text-lg text-gray-400">
-                Area <span className="text-black">{totalArea} sq.ft.</span>
-              </div>
-            </div>
-          </Carousel.Slide>
-        ))}
-      </Carousel>
-      <Divider className="my-4" />
+            </Carousel.Slide>
+          ))}
+        </Carousel>
+        <Divider className="my-4" />
+      </div>
       <FormProvider {...form}>
         <form
           onSubmit={e => {
@@ -342,180 +361,187 @@ const AddEditPriceDrawer = ({
             return form.handleSubmit(onSubmit)(e);
           }}
         >
-          <div className="border border-yellow-350 bg-yellow-250 m-6 p-4 rounded-md flex flex-col gap-4">
-            <div>
-              <div className="text-lg font-bold">Apply Display Cost</div>
-              <div className="text-gray-500 text-base">
-                Please select either Display Cost (per month) or Display Cost (per sq. ft.)
+          <div className="h-fit overflow-auto">
+            <div className="border border-yellow-350 bg-yellow-250 m-6 p-4 rounded-md flex flex-col gap-4">
+              <div>
+                <div className="text-lg font-bold">Apply Display Cost</div>
+                <div className="text-gray-500 text-base">
+                  Please select either Display Cost (per month) or Display Cost (per sq. ft.)
+                </div>
               </div>
-            </div>
-            <div className="text-base font-bold">Display Cost (per month)</div>
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-4">
+              <div className="text-base font-bold">Display Cost (per month)</div>
+              <div className="flex flex-col gap-4">
+                <div className="flex gap-4">
+                  <ControlledNumberInput
+                    precision={2}
+                    label="Cost"
+                    name="displayCostPerMonth"
+                    hideControls
+                    classNames={{ label: 'text-base font-bold' }}
+                    className="w-4/5"
+                    thousandSeparator=","
+                    onKeyDown={onChangeDisplayCostPerMonth}
+                  />
+                  <ControlledNumberInput
+                    precision={2}
+                    label="GST"
+                    name="displayCostGstPercentage"
+                    min={0}
+                    hideControls
+                    classNames={{ label: 'text-base font-bold' }}
+                    className="w-1/5"
+                    rightSection="%"
+                    onKeyDown={onChangeDisplayCostPercentage}
+                  />
+                </div>
                 <ControlledNumberInput
                   precision={2}
-                  label="Cost"
-                  name="displayCostPerMonth"
+                  label="Total"
+                  name="totalDisplayCost"
+                  disabled
                   hideControls
                   classNames={{ label: 'text-base font-bold' }}
-                  className="w-4/5"
                   thousandSeparator=","
                 />
-                <ControlledNumberInput
-                  precision={2}
-                  label="GST"
-                  name="displayCostGstPercentage"
-                  min={0}
-                  hideControls
-                  classNames={{ label: 'text-base font-bold' }}
-                  className="w-1/5"
-                  rightSection="%"
-                />
               </div>
-              <ControlledNumberInput
-                precision={2}
-                label="Total"
-                name="totalDisplayCost"
-                disabled
-                hideControls
-                classNames={{ label: 'text-base font-bold' }}
-                thousandSeparator=","
-              />
-            </div>
-            <div className="text-base font-bold">Display Cost (per sq. ft.)</div>
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-4">
+              <div className="text-base font-bold">Display Cost (per sq. ft.)</div>
+              <div className="flex flex-col gap-4">
+                <div className="flex gap-4">
+                  <ControlledNumberInput
+                    precision={2}
+                    label="Cost"
+                    name="displayCostPerSqFt"
+                    hideControls
+                    classNames={{ label: 'text-base font-bold' }}
+                    className="w-4/5"
+                    thousandSeparator=","
+                    onKeyDown={onChangeDisplayCostPerSqFt}
+                  />
+                  <ControlledNumberInput
+                    precision={2}
+                    label="GST"
+                    name="displayCostGstPercentage"
+                    min={0}
+                    hideControls
+                    classNames={{ label: 'text-base font-bold' }}
+                    className="w-1/5"
+                    rightSection="%"
+                    onKeyDown={onChangeDisplayCostPercentage}
+                  />
+                </div>
                 <ControlledNumberInput
                   precision={2}
-                  label="Cost"
-                  name="displayCostPerSqFt"
+                  label="Total"
+                  name="totalDisplayCost"
+                  disabled
                   hideControls
                   classNames={{ label: 'text-base font-bold' }}
-                  className="w-4/5"
                   thousandSeparator=","
                 />
-                <ControlledNumberInput
-                  precision={2}
-                  label="GST"
-                  name="displayCostGstPercentage"
-                  min={0}
-                  hideControls
-                  classNames={{ label: 'text-base font-bold' }}
-                  className="w-1/5"
-                  rightSection="%"
-                />
               </div>
-              <ControlledNumberInput
-                precision={2}
-                label="Total"
-                name="totalDisplayCost"
-                disabled
-                hideControls
-                classNames={{ label: 'text-base font-bold' }}
-                thousandSeparator=","
-              />
-            </div>
 
-            <ControlledNumberInput
-              precision={2}
-              label="Traded Amount"
-              name="tradedAmount"
-              hideControls
-              classNames={{ label: 'text-base font-bold' }}
-            />
-          </div>
-          <div className="border border-blue-200 bg-blue-100 m-6 p-4 rounded-md flex flex-col gap-4">
-            <Checkbox
-              defaultChecked
-              label="Apply for all selected inventories"
-              classNames={{ label: 'text-base font-bold' }}
-            />
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-4">
-                <ControlledNumberInput
-                  precision={2}
-                  label="Printing Cost (per sq. ft.)"
-                  name="printingCostPerSqft"
-                  hideControls
-                  classNames={{ label: 'text-base font-bold' }}
-                  className="w-4/5"
-                />
-                <ControlledNumberInput
-                  precision={2}
-                  label="GST"
-                  name="printingGstPercentage"
-                  hideControls
-                  classNames={{ label: 'text-base font-bold' }}
-                  className="w-1/5"
-                  rightSection="%"
-                />
-              </div>
               <ControlledNumberInput
                 precision={2}
-                label="Total Printing Cost"
-                name="totalPrintingCost"
-                disabled
+                label="Traded Amount"
+                name="tradedAmount"
                 hideControls
                 classNames={{ label: 'text-base font-bold' }}
               />
             </div>
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-4">
+            <div className="border border-blue-200 bg-blue-100 m-6 p-4 rounded-md flex flex-col gap-4">
+              <Checkbox
+                defaultChecked
+                label="Apply for all selected inventories"
+                classNames={{ label: 'text-base font-bold' }}
+              />
+              <div className="flex flex-col gap-4">
+                <div className="flex gap-4">
+                  <ControlledNumberInput
+                    precision={2}
+                    label="Printing Cost (per sq. ft.)"
+                    name="printingCostPerSqft"
+                    hideControls
+                    classNames={{ label: 'text-base font-bold' }}
+                    className="w-4/5"
+                  />
+                  <ControlledNumberInput
+                    precision={2}
+                    label="GST"
+                    name="printingGstPercentage"
+                    hideControls
+                    classNames={{ label: 'text-base font-bold' }}
+                    className="w-1/5"
+                    rightSection="%"
+                  />
+                </div>
                 <ControlledNumberInput
                   precision={2}
-                  label="Mounting Cost (per sq. ft.)"
-                  name="mountingCostPerSqft"
+                  label="Total Printing Cost"
+                  name="totalPrintingCost"
+                  disabled
                   hideControls
                   classNames={{ label: 'text-base font-bold' }}
-                  className="w-4/5"
                 />
+              </div>
+              <div className="flex flex-col gap-4">
+                <div className="flex gap-4">
+                  <ControlledNumberInput
+                    precision={2}
+                    label="Mounting Cost (per sq. ft.)"
+                    name="mountingCostPerSqft"
+                    hideControls
+                    classNames={{ label: 'text-base font-bold' }}
+                    className="w-4/5"
+                  />
+                  <ControlledNumberInput
+                    precision={2}
+                    label="GST"
+                    name="mountingGstPercentage"
+                    hideControls
+                    classNames={{ label: 'text-base font-bold' }}
+                    className="w-1/5"
+                    rightSection="%"
+                  />
+                </div>
                 <ControlledNumberInput
                   precision={2}
-                  label="GST"
-                  name="mountingGstPercentage"
+                  label="Total Mounting Cost"
+                  name="totalMountingCost"
+                  disabled
                   hideControls
                   classNames={{ label: 'text-base font-bold' }}
-                  className="w-1/5"
-                  rightSection="%"
                 />
+              </div>
+            </div>
+            <div className="border border-purple-350 bg-purple-100 m-6 p-4 rounded-md flex flex-col gap-4">
+              <div className="text-base font-bold">
+                Miscellaneous{' '}
+                <span className="text-xs font-normal italic"> ** inclusive of GST</span>
               </div>
               <ControlledNumberInput
                 precision={2}
-                label="Total Mounting Cost"
-                name="totalMountingCost"
-                disabled
+                label="One-time Installation Cost"
+                name="oneTimeInstallationCost"
+                hideControls
+                classNames={{ label: 'text-base font-bold' }}
+              />
+              <ControlledNumberInput
+                precision={2}
+                label="Monthly Additional Cost"
+                name="monthlyAdditionalCost"
+                hideControls
+                classNames={{ label: 'text-base font-bold' }}
+              />
+              <ControlledNumberInput
+                precision={2}
+                label="Other Charges (-)"
+                name="otherCharges"
                 hideControls
                 classNames={{ label: 'text-base font-bold' }}
               />
             </div>
           </div>
-          <div className="border border-purple-350 bg-purple-100 m-6 p-4 rounded-md flex flex-col gap-4">
-            <div className="text-base font-bold">
-              Miscellaneous <span className="text-xs font-normal italic"> ** inclusive of GST</span>
-            </div>
-            <ControlledNumberInput
-              precision={2}
-              label="One-time Installation Cost"
-              name="oneTimeInstallationCost"
-              hideControls
-              classNames={{ label: 'text-base font-bold' }}
-            />
-            <ControlledNumberInput
-              precision={2}
-              label="Monthly Additional Cost"
-              name="monthlyAdditionalCost"
-              hideControls
-              classNames={{ label: 'text-base font-bold' }}
-            />
-            <ControlledNumberInput
-              precision={2}
-              label="Other Charges (-)"
-              name="otherCharges"
-              hideControls
-              classNames={{ label: 'text-base font-bold' }}
-            />
-          </div>
-          <div className="bg-white p-6 pt-2 flex flex-col gap-6">
+          <div className="sticky bottom-0 z-10 bg-white p-6 pt-2 flex flex-col gap-6">
             <div className="flex justify-between">
               <div className="text-lg font-semibold">Total Price</div>
               <div className="text-xl text-purple-450 font-semibold">

@@ -159,15 +159,15 @@ const CreateBookingPage = () => {
         });
         return;
       }
-
       data.place = watchPlace?.map(item => ({
+        ...item,
         id: item._id,
         price: +item.price,
         media: isValidURL(item.media) ? item.media : undefined,
         startDate: item.startDate
           ? dayjs(item.startDate).startOf('day').toISOString()
           : dayjs().startOf('day').toISOString(),
-        endDate: item.startDate
+        endDate: item.endDate
           ? dayjs(item.endDate).endOf('day').toISOString()
           : dayjs().endOf('day').toISOString(),
         tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
@@ -293,13 +293,13 @@ const CreateBookingPage = () => {
         description: campaign?.description || '',
         place:
           campaign?.spaces?.map(item => ({
+            ...item,
+            location: item?.location?.city,
+            dimension: item?.specifications?.size,
             _id: item._id,
             price: +item.campaignPrice,
             media: isValidURL(item.media) ? item.media : undefined,
-            startDate: item.startDate,
-            endDate: item.endDate,
             tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
-            unit: item?.unit,
             availableUnit:
               item?.specifications?.unit && item.unit
                 ? item.specifications.unit - item.unit

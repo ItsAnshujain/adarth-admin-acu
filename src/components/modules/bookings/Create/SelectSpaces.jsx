@@ -57,6 +57,7 @@ const SelectSpace = () => {
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
+  const [selectedInventoryId, setSelectedInventoryId] = useState('');
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
       activeLayout: state.activeLayout,
@@ -231,7 +232,7 @@ const SelectSpace = () => {
 
   const RenderPeerCell = useCallback(({ row }) => row.original.peer || '-', []);
 
-  const RenderTotalPriceCell = useCallback(({ row }) => row.original.price || '-', []);
+  const RenderTotalPriceCell = useCallback(({ row }) => row.original.price.toFixed(2) || '-', []);
 
   const RenderInventoryIdCell = useCallback(({ row }) => row.original.inventoryId || '-', []);
 
@@ -316,7 +317,6 @@ const SelectSpace = () => {
             const isDisabled =
               watchPlace?.some(item => item._id === _id) && (!startDate || !endDate);
             const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
-
             return (
               <div className="min-w-[300px]">
                 <DateRangeSelector
@@ -404,12 +404,26 @@ const SelectSpace = () => {
         Header: 'PRICE',
         Cell: info =>
           useMemo(() =>
-            info.row.original.priceChanged ? (
-              <Button onClick={onClickAddPrice} className="bg-purple-450 order-3" size="xs">
+            info.row.original?.priceChanged ? (
+              <Button
+                onClick={() => {
+                  onClickAddPrice();
+                  setSelectedInventoryId(info.row.original?._id);
+                }}
+                className="bg-purple-450 order-3"
+                size="xs"
+              >
                 Edit Price
               </Button>
             ) : (
-              <Button onClick={onClickAddPrice} className="bg-purple-450 order-3" size="xs">
+              <Button
+                onClick={() => {
+                  onClickAddPrice();
+                  setSelectedInventoryId(info.row.original?._id);
+                }}
+                className="bg-purple-450 order-3"
+                size="xs"
+              >
                 Add Price
               </Button>
             ),
@@ -552,6 +566,16 @@ const SelectSpace = () => {
     }
   }, [inventoryQuery.data?.docs]);
 
+  useEffect(() => {
+    if (watchPlace.length) {
+      watchPlace.map(place =>
+        setUpdatedInventoryData(prev =>
+          prev.map(item => (item?._id === place?._id ? { ...item, ...place } : item)),
+        ),
+      );
+    }
+  }, [drawerOpened]);
+
   return (
     <>
       <div className="flex gap-2 py-5 flex-col">
@@ -560,7 +584,12 @@ const SelectSpace = () => {
             <p className="text-lg font-bold">Select Place for Order</p>
           </div>
           <div className="flex items-center">
-            <Button className="bg-black mr-1" onClick={drawerActions.open}>
+            <Button
+              className="bg-black mr-1"
+              onClick={() => {
+                onClickAddPrice();
+              }}
+            >
               Add Price
             </Button>
             <Button onClick={toggleFilter} variant="default">
@@ -630,6 +659,8 @@ const SelectSpace = () => {
         isOpened={drawerOpened}
         onClose={drawerActions.close}
         selectedInventories={watchPlace}
+        data={updatedInventoryData}
+        selectedInventoryId={selectedInventoryId}
       />
     </>
   );
