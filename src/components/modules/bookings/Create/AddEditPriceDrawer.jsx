@@ -104,6 +104,7 @@ const AddEditPriceDrawer = ({
   selectedInventories,
   styles = {},
   selectedInventoryId,
+  type,
 }) => {
   const formContext = useFormContext();
   const form = useForm({
@@ -137,7 +138,7 @@ const AddEditPriceDrawer = ({
   };
 
   const selectedInventory = useMemo(
-    () => selectedInventories[activeSlide || 0],
+    () => selectedInventories?.[activeSlide || 0],
     [selectedInventories, activeSlide],
   );
 
@@ -220,44 +221,83 @@ const AddEditPriceDrawer = ({
       mountingCost + mountingCost * ((watchMountingGstPercentage || 0) / 100),
     );
   }, [watchMountingCostPerSqft, watchMountingGstPercentage]);
+  const watchPlace = formContext.watch('place');
 
   const onSubmit = async formData => {
-    const watchPlace = formContext.watch('place');
-    formContext.setValue(
-      'place',
-      watchPlace?.map(place =>
-        place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)
-          ? {
-              ...place,
-              displayCostPerMonth: formData.displayCostPerMonth,
-              totalDisplayCost: formData.totalDisplayCost,
-              displayCostPerSqFt: formData.displayCostPerSqFt,
-              displayCostGstPercentage: formData.displayCostGstPercentage,
-              displayCostGst: formData.displayCostGst,
-              printingCostPerSqft: formData.printingCostPerSqft,
-              printingGstPercentage: formData.printingGstPercentage,
-              printingGst: formData.printingGst,
-              totalPrintingCost: formData.totalPrintingCost,
-              mountingCostPerSqft: formData.mountingCostPerSqft,
-              mountingGstPercentage: formData.mountingGstPercentage,
-              mountingGst: formData.mountingGst,
-              totalMountingCost: formData.totalMountingCost,
-              oneTimeInstallationCost: formData.oneTimeInstallationCost,
-              monthlyAdditionalCost: formData.monthlyAdditionalCost,
-              otherCharges: formData.otherCharges,
-              tradedAmount: formData.tradedAmount,
-              subjectToExtension: true,
-              price: totalPrice,
-              totalArea,
-              discountOn: '',
-              discountedDisplayCost: 0,
-              discountedTotalPrice: 0,
+    if (type === 'bookings') {
+      formContext.setValue(
+        'place',
+        watchPlace?.map(place =>
+          place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)
+            ? {
+                ...place,
+                displayCostPerMonth: formData.displayCostPerMonth,
+                totalDisplayCost: formData.totalDisplayCost,
+                displayCostPerSqFt: formData.displayCostPerSqFt,
+                displayCostGstPercentage: formData.displayCostGstPercentage,
+                displayCostGst: formData.displayCostGst,
+                printingCostPerSqft: formData.printingCostPerSqft,
+                printingGstPercentage: formData.printingGstPercentage,
+                printingGst: formData.printingGst,
+                totalPrintingCost: formData.totalPrintingCost,
+                mountingCostPerSqft: formData.mountingCostPerSqft,
+                mountingGstPercentage: formData.mountingGstPercentage,
+                mountingGst: formData.mountingGst,
+                totalMountingCost: formData.totalMountingCost,
+                oneTimeInstallationCost: formData.oneTimeInstallationCost,
+                monthlyAdditionalCost: formData.monthlyAdditionalCost,
+                otherCharges: formData.otherCharges,
+                tradedAmount: formData.tradedAmount,
+                subjectToExtension: true,
+                price: totalPrice,
+                totalArea,
+                discountOn: '',
+                discountedDisplayCost: 0,
+                discountedTotalPrice: 0,
 
-              priceChanged: true,
-            }
-          : place,
-      ),
-    );
+                priceChanged: true,
+              }
+            : place,
+        ),
+      );
+    } else {
+      formContext.setValue(
+        'spaces',
+        selectedInventories?.map(place =>
+          place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)
+            ? {
+                ...place,
+                displayCostPerMonth: formData.displayCostPerMonth,
+                totalDisplayCost: formData.totalDisplayCost,
+                displayCostPerSqFt: formData.displayCostPerSqFt,
+                displayCostGstPercentage: formData.displayCostGstPercentage,
+                displayCostGst: formData.displayCostGst,
+                printingCostPerSqft: formData.printingCostPerSqft,
+                printingGstPercentage: formData.printingGstPercentage,
+                printingGst: formData.printingGst,
+                totalPrintingCost: formData.totalPrintingCost,
+                mountingCostPerSqft: formData.mountingCostPerSqft,
+                mountingGstPercentage: formData.mountingGstPercentage,
+                mountingGst: formData.mountingGst,
+                totalMountingCost: formData.totalMountingCost,
+                oneTimeInstallationCost: formData.oneTimeInstallationCost,
+                monthlyAdditionalCost: formData.monthlyAdditionalCost,
+                otherCharges: formData.otherCharges,
+                tradedAmount: formData.tradedAmount,
+                subjectToExtension: true,
+                price: totalPrice,
+                totalArea,
+                discountOn: '',
+                discountedDisplayCost: 0,
+                discountedTotalPrice: 0,
+
+                priceChanged: true,
+              }
+            : place,
+        ),
+      );
+    }
+
     onClose();
     form.reset();
   };
@@ -288,7 +328,7 @@ const AddEditPriceDrawer = ({
   }, [selectedInventory, activeSlide]);
 
   useEffect(() => {
-    const currentIndex = selectedInventories.findIndex(inv => inv?._id === selectedInventoryId);
+    const currentIndex = selectedInventories?.findIndex(inv => inv?._id === selectedInventoryId);
     if (currentIndex >= 0) {
       const itemToMove = selectedInventories.splice(currentIndex, 1)[0];
       selectedInventories.unshift(itemToMove);

@@ -8,6 +8,7 @@ import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
+import { showNotification } from '@mantine/notifications';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
@@ -50,6 +51,7 @@ const Spaces = () => {
   const { id: proposalId } = useParams();
   const { values, setFieldValue } = useFormContext();
   const [drawerOpened, drawerActions] = useDisclosure();
+
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
       activeLayout: state.activeLayout,
@@ -68,6 +70,7 @@ const Spaces = () => {
     ids: selectedInventoryIds.join(','),
   });
   const [searchInput, setSearchInput] = useState('');
+  const [selectedInventoryId, setSelectedInventoryId] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
@@ -142,6 +145,22 @@ const Spaces = () => {
       ),
       ...updatedModalConfig,
     });
+
+  const onClickAddPrice = () => {
+    if (!values.spaces?.length) {
+      showNotification({
+        title: 'Please select atleast one place to add price',
+        color: 'blue',
+      });
+    } else if (values.spaces.some(item => !(item.startDate || item.endDate))) {
+      showNotification({
+        title: 'Please select the proposal date to add price',
+        color: 'blue',
+      });
+    } else {
+      drawerActions.open();
+    }
+  };
 
   const COLUMNS = useMemo(
     () => [
@@ -288,16 +307,37 @@ const Spaces = () => {
           row: {
             original: { dimension },
           },
-        }) => useMemo(() => <div className="flex gap-x-2">{dimension}</div>, []),
+        }) =>
+          useMemo(() => dimension?.map(dim => `${dim.height}ft x ${dim.width}ft`).join(','), []),
       },
       {
         Header: 'PRICE',
-        Cell: () =>
-          useMemo(() => (
-            <Button onClick={drawerActions.open} className="bg-purple-450 order-3" size="xs">
-              Add Price
-            </Button>
-          )),
+        Cell: info =>
+          useMemo(() =>
+            info.row.original?.priceChanged ? (
+              <Button
+                onClick={() => {
+                  onClickAddPrice();
+                  setSelectedInventoryId(info.row.original?._id);
+                }}
+                className="bg-purple-450 order-3"
+                size="xs"
+              >
+                Edit Price
+              </Button>
+            ) : (
+              <Button
+                onClick={() => {
+                  onClickAddPrice();
+                  setSelectedInventoryId(info.row.original?._id);
+                }}
+                className="bg-purple-450 order-3"
+                size="xs"
+              >
+                Add Price
+              </Button>
+            ),
+          ),
       },
       {
         Header: 'PRICING',
@@ -506,18 +546,7 @@ const Spaces = () => {
         obj.additionalTags = item?.specifications?.additionalTags;
         obj.category = item?.basicInformation?.category?.name;
         obj.subCategory = item?.basicInformation?.subCategory?.name;
-        obj.dimension = item.specifications?.size?.length ? (
-          <p>
-            {item.specifications.size
-              .map((ele, index) =>
-                index < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
-              )
-              .filter(ele => ele !== null)
-              .join(', ')}
-          </p>
-        ) : (
-          '-'
-        );
+        obj.dimension = item.specifications?.size;
         obj.location = item?.location?.city;
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.mediaType = item?.basicInformation?.mediaType?.name;
@@ -541,6 +570,16 @@ const Spaces = () => {
     }
   }, [debouncedSearch]);
 
+  useEffect(() => {
+    if (values.spaces.length) {
+      values.spaces.map(place =>
+        setUpdatedInventoryData(prev =>
+          prev.map(item => (item?._id === place?._id ? { ...item, ...place } : item)),
+        ),
+      );
+    }
+  }, [drawerOpened]);
+
   return (
     <>
       <div className="flex gap-2 py-5 flex-col">
@@ -550,7 +589,12 @@ const Spaces = () => {
           </Text>
           <div className="flex items-center gap-2">
             <div className="flex items-center">
-              <Button className="bg-black mr-1" onClick={drawerActions.open}>
+              <Button
+                className="bg-black mr-1"
+                onClick={() => {
+                  onClickAddPrice();
+                }}
+              >
                 Add Price
               </Button>
               <Button onClick={toggleFilter} variant="default">
@@ -614,7 +658,14 @@ const Spaces = () => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
       ) : null}
-      <AddEditPriceDrawer isOpened={drawerOpened} onClose={drawerActions.close} />
+      <AddEditPriceDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        selectedInventories={values.spaces}
+        data={updatedInventoryData}
+        selectedInventoryId={selectedInventoryId}
+        type="proposal"
+      />{' '}
     </>
   );
 };
