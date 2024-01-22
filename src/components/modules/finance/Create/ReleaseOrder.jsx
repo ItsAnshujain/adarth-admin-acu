@@ -284,20 +284,30 @@ const ReleaseOrder = ({
         Cell: ({
           row: {
             original: {
-              area,
-              city,
-              displayCost,
-              itemId,
-              location,
-              media,
-              mountingCost,
-              printingCost,
-              size,
-              unit,
-              facing,
               displayCostDiscount,
               mountingCostDiscount,
               printingCostDiscount,
+              name,
+              location,
+              startDate,
+              endDate,
+              quantity,
+              rate,
+              per,
+              price,
+              itemId,
+              hsn,
+              city,
+              state,
+              size,
+              unit,
+              category,
+              facing,
+              area,
+              printingCost,
+              mountingCost,
+              totalDisplayCost,
+              displayCostPerMonth,
             },
           },
         }) =>
@@ -316,20 +326,30 @@ const ReleaseOrder = ({
                     icon={<Edit2 className="h-4" />}
                     onClick={() => {
                       onClickAddItems({
-                        area,
-                        city,
-                        displayCost,
-                        itemId,
-                        location,
-                        media,
-                        mountingCost,
-                        printingCost,
-                        size,
-                        unit,
-                        facing,
                         displayCostDiscount,
                         mountingCostDiscount,
                         printingCostDiscount,
+                        name,
+                        location,
+                        startDate,
+                        endDate,
+                        quantity,
+                        rate,
+                        per,
+                        price,
+                        itemId,
+                        hsn,
+                        city,
+                        state,
+                        size,
+                        unit,
+                        category,
+                        facing,
+                        area,
+                        printingCost,
+                        mountingCost,
+                        totalDisplayCost,
+                        displayCostPerMonth,
                       });
                     }}
                   >
@@ -390,6 +410,7 @@ const ReleaseOrder = ({
       grandTotal: 0,
       grandTotalInWords: '',
     };
+
     if (addSpaceItem?.length) {
       addSpaceItem.forEach(item => {
         if (item?.totalDisplayCost) {
@@ -459,7 +480,6 @@ const ReleaseOrder = ({
         ? Number(tempInitialTotal.grandTotal.toFixed(2))
         : 0,
     );
-
     return tempInitialTotal;
   }, [addSpaceItem, values.discount, values.forMonths]);
 

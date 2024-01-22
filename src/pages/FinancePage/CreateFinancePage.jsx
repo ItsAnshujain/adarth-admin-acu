@@ -704,6 +704,9 @@ const CreateFinancePage = () => {
           totalMountingCost: parseFloat(item.totalMountingCost.toFixed(2)),
           price: parseFloat(item.totalDisplayCost.toFixed(2)),
           displayCostPerMonth: parseFloat(item.displayCostPerMonth.toFixed(2)),
+          displayCostDiscount: item.displayCostDiscount || 0,
+          mountingCostDiscount: item.mountingCostDiscount || 0,
+          printingCostDiscount: item.printingCostDiscount || 0,
         }));
 
         if (!data.spaces.length) {
@@ -738,11 +741,16 @@ const CreateFinancePage = () => {
             city: item.city,
             state: item.state,
             areaInSqFt: item.area,
+            printingCost: parseFloat(item.totalPrintingCost.toFixed(2)),
+            mountingCost: parseFloat(item.totalMountingCost.toFixed(2)),
             totalDisplayCost: parseFloat(item.totalDisplayCost.toFixed(2)),
             totalPrintingCost: parseFloat(item.totalPrintingCost.toFixed(2)),
             totalMountingCost: parseFloat(item.totalMountingCost.toFixed(2)),
             price: parseFloat(item.totalDisplayCost.toFixed(2)),
             displayCostPerMonth: parseFloat(item.displayCostPerMonth.toFixed(2)),
+            displayCostDiscount: item.displayCostDiscount || 0,
+            mountingCostDiscount: item.mountingCostDiscount || 0,
+            printingCostDiscount: item.printingCostDiscount || 0,
           }));
           const finalData = { ...data, ...updatedForm };
           if (finalData.mountingGst === 0 || finalData.mountingGst === 18) {

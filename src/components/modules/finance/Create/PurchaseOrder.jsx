@@ -295,6 +295,7 @@ const PurchaseOrder = ({
               printingCost,
               totalMountingCost,
               totalDisplayCost,
+              displayCostPerMonth,
             },
           },
         }) =>
@@ -332,6 +333,7 @@ const PurchaseOrder = ({
                         printingCost,
                         totalMountingCost,
                         totalDisplayCost,
+                        displayCostPerMonth,
                       })
                     }
                   >
