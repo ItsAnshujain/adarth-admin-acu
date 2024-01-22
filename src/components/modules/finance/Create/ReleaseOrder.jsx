@@ -253,9 +253,9 @@ const ReleaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { displayCost },
+            original: { displayCostPerMonth },
           },
-        }) => useMemo(() => <p>{displayCost.toFixed(2)}</p>, []),
+        }) => useMemo(() => <p>{displayCostPerMonth.toFixed(2)}</p>, []),
       },
       {
         Header: 'PRINTING COST',
@@ -392,8 +392,9 @@ const ReleaseOrder = ({
     };
     if (addSpaceItem?.length) {
       addSpaceItem.forEach(item => {
-        if (item?.displayCost) {
-          tempInitialTotal.initTotal.display += item.displayCost - item.displayCostDiscount || 0;
+        if (item?.totalDisplayCost) {
+          tempInitialTotal.initTotal.display +=
+            item.totalDisplayCost - item.displayCostDiscount || 0;
         }
         if (item?.printingCost) {
           tempInitialTotal.initTotal.printing += item.printingCost - item.printingCostDiscount || 0;
@@ -614,7 +615,7 @@ const ReleaseOrder = ({
           <div className="grid grid-cols-4 gap-4 mb-4">
             <NumberInput
               styles={styles}
-              label="Printing ft&sup2; Cost"
+              label="Printing/ ft&sup2; Cost"
               name="printingSqftCost"
               withAsterisk
               placeholder="Write..."
@@ -633,7 +634,7 @@ const ReleaseOrder = ({
             />
             <NumberInput
               styles={styles}
-              label="Mounting ft&sup2; Cost"
+              label="Mounting/ ft&sup2; Cost"
               name="mountingSqftCost"
               withAsterisk
               placeholder="Write..."
@@ -651,7 +652,7 @@ const ReleaseOrder = ({
             />
           </div>
         ) : null}
-        {!bookingIdFromFinance && addSpaceItem?.length ? (
+        {!bookingIdFromFinance ? (
           <div className="grid grid-cols-3 gap-4 mb-4">
             <NumberInput
               styles={styles}

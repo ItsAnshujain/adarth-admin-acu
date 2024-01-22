@@ -10,7 +10,7 @@ import TextInput from '../../shared/TextInput';
 import { FormProvider, useForm, useFormContext } from '../../../context/formContext';
 import TrashIcon from '../../../assets/trash.svg';
 import { useFetchMasters } from '../../../apis/queries/masters.queries';
-import { serialize } from '../../../utils';
+import { calculateTotalMonths, serialize } from '../../../utils';
 import Select from '../../shared/Select';
 import { FACING_VALUE_LIST } from '../../../utils/constants';
 import TextareaInput from '../../shared/TextareaInput';
@@ -32,6 +32,7 @@ const initialPurchaseValues = {
   city: '',
   state: '',
   unit: 0,
+  displayCostPerMonth: 0,
   size: [
     {
       height: null,
@@ -91,12 +92,12 @@ const purchaseSchema = yup.object({
         .required('Width is required'),
     }),
   ),
-  displayCost: yup
+  displayCostPerMonth: yup
     .number()
     .positive('Must be a positive number')
     .typeError('Must be a number')
     .nullable()
-    .required('Display Cost is required'),
+    .required('Display Cost/Month is required'),
   printingCost: yup
     .number()
     .min(0, 'Must be greater than or equal to 0')
@@ -117,6 +118,7 @@ const initialReleaseValues = {
   city: '',
   state: '',
   unit: 0,
+  displayCostPerMonth: 0,
   size: [
     {
       height: null,
@@ -176,12 +178,12 @@ const releaseSchema = yup.object({
         .required('Width is required'),
     }),
   ),
-  displayCost: yup
+  displayCostPerMonth: yup
     .number()
     .positive('Must be a positive number')
     .typeError('Must be a number')
     .nullable()
-    .required('Display Cost is required'),
+    .required('Display Cost/ Month is required'),
   printingCost: yup
     .number()
     .min(0, 'Must be greater than or equal to 0')
@@ -202,6 +204,7 @@ const initialInvoiceValues = {
   city: '',
   state: '',
   unit: 0,
+  displayCostPerMonth: 0,
   size: [
     {
       height: null,
@@ -324,13 +327,18 @@ const PurchaseAndInvoiceContent = ({
     return [];
   }, [categoryData, isCategoryLoaded]);
 
+  const totalMonths = useMemo(
+    () => calculateTotalMonths(values.startDate, values.endDate),
+    [values.startDate, values.endDate],
+  );
+
   useEffect(() => {
     const totalPrintingCost = printingSqftCost * values.area;
     const totalMountingCost = mountingSqftCost * values.area;
     const totalPrintingCostWithGst =
-      totalPrintingCost + (totalPrintingCost * printingCostGst) / 100;
+      totalPrintingCost + totalPrintingCost * (printingCostGst / 100);
     const totalMountingCostWithGst =
-      totalPrintingCost + (totalMountingCost * mountingCostGst) / 100;
+      totalPrintingCost + totalMountingCost * (mountingCostGst / 100);
 
     setValues({
       ...values,
@@ -338,9 +346,11 @@ const PurchaseAndInvoiceContent = ({
       mountingCost: totalMountingCost,
       totalPrintingCost: totalPrintingCostWithGst,
       totalMountingCost: totalMountingCostWithGst,
-      displayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
+      totalDisplayCost: values.displayCostPerMonth * totalMonths,
+      // displayCost: (totalPrintingCost + totalMountingCost) / totalMonths,
+      // totalDisplayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
     });
-  }, [values.area, mountingSqftCost, printingSqftCost]);
+  }, [values.area, mountingSqftCost, printingSqftCost, values.displayCostPerMonth]);
 
   const calculateHeightWidth = useMemo(() => {
     const total = values.size?.reduce((acc, item) => {
@@ -540,7 +550,7 @@ const PurchaseAndInvoiceContent = ({
       <div className="grid grid-cols-2  gap-4">
         <NumberInput
           label="Total Printing Cost"
-          name="printingCost"
+          name="totalPrintingCost"
           errors={errors}
           placeholder="Write..."
           size="md"
@@ -552,7 +562,7 @@ const PurchaseAndInvoiceContent = ({
         />
         <NumberInput
           label="Total Mounting Cost"
-          name="mountingCost"
+          name="totalMountingCost"
           errors={errors}
           placeholder="Write..."
           size="md"
@@ -566,14 +576,12 @@ const PurchaseAndInvoiceContent = ({
 
       <NumberInput
         label="Total Display Cost/Month"
-        name="displayCost"
+        name="displayCostPerMonth"
         errors={errors}
         placeholder="Write..."
         size="md"
         className="mb-4"
         hideControls
-        readOnly
-        disabled
         precision={2}
       />
 
@@ -636,6 +644,11 @@ const ReleaseContent = ({
     return [];
   }, [categoryData, isCategoryLoaded]);
 
+  const totalMonths = useMemo(
+    () => calculateTotalMonths(values.startDate, values.endDate),
+    [values.startDate, values.endDate],
+  );
+
   useEffect(() => {
     const totalPrintingCost = printingSqftCost * values.area;
     const totalMountingCost = mountingSqftCost * values.area;
@@ -650,10 +663,9 @@ const ReleaseContent = ({
       mountingCost: totalMountingCost,
       totalPrintingCost: totalPrintingCostWithGst,
       totalMountingCost: totalMountingCostWithGst,
-      displayCost: totalPrintingCost + totalMountingCost,
-      totalDisplayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
+      totalDisplayCost: values.displayCostPerMonth * totalMonths,
     });
-  }, [values.area, mountingSqftCost, printingSqftCost]);
+  }, [values.area, mountingSqftCost, printingSqftCost, values.displayCostPerMonth]);
 
   const calculateHeightWidth = useMemo(() => {
     const total = values.size?.reduce((acc, item) => {
@@ -863,18 +875,50 @@ const ReleaseContent = ({
         />
       </div>
 
-      <NumberInput
-        label="Total Display Cost/Month"
-        name="displayCost"
-        errors={errors}
-        placeholder="Write..."
-        size="md"
-        className="mb-4"
-        hideControls
-        readOnly
-        disabled
-        precision={2}
-      />
+      <div className="grid grid-cols-2  gap-4">
+        <NumberInput
+          label="Total Display Cost/Month"
+          name="displayCostPerMonth"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          precision={2}
+        />
+        <NumberInput
+          label="Total Display Cost Discount"
+          name="displayCostDiscount"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          precision={2}
+        />
+      </div>
+      <div className="grid grid-cols-2  gap-4">
+        <NumberInput
+          label="Printing Cost Discount"
+          name="printingCostDiscount"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          precision={2}
+        />
+        <NumberInput
+          label="Mounting Cost Discount"
+          name="mountingCostDiscount"
+          errors={errors}
+          placeholder="Write..."
+          size="md"
+          className="mb-4"
+          hideControls
+          precision={2}
+        />
+      </div>
 
       <TextareaInput
         label="Description of Goods and Services"
@@ -914,7 +958,10 @@ const ManualEntryContent = ({
       const tempArr = [...addSpaceItem];
       const res = tempArr.map(ele => {
         if (ele.itemId === item.itemId) {
-          return { ...formData, itemId: item.itemId };
+          return {
+            ...formData,
+            itemId: item.itemId,
+          };
         }
         return ele;
       });
@@ -942,7 +989,7 @@ const ManualEntryContent = ({
         price: item?.price,
         area: item?.area,
         city: item?.city,
-        displayCost: item?.displayCost,
+        displayCostPerMonth: item?.displayCostPerMonth,
         height: item?.height,
         itemId: item?.itemId,
         media: item?.media,

@@ -11,6 +11,7 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
     () => Number((totalPrice + totalPrice * 0.18).toFixed(2)),
     [totalPrice],
   );
+
   return (
     <div className="px-5">
       <div className="max-h-[500px] overflow-y-auto">
@@ -185,7 +186,7 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
                     </div>
                     <div>
                       <p>Total Display Cost/Month:</p>
-                      <p>{toIndianCurrency(item?.totalDisplayCost)}</p>
+                      <p>{toIndianCurrency(item?.displayCostPerMonth)}</p>
                     </div>
                     <div>
                       <p>Printing Cost:</p>

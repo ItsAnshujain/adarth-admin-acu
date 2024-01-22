@@ -482,9 +482,14 @@ const CreateFinancePage = () => {
   const calculateManualTotalPrice = useMemo(() => {
     const initialPrice = 0;
     if (addSpaceItem.length) {
-      return addSpaceItem
-        .map(item => (item?.displayCost ? Number(item.displayCost) : 0))
-        .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
+      return addSpaceItem.reduce(
+        (previousValue, currentValue) =>
+          previousValue +
+          currentValue.totalDisplayCost +
+          currentValue.totalPrintingCost +
+          currentValue.totalMountingCost,
+        initialPrice,
+      );
     }
     return initialPrice;
   }, [addSpaceItem]);
@@ -589,10 +594,11 @@ const CreateFinancePage = () => {
           city: item.city,
           state: item.state,
           areaInSqFt: item.area,
-          totalDisplayCost: item.displayCost,
-          totalPrintingCost: item.printingCost,
-          totalMountingCost: item.mountingCost,
-          price: item.displayCost,
+          totalDisplayCost: parseFloat(item.totalDisplayCost.toFixed(2)),
+          totalPrintingCost: parseFloat(item.totalPrintingCost.toFixed(2)),
+          totalMountingCost: parseFloat(item.totalMountingCost.toFixed(2)),
+          price: parseFloat(item.totalDisplayCost.toFixed(2)),
+          displayCostPerMonth: parseFloat(item.displayCostPerMonth.toFixed(2)),
         }));
 
         if (!data.spaces.length) {
@@ -601,10 +607,11 @@ const CreateFinancePage = () => {
           });
           return;
         }
-        data.subTotal = calculateManualTotalPrice;
+        data.subTotal = parseFloat(calculateManualTotalPrice.toFixed(2));
         data.gst = +(data.subTotal * 0.18).toFixed(2);
-        data.total = data.subTotal + data.gst;
-        data.totalInWords = toWords.convert(data.total);
+        data.total = parseFloat((data.subTotal + data.gst).toFixed(2));
+        data.taxInWords = toWords.convert(parseFloat(data.gst.toFixed(2)));
+        data.totalInWords = toWords.convert(parseFloat(data.total.toFixed(2)));
         data.printingCostPerSqft = data.printingSqftCost;
         data.mountingCostPerSqft = data.mountingSqftCost;
         if (submitType === 'preview') {
@@ -690,13 +697,13 @@ const CreateFinancePage = () => {
           city: item.city,
           state: item.state,
           areaInSqFt: item.area,
-          displayCost: item.displayCost,
-          printingCost: item.printingCost,
-          mountingCost: item.mountingCost,
-          totalDisplayCost: item.totalDisplayCost,
-          totalPrintingCost: item.totalPrintingCost,
-          totalMountingCost: item.totalMountingCost,
-          price: item.displayCost,
+          printingCost: parseFloat(item.totalPrintingCost.toFixed(2)),
+          mountingCost: parseFloat(item.totalMountingCost.toFixed(2)),
+          totalDisplayCost: parseFloat(item.totalDisplayCost.toFixed(2)),
+          totalPrintingCost: parseFloat(item.totalPrintingCost.toFixed(2)),
+          totalMountingCost: parseFloat(item.totalMountingCost.toFixed(2)),
+          price: parseFloat(item.totalDisplayCost.toFixed(2)),
+          displayCostPerMonth: parseFloat(item.displayCostPerMonth.toFixed(2)),
         }));
 
         if (!data.spaces.length) {
@@ -706,11 +713,11 @@ const CreateFinancePage = () => {
           return;
         }
 
-        data.subTotal = calculateManualTotalPrice;
+        data.subTotal = parseFloat(calculateManualTotalPrice.toFixed(2));
         data.gst = +(data.subTotal * 0.18).toFixed(2);
-        data.total = data.subTotal + data.gst;
-        data.taxInWords = toWords.convert(data.gst);
-        data.totalInWords = toWords.convert(data.total);
+        data.total = parseFloat((data.subTotal + data.gst).toFixed(2));
+        data.taxInWords = toWords.convert(parseFloat(data.gst.toFixed(2)));
+        data.totalInWords = toWords.convert(parseFloat(data.total.toFixed(2)));
         data.printingCostPerSqft = data.printingSqftCost;
         data.mountingCostPerSqft = data.mountingSqftCost;
         if (submitType === 'preview') {
@@ -731,13 +738,11 @@ const CreateFinancePage = () => {
             city: item.city,
             state: item.state,
             areaInSqFt: item.area,
-            displayCost: item.displayCost,
-            printingCost: item.printingCost,
-            mountingCost: item.mountingCost,
-            totalDisplayCost: item.totalDisplayCost,
-            totalPrintingCost: item.totalPrintingCost,
-            totalMountingCost: item.totalMountingCost,
-            price: item.displayCost,
+            totalDisplayCost: parseFloat(item.totalDisplayCost.toFixed(2)),
+            totalPrintingCost: parseFloat(item.totalPrintingCost.toFixed(2)),
+            totalMountingCost: parseFloat(item.totalMountingCost.toFixed(2)),
+            price: parseFloat(item.totalDisplayCost.toFixed(2)),
+            displayCostPerMonth: parseFloat(item.displayCostPerMonth.toFixed(2)),
           }));
           const finalData = { ...data, ...updatedForm };
           if (finalData.mountingGst === 0 || finalData.mountingGst === 18) {
@@ -818,10 +823,11 @@ const CreateFinancePage = () => {
           city: item.city,
           state: item.state,
           areaInSqFt: item.area,
-          totalDisplayCost: item.displayCost,
-          totalPrintingCost: item.printingCost,
-          totalMountingCost: item.mountingCost,
-          price: item.displayCost,
+          totalDisplayCost: parseFloat(item.totalDisplayCost.toFixed(2)),
+          totalPrintingCost: parseFloat(item.totalPrintingCost.toFixed(2)),
+          totalMountingCost: parseFloat(item.totalMountingCost.toFixed(2)),
+          price: parseFloat(item.totalDisplayCost.toFixed(2)),
+          displayCostPerMonth: parseFloat(item.displayCostPerMonth.toFixed(2)),
         }));
 
         if (!data.spaces.length) {
@@ -830,11 +836,11 @@ const CreateFinancePage = () => {
           });
           return;
         }
-        data.subTotal = calculateManualTotalPrice;
+        data.subTotal = parseFloat(calculateManualTotalPrice.toFixed(2));
         data.gst = +(data.subTotal * 0.18).toFixed(2);
-        data.total = data.subTotal + data.gst;
-        data.taxInWords = toWords.convert(data.gst);
-        data.totalInWords = toWords.convert(data.total);
+        data.total = parseFloat((data.subTotal + data.gst).toFixed(2));
+        data.taxInWords = toWords.convert(parseFloat(data.gst.toFixed(2)));
+        data.totalInWords = toWords.convert(parseFloat(data.total.toFixed(2)));
         data.printingCostPerSqft = data.printingSqftCost;
         data.mountingCostPerSqft = data.mountingSqftCost;
         if (submitType === 'preview') {
@@ -938,18 +944,14 @@ const CreateFinancePage = () => {
             }
             onClickAddItems={data => {
               if (
-                !form.values.printingSqftCost ||
-                !form.values.mountingSqftCost ||
-                !form.values.printingGstPercentage ||
-                !form.values.mountingGstPercentage ||
-                form.values.printingSqftCost === 0 ||
-                form.values.mountingSqftCost === 0 ||
-                form.values.printingGstPercentage === 0 ||
-                form.values.mountingGstPercentage === 0
+                (!form.values.printingSqftCost && form.values.printingSqftCost !== 0) ||
+                (!form.values.mountingSqftCost && form.values.mountingSqftCost !== 0) ||
+                (!form.values.printingGstPercentage && form.values.printingGstPercentage !== 0) ||
+                (!form.values.mountingGstPercentage && form.values.mountingGstPercentage !== 0)
               ) {
                 showNotification({
                   title:
-                    'Please select printing ft² cost, printing gst %, mounting ft² and mounting gst % cost before adding items',
+                    'Please select printing/ ft² cost, printing gst %, mounting/ ft² and mounting gst % cost before adding items',
                   color: 'blue',
                 });
                 return;

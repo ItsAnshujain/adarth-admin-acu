@@ -151,7 +151,7 @@ const PurchaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice, has
                     </div>
                     <div>
                       <p>Total Display Cost/Month:</p>
-                      <p>{toIndianCurrency(item?.totalDisplayCost)}</p>
+                      <p>{toIndianCurrency(item?.displayCostPerMonth)}</p>
                     </div>
                     <div>
                       <p>Printing Cost:</p>
