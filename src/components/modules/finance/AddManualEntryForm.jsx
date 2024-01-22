@@ -550,7 +550,7 @@ const PurchaseAndInvoiceContent = ({
       <div className="grid grid-cols-2  gap-4">
         <NumberInput
           label="Total Printing Cost"
-          name="totalPrintingCost"
+          name="printingCost"
           errors={errors}
           placeholder="Write..."
           size="md"
@@ -562,7 +562,7 @@ const PurchaseAndInvoiceContent = ({
         />
         <NumberInput
           label="Total Mounting Cost"
-          name="totalMountingCost"
+          name="mountingCost"
           errors={errors}
           placeholder="Write..."
           size="md"
@@ -961,6 +961,9 @@ const ManualEntryContent = ({
           return {
             ...formData,
             itemId: item.itemId,
+            displayCostDiscount: item.displayCostDiscount || 0,
+            mountingCostDiscount: item.mountingCostDiscount || 0,
+            printingCostDiscount: item.printingCostDiscount || 0,
           };
         }
         return ele;
@@ -973,7 +976,16 @@ const ManualEntryContent = ({
       });
       return;
     }
-    setAddSpaceItem(prevState => [...prevState, { ...formData, itemId: uuidv4() }]);
+    setAddSpaceItem(prevState => [
+      ...prevState,
+      {
+        ...formData,
+        itemId: uuidv4(),
+        displayCostDiscount: item.displayCostDiscount || 0,
+        mountingCostDiscount: item.mountingCostDiscount || 0,
+        printingCostDiscount: item.printingCostDiscount || 0,
+      },
+    ]);
     onClose();
   };
 
@@ -996,7 +1008,7 @@ const ManualEntryContent = ({
         mountingCost: item?.mountingCost,
         printingCost: item?.printingCost,
         width: item?.width,
-        hsn: item?.hsn,
+        hsn: item?.hsn || 0,
         state: item?.state,
         category: item.category,
         size: item?.size?.map(ele => ({

@@ -285,6 +285,7 @@ const Invoice = ({
               printingCost,
               mountingCost,
               totalDisplayCost,
+              displayCostPerMonth,
             },
           },
         }) =>
@@ -323,6 +324,7 @@ const Invoice = ({
                         printingCost,
                         mountingCost,
                         totalDisplayCost,
+                        displayCostPerMonth,
                       })
                     }
                   >
