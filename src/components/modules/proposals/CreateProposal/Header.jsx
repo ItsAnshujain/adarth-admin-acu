@@ -1,8 +1,8 @@
 import { Chip, Button } from '@mantine/core';
 import classNames from 'classnames';
 import { ChevronLeft, ChevronRight } from 'react-feather';
+import { useFormContext } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { useFormContext } from '../../../../context/formContext';
 
 const initialState = ['Basic Information', 'Specifications'];
 

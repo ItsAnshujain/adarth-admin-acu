@@ -96,6 +96,7 @@ const defaultValues = {
   oneTimeInstallationCost: 0,
   monthlyAdditionalCost: 0,
   otherCharges: 0,
+  applyPrintingMountingCostForAll: true,
 };
 
 const AddEditPriceDrawer = ({
@@ -121,6 +122,8 @@ const AddEditPriceDrawer = ({
   const watchMountingCostPerSqft = form.watch('mountingCostPerSqft');
   const watchPrintingGstPercentage = form.watch('printingGstPercentage');
   const watchMountingGstPercentage = form.watch('mountingGstPercentage');
+
+  const watchApplyPrintingMountingCostForAll = form.watch('applyPrintingMountingCostForAll');
 
   const calculateTotalMonths = (startDate, endDate) => {
     const start = new Date(startDate);
@@ -156,8 +159,26 @@ const AddEditPriceDrawer = ({
     [selectedInventory?.dimension],
   );
 
-  const totalPrice = useMemo(() => {
-    const {
+  const {
+    totalDisplayCost,
+    tradedAmount,
+    totalPrintingCost,
+    totalMountingCost,
+    oneTimeInstallationCost,
+    monthlyAdditionalCost,
+    otherCharges,
+  } = form.watch();
+
+  const totalPrice = useMemo(
+    () =>
+      totalDisplayCost +
+      tradedAmount +
+      totalPrintingCost +
+      totalMountingCost +
+      oneTimeInstallationCost +
+      monthlyAdditionalCost -
+      otherCharges,
+    [
       totalDisplayCost,
       tradedAmount,
       totalPrintingCost,
@@ -165,17 +186,8 @@ const AddEditPriceDrawer = ({
       oneTimeInstallationCost,
       monthlyAdditionalCost,
       otherCharges,
-    } = form.watch();
-    return (
-      totalDisplayCost +
-      tradedAmount +
-      totalPrintingCost +
-      totalMountingCost +
-      oneTimeInstallationCost +
-      monthlyAdditionalCost -
-      otherCharges
-    );
-  }, [form.watch()]);
+    ],
+  );
 
   const onChangeDisplayCostPerMonth = useCallback(() => {
     const displayCostPerMonth = watchDisplayCostPerMonth * totalMonths || 0;
@@ -257,6 +269,16 @@ const AddEditPriceDrawer = ({
 
                 priceChanged: true,
               }
+            : watchApplyPrintingMountingCostForAll
+            ? {
+                ...place,
+                printingCostPerSqft: formData.printingCostPerSqft,
+                printingGst: formData.printingGst,
+                totalPrintingCost: formData.totalPrintingCost,
+                mountingCostPerSqft: formData.mountingCostPerSqft,
+                mountingGst: formData.mountingGst,
+                totalMountingCost: formData.totalMountingCost,
+              }
             : place,
         ),
       );
@@ -293,6 +315,16 @@ const AddEditPriceDrawer = ({
 
                 priceChanged: true,
               }
+            : watchApplyPrintingMountingCostForAll
+            ? {
+                ...place,
+                printingCostPerSqft: formData.printingCostPerSqft,
+                printingGst: formData.printingGst,
+                totalPrintingCost: formData.totalPrintingCost,
+                mountingCostPerSqft: formData.mountingCostPerSqft,
+                mountingGst: formData.mountingGst,
+                totalMountingCost: formData.totalMountingCost,
+              }
             : place,
         ),
       );
@@ -301,8 +333,9 @@ const AddEditPriceDrawer = ({
     onClose();
     form.reset();
   };
+
   useEffect(() => {
-    if (selectedInventory?.company || selectedInventory?.priceChanged) {
+    if (selectedInventory?.company || selectedInventory?.priceChanged || selectedInventory?.price) {
       form.reset({
         displayCostPerMonth: selectedInventory.displayCostPerMonth,
         totalDisplayCost: selectedInventory.totalDisplayCost,
@@ -321,6 +354,7 @@ const AddEditPriceDrawer = ({
         monthlyAdditionalCost: selectedInventory.monthlyAdditionalCost,
         otherCharges: selectedInventory.otherCharges,
         tradedAmount: selectedInventory.tradedAmount,
+        applyPrintingMountingCostForAll: true,
       });
     } else {
       form.reset(defaultValues);
@@ -348,7 +382,7 @@ const AddEditPriceDrawer = ({
       onClose={onClose}
       classNames={{
         title: 'text-xl font-semibold',
-        header: 'px-6 pt-2 z-20 h-20 sticky top-0 bg-white',
+        header: 'px-6 mb-0 z-20 h-16 sticky top-0 bg-white',
         closeButton: 'text-black',
       }}
     >
@@ -490,9 +524,16 @@ const AddEditPriceDrawer = ({
             </div>
             <div className="border border-blue-200 bg-blue-100 m-6 p-4 rounded-md flex flex-col gap-4">
               <Checkbox
-                defaultChecked
+                name="applyPrintingMountingCostForAll"
                 label="Apply for all selected inventories"
                 classNames={{ label: 'text-base font-bold' }}
+                checked={form.getValues('applyPrintingMountingCostForAll')}
+                onChange={() =>
+                  form.setValue(
+                    'applyPrintingMountingCostForAll',
+                    !watchApplyPrintingMountingCostForAll,
+                  )
+                }
               />
               <div className="flex flex-col gap-4">
                 <div className="flex gap-4">

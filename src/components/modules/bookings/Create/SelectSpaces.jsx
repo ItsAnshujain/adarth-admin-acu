@@ -402,16 +402,21 @@ const SelectSpace = () => {
       },
       {
         Header: 'PRICE',
-        Cell: info =>
+        Cell: ({
+          row: {
+            original: { priceChanged, startDate, endDate, _id },
+          },
+        }) =>
           useMemo(() =>
-            info.row.original?.priceChanged ? (
+            priceChanged ? (
               <Button
                 onClick={() => {
                   onClickAddPrice();
-                  setSelectedInventoryId(info.row.original?._id);
+                  setSelectedInventoryId(_id);
                 }}
                 className="bg-purple-450 order-3"
                 size="xs"
+                disabled={!watchPlace.some(item => item._id === _id) && (!startDate || !endDate)}
               >
                 Edit Price
               </Button>
@@ -419,10 +424,11 @@ const SelectSpace = () => {
               <Button
                 onClick={() => {
                   onClickAddPrice();
-                  setSelectedInventoryId(info.row.original?._id);
+                  setSelectedInventoryId(_id);
                 }}
                 className="bg-purple-450 order-3"
                 size="xs"
+                disabled={!watchPlace.some(item => item._id === _id) && (!startDate || !endDate)}
               >
                 Add Price
               </Button>
@@ -607,7 +613,7 @@ const SelectSpace = () => {
             <p className="text-slate-400">Total Price</p>
             <Group>
               <p className="font-bold">{toIndianCurrency(memoizedCalculateTotalPrice)}</p>
-              <p className="text-xs">**additional gst to be included</p>
+              <p className="text-xs italic">** inclusive of GST</p>
             </Group>
           </div>
         </div>

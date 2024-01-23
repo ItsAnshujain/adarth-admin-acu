@@ -9,6 +9,7 @@ import { useModals } from '@mantine/modals';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
 import { showNotification } from '@mantine/notifications';
+import { useFormContext } from 'react-hook-form';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
@@ -25,7 +26,6 @@ import {
   stringToColour,
 } from '../../../utils';
 import Filter from '../inventory/Filter';
-import { useFormContext } from '../../../context/formContext';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../../DateRangeSelector';
 import RowsPerPage from '../../RowsPerPage';
@@ -49,8 +49,9 @@ const updatedModalConfig = {
 const Spaces = () => {
   const modals = useModals();
   const { id: proposalId } = useParams();
-  const { values, setFieldValue } = useFormContext();
+  const form = useFormContext();
   const [drawerOpened, drawerActions] = useDisclosure();
+  const watchSpaces = form.watch('spaces') || [];
 
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
@@ -59,7 +60,7 @@ const Spaces = () => {
     }),
     shallow,
   );
-  const selectedInventoryIds = useMemo(() => values.spaces.map(space => space._id));
+  const selectedInventoryIds = useMemo(() => watchSpaces.map(space => space._id));
   const [searchParams, setSearchParams] = useSearchParams({
     limit: activeLayout.inventoryLimit || 20,
     page: 1,
@@ -84,7 +85,7 @@ const Spaces = () => {
   const updateData = debounce((key, val, id, inputId) => {
     if (key === 'dateRange') {
       let availableUnit = 0;
-      const hasChangedUnit = values.spaces.find(item => item._id === id)?.hasChangedUnit;
+      const hasChangedUnit = watchSpaces.find(item => item._id === id)?.hasChangedUnit;
       setUpdatedInventoryData(prev => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
@@ -100,9 +101,9 @@ const Spaces = () => {
         return newList;
       });
 
-      setFieldValue(
+      form.setValue(
         'spaces',
-        values.spaces.map(item =>
+        watchSpaces.map(item =>
           item._id === id
             ? {
                 ...item,
@@ -123,9 +124,9 @@ const Spaces = () => {
         ),
       );
 
-      setFieldValue(
+      form.setValue(
         'spaces',
-        values.spaces.map(item =>
+        watchSpaces.map(item =>
           item._id === id
             ? { ...item, [key]: val, ...(key === 'unit' ? { hasChangedUnit: true } : {}) }
             : item,
@@ -147,12 +148,12 @@ const Spaces = () => {
     });
 
   const onClickAddPrice = () => {
-    if (!values.spaces?.length) {
+    if (!watchSpaces?.length) {
       showNotification({
         title: 'Please select atleast one place to add price',
         color: 'blue',
       });
-    } else if (values.spaces.some(item => !(item.startDate || item.endDate))) {
+    } else if (watchSpaces.some(item => !(item.startDate || item.endDate))) {
       showNotification({
         title: 'Please select the proposal date to add price',
         color: 'blue',
@@ -312,16 +313,21 @@ const Spaces = () => {
       },
       {
         Header: 'PRICE',
-        Cell: info =>
+        Cell: ({
+          row: {
+            original: { priceChanged, startDate, endDate, _id },
+          },
+        }) =>
           useMemo(() =>
-            info.row.original?.priceChanged ? (
+            priceChanged ? (
               <Button
                 onClick={() => {
                   onClickAddPrice();
-                  setSelectedInventoryId(info.row.original?._id);
+                  setSelectedInventoryId(_id);
                 }}
                 className="bg-purple-450 order-3"
                 size="xs"
+                disabled={!watchSpaces.some(item => item._id === _id) && (!startDate || !endDate)}
               >
                 Edit Price
               </Button>
@@ -329,10 +335,11 @@ const Spaces = () => {
               <Button
                 onClick={() => {
                   onClickAddPrice();
-                  setSelectedInventoryId(info.row.original?._id);
+                  setSelectedInventoryId(_id);
                 }}
                 className="bg-purple-450 order-3"
                 size="xs"
+                disabled={!watchSpaces.some(item => item._id === _id) && (!startDate || !endDate)}
               >
                 Add Price
               </Button>
@@ -340,25 +347,13 @@ const Spaces = () => {
           ),
       },
       {
-        Header: 'PRICING',
+        Header: 'TOTAL PRICE',
         accessor: 'basicInformation.price',
         Cell: ({
           row: {
-            original: { _id, price },
+            original: { price },
           },
-        }) =>
-          useMemo(
-            () => (
-              <NumberInput
-                id={`unit-${_id}`}
-                defaultValue={+(price || 0)}
-                className="w-40"
-                hideControls
-                onChange={e => updateData('price', e, _id, `unit-${_id}`)}
-              />
-            ),
-            [],
-          ),
+        }) => useMemo(() => toIndianCurrency(price), []),
       },
       {
         Header: 'PROPOSAL DATE',
@@ -371,7 +366,7 @@ const Spaces = () => {
         }) =>
           useMemo(() => {
             const isDisabled =
-              values?.spaces?.some(item => item._id === _id) && (!startDate || !endDate);
+              watchSpaces.some(item => item._id === _id) && (!startDate || !endDate);
             const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
 
             return (
@@ -395,14 +390,13 @@ const Spaces = () => {
           },
         }) =>
           useMemo(() => {
-            const isDisabled = !values?.spaces?.some(
+            const isDisabled = !watchSpaces.some(
               item => item._id === _id && item.startDate !== null && item.endDate !== null,
             );
 
             const unitLeft = getAvailableUnits(bookingRange, startDate, endDate, originalUnit);
-            const data = values?.spaces ? values.spaces.find(item => item._id === _id) : {};
+            const data = watchSpaces ? watchSpaces.find(item => item._id === _id) : {};
             const isExceeded = data?.unit > (proposalId ? unitLeft : data?.availableUnit);
-
             return (
               <Tooltip
                 label={
@@ -484,18 +478,18 @@ const Spaces = () => {
           ),
       },
     ],
-    [updatedInventoryData, values.spaces],
+    [updatedInventoryData, watchSpaces],
   );
 
   const getTotalPrice = (places = []) => {
     const totalPrice = places.reduce(
-      (acc, item) => acc + +(item.price || item?.basicInformation?.price || 0),
+      (acc, item) => acc + +(item?.price || item?.basicInformation?.price || 0),
       0,
     );
     return totalPrice;
   };
 
-  const handleSelection = selectedRows => setFieldValue('spaces', selectedRows);
+  const handleSelection = selectedRows => form.setValue('spaces', selectedRows);
 
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
@@ -531,7 +525,7 @@ const Spaces = () => {
       const finalData = [];
 
       for (const item of docs) {
-        const selectionItem = values?.spaces?.find(pl => pl._id === item._id);
+        const selectionItem = watchSpaces.find(pl => pl._id === item._id);
 
         const obj = {};
         obj._id = item._id;
@@ -571,8 +565,8 @@ const Spaces = () => {
   }, [debouncedSearch]);
 
   useEffect(() => {
-    if (values.spaces.length) {
-      values.spaces.map(place =>
+    if (watchSpaces.length) {
+      watchSpaces.map(place =>
         setUpdatedInventoryData(prev =>
           prev.map(item => (item?._id === place?._id ? { ...item, ...place } : item)),
         ),
@@ -607,11 +601,14 @@ const Spaces = () => {
         <div className="flex gap-4">
           <div>
             <Text color="gray">Selected Places</Text>
-            <Text weight="bold">{values?.spaces?.length}</Text>
+            <Text weight="bold">{watchSpaces.length}</Text>
           </div>
           <div>
             <Text color="gray">Total Price</Text>
-            <Text weight="bold">{toIndianCurrency(getTotalPrice(values?.spaces))}</Text>
+            <Group>
+              <Text weight="bold">{toIndianCurrency(getTotalPrice(watchSpaces))}</Text>
+              <p className="text-xs italic">** exclusive of GST</p>
+            </Group>
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -651,7 +648,7 @@ const Spaces = () => {
           COLUMNS={COLUMNS}
           allowRowsSelect
           setSelectedFlatRows={handleSelection}
-          selectedRowData={values.spaces}
+          selectedRowData={watchSpaces}
           handleSorting={handleSortByColumn}
           activePage={pagination.page}
           totalPages={pagination.totalPages}
@@ -661,7 +658,7 @@ const Spaces = () => {
       <AddEditPriceDrawer
         isOpened={drawerOpened}
         onClose={drawerActions.close}
-        selectedInventories={values.spaces}
+        selectedInventories={watchSpaces}
         data={updatedInventoryData}
         selectedInventoryId={selectedInventoryId}
         type="proposal"
