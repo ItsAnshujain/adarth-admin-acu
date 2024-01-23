@@ -10,7 +10,7 @@ import { validateImageResolution, serialize, supportedTypes } from '../../../../
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import image from '../../../../assets/image.png';
 import trash from '../../../../assets/trash.svg';
-import { useUploadFile } from '../../../../apis/queries/upload.queries';
+import { useDeleteUploadedFile, useUploadFile } from '../../../../apis/queries/upload.queries';
 import modalConfig from '../../../../utils/modalConfig';
 import SelectTermsItem from './SelectTermsItem';
 import { useProposalTerms, useProposalTermsById } from '../../../../apis/queries/proposal.queries';
@@ -45,6 +45,7 @@ const BasicInfo = ({ proposalId, userData }) => {
   const form = useFormContext();
   const [activeImage, setActiveImage] = useState();
   const { mutateAsync: upload, isLoading: isUploadLoading } = useUploadFile();
+  const { mutateAsync: deleteFile, isLoading: isDeleteLoading } = useDeleteUploadedFile();
 
   const watchProposalTermsId = form.watch('proposalTermsId');
   const watchLetterFooter = form.watch('letterFooter');
@@ -98,7 +99,12 @@ const BasicInfo = ({ proposalId, userData }) => {
   const handleDeleteImage = async (e, key) => {
     e.stopPropagation();
     setActiveImage(key);
-    setFieldValue(key, '');
+
+    if (form.getFieldState(key)) {
+      await deleteFile(form.getFieldState(key).split('/').at(-1), {
+        onSuccess: () => form.setValue(key, ''),
+      });
+    }
   };
 
   const memoizedProposalData = useMemo(() => {
@@ -214,131 +220,21 @@ const BasicInfo = ({ proposalId, userData }) => {
                   />
                 </div>
               ) : null}
-              <Box
-                className="bg-white border rounded-md cursor-zoom-in"
-                onClick={() => toggleImagePreviewModal(values?.letterHead)}
-              >
-                {values?.letterHead ? (
-                  <div className="relative">
-                    <MantineImage
-                      src={values?.letterHead}
-                      alt="letter-head-preview"
-                      height={180}
-                      width={350}
-                      className="bg-slate-100"
-                      fit="contain"
-                      placeholder={
-                        <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
-                      }
-                    />
-                    <ActionIcon
-                      className="absolute right-2 top-1 bg-white"
-                      onClick={e => handleDeleteImage(e, 'letterHead')}
-                      loading={activeImage === 'letterHead'}
-                    >
-                      <MantineImage src={trash} alt="trash-icon" />
-                    </ActionIcon>
-                  </div>
-                ) : null}
-              </Box>
-            </div>
-          </div>
-
-          <div>
-            <p className="font-semibold text-lg">Letter Footer</p>
-            <div className="mb-3">
-              <span className="font-bold text-gray-500 mr-2">Supported types</span>
-              {supportedTypes.map(item => (
-                <Badge key={item} className="mr-2">
-                  {item}
-                </Badge>
-              ))}
-              <p className="text-red-450">Recommended Size: Max 1350px x 80px</p>
-            </div>
-            <div className="flex items-start">
-              {!values?.letterFooter ? (
-                <div className="h-[180px] w-[350px] mr-4 mb-2">
-                  <Dropzone
-                    onDrop={imagePath => onHandleDrop(imagePath, 'letterFooter')}
-                    accept={['image/png', 'image/jpeg']}
-                    className="h-full w-full flex justify-center items-center bg-slate-100"
-                    loading={activeImage === 'letterFooter' && isUploadLoading}
-                    name="letterFooter"
-                    multiple={false}
-                    {...getInputProps('letterFooter')}
-                  >
-                    <div className="flex items-center justify-center">
-                      <MantineImage src={image} alt="placeholder" height={50} width={50} />
-                    </div>
-                    <p>
-                      Drag and Drop your file here, or{' '}
-                      <span className="text-purple-450 border-none">browse</span>
-                    </p>
-                  </Dropzone>
-                  {errors?.letterFooter ? (
-                    <p className="mt-1 text-xs text-red-450">{errors?.letterFooter}</p>
-                  ) : null}
+              {userData?.proposalFooter ? (
+                <div className="flex flex-col">
+                  <p className="font-semibold text-lg">Letter Footer</p>
+                  <MantineImage
+                    src={userData.proposalFooter || null}
+                    alt="letter-head-preview"
+                    height={180}
+                    width={350}
+                    className="bg-slate-100"
+                    fit="contain"
+                    placeholder={
+                      <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
+                    }
+                  />
                 </div>
-              ) : null}
-              <Box
-                className="bg-white border rounded-md cursor-zoom-in"
-                onClick={() => toggleImagePreviewModal(values?.letterFooter)}
-              >
-                {values?.letterFooter ? (
-                  <div className="relative">
-                    <MantineImage
-                      src={values?.letterFooter}
-                      alt="letter-footer-preview"
-                      height={180}
-                      width={350}
-                      className="bg-slate-100"
-                      fit="contain"
-                      withPlaceholder
-                      placeholder={
-                        <Text align="center">Unexpected error occured. Image cannot be loaded</Text>
-                      }
-                    />
-                    <ActionIcon
-                      className="absolute right-2 top-1 bg-white"
-                      onClick={e => handleDeleteImage(e, 'letterFooter')}
-                      loading={activeImage === 'letterFooter'}
-                    >
-                      <MantineImage src={trash} alt="trash-icon" />
-                    </ActionIcon>
-                  </div>
-                ) : null}
-              </Box>
-            </div>
-          </div>
-        </section>
-      )}
-      <section className="grid grid-cols-2">
-        <Group className="flex flex-col col-span-1 items-start">
-          <Select
-            label="Select Terms and Conditions"
-            name="proposalTermsId"
-            options={memoizedProposalTerms}
-            styles={nativeSelectStyles}
-            rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
-            rightSectionWidth={40}
-            className="mb-7 w-full"
-            classNames={{ dropdown: 'px-1 py-2' }}
-            placeholder="Select Terms and Conditions"
-            itemComponent={SelectTermsItem}
-            filter={(value, item) =>
-              item.label.toLowerCase().includes(value.toLowerCase().trim()) ||
-              item.description.toLowerCase().includes(value.toLowerCase().trim())
-            }
-          />
-
-          {values.proposalTermsId ? (
-            <section className="py-5">
-              <Text size="md" weight="bold">
-                Terms and Conditions
-              </Text>
-              <p>{proposalTermById?.data?.name}</p>
-              {proposalTermById?.data?.description?.[0] !== '' ? (
-                <ViewRte data={proposalTermById?.data?.description[0] || ''} />
               ) : null}
             </section>
           ) : (
