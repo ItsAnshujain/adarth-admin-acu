@@ -110,7 +110,7 @@ const CreateBookingPage = () => {
 
   const watchPlace = form.watch('place') || [];
 
-  const handleSubmit = form.handleSubmit(async formData => {
+  const onSubmit = form.handleSubmit(async formData => {
     setFormStep(prevState => prevState + 1);
     if (formStep === 3) {
       const data = { ...formData };
@@ -159,15 +159,15 @@ const CreateBookingPage = () => {
         });
         return;
       }
-
       data.place = watchPlace?.map(item => ({
+        ...item,
         id: item._id,
         price: +item.price,
         media: isValidURL(item.media) ? item.media : undefined,
         startDate: item.startDate
           ? dayjs(item.startDate).startOf('day').toISOString()
           : dayjs().startOf('day').toISOString(),
-        endDate: item.startDate
+        endDate: item.endDate
           ? dayjs(item.endDate).endOf('day').toISOString()
           : dayjs().endOf('day').toISOString(),
         tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
@@ -293,13 +293,13 @@ const CreateBookingPage = () => {
         description: campaign?.description || '',
         place:
           campaign?.spaces?.map(item => ({
+            ...item,
+            location: item?.location?.city,
+            dimension: item?.specifications?.size,
             _id: item._id,
             price: +item.campaignPrice,
             media: isValidURL(item.media) ? item.media : undefined,
-            startDate: item.startDate,
-            endDate: item.endDate,
             tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
-            unit: item?.unit,
             availableUnit:
               item?.specifications?.unit && item.unit
                 ? item.specifications.unit - item.unit
@@ -337,7 +337,7 @@ const CreateBookingPage = () => {
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <FormProvider {...form}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onSubmit}>
           <Header
             setFormStep={setFormStep}
             formStep={formStep}

@@ -2,12 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Image, NumberInput, Loader, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { useModals } from '@mantine/modals';
 import shallow from 'zustand/shallow';
 import { useFormContext } from 'react-hook-form';
+import { showNotification } from '@mantine/notifications';
 import Search from '../../../Search';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
@@ -34,6 +35,7 @@ import CategoryContent from '../../inventory/CategoryContent';
 import SubCategoryContent from '../../inventory/SubCategoryContent';
 import UploadMediaContent from '../../inventory/UploadMediaContent';
 import DimensionContent from '../../inventory/DimensionContent';
+import AddEditPriceDrawer from './AddEditPriceDrawer';
 
 dayjs.extend(isBetween);
 
@@ -55,6 +57,7 @@ const SelectSpace = () => {
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
+  const [selectedInventoryId, setSelectedInventoryId] = useState('');
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
       activeLayout: state.activeLayout,
@@ -63,7 +66,7 @@ const SelectSpace = () => {
     shallow,
   );
   const watchPlace = form.watch('place') || [];
-
+  const [drawerOpened, drawerActions] = useDisclosure();
   const selectedInventoryIds = useMemo(() => watchPlace.map(space => space._id));
 
   const [searchParams, setSearchParams] = useSearchParams({
@@ -229,6 +232,8 @@ const SelectSpace = () => {
 
   const RenderPeerCell = useCallback(({ row }) => row.original.peer || '-', []);
 
+  const RenderTotalPriceCell = useCallback(({ row }) => row.original.price.toFixed(2) || '-', []);
+
   const RenderInventoryIdCell = useCallback(({ row }) => row.original.inventoryId || '-', []);
 
   const RenderMediaTypeCell = useCallback(({ row }) => row.original.mediaType || '-', []);
@@ -238,6 +243,21 @@ const SelectSpace = () => {
     [updateData],
   );
 
+  const onClickAddPrice = () => {
+    if (!watchPlace?.length) {
+      showNotification({
+        title: 'Please select atleast one place to add price',
+        color: 'blue',
+      });
+    } else if (watchPlace.some(item => !(item.startDate || item.endDate))) {
+      showNotification({
+        title: 'Please select the occupancy date to add price',
+        color: 'blue',
+      });
+    } else {
+      drawerActions.open();
+    }
+  };
   const COLUMNS = useMemo(
     () => [
       {
@@ -297,7 +317,6 @@ const SelectSpace = () => {
             const isDisabled =
               watchPlace?.some(item => item._id === _id) && (!startDate || !endDate);
             const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
-
             return (
               <div className="min-w-[300px]">
                 <DateRangeSelector
@@ -381,27 +400,44 @@ const SelectSpace = () => {
           ),
       },
       {
-        Header: 'PRICING',
-        accessor: 'basicInformation.price',
+        Header: 'PRICE',
         Cell: ({
           row: {
-            original: { price, _id },
+            original: { priceChanged, startDate, endDate, _id },
           },
         }) =>
-          useMemo(() => {
-            const isPriceZero =
-              watchPlace?.some(item => item._id === _id) && (price === 0 || !price);
-
-            return (
-              <NumberInput
-                id={`price-${_id}`}
-                hideControls
-                defaultValue={+(price || 0)}
-                onChange={e => updateData('price', e, _id, `price-${_id}`)}
-                error={isPriceZero}
-              />
-            );
-          }, []),
+          useMemo(() =>
+            priceChanged ? (
+              <Button
+                onClick={() => {
+                  onClickAddPrice();
+                  setSelectedInventoryId(_id);
+                }}
+                className="bg-purple-450 order-3"
+                size="xs"
+                disabled={!watchPlace.some(item => item._id === _id) && (!startDate || !endDate)}
+              >
+                Edit Price
+              </Button>
+            ) : (
+              <Button
+                onClick={() => {
+                  onClickAddPrice();
+                  setSelectedInventoryId(_id);
+                }}
+                className="bg-purple-450 order-3"
+                size="xs"
+                disabled={!watchPlace.some(item => item._id === _id) && (!startDate || !endDate)}
+              >
+                Add Price
+              </Button>
+            ),
+          ),
+      },
+      {
+        Header: 'TOTAL PRICE',
+        accessor: 'basicInformation.price',
+        Cell: RenderTotalPriceCell,
       },
       {
         Header: 'MEDIA OWNER NAME',
@@ -451,7 +487,7 @@ const SelectSpace = () => {
           ),
       },
     ],
-    [updatedInventoryData, watchPlace.length],
+    [updatedInventoryData, watchPlace],
   );
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -535,6 +571,16 @@ const SelectSpace = () => {
     }
   }, [inventoryQuery.data?.docs]);
 
+  useEffect(() => {
+    if (watchPlace.length) {
+      watchPlace.map(place =>
+        setUpdatedInventoryData(prev =>
+          prev.map(item => (item?._id === place?._id ? { ...item, ...place } : item)),
+        ),
+      );
+    }
+  }, [drawerOpened]);
+
   return (
     <>
       <div className="flex gap-2 py-5 flex-col">
@@ -542,9 +588,17 @@ const SelectSpace = () => {
           <div>
             <p className="text-lg font-bold">Select Place for Order</p>
           </div>
-          <div>
+          <div className="flex items-center">
+            <Button
+              className="bg-black mr-1"
+              onClick={() => {
+                onClickAddPrice();
+              }}
+            >
+              Add Price
+            </Button>
             <Button onClick={toggleFilter} variant="default">
-              <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
+              <ChevronDown size={16} className="mr-1" /> Filter
             </Button>
             {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
           </div>
@@ -558,7 +612,7 @@ const SelectSpace = () => {
             <p className="text-slate-400">Total Price</p>
             <Group>
               <p className="font-bold">{toIndianCurrency(memoizedCalculateTotalPrice)}</p>
-              <p className="text-xs">**additional gst to be included</p>
+              <p className="text-xs italic">** inclusive of GST</p>
             </Group>
           </div>
         </div>
@@ -606,6 +660,13 @@ const SelectSpace = () => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
       ) : null}
+      <AddEditPriceDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        selectedInventories={watchPlace}
+        data={updatedInventoryData}
+        selectedInventoryId={selectedInventoryId}
+      />
     </>
   );
 };
