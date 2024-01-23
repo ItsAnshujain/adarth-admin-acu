@@ -538,3 +538,18 @@ export const calculateTotalPrice = (option = []) => {
   const totalPrice = option.reduce((acc, item) => acc + +(item.price || 0), 0);
   return totalPrice;
 };
+
+export const calculateTotalMonths = (startDate, endDate) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const yearDiff = end.getFullYear() - start.getFullYear();
+  const monthDiff = end.getMonth() - start.getMonth();
+  const dayDiff = end.getDate() - start.getDate() + 1;
+
+  const totalMonths = yearDiff * 12 + monthDiff;
+
+  const fractionOfMonth = dayDiff / new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate();
+
+  return totalMonths + fractionOfMonth;
+};

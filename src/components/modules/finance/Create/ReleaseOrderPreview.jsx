@@ -1,5 +1,5 @@
 import { Group, Text } from '@mantine/core';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ToWords } from 'to-words';
 import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../../utils/currencyFormat';
@@ -7,6 +7,11 @@ import ROCalculatedTable from './ROCalculatedTable';
 
 const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, hasBookingId }) => {
   const toWords = new ToWords();
+
+  const memoizedTotalPrice = useMemo(
+    () => Number((totalPrice + totalPrice * 0.18).toFixed(2)),
+    [totalPrice],
+  );
 
   return (
     <div className="px-5">
@@ -97,7 +102,7 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                       </div>
                       <div>
                         <p>Total Amount:</p>
-                        <p>{item?.campaignPrice}</p>
+                        <p>{item?.campaignPrice.toFixed(2)}</p>
                       </div>
                     </Group>
                   </div>
@@ -105,7 +110,7 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
               : previewData?.spaces?.map((item, index) => (
                   <div className="flex justify-between items-center" key={uuidv4()}>
                     <p className="text-lg mr-2">{index + 1}</p>
-                    <Group className="grid grid-cols-8 gap-2">
+                    <Group className="grid grid-cols-7 gap-2">
                       <div>
                         <p>City:</p>
                         <Text
@@ -126,24 +131,15 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                           {item?.location}
                         </Text>
                       </div>
-                      <div>
-                        <p>Media:</p>
-                        <Text
-                          className="overflow-hidden text-ellipsis max-w-[180px]"
-                          lineClamp={1}
-                          title={item?.media}
-                        >
-                          {item?.media}
-                        </Text>
-                      </div>
+
                       <div>
                         <p>
                           Dimensions <span className="text-sm">(WxH)</span>:
                         </p>
                         <div className="flex gap-x-2">
-                          {item?.size?.length ? (
+                          {item?.dimensions?.length ? (
                             <p>
-                              {item.size
+                              {item.dimensions
                                 .map((ele, idx) =>
                                   idx < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
                                 )
@@ -157,19 +153,19 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                       </div>
                       <div>
                         <p>Area:</p>
-                        <Text>{item?.area}</Text>
+                        <Text>{item?.areaInSqFt.toFixed(2)}</Text>
                       </div>
                       <div>
                         <p>Display Cost:</p>
-                        <Text>{item?.displayCost}</Text>
+                        <Text>{item?.totalDisplayCost.toFixed(2)}</Text>
                       </div>
                       <div>
                         <p>Printing Cost:</p>
-                        <Text>{item?.printingCost}</Text>
+                        <Text>{item?.totalPrintingCost.toFixed(2)}</Text>
                       </div>
                       <div>
                         <p>Mounting Cost:</p>
-                        <Text>{item?.mountingCost}</Text>
+                        <Text>{item?.totalMountingCost.toFixed(2)}</Text>
                       </div>
                     </Group>
                   </div>
@@ -186,9 +182,7 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                 </div>
                 <div className="flex justify-end">
                   <p className="text-lg font-bold">Total:</p>
-                  <p className="text-lg ml-2">
-                    {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
-                  </p>
+                  <p className="text-lg ml-2">{toIndianCurrency(memoizedTotalPrice) || 0}</p>
                 </div>
               </>
             ) : null}
@@ -208,7 +202,7 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
               <p className="text-lg ml-2">
                 {previewData?.grandTotalInWords
                   ? previewData?.grandTotalInWords
-                  : totalPrice && toWords.convert(Math.round(totalPrice + totalPrice * 0.18))}
+                  : totalPrice && toWords.convert(memoizedTotalPrice)}
               </p>
             </div>
             <p className="text-lg">
