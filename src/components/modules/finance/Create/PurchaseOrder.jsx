@@ -237,7 +237,7 @@ const PurchaseOrder = ({
           row: {
             original: { area },
           },
-        }) => useMemo(() => <p>{area.toFixed(2) || '-'}</p>, []),
+        }) => useMemo(() => <p>{area.toFixed(2) || '-'} sq.ft.</p>, []),
       },
       {
         Header: 'TOTAL DISPLAY COST/MONTH',
@@ -247,7 +247,7 @@ const PurchaseOrder = ({
           row: {
             original: { displayCostPerMonth },
           },
-        }) => useMemo(() => <p>{displayCostPerMonth.toFixed(2) || '-'}</p>, []),
+        }) => useMemo(() => <p>{toIndianCurrency(displayCostPerMonth)}</p>, []),
       },
       {
         Header: 'PRINTING COST',
@@ -257,7 +257,7 @@ const PurchaseOrder = ({
           row: {
             original: { printingCost },
           },
-        }) => useMemo(() => <p>{printingCost.toFixed(2) || '-'}</p>, []),
+        }) => useMemo(() => <p>{toIndianCurrency(printingCost)}</p>, []),
       },
       {
         Header: 'MOUNTING COST',
@@ -267,7 +267,7 @@ const PurchaseOrder = ({
           row: {
             original: { mountingCost },
           },
-        }) => useMemo(() => <p>{mountingCost.toFixed(2) || '-'}</p>, []),
+        }) => useMemo(() => <p>{toIndianCurrency(mountingCost)}</p>, []),
       },
       {
         Header: 'ACTION',

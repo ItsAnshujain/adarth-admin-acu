@@ -961,9 +961,9 @@ const ManualEntryContent = ({
           return {
             ...formData,
             itemId: item.itemId,
-            displayCostDiscount: item.displayCostDiscount || 0,
-            mountingCostDiscount: item.mountingCostDiscount || 0,
-            printingCostDiscount: item.printingCostDiscount || 0,
+            displayCostDiscount: item?.displayCostDiscount || 0,
+            mountingCostDiscount: item?.mountingCostDiscount || 0,
+            printingCostDiscount: item?.printingCostDiscount || 0,
           };
         }
         return ele;
@@ -981,9 +981,9 @@ const ManualEntryContent = ({
       {
         ...formData,
         itemId: uuidv4(),
-        displayCostDiscount: item.displayCostDiscount || 0,
-        mountingCostDiscount: item.mountingCostDiscount || 0,
-        printingCostDiscount: item.printingCostDiscount || 0,
+        displayCostDiscount: item?.displayCostDiscount || 0,
+        mountingCostDiscount: item?.mountingCostDiscount || 0,
+        printingCostDiscount: item?.printingCostDiscount || 0,
       },
     ]);
     onClose();
@@ -1017,9 +1017,9 @@ const ManualEntryContent = ({
         })),
         unit: item?.unit,
         facing: { label: item?.facing?.label, value: item?.facing?.value },
-        displayCostDiscount: item.displayCostDiscount,
-        mountingCostDiscount: item.mountingCostDiscount,
-        printingCostDiscount: item.printingCostDiscount,
+        displayCostDiscount: item?.displayCostDiscount,
+        mountingCostDiscount: item?.mountingCostDiscount,
+        printingCostDiscount: item?.printingCostDiscount,
       });
     }
   }, [item]);

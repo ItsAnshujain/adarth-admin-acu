@@ -13,7 +13,7 @@ import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import NativeSelect from '../../../shared/NativeSelect';
 import image from '../../../../assets/image.png';
 import trash from '../../../../assets/trash.svg';
-import { useDeleteUploadedFile, useUploadFile } from '../../../../apis/queries/upload.queries';
+import { useUploadFile } from '../../../../apis/queries/upload.queries';
 import modalConfig from '../../../../utils/modalConfig';
 import Select from '../../../shared/Select';
 import SelectTermsItem from './SelectTermsItem';
@@ -46,7 +46,6 @@ const BasicInfo = ({ proposalId, userData }) => {
   const { getInputProps, values, errors, setFieldValue } = useFormContext();
   const [activeImage, setActiveImage] = useState();
   const { mutateAsync: upload, isLoading: isUploadLoading } = useUploadFile();
-  const { mutateAsync: deleteFile, isLoading: isDeleteLoading } = useDeleteUploadedFile();
 
   const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
     serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
@@ -99,12 +98,7 @@ const BasicInfo = ({ proposalId, userData }) => {
   const handleDeleteImage = async (e, key) => {
     e.stopPropagation();
     setActiveImage(key);
-
-    if (values[key]) {
-      await deleteFile(values[key].split('/').at(-1), {
-        onSuccess: () => setFieldValue(key, ''),
-      });
-    }
+    setFieldValue(key, '');
   };
 
   const memoizedProposalData = useMemo(() => {
@@ -291,8 +285,7 @@ const BasicInfo = ({ proposalId, userData }) => {
                     <ActionIcon
                       className="absolute right-2 top-1 bg-white"
                       onClick={e => handleDeleteImage(e, 'letterHead')}
-                      loading={activeImage === 'letterHead' && isDeleteLoading}
-                      disabled={isDeleteLoading}
+                      loading={activeImage === 'letterHead'}
                     >
                       <MantineImage src={trash} alt="trash-icon" />
                     </ActionIcon>
@@ -359,8 +352,7 @@ const BasicInfo = ({ proposalId, userData }) => {
                     <ActionIcon
                       className="absolute right-2 top-1 bg-white"
                       onClick={e => handleDeleteImage(e, 'letterFooter')}
-                      loading={activeImage === 'letterFooter' && isDeleteLoading}
-                      disabled={isDeleteLoading}
+                      loading={activeImage === 'letterFooter'}
                     >
                       <MantineImage src={trash} alt="trash-icon" />
                     </ActionIcon>
