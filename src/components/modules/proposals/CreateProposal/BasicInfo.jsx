@@ -99,12 +99,7 @@ const BasicInfo = ({ proposalId, userData }) => {
   const handleDeleteImage = async (e, key) => {
     e.stopPropagation();
     setActiveImage(key);
-
-    if (values[key]) {
-      await deleteFile(values[key].split('/').at(-1), {
-        onSuccess: () => setFieldValue(key, ''),
-      });
-    }
+    setFieldValue(key, '');
   };
 
   const memoizedProposalData = useMemo(() => {
