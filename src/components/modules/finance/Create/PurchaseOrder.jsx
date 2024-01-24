@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { ToWords } from 'to-words';
 import { DatePicker } from '@mantine/dates';
@@ -357,6 +357,16 @@ const PurchaseOrder = ({
     [addSpaceItem],
   );
 
+  useEffect(() => {
+    setAddSpaceItem(prev =>
+      prev.map(item => ({
+        ...item,
+        printingCost: item.area * values.printingSqftCost,
+        mountingCost: item.area * values.mountingSqftCost,
+      })),
+    );
+  }, [values.printingSqftCost, values.mountingSqftCost]);
+
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -592,7 +602,7 @@ const PurchaseOrder = ({
                 classNameWrapper="min-h-[150px]"
               />
             </div>
-            <div className="max-w-screen mt-3 flex flex-col justify-end mr-7 pr-16 text-lg">
+            <div className="max-w-screen mt-3 flex flex-col justify-end mr-7 text-lg">
               <div className="flex justify-end">
                 <p className="text-lg font-bold">Amount:</p>
                 <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>

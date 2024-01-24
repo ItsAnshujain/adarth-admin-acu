@@ -267,10 +267,10 @@ const initialReleaseValues = {
   },
   grandTotal: null,
   grandTotalInWords: '',
-  printingSqftCost: 0,
-  mountingSqftCost: 0,
-  mountingGstPercentage: 0,
-  printingGstPercentage: 0,
+  printingSqftCost: '',
+  mountingSqftCost: '',
+  mountingGstPercentage: '',
+  printingGstPercentage: '',
   forMonths: 3,
 };
 
@@ -476,6 +476,7 @@ const CreateFinancePage = () => {
         .map(item => (item?.campaignPrice ? +item.campaignPrice : 0))
         .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
     }
+
     return initialPrice;
   }, [bookingData?.campaign?.spaces]);
 
@@ -491,6 +492,7 @@ const CreateFinancePage = () => {
         initialPrice,
       );
     }
+
     return initialPrice;
   }, [addSpaceItem]);
 
@@ -505,6 +507,7 @@ const CreateFinancePage = () => {
         )
         .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
     }
+
     return initialPrice;
   }, [addSpaceItem]);
 

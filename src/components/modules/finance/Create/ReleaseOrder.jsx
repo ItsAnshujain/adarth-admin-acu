@@ -646,6 +646,7 @@ const ReleaseOrder = ({
               min={0}
               precision={2}
               max={100}
+              withAsterisk
             />
           </div>
         ) : null}

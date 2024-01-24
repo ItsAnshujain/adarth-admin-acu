@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { ToWords } from 'to-words';
 import { ActionIcon, Button, Group, Menu, Text } from '@mantine/core';
@@ -347,6 +347,27 @@ const Invoice = ({
     ],
     [addSpaceItem],
   );
+
+  useEffect(() => {
+    setAddSpaceItem(prev =>
+      prev.map(item => ({
+        ...item,
+        printingCost: item.area * values.printingSqftCost || 0,
+        mountingCost: item.area * values.mountingSqftCost || 0,
+        totalPrintingCost:
+          item.area * values.printingSqftCost +
+            item.area * values.printingSqftCost * ((values.printingGstPercentage || 0) / 100) || 0,
+        totalMountingCost:
+          item.area * values.mountingSqftCost +
+            item.area * values.mountingSqftCost * ((values.mountingGstPercentage || 0) / 100) || 0,
+      })),
+    );
+  }, [
+    values.printingSqftCost,
+    values.mountingSqftCost,
+    values.printingGstPercentage,
+    values.mountingGstPercentage,
+  ]);
 
   return (
     <div>

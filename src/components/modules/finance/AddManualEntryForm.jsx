@@ -92,12 +92,7 @@ const purchaseSchema = yup.object({
         .required('Width is required'),
     }),
   ),
-  displayCostPerMonth: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Display Cost/Month is required'),
+  displayCostPerMonth: yup.number().typeError('Must be a number').nullable(),
   printingCost: yup
     .number()
     .min(0, 'Must be greater than or equal to 0')
@@ -178,12 +173,7 @@ const releaseSchema = yup.object({
         .required('Width is required'),
     }),
   ),
-  displayCostPerMonth: yup
-    .number()
-    .positive('Must be a positive number')
-    .typeError('Must be a number')
-    .nullable()
-    .required('Display Cost/ Month is required'),
+  displayCostPerMonth: yup.number().typeError('Must be a number').nullable(),
   printingCost: yup
     .number()
     .min(0, 'Must be greater than or equal to 0')
@@ -338,7 +328,7 @@ const PurchaseAndInvoiceContent = ({
     const totalPrintingCostWithGst =
       totalPrintingCost + totalPrintingCost * (printingCostGst / 100);
     const totalMountingCostWithGst =
-      totalPrintingCost + totalMountingCost * (mountingCostGst / 100);
+      totalMountingCost + totalMountingCost * (mountingCostGst / 100);
 
     setValues({
       ...values,
@@ -347,10 +337,8 @@ const PurchaseAndInvoiceContent = ({
       totalPrintingCost: totalPrintingCostWithGst,
       totalMountingCost: totalMountingCostWithGst,
       totalDisplayCost: values.displayCostPerMonth * totalMonths,
-      // displayCost: (totalPrintingCost + totalMountingCost) / totalMonths,
-      // totalDisplayCost: totalPrintingCostWithGst + totalMountingCostWithGst,
     });
-  }, [values.area, mountingSqftCost, printingSqftCost, values.displayCostPerMonth]);
+  }, [values.area, mountingSqftCost, printingSqftCost, values.displayCostPerMonth, totalMonths]);
 
   const calculateHeightWidth = useMemo(() => {
     const total = values.size?.reduce((acc, item) => {
@@ -653,9 +641,9 @@ const ReleaseContent = ({
     const totalPrintingCost = printingSqftCost * values.area;
     const totalMountingCost = mountingSqftCost * values.area;
     const totalPrintingCostWithGst =
-      totalPrintingCost + (totalPrintingCost * printingCostGst) / 100;
+      totalPrintingCost + totalPrintingCost * (printingCostGst / 100);
     const totalMountingCostWithGst =
-      totalPrintingCost + (totalMountingCost * mountingCostGst) / 100;
+      totalMountingCost + totalMountingCost * (mountingCostGst / 100);
 
     setValues({
       ...values,
@@ -952,7 +940,6 @@ const ManualEntryContent = ({
 }) => {
   const form = useForm({ validate: yupResolver(schema[type]), initialValues: initialValues[type] });
   const ManualEntries = contents[type] ?? <div />;
-
   const onSubmit = async formData => {
     if (item) {
       const tempArr = [...addSpaceItem];
@@ -1007,6 +994,8 @@ const ManualEntryContent = ({
         media: item?.media,
         mountingCost: item?.mountingCost,
         printingCost: item?.printingCost,
+        totalMountingCost: item?.totalMountingCost,
+        totalPrintingCost: item?.totalPrintingCost,
         width: item?.width,
         hsn: item?.hsn || 0,
         state: item?.state,
