@@ -222,7 +222,7 @@ const CreateProposalPage = () => {
           })) || [],
         letterHead: proposalData?.proposal?.letterHead,
         letterFooter: proposalData?.proposal?.letterFooter,
-        proposalTermsId: {
+        proposalTermsId: proposalData?.proposal?.proposalTermsId && {
           label: proposalData?.proposal?.proposalTermsId?.name,
           value: proposalData?.proposal?.proposalTermsId?._id,
         },
