@@ -140,9 +140,20 @@ const AddEditPriceDrawer = ({
     return totalMonths + fractionOfMonth;
   };
 
+  useEffect(() => {
+    const currentIndex = selectedInventories?.findIndex(inv => inv?._id === selectedInventoryId);
+    if (currentIndex >= 0) {
+      const itemToMove = selectedInventories.splice(currentIndex, 1)[0];
+      selectedInventories.unshift(itemToMove);
+    }
+  }, [selectedInventoryId]);
+
   const selectedInventory = useMemo(
-    () => selectedInventories?.[activeSlide || 0],
-    [selectedInventories, activeSlide],
+    () =>
+      !activeSlide
+        ? selectedInventories?.filter(inv => inv._id === selectedInventoryId)?.[0]
+        : selectedInventories[activeSlide || 0],
+    [selectedInventories, selectedInventoryId, activeSlide],
   );
 
   const totalMonths = useMemo(
@@ -278,6 +289,15 @@ const AddEditPriceDrawer = ({
                 mountingCostPerSqft: formData.mountingCostPerSqft,
                 mountingGst: formData.mountingGst,
                 totalMountingCost: formData.totalMountingCost,
+                totalPrice:
+                  place.totalDisplayCost ||
+                  0 + place.tradedAmount ||
+                  0 + formData.totalPrintingCost ||
+                  0 + formData.totalMountingCost ||
+                  0 + place.oneTimeInstallationCost ||
+                  0 + place.monthlyAdditionalCost ||
+                  0 - place.otherCharges ||
+                  0,
               }
             : place,
         ),
@@ -324,6 +344,15 @@ const AddEditPriceDrawer = ({
                 mountingCostPerSqft: formData.mountingCostPerSqft,
                 mountingGst: formData.mountingGst,
                 totalMountingCost: formData.totalMountingCost,
+                price:
+                  place.totalDisplayCost ||
+                  0 + place.tradedAmount ||
+                  0 + formData.totalPrintingCost ||
+                  0 + formData.totalMountingCost ||
+                  0 + place.oneTimeInstallationCost ||
+                  0 + place.monthlyAdditionalCost ||
+                  0 - place.otherCharges ||
+                  0,
               }
             : place,
         ),
@@ -337,37 +366,29 @@ const AddEditPriceDrawer = ({
   useEffect(() => {
     if (selectedInventory?.company || selectedInventory?.priceChanged || selectedInventory?.price) {
       form.reset({
-        displayCostPerMonth: selectedInventory.displayCostPerMonth,
-        totalDisplayCost: selectedInventory.totalDisplayCost,
-        displayCostPerSqFt: selectedInventory.displayCostPerSqFt,
-        displayCostGstPercentage: selectedInventory.displayCostGstPercentage,
-        displayCostGst: selectedInventory.displayCostGst,
-        printingCostPerSqft: selectedInventory.printingCostPerSqft,
-        printingGstPercentage: selectedInventory.printingGstPercentage,
-        printingGst: selectedInventory.printingGst,
-        totalPrintingCost: selectedInventory.totalPrintingCost,
-        mountingCostPerSqft: selectedInventory.mountingCostPerSqft,
-        mountingGstPercentage: selectedInventory.mountingGstPercentage,
-        mountingGst: selectedInventory.mountingGst,
-        totalMountingCost: selectedInventory.totalMountingCost,
-        oneTimeInstallationCost: selectedInventory.oneTimeInstallationCost,
-        monthlyAdditionalCost: selectedInventory.monthlyAdditionalCost,
-        otherCharges: selectedInventory.otherCharges,
-        tradedAmount: selectedInventory.tradedAmount,
+        displayCostPerMonth: selectedInventory.displayCostPerMonth || 0,
+        totalDisplayCost: selectedInventory.totalDisplayCost || 0,
+        displayCostPerSqFt: selectedInventory.displayCostPerSqFt || 0,
+        displayCostGstPercentage: selectedInventory.displayCostGstPercentage || 0,
+        displayCostGst: selectedInventory.displayCostGst || 0,
+        printingCostPerSqft: selectedInventory.printingCostPerSqft || 0,
+        printingGstPercentage: selectedInventory.printingGstPercentage || 0,
+        printingGst: selectedInventory.printingGst || 0,
+        totalPrintingCost: selectedInventory.totalPrintingCost || 0,
+        mountingCostPerSqft: selectedInventory.mountingCostPerSqft || 0,
+        mountingGstPercentage: selectedInventory.mountingGstPercentage || 0,
+        mountingGst: selectedInventory.mountingGst || 0,
+        totalMountingCost: selectedInventory.totalMountingCost || 0,
+        oneTimeInstallationCost: selectedInventory.oneTimeInstallationCost || 0,
+        monthlyAdditionalCost: selectedInventory.monthlyAdditionalCost || 0,
+        otherCharges: selectedInventory.otherCharges || 0,
+        tradedAmount: selectedInventory.tradedAmount || 0,
         applyPrintingMountingCostForAll: true,
       });
     } else {
       form.reset(defaultValues);
     }
   }, [selectedInventory, activeSlide]);
-
-  useEffect(() => {
-    const currentIndex = selectedInventories?.findIndex(inv => inv?._id === selectedInventoryId);
-    if (currentIndex >= 0) {
-      const itemToMove = selectedInventories.splice(currentIndex, 1)[0];
-      selectedInventories.unshift(itemToMove);
-    }
-  }, [selectedInventoryId]);
 
   return (
     <Drawer
@@ -391,7 +412,6 @@ const AddEditPriceDrawer = ({
         <Carousel
           align="center"
           height={170}
-          loop
           controlsOffset="lg"
           initialSlide={0}
           nextControlIcon={<ChevronRight size={25} className="rounded-full" />}

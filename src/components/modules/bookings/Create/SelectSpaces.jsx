@@ -666,6 +666,7 @@ const SelectSpace = () => {
         selectedInventories={watchPlace}
         data={updatedInventoryData}
         selectedInventoryId={selectedInventoryId}
+        type="bookings"
       />
     </>
   );
