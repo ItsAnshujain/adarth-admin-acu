@@ -150,12 +150,12 @@ const AddEditPriceDrawer = ({
 
   const selectedInventory = useMemo(
     () =>
-      activeSlide <= 0
+      !activeSlide
         ? selectedInventories?.filter(inv => inv._id === selectedInventoryId)?.[0]
         : selectedInventories[activeSlide || 0],
-    [selectedInventories, selectedInventoryId],
+    [selectedInventories, selectedInventoryId, activeSlide],
   );
-
+  console.log(selectedInventory, 'activeSlide', activeSlide);
   const totalMonths = useMemo(
     () => calculateTotalMonths(selectedInventory?.startDate, selectedInventory?.endDate),
     [selectedInventory?.startDate, selectedInventory?.endDate],
