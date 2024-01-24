@@ -140,9 +140,20 @@ const AddEditPriceDrawer = ({
     return totalMonths + fractionOfMonth;
   };
 
+  useEffect(() => {
+    const currentIndex = selectedInventories?.findIndex(inv => inv?._id === selectedInventoryId);
+    if (currentIndex >= 0) {
+      const itemToMove = selectedInventories.splice(currentIndex, 1)[0];
+      selectedInventories.unshift(itemToMove);
+    }
+  }, [selectedInventoryId]);
+
   const selectedInventory = useMemo(
-    () => selectedInventories?.[activeSlide || 0],
-    [selectedInventories, activeSlide],
+    () =>
+      activeSlide <= 0
+        ? selectedInventories?.filter(inv => inv._id === selectedInventoryId)?.[0]
+        : selectedInventories[activeSlide || 0],
+    [selectedInventories, selectedInventoryId],
   );
 
   const totalMonths = useMemo(
@@ -379,14 +390,6 @@ const AddEditPriceDrawer = ({
     }
   }, [selectedInventory, activeSlide]);
 
-  useEffect(() => {
-    const currentIndex = selectedInventories?.findIndex(inv => inv?._id === selectedInventoryId);
-    if (currentIndex >= 0) {
-      const itemToMove = selectedInventories.splice(currentIndex, 1)[0];
-      selectedInventories.unshift(itemToMove);
-    }
-  }, [selectedInventoryId]);
-
   return (
     <Drawer
       className="overflow-auto"
@@ -409,7 +412,6 @@ const AddEditPriceDrawer = ({
         <Carousel
           align="center"
           height={170}
-          loop
           controlsOffset="lg"
           initialSlide={0}
           nextControlIcon={<ChevronRight size={25} className="rounded-full" />}
