@@ -1,10 +1,9 @@
 import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Button, createStyles } from '@mantine/core';
-import { RangeCalendar, DatePicker } from '@mantine/dates';
-import { Calendar } from 'react-feather';
 import dayjs from 'dayjs';
 import { DATE_FORMAT } from '../utils/constants';
+import CustomDateRangePicker from './CustomDateRangePicker';
 
 const styles = {
   monthPickerControlActive: { backgroundColor: '#4B0DAF !important' },
@@ -104,66 +103,17 @@ const DateRange = ({
           </Button>
         </div>
       </div>
-      <div className="flex gap-8 pt-4">
-        <div className="border rounded-md flex-1 p-4 py-6">
-          <RangeCalendar
-            value={value}
-            disableOutsideEvents
-            onChange={handleRangeSetting}
-            dayClassName={(_, modifiers) =>
-              cx({
-                [classes.outside]: modifiers.outside,
-                [classes.weekend]: modifiers.weekend,
-                [classes.selectedRange]: modifiers.selectedInRange,
-                [classes.disabled]: modifiers.disabled,
-              })
-            }
-            allowSingleDateInRange
-            minDate={rangeCalendarMinDate}
-          />
-        </div>
-        <div className="flex-1 flex flex-col items-start gap-2">
-          <p className="text-lg font-bold">Picked Date</p>
-          <p className="font-bold">Date From</p>
-          <DatePicker
-            clearable={false}
-            onChange={handleSetStartDate}
-            value={value[0]}
-            icon={<Calendar className="text-black absolute left-[500%]" />}
-            styles={styles}
-            disableOutsideEvents
-            dayClassName={(_, modifiers) =>
-              cx({
-                [classes.outside]: modifiers.outside,
-                [classes.weekend]: modifiers.weekend,
-                [classes.selectedRange]: modifiers.selectedInRange,
-                [classes.disabled]: modifiers.disabled,
-              })
-            }
-            minDate={datePickerMinDate}
-            placeholder="Month Day, Year"
-          />
-          <p className="font-bold mt-3">Date To</p>
-          <DatePicker
-            clearable={false}
-            onChange={handleSetEndDate}
-            value={value[1]}
-            icon={<Calendar className="text-black absolute left-[500%]" />}
-            styles={styles}
-            disableOutsideEvents
-            dayClassName={(_, modifiers) =>
-              cx({
-                [classes.outside]: modifiers.outside,
-                [classes.weekend]: modifiers.weekend,
-                [classes.selectedRange]: modifiers.selectedInRange,
-                [classes.disabled]: modifiers.disabled,
-              })
-            }
-            minDate={datePickerMinDate}
-            placeholder="Month Day, Year"
-          />
-        </div>
-      </div>
+      <CustomDateRangePicker
+        classes={classes}
+        value={value}
+        minDate={rangeCalendarMinDate}
+        handleSetStartDate={handleSetStartDate}
+        datePickerMinDate={datePickerMinDate}
+        handleRangeSetting={handleRangeSetting}
+        styles={styles}
+        handleSetEndDate={handleSetEndDate}
+        cx={cx}
+      />
     </div>
   );
 };

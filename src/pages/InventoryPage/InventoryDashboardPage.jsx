@@ -40,6 +40,8 @@ import SpacesMenuPopover from '../../components/Popovers/SpacesMenuPopover';
 import ViewByFilter from '../../components/modules/inventory/ViewByFilter';
 import ShareContent from '../../components/modules/proposals/ViewProposal/ShareContent';
 import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
+import VacantInventoryFilter from '../../components/modules/inventory/VacantInventoryFilterContent';
+import { DATE_FORMAT } from '../../utils/constants';
 
 dayjs.extend(isBetween);
 
@@ -400,14 +402,24 @@ const InventoryDashboardPage = () => {
   };
 
   const handleFilterVacantInventory = () => {
-    if (!(searchParams.get('from') && searchParams.get('to'))) {
-      showNotification({
-        message: 'Please select a Date Range',
-      });
-      return;
-    }
-    searchParams.set('isUnderMaintenance', false);
-    setSearchParams(searchParams);
+    modals.openModal({
+      modalId: 'vacantInventoryFilter',
+      title: 'Vacant Inventory Filter',
+      children: (
+        <VacantInventoryFilter
+          searchParamQueries={searchParams}
+          onClose={(city, from, to) => {
+            modals.closeModal('vacantInventoryFilter');
+            searchParams.set('isUnderMaintenance', false);
+            searchParams.set('cities', city);
+            searchParams.set('from', dayjs(from).format(DATE_FORMAT));
+            searchParams.set('to', dayjs(to).format(DATE_FORMAT));
+            setSearchParams(searchParams);
+          }}
+        />
+      ),
+      ...modalConfig,
+    });
   };
 
   const toggleShareOptions = () => {
