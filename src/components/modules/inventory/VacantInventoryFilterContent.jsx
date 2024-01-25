@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button, Select } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import { useDistinctCities } from '../../../apis/queries/inventory.queries';
 import CustomDateRangePicker from '../../CustomDateRangePicker';
 
@@ -23,6 +24,17 @@ const VacantInventoryFilter = ({ onClose }) => {
     }
 
     setDateRange(val);
+  };
+
+  const onSubmit = () => {
+    if (!dateRange[0] && !dateRange[1]) {
+      showNotification({
+        message: 'Please select date range',
+      });
+      return;
+    }
+
+    onClose(city, dateRange[0], dateRange[1]);
   };
   return (
     <div className="h-full relative">
@@ -51,10 +63,7 @@ const VacantInventoryFilter = ({ onClose }) => {
           <Button className="secondary-button font-medium text-base mt-2 w-full" onClick={onClose}>
             Cancel
           </Button>
-          <Button
-            className="primary-button font-medium text-base mt-2 w-full"
-            onClick={() => onClose(city, dateRange[0], dateRange[1])}
-          >
+          <Button className="primary-button font-medium text-base mt-2 w-full" onClick={onSubmit}>
             Submit
           </Button>
         </div>
