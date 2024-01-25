@@ -309,7 +309,7 @@ const Spaces = () => {
             original: { dimension },
           },
         }) =>
-          useMemo(() => dimension?.map(dim => `${dim.height}ft x ${dim.width}ft`).join(','), []),
+          useMemo(() => dimension?.map(dim => `${dim.width}ft x ${dim.height}ft`).join(','), []),
       },
       {
         Header: 'PRICE',
