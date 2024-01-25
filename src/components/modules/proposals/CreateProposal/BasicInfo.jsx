@@ -98,8 +98,7 @@ const BasicInfo = ({ proposalId, userData }) => {
 
   const handleDeleteImage = async (e, key) => {
     e.stopPropagation();
-    setActiveImage(key);
-
+    form.setValue(key, '');
     if (form.getFieldState(key)) {
       await deleteFile(form.getFieldState(key).split('/').at(-1), {
         onSuccess: () => form.setValue(key, ''),
