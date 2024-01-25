@@ -63,8 +63,6 @@ const PurchaseOrder = ({ totalPrice }) => {
             label="Amount Chargeable"
             name="total"
             placeholder="Write..."
-            readOnly
-            disabled
           />
         </div>
       </div>
