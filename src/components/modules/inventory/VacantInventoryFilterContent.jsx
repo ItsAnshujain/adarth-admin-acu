@@ -37,7 +37,7 @@ const VacantInventoryFilter = ({ onClose }) => {
     onClose(city, dateRange[0], dateRange[1]);
   };
   return (
-    <div className="h-full relative">
+    <div className=" h-[500px] relative">
       <div className="px-6 pb-6 flex flex-col">
         <Select
           label="City"

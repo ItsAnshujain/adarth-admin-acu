@@ -8,7 +8,7 @@ const modalConfig = {
   classNames: {
     title: 'font-dmSans text-xl px-4',
     header: 'px-4 pt-4',
-    body: 'pb-4 h-[500px] overflow-auto',
+    body: 'pb-4 overflow-auto',
     close: 'mr-4',
   },
 };

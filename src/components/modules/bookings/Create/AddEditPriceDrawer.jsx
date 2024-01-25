@@ -1,5 +1,5 @@
 import { Carousel } from '@mantine/carousel';
-import { Button, Checkbox, Divider, Drawer } from '@mantine/core';
+import { Button, Checkbox, Divider, Drawer, Switch } from '@mantine/core';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import * as yup from 'yup';
 import { ChevronLeft, ChevronRight } from 'react-feather';
@@ -79,6 +79,7 @@ const schema = yup.object({
     .typeError('Must be a number')
     .nullable()
     .required('Other Charges is required'),
+  discount: yup.number().typeError('Must be a number').nullable().required('Discount is required'),
 });
 
 const defaultValues = {
@@ -97,6 +98,9 @@ const defaultValues = {
   monthlyAdditionalCost: 0,
   otherCharges: 0,
   applyPrintingMountingCostForAll: true,
+  subjectToExtension: false,
+  discountOn: 'displayCost',
+  applyDiscountForAll: true,
 };
 
 const AddEditPriceDrawer = ({
@@ -124,6 +128,11 @@ const AddEditPriceDrawer = ({
   const watchMountingGstPercentage = form.watch('mountingGstPercentage');
 
   const watchApplyPrintingMountingCostForAll = form.watch('applyPrintingMountingCostForAll');
+  const watchApplyDiscountForAll = form.watch('applyDiscountForAll');
+
+  const watchDiscount = form.watch('discount');
+  const watchDiscountOn = form.watch('discountOn');
+  const watchSubjectToExtension = form.watch('subjectToExtension');
 
   const calculateTotalMonths = (startDate, endDate) => {
     const start = new Date(startDate);
@@ -180,25 +189,28 @@ const AddEditPriceDrawer = ({
     otherCharges,
   } = form.watch();
 
-  const totalPrice = useMemo(
-    () =>
-      totalDisplayCost +
+  const totalPrice = useMemo(() => {
+    const total =
+      totalDisplayCost -
+      (watchDiscountOn === 'displayCost' ? totalDisplayCost * ((watchDiscount || 0) / 100) : 0) +
       tradedAmount +
       totalPrintingCost +
       totalMountingCost +
       oneTimeInstallationCost +
       monthlyAdditionalCost -
-      otherCharges,
-    [
-      totalDisplayCost,
-      tradedAmount,
-      totalPrintingCost,
-      totalMountingCost,
-      oneTimeInstallationCost,
-      monthlyAdditionalCost,
-      otherCharges,
-    ],
-  );
+      otherCharges;
+    return total - (watchDiscountOn === 'totalPrice' ? total * ((watchDiscount || 0) / 100) : 0);
+  }, [
+    totalDisplayCost,
+    tradedAmount,
+    totalPrintingCost,
+    totalMountingCost,
+    oneTimeInstallationCost,
+    monthlyAdditionalCost,
+    otherCharges,
+    watchDiscount,
+    watchDiscountOn,
+  ]);
 
   const onChangeDisplayCostPerMonth = useCallback(() => {
     const displayCostPerMonth = watchDisplayCostPerMonth * totalMonths || 0;
@@ -245,7 +257,6 @@ const AddEditPriceDrawer = ({
     );
   }, [watchMountingCostPerSqft, watchMountingGstPercentage]);
   const watchPlace = formContext.watch('place');
-
   const onSubmit = async formData => {
     if (type === 'bookings') {
       formContext.setValue(
@@ -271,14 +282,79 @@ const AddEditPriceDrawer = ({
                 monthlyAdditionalCost: formData.monthlyAdditionalCost,
                 otherCharges: formData.otherCharges,
                 tradedAmount: formData.tradedAmount,
-                subjectToExtension: true,
                 price: totalPrice,
+                totalPrice,
                 totalArea,
-                discountOn: '',
-                discountedDisplayCost: 0,
-                discountedTotalPrice: 0,
-
+                discountOn: formData.discountOn,
+                discountedDisplayCost:
+                  formData.totalDisplayCost -
+                  (formData.discountOn === 'displayCost'
+                    ? totalDisplayCost * ((formData.discount || 0) / 100)
+                    : 0),
+                discountedTotalPrice: totalPrice,
                 priceChanged: true,
+                discount: formData.discount,
+              }
+            : watchApplyPrintingMountingCostForAll && watchApplyDiscountForAll
+            ? {
+                ...place,
+                printingCostPerSqft: formData.printingCostPerSqft,
+                printingGst: formData.printingGst,
+                totalPrintingCost: formData.totalPrintingCost,
+                mountingCostPerSqft: formData.mountingCostPerSqft,
+                mountingGst: formData.mountingGst,
+                totalMountingCost: formData.totalMountingCost,
+                totalPrice:
+                  (place.totalDisplayCost ||
+                    0 + place.tradedAmount ||
+                    0 + formData.totalPrintingCost ||
+                    0 + formData.totalMountingCost ||
+                    0 + place.oneTimeInstallationCost ||
+                    0 + place.monthlyAdditionalCost ||
+                    0 - place.otherCharges ||
+                    0) -
+                  (formData.discountOn === 'displayCost'
+                    ? place.totalDisplayCost * ((formData.discount || 0) / 100)
+                    : formData.discountOn === 'totalPrice'
+                    ? (place.totalDisplayCost ||
+                        0 + place.tradedAmount ||
+                        0 + formData.totalPrintingCost ||
+                        0 + formData.totalMountingCost ||
+                        0 + place.oneTimeInstallationCost ||
+                        0 + place.monthlyAdditionalCost ||
+                        0 - place.otherCharges ||
+                        0) *
+                      ((formData.discount || 0) / 100)
+                    : 0),
+
+                discountOn: formData.discountOn,
+                discountedDisplayCost:
+                  formData.totalDisplayCost -
+                  (formData.discountOn === 'displayCost'
+                    ? place.totalDisplayCost * ((formData.discount || 0) / 100)
+                    : 0),
+                discountedTotalPrice:
+                  place.totalPrice -
+                  (formData.discountOn === 'displayCost'
+                    ? place.totalDisplayCost * ((formData.discount || 0) / 100)
+                    : formData.discountOn === 'totalPrice'
+                    ? place.totalPrice * (formData.discount / 100)
+                    : 0),
+                discount: formData.discount,
+                price:
+                  (place.totalDisplayCost ||
+                    0 + place.tradedAmount ||
+                    0 + formData.totalPrintingCost ||
+                    0 + formData.totalMountingCost ||
+                    0 + place.oneTimeInstallationCost ||
+                    0 + place.monthlyAdditionalCost ||
+                    0 - place.otherCharges ||
+                    0) -
+                  (formData.discountOn === 'displayCost'
+                    ? place.totalDisplayCost * ((formData.discount || 0) / 100)
+                    : formData.discountOn === 'totalPrice'
+                    ? place.price * ((formData.discount || 0) / 100)
+                    : 0),
               }
             : watchApplyPrintingMountingCostForAll
             ? {
@@ -298,6 +374,31 @@ const AddEditPriceDrawer = ({
                   0 + place.monthlyAdditionalCost ||
                   0 - place.otherCharges ||
                   0,
+              }
+            : watchApplyDiscountForAll
+            ? {
+                ...place,
+                price:
+                  place.totalPrice -
+                  (formData.discountOn === 'displayCost'
+                    ? place.totalDisplayCost * ((formData.discount || 0) / 100)
+                    : formData.discountOn === 'totalPrice'
+                    ? place.totalPrice * (formData.discount / 100)
+                    : 0),
+                discountOn: formData.discountOn,
+                discountedDisplayCost:
+                  formData.totalDisplayCost -
+                  (formData.discountOn === 'displayCost'
+                    ? place.totalDisplayCost * ((formData.discount || 0) / 100)
+                    : 0),
+                discountedTotalPrice:
+                  place.totalPrice -
+                  (formData.discountOn === 'displayCost'
+                    ? place.totalDisplayCost * ((formData.discount || 0) / 100)
+                    : formData.discountOn === 'totalPrice'
+                    ? place.totalPrice * (formData.discount / 100)
+                    : 0),
+                discount: formData.discount,
               }
             : place,
         ),
@@ -326,18 +427,15 @@ const AddEditPriceDrawer = ({
                 monthlyAdditionalCost: formData.monthlyAdditionalCost,
                 otherCharges: formData.otherCharges,
                 tradedAmount: formData.tradedAmount,
-                subjectToExtension: true,
+                subjectToExtension: formData.subjectToExtension,
                 price: totalPrice,
                 totalArea,
-                discountOn: '',
-                discountedDisplayCost: 0,
-                discountedTotalPrice: 0,
-
                 priceChanged: true,
               }
             : watchApplyPrintingMountingCostForAll
             ? {
                 ...place,
+                subjectToExtension: formData.subjectToExtension,
                 printingCostPerSqft: formData.printingCostPerSqft,
                 printingGst: formData.printingGst,
                 totalPrintingCost: formData.totalPrintingCost,
@@ -383,7 +481,11 @@ const AddEditPriceDrawer = ({
         monthlyAdditionalCost: selectedInventory.monthlyAdditionalCost || 0,
         otherCharges: selectedInventory.otherCharges || 0,
         tradedAmount: selectedInventory.tradedAmount || 0,
-        applyPrintingMountingCostForAll: true,
+        applyPrintingMountingCostForAll: selectedInventory.applyPrintingMountingCostForAll || true,
+        subjectToExtension: selectedInventory.subjectToExtension || false,
+        discountOn: selectedInventory.discountOn || 'displayCost',
+        discount: selectedInventory.discount || 0,
+        applyDiscountForAll: selectedInventory.applyDiscountForAll || true,
       });
     } else {
       form.reset(defaultValues);
@@ -433,8 +535,11 @@ const AddEditPriceDrawer = ({
                   Dimension{' '}
                   <span className="text-black">
                     {inventory.dimension
-                      ?.map(dimension => `${dimension.height}ft x ${dimension.width}ft`)
-                      .join(',')}
+                      .map((item, index) =>
+                        index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
+                      )
+                      .filter(item => item !== null)
+                      .join(', ')}
                   </span>
                   <div className="text-lg text-gray-400 p-0 m-0">(WxH)</div>
                 </div>
@@ -456,7 +561,7 @@ const AddEditPriceDrawer = ({
           }}
         >
           <div className="h-fit overflow-auto">
-            <div className="border border-yellow-350 bg-yellow-250 m-6 p-4 rounded-md flex flex-col gap-4">
+            <div className="border border-yellow-350 bg-yellow-250 m-6 p-4 rounded-lg flex flex-col gap-4">
               <div>
                 <div className="text-lg font-bold">Apply Display Cost</div>
                 <div className="text-gray-500 text-base">
@@ -542,11 +647,11 @@ const AddEditPriceDrawer = ({
                 classNames={{ label: 'text-base font-bold' }}
               />
             </div>
-            <div className="border border-blue-200 bg-blue-100 m-6 p-4 rounded-md flex flex-col gap-4">
+            <div className="border border-blue-200 bg-blue-100 m-6 p-4 rounded-lg flex flex-col gap-4">
               <Checkbox
                 name="applyPrintingMountingCostForAll"
                 label="Apply for all selected inventories"
-                classNames={{ label: 'text-base font-bold' }}
+                classNames={{ label: 'text-lg font-bold', body: 'items-center' }}
                 checked={form.getValues('applyPrintingMountingCostForAll')}
                 onChange={() =>
                   form.setValue(
@@ -614,8 +719,8 @@ const AddEditPriceDrawer = ({
                 />
               </div>
             </div>
-            <div className="border border-purple-350 bg-purple-100 m-6 p-4 rounded-md flex flex-col gap-4">
-              <div className="text-base font-bold">
+            <div className="border border-purple-350 bg-purple-100 m-6 p-4 rounded-lg flex flex-col gap-4">
+              <div className="text-lg font-bold">
                 Miscellaneous{' '}
                 <span className="text-xs font-normal italic"> ** inclusive of GST</span>
               </div>
@@ -641,6 +746,58 @@ const AddEditPriceDrawer = ({
                 classNames={{ label: 'text-base font-bold' }}
               />
             </div>
+            {type === 'bookings' ? (
+              <div className="border border-green-350 bg-green-100 m-6 p-4 rounded-lg flex flex-col gap-4">
+                <Checkbox
+                  name="applyDiscountForAll"
+                  label="Apply for all selected inventories"
+                  classNames={{ label: 'text-lg font-bold', body: 'items-center' }}
+                  checked={form.getValues('applyDiscountForAll')}
+                  onChange={() => form.setValue('applyDiscountForAll', !watchApplyDiscountForAll)}
+                />
+
+                <div className="text-lg">
+                  Please select how you would like to apply the discount
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-base font-medium">Display Cost</div>
+                  <Switch
+                    size="lg"
+                    classNames={{ track: 'border-2 border-slate' }}
+                    checked={watchDiscountOn === 'totalPrice'}
+                    onChange={() =>
+                      form.setValue(
+                        'discountOn',
+                        watchDiscountOn === 'displayCost' ? 'totalPrice' : 'displayCost',
+                      )
+                    }
+                  />
+                  <div className="text-base font-medium">Total Price</div>
+                </div>
+                <ControlledNumberInput
+                  precision={2}
+                  label="Discount (%)"
+                  name="discount"
+                  hideControls
+                  classNames={{ label: 'text-base font-bold' }}
+                />
+              </div>
+            ) : (
+              <div className="border border-green-350 bg-green-100 m-6 p-4 rounded-lg flex flex-col gap-4">
+                <div className="text-lg font-bold">Subject to Extension</div>
+                <div className="flex items-center gap-4">
+                  <div className="text-base font-medium">No</div>
+                  <Switch
+                    name="subjectToExtension"
+                    size="lg"
+                    classNames={{ track: 'border-2 border-slate' }}
+                    checked={watchSubjectToExtension}
+                    onChange={() => form.setValue('subjectToExtension', !watchSubjectToExtension)}
+                  />
+                  <div className="text-base font-medium">Yes</div>
+                </div>
+              </div>
+            )}
           </div>
           <div className="sticky bottom-0 z-10 bg-white p-6 pt-2 flex flex-col gap-6">
             <div className="flex justify-between">
