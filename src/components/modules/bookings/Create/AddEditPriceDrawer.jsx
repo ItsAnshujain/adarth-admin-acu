@@ -101,6 +101,7 @@ const defaultValues = {
   subjectToExtension: false,
   discountOn: 'displayCost',
   applyDiscountForAll: true,
+  discount: 0,
 };
 
 const AddEditPriceDrawer = ({
@@ -435,7 +436,6 @@ const AddEditPriceDrawer = ({
             : watchApplyPrintingMountingCostForAll
             ? {
                 ...place,
-                subjectToExtension: formData.subjectToExtension,
                 printingCostPerSqft: formData.printingCostPerSqft,
                 printingGst: formData.printingGst,
                 totalPrintingCost: formData.totalPrintingCost,
