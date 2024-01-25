@@ -405,10 +405,12 @@ const InventoryDashboardPage = () => {
     modals.openModal({
       modalId: 'vacantInventoryFilter',
       title: 'Vacant Inventory Filter',
+      size: 'xl',
       children: (
         <VacantInventoryFilter
           searchParamQueries={searchParams}
-          onClose={(city, from, to) => {
+          onClose={() => modals.closeModal('vacantInventoryFilter')}
+          onSubmit={(city, from, to) => {
             modals.closeModal('vacantInventoryFilter');
             searchParams.set('isUnderMaintenance', false);
             searchParams.set('cities', city);
