@@ -327,7 +327,7 @@ const SelectSpace = () => {
                 />
               </div>
             );
-          }, []),
+          }, [startDate, endDate, bookingRange, unit, _id]),
       },
       {
         Header: 'UNIT',

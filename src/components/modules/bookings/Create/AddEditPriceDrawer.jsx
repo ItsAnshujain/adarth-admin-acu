@@ -534,8 +534,8 @@ const AddEditPriceDrawer = ({
                 <div className="text-lg text-gray-400">
                   Dimension{' '}
                   <span className="text-black">
-                    {inventory.dimension
-                      .map((item, index) =>
+                    {inventory?.dimension
+                      ?.map((item, index) =>
                         index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
                       )
                       .filter(item => item !== null)
