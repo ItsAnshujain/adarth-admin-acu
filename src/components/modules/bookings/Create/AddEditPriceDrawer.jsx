@@ -151,7 +151,7 @@ const AddEditPriceDrawer = ({
     return (
       area *
       (selectedInventory?.unit || 0) *
-      (selectedInventory === 'Single' ? 1 : selectedInventory === 'Double' ? 2 : 4)
+      (selectedInventory?.facing === 'Single' ? 1 : selectedInventory?.facing === 'Double' ? 2 : 4)
     );
   }, [selectedInventory?.dimension]);
 
@@ -283,12 +283,12 @@ const AddEditPriceDrawer = ({
                 (selectedInventory?.unit || 0) *
                 (selectedInventory === 'Single' ? 1 : selectedInventory === 'Double' ? 2 : 4) || 0;
             const updatedTotalPrintingCost =
-              (place.facing === 'Single' ? 1 : place.facing === 'Double' ? 2 : 4) *
+              (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) *
                 area *
                 formData.printingCostPerSqft || 0;
 
             const updatedTotalMountingCost =
-              (place.facing === 'Single' ? 1 : place.facing === 'Double' ? 2 : 4) *
+              (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) *
                 area *
                 formData.mountingCostPerSqft || 0;
 
@@ -303,12 +303,12 @@ const AddEditPriceDrawer = ({
 
             return {
               ...place,
-              printingCostPerSqft: formData.printingCostPerSqft,
+              printingCostPerSqft: Number(formData.printingCostPerSqft.toFixed(2)),
               printingGst: formData.printingGst,
-              mountingCostPerSqft: formData.mountingCostPerSqft,
+              mountingCostPerSqft: Number(formData.mountingCostPerSqft.toFixed(2)),
               mountingGst: formData.mountingGst,
-              totalPrintingCost: updatedTotalPrintingCost,
-              totalMountingCost: updatedTotalMountingCost,
+              totalPrintingCost: Number(updatedTotalPrintingCost.toFixed(2)),
+              totalMountingCost: Number(updatedTotalMountingCost.toFixed(2)),
               price:
                 updatedTotalPrice -
                 (formData.discountOn === 'displayCost'
@@ -317,18 +317,20 @@ const AddEditPriceDrawer = ({
                   ? updatedTotalPrice * (formData.discount / 100)
                   : 0),
               discountOn: formData.discountOn,
-              discountedDisplayCost:
+              discountedDisplayCost: Number(
                 formData.totalDisplayCost -
-                (formData.discountOn === 'displayCost'
-                  ? place.totalDisplayCost * ((formData.discount || 0) / 100)
-                  : 0),
-              discountedTotalPrice:
+                  (formData.discountOn === 'displayCost'
+                    ? place.totalDisplayCost * ((formData.discount || 0) / 100)
+                    : 0),
+              ).toFixed(2),
+              discountedTotalPrice: Number(
                 place.price -
-                (formData.discountOn === 'displayCost'
-                  ? place.totalDisplayCost * ((formData.discount || 0) / 100)
-                  : formData.discountOn === 'totalPrice'
-                  ? place.price * (formData.discount / 100)
-                  : 0),
+                  (formData.discountOn === 'displayCost'
+                    ? place.totalDisplayCost * ((formData.discount || 0) / 100)
+                    : formData.discountOn === 'totalPrice'
+                    ? place.price * (formData.discount / 100)
+                    : 0),
+              ).toFixed(2),
               discount: formData.discount,
             };
           }
@@ -342,12 +344,12 @@ const AddEditPriceDrawer = ({
                 (selectedInventory?.unit || 0) *
                 (selectedInventory === 'Single' ? 1 : selectedInventory === 'Double' ? 2 : 4) || 0;
             const updatedTotalPrintingCost =
-              (place.facing === 'Single' ? 1 : place.facing === 'Double' ? 2 : 4) *
+              (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) *
                 area *
                 formData.printingCostPerSqft || 0;
 
             const updatedTotalMountingCost =
-              (place.facing === 'Single' ? 1 : place.facing === 'Double' ? 2 : 4) *
+              (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) *
                 area *
                 formData.mountingCostPerSqft || 0;
 
@@ -362,10 +364,10 @@ const AddEditPriceDrawer = ({
 
             return {
               ...place,
-              printingCostPerSqft: formData.printingCostPerSqft,
+              printingCostPerSqft: Number(formData.printingCostPerSqft.toFixed(2)),
               printingGst: formData.printingGst,
-              totalPrintingCost: updatedTotalPrintingCost,
-              totalMountingCost: updatedTotalMountingCost,
+              totalPrintingCost: Number(updatedTotalPrintingCost.toFixed(2)),
+              totalMountingCost: Number(updatedTotalMountingCost.toFixed(2)),
               mountingGst: formData.mountingGst,
               price: updatedTotalPrice,
             };
@@ -382,18 +384,21 @@ const AddEditPriceDrawer = ({
                   ? place.price * (formData.discount / 100)
                   : 0),
               discountOn: formData.discountOn,
-              discountedDisplayCost:
+              discountedDisplayCost: Number(
                 formData.totalDisplayCost -
-                (formData.discountOn === 'displayCost'
-                  ? place.totalDisplayCost * ((formData.discount || 0) / 100)
-                  : 0),
-              discountedTotalPrice:
+                  (formData.discountOn === 'displayCost'
+                    ? place.totalDisplayCost * ((formData.discount || 0) / 100)
+                    : 0),
+              ).toFixed(2),
+              discountedTotalPrice: Number(
                 place.price -
-                (formData.discountOn === 'displayCost'
-                  ? place.totalDisplayCost * ((formData.discount || 0) / 100)
-                  : formData.discountOn === 'totalPrice'
-                  ? place.price * (formData.discount / 100)
-                  : 0),
+                  (formData.discountOn === 'displayCost'
+                    ? place.totalDisplayCost * ((formData.discount || 0) / 100)
+                    : formData.discountOn === 'totalPrice'
+                    ? place.price * (formData.discount / 100)
+                    : 0
+                  ).toFixed(2),
+              ),
               discount: formData.discount,
             };
           }
@@ -410,14 +415,14 @@ const AddEditPriceDrawer = ({
                 ...place,
                 displayCostPerMonth: formData.displayCostPerMonth,
                 totalDisplayCost: formData.totalDisplayCost,
-                displayCostPerSqFt: formData.displayCostPerSqFt,
+                displayCostPerSqFt: Number(formData.displayCostPerSqFt.toFixed()),
                 displayCostGstPercentage: formData.displayCostGstPercentage,
                 displayCostGst: formData.displayCostGst,
-                printingCostPerSqft: formData.printingCostPerSqft,
+                printingCostPerSqft: Number(formData.printingCostPerSqft.toFixed(2)),
                 printingGstPercentage: formData.printingGstPercentage,
                 printingGst: formData.printingGst,
                 totalPrintingCost: formData.totalPrintingCost,
-                mountingCostPerSqft: formData.mountingCostPerSqft,
+                mountingCostPerSqft: formData.mountingCoNumberstPerSqft.toFixed(2),
                 mountingGstPercentage: formData.mountingGstPercentage,
                 mountingGst: formData.mountingGst,
                 totalMountingCost: formData.totalMountingCost,
@@ -433,10 +438,10 @@ const AddEditPriceDrawer = ({
             : watchApplyPrintingMountingCostForAll
             ? {
                 ...place,
-                printingCostPerSqft: formData.printingCostPerSqft,
+                printingCostPerSqft: Number(formData.printingCostPerSqft.toFixed(2)),
                 printingGst: formData.printingGst,
                 totalPrintingCost: formData.totalPrintingCost,
-                mountingCostPerSqft: formData.mountingCostPerSqft,
+                mountingCostPerSqft: Number(formData.mountingCostPerSqft.toFixed(2)),
                 mountingGst: formData.mountingGst,
                 totalMountingCost: formData.totalMountingCost,
                 price:

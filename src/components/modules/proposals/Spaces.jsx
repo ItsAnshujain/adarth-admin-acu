@@ -15,6 +15,7 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 import { useFetchInventory } from '../../../apis/queries/inventory.queries';
 import {
+  calculateTotalMonths,
   categoryColors,
   currentDate,
   debounce,
@@ -124,11 +125,58 @@ const Spaces = () => {
         ),
       );
 
+      const calculateTotalArea = place =>
+        (place?.dimension?.reduce(
+          (accumulator, dimension) => accumulator + dimension.height * dimension.width,
+          0,
+        ) || 0) *
+          (place?.unit || 0) *
+          (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) || 0;
+
       form.setValue(
         'spaces',
         watchSpaces.map(item =>
           item._id === id
-            ? { ...item, [key]: val, ...(key === 'unit' ? { hasChangedUnit: true } : {}) }
+            ? {
+                ...item,
+                printingCostPerSqft: item.printingCostPerSqft,
+                totalPrintingCost: Number(
+                  (
+                    item.printingCostPerSqft *
+                    calculateTotalArea(item) *
+                    calculateTotalMonths(item?.startDate, item?.endDate)
+                  ).toFixed(2),
+                ),
+                mountingCostPerSqft: item.mountingCostPerSqft,
+                totalMountingCost: Number(
+                  (
+                    item.mountingCostPerSqft *
+                    calculateTotalArea(item) *
+                    calculateTotalMonths(item?.startDate, item?.endDate)
+                  ).toFixed(2),
+                ),
+                totalArea: calculateTotalArea(item),
+                price: Number(
+                  (
+                    item.totalDisplayCost ||
+                    0 + item.tradedAmount ||
+                    0 +
+                      item.printingCostPerSqft *
+                        calculateTotalArea(item) *
+                        calculateTotalMonths(item?.startDate, item?.endDate) ||
+                    0 +
+                      item.mountingCostPerSqft *
+                        calculateTotalArea(item) *
+                        calculateTotalMonths(item?.startDate, item?.endDate) ||
+                    0 + item.oneTimeInstallationCost ||
+                    0 + item.monthlyAdditionalCost ||
+                    0 - item.otherCharges ||
+                    0
+                  ).toFixed(2),
+                ),
+                [key]: val,
+                ...(key === 'unit' ? { hasChangedUnit: true } : {}),
+              }
             : item,
         ),
       );
@@ -370,9 +418,26 @@ const Spaces = () => {
         accessor: 'basicInformation.price',
         Cell: ({
           row: {
-            original: { price },
+            original: {
+              totalDisplayCost,
+              tradedAmount,
+              totalPrintingCost,
+              totalMountingCost,
+              oneTimeInstallationCost,
+              monthlyAdditionalCost,
+            },
           },
-        }) => useMemo(() => toIndianCurrency(price), [price]),
+        }) =>
+          useMemo(() => {
+            const totalCost =
+              (totalDisplayCost || 0) +
+              (tradedAmount || 0) +
+              (totalPrintingCost || 0) +
+              (totalMountingCost || 0) +
+              (oneTimeInstallationCost || 0) +
+              (monthlyAdditionalCost || 0);
+            return totalCost.toFixed(2) || 0;
+          }, []),
       },
       {
         Header: 'PROPOSAL DATE',
@@ -587,11 +652,18 @@ const Spaces = () => {
     if (watchSpaces.length) {
       watchSpaces.map(place =>
         setUpdatedInventoryData(prev =>
-          prev.map(item => (item?._id === place?._id ? { ...item, ...place } : item)),
+          prev.map(item =>
+            item?._id === place?._id
+              ? {
+                  ...item,
+                  ...place,
+                }
+              : item,
+          ),
         ),
       );
     }
-  }, [drawerOpened]);
+  }, [drawerOpened, watchSpaces]);
 
   return (
     <>

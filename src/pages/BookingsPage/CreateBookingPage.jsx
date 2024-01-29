@@ -162,7 +162,7 @@ const CreateBookingPage = () => {
       data.place = watchPlace?.map(item => ({
         ...item,
         id: item._id,
-        price: +item.price,
+        price: +Number(item.price.toFixed(2) || 0),
         media: isValidURL(item.media) ? item.media : undefined,
         startDate: item.startDate
           ? dayjs(item.startDate).startOf('day').toISOString()
@@ -173,6 +173,8 @@ const CreateBookingPage = () => {
         tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
         unit: item?.unit ? +item.unit : 1,
         discountPercentage: item.discount,
+        totalPrintingCost: Number(item.totalPrintingCost.toFixed(2)) || 0,
+        discountedTotalPrice: Number(item.discountedTotalPrice.toFixed(2)) || 0,
       }));
 
       if (data.place.some(item => item.price === 0 || !item.price)) {
@@ -206,7 +208,7 @@ const CreateBookingPage = () => {
 
       const totalPrice = calculateTotalPrice(watchPlace);
       const gstCalculation = totalPrice * 0.18;
-      data.price = (totalPrice + gstCalculation).toFixed(2);
+      data.price = Number((totalPrice + gstCalculation).toFixed(2)) || 0;
 
       Object.keys(data).forEach(k => {
         if (data[k] === '') {
@@ -298,7 +300,7 @@ const CreateBookingPage = () => {
             location: item?.location?.city,
             dimension: item?.specifications?.size,
             _id: item._id,
-            price: +item.campaignPrice,
+            price: +Number(item.campaignPrice.toFixed(2)),
             media: isValidURL(item.media) ? item.media : undefined,
             tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
             availableUnit:

@@ -536,7 +536,7 @@ export const formLabelStyles = {
 export const calculateTotalPrice = (option = []) => {
   if (!option.length) return 0;
   const totalPrice = option.reduce((acc, item) => acc + +(item.price || 0), 0);
-  return totalPrice.toFixed(2);
+  return Number(totalPrice.toFixed(2)) || 0;
 };
 
 export const calculateTotalMonths = (startDate, endDate) => {
