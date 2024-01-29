@@ -172,6 +172,7 @@ const CreateBookingPage = () => {
           : dayjs().endOf('day').toISOString(),
         tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
         unit: item?.unit ? +item.unit : 1,
+        discountPercentage: item.discount,
       }));
 
       if (data.place.some(item => item.price === 0 || !item.price)) {
@@ -305,6 +306,9 @@ const CreateBookingPage = () => {
                 ? item.specifications.unit - item.unit
                 : item.unit,
             initialUnit: item?.unit || 0,
+            discount: item?.discountPercentage,
+            startDate: new Date(item.startDate),
+            endDate: new Date(item.endDate),
           })) || [],
         industry: campaign?.industry?._id || '',
         displayBrands: displayBrands?.[0] || '',

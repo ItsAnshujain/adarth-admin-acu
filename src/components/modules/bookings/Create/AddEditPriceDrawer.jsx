@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import classNames from 'classnames';
 import ControlledNumberInput from '../../../shared/FormInputs/Controlled/ControlledNumberInput';
 import { indianCurrencyInDecimals } from '../../../../utils';
 
@@ -127,6 +128,8 @@ const AddEditPriceDrawer = ({
   const watchMountingCostPerSqft = form.watch('mountingCostPerSqft');
   const watchPrintingGstPercentage = form.watch('printingGstPercentage');
   const watchMountingGstPercentage = form.watch('mountingGstPercentage');
+  const watchTotalPrintingCost = form.watch('totalPrintingCost');
+  const watchTotalMountingCost = form.watch('totalMountingCost');
 
   const watchApplyPrintingMountingCostForAll = form.watch('applyPrintingMountingCostForAll');
   const watchApplyDiscountForAll = form.watch('applyDiscountForAll');
@@ -168,17 +171,21 @@ const AddEditPriceDrawer = ({
 
   const totalMonths = useMemo(
     () => calculateTotalMonths(selectedInventory?.startDate, selectedInventory?.endDate),
-    [selectedInventory?.startDate, selectedInventory?.endDate],
+    [selectedInventory],
   );
 
-  const totalArea = useMemo(
-    () =>
+  const totalArea = useMemo(() => {
+    const area =
       selectedInventory?.dimension?.reduce(
         (accumulator, dimension) => accumulator + dimension.height * dimension.width,
         0,
-      ) || 0,
-    [selectedInventory?.dimension],
-  );
+      ) || 0;
+    return (
+      area *
+      (selectedInventory?.unit || 0) *
+      (selectedInventory === 'Single' ? 1 : selectedInventory === 'Double' ? 2 : 4)
+    );
+  }, [selectedInventory?.dimension]);
 
   const {
     totalDisplayCost,
@@ -220,7 +227,7 @@ const AddEditPriceDrawer = ({
       displayCostPerMonth + displayCostPerMonth * ((watchDisplayCostGstPercentage || 0) / 100),
     );
     form.setValue('displayCostPerSqFt', (watchDisplayCostPerMonth || 0) / totalArea);
-  }, [watchDisplayCostPerMonth, watchDisplayCostGstPercentage]);
+  }, [watchDisplayCostPerMonth, watchDisplayCostGstPercentage, totalMonths]);
 
   const onChangeDisplayCostPerSqFt = useCallback(() => {
     const displayCostPerSqFt = watchDisplayCostPerSqFt * totalArea || 0;
@@ -230,7 +237,7 @@ const AddEditPriceDrawer = ({
       displayCostPerSqFt + displayCostPerSqFt * ((watchDisplayCostGstPercentage || 0) / 100),
     );
     form.setValue('displayCostPerMonth', (watchDisplayCostPerSqFt || 0) * totalArea);
-  }, [watchDisplayCostPerSqFt, watchDisplayCostGstPercentage]);
+  }, [watchDisplayCostPerSqFt, watchDisplayCostGstPercentage, totalMonths]);
 
   const onChangeDisplayCostPercentage = useCallback(() => {
     const displayCostPerSqFt = watchDisplayCostPerSqFt * totalArea || 0;
@@ -240,23 +247,38 @@ const AddEditPriceDrawer = ({
       displayCostPerSqFt + displayCostPerSqFt * ((watchDisplayCostGstPercentage || 0) / 100),
     );
     form.setValue('displayCostPerMonth', (watchDisplayCostPerSqFt || 0) * totalArea);
-  }, [watchDisplayCostPerSqFt, watchDisplayCostPerMonth, watchDisplayCostGstPercentage]);
+  }, [watchDisplayCostPerSqFt, watchDisplayCostPerMonth, watchDisplayCostGstPercentage, totalArea]);
 
-  useEffect(() => {
-    const printingCost = (watchPrintingCostPerSqft * totalArea) / totalMonths || 0;
+  const onChangePrintingCost = useCallback(() => {
+    const printingCost = watchPrintingCostPerSqft * totalArea * totalMonths || 0;
     form.setValue(
       'totalPrintingCost',
       printingCost + printingCost * ((watchPrintingGstPercentage || 0) / 100),
     );
-  }, [watchPrintingCostPerSqft, watchPrintingGstPercentage]);
+  }, [watchPrintingCostPerSqft, watchPrintingGstPercentage, totalArea, totalMonths]);
 
-  useEffect(() => {
-    const mountingCost = (watchMountingCostPerSqft * totalArea) / totalMonths || 0;
+  const onChangeMountingCost = useCallback(() => {
+    const mountingCost = watchMountingCostPerSqft * totalArea * totalMonths || 0;
     form.setValue(
       'totalMountingCost',
       mountingCost + mountingCost * ((watchMountingGstPercentage || 0) / 100),
     );
-  }, [watchMountingCostPerSqft, watchMountingGstPercentage]);
+  }, [watchMountingCostPerSqft, watchMountingGstPercentage, totalArea, totalMonths]);
+
+  const onChangePrintingCostGst = useCallback(() => {
+    form.setValue(
+      'totalPrintingCost',
+      watchTotalPrintingCost + watchTotalPrintingCost * (watchPrintingGstPercentage / 100),
+    );
+  }, [watchTotalPrintingCost, watchPrintingGstPercentage]);
+
+  const onChangeMountingCostGst = useCallback(() => {
+    form.setValue(
+      'totalMountingCost',
+      watchTotalMountingCost + watchTotalMountingCost * (watchMountingGstPercentage / 100),
+    );
+  }, [watchTotalMountingCost, watchMountingGstPercentage]);
+
   const watchPlace = formContext.watch('place');
   const onSubmit = async formData => {
     if (type === 'bookings') {
@@ -357,7 +379,9 @@ const AddEditPriceDrawer = ({
                     ? place.price * ((formData.discount || 0) / 100)
                     : 0),
               }
-            : watchApplyPrintingMountingCostForAll
+            : watchApplyPrintingMountingCostForAll &&
+              watchPrintingCostPerSqft > 0 &&
+              watchMountingCostPerSqft > 0
             ? {
                 ...place,
                 printingCostPerSqft: formData.printingCostPerSqft,
@@ -376,7 +400,7 @@ const AddEditPriceDrawer = ({
                   0 - place.otherCharges ||
                   0,
               }
-            : watchApplyDiscountForAll
+            : watchApplyDiscountForAll && watchDiscount > 0
             ? {
                 ...place,
                 price:
@@ -527,7 +551,9 @@ const AddEditPriceDrawer = ({
           {selectedInventories?.map(inventory => (
             <Carousel.Slide>
               <div className="bg-gray-200 h-full rounded-lg p-4 w-3/4 m-auto flex flex-col g">
-                <div className="text-xl">{inventory.spaceName}</div>
+                <div className="text-xl">
+                  {inventory.spaceName || inventory?.basicInformation?.spaceName}
+                </div>
                 <div className="text-lg text-gray-400">
                   City <span className="text-black">{inventory.location}</span>
                 </div>
@@ -550,7 +576,7 @@ const AddEditPriceDrawer = ({
             </Carousel.Slide>
           ))}
         </Carousel>
-        <Divider className="my-4" />
+        <Divider className="mt-4" />
       </div>
       <FormProvider {...form}>
         <form
@@ -577,21 +603,24 @@ const AddEditPriceDrawer = ({
                     name="displayCostPerMonth"
                     hideControls
                     classNames={{ label: 'text-base font-bold' }}
-                    className="w-4/5"
+                    className={classNames(type === 'bookings' ? 'w-3/4' : 'w-full')}
                     thousandSeparator=","
-                    onKeyDown={onChangeDisplayCostPerMonth}
+                    onKeyUp={onChangeDisplayCostPerMonth}
                   />
-                  <ControlledNumberInput
-                    precision={2}
-                    label="GST"
-                    name="displayCostGstPercentage"
-                    min={0}
-                    hideControls
-                    classNames={{ label: 'text-base font-bold' }}
-                    className="w-1/5"
-                    rightSection="%"
-                    onKeyDown={onChangeDisplayCostPercentage}
-                  />
+                  {type === 'bookings' ? (
+                    <ControlledNumberInput
+                      precision={2}
+                      label="GST"
+                      name="displayCostGstPercentage"
+                      min={0}
+                      hideControls
+                      classNames={{ label: 'text-base font-bold' }}
+                      className="w-1/4"
+                      rightSection="%"
+                      onKeyUp={onChangeDisplayCostPercentage}
+                      max={100}
+                    />
+                  ) : null}
                 </div>
                 <ControlledNumberInput
                   precision={2}
@@ -612,21 +641,24 @@ const AddEditPriceDrawer = ({
                     name="displayCostPerSqFt"
                     hideControls
                     classNames={{ label: 'text-base font-bold' }}
-                    className="w-4/5"
+                    className={classNames(type === 'bookings' ? 'w-3/4' : 'w-full')}
                     thousandSeparator=","
-                    onKeyDown={onChangeDisplayCostPerSqFt}
+                    onKeyUp={onChangeDisplayCostPerSqFt}
                   />
-                  <ControlledNumberInput
-                    precision={2}
-                    label="GST"
-                    name="displayCostGstPercentage"
-                    min={0}
-                    hideControls
-                    classNames={{ label: 'text-base font-bold' }}
-                    className="w-1/5"
-                    rightSection="%"
-                    onKeyDown={onChangeDisplayCostPercentage}
-                  />
+                  {type === 'bookings' ? (
+                    <ControlledNumberInput
+                      precision={2}
+                      label="GST"
+                      name="displayCostGstPercentage"
+                      min={0}
+                      hideControls
+                      classNames={{ label: 'text-base font-bold' }}
+                      className="w-1/4"
+                      rightSection="%"
+                      onKeyUp={onChangeDisplayCostPercentage}
+                      max={100}
+                    />
+                  ) : null}
                 </div>
                 <ControlledNumberInput
                   precision={2}
@@ -668,17 +700,22 @@ const AddEditPriceDrawer = ({
                     name="printingCostPerSqft"
                     hideControls
                     classNames={{ label: 'text-base font-bold' }}
-                    className="w-4/5"
+                    className={classNames(type === 'bookings' ? 'w-3/4' : 'w-full')}
+                    onKeyUp={onChangePrintingCost}
                   />
-                  <ControlledNumberInput
-                    precision={2}
-                    label="GST"
-                    name="printingGstPercentage"
-                    hideControls
-                    classNames={{ label: 'text-base font-bold' }}
-                    className="w-1/5"
-                    rightSection="%"
-                  />
+                  {type === 'bookings' ? (
+                    <ControlledNumberInput
+                      precision={2}
+                      label="GST"
+                      name="printingGstPercentage"
+                      hideControls
+                      classNames={{ label: 'text-base font-bold' }}
+                      className="w-1/4"
+                      rightSection="%"
+                      max={100}
+                      onKeyUp={onChangePrintingCostGst}
+                    />
+                  ) : null}
                 </div>
                 <ControlledNumberInput
                   precision={2}
@@ -697,17 +734,22 @@ const AddEditPriceDrawer = ({
                     name="mountingCostPerSqft"
                     hideControls
                     classNames={{ label: 'text-base font-bold' }}
-                    className="w-4/5"
+                    className={classNames(type === 'bookings' ? 'w-3/4' : 'w-full')}
+                    onKeyUp={onChangeMountingCost}
                   />
-                  <ControlledNumberInput
-                    precision={2}
-                    label="GST"
-                    name="mountingGstPercentage"
-                    hideControls
-                    classNames={{ label: 'text-base font-bold' }}
-                    className="w-1/5"
-                    rightSection="%"
-                  />
+                  {type === 'bookings' ? (
+                    <ControlledNumberInput
+                      precision={2}
+                      label="GST"
+                      name="mountingGstPercentage"
+                      hideControls
+                      classNames={{ label: 'text-base font-bold' }}
+                      className="w-1/4"
+                      rightSection="%"
+                      max={100}
+                      onKeyUp={onChangeMountingCostGst}
+                    />
+                  ) : null}
                 </div>
                 <ControlledNumberInput
                   precision={2}
@@ -738,13 +780,19 @@ const AddEditPriceDrawer = ({
                 hideControls
                 classNames={{ label: 'text-base font-bold' }}
               />
-              <ControlledNumberInput
-                precision={2}
-                label="Other Charges (-)"
-                name="otherCharges"
-                hideControls
-                classNames={{ label: 'text-base font-bold' }}
-              />
+              {type === 'bookings' ? (
+                <ControlledNumberInput
+                  precision={2}
+                  label={
+                    <div>
+                      Other Charges (<span className="text-red-600">-</span>)
+                    </div>
+                  }
+                  name="otherCharges"
+                  hideControls
+                  classNames={{ label: 'text-base font-bold' }}
+                />
+              ) : null}
             </div>
             {type === 'bookings' ? (
               <div className="border border-green-350 bg-green-100 m-6 p-4 rounded-lg flex flex-col gap-4">

@@ -99,7 +99,6 @@ const SelectSpace = () => {
           newList[index].originalUnit,
         );
         newList[index] = { ...newList[index], availableUnit };
-
         return newList;
       });
 
@@ -317,6 +316,7 @@ const SelectSpace = () => {
             const isDisabled =
               watchPlace?.some(item => item._id === _id) && (!startDate || !endDate);
             const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
+
             return (
               <div className="min-w-[300px]">
                 <DateRangeSelector
@@ -403,11 +403,11 @@ const SelectSpace = () => {
         Header: 'PRICE',
         Cell: ({
           row: {
-            original: { priceChanged, startDate, endDate, _id },
+            original: { priceChanged, startDate, endDate, _id, displayCostPerMonth },
           },
         }) =>
           useMemo(() =>
-            priceChanged ? (
+            priceChanged || displayCostPerMonth ? (
               <Button
                 onClick={() => {
                   onClickAddPrice();
@@ -560,6 +560,7 @@ const SelectSpace = () => {
         obj.startDate = getDate(selectionItem, item, 'startDate');
         obj.endDate = getDate(selectionItem, item, 'endDate');
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
+        obj.spacing = item.location.spacing;
         finalData.push(obj);
       }
 
