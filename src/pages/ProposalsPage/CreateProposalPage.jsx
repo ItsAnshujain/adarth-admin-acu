@@ -148,10 +148,6 @@ const CreateProposalPage = () => {
 
       delete data.uploadType;
 
-      if (data.proposalTermsId) {
-        data.proposalTermsId = data.proposalTermsId.value;
-      }
-
       if (proposalId) {
         data = {
           ...data,
@@ -196,6 +192,7 @@ const CreateProposalPage = () => {
 
   useEffect(() => {
     if (proposalData) {
+      console.log(proposalData);
       form.reset({
         ...form.values,
         name: proposalData?.proposal?.name,
@@ -222,10 +219,7 @@ const CreateProposalPage = () => {
           })) || [],
         letterHead: proposalData?.proposal?.letterHead,
         letterFooter: proposalData?.proposal?.letterFooter,
-        proposalTermsId: proposalData?.proposal?.proposalTermsId && {
-          label: proposalData?.proposal?.proposalTermsId?.name,
-          value: proposalData?.proposal?.proposalTermsId?._id,
-        },
+        proposalTermsId: proposalData?.proposal?.proposalTermsId?._id,
       });
     }
   }, [proposalData, userData]);
