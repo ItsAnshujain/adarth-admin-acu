@@ -413,7 +413,7 @@ const InventoryDashboardPage = () => {
           onSubmit={(city, from, to) => {
             modals.closeModal('vacantInventoryFilter');
             searchParams.set('isUnderMaintenance', false);
-            searchParams.set('cities', city);
+            if (city) searchParams.set('cities', city);
             searchParams.set('from', dayjs(from).format(DATE_FORMAT));
             searchParams.set('to', dayjs(to).format(DATE_FORMAT));
             setSearchParams(searchParams);
