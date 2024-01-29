@@ -99,7 +99,6 @@ const SelectSpace = () => {
           newList[index].originalUnit,
         );
         newList[index] = { ...newList[index], availableUnit };
-
         return newList;
       });
 
@@ -327,7 +326,7 @@ const SelectSpace = () => {
                 />
               </div>
             );
-          }, [startDate, endDate, bookingRange, unit, _id]),
+          }, []),
       },
       {
         Header: 'UNIT',
@@ -403,11 +402,11 @@ const SelectSpace = () => {
         Header: 'PRICE',
         Cell: ({
           row: {
-            original: { priceChanged, startDate, endDate, _id },
+            original: { priceChanged, startDate, endDate, _id, displayCostPerMonth },
           },
         }) =>
           useMemo(() =>
-            priceChanged ? (
+            priceChanged || displayCostPerMonth ? (
               <Button
                 onClick={() => {
                   onClickAddPrice();
@@ -560,6 +559,7 @@ const SelectSpace = () => {
         obj.startDate = getDate(selectionItem, item, 'startDate');
         obj.endDate = getDate(selectionItem, item, 'endDate');
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
+        obj.spacing = item.location.spacing;
         finalData.push(obj);
       }
 
