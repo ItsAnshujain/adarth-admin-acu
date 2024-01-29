@@ -231,7 +231,32 @@ const SelectSpace = () => {
 
   const RenderPeerCell = useCallback(({ row }) => row.original.peer || '-', []);
 
-  const RenderTotalPriceCell = useCallback(({ row }) => row.original.price.toFixed(2) || '-', []);
+  const RenderTotalPriceCell = useCallback(
+    ({
+      row: {
+        original: {
+          totalDisplayCost,
+          discountOn,
+          discount,
+          tradedAmount,
+          totalPrintingCost,
+          totalMountingCost,
+          oneTimeInstallationCost,
+          monthlyAdditionalCost,
+          otherCharges,
+        },
+      },
+    }) =>
+      totalDisplayCost -
+        (discountOn === 'displayCost' ? totalDisplayCost * ((discount || 0) / 100) : 0) +
+        tradedAmount +
+        totalPrintingCost +
+        totalMountingCost +
+        oneTimeInstallationCost +
+        monthlyAdditionalCost -
+        otherCharges || '-',
+    [],
+  );
 
   const RenderInventoryIdCell = useCallback(({ row }) => row.original.inventoryId || '-', []);
 
@@ -403,35 +428,56 @@ const SelectSpace = () => {
         Header: 'PRICE',
         Cell: ({
           row: {
-            original: { priceChanged, startDate, endDate, _id, displayCostPerMonth },
+            original: {
+              priceChanged,
+              startDate,
+              endDate,
+              _id,
+              displayCostPerMonth,
+              totalPrintingCost,
+              totalMountingCost,
+              oneTimeInstallationCost,
+              monthlyAdditionalCost,
+              otherCharges,
+              discountPercentage,
+            },
           },
         }) =>
-          useMemo(() =>
-            priceChanged || displayCostPerMonth ? (
-              <Button
-                onClick={() => {
-                  onClickAddPrice();
-                  setSelectedInventoryId(_id);
-                }}
-                className="bg-purple-450 order-3"
-                size="xs"
-                disabled={!watchPlace.some(item => item._id === _id) && (!startDate || !endDate)}
-              >
-                Edit Price
-              </Button>
-            ) : (
-              <Button
-                onClick={() => {
-                  onClickAddPrice();
-                  setSelectedInventoryId(_id);
-                }}
-                className="bg-purple-450 order-3"
-                size="xs"
-                disabled={!watchPlace.some(item => item._id === _id) && (!startDate || !endDate)}
-              >
-                Add Price
-              </Button>
-            ),
+          useMemo(
+            () =>
+              priceChanged ||
+              displayCostPerMonth ||
+              totalPrintingCost ||
+              totalMountingCost ||
+              oneTimeInstallationCost ||
+              monthlyAdditionalCost ||
+              otherCharges ||
+              discountPercentage ? (
+                <Button
+                  onClick={() => {
+                    onClickAddPrice();
+                    setSelectedInventoryId(_id);
+                  }}
+                  className="bg-purple-450 order-3"
+                  size="xs"
+                  disabled={!watchPlace.some(item => item._id === _id)}
+                >
+                  Edit Price
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    onClickAddPrice();
+                    setSelectedInventoryId(_id);
+                  }}
+                  className="bg-purple-450 order-3"
+                  size="xs"
+                  disabled={!watchPlace.some(item => item._id === _id)}
+                >
+                  Add Price
+                </Button>
+              ),
+            [watchPlace, startDate, endDate],
           ),
       },
       {
@@ -580,7 +626,7 @@ const SelectSpace = () => {
         ),
       );
     }
-  }, [drawerOpened]);
+  }, [drawerOpened, watchPlace]);
 
   return (
     <>

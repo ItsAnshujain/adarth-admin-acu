@@ -315,11 +315,30 @@ const Spaces = () => {
         Header: 'PRICE',
         Cell: ({
           row: {
-            original: { priceChanged, startDate, endDate, _id },
+            original: {
+              priceChanged,
+              startDate,
+              endDate,
+              _id,
+              displayCostPerMonth,
+              totalPrintingCost,
+              totalMountingCost,
+              oneTimeInstallationCost,
+              monthlyAdditionalCost,
+              otherCharges,
+              discountPercentage,
+            },
           },
         }) =>
           useMemo(() =>
-            priceChanged ? (
+            priceChanged ||
+            displayCostPerMonth ||
+            totalPrintingCost ||
+            totalMountingCost ||
+            oneTimeInstallationCost ||
+            monthlyAdditionalCost ||
+            otherCharges ||
+            discountPercentage ? (
               <Button
                 onClick={() => {
                   onClickAddPrice();
