@@ -372,7 +372,7 @@ const Spaces = () => {
           row: {
             original: { price },
           },
-        }) => useMemo(() => toIndianCurrency(price), []),
+        }) => useMemo(() => toIndianCurrency(price), [price]),
       },
       {
         Header: 'PROPOSAL DATE',

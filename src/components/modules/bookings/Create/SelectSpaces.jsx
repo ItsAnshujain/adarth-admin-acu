@@ -231,33 +231,6 @@ const SelectSpace = () => {
 
   const RenderPeerCell = useCallback(({ row }) => row.original.peer || '-', []);
 
-  const RenderTotalPriceCell = useCallback(
-    ({
-      row: {
-        original: {
-          totalDisplayCost,
-          discountOn,
-          discount,
-          tradedAmount,
-          totalPrintingCost,
-          totalMountingCost,
-          oneTimeInstallationCost,
-          monthlyAdditionalCost,
-          otherCharges,
-        },
-      },
-    }) =>
-      totalDisplayCost -
-        (discountOn === 'displayCost' ? totalDisplayCost * ((discount || 0) / 100) : 0) +
-        tradedAmount +
-        totalPrintingCost +
-        totalMountingCost +
-        oneTimeInstallationCost +
-        monthlyAdditionalCost -
-        otherCharges || '-',
-    [],
-  );
-
   const RenderInventoryIdCell = useCallback(({ row }) => row.original.inventoryId || '-', []);
 
   const RenderMediaTypeCell = useCallback(({ row }) => row.original.mediaType || '-', []);
@@ -483,7 +456,37 @@ const SelectSpace = () => {
       {
         Header: 'TOTAL PRICE',
         accessor: 'basicInformation.price',
-        Cell: RenderTotalPriceCell,
+        Cell: ({
+          row: {
+            original: {
+              totalDisplayCost,
+              discountOn,
+              discount,
+              tradedAmount,
+              totalPrintingCost,
+              totalMountingCost,
+              oneTimeInstallationCost,
+              monthlyAdditionalCost,
+              otherCharges,
+            },
+          },
+        }) =>
+          useMemo(() => {
+            const totalCost =
+              (totalDisplayCost || 0) -
+              (discountOn === 'displayCost'
+                ? (totalDisplayCost || 0) * ((discount || 0) / 100)
+                : 0) +
+              (tradedAmount || 0) +
+              (totalPrintingCost || 0) +
+              (totalMountingCost || 0) +
+              (oneTimeInstallationCost || 0) +
+              (monthlyAdditionalCost || 0) -
+              (otherCharges || 0);
+            return discountOn === 'totalPrice'
+              ? (totalCost || 0) - (totalCost || 0) * (discount / 100)
+              : totalCost;
+          }, []),
       },
       {
         Header: 'MEDIA OWNER NAME',
