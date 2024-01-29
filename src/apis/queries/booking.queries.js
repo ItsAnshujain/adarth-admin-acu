@@ -24,6 +24,7 @@ import {
   fetchUserSalesByUserId,
   fetchCalendarEvents,
   exportBookings,
+  exportBooking,
 } from '../requests/booking.requests';
 import { onApiError } from '../../utils';
 
@@ -420,10 +421,27 @@ export const useCalendarEvents = (payload, enabled = true) =>
     onError: onApiError,
   });
 
-export const useExportBooking = () =>
+export const useExportBookings = () =>
   useMutation(
     async ({ type, query }) => {
       const res = await exportBookings(type, query);
+      return res?.data;
+    },
+    {
+      onError: err => {
+        showNotification({
+          title: 'Error',
+          message: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+
+export const useExportBooking = () =>
+  useMutation(
+    async ({ bookingId }) => {
+      const res = await exportBooking(bookingId);
       return res?.data;
     },
     {

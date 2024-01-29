@@ -341,7 +341,7 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
       });
 
       const inventoryResponse = await shareInventory.mutateAsync(
-        { queries: serialize({ ...params, utcOffset: dayjs().utcOffset() }), data },
+        { queries: serialize({ ...params, page: 1, utcOffset: dayjs().utcOffset() }), data },
         {
           onSuccess: () => {
             setActiveFileType([]);

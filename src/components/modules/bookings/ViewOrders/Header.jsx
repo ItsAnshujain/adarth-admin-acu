@@ -3,12 +3,17 @@ import classNames from 'classnames';
 import { ArrowLeft } from 'react-feather';
 import { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { showNotification } from '@mantine/notifications';
 import Menu from '../../finance/Menu';
+import { useExportBooking } from '../../../../apis/queries/booking.queries';
+import { downloadPdf } from '../../../../utils';
 
 const Header = ({ bookingId, bookingData }) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams({ tab: 'order-information' });
   const tab = searchParams.get('tab');
+
+  const exportBookingHandler = useExportBooking();
 
   const purchaseOrderList = useMemo(
     () => [
@@ -55,6 +60,16 @@ const Header = ({ bookingId, bookingData }) => {
     setSearchParams(searchParams);
   };
 
+  const exportBooking = async () => {
+    const res = await exportBookingHandler.mutateAsync({
+      bookingId,
+    });
+    downloadPdf(res.xlsxLink);
+    showNotification({
+      title: 'Download successful',
+      color: 'green',
+    });
+  };
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center flex-wrap">
       <div className="flex gap-3 items-center font-medium">
@@ -94,7 +109,14 @@ const Header = ({ bookingId, bookingData }) => {
           Overview
         </Button>
       </div>
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 flex-wrap items-center">
+        <Button
+          className="text-white cursor-pointer bg-black text-sm font-semibold py-2 px-3 rounded-md"
+          onClick={exportBooking}
+          loading={exportBookingHandler.isLoading}
+        >
+          Export Booking
+        </Button>
         {tab === 'order-information' ? (
           <div className="flex gap-2 flex-wrap">
             <Menu btnLabel="Generate Purchase Order" options={purchaseOrderList} />

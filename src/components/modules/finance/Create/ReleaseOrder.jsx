@@ -37,7 +37,7 @@ const ReleaseOrder = ({
   setUpdatedForm = () => {},
 }) => {
   const toWords = new ToWords();
-  const { values } = useFormContext();
+  const { errors, values } = useFormContext();
   const handleDeleteSpaceItem = spaceId => {
     setAddSpaceItem(addSpaceItem?.filter(item => item.itemId !== spaceId));
   };
