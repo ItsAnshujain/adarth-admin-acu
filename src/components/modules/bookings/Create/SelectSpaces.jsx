@@ -316,6 +316,7 @@ const SelectSpace = () => {
             const isDisabled =
               watchPlace?.some(item => item._id === _id) && (!startDate || !endDate);
             const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
+
             return (
               <div className="min-w-[300px]">
                 <DateRangeSelector
@@ -326,7 +327,7 @@ const SelectSpace = () => {
                 />
               </div>
             );
-          }, []),
+          }, [startDate, endDate, bookingRange, unit, _id]),
       },
       {
         Header: 'UNIT',

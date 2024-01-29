@@ -307,6 +307,8 @@ const CreateBookingPage = () => {
                 : item.unit,
             initialUnit: item?.unit || 0,
             discount: item?.discountPercentage,
+            startDate: new Date(item.startDate),
+            endDate: new Date(item.endDate),
           })) || [],
         industry: campaign?.industry?._id || '',
         displayBrands: displayBrands?.[0] || '',
