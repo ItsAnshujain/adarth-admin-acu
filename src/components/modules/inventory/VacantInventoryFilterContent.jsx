@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, MultiSelect, Select } from '@mantine/core';
+import { Button, MultiSelect } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { useDistinctCities } from '../../../apis/queries/inventory.queries';
 import CustomDateRangePicker from '../../CustomDateRangePicker';
@@ -47,7 +47,7 @@ const VacantInventoryFilter = ({ onSubmit, onClose, searchParamQueries }) => {
 
       return newState;
     });
-    setCity(searchParamQueries.get('cities').split(','));
+    setCity(searchParamQueries.get('cities')?.split(','));
   }, []);
 
   return (

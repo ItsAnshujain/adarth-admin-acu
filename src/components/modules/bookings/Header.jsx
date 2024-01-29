@@ -9,7 +9,7 @@ import DateRange from '../../DateRange';
 import Filter from './Filter';
 import RoleBased from '../../RoleBased';
 import { ROLES, downloadPdf } from '../../../utils';
-import { useExportBooking } from '../../../apis/queries/booking.queries';
+import { useExportBookings } from '../../../apis/queries/booking.queries';
 
 const AreaHeader = ({ text }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -23,7 +23,7 @@ const AreaHeader = ({ text }) => {
   const toggleFilter = () => setShowFilter(!showFilter);
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
 
-  const exportBookingsHandler = useExportBooking();
+  const exportBookingsHandler = useExportBookings();
 
   const exportBookings = async () => {
     if (exportType) {
