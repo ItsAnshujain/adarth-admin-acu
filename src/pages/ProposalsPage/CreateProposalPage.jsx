@@ -103,7 +103,7 @@ const CreateProposalPage = () => {
       data.spaces = watchSpaces.map(item => ({
         ...item,
         id: item._id,
-        price: +item.price,
+        price: +item.price.toFixed(2) || 0,
         startDate: item.startDate
           ? dayjs(item.startDate).startOf('day').toISOString()
           : dayjs().startOf('day').toISOString(),
