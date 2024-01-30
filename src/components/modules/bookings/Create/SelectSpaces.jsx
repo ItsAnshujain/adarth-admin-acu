@@ -559,7 +559,7 @@ const SelectSpace = () => {
               (monthlyAdditionalCost || 0) -
               (otherCharges || 0);
             return discountOn === 'totalPrice'
-              ? ((totalCost || 0) - (totalCost || 0) * (discount / 100)).toFixed(2) || 0
+              ? ((totalCost || 0) - (totalCost || 0) * ((discount || 0) / 100)).toFixed(2) || 0
               : totalCost.toFixed(2) || 0;
           }, []),
       },
