@@ -201,14 +201,19 @@ const AddEditPriceDrawer = ({
     const displayCostPerSqFt = watchDisplayCostPerSqFt * totalArea || 0;
 
     form.setValue(
-      'totalDisplayCost',
-      displayCostPerSqFt + displayCostPerSqFt * ((watchDisplayCostGstPercentage || 0) / 100),
+      'displayCostPerMonth',
+      displayCostPerSqFt + displayCostPerSqFt * ((watchDisplayCostGstPercentage || 0) / 100) || 0,
     );
-    form.setValue('displayCostPerMonth', (watchDisplayCostPerSqFt || 0) * totalArea);
+
+    form.setValue(
+      'totalDisplayCost',
+      displayCostPerSqFt * totalMonths +
+        displayCostPerSqFt * ((watchDisplayCostGstPercentage || 0) / 100),
+    );
   }, [watchDisplayCostPerSqFt, watchDisplayCostGstPercentage, totalMonths]);
 
   const onChangeDisplayCostPercentage = useCallback(() => {
-    const displayCostPerSqFt = watchDisplayCostPerSqFt * totalArea || 0;
+    const displayCostPerSqFt = watchDisplayCostPerSqFt * totalArea * totalMonths || 0;
 
     form.setValue(
       'totalDisplayCost',
@@ -266,12 +271,7 @@ const AddEditPriceDrawer = ({
               priceChanged: true,
             };
           }
-
-          if (
-            watchApplyPrintingMountingCostForAll &&
-            watchApplyDiscountForAll &&
-            watchDiscount > 0
-          ) {
+          if (watchApplyPrintingMountingCostForAll && watchApplyDiscountForAll) {
             const totalMonthsOfPlace = calculateTotalMonths(place.startDate, place.endDate);
             const area =
               (place?.dimension?.reduce(
@@ -317,7 +317,7 @@ const AddEditPriceDrawer = ({
                 (formData.discountOn === 'displayCost'
                   ? place.totalDisplayCost * ((formData.discount || 0) / 100)
                   : formData.discountOn === 'totalPrice'
-                  ? updatedTotalPrice * (formData.discount / 100)
+                  ? updatedTotalPrice * ((formData.discount || 0) / 100)
                   : 0),
               discountOn: formData.discountOn,
               discountedTotalPrice: Number(
@@ -325,7 +325,7 @@ const AddEditPriceDrawer = ({
                   (formData.discountOn === 'displayCost'
                     ? place.totalDisplayCost * ((formData.discount || 0) / 100)
                     : formData.discountOn === 'totalPrice'
-                    ? place.price * (formData.discount / 100)
+                    ? place.price * ((formData.discount || 0) / 100)
                     : 0),
               ).toFixed(2),
               discount: formData.discount,
@@ -364,6 +364,7 @@ const AddEditPriceDrawer = ({
               printingGst: formData.printingGst,
               mountingGstPercentage: formData.mountingGstPercentage,
               mountingGst: formData.mountingGst,
+              mountingCostPerSqft: Number(formData.mountingCostPerSqft?.toFixed(2)),
               totalPrintingCost:
                 Number(updatedTotalPrintingCost.toFixed(2)) +
                 (Number(updatedTotalPrintingCost.toFixed(2)) * formData.printingGstPercentage) /
@@ -384,7 +385,7 @@ const AddEditPriceDrawer = ({
                 (formData.discountOn === 'displayCost'
                   ? place.totalDisplayCost * ((formData.discount || 0) / 100)
                   : formData.discountOn === 'totalPrice'
-                  ? place.price * (formData.discount / 100)
+                  ? place.price * ((formData.discount || 0) / 100)
                   : 0),
               discountOn: formData.discountOn,
               discountedTotalPrice: Number(
@@ -392,7 +393,7 @@ const AddEditPriceDrawer = ({
                   (formData.discountOn === 'displayCost'
                     ? place.totalDisplayCost * ((formData.discount || 0) / 100)
                     : formData.discountOn === 'totalPrice'
-                    ? place.price * (formData.discount / 100)
+                    ? place.price * ((formData.discount || 0) / 100)
                     : 0
                   ).toFixed(2),
               ),
@@ -506,7 +507,7 @@ const AddEditPriceDrawer = ({
         printingGstPercentage: selectedInventory.printingGstPercentage,
         printingGst: selectedInventory.printingGst,
         totalPrintingCost: selectedInventory.totalPrintingCost,
-        mountingCostPerSqft: Number(selectedInventory.mountingCostPerSqft),
+        mountingCostPerSqft: selectedInventory.mountingCostPerSqft || null,
         mountingGstPercentage: selectedInventory.mountingGstPercentage,
         mountingGst: selectedInventory.mountingGst,
         totalMountingCost: selectedInventory.totalMountingCost,
