@@ -506,7 +506,7 @@ const AddEditPriceDrawer = ({
         printingGstPercentage: selectedInventory.printingGstPercentage,
         printingGst: selectedInventory.printingGst,
         totalPrintingCost: selectedInventory.totalPrintingCost,
-        mountingCostPerSqft: Number(selectedInventory.mountingCostPerSqft),
+        mountingCostPerSqft: Number(selectedInventory.mountingCostPerSqft) || null,
         mountingGstPercentage: selectedInventory.mountingGstPercentage,
         mountingGst: selectedInventory.mountingGst,
         totalMountingCost: selectedInventory.totalMountingCost,
