@@ -686,7 +686,7 @@ const Spaces = () => {
             <Text color="gray">Total Price</Text>
             <Group>
               <Text weight="bold">{toIndianCurrency(getTotalPrice(watchSpaces))}</Text>
-              <p className="text-xs italic">** exclusive of GST</p>
+              <p className="text-xs italic text-blue-500">** exclusive of GST</p>
             </Group>
           </div>
         </div>
