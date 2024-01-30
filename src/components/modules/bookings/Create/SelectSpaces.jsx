@@ -122,6 +122,12 @@ const SelectSpace = () => {
         watchPlace.map(item => {
           const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
           const updatedTotalMonths = calculateTotalMonths(val[0], val[1]);
+
+          const updatedTotalPrintingCost =
+            updatedTotalArea * item.printingCostPerSqft * updatedTotalMonths || 0;
+          const updatedTotalMountingCost =
+            updatedTotalArea * item.mountingCostPerSqft * updatedTotalMonths || 0;
+
           return item._id === id
             ? {
                 ...item,
@@ -133,16 +139,12 @@ const SelectSpace = () => {
                   (
                     (item.totalDisplayCost || 0) +
                     (item.tradedAmount || 0) +
-                    (item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths +
-                      item.printingCostPerSqft *
-                        updatedTotalArea *
-                        updatedTotalMonths *
-                        (item.printingGstPercentage / 100) || 0) +
-                    (item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths +
-                      item.mountingCostPerSqft *
-                        updatedTotalArea *
-                        updatedTotalMonths *
-                        (item.mountingGstPercentage / 100) || 0) +
+                    (Number(updatedTotalPrintingCost.toFixed(2)) +
+                      (Number(updatedTotalPrintingCost.toFixed(2)) * item.printingGstPercentage) /
+                        100) +
+                    (Number(updatedTotalMountingCost.toFixed(2)) +
+                      (Number(updatedTotalMountingCost.toFixed(2)) * item.printingGstPercentage) /
+                        100) +
                     (item.oneTimeInstallationCost || 0) +
                     (item.monthlyAdditionalCost || 0) -
                     (item.otherCharges || 0)
@@ -214,8 +216,19 @@ const SelectSpace = () => {
     }
   }, 500);
 
+  const getTotalPrice = (places = []) => {
+    const totalPrice = places.reduce(
+      (acc, item) =>
+        item.startDate &&
+        item.endDate &&
+        acc + +(item?.price || item?.basicInformation?.price || 0),
+      0,
+    );
+    return totalPrice || 0;
+  };
+
   const memoizedCalculateTotalPrice = useMemo(
-    () => calculateTotalPrice(watchPlace),
+    () => getTotalPrice(watchPlace),
     [watchPlace, updateData],
   );
 
@@ -474,92 +487,68 @@ const SelectSpace = () => {
       },
       {
         Header: 'PRICE',
-        Cell: ({
-          row: {
-            original: {
-              priceChanged,
-              startDate,
-              endDate,
-              _id,
-              displayCostPerMonth,
-              totalPrintingCost,
-              totalMountingCost,
-              oneTimeInstallationCost,
-              monthlyAdditionalCost,
-              otherCharges,
-              discountPercentage,
-            },
-          },
-        }) =>
-          useMemo(
-            () =>
-              priceChanged ||
-              displayCostPerMonth ||
-              totalPrintingCost ||
-              totalMountingCost ||
-              oneTimeInstallationCost ||
-              monthlyAdditionalCost ||
-              otherCharges ||
-              discountPercentage ? (
+        Cell: ({ row: { original } }) =>
+          useMemo(() => {
+            const place = watchPlace.filter(item => item._id === original._id)?.[0];
+            if (
+              place?.priceChanged ||
+              place?.displayCostPerMonth ||
+              place?.totalPrintingCost ||
+              place?.totalMountingCost ||
+              place?.oneTimeInstallationCost ||
+              place?.monthlyAdditionalCost ||
+              place?.otherCharges ||
+              place?.discountPercentage
+            ) {
+              return (
                 <Button
                   onClick={() => {
                     onClickAddPrice();
-                    setSelectedInventoryId(_id);
+                    setSelectedInventoryId(original._id);
                   }}
                   className="bg-purple-450 order-3"
                   size="xs"
-                  disabled={!watchPlace.some(item => item._id === _id)}
+                  disabled={!watchPlace.some(item => item._id === original._id)}
                 >
                   Edit Price
                 </Button>
-              ) : (
-                <Button
-                  onClick={() => {
-                    onClickAddPrice();
-                    setSelectedInventoryId(_id);
-                  }}
-                  className="bg-purple-450 order-3"
-                  size="xs"
-                  disabled={!watchPlace.some(item => item._id === _id)}
-                >
-                  Add Price
-                </Button>
-              ),
-            [watchPlace, startDate, endDate],
-          ),
+              );
+            }
+            return (
+              <Button
+                onClick={() => {
+                  onClickAddPrice();
+                  setSelectedInventoryId(original._id);
+                }}
+                className="bg-purple-450 order-3"
+                size="xs"
+                disabled={!watchPlace.some(item => item._id === original._id)}
+              >
+                Add Price
+              </Button>
+            );
+          }, [watchPlace]),
       },
       {
         Header: 'TOTAL PRICE',
         accessor: 'basicInformation.price',
-        Cell: ({
-          row: {
-            original: {
-              totalDisplayCost,
-              discountOn,
-              discount,
-              tradedAmount,
-              totalPrintingCost,
-              totalMountingCost,
-              oneTimeInstallationCost,
-              monthlyAdditionalCost,
-              otherCharges,
-            },
-          },
-        }) =>
+        Cell: ({ row: { original } }) =>
           useMemo(() => {
+            const place = watchPlace.filter(item => item._id === original._id)?.[0];
             const totalCost =
-              (totalDisplayCost || 0) -
-              (discountOn === 'displayCost'
-                ? (totalDisplayCost || 0) * ((discount || 0) / 100)
+              (place?.totalDisplayCost || 0) -
+              (place?.discountOn === 'displayCost'
+                ? (place?.totalDisplayCost || 0) * ((place?.discount || 0) / 100)
                 : 0) +
-              (tradedAmount || 0) +
-              (totalPrintingCost || 0) +
-              (totalMountingCost || 0) +
-              (oneTimeInstallationCost || 0) +
-              (monthlyAdditionalCost || 0) -
-              (otherCharges || 0);
-            return discountOn === 'totalPrice'
-              ? ((totalCost || 0) - (totalCost || 0) * ((discount || 0) / 100)).toFixed(2) || 0
+              (place?.tradedAmount || 0) +
+              (place?.totalPrintingCost || 0) +
+              (place?.totalMountingCost || 0) +
+              (place?.oneTimeInstallationCost || 0) +
+              (place?.monthlyAdditionalCost || 0) -
+              (place?.otherCharges || 0);
+            return place?.discountOn === 'totalPrice'
+              ? ((totalCost || 0) - (totalCost || 0) * ((place?.discount || 0) / 100)).toFixed(2) ||
+                  0
               : totalCost.toFixed(2) || 0;
           }, []),
       },
