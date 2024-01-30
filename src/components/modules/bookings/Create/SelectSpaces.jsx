@@ -14,6 +14,7 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import {
+  calculateTotalMonths,
   calculateTotalPrice,
   currentDate,
   debounce,
@@ -84,6 +85,14 @@ const SelectSpace = () => {
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
+  const calculateTotalArea = place =>
+    (place?.dimension?.reduce(
+      (accumulator, dimension) => accumulator + dimension.height * dimension.width,
+      0,
+    ) || 0) *
+      (place?.unit || 0) *
+      (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) || 0;
+
   const updateData = debounce((key, val, id, inputId) => {
     if (key === 'dateRange') {
       let availableUnit = 0;
@@ -129,7 +138,63 @@ const SelectSpace = () => {
         'place',
         watchPlace.map(item =>
           item._id === id
-            ? { ...item, [key]: val, ...(key === 'unit' ? { hasChangedUnit: true } : {}) }
+            ? {
+                ...item,
+                printingCostPerSqft: item.printingCostPerSqft,
+                printingGst: item.printingGstPercentage,
+                totalPrintingCost: Number(
+                  (
+                    item.printingCostPerSqft *
+                      calculateTotalArea(item) *
+                      calculateTotalMonths(item?.startDate, item?.endDate) +
+                    item.printingCostPerSqft *
+                      calculateTotalArea(item) *
+                      calculateTotalMonths(item?.startDate, item?.endDate) *
+                      (item.printingGstPercentage / 100)
+                  ).toFixed(2),
+                ),
+                mountingCostPerSqft: item.mountingCostPerSqft,
+                mountingGst: item.mountingGst,
+                totalMountingCost: Number(
+                  (
+                    item.mountingCostPerSqft *
+                      calculateTotalArea(item) *
+                      calculateTotalMonths(item?.startDate, item?.endDate) +
+                    item.mountingCostPerSqft *
+                      calculateTotalArea(item) *
+                      calculateTotalMonths(item?.startDate, item?.endDate) *
+                      (item.mountingGstPercentage / 100)
+                  ).toFixed(2),
+                ),
+                totalArea: calculateTotalArea(item),
+                price: Number(
+                  (
+                    item.totalDisplayCost ||
+                    0 + item.tradedAmount ||
+                    0 +
+                      (item.printingCostPerSqft *
+                        calculateTotalArea(item) *
+                        calculateTotalMonths(item?.startDate, item?.endDate) +
+                        item.printingCostPerSqft *
+                          calculateTotalArea(item) *
+                          calculateTotalMonths(item?.startDate, item?.endDate) *
+                          (item.printingGstPercentage / 100) || 0) +
+                      (item.mountingCostPerSqft *
+                        calculateTotalArea(item) *
+                        calculateTotalMonths(item?.startDate, item?.endDate) +
+                        item.mountingCostPerSqft *
+                          calculateTotalArea(item) *
+                          calculateTotalMonths(item?.startDate, item?.endDate) *
+                          (item.mountingGstPercentage / 100) || 0) +
+                      item.oneTimeInstallationCost ||
+                    0 + item.monthlyAdditionalCost ||
+                    0 - item.otherCharges ||
+                    0
+                  ).toFixed(2),
+                ),
+                [key]: val,
+                ...(key === 'unit' ? { hasChangedUnit: true } : {}),
+              }
             : item,
         ),
       );
@@ -142,7 +207,7 @@ const SelectSpace = () => {
 
   const memoizedCalculateTotalPrice = useMemo(
     () => calculateTotalPrice(watchPlace),
-    [watchPlace.length, updateData],
+    [watchPlace, updateData],
   );
 
   const handleSortRowsOnTop = (ids, rows) => {
@@ -625,7 +690,14 @@ const SelectSpace = () => {
     if (watchPlace.length) {
       watchPlace.map(place =>
         setUpdatedInventoryData(prev =>
-          prev.map(item => (item?._id === place?._id ? { ...item, ...place } : item)),
+          prev.map(item =>
+            item?._id === place?._id
+              ? {
+                  ...item,
+                  ...place,
+                }
+              : item,
+          ),
         ),
       );
     }
