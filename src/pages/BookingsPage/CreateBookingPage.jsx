@@ -206,7 +206,7 @@ const CreateBookingPage = () => {
 
       const totalPrice = calculateTotalPrice(watchPlace);
       const gstCalculation = totalPrice * 0.18;
-      data.price = totalPrice + gstCalculation;
+      data.price = (totalPrice + gstCalculation).toFixed(2);
 
       Object.keys(data).forEach(k => {
         if (data[k] === '') {

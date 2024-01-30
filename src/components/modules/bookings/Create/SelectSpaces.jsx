@@ -231,8 +231,6 @@ const SelectSpace = () => {
 
   const RenderPeerCell = useCallback(({ row }) => row.original.peer || '-', []);
 
-  const RenderTotalPriceCell = useCallback(({ row }) => row.original.price.toFixed(2) || '-', []);
-
   const RenderInventoryIdCell = useCallback(({ row }) => row.original.inventoryId || '-', []);
 
   const RenderMediaTypeCell = useCallback(({ row }) => row.original.mediaType || '-', []);
@@ -403,41 +401,92 @@ const SelectSpace = () => {
         Header: 'PRICE',
         Cell: ({
           row: {
-            original: { priceChanged, startDate, endDate, _id, displayCostPerMonth },
+            original: {
+              priceChanged,
+              startDate,
+              endDate,
+              _id,
+              displayCostPerMonth,
+              totalPrintingCost,
+              totalMountingCost,
+              oneTimeInstallationCost,
+              monthlyAdditionalCost,
+              otherCharges,
+              discountPercentage,
+            },
           },
         }) =>
-          useMemo(() =>
-            priceChanged || displayCostPerMonth ? (
-              <Button
-                onClick={() => {
-                  onClickAddPrice();
-                  setSelectedInventoryId(_id);
-                }}
-                className="bg-purple-450 order-3"
-                size="xs"
-                disabled={!watchPlace.some(item => item._id === _id) && (!startDate || !endDate)}
-              >
-                Edit Price
-              </Button>
-            ) : (
-              <Button
-                onClick={() => {
-                  onClickAddPrice();
-                  setSelectedInventoryId(_id);
-                }}
-                className="bg-purple-450 order-3"
-                size="xs"
-                disabled={!watchPlace.some(item => item._id === _id) && (!startDate || !endDate)}
-              >
-                Add Price
-              </Button>
-            ),
+          useMemo(
+            () =>
+              priceChanged ||
+              displayCostPerMonth ||
+              totalPrintingCost ||
+              totalMountingCost ||
+              oneTimeInstallationCost ||
+              monthlyAdditionalCost ||
+              otherCharges ||
+              discountPercentage ? (
+                <Button
+                  onClick={() => {
+                    onClickAddPrice();
+                    setSelectedInventoryId(_id);
+                  }}
+                  className="bg-purple-450 order-3"
+                  size="xs"
+                  disabled={!watchPlace.some(item => item._id === _id)}
+                >
+                  Edit Price
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    onClickAddPrice();
+                    setSelectedInventoryId(_id);
+                  }}
+                  className="bg-purple-450 order-3"
+                  size="xs"
+                  disabled={!watchPlace.some(item => item._id === _id)}
+                >
+                  Add Price
+                </Button>
+              ),
+            [watchPlace, startDate, endDate],
           ),
       },
       {
         Header: 'TOTAL PRICE',
         accessor: 'basicInformation.price',
-        Cell: RenderTotalPriceCell,
+        Cell: ({
+          row: {
+            original: {
+              totalDisplayCost,
+              discountOn,
+              discount,
+              tradedAmount,
+              totalPrintingCost,
+              totalMountingCost,
+              oneTimeInstallationCost,
+              monthlyAdditionalCost,
+              otherCharges,
+            },
+          },
+        }) =>
+          useMemo(() => {
+            const totalCost =
+              (totalDisplayCost || 0) -
+              (discountOn === 'displayCost'
+                ? (totalDisplayCost || 0) * ((discount || 0) / 100)
+                : 0) +
+              (tradedAmount || 0) +
+              (totalPrintingCost || 0) +
+              (totalMountingCost || 0) +
+              (oneTimeInstallationCost || 0) +
+              (monthlyAdditionalCost || 0) -
+              (otherCharges || 0);
+            return discountOn === 'totalPrice'
+              ? ((totalCost || 0) - (totalCost || 0) * (discount / 100)).toFixed(2) || 0
+              : totalCost.toFixed(2) || 0;
+          }, []),
       },
       {
         Header: 'MEDIA OWNER NAME',
@@ -580,7 +629,7 @@ const SelectSpace = () => {
         ),
       );
     }
-  }, [drawerOpened]);
+  }, [drawerOpened, watchPlace]);
 
   return (
     <>
