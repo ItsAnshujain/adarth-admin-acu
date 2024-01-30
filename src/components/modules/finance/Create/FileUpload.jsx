@@ -208,14 +208,15 @@ const FileUpload = () => {
 
   const calcutateTotalPrice = useMemo(() => {
     const initialPrice = 0;
-    if (bookingData?.campaign?.spaces?.length > 0) {
-      return bookingData?.campaign?.spaces
-        .map(item =>
-          item?.basicInformation?.price ? Number.parseInt(item.basicInformation.price, 10) : 0,
-        )
-        .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
+    if (bookingData?.campaign?.price) {
+      return bookingData?.campaign?.price;
     }
-    return initialPrice;
+
+    return bookingData?.campaign?.spaces
+      .map(item =>
+        item?.basicInformation?.price ? Number.parseInt(item.basicInformation.price, 10) : 0,
+      )
+      .reduce((previousValue, currentValue) => previousValue + currentValue, initialPrice);
   }, [bookingData?.campaign?.spaces]);
 
   useEffect(() => {

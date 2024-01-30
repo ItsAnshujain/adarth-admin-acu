@@ -136,8 +136,10 @@ const SelectSpace = () => {
 
       form.setValue(
         'place',
-        watchPlace.map(item =>
-          item._id === id
+        watchPlace.map(item => {
+          const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
+          const updatedTotalMonths = calculateTotalMonths(item?.startDate, item?.endDate);
+          return item._id === id
             ? {
                 ...item,
                 printingCostPerSqft: item.printingCostPerSqft,
@@ -145,11 +147,11 @@ const SelectSpace = () => {
                 totalPrintingCost: Number(
                   (
                     item.printingCostPerSqft *
-                      calculateTotalArea(item) *
+                      updatedTotalArea *
                       calculateTotalMonths(item?.startDate, item?.endDate) +
                     item.printingCostPerSqft *
-                      calculateTotalArea(item) *
-                      calculateTotalMonths(item?.startDate, item?.endDate) *
+                      updatedTotalArea *
+                      updatedTotalMonths *
                       (item.printingGstPercentage / 100)
                   ).toFixed(2),
                 ),
@@ -157,46 +159,38 @@ const SelectSpace = () => {
                 mountingGst: item.mountingGst,
                 totalMountingCost: Number(
                   (
+                    item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths +
                     item.mountingCostPerSqft *
-                      calculateTotalArea(item) *
-                      calculateTotalMonths(item?.startDate, item?.endDate) +
-                    item.mountingCostPerSqft *
-                      calculateTotalArea(item) *
-                      calculateTotalMonths(item?.startDate, item?.endDate) *
+                      updatedTotalArea *
+                      updatedTotalMonths *
                       (item.mountingGstPercentage / 100)
                   ).toFixed(2),
                 ),
                 totalArea: calculateTotalArea(item),
                 price: Number(
                   (
-                    item.totalDisplayCost ||
-                    0 + item.tradedAmount ||
-                    0 +
-                      (item.printingCostPerSqft *
-                        calculateTotalArea(item) *
-                        calculateTotalMonths(item?.startDate, item?.endDate) +
-                        item.printingCostPerSqft *
-                          calculateTotalArea(item) *
-                          calculateTotalMonths(item?.startDate, item?.endDate) *
-                          (item.printingGstPercentage / 100) || 0) +
-                      (item.mountingCostPerSqft *
-                        calculateTotalArea(item) *
-                        calculateTotalMonths(item?.startDate, item?.endDate) +
-                        item.mountingCostPerSqft *
-                          calculateTotalArea(item) *
-                          calculateTotalMonths(item?.startDate, item?.endDate) *
-                          (item.mountingGstPercentage / 100) || 0) +
-                      item.oneTimeInstallationCost ||
-                    0 + item.monthlyAdditionalCost ||
-                    0 - item.otherCharges ||
-                    0
+                    (item.totalDisplayCost || 0) +
+                    (item.tradedAmount || 0) +
+                    (item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths +
+                      item.printingCostPerSqft *
+                        updatedTotalArea *
+                        updatedTotalMonths *
+                        (item.printingGstPercentage / 100) || 0) +
+                    (item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths +
+                      item.mountingCostPerSqft *
+                        updatedTotalArea *
+                        updatedTotalMonths *
+                        (item.mountingGstPercentage / 100) || 0) +
+                    (item.oneTimeInstallationCost || 0) +
+                    (item.monthlyAdditionalCost || 0) -
+                    (item.otherCharges || 0)
                   ).toFixed(2),
                 ),
                 [key]: val,
                 ...(key === 'unit' ? { hasChangedUnit: true } : {}),
               }
-            : item,
-        ),
+            : item;
+        }),
       );
 
       if (inputId) {
@@ -320,6 +314,7 @@ const SelectSpace = () => {
       drawerActions.open();
     }
   };
+
   const COLUMNS = useMemo(
     () => [
       {

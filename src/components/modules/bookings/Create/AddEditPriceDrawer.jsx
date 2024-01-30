@@ -303,9 +303,9 @@ const AddEditPriceDrawer = ({
 
             return {
               ...place,
-              printingCostPerSqft: Number(formData.printingCostPerSqft.toFixed(2)),
+              printingCostPerSqft: Number(formData.printingCostPerSqft?.toFixed(2)),
               printingGst: formData.printingGst,
-              mountingCostPerSqft: Number(formData.mountingCostPerSqft.toFixed(2)),
+              mountingCostPerSqft: Number(formData.mountingCostPerSqft?.toFixed(2)),
               mountingGst: formData.mountingGst,
               totalPrintingCost: Number(updatedTotalPrintingCost.toFixed(2)),
               totalMountingCost: Number(updatedTotalMountingCost.toFixed(2)),
@@ -364,7 +364,7 @@ const AddEditPriceDrawer = ({
 
             return {
               ...place,
-              printingCostPerSqft: Number(formData.printingCostPerSqft.toFixed(2)),
+              printingCostPerSqft: Number(formData.printingCostPerSqft?.toFixed(2)),
               printingGst: formData.printingGst,
               totalPrintingCost: Number(updatedTotalPrintingCost.toFixed(2)),
               totalMountingCost: Number(updatedTotalMountingCost.toFixed(2)),
@@ -418,11 +418,11 @@ const AddEditPriceDrawer = ({
                 displayCostPerSqFt: Number(formData.displayCostPerSqFt.toFixed()),
                 displayCostGstPercentage: formData.displayCostGstPercentage,
                 displayCostGst: formData.displayCostGst,
-                printingCostPerSqft: Number(formData.printingCostPerSqft.toFixed(2)),
+                printingCostPerSqft: Number(formData.printingCostPerSqft?.toFixed(2)),
                 printingGstPercentage: formData.printingGstPercentage,
                 printingGst: formData.printingGst,
                 totalPrintingCost: formData.totalPrintingCost,
-                mountingCostPerSqft: formData.mountingCoNumberstPerSqft.toFixed(2),
+                mountingCostPerSqft: Number(formData.mountingCostPerSqft)?.toFixed(2),
                 mountingGstPercentage: formData.mountingGstPercentage,
                 mountingGst: formData.mountingGst,
                 totalMountingCost: formData.totalMountingCost,
@@ -438,10 +438,10 @@ const AddEditPriceDrawer = ({
             : watchApplyPrintingMountingCostForAll
             ? {
                 ...place,
-                printingCostPerSqft: Number(formData.printingCostPerSqft.toFixed(2)),
+                printingCostPerSqft: Number(formData.printingCostPerSqft?.toFixed(2)),
                 printingGst: formData.printingGst,
                 totalPrintingCost: formData.totalPrintingCost,
-                mountingCostPerSqft: Number(formData.mountingCostPerSqft.toFixed(2)),
+                mountingCostPerSqft: Number(formData.mountingCostPerSqft?.toFixed(2)),
                 mountingGst: formData.mountingGst,
                 totalMountingCost: formData.totalMountingCost,
                 price:
@@ -486,7 +486,7 @@ const AddEditPriceDrawer = ({
         printingGstPercentage: selectedInventory.printingGstPercentage,
         printingGst: selectedInventory.printingGst,
         totalPrintingCost: selectedInventory.totalPrintingCost,
-        mountingCostPerSqft: selectedInventory.mountingCostPerSqft,
+        mountingCostPerSqft: Number(selectedInventory.mountingCostPerSqft),
         mountingGstPercentage: selectedInventory.mountingGstPercentage,
         mountingGst: selectedInventory.mountingGst,
         totalMountingCost: selectedInventory.totalMountingCost,
@@ -504,6 +504,8 @@ const AddEditPriceDrawer = ({
       form.reset(defaultValues);
     }
   }, [selectedInventory, activeSlide]);
+
+  console.log(form.formState);
 
   return (
     <Drawer

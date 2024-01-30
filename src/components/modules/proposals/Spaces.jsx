@@ -125,60 +125,48 @@ const Spaces = () => {
         ),
       );
 
-      const calculateTotalArea = place =>
+      const calculateTotalArea = (place, unit) =>
         (place?.dimension?.reduce(
           (accumulator, dimension) => accumulator + dimension.height * dimension.width,
           0,
         ) || 0) *
-          (place?.unit || 0) *
+          (unit || 0) *
           (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) || 0;
 
       form.setValue(
         'spaces',
-        watchSpaces.map(item =>
-          item._id === id
+        watchSpaces.map(item => {
+          const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
+          const updatedTotalMonths = calculateTotalMonths(item?.startDate, item?.endDate);
+          return item._id === id
             ? {
                 ...item,
                 printingCostPerSqft: item.printingCostPerSqft,
                 totalPrintingCost: Number(
-                  (
-                    item.printingCostPerSqft *
-                    calculateTotalArea(item) *
-                    calculateTotalMonths(item?.startDate, item?.endDate)
-                  ).toFixed(2),
+                  (item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths).toFixed(2),
                 ),
                 mountingCostPerSqft: item.mountingCostPerSqft,
                 totalMountingCost: Number(
-                  (
-                    item.mountingCostPerSqft *
-                    calculateTotalArea(item) *
-                    calculateTotalMonths(item?.startDate, item?.endDate)
-                  ).toFixed(2),
+                  (item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths).toFixed(2),
                 ),
-                totalArea: calculateTotalArea(item),
+                totalArea: updatedTotalArea,
                 price: Number(
                   (
-                    item.totalDisplayCost ||
-                    0 + item.tradedAmount ||
-                    0 +
-                      item.printingCostPerSqft *
-                        calculateTotalArea(item) *
-                        calculateTotalMonths(item?.startDate, item?.endDate) ||
-                    0 +
-                      item.mountingCostPerSqft *
-                        calculateTotalArea(item) *
-                        calculateTotalMonths(item?.startDate, item?.endDate) ||
-                    0 + item.oneTimeInstallationCost ||
-                    0 + item.monthlyAdditionalCost ||
-                    0 - item.otherCharges ||
-                    0
+                    (item.totalDisplayCost || 0) +
+                    (item.tradedAmount || 0) +
+                    (Number(item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
+                      0) +
+                    (Number(item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
+                      0) +
+                    (item.oneTimeInstallationCost || 0) +
+                    (item.monthlyAdditionalCost || 0)
                   ).toFixed(2),
                 ),
                 [key]: val,
                 ...(key === 'unit' ? { hasChangedUnit: true } : {}),
               }
-            : item,
-        ),
+            : item;
+        }),
       );
       if (inputId) {
         setTimeout(() => document.querySelector(`#${inputId}`)?.focus());
@@ -209,6 +197,14 @@ const Spaces = () => {
     } else {
       drawerActions.open();
     }
+  };
+
+  const getTotalPrice = (places = []) => {
+    const totalPrice = places.reduce(
+      (acc, item) => acc + +(item?.price || item?.basicInformation?.price || 0),
+      0,
+    );
+    return totalPrice;
   };
 
   const COLUMNS = useMemo(
@@ -564,14 +560,6 @@ const Spaces = () => {
     ],
     [updatedInventoryData, watchSpaces],
   );
-
-  const getTotalPrice = (places = []) => {
-    const totalPrice = places.reduce(
-      (acc, item) => acc + +(item?.price || item?.basicInformation?.price || 0),
-      0,
-    );
-    return totalPrice;
-  };
 
   const handleSelection = selectedRows => form.setValue('spaces', selectedRows);
 
