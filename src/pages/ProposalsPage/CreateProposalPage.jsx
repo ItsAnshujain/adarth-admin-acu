@@ -192,7 +192,6 @@ const CreateProposalPage = () => {
 
   useEffect(() => {
     if (proposalData) {
-      console.log(proposalData);
       form.reset({
         ...form.values,
         name: proposalData?.proposal?.name,
