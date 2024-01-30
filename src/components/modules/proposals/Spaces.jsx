@@ -84,6 +84,14 @@ const Spaces = () => {
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const updateData = debounce((key, val, id, inputId) => {
+    const calculateTotalArea = (place, unit) =>
+      (place?.dimension?.reduce(
+        (accumulator, dimension) => accumulator + dimension.height * dimension.width,
+        0,
+      ) || 0) *
+        (unit || 0) *
+        (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) || 0;
+
     if (key === 'dateRange') {
       let availableUnit = 0;
       const hasChangedUnit = watchSpaces.find(item => item._id === id)?.hasChangedUnit;
@@ -104,17 +112,31 @@ const Spaces = () => {
 
       form.setValue(
         'spaces',
-        watchSpaces.map(item =>
-          item._id === id
+        watchSpaces.map(item => {
+          const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
+          const updatedTotalMonths = calculateTotalMonths(item?.startDate, item?.endDate);
+          return item._id === id
             ? {
                 ...item,
                 startDate: val[0],
                 endDate: val[1],
                 ...(!hasChangedUnit ? { unit: availableUnit } : {}),
                 availableUnit,
+                price: Number(
+                  (
+                    (item.totalDisplayCost || 0) +
+                    (item.tradedAmount || 0) +
+                    (Number(item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
+                      0) +
+                    (Number(item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
+                      0) +
+                    (item.oneTimeInstallationCost || 0) +
+                    (item.monthlyAdditionalCost || 0)
+                  ).toFixed(2),
+                ),
               }
-            : item,
-        ),
+            : item;
+        }),
       );
     } else {
       setUpdatedInventoryData(prev =>
@@ -124,14 +146,6 @@ const Spaces = () => {
             : item,
         ),
       );
-
-      const calculateTotalArea = (place, unit) =>
-        (place?.dimension?.reduce(
-          (accumulator, dimension) => accumulator + dimension.height * dimension.width,
-          0,
-        ) || 0) *
-          (unit || 0) *
-          (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) || 0;
 
       form.setValue(
         'spaces',
@@ -201,10 +215,13 @@ const Spaces = () => {
 
   const getTotalPrice = (places = []) => {
     const totalPrice = places.reduce(
-      (acc, item) => acc + +(item?.price || item?.basicInformation?.price || 0),
+      (acc, item) =>
+        item.startDate &&
+        item.endDate &&
+        acc + +(item?.price || item?.basicInformation?.price || 0),
       0,
     );
-    return totalPrice;
+    return totalPrice || 0;
   };
 
   const COLUMNS = useMemo(
@@ -357,81 +374,69 @@ const Spaces = () => {
       },
       {
         Header: 'PRICE',
-        Cell: ({
-          row: {
-            original: {
-              priceChanged,
-              startDate,
-              endDate,
-              _id,
-              displayCostPerMonth,
-              totalPrintingCost,
-              totalMountingCost,
-              oneTimeInstallationCost,
-              monthlyAdditionalCost,
-              otherCharges,
-              discountPercentage,
-            },
-          },
-        }) =>
-          useMemo(() =>
-            priceChanged ||
-            displayCostPerMonth ||
-            totalPrintingCost ||
-            totalMountingCost ||
-            oneTimeInstallationCost ||
-            monthlyAdditionalCost ||
-            otherCharges ||
-            discountPercentage ? (
+        Cell: ({ row: { original } }) =>
+          useMemo(() => {
+            const place = watchSpaces.filter(item => item._id === original._id)?.[0];
+
+            if (
+              place?.priceChanged ||
+              place?.displayCostPerMonth ||
+              place?.totalPrintingCost ||
+              place?.totalMountingCost ||
+              place?.oneTimeInstallationCost ||
+              place?.monthlyAdditionalCost ||
+              place?.otherCharges ||
+              place?.discountPercentage
+            ) {
+              return (
+                <Button
+                  onClick={() => {
+                    onClickAddPrice();
+                    setSelectedInventoryId(original._id);
+                  }}
+                  className="bg-purple-450 order-3"
+                  size="xs"
+                  disabled={
+                    !watchSpaces.some(item => item._id === original._id) &&
+                    (!original.startDate || !original.endDate)
+                  }
+                >
+                  Edit Price
+                </Button>
+              );
+            }
+            return (
               <Button
                 onClick={() => {
                   onClickAddPrice();
-                  setSelectedInventoryId(_id);
+                  setSelectedInventoryId(original._id);
                 }}
                 className="bg-purple-450 order-3"
                 size="xs"
-                disabled={!watchSpaces.some(item => item._id === _id) && (!startDate || !endDate)}
-              >
-                Edit Price
-              </Button>
-            ) : (
-              <Button
-                onClick={() => {
-                  onClickAddPrice();
-                  setSelectedInventoryId(_id);
-                }}
-                className="bg-purple-450 order-3"
-                size="xs"
-                disabled={!watchSpaces.some(item => item._id === _id) && (!startDate || !endDate)}
+                disabled={
+                  !watchSpaces.some(item => item._id === original._id) &&
+                  (!original.startDate || !original.endDate)
+                }
               >
                 Add Price
               </Button>
-            ),
-          ),
+            );
+          }),
       },
       {
         Header: 'TOTAL PRICE',
         accessor: 'basicInformation.price',
-        Cell: ({
-          row: {
-            original: {
-              totalDisplayCost,
-              tradedAmount,
-              totalPrintingCost,
-              totalMountingCost,
-              oneTimeInstallationCost,
-              monthlyAdditionalCost,
-            },
-          },
-        }) =>
+        Cell: ({ row: { original } }) =>
           useMemo(() => {
+            const place = watchSpaces.filter(item => item._id === original._id)?.[0];
+
             const totalCost =
-              (totalDisplayCost || 0) +
-              (tradedAmount || 0) +
-              (totalPrintingCost || 0) +
-              (totalMountingCost || 0) +
-              (oneTimeInstallationCost || 0) +
-              (monthlyAdditionalCost || 0);
+              (place?.totalDisplayCost || 0) +
+              (place?.tradedAmount || 0) +
+              (place?.totalPrintingCost || 0) +
+              (place?.totalMountingCost || 0) +
+              (place?.oneTimeInstallationCost || 0) +
+              (place?.monthlyAdditionalCost || 0);
             return totalCost.toFixed(2) || 0;
           }, []),
       },

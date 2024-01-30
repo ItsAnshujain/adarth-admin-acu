@@ -443,7 +443,7 @@ const AddEditPriceDrawer = ({
                 printingGstPercentage: formData.printingGstPercentage,
                 printingGst: formData.printingGst,
                 totalPrintingCost: formData.totalPrintingCost,
-                mountingCostPerSqft: Number(formData.mountingCostPerSqft)?.toFixed(2),
+                mountingCostPerSqft: Number(formData.mountingCostPerSqft?.toFixed(2)),
                 mountingGstPercentage: formData.mountingGstPercentage,
                 mountingGst: formData.mountingGst,
                 totalMountingCost: formData.totalMountingCost,
