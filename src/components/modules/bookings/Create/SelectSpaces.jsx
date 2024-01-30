@@ -85,13 +85,19 @@ const SelectSpace = () => {
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
-  const calculateTotalArea = place =>
+  const calculateTotalArea = (place, unit) =>
     (place?.dimension?.reduce(
       (accumulator, dimension) => accumulator + dimension.height * dimension.width,
       0,
     ) || 0) *
-      (place?.unit || 0) *
-      (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) || 0;
+      (unit || 0) *
+      (place?.facing === 'Single'
+        ? 1
+        : place?.facing === 'Double'
+        ? 2
+        : place?.facing === 'Four Facing'
+        ? 4
+        : 1) || 0;
 
   const updateData = debounce((key, val, id, inputId) => {
     if (key === 'dateRange') {
@@ -113,17 +119,38 @@ const SelectSpace = () => {
 
       form.setValue(
         'place',
-        watchPlace.map(item =>
-          item._id === id
+        watchPlace.map(item => {
+          const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
+          const updatedTotalMonths = calculateTotalMonths(val[0], val[1]);
+          return item._id === id
             ? {
                 ...item,
                 startDate: val[0],
                 endDate: val[1],
                 ...(!hasChangedUnit ? { unit: availableUnit } : {}),
                 availableUnit,
+                price: Number(
+                  (
+                    (item.totalDisplayCost || 0) +
+                    (item.tradedAmount || 0) +
+                    (item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths +
+                      item.printingCostPerSqft *
+                        updatedTotalArea *
+                        updatedTotalMonths *
+                        (item.printingGstPercentage / 100) || 0) +
+                    (item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths +
+                      item.mountingCostPerSqft *
+                        updatedTotalArea *
+                        updatedTotalMonths *
+                        (item.mountingGstPercentage / 100) || 0) +
+                    (item.oneTimeInstallationCost || 0) +
+                    (item.monthlyAdditionalCost || 0) -
+                    (item.otherCharges || 0)
+                  ).toFixed(2),
+                ),
               }
-            : item,
-        ),
+            : item;
+        }),
       );
     } else {
       setUpdatedInventoryData(prev =>
@@ -139,48 +166,36 @@ const SelectSpace = () => {
         watchPlace.map(item => {
           const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
           const updatedTotalMonths = calculateTotalMonths(item?.startDate, item?.endDate);
+          const updatedTotalPrintingCost =
+            updatedTotalArea * item.printingCostPerSqft * updatedTotalMonths || 0;
+          const updatedTotalMountingCost =
+            updatedTotalArea * item.mountingCostPerSqft * updatedTotalMonths || 0;
+
           return item._id === id
             ? {
                 ...item,
                 printingCostPerSqft: item.printingCostPerSqft,
-                printingGst: item.printingGstPercentage,
-                totalPrintingCost: Number(
-                  (
-                    item.printingCostPerSqft *
-                      updatedTotalArea *
-                      calculateTotalMonths(item?.startDate, item?.endDate) +
-                    item.printingCostPerSqft *
-                      updatedTotalArea *
-                      updatedTotalMonths *
-                      (item.printingGstPercentage / 100)
-                  ).toFixed(2),
-                ),
+                printingGst: item.printingGst,
+                totalPrintingCost:
+                  Number(updatedTotalPrintingCost.toFixed(2)) +
+                  (Number(updatedTotalPrintingCost.toFixed(2)) * item.printingGstPercentage) / 100,
+                totalMountingCost:
+                  Number(updatedTotalMountingCost.toFixed(2)) +
+                  (Number(updatedTotalMountingCost.toFixed(2)) * item.printingGstPercentage) / 100,
                 mountingCostPerSqft: item.mountingCostPerSqft,
                 mountingGst: item.mountingGst,
-                totalMountingCost: Number(
-                  (
-                    item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths +
-                    item.mountingCostPerSqft *
-                      updatedTotalArea *
-                      updatedTotalMonths *
-                      (item.mountingGstPercentage / 100)
-                  ).toFixed(2),
-                ),
-                totalArea: calculateTotalArea(item),
+
+                totalArea: calculateTotalArea(item, item.unit),
                 price: Number(
                   (
                     (item.totalDisplayCost || 0) +
                     (item.tradedAmount || 0) +
-                    (item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths +
-                      item.printingCostPerSqft *
-                        updatedTotalArea *
-                        updatedTotalMonths *
-                        (item.printingGstPercentage / 100) || 0) +
-                    (item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths +
-                      item.mountingCostPerSqft *
-                        updatedTotalArea *
-                        updatedTotalMonths *
-                        (item.mountingGstPercentage / 100) || 0) +
+                    (Number(updatedTotalPrintingCost.toFixed(2)) +
+                      (Number(updatedTotalPrintingCost.toFixed(2)) * item.printingGstPercentage) /
+                        100) +
+                    (Number(updatedTotalMountingCost.toFixed(2)) +
+                      (Number(updatedTotalMountingCost.toFixed(2)) * item.printingGstPercentage) /
+                        100) +
                     (item.oneTimeInstallationCost || 0) +
                     (item.monthlyAdditionalCost || 0) -
                     (item.otherCharges || 0)
@@ -729,7 +744,7 @@ const SelectSpace = () => {
             <p className="text-slate-400">Total Price</p>
             <Group>
               <p className="font-bold">{toIndianCurrency(memoizedCalculateTotalPrice)}</p>
-              <p className="text-xs italic">** inclusive of GST</p>
+              <p className="text-xs italic text-blue-500">** inclusive of GST</p>
             </Group>
           </div>
         </div>
