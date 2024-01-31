@@ -359,9 +359,18 @@ const AddEditPriceDrawer = ({
               Number(formData.mountingCostPerSqft?.toFixed(2)) *
               (Number(totalMonthsOfPlace?.toFixed(2)) || 0);
 
-            const updatedTotalPrice = Number(
-              (
-                (place.totalDisplayCost || 0) +
+            const updatedDisplayCost =
+              Number(place.displayCostPerMonth?.toFixed(2)) +
+              Number(place.displayCostPerMonth?.toFixed(2)) *
+                ((Number(place.displayCostGstPercentages?.toFixed(2)) || 0) / 100);
+
+            const discountedDisplayCost =
+              watchDiscountOn === 'displayCost'
+                ? (updatedDisplayCost || 0) * ((watchDiscount || 0) / 100)
+                : 0;
+
+            let updatedTotalPrice = Number(
+              (updatedDisplayCost || 0) +
                 (Number(updatedTotalPrintingCost?.toFixed(2)) +
                   Number(updatedTotalPrintingCost?.toFixed(2)) *
                     ((place.printingGstPercentage || 0) / 100)) +
@@ -370,12 +379,9 @@ const AddEditPriceDrawer = ({
                   0 * ((place.mountingGstPercentage || 0) / 100)) +
                 (place.oneTimeInstallationCost || 0) +
                 (place.monthlyAdditionalCost || 0) * totalMonths -
-                (place.otherCharges || 0) -
-                (place.discountOn === 'displayCost'
-                  ? (place.totalDisplayCost || 0) * ((place.discount || 0) / 100)
-                  : 0)
-              )?.toFixed(2),
+                (place.otherCharges || 0),
             );
+            updatedTotalPrice -= discountedDisplayCost;
 
             return {
               ...place,
