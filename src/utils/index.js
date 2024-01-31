@@ -441,7 +441,7 @@ export const getAvailableUnits = (filterRange, fromDate, toDate, units) => {
   for (let i = 0; i < filteredRange.length; i++) {
     bookedUnit += filteredRange[i].bookedUnit;
   }
-  const availableUnit = units - (bookedUnit || 1);
+  const availableUnit = units - (bookedUnit || 0);
   return availableUnit < 0 ? 0 : availableUnit;
 };
 
