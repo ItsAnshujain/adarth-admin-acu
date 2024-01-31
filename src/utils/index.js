@@ -577,13 +577,12 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   const updatedTotalMountingCost =
     updatedTotalArea * (item?.mountingCostPerSqft || 0) * (updatedTotalMonths || 0);
   const totalDisplayCost =
-    (item?.displayCostPerSqFt || 0) * updatedTotalMonths +
+    (item?.displayCostPerSqFt || 0) * updatedTotalMonths * (updatedTotalArea || 0) +
     (item?.displayCostPerSqFt || 0) * ((item?.displayCostGstPercentage || 0) / 100);
 
   const totalCost = Number(
     (
       (totalDisplayCost || 0) +
-      (item?.tradedAmount || 0) +
       (Number(updatedTotalPrintingCost.toFixed(2)) +
         Number(updatedTotalPrintingCost.toFixed(2)) * ((item?.printingGstPercentage || 0) / 100)) +
       (Number(updatedTotalMountingCost.toFixed(2)) +

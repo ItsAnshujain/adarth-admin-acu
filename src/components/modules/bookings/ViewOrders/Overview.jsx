@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   BackgroundImage,
   Center,
-  Divider,
   Group,
   Image,
   Pagination,
@@ -196,30 +195,11 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           >
             {bookingData?.campaign?.description || 'NA'}
           </Spoiler>
-          <div className="flex flex-col mt-4 w-[300px] border rounded-xl">
-            <div className="pt-3 px-4">
-              <Group className="justify-between">
-                <p className="text-slate-400 font-medium text-sm">Amount</p>
-                <p className="font-semibold text-sm">
-                  {toIndianCurrency(bookingData?.campaign?.totalPrice)}
-                </p>
-              </Group>
-              <Divider color="#E5E7EB" className="my-2" />
-              <Group className="justify-between mb-3">
-                <p className="text-slate-400 font-medium text-sm">GST</p>
-                <p className="font-semibold text-sm">
-                  {toIndianCurrency(
-                    bookingData?.campaign?.price && bookingData?.campaign?.totalPrice
-                      ? bookingData.campaign.price - bookingData.campaign.totalPrice
-                      : 0,
-                  )}
-                </p>
-              </Group>
-            </div>
-            <Group className="justify-between bg-gray-25 px-4 py-2 rounded-b-xl">
-              <p className="text-black font-semibold text-sm">Total Amount</p>
+          <div className="flex flex-col mt-4 w-[300px] border">
+            <Group className="justify-between bg-gray-25 px-4 py-2">
+              <p className="text-black font-semibold text-sm">Total Price</p>
               <p className="font-bold text-purple-450 text-lg">
-                {toIndianCurrency(bookingData?.campaign?.price)}
+                {toIndianCurrency(bookingData?.campaign?.totalPrice)}
               </p>
             </Group>
           </div>
