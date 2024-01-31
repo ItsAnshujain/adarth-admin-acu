@@ -150,8 +150,14 @@ const AddEditPriceDrawer = ({
       ) || 0;
     return (
       area *
-      (selectedInventory?.unit || 1) *
-      (selectedInventory?.facing === 'Single' ? 1 : selectedInventory?.facing === 'Double' ? 2 : 4)
+        (selectedInventory?.unit || 1) *
+        (selectedInventory?.facing === 'Single'
+          ? 1
+          : selectedInventory?.facing === 'Double'
+          ? 2
+          : selectedInventory?.facing === 'Four Facing'
+          ? 4
+          : 1) || 0
     );
   }, [selectedInventory?.dimension]);
 
@@ -174,14 +180,15 @@ const AddEditPriceDrawer = ({
         selectedInventory?.endDate,
       );
     const total =
-      totalDisplayCost -
-      (watchDiscountOn === 'displayCost' ? totalDisplayCost * ((watchDiscount || 0) / 100) : 0) +
-      (tradedAmount || 0) +
-      totalPrintingCost +
-      totalMountingCost +
-      oneTimeInstallationCost +
-      (monthlyAdditionalCost || 0) * totalMonths -
-      otherCharges;
+      Number(totalDisplayCost?.toFixed(2)) -
+      (watchDiscountOn === 'displayCost'
+        ? Number(totalDisplayCost?.toFixed(2)) * ((Number(watchDiscount?.toFixed(2)) || 0) / 100)
+        : 0) +
+      Number(totalPrintingCost?.toFixed(2)) +
+      Number(totalMountingCost?.toFixed(2)) +
+      Number(oneTimeInstallationCost?.toFixed(2)) +
+      (Number(monthlyAdditionalCost?.toFixed(2)) || 0) * Number(totalMonths?.toFixed(2)) -
+      Number(otherCharges?.toFixed(2));
     return total - (watchDiscountOn === 'totalPrice' ? total * ((watchDiscount || 0) / 100) : 0);
   }, [
     totalDisplayCost,
@@ -199,14 +206,18 @@ const AddEditPriceDrawer = ({
   const onChangeDisplayCostPerMonth = useCallback(() => {
     const displayCostPerMonth = watchDisplayCostPerMonth * totalMonths || 0;
     form.setValue(
-      'totalDisplayCost',
+      totalArea && totalArea > 0 && 'totalDisplayCost',
       displayCostPerMonth + displayCostPerMonth * ((watchDisplayCostGstPercentage || 0) / 100),
     );
-    form.setValue('displayCostPerSqFt', (watchDisplayCostPerMonth || 0) / totalArea);
+
+    form.setValue(
+      'displayCostPerSqFt',
+      totalArea && totalArea > 0 && (watchDisplayCostPerMonth || 0) / totalArea,
+    );
   }, [watchDisplayCostPerMonth, watchDisplayCostGstPercentage, totalMonths]);
 
   const onChangeDisplayCostPerSqFt = useCallback(() => {
-    const displayCostPerSqFt = watchDisplayCostPerSqFt * totalArea || 0;
+    const displayCostPerSqFt = watchDisplayCostPerSqFt * (totalArea || 0) || 0;
 
     form.setValue(
       'displayCostPerMonth',
@@ -215,50 +226,57 @@ const AddEditPriceDrawer = ({
 
     form.setValue(
       'totalDisplayCost',
-      displayCostPerSqFt * totalMonths +
-        displayCostPerSqFt * ((watchDisplayCostGstPercentage || 0) / 100),
+      totalArea &&
+        totalArea > 0 &&
+        displayCostPerSqFt * totalMonths +
+          displayCostPerSqFt * ((watchDisplayCostGstPercentage || 0) / 100),
     );
   }, [watchDisplayCostPerSqFt, watchDisplayCostGstPercentage, totalMonths]);
 
   const onChangeDisplayCostPercentage = useCallback(() => {
-    const displayCostPerSqFt = watchDisplayCostPerSqFt * totalArea * totalMonths || 0;
+    const displayCostPerSqFt = watchDisplayCostPerSqFt * (totalArea || 0) * totalMonths || 0;
 
     form.setValue(
       'totalDisplayCost',
       displayCostPerSqFt + displayCostPerSqFt * ((watchDisplayCostGstPercentage || 0) / 100),
     );
-    form.setValue('displayCostPerMonth', (watchDisplayCostPerSqFt || 0) * totalArea);
-  }, [watchDisplayCostPerSqFt, watchDisplayCostPerMonth, watchDisplayCostGstPercentage, totalArea]);
+    form.setValue('displayCostPerMonth', (watchDisplayCostPerSqFt || 0) * (totalArea || 0));
+  }, [
+    watchDisplayCostPerSqFt,
+    watchDisplayCostPerMonth,
+    watchDisplayCostGstPercentage,
+    totalArea || 0,
+  ]);
 
   const onChangePrintingCost = useCallback(() => {
-    const printingCost = watchPrintingCostPerSqft * totalArea * totalMonths || 0;
+    const printingCost = watchPrintingCostPerSqft * (totalArea || 0) * totalMonths || 0;
     form.setValue(
       'totalPrintingCost',
       printingCost + printingCost * ((watchPrintingGstPercentage || 0) / 100),
     );
-  }, [watchPrintingCostPerSqft, watchPrintingGstPercentage, totalArea, totalMonths]);
+  }, [watchPrintingCostPerSqft, watchPrintingGstPercentage, totalArea || 0, totalMonths]);
 
   const onChangePrintingCostGst = useCallback(() => {
-    const printingCost = watchPrintingCostPerSqft * totalArea * totalMonths || 0;
+    const printingCost = watchPrintingCostPerSqft * (totalArea || 0) * totalMonths || 0;
     form.setValue(
       'totalPrintingCost',
-      printingCost + printingCost * (watchPrintingGstPercentage / 100),
+      printingCost + printingCost * ((watchPrintingGstPercentage || 0) / 100),
     );
   }, [watchTotalPrintingCost, watchPrintingGstPercentage]);
 
   const onChangeMountingCost = useCallback(() => {
-    const mountingCost = watchMountingCostPerSqft * totalArea * totalMonths || 0;
+    const mountingCost = watchMountingCostPerSqft * (totalArea || 0) * totalMonths || 0;
     form.setValue(
       'totalMountingCost',
       mountingCost + mountingCost * ((watchMountingGstPercentage || 0) / 100),
     );
-  }, [watchMountingCostPerSqft, watchMountingGstPercentage, totalArea, totalMonths]);
+  }, [watchMountingCostPerSqft, watchMountingGstPercentage, totalArea || 0, totalMonths]);
 
   const onChangeMountingCostGst = useCallback(() => {
-    const mountingCost = watchMountingCostPerSqft * totalArea * totalMonths || 0;
+    const mountingCost = watchMountingCostPerSqft * (totalArea || 0) * totalMonths || 0;
     form.setValue(
       'totalMountingCost',
-      mountingCost + mountingCost * (watchMountingGstPercentage / 100),
+      mountingCost + mountingCost * ((watchMountingGstPercentage || 0) / 100),
     );
   }, [watchTotalMountingCost, watchMountingGstPercentage]);
 
@@ -287,22 +305,37 @@ const AddEditPriceDrawer = ({
                 0,
               ) || 0) *
                 (place?.unit || 1) *
-                (place.facing === 'Single' ? 1 : place.facing === 'Double' ? 2 : 4) || 0;
+                (place.facing === 'Single'
+                  ? 1
+                  : place.facing === 'Double'
+                  ? 2
+                  : place.facing === 'Four Facing'
+                  ? 4
+                  : 1) || 0;
 
             const updatedTotalPrintingCost =
-              area * formData.printingCostPerSqft * totalMonthsOfPlace || 0;
+              area * formData.printingCostPerSqft * (totalMonthsOfPlace || 0);
 
             const updatedTotalMountingCost =
-              area * formData.mountingCostPerSqft * totalMonthsOfPlace || 0;
+              area * formData.mountingCostPerSqft * (totalMonthsOfPlace || 0);
 
-            const updatedTotalPrice =
-              (place.totalDisplayCost || 0) +
-              (place.tradedAmount || 0) +
-              updatedTotalPrintingCost +
-              updatedTotalMountingCost +
-              (place.oneTimeInstallationCost || 0) +
-              ((place.monthlyAdditionalCost || 0) * totalMonths || 0) -
-              (place.otherCharges || 0);
+            const updatedTotalPrice = Number(
+              (
+                (place.totalDisplayCost || 0) +
+                (Number(updatedTotalPrintingCost.toFixed(2)) +
+                  Number(updatedTotalPrintingCost.toFixed(2)) *
+                    ((place.printingGstPercentage || 0) / 100)) +
+                (Number(updatedTotalMountingCost.toFixed(2)) +
+                  Number(updatedTotalMountingCost.toFixed(2)) *
+                    ((place.mountingGstPercentage || 0) / 100)) +
+                (place.oneTimeInstallationCost || 0) +
+                (place.monthlyAdditionalCost || 0) * totalMonths -
+                (place.otherCharges || 0) -
+                (place.discountOn === 'displayCost'
+                  ? (totalDisplayCost || 0) * ((place.discount || 0) / 100)
+                  : 0)
+              ).toFixed(2),
+            );
 
             return {
               ...place,
@@ -318,13 +351,11 @@ const AddEditPriceDrawer = ({
                   100,
               totalMountingCost:
                 Number(updatedTotalMountingCost.toFixed(2)) +
-                (Number(updatedTotalMountingCost.toFixed(2)) * formData.printingGstPercentage) /
+                (Number(updatedTotalMountingCost.toFixed(2)) * formData.mountingGstPercentage) /
                   100,
               price:
                 updatedTotalPrice -
-                (formData.discountOn === 'displayCost'
-                  ? place.totalDisplayCost * ((formData.discount || 0) / 100)
-                  : formData.discountOn === 'totalPrice'
+                (formData.discountOn === 'totalPrice'
                   ? updatedTotalPrice * ((formData.discount || 0) / 100)
                   : 0),
               discountOn: formData.discountOn,
@@ -342,28 +373,43 @@ const AddEditPriceDrawer = ({
 
           if (watchApplyPrintingMountingCostForAll) {
             const totalMonthsOfPlace = calculateTotalMonths(place.startDate, place.endDate);
-
             const area =
               (place?.dimension?.reduce(
                 (accumulator, dimension) => accumulator + dimension.height * dimension.width,
                 0,
               ) || 0) *
                 (place?.unit || 1) *
-                (place.facing === 'Single' ? 1 : place.facing === 'Double' ? 2 : 4) || 0;
+                (place.facing === 'Single'
+                  ? 1
+                  : place.facing === 'Double'
+                  ? 2
+                  : place.facing === 'Four Facing'
+                  ? 4
+                  : 1) || 0;
+
             const updatedTotalPrintingCost =
-              area * formData.printingCostPerSqft * totalMonthsOfPlace || 0;
+              area * formData.printingCostPerSqft * (totalMonthsOfPlace || 0);
 
             const updatedTotalMountingCost =
-              area * formData.mountingCostPerSqft * totalMonthsOfPlace || 0;
+              area * formData.mountingCostPerSqft * (totalMonthsOfPlace || 0);
 
-            const updatedTotalPrice =
-              (place.totalDisplayCost || 0) +
-              (place.tradedAmount || 0) +
-              updatedTotalPrintingCost +
-              updatedTotalMountingCost +
-              (place.oneTimeInstallationCost || 0) +
-              ((place.monthlyAdditionalCost || 0) * totalMonths || 0) -
-              (place.otherCharges || 0);
+            const updatedTotalPrice = Number(
+              (
+                (place.totalDisplayCost || 0) +
+                (Number(updatedTotalPrintingCost.toFixed(2)) +
+                  Number(updatedTotalPrintingCost.toFixed(2)) *
+                    ((place.printingGstPercentage || 0) / 100)) +
+                (Number(updatedTotalMountingCost.toFixed(2)) +
+                  Number(updatedTotalMountingCost.toFixed(2)) *
+                    ((place.mountingGstPercentage || 0) / 100)) +
+                (place.oneTimeInstallationCost || 0) +
+                (place.monthlyAdditionalCost || 0) * totalMonths -
+                (place.otherCharges || 0) -
+                (place.discountOn === 'displayCost'
+                  ? (totalDisplayCost || 0) * ((place.discount || 0) / 100)
+                  : 0)
+              ).toFixed(2),
+            );
 
             return {
               ...place,
@@ -379,9 +425,13 @@ const AddEditPriceDrawer = ({
                   100,
               totalMountingCost:
                 Number(updatedTotalMountingCost.toFixed(2)) +
-                (Number(updatedTotalMountingCost.toFixed(2)) * formData.printingGstPercentage) /
+                (Number(updatedTotalMountingCost.toFixed(2)) * formData.mountingGstPercentage) /
                   100,
-              price: updatedTotalPrice,
+              price:
+                updatedTotalPrice -
+                (formData.discountOn === 'totalPrice'
+                  ? updatedTotalPrice * ((formData.discount || 0) / 100)
+                  : 0),
             };
           }
 
@@ -424,19 +474,26 @@ const AddEditPriceDrawer = ({
               0,
             ) || 0) *
               (place?.unit || 1) *
-              (place.facing === 'Single' ? 1 : place.facing === 'Double' ? 2 : 4) || 0;
+              (place.facing === 'Single'
+                ? 1
+                : place.facing === 'Double'
+                ? 2
+                : place.facing === 'Four Facing'
+                ? 4
+                : 1) || 0;
 
           const updatedTotalPrintingCost =
-            area * formData.printingCostPerSqft * totalMonthsOfPlace || 0;
+            area * formData.printingCostPerSqft * (totalMonthsOfPlace || 0);
           const updatedTotalMountingCost =
-            area * formData.mountingCostPerSqft * totalMonthsOfPlace || 0;
+            area * formData.mountingCostPerSqft * (totalMonthsOfPlace || 0);
 
           const updatedTotalPrice =
-            (place.totalDisplayCost || 0) +
-            updatedTotalPrintingCost +
-            updatedTotalMountingCost +
-            (place.oneTimeInstallationCost || 0) +
-            (place.monthlyAdditionalCost || 0) * (totalMonths || 0);
+            (Number(place.totalDisplayCost?.toFixed(2)) || 0) +
+            Number(updatedTotalPrintingCost?.toFixed(2)) +
+            Number(updatedTotalMountingCost?.toFixed(2)) +
+            (Number(place.oneTimeInstallationCost?.toFixed(2)) || 0) +
+            Number(place.monthlyAdditionalCost?.toFixed(2) || 0) *
+              (Number(totalMonthsOfPlace?.toFixed(2)) || 0);
 
           return place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)
             ? {

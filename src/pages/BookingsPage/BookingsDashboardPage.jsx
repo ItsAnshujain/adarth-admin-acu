@@ -363,7 +363,7 @@ const BookingsDashboardPage = () => {
           row: {
             original: { campaign },
           },
-        }) => useMemo(() => toIndianCurrency(campaign?.price || 0), []),
+        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
       },
       {
         Header: 'OUTSTANDING PO',

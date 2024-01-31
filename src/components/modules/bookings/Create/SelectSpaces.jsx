@@ -168,8 +168,11 @@ const SelectSpace = () => {
           item._id === id
             ? {
                 ...item,
+                tradedAmount: key === 'tradedAmount' ? val : item.tradedAmount,
                 printingCostPerSqft: item.printingCostPerSqft,
                 printingGst: item.printingGst,
+                printingGstPercentage: item.printingGstPercentage,
+
                 totalPrintingCost: calculateTotalPrintingOrMountingCost(
                   item,
                   key === 'unit' ? val : item.unit,
@@ -188,6 +191,7 @@ const SelectSpace = () => {
                 ),
                 mountingCostPerSqft: item.mountingCostPerSqft,
                 mountingGst: item.mountingGst,
+                mountingGstPercentage: item.mountingGstPercentage,
 
                 totalArea: calculateTotalArea(item, item.unit),
                 price: calculateTotalCostOfBooking(
