@@ -201,11 +201,13 @@ const AddEditPriceDrawer = ({
     watchDiscount,
     watchDiscountOn,
     selectedInventory,
+    watchDisplayCostPerMonth,
   ]);
 
   const onChangeDisplayCostPerMonth = useCallback(() => {
     const displayCostPerMonth =
       Number(watchDisplayCostPerMonth?.toFixed(2)) * Number(totalMonths?.toFixed(2)) || 0;
+
     form.setValue(
       totalArea && totalArea > 0 && 'totalDisplayCost',
       Number(displayCostPerMonth?.toFixed(2)) +
@@ -600,7 +602,8 @@ const AddEditPriceDrawer = ({
       selectedInventory?.otherCharges ||
       selectedInventory?.discountPercentage ||
       selectedInventory?.printingCostPerSqft ||
-      selectedInventory?.mountingCostPerSqft
+      selectedInventory?.mountingCostPerSqft ||
+      selectedInventory?.tradedAmount
     ) {
       form.reset({
         displayCostPerMonth: selectedInventory.displayCostPerMonth || 0,
@@ -609,13 +612,13 @@ const AddEditPriceDrawer = ({
         displayCostGstPercentage: selectedInventory.displayCostGstPercentage || 0,
         displayCostGst: selectedInventory.displayCostGst || 0,
         printingCostPerSqft: selectedInventory.printingCostPerSqft || 0,
-        printingGstPercentage: selectedInventory.printingGstPercentage,
-        printingGst: selectedInventory.printingGst,
-        totalPrintingCost: selectedInventory.totalPrintingCost,
+        printingGstPercentage: selectedInventory.printingGstPercentage || 0,
+        printingGst: selectedInventory.printingGst || 0,
+        totalPrintingCost: selectedInventory.totalPrintingCost || 0,
         mountingCostPerSqft: selectedInventory.mountingCostPerSqft || null,
-        mountingGstPercentage: selectedInventory.mountingGstPercentage,
-        mountingGst: selectedInventory.mountingGst,
-        totalMountingCost: selectedInventory.totalMountingCost,
+        mountingGstPercentage: selectedInventory.mountingGstPercentage || 0,
+        mountingGst: selectedInventory.mountingGst || 0,
+        totalMountingCost: selectedInventory.totalMountingCost || 0,
         oneTimeInstallationCost: selectedInventory.oneTimeInstallationCost || 0,
         monthlyAdditionalCost: selectedInventory.monthlyAdditionalCost || 0,
         otherCharges: selectedInventory.otherCharges || 0,
@@ -623,9 +626,9 @@ const AddEditPriceDrawer = ({
         applyPrintingMountingCostForAll: selectedInventory.applyPrintingMountingCostForAll || true,
         subjectToExtension: selectedInventory.subjectToExtension || false,
         discountOn: selectedInventory.discountOn || 'displayCost',
-        discount: selectedInventory.discount,
+        discount: selectedInventory.discount || 0,
         applyDiscountForAll: selectedInventory.applyDiscountForAll || true,
-        discountedDisplayCost: selectedInventory.discountedDisplayCost,
+        discountedDisplayCost: selectedInventory.discountedDisplayCost || 0,
       });
     } else {
       form.reset(defaultValues);

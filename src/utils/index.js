@@ -536,7 +536,7 @@ export const formLabelStyles = {
 export const calculateTotalPrice = (option = []) => {
   if (!option.length) return 0;
   const totalPrice = option.reduce((acc, item) => acc + +(item.price || 0), 0);
-  return Number(totalPrice.toFixed(2)) || 0;
+  return Number(totalPrice?.toFixed(2)) || 0;
 };
 
 export const calculateTotalMonths = (startDate, endDate) => {
@@ -573,32 +573,44 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   const updatedTotalArea = calculateTotalArea(item, unit);
   const updatedTotalMonths = calculateTotalMonths(startDate, endDate);
   const updatedTotalPrintingCost =
-    updatedTotalArea * (item?.printingCostPerSqft || 0) * (updatedTotalMonths || 0);
+    Number(updatedTotalArea?.toFixed(2)) *
+    (Number(item?.printingCostPerSqft?.toFixed(2)) || 0) *
+    (Number(updatedTotalMonths?.toFixed(2)) || 0);
   const updatedTotalMountingCost =
-    updatedTotalArea * (item?.mountingCostPerSqft || 0) * (updatedTotalMonths || 0);
+    Number(updatedTotalArea?.toFixed(2)) *
+    (Number(item?.mountingCostPerSqft?.toFixed(2)) || 0) *
+    (Number(updatedTotalMonths?.toFixed(2)) || 0);
   const totalDisplayCost =
-    (item?.displayCostPerSqFt || 0) * updatedTotalMonths * (updatedTotalArea || 0) +
-    (item?.displayCostPerSqFt || 0) * ((item?.displayCostGstPercentage || 0) / 100);
+    (Number(item?.displayCostPerMonth?.toFixed(2)) || 0) * Number(updatedTotalMonths?.toFixed(2)) +
+    (Number(item?.displayCostPerMonth?.toFixed(2)) || 0) *
+      ((Number(item?.displayCostGstPercentage?.toFixed(2)) || 0) / 100);
 
   const totalCost = Number(
     (
       (totalDisplayCost || 0) +
-      (Number(updatedTotalPrintingCost.toFixed(2)) +
-        Number(updatedTotalPrintingCost.toFixed(2)) * ((item?.printingGstPercentage || 0) / 100)) +
-      (Number(updatedTotalMountingCost.toFixed(2)) +
-        Number(updatedTotalMountingCost.toFixed(2)) * ((item?.mountingGstPercentage || 0) / 100)) +
-      (item?.oneTimeInstallationCost || 0) +
-      (item?.monthlyAdditionalCost || 0) * updatedTotalMonths -
-      (item?.otherCharges || 0) -
+      (Number(updatedTotalPrintingCost?.toFixed(2)) +
+        Number(updatedTotalPrintingCost?.toFixed(2)) * ((item?.printingGstPercentage || 0) / 100)) +
+      (Number(updatedTotalMountingCost?.toFixed(2)) +
+        Number(updatedTotalMountingCost?.toFixed(2)) * ((item?.mountingGstPercentage || 0) / 100)) +
+      (Number(item?.oneTimeInstallationCost?.toFixed(2)) || 0) +
+      (Number(item?.monthlyAdditionalCost?.toFixed(2)) || 0) *
+        Number(updatedTotalMonths?.toFixed(2)) -
+      (Number(item?.otherCharges?.toFixed(2)) || 0) -
       (item?.discountOn === 'displayCost'
-        ? (totalDisplayCost || 0) * ((item?.discount || 0) / 100)
+        ? (Number(totalDisplayCost?.toFixed(2)) || 0) *
+          ((Number(item?.discount?.toFixed(2)) || 0) / 100)
         : 0)
-    ).toFixed(2),
+    )?.toFixed(2),
   );
 
   return item?.discountOn === 'totalPrice'
-    ? Number(((totalCost || 0) - (totalCost || 0) * ((item?.discount || 0) / 100)).toFixed(2) || 0)
-    : Number(totalCost.toFixed(2)) || 0;
+    ? Number(
+        (
+          (totalCost || 0) -
+          (totalCost || 0) * ((Number(item?.discount?.toFixed(2)) || 0) / 100)
+        )?.toFixed(2) || 0,
+      )
+    : Number(totalCost?.toFixed(2)) || 0;
 };
 
 export const calculateTotalPrintingOrMountingCost = (

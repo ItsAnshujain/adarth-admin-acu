@@ -722,7 +722,7 @@ const SelectSpace = () => {
           <div>
             <p className="text-slate-400">Total Price</p>
             <Group>
-              <p className="font-bold">{toIndianCurrency(memoizedCalculateTotalPrice)}</p>
+              <p className="font-bold">{toIndianCurrency(getTotalPrice(watchPlace))}</p>
               <p className="text-xs italic text-blue-500">** inclusive of GST</p>
             </Group>
           </div>
