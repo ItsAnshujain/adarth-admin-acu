@@ -159,7 +159,8 @@ const CreateBookingPage = () => {
         });
         return;
       }
-      data.place = watchPlace?.map(item => ({
+      // eslint-disable-next-line no-unused-vars
+      data.place = watchPlace?.map(({ bookingRange, campaigns, ...item }) => ({
         ...item,
         id: item._id,
         price: +Number(item.price?.toFixed(2) || 0),

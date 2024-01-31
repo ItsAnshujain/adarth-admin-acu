@@ -100,18 +100,21 @@ const CreateProposalPage = () => {
         return;
       }
 
-      data.spaces = watchSpaces.map(item => ({
-        ...item,
-        id: item._id,
-        price: +item.price.toFixed(2) || 0,
-        startDate: item.startDate
-          ? dayjs(item.startDate).startOf('day').toISOString()
-          : dayjs().startOf('day').toISOString(),
-        endDate: item.startDate
-          ? dayjs(item.endDate).endOf('day').toISOString()
-          : dayjs().endOf('day').toISOString(),
-        unit: item?.unit ? +item.unit : 1,
-      }));
+      data.spaces = watchSpaces.map(
+        // eslint-disable-next-line no-unused-vars
+        ({ pricingDetails, createdBy, campaigns, bookingRange, ...item }) => ({
+          ...item,
+          id: item._id,
+          price: +item.price.toFixed(2) || 0,
+          startDate: item.startDate
+            ? dayjs(item.startDate).startOf('day').toISOString()
+            : dayjs().startOf('day').toISOString(),
+          endDate: item.startDate
+            ? dayjs(item.endDate).endOf('day').toISOString()
+            : dayjs().endOf('day').toISOString(),
+          unit: item?.unit ? +item.unit : 1,
+        }),
+      );
 
       if (data.uploadType === 'existing') {
         data.letterHead = userData?.proposalHead;
