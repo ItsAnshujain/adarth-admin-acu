@@ -427,6 +427,8 @@ const SelectSpace = () => {
             const unitLeft = getAvailableUnits(bookingRange, startDate, endDate, originalUnit);
             const data = watchPlace ? watchPlace.find(item => item._id === _id) : {};
             const isExceeded =
+              data?.startDate &&
+              data?.endDate &&
               data?.unit > (bookingId ? unitLeft + (data?.initialUnit || 0) : unitLeft);
             return (
               <Tooltip
