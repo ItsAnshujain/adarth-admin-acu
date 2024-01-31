@@ -54,7 +54,7 @@ const PurchaseOrder = ({
   };
 
   const memoizedTotalPrice = useMemo(
-    () => Number((totalPrice + totalPrice * 0.18).toFixed(2)),
+    () => Number((totalPrice + totalPrice * 0.18)?.toFixed(2)),
     [totalPrice],
   );
 
@@ -237,7 +237,7 @@ const PurchaseOrder = ({
           row: {
             original: { area },
           },
-        }) => useMemo(() => <p>{area.toFixed(2) || '-'} sq.ft.</p>, []),
+        }) => useMemo(() => <p>{area?.toFixed(2) || '-'} sq.ft.</p>, []),
       },
       {
         Header: 'TOTAL DISPLAY COST/MONTH',
@@ -309,7 +309,7 @@ const PurchaseOrder = ({
                 </Menu.Target>
 
                 <Menu.Dropdown>
-                  <Menu.Item
+                  {/* <Menu.Item
                     className="cursor-pointer flex items-center gap-1"
                     icon={<Edit2 className="h-4" />}
                     onClick={() =>
@@ -338,7 +338,7 @@ const PurchaseOrder = ({
                     }
                   >
                     <span className="ml-1">Edit</span>
-                  </Menu.Item>
+                  </Menu.Item> */}
 
                   <Menu.Item
                     className="cursor-pointer flex items-center gap-1"

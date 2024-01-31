@@ -22,21 +22,23 @@ const ProcessPipeline = ({ bookingData }) => {
           {
             status: 'Purchase Order',
             date: bookingData?.purchaseOrderUpdatedAt,
-            isSuccess: bookingData?.outStandingPurchaseOrder <= 0,
+            isSuccess:
+              bookingData?.outStandingPurchaseOrder && bookingData?.outStandingPurchaseOrder <= 0,
             className: 'ml-[55px]',
             hasBottomEdge: false,
           },
           {
             status: 'Release Order',
             date: bookingData?.releaseOrderUpdatedAt,
-            isSuccess: bookingData?.outStandingReleaseOrder <= 0,
+            isSuccess:
+              bookingData?.outStandingReleaseOrder && bookingData?.outStandingReleaseOrder <= 0,
             hasBottomEdge: false,
             className: 'ml-[55px]',
           },
           {
             status: 'Invoice',
             date: bookingData?.invoiceUpdatedAt,
-            isSuccess: bookingData?.outStandingInvoice <= 0,
+            isSuccess: bookingData?.outStandingInvoice && bookingData?.outStandingInvoice <= 0,
             hasRightEdge: false,
             hasBottomEdge: false,
             className: 'ml-[55px]',

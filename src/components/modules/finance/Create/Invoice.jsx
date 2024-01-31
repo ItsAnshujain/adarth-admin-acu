@@ -226,7 +226,7 @@ const Invoice = ({
           row: {
             original: { area },
           },
-        }) => useMemo(() => <p>{area.toFixed(2) || '-'} sq. ft.</p>, []),
+        }) => useMemo(() => <p>{area?.toFixed(2) || '-'} sq. ft.</p>, []),
       },
       {
         Header: 'TOTAL DISPLAY COST/MONTH',

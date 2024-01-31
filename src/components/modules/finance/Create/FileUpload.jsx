@@ -205,11 +205,10 @@ const FileUpload = () => {
       },
     );
   };
-
   const calcutateTotalPrice = useMemo(() => {
     const initialPrice = 0;
-    if (bookingData?.campaign?.price) {
-      return bookingData?.campaign?.price;
+    if (bookingData?.campaign?.totalPrice) {
+      return bookingData?.campaign?.totalPrice;
     }
 
     return bookingData?.campaign?.spaces

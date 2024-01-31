@@ -298,7 +298,7 @@ const CreateBookingPage = () => {
         place:
           campaign?.spaces?.map(item => ({
             ...item,
-            location: item?.location?.city,
+            location: item?.location,
             dimension: item?.specifications?.size,
             _id: item._id,
             price: +Number(item.campaignPrice.toFixed(2)),

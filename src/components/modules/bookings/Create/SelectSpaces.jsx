@@ -91,11 +91,11 @@ const SelectSpace = () => {
       0,
     ) || 0) *
       (unit || 1) *
-      (place?.facing === 'Single'
+      (place?.facing === 'Single' || place?.location?.facing?.name === 'Single'
         ? 1
-        : place?.facing === 'Double'
+        : place?.facing === 'Double' || place?.location?.facing?.name === 'Double'
         ? 2
-        : place?.facing === 'Four Facing'
+        : place?.facing === 'Four Facing' || place?.location?.facing?.name === 'Four Facing'
         ? 4
         : 1) || 0;
 
@@ -224,11 +224,6 @@ const SelectSpace = () => {
     return totalPrice || 0;
   };
 
-  const memoizedCalculateTotalPrice = useMemo(
-    () => getTotalPrice(watchPlace),
-    [watchPlace, updateData],
-  );
-
   const handleSortRowsOnTop = (ids, rows) => {
     setUpdatedInventoryData(() => {
       const arr1 = [];
@@ -289,7 +284,7 @@ const SelectSpace = () => {
 
   const RenderFaciaTowardsCell = useCallback(({ row }) => row.original.faciaTowards || '-', []);
 
-  const RenderCityCell = useCallback(({ row }) => row.original.location || '-', []);
+  const RenderCityCell = useCallback(({ row }) => row.original.location.city || '-', []);
 
   const RenderAdditionalTagsCell = useCallback(
     ({ row }) => <AdditionalTagsContent list={row.original.additionalTags || []} />,
