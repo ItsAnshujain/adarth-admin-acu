@@ -309,7 +309,7 @@ const PurchaseOrder = ({
                 </Menu.Target>
 
                 <Menu.Dropdown>
-                  {/* <Menu.Item
+                  <Menu.Item
                     className="cursor-pointer flex items-center gap-1"
                     icon={<Edit2 className="h-4" />}
                     onClick={() =>
@@ -338,7 +338,7 @@ const PurchaseOrder = ({
                     }
                   >
                     <span className="ml-1">Edit</span>
-                  </Menu.Item> */}
+                  </Menu.Item>
 
                   <Menu.Item
                     className="cursor-pointer flex items-center gap-1"
