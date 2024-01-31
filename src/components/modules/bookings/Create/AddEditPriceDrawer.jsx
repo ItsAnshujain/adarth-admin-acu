@@ -150,14 +150,14 @@ const AddEditPriceDrawer = ({
       ) || 0;
     return (
       area *
-      (selectedInventory?.unit || 1) *
-      (selectedInventory?.facing === 'Single'
-        ? 1
-        : selectedInventory?.facing === 'Double'
-        ? 2
-        : selectedInventory?.facing === 'Four Facing'
-        ? 4
-        : 1)
+        (selectedInventory?.unit || 1) *
+        (selectedInventory?.facing === 'Single'
+          ? 1
+          : selectedInventory?.facing === 'Double'
+          ? 2
+          : selectedInventory?.facing === 'Four Facing'
+          ? 4
+          : 1) || 0
     );
   }, [selectedInventory?.dimension]);
 
@@ -227,8 +227,6 @@ const AddEditPriceDrawer = ({
     form.setValue(
       'totalDisplayCost',
       totalArea &&
-        totalArea > 0 &&
-        totalArea &&
         totalArea > 0 &&
         displayCostPerSqFt * totalMonths +
           displayCostPerSqFt * ((watchDisplayCostGstPercentage || 0) / 100),
