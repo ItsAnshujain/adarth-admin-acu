@@ -15,7 +15,6 @@ import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import {
   calculateTotalCostOfBooking,
-  calculateTotalMonths,
   calculateTotalPrintingOrMountingCost,
   currentDate,
   debounce,
