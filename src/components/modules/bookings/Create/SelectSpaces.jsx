@@ -14,8 +14,8 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import {
-  calculateTotalMonths,
-  calculateTotalPrice,
+  calculateTotalCostOfBooking,
+  calculateTotalPrintingOrMountingCost,
   currentDate,
   debounce,
   generateSlNo,
@@ -90,7 +90,7 @@ const SelectSpace = () => {
       (accumulator, dimension) => accumulator + dimension.height * dimension.width,
       0,
     ) || 0) *
-      (unit || 0) *
+      (unit || 1) *
       (place?.facing === 'Single'
         ? 1
         : place?.facing === 'Double'
@@ -119,40 +119,39 @@ const SelectSpace = () => {
 
       form.setValue(
         'place',
-        watchPlace.map(item => {
-          const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
-          const updatedTotalMonths = calculateTotalMonths(val[0], val[1]);
-
-          const updatedTotalPrintingCost =
-            updatedTotalArea * item.printingCostPerSqft * updatedTotalMonths || 0;
-          const updatedTotalMountingCost =
-            updatedTotalArea * item.mountingCostPerSqft * updatedTotalMonths || 0;
-
-          return item._id === id
+        watchPlace.map(item =>
+          item._id === id
             ? {
                 ...item,
                 startDate: val[0],
                 endDate: val[1],
                 ...(!hasChangedUnit ? { unit: availableUnit } : {}),
                 availableUnit,
-                price: Number(
-                  (
-                    (item.totalDisplayCost || 0) +
-                    (item.tradedAmount || 0) +
-                    (Number(updatedTotalPrintingCost.toFixed(2)) +
-                      (Number(updatedTotalPrintingCost.toFixed(2)) * item.printingGstPercentage) /
-                        100) +
-                    (Number(updatedTotalMountingCost.toFixed(2)) +
-                      (Number(updatedTotalMountingCost.toFixed(2)) * item.printingGstPercentage) /
-                        100) +
-                    (item.oneTimeInstallationCost || 0) +
-                    (item.monthlyAdditionalCost || 0) -
-                    (item.otherCharges || 0)
-                  ).toFixed(2),
+                price: calculateTotalCostOfBooking(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  val[0],
+                  val[1],
+                ),
+                totalPrintingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  val[0],
+                  val[1],
+                  item.printingCostPerSqft,
+                  item.printingGstPercentage,
+                ),
+                totalMountingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  val[0],
+                  val[1],
+                  item.mountingCostPerSqft,
+                  item.mountingGstPercentage,
                 ),
               }
-            : item;
-        }),
+            : item,
+        ),
       );
     } else {
       setUpdatedInventoryData(prev =>
@@ -165,49 +164,43 @@ const SelectSpace = () => {
 
       form.setValue(
         'place',
-        watchPlace.map(item => {
-          const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
-          const updatedTotalMonths = calculateTotalMonths(item?.startDate, item?.endDate);
-          const updatedTotalPrintingCost =
-            updatedTotalArea * item.printingCostPerSqft * updatedTotalMonths || 0;
-          const updatedTotalMountingCost =
-            updatedTotalArea * item.mountingCostPerSqft * updatedTotalMonths || 0;
-
-          return item._id === id
+        watchPlace.map(item =>
+          item._id === id
             ? {
                 ...item,
                 printingCostPerSqft: item.printingCostPerSqft,
                 printingGst: item.printingGst,
-                totalPrintingCost:
-                  Number(updatedTotalPrintingCost.toFixed(2)) +
-                  (Number(updatedTotalPrintingCost.toFixed(2)) * item.printingGstPercentage) / 100,
-                totalMountingCost:
-                  Number(updatedTotalMountingCost.toFixed(2)) +
-                  (Number(updatedTotalMountingCost.toFixed(2)) * item.printingGstPercentage) / 100,
+                totalPrintingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.startDate,
+                  item.endDate,
+                  item.printingCostPerSqft,
+                  item.printingGstPercentage,
+                ),
+                totalMountingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.startDate,
+                  item.endDate,
+                  item.mountingCostPerSqft,
+                  item.mountingGstPercentage,
+                ),
                 mountingCostPerSqft: item.mountingCostPerSqft,
                 mountingGst: item.mountingGst,
 
                 totalArea: calculateTotalArea(item, item.unit),
-                price: Number(
-                  (
-                    (item.totalDisplayCost || 0) +
-                    (item.tradedAmount || 0) +
-                    (Number(updatedTotalPrintingCost.toFixed(2)) +
-                      (Number(updatedTotalPrintingCost.toFixed(2)) * item.printingGstPercentage) /
-                        100) +
-                    (Number(updatedTotalMountingCost.toFixed(2)) +
-                      (Number(updatedTotalMountingCost.toFixed(2)) * item.printingGstPercentage) /
-                        100) +
-                    (item.oneTimeInstallationCost || 0) +
-                    (item.monthlyAdditionalCost || 0) -
-                    (item.otherCharges || 0)
-                  ).toFixed(2),
+                price: calculateTotalCostOfBooking(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.startDate,
+                  item.endDate,
                 ),
                 [key]: val,
                 ...(key === 'unit' ? { hasChangedUnit: true } : {}),
               }
-            : item;
-        }),
+            : item,
+        ),
       );
 
       if (inputId) {
@@ -535,21 +528,12 @@ const SelectSpace = () => {
         Cell: ({ row: { original } }) =>
           useMemo(() => {
             const place = watchPlace.filter(item => item._id === original._id)?.[0];
-            const totalCost =
-              (place?.totalDisplayCost || 0) -
-              (place?.discountOn === 'displayCost'
-                ? (place?.totalDisplayCost || 0) * ((place?.discount || 0) / 100)
-                : 0) +
-              (place?.tradedAmount || 0) +
-              (place?.totalPrintingCost || 0) +
-              (place?.totalMountingCost || 0) +
-              (place?.oneTimeInstallationCost || 0) +
-              (place?.monthlyAdditionalCost || 0) -
-              (place?.otherCharges || 0);
-            return place?.discountOn === 'totalPrice'
-              ? ((totalCost || 0) - (totalCost || 0) * ((place?.discount || 0) / 100)).toFixed(2) ||
-                  0
-              : totalCost.toFixed(2) || 0;
+            return calculateTotalCostOfBooking(
+              place,
+              place?.unit,
+              place?.startDate,
+              place?.endDate,
+            );
           }, []),
       },
       {

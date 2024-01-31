@@ -173,8 +173,8 @@ const CreateBookingPage = () => {
         tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
         unit: item?.unit ? +item.unit : 1,
         discountPercentage: item.discount,
-        totalPrintingCost: Number(item.totalPrintingCost?.toFixed(2)) || 0,
-        discountedTotalPrice: Number(item.discountedTotalPrice?.toFixed(2)) || 0,
+        totalPrintingCost: Number(Number(item.totalPrintingCost)?.toFixed(2)) || 0,
+        discountedTotalPrice: Number(Number(item.discountedTotalPrice)?.toFixed(2)) || 0,
       }));
 
       if (data.place.some(item => item.price === 0 || !item.price)) {
@@ -208,7 +208,7 @@ const CreateBookingPage = () => {
 
       const totalPrice = calculateTotalPrice(watchPlace);
       const gstCalculation = totalPrice * 0.18;
-      data.price = Number((totalPrice + gstCalculation).toFixed(2)) || 0;
+      data.price = Number((totalPrice + gstCalculation)?.toFixed(2)) || 0;
 
       Object.keys(data).forEach(k => {
         if (data[k] === '') {
@@ -307,7 +307,7 @@ const CreateBookingPage = () => {
               item?.specifications?.unit && item.unit
                 ? item.specifications.unit - item.unit
                 : item.unit,
-            initialUnit: item?.unit || 0,
+            initialUnit: item?.unit,
             discount: item?.discountPercentage,
             startDate: new Date(item.startDate),
             endDate: new Date(item.endDate),
