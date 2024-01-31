@@ -560,13 +560,13 @@ export const calculateTotalArea = (place, unit) =>
     0,
   ) || 0) *
     (unit || 1) *
-    (place?.facing === 'Single'
+    (place?.facing === 'Single' || place?.location?.facing?.name === 'Single'
       ? 1
-      : place?.facing === 'Double'
+      : place?.facing === 'Double' || place.location?.facing?.name === 'Double'
       ? 2
-      : place?.facing === 'Four Facing'
+      : place?.facing === 'Four Facing' || place.location?.facing?.name === 'Four Facing'
       ? 4
-      : 1) || 0;
+      : 1) || 1;
 
 export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   if (!item) return 0;

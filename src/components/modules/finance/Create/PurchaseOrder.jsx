@@ -54,7 +54,7 @@ const PurchaseOrder = ({
   };
 
   const memoizedTotalPrice = useMemo(
-    () => Number((totalPrice + totalPrice * 0.18).toFixed(2)),
+    () => Number((totalPrice + totalPrice * 0.18)?.toFixed(2)),
     [totalPrice],
   );
 
@@ -237,7 +237,7 @@ const PurchaseOrder = ({
           row: {
             original: { area },
           },
-        }) => useMemo(() => <p>{area.toFixed(2) || '-'} sq.ft.</p>, []),
+        }) => useMemo(() => <p>{area?.toFixed(2) || '-'} sq.ft.</p>, []),
       },
       {
         Header: 'TOTAL DISPLAY COST/MONTH',

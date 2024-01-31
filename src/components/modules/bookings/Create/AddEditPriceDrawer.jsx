@@ -151,11 +151,14 @@ const AddEditPriceDrawer = ({
     return (
       area *
         (selectedInventory?.unit || 1) *
-        (selectedInventory?.facing === 'Single'
+        (selectedInventory?.facing === 'Single' ||
+        selectedInventory?.location?.facing?.name === 'Single'
           ? 1
-          : selectedInventory?.facing === 'Double'
+          : selectedInventory?.facing === 'Double' ||
+            selectedInventory?.location?.facing?.name === 'Double'
           ? 2
-          : selectedInventory?.facing === 'Four Facing'
+          : selectedInventory?.facing === 'Four Facing' ||
+            selectedInventory?.location?.facing?.name === 'Four Facing'
           ? 4
           : 1) || 0
     );
@@ -244,20 +247,14 @@ const AddEditPriceDrawer = ({
   }, [watchDisplayCostPerSqFt, watchDisplayCostGstPercentage, totalMonths]);
 
   const onChangeDisplayCostPercentage = useCallback(() => {
-    const displayCostPerSqFt =
-      Number(watchDisplayCostPerSqFt?.toFixed(2)) *
-        (Number(totalArea?.toFixed(2)) || 0) *
-        Number(totalMonths?.toFixed(2)) || 0;
+    const displayCostPerMonth =
+      Number(watchDisplayCostPerMonth?.toFixed(2)) * Number(totalMonths?.toFixed(2)) || 0;
 
     form.setValue(
       'totalDisplayCost',
-      Number(displayCostPerSqFt?.toFixed(2)) +
-        Number(displayCostPerSqFt?.toFixed(2)) *
+      Number(displayCostPerMonth?.toFixed(2)) +
+        Number(displayCostPerMonth?.toFixed(2)) *
           ((Number(watchDisplayCostGstPercentage?.toFixed(2)) || 0) / 100),
-    );
-    form.setValue(
-      'displayCostPerMonth',
-      (Number(watchDisplayCostPerSqFt?.toFixed(2)) || 0) * (Number(totalArea?.toFixed(2)) || 0),
     );
   }, [
     watchDisplayCostPerSqFt,
@@ -343,19 +340,24 @@ const AddEditPriceDrawer = ({
                 0,
               ) || 0) *
                 (place?.unit || 1) *
-                (place.facing === 'Single'
+                (place?.facing === 'Single' || place?.location?.facing.name === 'Single'
                   ? 1
-                  : place.facing === 'Double'
+                  : place?.facing === 'Double' || place?.location?.facing?.name === 'Double'
                   ? 2
-                  : place.facing === 'Four Facing'
+                  : place?.facing === 'Four Facing' ||
+                    place?.location?.facing?.name === 'Four Facing'
                   ? 4
                   : 1) || 0;
 
             const updatedTotalPrintingCost =
-              area * formData.printingCostPerSqft * (totalMonthsOfPlace || 0);
+              Number(area?.toFixed(2)) *
+              Number(formData.printingCostPerSqft?.toFixed(2)) *
+              (Number(totalMonthsOfPlace?.toFixed(2)) || 0);
 
             const updatedTotalMountingCost =
-              area * formData.mountingCostPerSqft * (totalMonthsOfPlace || 0);
+              Number(area?.toFixed(2)) *
+              Number(formData.mountingCostPerSqft?.toFixed(2)) *
+              (Number(totalMonthsOfPlace?.toFixed(2)) || 0);
 
             const updatedTotalPrice = Number(
               (
@@ -363,14 +365,14 @@ const AddEditPriceDrawer = ({
                 (Number(updatedTotalPrintingCost?.toFixed(2)) +
                   Number(updatedTotalPrintingCost?.toFixed(2)) *
                     ((place.printingGstPercentage || 0) / 100)) +
-                (Number(updatedTotalMountingCost?.toFixed(2)) +
-                  Number(updatedTotalMountingCost?.toFixed(2)) *
-                    ((place.mountingGstPercentage || 0) / 100)) +
+                (Number(updatedTotalMountingCost?.toFixed(2)) ||
+                  0 + Number(updatedTotalMountingCost?.toFixed(2)) ||
+                  0 * ((place.mountingGstPercentage || 0) / 100)) +
                 (place.oneTimeInstallationCost || 0) +
                 (place.monthlyAdditionalCost || 0) * totalMonths -
                 (place.otherCharges || 0) -
                 (place.discountOn === 'displayCost'
-                  ? (totalDisplayCost || 0) * ((place.discount || 0) / 100)
+                  ? (place.totalDisplayCost || 0) * ((place.discount || 0) / 100)
                   : 0)
               )?.toFixed(2),
             );
@@ -385,12 +387,13 @@ const AddEditPriceDrawer = ({
               mountingCostPerSqft: Number(formData.mountingCostPerSqft?.toFixed(2)),
               totalPrintingCost:
                 Number(updatedTotalPrintingCost?.toFixed(2)) +
-                (Number(updatedTotalPrintingCost?.toFixed(2)) * formData.printingGstPercentage) /
-                  100,
+                Number(updatedTotalPrintingCost?.toFixed(2)) *
+                  (formData.printingGstPercentage / 100),
               totalMountingCost:
                 Number(updatedTotalMountingCost?.toFixed(2)) +
-                (Number(updatedTotalMountingCost?.toFixed(2)) * formData.mountingGstPercentage) /
-                  100,
+                Number(updatedTotalMountingCost?.toFixed(2)) *
+                  (formData.mountingGstPercentage / 100),
+
               price:
                 updatedTotalPrice -
                 (formData.discountOn === 'totalPrice'
@@ -417,11 +420,12 @@ const AddEditPriceDrawer = ({
                 0,
               ) || 0) *
                 (place?.unit || 1) *
-                (place.facing === 'Single'
+                (place?.facing === 'Single' || place?.location?.facing.name === 'Single'
                   ? 1
-                  : place.facing === 'Double'
+                  : place?.facing === 'Double' || place?.location?.facing?.name === 'Double'
                   ? 2
-                  : place.facing === 'Four Facing'
+                  : place?.facing === 'Four Facing' ||
+                    place?.location?.facing?.name === 'Four Facing'
                   ? 4
                   : 1) || 0;
 
@@ -472,8 +476,7 @@ const AddEditPriceDrawer = ({
                   : 0),
             };
           }
-
-          if (watchApplyDiscountForAll && watchDiscount > 0) {
+          if (watchApplyDiscountForAll) {
             return {
               ...place,
               price:
@@ -515,11 +518,11 @@ const AddEditPriceDrawer = ({
               0,
             ) || 0) *
               (place?.unit || 1) *
-              (place.facing === 'Single'
+              (place?.facing === 'Single' || place?.location?.facing.name === 'Single'
                 ? 1
-                : place.facing === 'Double'
+                : place?.facing === 'Double' || place?.location?.facing?.name === 'Double'
                 ? 2
-                : place.facing === 'Four Facing'
+                : place?.facing === 'Four Facing' || place?.location?.facing?.name === 'Four Facing'
                 ? 4
                 : 1) || 0;
 
@@ -674,7 +677,7 @@ const AddEditPriceDrawer = ({
                   {inventory.spaceName || inventory?.basicInformation?.spaceName}
                 </div>
                 <div className="text-lg text-gray-400">
-                  City <span className="text-black">{inventory.location}</span>
+                  City <span className="text-black">{inventory.location.city}</span>
                 </div>
                 <div className="text-lg text-gray-400">
                   Dimension{' '}
