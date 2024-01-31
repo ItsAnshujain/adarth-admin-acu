@@ -7,7 +7,7 @@ import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import classNames from 'classnames';
 import ControlledNumberInput from '../../../shared/FormInputs/Controlled/ControlledNumberInput';
-import { indianCurrencyInDecimals } from '../../../../utils';
+import { calculateTotalCostOfBooking, indianCurrencyInDecimals } from '../../../../utils';
 
 const schema = yup.object({
   displayCostPerMonth: yup
@@ -150,7 +150,7 @@ const AddEditPriceDrawer = ({
       ) || 0;
     return (
       area *
-      (selectedInventory?.unit || 0) *
+      (selectedInventory?.unit || 1) *
       (selectedInventory?.facing === 'Single' ? 1 : selectedInventory?.facing === 'Double' ? 2 : 4)
     );
   }, [selectedInventory?.dimension]);
@@ -166,6 +166,13 @@ const AddEditPriceDrawer = ({
   } = form.watch();
 
   const totalPrice = useMemo(() => {
+    if (type === 'bookings')
+      return calculateTotalCostOfBooking(
+        { ...selectedInventory, ...form.watch() },
+        selectedInventory?.unit,
+        selectedInventory?.startDate,
+        selectedInventory?.endDate,
+      );
     const total =
       totalDisplayCost -
       (watchDiscountOn === 'displayCost' ? totalDisplayCost * ((watchDiscount || 0) / 100) : 0) +
@@ -173,7 +180,7 @@ const AddEditPriceDrawer = ({
       totalPrintingCost +
       totalMountingCost +
       oneTimeInstallationCost +
-      monthlyAdditionalCost -
+      (monthlyAdditionalCost || 0) * totalMonths -
       otherCharges;
     return total - (watchDiscountOn === 'totalPrice' ? total * ((watchDiscount || 0) / 100) : 0);
   }, [
@@ -186,6 +193,7 @@ const AddEditPriceDrawer = ({
     otherCharges,
     watchDiscount,
     watchDiscountOn,
+    selectedInventory,
   ]);
 
   const onChangeDisplayCostPerMonth = useCallback(() => {
@@ -278,7 +286,7 @@ const AddEditPriceDrawer = ({
                 (accumulator, dimension) => accumulator + dimension.height * dimension.width,
                 0,
               ) || 0) *
-                (place?.unit || 0) *
+                (place?.unit || 1) *
                 (place.facing === 'Single' ? 1 : place.facing === 'Double' ? 2 : 4) || 0;
 
             const updatedTotalPrintingCost =
@@ -293,7 +301,7 @@ const AddEditPriceDrawer = ({
               updatedTotalPrintingCost +
               updatedTotalMountingCost +
               (place.oneTimeInstallationCost || 0) +
-              (place.monthlyAdditionalCost || 0) -
+              ((place.monthlyAdditionalCost || 0) * totalMonths || 0) -
               (place.otherCharges || 0);
 
             return {
@@ -340,7 +348,7 @@ const AddEditPriceDrawer = ({
                 (accumulator, dimension) => accumulator + dimension.height * dimension.width,
                 0,
               ) || 0) *
-                (place?.unit || 0) *
+                (place?.unit || 1) *
                 (place.facing === 'Single' ? 1 : place.facing === 'Double' ? 2 : 4) || 0;
             const updatedTotalPrintingCost =
               area * formData.printingCostPerSqft * totalMonthsOfPlace || 0;
@@ -354,7 +362,7 @@ const AddEditPriceDrawer = ({
               updatedTotalPrintingCost +
               updatedTotalMountingCost +
               (place.oneTimeInstallationCost || 0) +
-              (place.monthlyAdditionalCost || 0) -
+              ((place.monthlyAdditionalCost || 0) * totalMonths || 0) -
               (place.otherCharges || 0);
 
             return {
@@ -415,12 +423,11 @@ const AddEditPriceDrawer = ({
               (accumulator, dimension) => accumulator + dimension.height * dimension.width,
               0,
             ) || 0) *
-              (place?.unit || 0) *
+              (place?.unit || 1) *
               (place.facing === 'Single' ? 1 : place.facing === 'Double' ? 2 : 4) || 0;
 
           const updatedTotalPrintingCost =
             area * formData.printingCostPerSqft * totalMonthsOfPlace || 0;
-
           const updatedTotalMountingCost =
             area * formData.mountingCostPerSqft * totalMonthsOfPlace || 0;
 
@@ -429,7 +436,7 @@ const AddEditPriceDrawer = ({
             updatedTotalPrintingCost +
             updatedTotalMountingCost +
             (place.oneTimeInstallationCost || 0) +
-            (place.monthlyAdditionalCost || 0);
+            (place.monthlyAdditionalCost || 0) * (totalMonths || 0);
 
           return place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)
             ? {
@@ -462,16 +469,18 @@ const AddEditPriceDrawer = ({
                 ...place,
                 printingCostPerSqft: Number(formData.printingCostPerSqft?.toFixed(2)),
                 printingGst: formData.printingGst,
+                printingGstPercentage: formData.printingGstPercentage,
                 mountingCostPerSqft: Number(formData.mountingCostPerSqft?.toFixed(2)),
+                mountingGstPercentage: formData.mountingGstPercentage,
                 mountingGst: formData.mountingGst,
                 totalPrintingCost:
                   Number(updatedTotalPrintingCost.toFixed(2)) +
-                  (Number(updatedTotalPrintingCost.toFixed(2)) * formData.printingGstPercentage) /
-                    100,
+                  Number(updatedTotalPrintingCost.toFixed(2)) *
+                    ((formData.printingGstPercentage || 0) / 100),
                 totalMountingCost:
                   Number(updatedTotalMountingCost.toFixed(2)) +
-                  (Number(updatedTotalMountingCost.toFixed(2)) * formData.printingGstPercentage) /
-                    100,
+                  Number(updatedTotalMountingCost.toFixed(2)) *
+                    ((formData.mountingGstPercentage || 0) / 100),
                 discountedDisplayCost: formData.discountedDisplayCost || 0,
                 price: updatedTotalPrice || 0,
               }

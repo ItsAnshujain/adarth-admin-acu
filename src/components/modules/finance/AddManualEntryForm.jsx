@@ -352,7 +352,7 @@ const PurchaseAndInvoiceContent = ({
   }, [values.size]);
 
   useEffect(() => {
-    setFieldValue('area', calculateHeightWidth * (values.unit || 0) * (values.facing?.value || 0));
+    setFieldValue('area', calculateHeightWidth * (values.unit || 1) * (values.facing?.value || 1));
   }, [calculateHeightWidth, values.unit, values.facing?.value]);
 
   return (
@@ -667,7 +667,7 @@ const ReleaseContent = ({
   }, [values.size]);
 
   useEffect(() => {
-    setFieldValue('area', calculateHeightWidth * (values.unit || 0) * (values.facing?.value || 0));
+    setFieldValue('area', calculateHeightWidth * (values.unit || 1) * (values.facing?.value || 1));
   }, [calculateHeightWidth, values.unit, values.facing?.value]);
 
   return (

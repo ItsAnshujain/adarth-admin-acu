@@ -89,7 +89,7 @@ const Spaces = () => {
         (accumulator, dimension) => accumulator + dimension.height * dimension.width,
         0,
       ) || 0) *
-        (unit || 0) *
+        (unit || 1) *
         (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) || 0;
 
     if (key === 'dateRange') {
@@ -131,7 +131,7 @@ const Spaces = () => {
                     (Number(item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
                       0) +
                     (item.oneTimeInstallationCost || 0) +
-                    (item.monthlyAdditionalCost || 0)
+                    (item.monthlyAdditionalCost || 0) * updatedTotalMonths
                   ).toFixed(2),
                 ),
               }
@@ -173,7 +173,7 @@ const Spaces = () => {
                     (Number(item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
                       0) +
                     (item.oneTimeInstallationCost || 0) +
-                    (item.monthlyAdditionalCost || 0)
+                    (item.monthlyAdditionalCost || 0) * updatedTotalMonths
                   ).toFixed(2),
                 ),
                 [key]: val,
@@ -429,6 +429,7 @@ const Spaces = () => {
         Cell: ({ row: { original } }) =>
           useMemo(() => {
             const place = watchSpaces.filter(item => item._id === original._id)?.[0];
+            const updatedTotalMonths = calculateTotalMonths(place?.startDate, place?.endDate);
 
             const totalCost =
               (place?.totalDisplayCost || 0) +
@@ -436,7 +437,7 @@ const Spaces = () => {
               (place?.totalPrintingCost || 0) +
               (place?.totalMountingCost || 0) +
               (place?.oneTimeInstallationCost || 0) +
-              (place?.monthlyAdditionalCost || 0);
+              (place?.monthlyAdditionalCost || 0) * (updatedTotalMonths || 0);
             return totalCost.toFixed(2) || 0;
           }, []),
       },
