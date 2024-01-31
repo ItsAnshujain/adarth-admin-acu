@@ -490,12 +490,12 @@ const AddEditPriceDrawer = ({
             area * formData.mountingCostPerSqft * (totalMonthsOfPlace || 0);
 
           const updatedTotalPrice =
-            (Number(place.totalDisplayCost.toFixed(2)) || 0) +
-            Number(updatedTotalPrintingCost.toFixed(2)) +
-            Number(updatedTotalMountingCost.toFixed(2)) +
-            (Number(place.oneTimeInstallationCost.toFixed(2)) || 0) +
-            Number(place.monthlyAdditionalCost.toFixed(2) || 0) *
-              (Number(totalMonthsOfPlace.toFixed(2)) || 0);
+            (Number(place.totalDisplayCost?.toFixed(2)) || 0) +
+            Number(updatedTotalPrintingCost?.toFixed(2)) +
+            Number(updatedTotalMountingCost?.toFixed(2)) +
+            (Number(place.oneTimeInstallationCost?.toFixed(2)) || 0) +
+            Number(place.monthlyAdditionalCost?.toFixed(2) || 0) *
+              (Number(totalMonthsOfPlace?.toFixed(2)) || 0);
 
           return place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)
             ? {
