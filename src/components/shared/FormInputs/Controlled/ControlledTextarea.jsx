@@ -6,8 +6,8 @@ const ControlledTextarea = ({ name, ...props }) => {
   const form = useFormContext();
 
   const getError = () => {
-    if (name.includes('.')) {
-      const errorPart = name.split('.');
+    if (name?.includes('.')) {
+      const errorPart = name?.split('.');
       let error = form.formState.errors;
       errorPart.forEach(item => {
         if (item) error = error?.[item];
