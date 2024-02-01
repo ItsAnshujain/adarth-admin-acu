@@ -161,7 +161,6 @@ const BasicInfo = ({ proposalId, userData }) => {
             label="Description"
             name="description"
             styles={styles}
-            // errors={errors}
             maxLength={400}
             placeholder="Maximum 400 characters"
             minRows={4}

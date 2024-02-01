@@ -23,7 +23,8 @@ const ProcessPipeline = ({ bookingData }) => {
             status: 'Purchase Order',
             date: bookingData?.purchaseOrderUpdatedAt,
             isSuccess:
-              bookingData?.outStandingPurchaseOrder && bookingData?.outStandingPurchaseOrder <= 0,
+              bookingData?.outStandingPurchaseOrder !== null &&
+              bookingData?.outStandingPurchaseOrder <= 0,
             className: 'ml-[55px]',
             hasBottomEdge: false,
           },
@@ -31,14 +32,16 @@ const ProcessPipeline = ({ bookingData }) => {
             status: 'Release Order',
             date: bookingData?.releaseOrderUpdatedAt,
             isSuccess:
-              bookingData?.outStandingReleaseOrder && bookingData?.outStandingReleaseOrder <= 0,
+              bookingData?.outStandingReleaseOrder !== null &&
+              bookingData?.outStandingReleaseOrder <= 0,
             hasBottomEdge: false,
             className: 'ml-[55px]',
           },
           {
             status: 'Invoice',
             date: bookingData?.invoiceUpdatedAt,
-            isSuccess: bookingData?.outStandingInvoice && bookingData?.outStandingInvoice <= 0,
+            isSuccess:
+              bookingData?.outStandingInvoice !== null && bookingData?.outStandingInvoice <= 0,
             hasRightEdge: false,
             hasBottomEdge: false,
             className: 'ml-[55px]',

@@ -150,17 +150,19 @@ const AddEditPriceDrawer = ({
       ) || 0;
     return (
       area *
-        (selectedInventory?.unit || 1) *
-        (selectedInventory?.facing === 'Single' ||
-        selectedInventory?.location?.facing?.name === 'Single'
+      (selectedInventory?.unit || 1) *
+      (selectedInventory?.facing === 'Single' ||
+        (selectedInventory?.facing?.toLowerCase().includes('single') ||
+        selectedInventory?.location?.facing?.name?.toLowerCase().includes('single')
           ? 1
-          : selectedInventory?.facing === 'Double' ||
-            selectedInventory?.location?.facing?.name === 'Double'
+          : selectedInventory?.facing?.toLowerCase().includes('double') ||
+            selectedInventory?.location?.facing?.name?.toLowerCase().includes('double')
           ? 2
-          : selectedInventory?.facing === 'Four Facing' ||
-            selectedInventory?.location?.facing?.name === 'Four Facing'
+          : selectedInventory?.facing?.toLowerCase().includes('four') ||
+            selectedInventory?.location?.facing?.name.toLowerCase().includes('four')
           ? 4
-          : 1) || 0
+          : 1) ||
+        0)
     );
   }, [selectedInventory?.dimension]);
 
@@ -190,7 +192,7 @@ const AddEditPriceDrawer = ({
       Number(totalPrintingCost?.toFixed(2)) +
       Number(totalMountingCost?.toFixed(2)) +
       Number(oneTimeInstallationCost?.toFixed(2)) +
-      (Number(monthlyAdditionalCost?.toFixed(2)) || 0) * Number(totalMonths?.toFixed(2)) -
+      (Number(monthlyAdditionalCost?.toFixed(2)) || 0) * Number(totalMonths) -
       Number(otherCharges?.toFixed(2));
     return total - (watchDiscountOn === 'totalPrice' ? total * ((watchDiscount || 0) / 100) : 0);
   }, [
@@ -209,7 +211,7 @@ const AddEditPriceDrawer = ({
 
   const onChangeDisplayCostPerMonth = useCallback(() => {
     const displayCostPerMonth =
-      Number(watchDisplayCostPerMonth?.toFixed(2)) * Number(totalMonths?.toFixed(2)) || 0;
+      Number(watchDisplayCostPerMonth?.toFixed(2)) * Number(totalMonths) || 0;
 
     form.setValue(
       totalArea && totalArea > 0 && 'totalDisplayCost',
@@ -240,7 +242,7 @@ const AddEditPriceDrawer = ({
       'totalDisplayCost',
       totalArea &&
         totalArea > 0 &&
-        Number(displayCostPerSqFt?.toFixed(2)) * Number(totalMonths?.toFixed(2)) +
+        Number(displayCostPerSqFt?.toFixed(2)) * Number(totalMonths) +
           Number(displayCostPerSqFt?.toFixed(2)) *
             ((Number(watchDisplayCostGstPercentage?.toFixed(2)) || 0) / 100),
     );
@@ -248,7 +250,7 @@ const AddEditPriceDrawer = ({
 
   const onChangeDisplayCostPercentage = useCallback(() => {
     const displayCostPerMonth =
-      Number(watchDisplayCostPerMonth?.toFixed(2)) * Number(totalMonths?.toFixed(2)) || 0;
+      Number(watchDisplayCostPerMonth?.toFixed(2)) * Number(totalMonths) || 0;
 
     form.setValue(
       'totalDisplayCost',
@@ -267,7 +269,7 @@ const AddEditPriceDrawer = ({
     const printingCost =
       Number(watchPrintingCostPerSqft?.toFixed(2)) *
         (Number(totalArea?.toFixed(2)) || 0) *
-        Number(totalMonths?.toFixed(2)) || 0;
+        Number(totalMonths) || 0;
     form.setValue(
       'totalPrintingCost',
       Number(printingCost?.toFixed(2)) +
@@ -280,7 +282,7 @@ const AddEditPriceDrawer = ({
     const printingCost =
       Number(watchPrintingCostPerSqft?.toFixed(2)) *
         (Number(totalArea?.toFixed(2)) || 0) *
-        Number(totalMonths?.toFixed(2)) || 0;
+        Number(totalMonths) || 0;
     form.setValue(
       'totalPrintingCost',
       Number(printingCost?.toFixed(2)) +
@@ -293,7 +295,7 @@ const AddEditPriceDrawer = ({
     const mountingCost =
       Number(watchMountingCostPerSqft?.toFixed(2)) *
         (Number(totalArea?.toFixed(2)) || 0) *
-        Number(totalMonths?.toFixed(2)) || 0;
+        Number(totalMonths) || 0;
     form.setValue(
       'totalMountingCost',
       Number(mountingCost?.toFixed(2)) +
@@ -306,7 +308,7 @@ const AddEditPriceDrawer = ({
     const mountingCost =
       Number(watchMountingCostPerSqft?.toFixed(2)) *
         (Number(totalArea?.toFixed(2)) || 0) *
-        Number(totalMonths?.toFixed(2)) || 0;
+        Number(totalMonths) || 0;
     form.setValue(
       'totalMountingCost',
       Number(mountingCost?.toFixed(2)) +
@@ -340,12 +342,14 @@ const AddEditPriceDrawer = ({
                 0,
               ) || 0) *
                 (place?.unit || 1) *
-                (place?.facing === 'Single' || place?.location?.facing.name === 'Single'
+                (place?.facing?.toLowerCase().includes('single') ||
+                place?.location?.facing?.name?.toLowerCase().includes('single')
                   ? 1
-                  : place?.facing === 'Double' || place?.location?.facing?.name === 'Double'
+                  : place?.facing?.toLowerCase().includes('double') ||
+                    place?.location?.facing?.name?.toLowerCase().includes('double')
                   ? 2
-                  : place?.facing === 'Four Facing' ||
-                    place?.location?.facing?.name === 'Four Facing'
+                  : place?.facing?.toLowerCase().includes('four') ||
+                    place?.location?.facing?.name.toLowerCase().includes('four')
                   ? 4
                   : 1) || 0;
 
@@ -426,12 +430,14 @@ const AddEditPriceDrawer = ({
                 0,
               ) || 0) *
                 (place?.unit || 1) *
-                (place?.facing === 'Single' || place?.location?.facing.name === 'Single'
+                (place?.facing?.toLowerCase().includes('single') ||
+                place?.location?.facing?.name?.toLowerCase().includes('single')
                   ? 1
-                  : place?.facing === 'Double' || place?.location?.facing?.name === 'Double'
+                  : place?.facing?.toLowerCase().includes('double') ||
+                    place?.location?.facing?.name?.toLowerCase().includes('double')
                   ? 2
-                  : place?.facing === 'Four Facing' ||
-                    place?.location?.facing?.name === 'Four Facing'
+                  : place?.facing?.toLowerCase().includes('four') ||
+                    place?.location?.facing?.name.toLowerCase().includes('four')
                   ? 4
                   : 1) || 0;
 
@@ -524,11 +530,14 @@ const AddEditPriceDrawer = ({
               0,
             ) || 0) *
               (place?.unit || 1) *
-              (place?.facing === 'Single' || place?.location?.facing.name === 'Single'
+              (place?.facing?.toLowerCase().includes('single') ||
+              place?.location?.facing?.name?.toLowerCase().includes('single')
                 ? 1
-                : place?.facing === 'Double' || place?.location?.facing?.name === 'Double'
+                : place?.facing?.toLowerCase().includes('double') ||
+                  place?.location?.facing?.name?.toLowerCase().includes('double')
                 ? 2
-                : place?.facing === 'Four Facing' || place?.location?.facing?.name === 'Four Facing'
+                : place?.facing?.toLowerCase().includes('four') ||
+                  place?.location?.facing?.name.toLowerCase().includes('four')
                 ? 4
                 : 1) || 0;
 
