@@ -217,11 +217,13 @@ const CreateBookingPage = () => {
         }
       });
 
-      Object.keys(data.client).forEach(k => {
-        if (data.client[k] === '') {
-          delete data.client[k];
-        }
-      });
+      if (data.client) {
+        Object.keys(data.client).forEach(k => {
+          if (data.client[k] === '') {
+            delete data.client[k];
+          }
+        });
+      }
 
       if (bookingId) {
         updateBooking.mutate(
