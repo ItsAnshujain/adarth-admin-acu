@@ -91,11 +91,14 @@ const SelectSpace = () => {
       0,
     ) || 0) *
       (unit || 1) *
-      (place?.facing === 'Single' || place?.location?.facing?.name === 'Single'
+      (place?.facing?.toLowerCase().includes('single') ||
+      place?.location?.facing?.name?.toLowerCase().includes('single')
         ? 1
-        : place?.facing === 'Double' || place?.location?.facing?.name === 'Double'
+        : place?.facing?.toLowerCase().includes('double') ||
+          place?.location?.facing?.name?.toLowerCase().includes('double')
         ? 2
-        : place?.facing === 'Four Facing' || place?.location?.facing?.name === 'Four Facing'
+        : place?.facing?.toLowerCase().includes('four') ||
+          place?.location?.facing?.name.toLowerCase().includes('four')
         ? 4
         : 1) || 0;
 

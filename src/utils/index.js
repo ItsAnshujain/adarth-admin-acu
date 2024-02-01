@@ -560,13 +560,16 @@ export const calculateTotalArea = (place, unit) =>
     0,
   ) || 0) *
     (unit || 1) *
-    (place?.facing === 'Single' || place?.location?.facing?.name === 'Single'
+    (place?.facing?.toLowerCase().includes('single') ||
+    place?.location?.facing?.name?.toLowerCase().includes('single')
       ? 1
-      : place?.facing === 'Double' || place.location?.facing?.name === 'Double'
+      : place?.facing?.toLowerCase().includes('double') ||
+        place?.location?.facing?.name?.toLowerCase().includes('double')
       ? 2
-      : place?.facing === 'Four Facing' || place.location?.facing?.name === 'Four Facing'
+      : place?.facing?.toLowerCase().includes('four') ||
+        place?.location?.facing?.name.toLowerCase().includes('four')
       ? 4
-      : 1) || 1;
+      : 1) || 0;
 
 export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   if (!item) return 0;
@@ -575,15 +578,17 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   const updatedTotalPrintingCost =
     Number(updatedTotalArea?.toFixed(2)) *
     (Number(item?.printingCostPerSqft?.toFixed(2)) || 0) *
-    (Number(updatedTotalMonths?.toFixed(2)) || 0);
+    (Number(updatedTotalMonths) || 0);
   const updatedTotalMountingCost =
     Number(updatedTotalArea?.toFixed(2)) *
     (Number(item?.mountingCostPerSqft?.toFixed(2)) || 0) *
-    (Number(updatedTotalMonths?.toFixed(2)) || 0);
+    (Number(updatedTotalMonths) || 0);
   const totalDisplayCost =
-    (Number(item?.displayCostPerMonth?.toFixed(2)) || 0) * Number(updatedTotalMonths?.toFixed(2)) +
-    (Number(item?.displayCostPerMonth?.toFixed(2)) || 0) *
-      ((Number(item?.displayCostGstPercentage?.toFixed(2)) || 0) / 100);
+    updatedTotalArea > 0
+      ? (Number(item?.displayCostPerMonth?.toFixed(2)) || 0) * Number(updatedTotalMonths) +
+        (Number(item?.displayCostPerMonth?.toFixed(2)) || 0) *
+          ((Number(item?.displayCostGstPercentage?.toFixed(2)) || 0) / 100)
+      : 0;
 
   const totalCost = Number(
     (
@@ -593,8 +598,7 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
       (Number(updatedTotalMountingCost?.toFixed(2)) +
         Number(updatedTotalMountingCost?.toFixed(2)) * ((item?.mountingGstPercentage || 0) / 100)) +
       (Number(item?.oneTimeInstallationCost?.toFixed(2)) || 0) +
-      (Number(item?.monthlyAdditionalCost?.toFixed(2)) || 0) *
-        Number(updatedTotalMonths?.toFixed(2)) -
+      (Number(item?.monthlyAdditionalCost?.toFixed(2)) || 0) * Number(updatedTotalMonths) -
       (Number(item?.otherCharges?.toFixed(2)) || 0) -
       (item?.discountOn === 'displayCost'
         ? (Number(totalDisplayCost?.toFixed(2)) || 0) *

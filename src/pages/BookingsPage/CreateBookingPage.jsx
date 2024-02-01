@@ -23,6 +23,7 @@ import {
   isValidURL,
   serialize,
   calculateTotalPrice,
+  getAvailableUnits,
 } from '../../utils';
 import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 
@@ -104,7 +105,7 @@ const CreateBookingPage = () => {
   const proposalId = searchParams.get('proposalId');
   const proposalLimit = searchParams.get('proposalLimit');
   const proposalById = useFetchProposalById(
-    `${proposalId}?${serialize({ ...proposalByIdQuery, limit: proposalLimit })}`,
+    `${proposalId}?${serialize({ ...proposalByIdQuery, limit: proposalLimit || 0 })}`,
     !!proposalId,
   );
 
@@ -146,13 +147,14 @@ const CreateBookingPage = () => {
         return;
       }
 
-      if (
+      const isExceeded = () =>
         data.place?.some(item =>
           bookingId
             ? item.unit > item.initialUnit + item.availableUnit
             : item.unit > item.availableUnit,
-        )
-      ) {
+        );
+
+      if (isExceeded()) {
         showNotification({
           title: 'Exceeded maximum units available for selected date range for one or more places',
           color: 'blue',
@@ -217,11 +219,13 @@ const CreateBookingPage = () => {
         }
       });
 
-      Object.keys(data.client).forEach(k => {
-        if (data.client[k] === '') {
-          delete data.client[k];
-        }
-      });
+      if (data.client) {
+        Object.keys(data.client).forEach(k => {
+          if (data.client[k] === '') {
+            delete data.client[k];
+          }
+        });
+      }
 
       if (bookingId) {
         updateBooking.mutate(
@@ -327,15 +331,24 @@ const CreateBookingPage = () => {
         campaignName: proposalById.data?.proposal?.name || '',
         description: proposalById.data?.proposal?.description || '',
         place: proposalById.data?.inventories.docs.map(item => ({
+          ...item,
+          ...item.pricingDetails,
+          startDate: new Date(item.startDate),
+          endDate: new Date(item.endDate),
           _id: item._id,
           price: item.price,
           media: isValidURL(item.media) ? item.media : undefined,
-          startDate: item.startDate,
-          endDate: item.endDate,
           tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
           unit: item?.bookedUnits,
-          availableUnit: item?.remainingUnits,
+          availableUnit: getAvailableUnits(
+            item.bookingRange,
+            item.startDate,
+            item.endDate,
+            item.unit,
+          ),
           initialUnit: item?.bookedUnits || 0,
+          location: { city: item.location },
+          dimension: item.size,
         })),
       });
     }
