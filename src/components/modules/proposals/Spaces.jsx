@@ -4,15 +4,18 @@ import { ChevronDown } from 'react-feather';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
+import { showNotification } from '@mantine/notifications';
+import { useFormContext } from 'react-hook-form';
 import Search from '../../Search';
 import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 import { useFetchInventory } from '../../../apis/queries/inventory.queries';
 import {
+  calculateTotalMonths,
   categoryColors,
   currentDate,
   debounce,
@@ -24,13 +27,13 @@ import {
   stringToColour,
 } from '../../../utils';
 import Filter from '../inventory/Filter';
-import { useFormContext } from '../../../context/formContext';
 import SpacesMenuPopover from '../../Popovers/SpacesMenuPopover';
 import DateRangeSelector from '../../DateRangeSelector';
 import RowsPerPage from '../../RowsPerPage';
 import modalConfig from '../../../utils/modalConfig';
 import useLayoutView from '../../../store/layout.store';
 import SpaceNamePhotoContent from '../inventory/SpaceNamePhotoContent';
+import AddEditPriceDrawer from '../bookings/Create/AddEditPriceDrawer';
 
 dayjs.extend(isBetween);
 
@@ -47,7 +50,10 @@ const updatedModalConfig = {
 const Spaces = () => {
   const modals = useModals();
   const { id: proposalId } = useParams();
-  const { values, setFieldValue } = useFormContext();
+  const form = useFormContext();
+  const [drawerOpened, drawerActions] = useDisclosure();
+  const watchSpaces = form.watch('spaces') || [];
+
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
       activeLayout: state.activeLayout,
@@ -55,7 +61,7 @@ const Spaces = () => {
     }),
     shallow,
   );
-  const selectedInventoryIds = useMemo(() => values.spaces.map(space => space._id));
+  const selectedInventoryIds = useMemo(() => watchSpaces.map(space => space._id));
   const [searchParams, setSearchParams] = useSearchParams({
     limit: activeLayout.inventoryLimit || 20,
     page: 1,
@@ -66,6 +72,7 @@ const Spaces = () => {
     ids: selectedInventoryIds.join(','),
   });
   const [searchInput, setSearchInput] = useState('');
+  const [selectedInventoryId, setSelectedInventoryId] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
@@ -77,9 +84,17 @@ const Spaces = () => {
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const updateData = debounce((key, val, id, inputId) => {
+    const calculateTotalArea = (place, unit) =>
+      (place?.dimension?.reduce(
+        (accumulator, dimension) => accumulator + dimension.height * dimension.width,
+        0,
+      ) || 0) *
+        (unit || 1) *
+        (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) || 0;
+
     if (key === 'dateRange') {
       let availableUnit = 0;
-      const hasChangedUnit = values.spaces.find(item => item._id === id)?.hasChangedUnit;
+      const hasChangedUnit = watchSpaces.find(item => item._id === id)?.hasChangedUnit;
       setUpdatedInventoryData(prev => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
@@ -95,19 +110,33 @@ const Spaces = () => {
         return newList;
       });
 
-      setFieldValue(
+      form.setValue(
         'spaces',
-        values.spaces.map(item =>
-          item._id === id
+        watchSpaces.map(item => {
+          const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
+          const updatedTotalMonths = calculateTotalMonths(item?.startDate, item?.endDate);
+          return item._id === id
             ? {
                 ...item,
                 startDate: val[0],
                 endDate: val[1],
                 ...(!hasChangedUnit ? { unit: availableUnit } : {}),
                 availableUnit,
+                price: Number(
+                  (
+                    (item.totalDisplayCost || 0) +
+                    (item.tradedAmount || 0) +
+                    (Number(item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
+                      0) +
+                    (Number(item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
+                      0) +
+                    (item.oneTimeInstallationCost || 0) +
+                    (item.monthlyAdditionalCost || 0) * updatedTotalMonths
+                  ).toFixed(2),
+                ),
               }
-            : item,
-        ),
+            : item;
+        }),
       );
     } else {
       setUpdatedInventoryData(prev =>
@@ -118,13 +147,40 @@ const Spaces = () => {
         ),
       );
 
-      setFieldValue(
+      form.setValue(
         'spaces',
-        values.spaces.map(item =>
-          item._id === id
-            ? { ...item, [key]: val, ...(key === 'unit' ? { hasChangedUnit: true } : {}) }
-            : item,
-        ),
+        watchSpaces.map(item => {
+          const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
+          const updatedTotalMonths = calculateTotalMonths(item?.startDate, item?.endDate);
+          return item._id === id
+            ? {
+                ...item,
+                printingCostPerSqft: item.printingCostPerSqft,
+                totalPrintingCost: Number(
+                  (item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths).toFixed(2),
+                ),
+                mountingCostPerSqft: item.mountingCostPerSqft,
+                totalMountingCost: Number(
+                  (item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths).toFixed(2),
+                ),
+                totalArea: updatedTotalArea,
+                price: Number(
+                  (
+                    (item.totalDisplayCost || 0) +
+                    (item.tradedAmount || 0) +
+                    (Number(item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
+                      0) +
+                    (Number(item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
+                      0) +
+                    (item.oneTimeInstallationCost || 0) +
+                    (item.monthlyAdditionalCost || 0) * updatedTotalMonths
+                  ).toFixed(2),
+                ),
+                [key]: val,
+                ...(key === 'unit' ? { hasChangedUnit: true } : {}),
+              }
+            : item;
+        }),
       );
       if (inputId) {
         setTimeout(() => document.querySelector(`#${inputId}`)?.focus());
@@ -140,6 +196,33 @@ const Spaces = () => {
       ),
       ...updatedModalConfig,
     });
+
+  const onClickAddPrice = () => {
+    if (!watchSpaces?.length) {
+      showNotification({
+        title: 'Please select atleast one place to add price',
+        color: 'blue',
+      });
+    } else if (watchSpaces.some(item => !(item.startDate || item.endDate))) {
+      showNotification({
+        title: 'Please select the proposal date to add price',
+        color: 'blue',
+      });
+    } else {
+      drawerActions.open();
+    }
+  };
+
+  const getTotalPrice = (places = []) => {
+    const totalPrice = places.reduce(
+      (acc, item) =>
+        item.startDate &&
+        item.endDate &&
+        acc + +(item?.price || item?.basicInformation?.price || 0),
+      0,
+    );
+    return totalPrice || 0;
+  };
 
   const COLUMNS = useMemo(
     () => [
@@ -286,28 +369,77 @@ const Spaces = () => {
           row: {
             original: { dimension },
           },
-        }) => useMemo(() => <div className="flex gap-x-2">{dimension}</div>, []),
+        }) =>
+          useMemo(() => dimension?.map(dim => `${dim.width}ft x ${dim.height}ft`).join(','), []),
       },
       {
-        Header: 'PRICING',
+        Header: 'PRICE',
+        Cell: ({ row: { original } }) =>
+          useMemo(() => {
+            const place = watchSpaces.filter(item => item._id === original._id)?.[0];
+
+            if (
+              place?.priceChanged ||
+              place?.displayCostPerMonth ||
+              place?.totalPrintingCost ||
+              place?.totalMountingCost ||
+              place?.oneTimeInstallationCost ||
+              place?.monthlyAdditionalCost ||
+              place?.otherCharges ||
+              place?.discountPercentage
+            ) {
+              return (
+                <Button
+                  onClick={() => {
+                    onClickAddPrice();
+                    setSelectedInventoryId(original._id);
+                  }}
+                  className="bg-purple-450 order-3"
+                  size="xs"
+                  disabled={
+                    !watchSpaces.some(item => item._id === original._id) &&
+                    (!original.startDate || !original.endDate)
+                  }
+                >
+                  Edit Price
+                </Button>
+              );
+            }
+            return (
+              <Button
+                onClick={() => {
+                  onClickAddPrice();
+                  setSelectedInventoryId(original._id);
+                }}
+                className="bg-purple-450 order-3"
+                size="xs"
+                disabled={
+                  !watchSpaces.some(item => item._id === original._id) &&
+                  (!original.startDate || !original.endDate)
+                }
+              >
+                Add Price
+              </Button>
+            );
+          }),
+      },
+      {
+        Header: 'TOTAL PRICE',
         accessor: 'basicInformation.price',
-        Cell: ({
-          row: {
-            original: { _id, price },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <NumberInput
-                id={`unit-${_id}`}
-                defaultValue={+(price || 0)}
-                className="w-40"
-                hideControls
-                onChange={e => updateData('price', e, _id, `unit-${_id}`)}
-              />
-            ),
-            [],
-          ),
+        Cell: ({ row: { original } }) =>
+          useMemo(() => {
+            const place = watchSpaces.filter(item => item._id === original._id)?.[0];
+            const updatedTotalMonths = calculateTotalMonths(place?.startDate, place?.endDate);
+
+            const totalCost =
+              (place?.totalDisplayCost || 0) +
+              (place?.tradedAmount || 0) +
+              (place?.totalPrintingCost || 0) +
+              (place?.totalMountingCost || 0) +
+              (place?.oneTimeInstallationCost || 0) +
+              (place?.monthlyAdditionalCost || 0) * (updatedTotalMonths || 0);
+            return totalCost.toFixed(2) || 0;
+          }, []),
       },
       {
         Header: 'PROPOSAL DATE',
@@ -320,7 +452,7 @@ const Spaces = () => {
         }) =>
           useMemo(() => {
             const isDisabled =
-              values?.spaces?.some(item => item._id === _id) && (!startDate || !endDate);
+              watchSpaces.some(item => item._id === _id) && (!startDate || !endDate);
             const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
 
             return (
@@ -344,14 +476,13 @@ const Spaces = () => {
           },
         }) =>
           useMemo(() => {
-            const isDisabled = !values?.spaces?.some(
+            const isDisabled = !watchSpaces.some(
               item => item._id === _id && item.startDate !== null && item.endDate !== null,
             );
 
             const unitLeft = getAvailableUnits(bookingRange, startDate, endDate, originalUnit);
-            const data = values?.spaces ? values.spaces.find(item => item._id === _id) : {};
+            const data = watchSpaces ? watchSpaces.find(item => item._id === _id) : {};
             const isExceeded = data?.unit > (proposalId ? unitLeft : data?.availableUnit);
-
             return (
               <Tooltip
                 label={
@@ -433,18 +564,10 @@ const Spaces = () => {
           ),
       },
     ],
-    [updatedInventoryData, values.spaces],
+    [updatedInventoryData, watchSpaces],
   );
 
-  const getTotalPrice = (places = []) => {
-    const totalPrice = places.reduce(
-      (acc, item) => acc + +(item.price || item?.basicInformation?.price || 0),
-      0,
-    );
-    return totalPrice;
-  };
-
-  const handleSelection = selectedRows => setFieldValue('spaces', selectedRows);
+  const handleSelection = selectedRows => form.setValue('spaces', selectedRows);
 
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
@@ -480,7 +603,7 @@ const Spaces = () => {
       const finalData = [];
 
       for (const item of docs) {
-        const selectionItem = values?.spaces?.find(pl => pl._id === item._id);
+        const selectionItem = watchSpaces.find(pl => pl._id === item._id);
 
         const obj = {};
         obj._id = item._id;
@@ -495,18 +618,7 @@ const Spaces = () => {
         obj.additionalTags = item?.specifications?.additionalTags;
         obj.category = item?.basicInformation?.category?.name;
         obj.subCategory = item?.basicInformation?.subCategory?.name;
-        obj.dimension = item.specifications?.size?.length ? (
-          <p>
-            {item.specifications.size
-              .map((ele, index) =>
-                index < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
-              )
-              .filter(ele => ele !== null)
-              .join(', ')}
-          </p>
-        ) : (
-          '-'
-        );
+        obj.dimension = item.specifications?.size;
         obj.location = item?.location?.city;
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.mediaType = item?.basicInformation?.mediaType?.name;
@@ -530,6 +642,23 @@ const Spaces = () => {
     }
   }, [debouncedSearch]);
 
+  useEffect(() => {
+    if (watchSpaces.length) {
+      watchSpaces.map(place =>
+        setUpdatedInventoryData(prev =>
+          prev.map(item =>
+            item?._id === place?._id
+              ? {
+                  ...item,
+                  ...place,
+                }
+              : item,
+          ),
+        ),
+      );
+    }
+  }, [drawerOpened, watchSpaces]);
+
   return (
     <>
       <div className="flex gap-2 py-5 flex-col">
@@ -538,9 +667,17 @@ const Spaces = () => {
             Select Place for Proposal
           </Text>
           <div className="flex items-center gap-2">
-            <div className="mr-2">
+            <div className="flex items-center">
+              <Button
+                className="bg-black mr-1"
+                onClick={() => {
+                  onClickAddPrice();
+                }}
+              >
+                Add Price
+              </Button>
               <Button onClick={toggleFilter} variant="default">
-                <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
+                <ChevronDown size={16} className="mr-1" /> Filter
               </Button>
               {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
             </div>
@@ -549,11 +686,14 @@ const Spaces = () => {
         <div className="flex gap-4">
           <div>
             <Text color="gray">Selected Places</Text>
-            <Text weight="bold">{values?.spaces?.length}</Text>
+            <Text weight="bold">{watchSpaces.length}</Text>
           </div>
           <div>
             <Text color="gray">Total Price</Text>
-            <Text weight="bold">{toIndianCurrency(getTotalPrice(values?.spaces))}</Text>
+            <Group>
+              <Text weight="bold">{toIndianCurrency(getTotalPrice(watchSpaces))}</Text>
+              <p className="text-xs italic text-blue-500">** exclusive of GST</p>
+            </Group>
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -593,13 +733,21 @@ const Spaces = () => {
           COLUMNS={COLUMNS}
           allowRowsSelect
           setSelectedFlatRows={handleSelection}
-          selectedRowData={values.spaces}
+          selectedRowData={watchSpaces}
           handleSorting={handleSortByColumn}
           activePage={pagination.page}
           totalPages={pagination.totalPages}
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
       ) : null}
+      <AddEditPriceDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        selectedInventories={watchSpaces}
+        data={updatedInventoryData}
+        selectedInventoryId={selectedInventoryId}
+        type="proposal"
+      />{' '}
     </>
   );
 };

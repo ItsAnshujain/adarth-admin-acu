@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { ToWords } from 'to-words';
 import { DatePicker } from '@mantine/dates';
@@ -52,6 +52,11 @@ const PurchaseOrder = ({
   const handleDeleteSpaceItem = spaceId => {
     setAddSpaceItem(addSpaceItem?.filter(item => item.itemId !== spaceId));
   };
+
+  const memoizedTotalPrice = useMemo(
+    () => Number((totalPrice + totalPrice * 0.18)?.toFixed(2)),
+    [totalPrice],
+  );
 
   const COLUMNS = useMemo(
     () => [
@@ -107,16 +112,16 @@ const PurchaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { dueOn, _id },
+            original: { endDate, _id },
           },
         }) =>
           useMemo(
             () => (
               <DatePicker
-                defaultValue={dueOn || new Date()}
+                defaultValue={endDate || new Date()}
                 placeholder="Month Day, Year"
                 minDate={new Date()}
-                onChange={val => updateData('dueOn', val, _id)}
+                onChange={val => updateData('endDate', val, _id)}
                 dayClassName={(_, modifiers) =>
                   cx({
                     [classes.outside]: modifiers.outside,
@@ -127,7 +132,7 @@ const PurchaseOrder = ({
                 }
               />
             ),
-            [dueOn],
+            [endDate],
           ),
       },
       {
@@ -146,6 +151,7 @@ const PurchaseOrder = ({
                 defaultValue={+quantity || 1}
                 onBlur={e => updateData('quantity', e.target.value, _id)}
                 min={1}
+                precision={2}
               />
             ),
             [quantity],
@@ -194,84 +200,74 @@ const PurchaseOrder = ({
         Cell: ({ row: { index } }) => index + 1,
       },
       {
-        Header: 'DESCRIPTION OF GOODS AND SERVICES',
-        accessor: 'name',
+        Header: 'CITY',
+        accessor: 'city',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { name, location, titleDate },
+            original: { city },
           },
-        }) =>
-          useMemo(
-            () => (
-              <div className="flex flex-col items-start gap-1">
-                <Text
-                  className="overflow-hidden text-ellipsis max-w-[280px]"
-                  lineClamp={1}
-                  title={name}
-                >
-                  {name}
-                </Text>
-                <Text
-                  className="overflow-hidden text-ellipsis max-w-[180px]"
-                  lineClamp={1}
-                  title={typeof location !== 'object' ? location : '-'}
-                >
-                  {typeof location !== 'object' ? location : '-'}
-                </Text>
-                <div className="text-black font-light pr-2 text-xs">
-                  <span className="overflow-hidden text-ellipsis">
-                    {titleDate ? dayjs(titleDate).format(DATE_FORMAT) : <NoData type="na" />}
-                  </span>
-                </div>
-              </div>
-            ),
-            [],
-          ),
+        }) => useMemo(() => <p>{city || '-'}</p>, []),
       },
       {
-        Header: 'DATE',
-        accessor: 'date',
+        Header: 'LOCATION',
+        accessor: 'location',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { dueOn },
+            original: { location },
           },
-        }) =>
-          useMemo(
-            () => <p>{dueOn ? dayjs(dueOn).format(DATE_FORMAT) : <NoData type="na" />}</p>,
-            [],
-          ),
+        }) => useMemo(() => <p>{location || '-'}</p>, []),
       },
       {
-        Header: 'QUANTITY',
-        accessor: 'quantity',
+        Header: 'DIMENSION (WXH)',
+        accessor: 'dimension',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { quantity },
+            original: { size },
           },
-        }) => useMemo(() => <p className="w-[14%]">{quantity}</p>, []),
+        }) => useMemo(() => size && <p>{`${size[0]?.height}x${size[0]?.width}` || '-'}</p>, []),
       },
       {
-        Header: 'RATE',
-        accessor: 'rate',
+        Header: 'AREA',
+        accessor: 'area',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { rate },
+            original: { area },
           },
-        }) => useMemo(() => <p>{rate ? toIndianCurrency(Number.parseInt(rate, 10)) : 0}</p>, []),
+        }) => useMemo(() => <p>{area?.toFixed(2) || '-'} sq.ft.</p>, []),
       },
       {
-        Header: 'TOTAL AMOUNT',
-        accessor: 'price',
+        Header: 'TOTAL DISPLAY COST/MONTH',
+        accessor: 'totalDisplayCost',
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { price },
+            original: { displayCostPerMonth },
           },
-        }) => useMemo(() => <p>{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>, []),
+        }) => useMemo(() => <p>{toIndianCurrency(displayCostPerMonth)}</p>, []),
+      },
+      {
+        Header: 'PRINTING COST',
+        accessor: 'printingCost',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { printingCost },
+          },
+        }) => useMemo(() => <p>{toIndianCurrency(printingCost)}</p>, []),
+      },
+      {
+        Header: 'MOUNTING COST',
+        accessor: 'mountingCost',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { mountingCost },
+          },
+        }) => useMemo(() => <p>{toIndianCurrency(mountingCost)}</p>, []),
       },
       {
         Header: 'ACTION',
@@ -279,7 +275,28 @@ const PurchaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { itemId, name, location, titleDate, dueOn, quantity, rate, per, price },
+            original: {
+              itemId,
+              name,
+              location,
+              startDate,
+              endDate,
+              quantity,
+              rate,
+              per,
+              price,
+              city,
+              state,
+              size,
+              unit,
+              category,
+              facing,
+              area,
+              printingCost,
+              totalMountingCost,
+              totalDisplayCost,
+              displayCostPerMonth,
+            },
           },
         }) =>
           useMemo(
@@ -299,13 +316,24 @@ const PurchaseOrder = ({
                       onClickAddItems({
                         name,
                         location,
-                        titleDate,
-                        dueOn,
+                        startDate,
+                        endDate,
                         quantity,
                         rate,
                         per,
                         price,
                         itemId,
+                        city,
+                        state,
+                        size,
+                        unit,
+                        category,
+                        facing,
+                        area,
+                        printingCost,
+                        totalMountingCost,
+                        totalDisplayCost,
+                        displayCostPerMonth,
                       })
                     }
                   >
@@ -328,6 +356,16 @@ const PurchaseOrder = ({
     ],
     [addSpaceItem],
   );
+
+  useEffect(() => {
+    setAddSpaceItem(prev =>
+      prev.map(item => ({
+        ...item,
+        printingCost: item.area * values.printingSqftCost,
+        mountingCost: item.area * values.mountingSqftCost,
+      })),
+    );
+  }, [values.printingSqftCost, values.mountingSqftCost]);
 
   return (
     <div>
@@ -510,6 +548,50 @@ const PurchaseOrder = ({
             </Button>
           ) : null}
         </Group>
+
+        {!bookingIdFromFinance ? (
+          <div className="grid grid-cols-4 gap-4 mb-4">
+            <NumberInput
+              styles={styles}
+              label="Printing/ ft&sup2; Cost"
+              name="printingSqftCost"
+              withAsterisk
+              placeholder="Write..."
+              min={0}
+              precision={2}
+            />
+            <NumberInput
+              styles={styles}
+              label="Printing GST %"
+              name="printingGstPercentage"
+              placeholder="Write..."
+              min={0}
+              precision={2}
+              max={100}
+              withAsterisk
+            />
+            <NumberInput
+              styles={styles}
+              label="Mounting/ ft&sup2; Cost"
+              name="mountingSqftCost"
+              withAsterisk
+              placeholder="Write..."
+              min={0}
+              precision={2}
+            />
+            <NumberInput
+              styles={styles}
+              label="Mounting GST %"
+              name="mountingGstPercentage"
+              placeholder="Write..."
+              min={0}
+              precision={2}
+              max={100}
+              withAsterisk
+            />
+          </div>
+        ) : null}
+
         {addSpaceItem?.length ? (
           <>
             <div className="border-dashed border-0 border-black border-b-2 pb-4">
@@ -520,7 +602,7 @@ const PurchaseOrder = ({
                 classNameWrapper="min-h-[150px]"
               />
             </div>
-            <div className="max-w-screen mt-3 flex flex-col justify-end mr-7 pr-16 text-lg">
+            <div className="max-w-screen mt-3 flex flex-col justify-end mr-7 text-lg">
               <div className="flex justify-end">
                 <p className="text-lg font-bold">Amount:</p>
                 <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>
@@ -531,9 +613,7 @@ const PurchaseOrder = ({
               </div>
               <div className="flex justify-end">
                 <p className="text-lg font-bold">Total:</p>
-                <p className="text-lg ml-2">
-                  {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
-                </p>
+                <p className="text-lg ml-2">{toIndianCurrency(memoizedTotalPrice) || 0}</p>
               </div>
             </div>
           </>
@@ -549,7 +629,7 @@ const PurchaseOrder = ({
           label="Amount Chargeable (in words)"
           name="amountChargeable"
           placeholder="Write..."
-          value={toWords.convert(Math.round(totalPrice + totalPrice * 0.18))}
+          value={toWords.convert(memoizedTotalPrice)}
           readOnly
           disabled
         />

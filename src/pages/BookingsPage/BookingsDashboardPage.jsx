@@ -363,7 +363,34 @@ const BookingsDashboardPage = () => {
           row: {
             original: { campaign },
           },
-        }) => useMemo(() => toIndianCurrency(campaign?.price || 0), []),
+        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
+      },
+      {
+        Header: 'OUTSTANDING PO',
+        accessor: 'campaign.outstandingPO',
+        Cell: ({
+          row: {
+            original: { outStandingPurchaseOrder },
+          },
+        }) => useMemo(() => toIndianCurrency(outStandingPurchaseOrder || 0), []),
+      },
+      {
+        Header: 'OUTSTANDING RO',
+        accessor: 'campaign.outstandingRO',
+        Cell: ({
+          row: {
+            original: { outStandingReleaseOrder },
+          },
+        }) => useMemo(() => toIndianCurrency(outStandingReleaseOrder || 0), []),
+      },
+      {
+        Header: 'OUTSTANDING INVOICE',
+        accessor: 'campaign.outstandingInvoice',
+        Cell: ({
+          row: {
+            original: { outStandingInvoice },
+          },
+        }) => useMemo(() => toIndianCurrency(outStandingInvoice || 0), []),
       },
       {
         Header: 'SCHEDULE',

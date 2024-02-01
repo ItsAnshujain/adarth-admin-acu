@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import * as yup from 'yup';
 import { useNavigate, useParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
-import { yupResolver } from '@mantine/form';
 import dayjs from 'dayjs';
+import { FormProvider, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import BasicInfo from '../../components/modules/proposals/CreateProposal/BasicInfo';
 import Spaces from '../../components/modules/proposals/Spaces';
 import SuccessModal from '../../components/shared/Modal';
@@ -14,7 +15,6 @@ import {
   useFetchProposalById,
 } from '../../apis/queries/proposal.queries';
 import { useFetchUsersById } from '../../apis/queries/users.queries';
-import { FormProvider, useForm } from '../../context/formContext';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
 import { serialize } from '../../utils';
 import useUserStore from '../../store/user.store';
@@ -42,7 +42,10 @@ const schema = yup.object({
 const CreateProposalPage = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [formStep, setFormStep] = useState(1);
-  const form = useForm({ validate: yupResolver(schema), initialValues });
+  const form = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: initialValues,
+  });
   const navigate = useNavigate();
   const { id: proposalId } = useParams();
   const userId = useUserStore(state => state.id);
@@ -62,7 +65,7 @@ const CreateProposalPage = () => {
     `${proposalId}?${serialize(query)}`,
     !!proposalId,
   );
-
+  const watchSpaces = form.watch('spaces');
   const { data: proposalStatusData } = useFetchMasters(
     serialize({ type: 'proposal_status', parentId: null, limit: 100, page: 1 }),
   );
@@ -70,12 +73,12 @@ const CreateProposalPage = () => {
   const getForm = () =>
     formStep === 1 ? <BasicInfo proposalId={proposalId} userData={userData} /> : <Spaces />;
 
-  const onSubmit = formData => {
+  const onSubmit = form.handleSubmit(formData => {
     let data = {};
     data = { ...formData };
     setFormStep(2);
     if (formStep === 2) {
-      if (!form.values?.spaces?.length) {
+      if (!watchSpaces.length) {
         showNotification({
           title: 'Please select atleast one space to continue',
           color: 'blue',
@@ -97,17 +100,21 @@ const CreateProposalPage = () => {
         return;
       }
 
-      data.spaces = form.values?.spaces?.map(item => ({
-        id: item._id,
-        price: +item.price,
-        startDate: item.startDate
-          ? dayjs(item.startDate).startOf('day').toISOString()
-          : dayjs().startOf('day').toISOString(),
-        endDate: item.startDate
-          ? dayjs(item.endDate).endOf('day').toISOString()
-          : dayjs().endOf('day').toISOString(),
-        unit: item?.unit ? +item.unit : 1,
-      }));
+      data.spaces = watchSpaces.map(
+        // eslint-disable-next-line no-unused-vars
+        ({ pricingDetails, createdBy, campaigns, bookingRange, ...item }) => ({
+          ...item,
+          id: item._id,
+          price: +item.price.toFixed(2) || 0,
+          startDate: item.startDate
+            ? dayjs(item.startDate).startOf('day').toISOString()
+            : dayjs().startOf('day').toISOString(),
+          endDate: item.startDate
+            ? dayjs(item.endDate).endOf('day').toISOString()
+            : dayjs().endOf('day').toISOString(),
+          unit: item?.unit ? +item.unit : 1,
+        }),
+      );
 
       if (data.uploadType === 'existing') {
         data.letterHead = userData?.proposalHead;
@@ -143,10 +150,6 @@ const CreateProposalPage = () => {
       });
 
       delete data.uploadType;
-
-      if (data.proposalTermsId) {
-        data.proposalTermsId = data.proposalTermsId.value;
-      }
 
       if (proposalId) {
         data = {
@@ -188,11 +191,11 @@ const CreateProposalPage = () => {
         });
       }
     }
-  };
+  });
 
   useEffect(() => {
     if (proposalData) {
-      form.setValues({
+      form.reset({
         ...form.values,
         name: proposalData?.proposal?.name,
         description: proposalData?.proposal?.description || '',
@@ -205,6 +208,8 @@ const CreateProposalPage = () => {
           : new Date(),
         spaces:
           proposalData?.inventories.docs.map(item => ({
+            ...item,
+            ...item.pricingDetails,
             _id: item._id,
             price: item.price,
             startDate: new Date(item.startDate),
@@ -212,21 +217,19 @@ const CreateProposalPage = () => {
             unit: item?.bookedUnits,
             availableUnit: item?.remainingUnits,
             initialUnit: item?.bookedUnits || 0,
+            dimension: item.size,
           })) || [],
         letterHead: proposalData?.proposal?.letterHead,
         letterFooter: proposalData?.proposal?.letterFooter,
-        proposalTermsId: {
-          label: proposalData?.proposal?.proposalTermsId?.name,
-          value: proposalData?.proposal?.proposalTermsId?._id,
-        },
+        proposalTermsId: proposalData?.proposal?.proposalTermsId?._id,
       });
     }
   }, [proposalData, userData]);
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
-      <FormProvider form={form}>
-        <form onSubmit={form.onSubmit(onSubmit)}>
+      <FormProvider {...form}>
+        <form onSubmit={onSubmit}>
           <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
             <Header
               setFormStep={setFormStep}

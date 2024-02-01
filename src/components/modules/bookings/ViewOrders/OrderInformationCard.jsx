@@ -29,7 +29,7 @@ const OrderInformationCard = () => {
         <div>
           <p className="text-slate-400">Price</p>
           <Group className="gap-1">
-            <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.price)}</p>
+            <p className="font-bold">{toIndianCurrency(bookingData?.campaign?.totalPrice)}</p>
             <p className="text-xs italic">**inclusive of gst</p>
           </Group>
         </div>

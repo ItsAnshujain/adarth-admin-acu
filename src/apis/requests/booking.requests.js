@@ -51,3 +51,7 @@ export const fetchBookingStatsById = id => http.get(urlcat('/booking/:id/stats',
 export const fetchUserSalesByUserId = payload => http.get(urlcat('/booking/user-sales', payload));
 
 export const fetchCalendarEvents = payload => http.get(urlcat('/booking/calendar', payload));
+
+export const exportBookings = (type, query) => http.post(urlcat(`/booking/export/${type}`, query));
+
+export const exportBooking = bookingId => http.post(urlcat(`/booking/${bookingId}/export`));

@@ -283,17 +283,13 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
             {data?.tradedAmount ? (
               <Group className="gap-y-1 mb-1">
                 <p className="text-sm font-light text-slate-400">Traded Amount</p>
-                <p className="font-bold">
-                  {toIndianCurrency(Number.parseInt(data.tradedAmount, 10)) || 0}
-                </p>
+                <p className="font-bold">{toIndianCurrency(data.tradedAmount, 10) || 0}</p>
               </Group>
             ) : null}
             <Group>
               <p className="text-sm font-light text-slate-400">Booked Amount</p>
               <p className="font-bold">
-                {data?.campaignPrice
-                  ? toIndianCurrency(Number.parseInt(data.campaignPrice, 10))
-                  : 0}
+                {data?.campaignPrice ? toIndianCurrency(data.campaignPrice, 10) : 0}
               </p>
             </Group>
           </div>
