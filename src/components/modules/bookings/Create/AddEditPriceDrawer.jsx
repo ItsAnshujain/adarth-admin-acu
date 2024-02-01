@@ -354,47 +354,49 @@ const AddEditPriceDrawer = ({
                   : 1) || 0;
 
             const updatedTotalPrintingCost =
-              Number(area?.toFixed(2)) *
+              Number(area?.toFixed(2) || 0) *
               Number(formData.printingCostPerSqft?.toFixed(2)) *
               (Number(totalMonthsOfPlace?.toFixed(2)) || 0);
 
             const updatedTotalMountingCost =
-              Number(area?.toFixed(2)) *
+              Number(area?.toFixed(2) || 0) *
               Number(formData.mountingCostPerSqft?.toFixed(2)) *
               (Number(totalMonthsOfPlace?.toFixed(2)) || 0);
 
             const updatedDisplayCost =
-              Number(place.displayCostPerMonth?.toFixed(2)) +
-              Number(place.displayCostPerMonth?.toFixed(2)) *
-                ((Number(place.displayCostGstPercentages?.toFixed(2)) || 0) / 100);
+              area > 0
+                ? Number(place.displayCostPerMonth?.toFixed(2)) +
+                  Number(place.displayCostPerMonth?.toFixed(2)) *
+                    ((Number(place.displayCostGstPercentages?.toFixed(2)) || 0) / 100)
+                : 0;
 
             const discountedDisplayCost =
               watchDiscountOn === 'displayCost'
                 ? (updatedDisplayCost || 0) * ((watchDiscount || 0) / 100)
                 : 0;
-
             let updatedTotalPrice = Number(
               (updatedDisplayCost || 0) +
                 (Number(updatedTotalPrintingCost?.toFixed(2)) +
-                  Number(updatedTotalPrintingCost?.toFixed(2)) *
-                    ((place.printingGstPercentage || 0) / 100)) +
+                  (Number(updatedTotalPrintingCost?.toFixed(2)) *
+                    (place.printingGstPercentage || 0)) /
+                    100) +
                 (Number(updatedTotalMountingCost?.toFixed(2)) ||
-                  0 + Number(updatedTotalMountingCost?.toFixed(2)) ||
-                  0 * ((place.mountingGstPercentage || 0) / 100)) +
+                  0 +
+                    (Number(updatedTotalMountingCost?.toFixed(2)) ||
+                      (0 * (place.mountingGstPercentage || 0)) / 100)) +
                 (place.oneTimeInstallationCost || 0) +
                 (place.monthlyAdditionalCost || 0) * totalMonths -
                 (place.otherCharges || 0),
             );
             updatedTotalPrice -= discountedDisplayCost;
-
             return {
               ...place,
-              printingCostPerSqft: Number(formData.printingCostPerSqft?.toFixed(2)),
+              printingCostPerSqft: area > 0 ? Number(formData.printingCostPerSqft?.toFixed(2)) : 0,
               printingGstPercentage: formData.printingGstPercentage,
               printingGst: formData.printingGst,
               mountingGstPercentage: formData.mountingGstPercentage,
               mountingGst: formData.mountingGst,
-              mountingCostPerSqft: Number(formData.mountingCostPerSqft?.toFixed(2)),
+              mountingCostPerSqft: area > 0 ? Number(formData.mountingCostPerSqft?.toFixed(2)) : 0,
               totalPrintingCost:
                 Number(updatedTotalPrintingCost?.toFixed(2)) +
                 Number(updatedTotalPrintingCost?.toFixed(2)) *
@@ -467,12 +469,12 @@ const AddEditPriceDrawer = ({
 
             return {
               ...place,
-              printingCostPerSqft: Number(formData.printingCostPerSqft?.toFixed(2)),
+              printingCostPerSqft: area > 0 && Number(formData.printingCostPerSqft?.toFixed(2)),
               printingGstPercentage: formData.printingGstPercentage,
               printingGst: formData.printingGst,
               mountingGstPercentage: formData.mountingGstPercentage,
               mountingGst: formData.mountingGst,
-              mountingCostPerSqft: Number(formData.mountingCostPerSqft?.toFixed(2)),
+              mountingCostPerSqft: area > 0 && Number(formData.mountingCostPerSqft?.toFixed(2)),
               totalPrintingCost:
                 Number(updatedTotalPrintingCost?.toFixed(2)) +
                 (Number(updatedTotalPrintingCost?.toFixed(2)) * formData.printingGstPercentage) /
