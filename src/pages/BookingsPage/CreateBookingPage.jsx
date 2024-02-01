@@ -327,6 +327,7 @@ const CreateBookingPage = () => {
         campaignName: proposalById.data?.proposal?.name || '',
         description: proposalById.data?.proposal?.description || '',
         place: proposalById.data?.inventories.docs.map(item => ({
+          ...item,
           _id: item._id,
           price: item.price,
           media: isValidURL(item.media) ? item.media : undefined,
@@ -336,6 +337,9 @@ const CreateBookingPage = () => {
           unit: item?.bookedUnits,
           availableUnit: item?.remainingUnits,
           initialUnit: item?.bookedUnits || 0,
+          location: { city: item.location },
+          dimension: item.size,
+          ...item.pricingDetails,
         })),
       });
     }
