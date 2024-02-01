@@ -23,6 +23,7 @@ import {
   isValidURL,
   serialize,
   calculateTotalPrice,
+  getAvailableUnits,
 } from '../../utils';
 import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 
@@ -146,13 +147,14 @@ const CreateBookingPage = () => {
         return;
       }
 
-      if (
+      const isExceeded = () =>
         data.place?.some(item =>
           bookingId
             ? item.unit > item.initialUnit + item.availableUnit
             : item.unit > item.availableUnit,
-        )
-      ) {
+        );
+
+      if (isExceeded()) {
         showNotification({
           title: 'Exceeded maximum units available for selected date range for one or more places',
           color: 'blue',
@@ -338,7 +340,12 @@ const CreateBookingPage = () => {
           media: isValidURL(item.media) ? item.media : undefined,
           tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
           unit: item?.bookedUnits,
-          availableUnit: item?.remainingUnits,
+          availableUnit: getAvailableUnits(
+            item.bookingRange,
+            item.startDate,
+            item.endDate,
+            item.unit,
+          ),
           initialUnit: item?.bookedUnits || 0,
           location: { city: item.location },
           dimension: item.size,
