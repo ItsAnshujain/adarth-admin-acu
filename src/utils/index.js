@@ -569,7 +569,7 @@ export const calculateTotalArea = (place, unit) =>
       : place?.facing?.toLowerCase().includes('four') ||
         place?.location?.facing?.name.toLowerCase().includes('four')
       ? 4
-      : 1) || 1;
+      : 1) || 0;
 
 export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   if (!item) return 0;
@@ -584,9 +584,11 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
     (Number(item?.mountingCostPerSqft?.toFixed(2)) || 0) *
     (Number(updatedTotalMonths) || 0);
   const totalDisplayCost =
-    (Number(item?.displayCostPerMonth?.toFixed(2)) || 0) * Number(updatedTotalMonths) +
-    (Number(item?.displayCostPerMonth?.toFixed(2)) || 0) *
-      ((Number(item?.displayCostGstPercentage?.toFixed(2)) || 0) / 100);
+    updatedTotalArea > 0
+      ? (Number(item?.displayCostPerMonth?.toFixed(2)) || 0) * Number(updatedTotalMonths) +
+        (Number(item?.displayCostPerMonth?.toFixed(2)) || 0) *
+          ((Number(item?.displayCostGstPercentage?.toFixed(2)) || 0) / 100)
+      : 0;
 
   const totalCost = Number(
     (
