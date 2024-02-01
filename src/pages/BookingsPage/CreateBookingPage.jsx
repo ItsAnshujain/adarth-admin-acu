@@ -104,7 +104,7 @@ const CreateBookingPage = () => {
   const proposalId = searchParams.get('proposalId');
   const proposalLimit = searchParams.get('proposalLimit');
   const proposalById = useFetchProposalById(
-    `${proposalId}?${serialize({ ...proposalByIdQuery, limit: proposalLimit })}`,
+    `${proposalId}?${serialize({ ...proposalByIdQuery, limit: proposalLimit || 0 })}`,
     !!proposalId,
   );
 
@@ -330,18 +330,18 @@ const CreateBookingPage = () => {
         description: proposalById.data?.proposal?.description || '',
         place: proposalById.data?.inventories.docs.map(item => ({
           ...item,
+          ...item.pricingDetails,
+          startDate: new Date(item.startDate),
+          endDate: new Date(item.endDate),
           _id: item._id,
           price: item.price,
           media: isValidURL(item.media) ? item.media : undefined,
-          startDate: item.startDate,
-          endDate: item.endDate,
           tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
           unit: item?.bookedUnits,
           availableUnit: item?.remainingUnits,
           initialUnit: item?.bookedUnits || 0,
           location: { city: item.location },
           dimension: item.size,
-          ...item.pricingDetails,
         })),
       });
     }
