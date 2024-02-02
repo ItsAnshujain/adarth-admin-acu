@@ -29,27 +29,7 @@ const initialValues = {
   letterHead: '',
   letterFooter: '',
   uploadType: 'new',
-  displayColumns: [
-    'serialNo',
-    'spaceName',
-    'faciaTowards',
-    'subCategory',
-    'state',
-    'city',
-    'location',
-    'illumination',
-    'units',
-    'facing',
-    'widthInFt',
-    'heightInFt',
-    'areaInSqFt',
-    'displayPrice',
-    'discountedDisplayPrice',
-    'printingCost',
-    'mountingCost',
-    'availability',
-    'extension',
-  ],
+  displayColumns: ['spaceName', 'widthInFt', 'heightInFt', 'subCategory', 'city'],
 };
 
 const schema = yup.object({
