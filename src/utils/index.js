@@ -524,7 +524,7 @@ export const calculateDaysListByMonth = (month, year) => {
 export const timeLegend = {
   dayOfWeek: 'Days',
   dayOfMonth: 'Days',
-  quarter: 'Months',
+  quarter: 'Quarters',
   month: 'Months',
 };
 
@@ -577,11 +577,11 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   const updatedTotalMonths = calculateTotalMonths(startDate, endDate);
   const updatedTotalPrintingCost =
     Number(updatedTotalArea?.toFixed(2)) *
-    (Number(item?.printingCostPerSqft?.toFixed(2)) || 0) *
+    (Number(Number(item?.printingCostPerSqft)?.toFixed(2)) || 0) *
     (Number(updatedTotalMonths) || 0);
   const updatedTotalMountingCost =
     Number(updatedTotalArea?.toFixed(2)) *
-    (Number(item?.mountingCostPerSqft?.toFixed(2)) || 0) *
+    (Number(Number(item?.mountingCostPerSqft)?.toFixed(2)) || 0) *
     (Number(updatedTotalMonths) || 0);
   const totalDisplayCost =
     updatedTotalArea > 0
