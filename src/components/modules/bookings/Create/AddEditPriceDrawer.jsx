@@ -377,18 +377,17 @@ const AddEditPriceDrawer = ({
             let updatedTotalPrice = Number(
               (updatedDisplayCost || 0) +
                 (Number(updatedTotalPrintingCost?.toFixed(2)) +
-                  (Number(updatedTotalPrintingCost?.toFixed(2)) *
-                    (place.printingGstPercentage || 0)) /
-                    100) +
-                (Number(updatedTotalMountingCost?.toFixed(2)) ||
-                  0 +
-                    (Number(updatedTotalMountingCost?.toFixed(2)) ||
-                      (0 * (place.mountingGstPercentage || 0)) / 100)) +
+                  Number(updatedTotalPrintingCost?.toFixed(2)) *
+                    ((formData.printingGstPercentage || 0) / 100)) +
+                (Number(updatedTotalMountingCost?.toFixed(2)) +
+                  Number(updatedTotalMountingCost?.toFixed(2)) *
+                    ((formData.mountingGstPercentage || 0) / 100)) +
                 (place.oneTimeInstallationCost || 0) +
                 (place.monthlyAdditionalCost || 0) * totalMonths -
                 (place.otherCharges || 0),
             );
             updatedTotalPrice -= discountedDisplayCost;
+
             return {
               ...place,
               printingCostPerSqft: area > 0 ? Number(formData.printingCostPerSqft?.toFixed(2)) : 0,
@@ -463,13 +462,11 @@ const AddEditPriceDrawer = ({
             let updatedTotalPrice = Number(
               (updatedDisplayCost || 0) +
                 (Number(updatedTotalPrintingCost?.toFixed(2)) +
-                  (Number(updatedTotalPrintingCost?.toFixed(2)) *
-                    (place.printingGstPercentage || 0)) /
-                    100) +
-                (Number(updatedTotalMountingCost?.toFixed(2)) ||
-                  0 +
-                    (Number(updatedTotalMountingCost?.toFixed(2)) ||
-                      (0 * (place.mountingGstPercentage || 0)) / 100)) +
+                  Number(updatedTotalPrintingCost?.toFixed(2)) *
+                    ((formData.printingGstPercentage || 0) / 100)) +
+                (Number(updatedTotalMountingCost?.toFixed(2)) +
+                  Number(updatedTotalMountingCost?.toFixed(2)) *
+                    ((formData.mountingGstPercentage || 0) / 100)) +
                 (place.oneTimeInstallationCost || 0) +
                 (place.monthlyAdditionalCost || 0) * totalMonths -
                 (place.otherCharges || 0),
@@ -632,7 +629,8 @@ const AddEditPriceDrawer = ({
       selectedInventory?.discountPercentage ||
       selectedInventory?.printingCostPerSqft ||
       selectedInventory?.mountingCostPerSqft ||
-      selectedInventory?.tradedAmount
+      selectedInventory?.tradedAmount ||
+      selectedInventory?.discount
     ) {
       form.reset({
         displayCostPerMonth: selectedInventory.displayCostPerMonth || 0,
