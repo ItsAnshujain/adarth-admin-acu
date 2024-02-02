@@ -47,6 +47,7 @@ import {
   monthsInShort,
   quarters,
   serialize,
+  timeLegend,
 } from '../../utils';
 import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
@@ -150,6 +151,7 @@ const InventoryReportsPage = () => {
     isLoading: isInventoryReportLoading,
     isSuccess,
   } = useInventoryReport(removeUnwantedQueries(unwantedQueriesForReveueGraph));
+
   const { data: inventoryReportList, isLoading: inventoryReportListLoading } =
     useFetchInventoryReportList(removeUnwantedQueries(unwantedQuriesForInventories));
   const { mutateAsync, isLoading: isDownloadLoading } = useShareReport();
@@ -295,9 +297,14 @@ const InventoryReportsPage = () => {
       }) =>
         useMemo(
           () => (
-            <p>{`${specifications?.size?.width || 0}ft x ${
-              specifications?.size?.height || 0
-            }ft`}</p>
+            <p>
+              {specifications.size
+                .map((ele, idx) =>
+                  idx < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
+                )
+                .filter(ele => ele !== null)
+                .join(', ')}
+            </p>
           ),
           [],
         ),
@@ -433,9 +440,14 @@ const InventoryReportsPage = () => {
       }) =>
         useMemo(
           () => (
-            <p>{`${specifications?.size?.width || 0}ft x ${
-              specifications?.size?.height || 0
-            }ft`}</p>
+            <p>
+              {specifications?.size
+                ?.map((ele, idx) =>
+                  idx < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
+                )
+                .filter(ele => ele !== null)
+                .join(', ')}
+            </p>
           ),
           [],
         ),
@@ -668,14 +680,20 @@ const InventoryReportsPage = () => {
             {isInventoryReportLoading ? (
               <Loader className="mx-auto mt-10" />
             ) : (
-              <div className="max-h-[350px]">
-                <Line
-                  data={areaData}
-                  options={options}
-                  ref={chartRef}
-                  key={areaData.id}
-                  className="w-full"
-                />
+              <div className="flex flex-col pl-7 relative">
+                <p className="transform rotate-[-90deg] absolute left-[-48px] top-[40%]">
+                  Amounts in INR &gt;
+                </p>
+                <div className="max-h-[350px]">
+                  <Line
+                    data={areaData}
+                    options={options}
+                    ref={chartRef}
+                    key={areaData.id}
+                    className="w-full"
+                  />
+                </div>
+                <p className="text-center">{timeLegend[groupBy]} &gt;</p>
               </div>
             )}
           </div>
