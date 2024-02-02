@@ -29,6 +29,27 @@ const initialValues = {
   letterHead: '',
   letterFooter: '',
   uploadType: 'new',
+  displayColumns: [
+    'serialNo',
+    'spaceName',
+    'faciaTowards',
+    'subCategory',
+    'state',
+    'city',
+    'location',
+    'illumination',
+    'units',
+    'facing',
+    'widthInFt',
+    'heightInFt',
+    'areaInSqFt',
+    'displayPrice',
+    'discountedDisplayPrice',
+    'printingCost',
+    'mountingCost',
+    'availability',
+    'extension',
+  ],
 };
 
 const schema = yup.object({
@@ -222,6 +243,7 @@ const CreateProposalPage = () => {
         letterHead: proposalData?.proposal?.letterHead,
         letterFooter: proposalData?.proposal?.letterFooter,
         proposalTermsId: proposalData?.proposal?.proposalTermsId?._id,
+        displayColumns: proposalData?.proposal?.displayColumns || [],
       });
     }
   }, [proposalData, userData]);
