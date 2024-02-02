@@ -178,7 +178,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
                   <Text>
                     {proposalData?.description
                       ? proposalData.description
-                      : `Our outdoor advertisementcampaign is the perfect way to get your brand in front of a large audience. 
+                      : `Our outdoor advertisement campaign is the perfect way to get your brand in front of a large audience. 
                         With eye-catching graphics and strategic placement, our billboards and digital displays will capture the attention of anyone passing by. 
                         Our team will work with you to create a curated campaign that perfectly showcases your brand's message and identity.
                          From busy city streets to suburban highways, our outdoor advertising options are the perfect way to increase your brand's visibility and reach.
