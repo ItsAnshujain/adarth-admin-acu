@@ -29,6 +29,7 @@ const initialValues = {
   letterHead: '',
   letterFooter: '',
   uploadType: 'new',
+  displayColumns: ['spaceName', 'widthInFt', 'heightInFt', 'subCategory', 'city'],
 };
 
 const schema = yup.object({
@@ -222,6 +223,7 @@ const CreateProposalPage = () => {
         letterHead: proposalData?.proposal?.letterHead,
         letterFooter: proposalData?.proposal?.letterFooter,
         proposalTermsId: proposalData?.proposal?.proposalTermsId?._id,
+        displayColumns: proposalData?.proposal?.displayColumns || [],
       });
     }
   }, [proposalData, userData]);
