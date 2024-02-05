@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { Badge, Button, Image, Loader, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,6 +28,7 @@ import useUserStore from '../../store/user.store';
 import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesMenuPopover';
 import useLayoutView from '../../store/layout.store';
 import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
+import VersionsDrawer from '../../components/modules/proposals/ViewProposal/VersionsDrawer';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -61,6 +62,8 @@ const ProposalDetailsPage = () => {
   });
 
   const toggleFilter = () => setShowFilter(!showFilter);
+
+  const [versionDrawerOpened, versionDrawerActions] = useDisclosure();
 
   const { id: proposalId } = useParams();
   const { data: proposalData, isLoading: isProposalDataLoading } = useFetchProposalById(
@@ -361,6 +364,7 @@ const ProposalDetailsPage = () => {
       <Header
         isPeer={proposalData?.proposal?.isPeer}
         bookingId={proposalData?.proposal?.bookingId}
+        onOpenVersionsDrawer={versionDrawerActions.open}
       />
       <Details
         proposalData={proposalData?.proposal}
@@ -414,6 +418,7 @@ const ProposalDetailsPage = () => {
           />
         ) : null}
       </div>
+      <VersionsDrawer isOpened={versionDrawerOpened} onClose={versionDrawerActions.close} />
     </div>
   );
 };

@@ -1,11 +1,11 @@
 import { Button } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { ArrowLeft, Share2 } from 'react-feather';
+import { ArrowLeft, Share2, ChevronDown } from 'react-feather';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import modalConfig from '../../../../utils/modalConfig';
 import ShareContent from './ShareContent';
 
-const Header = ({ isPeer, bookingId }) => {
+const Header = ({ isPeer, bookingId, onOpenVersionsDrawer }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const handleBack = () => navigate(-1);
@@ -32,6 +32,13 @@ const Header = ({ isPeer, bookingId }) => {
         <ArrowLeft className="cursor-pointer" onClick={handleBack} />
       </div>
       <div className="flex gap-4">
+        <Button
+          variant="default"
+          onClick={onOpenVersionsDrawer}
+          leftIcon={<ChevronDown size={16} className="mt-[1px] mr-1" />}
+        >
+          Versions
+        </Button>
         <div className="relative">
           <Button
             className="bg-black"
