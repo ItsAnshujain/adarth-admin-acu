@@ -374,7 +374,7 @@ const SelectSpace = () => {
         Cell: RenderCategoryCell,
       },
       {
-        Header: 'MEDIUM',
+        Header: 'SUB CATEGORY',
         accessor: 'basicInformation.subCategory.name',
         Cell: RenderSubCategoryCell,
       },
