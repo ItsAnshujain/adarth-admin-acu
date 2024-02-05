@@ -180,6 +180,7 @@ export const proposalColumns = [
   { name: 'Units', enum: 'units', mandatory: false },
   { name: 'Facing', enum: 'facing', mandatory: false },
   { name: 'Area (in sq. ft.)', enum: 'areaInSqFt', mandatory: false },
+  { name: 'Installation cost', enum: 'installationCost', mandatory: false },
   { name: 'Display Price', enum: 'displayPrice', mandatory: false },
   { name: 'Discounted Display Price', enum: 'discountedDisplayPrice', mandatory: false },
   { name: 'Printing Cost', enum: 'printingCost', mandatory: false },
