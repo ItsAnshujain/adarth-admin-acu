@@ -20,6 +20,10 @@ const SelectColumns = ({ isOpened, styles, onClose, columns }) => {
     onClose();
   };
 
+  const selectAll = () => {
+    setProposalColumns(columns.map(col => col.enum));
+  };
+
   useEffect(() => {
     setProposalColumns(form.watch('displayColumns'));
   }, [form.watch('displayColumns')]);
@@ -40,13 +44,16 @@ const SelectColumns = ({ isOpened, styles, onClose, columns }) => {
       title="Select Columns"
       onClose={onClose}
     >
-      <div className="w-full flex justify-end">
+      <div className="w-full flex justify-end gap-5">
         <Button
           variant="default"
           className="mb-3 bg-purple-450 text-white w-full"
           onClick={applySelectedColumns}
         >
           Apply
+        </Button>
+        <Button variant="outline" className="mb-3 w-full" onClick={selectAll}>
+          Select all
         </Button>
       </div>
       <div className="overflow-auto">
