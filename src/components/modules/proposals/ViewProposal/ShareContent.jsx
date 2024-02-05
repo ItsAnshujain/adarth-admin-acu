@@ -78,10 +78,6 @@ const initialCopyLinkValues = {
   name: '',
 };
 
-const downloadFileValues = {
-  subject: '',
-};
-
 const downloadExcelFileValues = {
   subject: '',
   clientCompany: '',
@@ -118,13 +114,9 @@ const downloadLinkSchema = yup.object({
   name: yup.string().trim(),
 });
 
-const downloadFileSchema = yup.object({
-  subject: yup.string().trim().max(300).required('Subject is required'),
-});
-
 const downloadExcelFileSchema = yup.object({
-  subject: yup.string().trim().max(300).required('Subject is required'),
-  clientCompany: yup.string().trim().required('Client company is required'),
+  subject: yup.string().trim().max(300),
+  clientCompany: yup.string().trim(),
 });
 
 const initialValues = {
@@ -132,7 +124,6 @@ const initialValues = {
   whatsapp: initialWhatsAppValues,
   message: initialMessageValues,
   copy_link: initialCopyLinkValues,
-  download_file: downloadFileValues,
   download_excel_file: downloadExcelFileValues,
 };
 
@@ -142,18 +133,17 @@ const schemas = {
   message: messageSchema,
   copy_link: copyLinkSchema,
   download: downloadLinkSchema,
-  download_file: downloadFileSchema,
   download_excel_file: downloadExcelFileSchema,
 };
 
 const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
   const [activeFileType, setActiveFileType] = useState([]);
-  const [activeShare, setActiveShare] = useState('download_file');
+  const [activeShare, setActiveShare] = useState('');
   const [loaderType, setLoaderType] = useState(-1);
 
   const form = useForm({
-    resolver: yupResolver(schemas[activeShare]),
-    defaultValues: initialValues[activeShare],
+    resolver: activeShare && yupResolver(schemas[activeShare]),
+    defaultValues: activeShare && initialValues[activeShare],
   });
 
   const shareProposal = useShareProposal();
@@ -163,13 +153,13 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
     let tempArr = [...activeFileType]; // TODO: use immmer
     if (tempArr.some(item => item === value)) {
       tempArr = tempArr.filter(item => item !== value);
-      setActiveShare('download_file');
+      setActiveShare('');
     } else {
       tempArr.push(value);
       if (value === 'Excel') {
         setActiveShare('download_excel_file');
       } else {
-        setActiveShare('download_file');
+        setActiveShare('');
       }
     }
     setActiveFileType(tempArr);
@@ -180,7 +170,7 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
   const watchAspectRatio = form.watch('aspectRatio');
 
   const onSubmit = form.handleSubmit(async formData => {
-    const data = { ...formData };
+    const data = { ...formData, clientCompanyName: formData.clientCompany || undefined };
     if (!activeFileType.length) {
       showNotification({
         title: 'Please select a file type to continue',
@@ -256,7 +246,7 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
             }
 
             form.reset();
-            setActiveShare('download_file');
+            setActiveShare('');
             onClose();
           },
         },
@@ -289,7 +279,7 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
             }
 
             form.reset();
-            setActiveShare('download_file');
+            setActiveShare('');
             onClose();
           },
         },
@@ -316,22 +306,6 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
     if (activeFileType.length > 1) {
       showNotification({
         title: 'Please select only one file type to continue',
-        color: 'yellow',
-      });
-      return;
-    }
-
-    if (formData.subject === '') {
-      showNotification({
-        title: 'Please enter subject',
-        color: 'yellow',
-      });
-      return;
-    }
-
-    if (activeFileType.some(type => type === 'Excel') && formData.clientCompany === '') {
-      showNotification({
-        title: 'Please enter client company name',
         color: 'yellow',
       });
       return;
@@ -446,16 +420,18 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
               defaultValue="fill;generic"
             />
           </div>
-          <div>
-            <p className="font-medium text-xl mb-2">Subject</p>
-            <ControlledTextInput name="subject" placeholder="Enter..." className="mb-2" />
-          </div>
 
           {activeFileType.some(fileType => fileType === 'Excel') ? (
-            <div>
-              <p className="font-medium text-xl mb-2">Client company name</p>
-              <ControlledTextInput name="clientCompany" placeholder="Enter..." className="mb-2" />
-            </div>
+            <>
+              <div>
+                <p className="font-medium text-xl mb-2">Subject</p>
+                <ControlledTextInput name="subject" placeholder="Enter..." className="mb-2" />
+              </div>
+              <div>
+                <p className="font-medium text-xl mb-2">Client company name</p>
+                <ControlledTextInput name="clientCompany" placeholder="Enter..." className="mb-2" />
+              </div>
+            </>
           ) : null}
 
           <Button
