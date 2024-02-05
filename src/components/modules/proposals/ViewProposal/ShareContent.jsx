@@ -321,7 +321,7 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
       return;
     }
 
-    if (form.watch('subject') === '') {
+    if (formData.subject === '') {
       showNotification({
         title: 'Please enter subject',
         color: 'yellow',
@@ -329,7 +329,7 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
       return;
     }
 
-    if (activeFileType.some(type => type === 'Excel') && form.watch('clientCompany') === '') {
+    if (activeFileType.some(type => type === 'Excel') && formData.clientCompany === '') {
       showNotification({
         title: 'Please enter client company name',
         color: 'yellow',
