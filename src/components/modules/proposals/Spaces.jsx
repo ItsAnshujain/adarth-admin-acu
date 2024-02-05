@@ -341,7 +341,7 @@ const Spaces = () => {
           }, []),
       },
       {
-        Header: 'SUB CATEGORY',
+        Header: 'MEDIUM',
         accessor: 'basicInformation.subCategory.name',
         Cell: info =>
           useMemo(

@@ -249,12 +249,12 @@ const BasicInformationForm = () => {
           className="mb-7"
         />
         <Select
-          label="Sub Category"
+          label="Medium"
           name="basicInformation.subCategory"
           styles={styles}
           errors={errors}
           disabled={isSubCategoryLoading || !subCategories?.docs?.length}
-          placeholder={!subCategories?.docs?.length ? 'No Sub Category available' : 'Select...'}
+          placeholder={!subCategories?.docs?.length ? 'No Medium available' : 'Select...'}
           options={
             subCategoryLoaded
               ? subCategories.docs.map(subCategory => ({
