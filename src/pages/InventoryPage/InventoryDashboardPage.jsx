@@ -198,7 +198,7 @@ const InventoryDashboardPage = () => {
           }, []),
       },
       {
-        Header: 'MEDIUM',
+        Header: 'SUB CATEGORY',
         accessor: 'basicInformation.subCategory.name',
         Cell: info =>
           useMemo(
