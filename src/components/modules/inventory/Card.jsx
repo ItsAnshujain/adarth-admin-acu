@@ -116,7 +116,7 @@ const Card = ({
               </Text>
             </div>
             <div>
-              <p className="text-sm text-gray-400 mb-2">Sub Category</p>
+              <p className="text-sm text-gray-400 mb-2">Medium</p>
               <Text className="text-sm" lineClamp={1}>
                 {basicInformation?.subCategory?.name || '--'}
               </Text>

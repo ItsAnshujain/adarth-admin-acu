@@ -377,7 +377,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
           <Accordion.Item value="subCategory" className="mb-4 rounded-xl border">
             <Accordion.Control disabled={subCategoryQuery.isLoading}>
-              <p className="text-lg">Sub Category</p>
+              <p className="text-lg">Medium</p>
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
