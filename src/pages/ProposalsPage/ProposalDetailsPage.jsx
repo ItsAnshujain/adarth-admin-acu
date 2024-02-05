@@ -184,7 +184,7 @@ const ProposalDetailsPage = () => {
           }, []),
       },
       {
-        Header: 'SUB CATEGORY',
+        Header: 'MEDIUM',
         accessor: 'subCategory',
         Cell: info =>
           useMemo(
