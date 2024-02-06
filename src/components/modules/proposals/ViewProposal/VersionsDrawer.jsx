@@ -124,7 +124,7 @@ const VersionsDrawer = ({
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
         </div>
-      ) : (
+      ) : proposalVersionsQuery?.data?.docs?.length ? (
         proposalVersionsQuery?.data?.docs?.map(({ versionTitle, createdAt, _id }, index) => (
           <div
             key={_id}
@@ -177,6 +177,8 @@ const VersionsDrawer = ({
             </div>
           </div>
         ))
+      ) : (
+        <div className="text-center">No versions available</div>
       )}
     </Drawer>
   );
