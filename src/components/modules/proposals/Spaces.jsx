@@ -34,6 +34,8 @@ import modalConfig from '../../../utils/modalConfig';
 import useLayoutView from '../../../store/layout.store';
 import SpaceNamePhotoContent from '../inventory/SpaceNamePhotoContent';
 import AddEditPriceDrawer from '../bookings/Create/AddEditPriceDrawer';
+import SelectColumns from './SelectColumns';
+import { proposalColumns } from '../../../utils/constants';
 
 dayjs.extend(isBetween);
 
@@ -77,6 +79,7 @@ const Spaces = () => {
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
+  const [showSelectColumns, selectColumnsActions] = useDisclosure(false);
   const pages = searchParams.get('page');
   const limit = searchParams.get('limit');
   const { data: inventoryData, isLoading } = useFetchInventory(searchParams.toString());
@@ -676,6 +679,17 @@ const Spaces = () => {
               >
                 Add Price
               </Button>
+              <Button onClick={selectColumnsActions.open} variant="default" className="mr-1">
+                <ChevronDown size={16} className="mr-1" /> Select Columns
+              </Button>
+              {showSelectColumns && (
+                <SelectColumns
+                  isOpened={showSelectColumns}
+                  onClose={selectColumnsActions.close}
+                  columns={proposalColumns}
+                />
+              )}
+
               <Button onClick={toggleFilter} variant="default">
                 <ChevronDown size={16} className="mr-1" /> Filter
               </Button>

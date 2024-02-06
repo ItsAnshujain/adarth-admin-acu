@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { Badge, Button, Image, Loader, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,6 +28,8 @@ import useUserStore from '../../store/user.store';
 import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesMenuPopover';
 import useLayoutView from '../../store/layout.store';
 import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
+import VersionsDrawer from '../../components/modules/proposals/ViewProposal/VersionsDrawer';
+import ShareContent from '../../components/modules/proposals/ViewProposal/ShareContent';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -62,6 +64,8 @@ const ProposalDetailsPage = () => {
 
   const toggleFilter = () => setShowFilter(!showFilter);
 
+  const [versionDrawerOpened, versionDrawerActions] = useDisclosure();
+
   const { id: proposalId } = useParams();
   const { data: proposalData, isLoading: isProposalDataLoading } = useFetchProposalById(
     `${proposalId}?${searchParams.toString()}`,
@@ -78,6 +82,21 @@ const ProposalDetailsPage = () => {
       ),
       ...updatedModalConfig,
     });
+
+  const toggleShareOptions = id => {
+    modals.openModal({
+      modalId: 'shareProposalOption',
+      title: 'Share and Download Option',
+      children: (
+        <ShareContent
+          shareType="proposal"
+          id={id}
+          onClose={() => modals.closeModal('shareProposalOption')}
+        />
+      ),
+      ...modalConfig,
+    });
+  };
 
   const COLUMNS = useMemo(
     () => [
@@ -184,7 +203,7 @@ const ProposalDetailsPage = () => {
           }, []),
       },
       {
-        Header: 'SUB CATEGORY',
+        Header: 'MEDIUM',
         accessor: 'subCategory',
         Cell: info =>
           useMemo(
@@ -361,6 +380,10 @@ const ProposalDetailsPage = () => {
       <Header
         isPeer={proposalData?.proposal?.isPeer}
         bookingId={proposalData?.proposal?.bookingId}
+        onOpenVersionsDrawer={versionDrawerActions.open}
+        toggleShareOptions={toggleShareOptions}
+        parentProposalId={proposalData?.proposal?.parentProposalId}
+        version={proposalData?.proposal?.versionTitle}
       />
       <Details
         proposalData={proposalData?.proposal}
@@ -414,6 +437,14 @@ const ProposalDetailsPage = () => {
           />
         ) : null}
       </div>
+      <VersionsDrawer
+        isOpened={versionDrawerOpened}
+        onClose={versionDrawerActions.close}
+        searchParams={searchParams}
+        toggleShareOptions={toggleShareOptions}
+        parentId={proposalData?.proposal?.parentProposalId}
+        parentVersionTitle={proposalData?.proposal?.versionTitle}
+      />
     </div>
   );
 };

@@ -11,6 +11,9 @@ import {
   updateProposal,
   fetchProposalTerms,
   fetchProposalTermById,
+  deleteProposalVersion,
+  fetchProposalVersions,
+  restoreProposal,
 } from '../requests/proposal.requests';
 import { onApiError } from '../../utils';
 
@@ -175,3 +178,61 @@ export const useProposalTermsById = (proposalTermId, enabled = true) =>
     enabled,
     onError: onApiError,
   });
+
+// For Proposal Version
+
+export const useProposalVersions = ({ id, ...query }, enabled = true) =>
+  useQuery({
+    queryKey: ['proposal-versions', id],
+    queryFn: async () => {
+      const res = await fetchProposalVersions(query, id);
+      return res?.data;
+    },
+    enabled,
+    onError: onApiError,
+  });
+
+export const useDeleteProposalVersion = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async versionId => {
+      const res = await deleteProposalVersion(versionId);
+      return res?.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['proposal-versions']);
+        showNotification({
+          title: 'Proposal version deleted successfully',
+          color: 'green',
+        });
+      },
+      onError: err => {
+        showNotification({
+          title: err?.message,
+          color: 'red',
+        });
+      },
+    },
+  );
+};
+
+export const useRestoreProposal = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ proposalId, versionId }) => {
+      const res = await restoreProposal(proposalId, versionId);
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['proposal-versions']);
+      showNotification({
+        title: 'Proposal version deleted successfully',
+        color: 'green',
+      });
+    },
+    onError: onApiError,
+  });
+};
