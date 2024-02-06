@@ -51,8 +51,12 @@ const VersionsDrawer = ({
     });
   };
 
-  const onVersionClick = id => {
-    navigate(`/proposals/view-details/${id}?${searchParams.toString()}`);
+  const onVersionClick = (id, index, parentProposalId) => {
+    if (index !== 0) {
+      navigate(`/proposals/view-details/${id}?${searchParams.toString()}`);
+    } else {
+      navigate(`/proposals/view-details/${parentProposalId}?${searchParams.toString()}`);
+    }
     onClose();
   };
 
@@ -142,7 +146,7 @@ const VersionsDrawer = ({
                     </div>
                   }
                   classNames={{ inner: 'mt-2', root: 'w-1/2', label: 'w-[280px]' }}
-                  onClick={() => onVersionClick(_id)}
+                  onClick={() => onVersionClick(_id, index, parentProposalId)}
                   checked={proposalId === _id || parentVersionTitle === versionTitle}
                 />
                 <div className="flex">
