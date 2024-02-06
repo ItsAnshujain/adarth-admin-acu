@@ -1,30 +1,18 @@
 import { Button } from '@mantine/core';
-import { useModals } from '@mantine/modals';
 import { ArrowLeft, Share2, ChevronDown } from 'react-feather';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import modalConfig from '../../../../utils/modalConfig';
-import ShareContent from './ShareContent';
 
-const Header = ({ isPeer, bookingId, onOpenVersionsDrawer }) => {
+const Header = ({
+  isPeer,
+  bookingId,
+  onOpenVersionsDrawer,
+  toggleShareOptions,
+  parentProposalId,
+  version = '0.0',
+}) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const handleBack = () => navigate(-1);
-  const modals = useModals();
-
-  const toggleShareOptions = () => {
-    modals.openModal({
-      modalId: 'shareProposalOption',
-      title: 'Share and Download Option',
-      children: (
-        <ShareContent
-          shareType="proposal"
-          id={id}
-          onClose={() => modals.closeModal('shareProposalOption')}
-        />
-      ),
-      ...modalConfig,
-    });
-  };
 
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
@@ -37,18 +25,18 @@ const Header = ({ isPeer, bookingId, onOpenVersionsDrawer }) => {
           onClick={onOpenVersionsDrawer}
           leftIcon={<ChevronDown size={16} className="mt-[1px] mr-1" />}
         >
-          Versions
+          Versions {version}
         </Button>
         <div className="relative">
           <Button
             className="bg-black"
-            onClick={toggleShareOptions}
+            onClick={() => toggleShareOptions(id)}
             leftIcon={<Share2 className="h-5" />}
           >
             Share and Download
           </Button>
         </div>
-        {!isPeer && !bookingId ? (
+        {!isPeer && !bookingId && !parentProposalId ? (
           <div>
             <Link
               to={`/proposals/edit-details/${id}`}

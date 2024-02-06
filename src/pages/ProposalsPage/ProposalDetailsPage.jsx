@@ -29,6 +29,7 @@ import ProposalSpacesMenuPopover from '../../components/Popovers/ProposalSpacesM
 import useLayoutView from '../../store/layout.store';
 import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
 import VersionsDrawer from '../../components/modules/proposals/ViewProposal/VersionsDrawer';
+import ShareContent from '../../components/modules/proposals/ViewProposal/ShareContent';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -81,6 +82,21 @@ const ProposalDetailsPage = () => {
       ),
       ...updatedModalConfig,
     });
+
+  const toggleShareOptions = id => {
+    modals.openModal({
+      modalId: 'shareProposalOption',
+      title: 'Share and Download Option',
+      children: (
+        <ShareContent
+          shareType="proposal"
+          id={id}
+          onClose={() => modals.closeModal('shareProposalOption')}
+        />
+      ),
+      ...modalConfig,
+    });
+  };
 
   const COLUMNS = useMemo(
     () => [
@@ -365,6 +381,9 @@ const ProposalDetailsPage = () => {
         isPeer={proposalData?.proposal?.isPeer}
         bookingId={proposalData?.proposal?.bookingId}
         onOpenVersionsDrawer={versionDrawerActions.open}
+        toggleShareOptions={toggleShareOptions}
+        parentProposalId={proposalData?.proposal?.parentProposalId}
+        version={proposalData?.proposal?.versionTitle}
       />
       <Details
         proposalData={proposalData?.proposal}
@@ -418,7 +437,14 @@ const ProposalDetailsPage = () => {
           />
         ) : null}
       </div>
-      <VersionsDrawer isOpened={versionDrawerOpened} onClose={versionDrawerActions.close} />
+      <VersionsDrawer
+        isOpened={versionDrawerOpened}
+        onClose={versionDrawerActions.close}
+        searchParams={searchParams}
+        toggleShareOptions={toggleShareOptions}
+        parentId={proposalData?.proposal?.parentProposalId}
+        parentVersionTitle={proposalData?.proposal?.versionTitle}
+      />
     </div>
   );
 };
