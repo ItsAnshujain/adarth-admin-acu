@@ -8,7 +8,7 @@ const Header = ({
   onOpenVersionsDrawer,
   toggleShareOptions,
   parentProposalId,
-  version = '0.0',
+  version = '',
 }) => {
   const navigate = useNavigate();
   const { id } = useParams();
