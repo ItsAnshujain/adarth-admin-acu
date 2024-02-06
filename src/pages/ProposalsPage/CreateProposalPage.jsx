@@ -108,8 +108,8 @@ const CreateProposalPage = () => {
           id: item._id,
           price: +item.price.toFixed(2) || 0,
           startDate: item.startDate
-            ? dayjs(item.startDate).startOf('day').toISOString()
-            : dayjs().startOf('day').toISOString(),
+            ? dayjs(item.startDate).endOf('day').toISOString()
+            : dayjs().endOf('day').toISOString(),
           endDate: item.startDate
             ? dayjs(item.endDate).endOf('day').toISOString()
             : dayjs().endOf('day').toISOString(),
@@ -155,7 +155,7 @@ const CreateProposalPage = () => {
       if (proposalId) {
         data = {
           ...data,
-          startDate: dayjs(minDate).startOf('day').toISOString(),
+          startDate: dayjs(minDate).endOf('day').toISOString(),
           endDate: dayjs(maxDate).endOf('day').toISOString(),
         };
 
@@ -178,7 +178,7 @@ const CreateProposalPage = () => {
         data = {
           ...data,
           status,
-          startDate: dayjs(minDate).startOf('day').toISOString(),
+          startDate: dayjs(minDate).endOf('day').toISOString(),
           endDate: dayjs(maxDate).endOf('day').toISOString(),
         };
 
