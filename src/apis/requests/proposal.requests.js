@@ -21,3 +21,13 @@ export const createProposalTerms = data => http.post(urlcat('/proposal-terms'), 
 export const fetchProposalTerms = payload => http.get(urlcat('/proposal-terms', payload));
 
 export const fetchProposalTermById = id => http.get(urlcat('/proposal-terms/:id', { id }));
+
+// For Proposal Versions
+
+export const fetchProposalVersions = (payload, id) =>
+  http.get(urlcat(`/proposal/${id}/versions`, payload));
+
+export const deleteProposalVersion = versionId => http.delete(`/proposal/versions/${versionId}`);
+
+export const restoreProposal = (proposalId, versionId) =>
+  http.post(`/proposal/${proposalId}/restore/${versionId}`);
