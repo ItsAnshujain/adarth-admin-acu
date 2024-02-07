@@ -419,11 +419,11 @@ const HomePage = () => {
                 <Loader className="mx-auto" mt={80} />
               ) : (
                 <div className="flex flex-col pl-7 relative">
-                  <p className="transform rotate-[-90deg] absolute left-[-48px] top-[40%]">
-                    Amounts in INR &gt;
+                  <p className="transform rotate-[-90deg] absolute left-[-38px] top-[40%] text-sm">
+                    Amount in INR &gt;
                   </p>
                   <Line height="100" data={updatedLineData} options={options} key={uuidv4()} />
-                  <p className="text-center">{timeLegend[queryByTime.groupBy]} &gt;</p>
+                  <p className="text-center text-sm">{timeLegend[queryByTime.groupBy]} &gt;</p>
                 </div>
               )}
             </section>
