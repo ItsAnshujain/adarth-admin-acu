@@ -192,11 +192,9 @@ const Preview = () => {
                     <p className="text-slate-400 text-md font-light">Size (WxH)</p>
                     <div className="mb-4 flex gap-x-2">
                       {values?.specifications?.size.length ? (
-                        <p>
+                        <p className="max-w-[300px]">
                           {values.specifications.size
-                            .map((item, index) =>
-                              index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
-                            )
+                            .map(item => `${item?.width || 0}ft x ${item?.height || 0}ft`)
                             .filter(item => item !== null)
                             .join(', ')}
                         </p>

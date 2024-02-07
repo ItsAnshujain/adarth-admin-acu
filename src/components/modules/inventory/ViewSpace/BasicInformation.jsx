@@ -357,13 +357,11 @@ const BasicInfo = ({
                     <Text color="gray" size="xs" weight="300">
                       Size (WxH)
                     </Text>
-                    <div className="mb-4 flex gap-x-2">
+                    <div className="mb-4 flex gap-x-2 pr-2">
                       {inventoryDetails?.specifications?.size.length ? (
                         <p>
                           {inventoryDetails.specifications.size
-                            .map((item, index) =>
-                              index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
-                            )
+                            .map(item => `${item?.width || 0}ft x ${item?.height || 0}ft`)
                             .filter(item => item !== null)
                             .join(', ')}
                         </p>

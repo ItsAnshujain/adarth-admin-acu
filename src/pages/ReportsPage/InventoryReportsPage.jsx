@@ -297,11 +297,9 @@ const InventoryReportsPage = () => {
       }) =>
         useMemo(
           () => (
-            <p>
+            <p className="max-w-[300px]">
               {specifications.size
-                .map((ele, idx) =>
-                  idx < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
-                )
+                .map(ele => `${ele?.width || 0}ft x ${ele?.height || 0}ft`)
                 .filter(ele => ele !== null)
                 .join(', ')}
             </p>
@@ -440,11 +438,9 @@ const InventoryReportsPage = () => {
       }) =>
         useMemo(
           () => (
-            <p>
+            <p className="max-w-[300px]">
               {specifications?.size
-                ?.map((ele, idx) =>
-                  idx < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
-                )
+                ?.map(ele => `${ele?.width || 0}ft x ${ele?.height || 0}ft`)
                 .filter(ele => ele !== null)
                 .join(', ')}
             </p>
