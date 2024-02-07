@@ -677,8 +677,8 @@ const InventoryReportsPage = () => {
               <Loader className="mx-auto mt-10" />
             ) : (
               <div className="flex flex-col pl-7 relative">
-                <p className="transform rotate-[-90deg] absolute left-[-48px] top-[40%]">
-                  Amounts in INR &gt;
+                <p className="text-sm transform rotate-[-90deg] absolute left-[-38px] top-[40%]">
+                  Amount in INR &gt;
                 </p>
                 <div className="max-h-[350px]">
                   <Line
@@ -689,7 +689,7 @@ const InventoryReportsPage = () => {
                     className="w-full"
                   />
                 </div>
-                <p className="text-center">{timeLegend[groupBy]} &gt;</p>
+                <p className="text-center text-sm">{timeLegend[groupBy]} &gt;</p>
               </div>
             )}
           </div>

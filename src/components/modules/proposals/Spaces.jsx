@@ -285,7 +285,7 @@ const Spaces = () => {
           row: {
             original: { location },
           },
-        }) => useMemo(() => <p>{location || '-'}</p>, []),
+        }) => useMemo(() => <p>{location.city || '-'}</p>, []),
       },
       {
         Header: 'ADDITIONAL TAGS',
@@ -570,7 +570,29 @@ const Spaces = () => {
     [updatedInventoryData, watchSpaces],
   );
 
-  const handleSelection = selectedRows => form.setValue('spaces', selectedRows);
+  const handleSortRowsOnTop = (ids, rows) => {
+    setUpdatedInventoryData(() => {
+      const arr1 = [];
+      const arr2 = [];
+      rows.forEach(item => {
+        if (ids.includes(item._id)) {
+          arr1.push(item);
+        } else {
+          arr2.push(item);
+        }
+      });
+
+      return [...arr1, ...arr2];
+    });
+  };
+
+  const handleSelection = selectedRows => {
+    handleSortRowsOnTop(
+      selectedRows?.map(item => item._id),
+      updatedInventoryData,
+    );
+    form.setValue('spaces', selectedRows);
+  };
 
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
@@ -622,7 +644,7 @@ const Spaces = () => {
         obj.category = item?.basicInformation?.category?.name;
         obj.subCategory = item?.basicInformation?.subCategory?.name;
         obj.dimension = item.specifications?.size;
-        obj.location = item?.location?.city;
+        obj.location = item?.location;
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.mediaType = item?.basicInformation?.mediaType?.name;
         obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
@@ -632,7 +654,10 @@ const Spaces = () => {
         obj.endDate = getDate(selectionItem, item, 'endDate');
         finalData.push(obj);
       }
-      setUpdatedInventoryData(finalData);
+      handleSortRowsOnTop(
+        watchSpaces?.map(item => item._id),
+        finalData,
+      );
       setPagination(page);
     }
   }, [inventoryData]);
