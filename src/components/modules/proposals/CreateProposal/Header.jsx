@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 const initialState = ['Basic Information', 'Specifications'];
 
-const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposalId }) => {
+const Header = ({ setFormStep, formStep, isProposalLoading, proposalId }) => {
   const { values } = useFormContext();
   const navigate = useNavigate();
   const handleBack = () => {
@@ -85,11 +85,7 @@ const Header = ({ setFormStep, formStep, isProposalLoading, isEditable, proposal
             disabled={isProposalLoading || values?.spaces.find(item => !item.unit)}
             loading={isProposalLoading}
           >
-            {isProposalLoading
-              ? 'Saving...'
-              : isEditable && !values?.spaces.length
-              ? 'Edit'
-              : 'Save'}
+            {isProposalLoading ? 'Saving...' : 'Save'}
           </Button>
         ) : null}
       </div>
