@@ -229,11 +229,9 @@ const InventoryDashboardPage = () => {
             () => (
               <div className="flex gap-x-2">
                 {info.row.original.specifications?.size.length ? (
-                  <p>
+                  <p className="w-72">
                     {info.row.original.specifications.size
-                      .map((item, index) =>
-                        index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
-                      )
+                      .map(item => `${item?.width || 0}ft x ${item?.height || 0}ft`)
                       .filter(item => item !== null)
                       .join(', ')}
                   </p>

@@ -135,9 +135,7 @@ const Card = ({
               {specifications?.size.length ? (
                 <p className="text-sm">
                   {specifications.size
-                    .map((item, index) =>
-                      index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
-                    )
+                    .map(item => `${item?.width || 0}ft x ${item?.height || 0}ft`)
                     .filter(item => item !== null)
                     .join(', ')}
                 </p>

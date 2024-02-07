@@ -359,11 +359,9 @@ const SpaceList = () => {
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
         obj.dimension = item.specifications?.size?.length ? (
-          <p>
+          <p className="w-72">
             {item.specifications.size
-              .map((ele, index) =>
-                index < 2 ? `${ele?.width || 0}ft x ${ele?.height || 0}ft` : null,
-              )
+              .map(ele => `${ele?.width || 0}ft x ${ele?.height || 0}ft`)
               .filter(ele => ele !== null)
               .join(', ')}
           </p>
