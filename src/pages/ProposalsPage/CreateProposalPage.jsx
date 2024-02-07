@@ -235,7 +235,6 @@ const CreateProposalPage = () => {
               setFormStep={setFormStep}
               formStep={formStep}
               isProposalLoading={isCreateProposalLoading || isUpdateProposalLoading}
-              isEditable={!!proposalId}
               proposalId={proposalId}
             />
           </div>

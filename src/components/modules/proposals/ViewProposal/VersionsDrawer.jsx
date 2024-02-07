@@ -3,6 +3,7 @@ import { useModals } from '@mantine/modals';
 import { IconTrash, IconHistory, IconShare } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useMemo } from 'react';
 import modalConfig from '../../../../utils/modalConfig';
 import ConfirmContent from '../../../shared/ConfirmContent';
 import {
@@ -33,17 +34,17 @@ const VersionsDrawer = ({
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });
+  const Versions = useMemo(
+    () => proposalVersionsQuery.data?.pages.reduce((acc, { docs }) => [...acc, ...docs], []) || [],
+    [proposalVersionsQuery?.data],
+  );
 
   const handleDeleteVersion = (id, versionTitle) => {
     modals.closeModal('deleteVersionModal');
     deleteVersion.mutate(id, {
       onSuccess: () => {
         if (parentVersionTitle === versionTitle) {
-          navigate(
-            `/proposals/view-details/${
-              proposalVersionsQuery?.data?.docs?.[0]._id
-            }?${searchParams.toString()}`,
-          );
+          navigate(`/proposals/view-details/${Versions?.[0]._id}?${searchParams.toString()}`);
         }
 
         onClose();
@@ -112,6 +113,10 @@ const VersionsDrawer = ({
     });
   };
 
+  const loadMoreVersions = async () => {
+    await proposalVersionsQuery.fetchNextPage();
+  };
+
   return (
     <Drawer
       className="overflow-auto"
@@ -128,64 +133,72 @@ const VersionsDrawer = ({
         <div className="flex justify-center items-center h-[400px]">
           <Loader />
         </div>
-      ) : proposalVersionsQuery?.data?.docs?.length ? (
-        proposalVersionsQuery?.data?.docs?.map(
-          ({ versionTitle, createdAt, _id, parentProposalId }, index) => (
-            <div
-              key={_id}
-              className="border border-gray-400 p-2 rounded-md flex flex-col gap-2 my-2 h-fit"
-            >
-              <div className="flex w-full gap-4 justify-between">
-                <Radio
-                  label={
-                    <div>
-                      <div className="text-xl truncate" title={`Version ${versionTitle}`}>
-                        Version {versionTitle}
-                      </div>
-                      <div className="text-sm ">{dayjs(createdAt).format(DATE_FORMAT)}</div>
+      ) : Versions?.length ? (
+        Versions?.map(({ versionTitle, createdAt, _id, parentProposalId }, index) => (
+          <div
+            key={_id}
+            className="border border-gray-400 p-2 rounded-md flex flex-col gap-2 my-2 h-fit"
+          >
+            <div className="flex w-full gap-4 justify-between">
+              <Radio
+                label={
+                  <div>
+                    <div className="text-xl truncate" title={`Version ${versionTitle}`}>
+                      Version {versionTitle}
                     </div>
-                  }
-                  classNames={{ inner: 'mt-2', root: 'w-1/2', label: 'w-[280px]' }}
-                  onClick={() => onVersionClick(_id, index, parentProposalId)}
-                  checked={proposalId === _id || parentVersionTitle === versionTitle}
-                />
-                <div className="flex">
-                  {index !== 0 ? (
-                    <Button
-                      size="xs"
-                      title="Restore"
-                      className="text-black px-2"
-                      onClick={() => toggleRestoreProposal(_id, parentProposalId)}
-                    >
-                      <IconHistory size={22} />
-                    </Button>
-                  ) : null}
+                    <div className="text-sm ">{dayjs(createdAt).format(DATE_FORMAT)}</div>
+                  </div>
+                }
+                classNames={{ inner: 'mt-2', root: 'w-1/2', label: 'w-[280px]' }}
+                onClick={() => onVersionClick(_id, index, parentProposalId)}
+                checked={proposalId === _id || parentVersionTitle === versionTitle}
+              />
+              <div className="flex">
+                {index !== 0 ? (
                   <Button
                     size="xs"
-                    title="Share"
+                    title="Restore"
                     className="text-black px-2"
-                    onClick={() => shareVersion(_id)}
+                    onClick={() => toggleRestoreProposal(_id, parentProposalId)}
                   >
-                    <IconShare size={22} />
+                    <IconHistory size={22} />
                   </Button>
-                  {index !== 0 ? (
-                    <Button
-                      size="xs"
-                      title="Delete"
-                      className="text-red-350 px-2"
-                      onClick={() => toggleDeleteVersion(_id, versionTitle)}
-                    >
-                      <IconTrash size={22} />
-                    </Button>
-                  ) : null}
-                </div>
+                ) : null}
+                <Button
+                  size="xs"
+                  title="Share"
+                  className="text-black px-2"
+                  onClick={() => shareVersion(_id)}
+                >
+                  <IconShare size={22} />
+                </Button>
+                {index !== 0 ? (
+                  <Button
+                    size="xs"
+                    title="Delete"
+                    className="text-red-350 px-2"
+                    onClick={() => toggleDeleteVersion(_id, versionTitle)}
+                  >
+                    <IconTrash size={22} />
+                  </Button>
+                ) : null}
               </div>
             </div>
-          ),
-        )
+          </div>
+        ))
       ) : (
         <div className="text-center">No versions available</div>
       )}
+      {proposalVersionsQuery.hasNextPage ? (
+        <Button
+          variant="default"
+          onClick={loadMoreVersions}
+          className="w-full"
+          loading={proposalVersionsQuery.isLoading || proposalVersionsQuery.isFetching}
+        >
+          Load more
+        </Button>
+      ) : null}
     </Drawer>
   );
 };
