@@ -234,7 +234,7 @@ const ProposalDetailsPage = () => {
         }) =>
           useMemo(
             () => (
-              <p className="w-72">
+              <p className="max-w-[300px]">
                 {size
                   .map(item => `${item?.width || 0}ft x ${item?.height || 0}ft`)
                   .filter(item => item !== null)

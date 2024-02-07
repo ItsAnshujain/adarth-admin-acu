@@ -138,7 +138,7 @@ const ReleaseOrderPreview = ({ previewData, previewSpaces = [], totalPrice = 0, 
                         </p>
                         <div className="flex gap-x-2">
                           {item?.dimensions?.length ? (
-                            <p className="w-72">
+                            <p className="max-w-[300px]">
                               {item.dimensions
                                 .map(ele => `${ele?.width || 0}ft x ${ele?.height || 0}ft`)
                                 .filter(ele => ele !== null)

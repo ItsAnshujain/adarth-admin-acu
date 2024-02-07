@@ -297,7 +297,7 @@ const InventoryReportsPage = () => {
       }) =>
         useMemo(
           () => (
-            <p className="w-72">
+            <p className="max-w-[300px]">
               {specifications.size
                 .map(ele => `${ele?.width || 0}ft x ${ele?.height || 0}ft`)
                 .filter(ele => ele !== null)
@@ -438,7 +438,7 @@ const InventoryReportsPage = () => {
       }) =>
         useMemo(
           () => (
-            <p className="w-72">
+            <p className="max-w-[300px]">
               {specifications?.size
                 ?.map(ele => `${ele?.width || 0}ft x ${ele?.height || 0}ft`)
                 .filter(ele => ele !== null)

@@ -359,7 +359,7 @@ const SpaceList = () => {
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
         obj.dimension = item.specifications?.size?.length ? (
-          <p className="w-72">
+          <p className="max-w-[300px]">
             {item.specifications.size
               .map(ele => `${ele?.width || 0}ft x ${ele?.height || 0}ft`)
               .filter(ele => ele !== null)

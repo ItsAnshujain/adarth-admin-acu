@@ -198,7 +198,7 @@ const ReleaseOrder = ({
             () => (
               <div className="flex gap-x-2">
                 {info.row.original.size.length ? (
-                  <p className="w-72">
+                  <p className="max-w-[300px]">
                     {info.row.original.size
                       .map(item => `${item?.width || 0}ft x ${item?.height || 0}ft`)
                       .filter(item => item !== null)
