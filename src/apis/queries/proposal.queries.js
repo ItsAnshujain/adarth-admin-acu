@@ -1,5 +1,5 @@
 import { showNotification } from '@mantine/notifications';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createProposal,
   createProposalTerms,
@@ -182,14 +182,15 @@ export const useProposalTermsById = (proposalTermId, enabled = true) =>
 // For Proposal Version
 
 export const useProposalVersions = ({ id, ...query }, enabled = true) =>
-  useQuery({
+  useInfiniteQuery({
     queryKey: ['proposal-versions', id],
-    queryFn: async () => {
-      const res = await fetchProposalVersions(query, id);
-      return res?.data;
+    queryFn: async ({ pageParam = 0 }) => {
+      const res = await fetchProposalVersions({ ...query, page: pageParam || 1 }, id);
+
+      return res.data;
     },
     enabled,
-    onError: onApiError,
+    getNextPageParam: lastPage => (lastPage.hasNextPage ? +lastPage.pagingCounter + 1 : undefined),
   });
 
 export const useDeleteProposalVersion = () => {
