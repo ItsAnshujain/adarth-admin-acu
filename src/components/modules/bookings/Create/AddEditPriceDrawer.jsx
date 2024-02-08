@@ -429,8 +429,6 @@ const AddEditPriceDrawer = ({
       formContext.setValue('spaces', proposalData);
     }
 
-    setBookingData([]);
-    setProposalData([]);
     onClose();
     form.reset();
   };
