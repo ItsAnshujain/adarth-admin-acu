@@ -617,7 +617,9 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
       (item?.oneTimeInstallationCost || 0) +
       (item?.monthlyAdditionalCost || 0) * updatedTotalMonths -
       (item?.otherCharges || 0) -
-      (item?.discountOn === 'displayCost' ? (displayCost || 0) * ((item?.discount || 0) / 100) : 0),
+      (item?.discountOn === 'displayCost'
+        ? (item?.displayCostPerMonth || 0) * ((item?.discount || 0) / 100)
+        : 0),
   );
 
   return item?.discountOn === 'totalPrice'
