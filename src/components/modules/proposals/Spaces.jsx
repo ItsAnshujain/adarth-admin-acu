@@ -273,7 +273,7 @@ const Spaces = () => {
           row: {
             original: { location },
           },
-        }) => useMemo(() => <p>{location || '-'}</p>, []),
+        }) => useMemo(() => <p>{location.city || '-'}</p>, []),
       },
       {
         Header: 'ADDITIONAL TAGS',
@@ -621,7 +621,7 @@ const Spaces = () => {
         obj.category = item?.basicInformation?.category?.name;
         obj.subCategory = item?.basicInformation?.subCategory?.name;
         obj.dimension = item.specifications?.size;
-        obj.location = item?.location?.city;
+        obj.location = item?.location;
         obj.faciaTowards = item?.location?.faciaTowards;
         obj.mediaType = item?.basicInformation?.mediaType?.name;
         obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);

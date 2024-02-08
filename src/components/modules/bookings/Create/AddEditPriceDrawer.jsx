@@ -550,7 +550,6 @@ const AddEditPriceDrawer = ({
         <Divider className="pt-4" />
         <Carousel
           align="center"
-          height={170}
           controlsOffset="lg"
           initialSlide={0}
           nextControlIcon={<ChevronRight size={25} className="rounded-full" />}
@@ -563,24 +562,24 @@ const AddEditPriceDrawer = ({
         >
           {selectedInventories?.map(inventory => (
             <Carousel.Slide>
-              <div className="bg-gray-200 h-full rounded-lg p-4 w-3/4 m-auto flex flex-col g">
+              <div className="bg-gray-200 h-full rounded-lg p-4 w-3/4 m-auto flex flex-col justify-between">
                 <div className="text-xl">
                   {inventory.spaceName || inventory?.basicInformation?.spaceName}
                 </div>
                 <div className="text-lg text-gray-400">
                   City <span className="text-black">{inventory.location?.city}</span>
                 </div>
-                <div className="text-lg text-gray-400">
-                  Dimension{' '}
+                <div className="text-lg text-gray-400 flex">
+                  <div>
+                    Dimension
+                    <div className="text-lg text-gray-400 p-0 m-0">(WxH)</div>
+                  </div>
                   <span className="text-black">
                     {inventory?.dimension
-                      ?.map((item, index) =>
-                        index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
-                      )
+                      ?.map(item => `${item?.width || 0}ft x ${item?.height || 0}ft`)
                       .filter(item => item !== null)
                       .join(', ')}
                   </span>
-                  <div className="text-lg text-gray-400 p-0 m-0">(WxH)</div>
                 </div>
                 <div className="text-lg text-gray-400">
                   Area <span className="text-black">{totalArea} sq.ft.</span>
