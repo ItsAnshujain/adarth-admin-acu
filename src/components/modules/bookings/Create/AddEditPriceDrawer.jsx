@@ -429,6 +429,8 @@ const AddEditPriceDrawer = ({
       formContext.setValue('spaces', proposalData);
     }
 
+    setBookingData([]);
+    setProposalData([]);
     onClose();
     form.reset();
   };
@@ -699,7 +701,7 @@ const AddEditPriceDrawer = ({
               ) : (
                 <ControlledNumberInput
                   precision={2}
-                  label="Discounted Display Cost"
+                  label="Discounted Display Cost (per month)"
                   name="discountedDisplayCost"
                   hideControls
                   classNames={{ label: 'text-base font-bold' }}
