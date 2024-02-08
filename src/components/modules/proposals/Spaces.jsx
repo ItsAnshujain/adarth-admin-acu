@@ -15,6 +15,7 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 import { useFetchInventory } from '../../../apis/queries/inventory.queries';
 import {
+  calculateTotalCostOfBooking,
   calculateTotalMonths,
   categoryColors,
   currentDate,
@@ -36,6 +37,7 @@ import SpaceNamePhotoContent from '../inventory/SpaceNamePhotoContent';
 import AddEditPriceDrawer from '../bookings/Create/AddEditPriceDrawer';
 import SelectColumns from './SelectColumns';
 import { proposalColumns } from '../../../utils/constants';
+import DimensionContent from '../inventory/DimensionContent';
 
 dayjs.extend(isBetween);
 
@@ -115,31 +117,23 @@ const Spaces = () => {
 
       form.setValue(
         'spaces',
-        watchSpaces.map(item => {
-          const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
-          const updatedTotalMonths = calculateTotalMonths(item?.startDate, item?.endDate);
-          return item._id === id
+        watchSpaces.map(item =>
+          item._id === id
             ? {
                 ...item,
                 startDate: val[0],
                 endDate: val[1],
                 ...(!hasChangedUnit ? { unit: availableUnit } : {}),
                 availableUnit,
-                price: Number(
-                  (
-                    (item.totalDisplayCost || 0) +
-                    (item.tradedAmount || 0) +
-                    (Number(item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
-                      0) +
-                    (Number(item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
-                      0) +
-                    (item.oneTimeInstallationCost || 0) +
-                    (item.monthlyAdditionalCost || 0) * updatedTotalMonths
-                  ).toFixed(2),
+                price: calculateTotalCostOfBooking(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.startDate,
+                  item.endDate,
                 ),
               }
-            : item;
-        }),
+            : item,
+        ),
       );
     } else {
       setUpdatedInventoryData(prev =>
@@ -167,17 +161,11 @@ const Spaces = () => {
                   (item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths).toFixed(2),
                 ),
                 totalArea: updatedTotalArea,
-                price: Number(
-                  (
-                    (item.totalDisplayCost || 0) +
-                    (item.tradedAmount || 0) +
-                    (Number(item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
-                      0) +
-                    (Number(item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths) ||
-                      0) +
-                    (item.oneTimeInstallationCost || 0) +
-                    (item.monthlyAdditionalCost || 0) * updatedTotalMonths
-                  ).toFixed(2),
+                price: calculateTotalCostOfBooking(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.startDate,
+                  item.endDate,
                 ),
                 [key]: val,
                 ...(key === 'unit' ? { hasChangedUnit: true } : {}),
@@ -372,8 +360,7 @@ const Spaces = () => {
           row: {
             original: { dimension },
           },
-        }) =>
-          useMemo(() => dimension?.map(dim => `${dim.width}ft x ${dim.height}ft`).join(','), []),
+        }) => useMemo(() => <DimensionContent list={dimension} />, []),
       },
       {
         Header: 'PRICE',
@@ -432,16 +419,7 @@ const Spaces = () => {
         Cell: ({ row: { original } }) =>
           useMemo(() => {
             const place = watchSpaces.filter(item => item._id === original._id)?.[0];
-            const updatedTotalMonths = calculateTotalMonths(place?.startDate, place?.endDate);
-
-            const totalCost =
-              (place?.totalDisplayCost || 0) +
-              (place?.tradedAmount || 0) +
-              (place?.totalPrintingCost || 0) +
-              (place?.totalMountingCost || 0) +
-              (place?.oneTimeInstallationCost || 0) +
-              (place?.monthlyAdditionalCost || 0) * (updatedTotalMonths || 0);
-            return totalCost.toFixed(2) || 0;
+            return place?.price;
           }, []),
       },
       {
@@ -570,27 +548,26 @@ const Spaces = () => {
     [updatedInventoryData, watchSpaces],
   );
 
-  const handleSortRowsOnTop = (ids, rows) => {
+  const handleSortRowsOnTop = (spaces, rows) => {
     setUpdatedInventoryData(() => {
       const arr1 = [];
       const arr2 = [];
       rows.forEach(item => {
-        if (ids.includes(item._id)) {
+        if (spaces.some(space => space._id === item._id)) {
           arr1.push(item);
         } else {
           arr2.push(item);
         }
       });
-
+      if (arr1.length < spaces.length) {
+        return [...spaces, ...arr2];
+      }
       return [...arr1, ...arr2];
     });
   };
 
   const handleSelection = selectedRows => {
-    handleSortRowsOnTop(
-      selectedRows?.map(item => item._id),
-      updatedInventoryData,
-    );
+    handleSortRowsOnTop(selectedRows, updatedInventoryData);
     form.setValue('spaces', selectedRows);
   };
 
@@ -654,10 +631,7 @@ const Spaces = () => {
         obj.endDate = getDate(selectionItem, item, 'endDate');
         finalData.push(obj);
       }
-      handleSortRowsOnTop(
-        watchSpaces?.map(item => item._id),
-        finalData,
-      );
+      handleSortRowsOnTop(watchSpaces, finalData);
       setPagination(page);
     }
   }, [inventoryData]);
@@ -714,7 +688,6 @@ const Spaces = () => {
                   columns={proposalColumns}
                 />
               )}
-
               <Button onClick={toggleFilter} variant="default">
                 <ChevronDown size={16} className="mr-1" /> Filter
               </Button>

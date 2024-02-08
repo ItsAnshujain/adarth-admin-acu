@@ -6,8 +6,17 @@ import { ChevronLeft, ChevronRight } from 'react-feather';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import classNames from 'classnames';
+import shallow from 'zustand/shallow';
 import ControlledNumberInput from '../../../shared/FormInputs/Controlled/ControlledNumberInput';
-import { calculateTotalCostOfBooking, indianCurrencyInDecimals } from '../../../../utils';
+import {
+  calculateTotalAmountWithPercentage,
+  calculateTotalArea,
+  calculateTotalCostOfBooking,
+  calculateTotalMonths,
+  indianCurrencyInDecimals,
+} from '../../../../utils';
+import useBookingStore from '../../../../store/booking.store';
+import useProposalStore from '../../../../store/proposal.store';
 
 const schema = yup.object({
   displayCostPerMonth: yup
@@ -30,11 +39,7 @@ const schema = yup.object({
     .typeError('Must be a number')
     .nullable()
     .required('Display cost per sq. ft. is required'),
-  tradedAmount: yup
-    .number()
-    .typeError('Must be a number')
-    .nullable()
-    .required('Traded Amount is required'),
+  tradedAmount: yup.number().typeError('Must be a number').nullable(),
   oneTimeInstallationCost: yup
     .number()
     .typeError('Must be a number')
@@ -67,10 +72,10 @@ const defaultValues = {
   oneTimeInstallationCost: 0,
   monthlyAdditionalCost: 0,
   otherCharges: 0,
-  applyPrintingMountingCostForAll: true,
+  applyPrintingMountingCostForAll: false,
   subjectToExtension: false,
   discountOn: 'displayCost',
-  applyDiscountForAll: true,
+  applyDiscountForAll: false,
 };
 
 const AddEditPriceDrawer = ({
@@ -88,38 +93,19 @@ const AddEditPriceDrawer = ({
   });
   const [activeSlide, setActiveSlide] = useState();
 
-  const watchDisplayCostPerMonth = form.watch('displayCostPerMonth');
-  const watchDisplayCostPerSqFt = form.watch('displayCostPerSqFt');
   const watchDisplayCostGstPercentage = form.watch('displayCostGstPercentage');
-
+  const watchDisplayCostPerMonth = form.watch('displayCostPerMonth');
   const watchPrintingCostPerSqft = form.watch('printingCostPerSqft');
   const watchMountingCostPerSqft = form.watch('mountingCostPerSqft');
   const watchPrintingGstPercentage = form.watch('printingGstPercentage');
   const watchMountingGstPercentage = form.watch('mountingGstPercentage');
-  const watchTotalPrintingCost = form.watch('totalPrintingCost');
   const watchTotalMountingCost = form.watch('totalMountingCost');
 
   const watchApplyPrintingMountingCostForAll = form.watch('applyPrintingMountingCostForAll');
   const watchApplyDiscountForAll = form.watch('applyDiscountForAll');
 
-  const watchDiscount = form.watch('discount');
   const watchDiscountOn = form.watch('discountOn');
   const watchSubjectToExtension = form.watch('subjectToExtension');
-
-  const calculateTotalMonths = (startDate, endDate) => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    const yearDiff = end.getFullYear() - start.getFullYear();
-    const monthDiff = end.getMonth() - start.getMonth();
-    const dayDiff = end.getDate() - start.getDate() + 1;
-
-    const totalMonths = yearDiff * 12 + monthDiff;
-
-    const fractionOfMonth = dayDiff / new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate();
-
-    return totalMonths + fractionOfMonth;
-  };
 
   useEffect(() => {
     const currentIndex = selectedInventories?.findIndex(inv => inv?._id === selectedInventoryId);
@@ -142,475 +128,305 @@ const AddEditPriceDrawer = ({
     [selectedInventory],
   );
 
-  const totalArea = useMemo(() => {
-    const area =
-      selectedInventory?.dimension?.reduce(
-        (accumulator, dimension) => accumulator + dimension.height * dimension.width,
-        0,
-      ) || 0;
-    return (
-      area *
-      (selectedInventory?.unit || 1) *
-      (selectedInventory?.facing === 'Single' ||
-        (selectedInventory?.facing?.toLowerCase().includes('single') ||
-        selectedInventory?.location?.facing?.name?.toLowerCase().includes('single')
-          ? 1
-          : selectedInventory?.facing?.toLowerCase().includes('double') ||
-            selectedInventory?.location?.facing?.name?.toLowerCase().includes('double')
-          ? 2
-          : selectedInventory?.facing?.toLowerCase().includes('four') ||
-            selectedInventory?.location?.facing?.name.toLowerCase().includes('four')
-          ? 4
-          : 1) ||
-        0)
-    );
-  }, [selectedInventory?.dimension]);
+  const totalArea = useMemo(
+    () => calculateTotalArea(selectedInventory, selectedInventory?.unit),
+    [selectedInventory],
+  );
 
-  const {
-    totalDisplayCost,
-    tradedAmount,
-    totalPrintingCost,
-    totalMountingCost,
-    oneTimeInstallationCost,
-    monthlyAdditionalCost,
-    otherCharges,
-  } = form.watch();
-
-  const totalPrice = useMemo(() => {
-    if (type === 'bookings')
-      return calculateTotalCostOfBooking(
+  const totalPrice = useMemo(
+    () =>
+      calculateTotalCostOfBooking(
         { ...selectedInventory, ...form.watch() },
         selectedInventory?.unit,
         selectedInventory?.startDate,
         selectedInventory?.endDate,
+      ),
+    [selectedInventory, form.formState],
+  );
+
+  const onChangeDisplayCostPerMonth = useCallback(
+    val => {
+      const displayCostPerMonth = val * totalMonths;
+      const displayCostPerSqFt = Number((val / totalArea).toFixed(2));
+      form.setValue('displayCostPerSqFt', displayCostPerSqFt);
+
+      if (totalArea && totalArea > 0) {
+        form.setValue(
+          'totalDisplayCost',
+          calculateTotalAmountWithPercentage(displayCostPerMonth, watchDisplayCostGstPercentage),
+        );
+      }
+    },
+    [watchDisplayCostGstPercentage, totalMonths, totalArea],
+  );
+
+  const onChangeDisplayCostPerSqFt = useCallback(
+    val => {
+      const displayCostPerSqFt = val * totalArea;
+
+      form.setValue('displayCostPerMonth', Number(displayCostPerSqFt?.toFixed(2)) || 0);
+
+      if (totalArea && totalArea > 0) {
+        form.setValue(
+          'totalDisplayCost',
+          calculateTotalAmountWithPercentage(
+            displayCostPerSqFt * totalMonths,
+            watchDisplayCostGstPercentage,
+          ),
+        );
+      }
+    },
+    [watchDisplayCostGstPercentage, totalMonths, totalArea],
+  );
+
+  const onChangeDisplayCostPercentage = useCallback(
+    val => {
+      const displayCostPerMonth = watchDisplayCostPerMonth * Number(totalMonths) || 0;
+
+      form.setValue(
+        'totalDisplayCost',
+        calculateTotalAmountWithPercentage(displayCostPerMonth, val),
       );
-    const total =
-      Number(totalDisplayCost?.toFixed(2)) -
-      (watchDiscountOn === 'displayCost'
-        ? Number(totalDisplayCost?.toFixed(2)) * ((Number(watchDiscount?.toFixed(2)) || 0) / 100)
-        : 0) +
-      Number(totalPrintingCost?.toFixed(2)) +
-      Number(totalMountingCost?.toFixed(2)) +
-      Number(oneTimeInstallationCost?.toFixed(2)) +
-      (Number(monthlyAdditionalCost?.toFixed(2)) || 0) * Number(totalMonths) -
-      Number(otherCharges?.toFixed(2));
-    return total - (watchDiscountOn === 'totalPrice' ? total * ((watchDiscount || 0) / 100) : 0);
-  }, [
-    totalDisplayCost,
-    tradedAmount,
-    totalPrintingCost,
-    totalMountingCost,
-    oneTimeInstallationCost,
-    monthlyAdditionalCost,
-    otherCharges,
-    watchDiscount,
-    watchDiscountOn,
-    selectedInventory,
-    watchDisplayCostPerMonth,
-  ]);
+    },
+    [watchDisplayCostGstPercentage, totalArea],
+  );
 
-  const onChangeDisplayCostPerMonth = useCallback(() => {
-    const displayCostPerMonth =
-      Number(watchDisplayCostPerMonth?.toFixed(2)) * Number(totalMonths) || 0;
+  const onChangePrintingCost = useCallback(
+    val => {
+      const printingCost = val * totalArea;
+      form.setValue(
+        'totalPrintingCost',
+        calculateTotalAmountWithPercentage(printingCost, watchPrintingGstPercentage),
+      );
+    },
+    [watchPrintingGstPercentage, totalArea],
+  );
 
-    form.setValue(
-      totalArea && totalArea > 0 && 'totalDisplayCost',
-      Number(displayCostPerMonth?.toFixed(2)) +
-        Number(displayCostPerMonth?.toFixed(2)) *
-          ((Number(watchDisplayCostGstPercentage?.toFixed(2)) || 0) / 100),
-    );
+  const onChangePrintingCostGst = useCallback(
+    val => {
+      const printingCost = watchPrintingCostPerSqft * totalArea;
+      form.setValue('totalPrintingCost', calculateTotalAmountWithPercentage(printingCost, val));
+    },
+    [watchPrintingCostPerSqft, totalArea],
+  );
 
-    form.setValue(
-      'displayCostPerSqFt',
-      totalArea &&
-        totalArea > 0 &&
-        (Number(watchDisplayCostPerMonth?.toFixed(2)) || 0) / Number(totalArea?.toFixed(2)),
-    );
-  }, [watchDisplayCostPerMonth, watchDisplayCostGstPercentage, totalMonths]);
+  const onChangeMountingCost = useCallback(
+    val => {
+      const mountingCost = val * totalArea;
+      form.setValue(
+        'totalMountingCost',
+        calculateTotalAmountWithPercentage(mountingCost, watchMountingGstPercentage),
+      );
+    },
+    [watchMountingGstPercentage, totalArea],
+  );
 
-  const onChangeDisplayCostPerSqFt = useCallback(() => {
-    const displayCostPerSqFt =
-      Number(watchDisplayCostPerSqFt?.toFixed(2)) * (Number(totalArea?.toFixed(2)) || 0) || 0;
-
-    form.setValue(
-      'displayCostPerMonth',
-      Number(displayCostPerSqFt?.toFixed(2)) +
-        Number(displayCostPerSqFt?.toFixed(2)) * ((watchDisplayCostGstPercentage || 0) / 100) || 0,
-    );
-
-    form.setValue(
-      'totalDisplayCost',
-      totalArea &&
-        totalArea > 0 &&
-        Number(displayCostPerSqFt?.toFixed(2)) * Number(totalMonths) +
-          Number(displayCostPerSqFt?.toFixed(2)) *
-            ((Number(watchDisplayCostGstPercentage?.toFixed(2)) || 0) / 100),
-    );
-  }, [watchDisplayCostPerSqFt, watchDisplayCostGstPercentage, totalMonths]);
-
-  const onChangeDisplayCostPercentage = useCallback(() => {
-    const displayCostPerMonth =
-      Number(watchDisplayCostPerMonth?.toFixed(2)) * Number(totalMonths) || 0;
-
-    form.setValue(
-      'totalDisplayCost',
-      Number(displayCostPerMonth?.toFixed(2)) +
-        Number(displayCostPerMonth?.toFixed(2)) *
-          ((Number(watchDisplayCostGstPercentage?.toFixed(2)) || 0) / 100),
-    );
-  }, [
-    watchDisplayCostPerSqFt,
-    watchDisplayCostPerMonth,
-    watchDisplayCostGstPercentage,
-    totalArea || 0,
-  ]);
-
-  const onChangePrintingCost = useCallback(() => {
-    const printingCost =
-      Number(watchPrintingCostPerSqft?.toFixed(2)) *
-        (Number(totalArea?.toFixed(2)) || 0) *
-        Number(totalMonths) || 0;
-    form.setValue(
-      'totalPrintingCost',
-      Number(printingCost?.toFixed(2)) +
-        Number(printingCost?.toFixed(2)) *
-          ((Number(watchPrintingGstPercentage?.toFixed(2)) || 0) / 100),
-    );
-  }, [watchPrintingCostPerSqft, watchPrintingGstPercentage, totalArea || 0, totalMonths]);
-
-  const onChangePrintingCostGst = useCallback(() => {
-    const printingCost =
-      Number(watchPrintingCostPerSqft?.toFixed(2)) *
-        (Number(totalArea?.toFixed(2)) || 0) *
-        Number(totalMonths) || 0;
-    form.setValue(
-      'totalPrintingCost',
-      Number(printingCost?.toFixed(2)) +
-        Number(printingCost?.toFixed(2)) *
-          ((Number(watchPrintingGstPercentage?.toFixed(2)) || 0) / 100),
-    );
-  }, [watchTotalPrintingCost, watchPrintingGstPercentage]);
-
-  const onChangeMountingCost = useCallback(() => {
-    const mountingCost =
-      Number(watchMountingCostPerSqft?.toFixed(2)) *
-        (Number(totalArea?.toFixed(2)) || 0) *
-        Number(totalMonths) || 0;
-    form.setValue(
-      'totalMountingCost',
-      Number(mountingCost?.toFixed(2)) +
-        Number(mountingCost?.toFixed(2)) *
-          ((Number(watchMountingGstPercentage?.toFixed(2)) || 0) / 100),
-    );
-  }, [watchMountingCostPerSqft, watchMountingGstPercentage, totalArea || 0, totalMonths]);
-
-  const onChangeMountingCostGst = useCallback(() => {
-    const mountingCost =
-      Number(watchMountingCostPerSqft?.toFixed(2)) *
-        (Number(totalArea?.toFixed(2)) || 0) *
-        Number(totalMonths) || 0;
-    form.setValue(
-      'totalMountingCost',
-      Number(mountingCost?.toFixed(2)) +
-        Number(mountingCost?.toFixed(2)) *
-          ((Number(watchMountingGstPercentage?.toFixed(2)) || 0) / 100),
-    );
-  }, [watchTotalMountingCost, watchMountingGstPercentage]);
+  const onChangeMountingCostGst = useCallback(
+    val => {
+      const mountingCost = watchMountingCostPerSqft * totalArea;
+      form.setValue('totalMountingCost', calculateTotalAmountWithPercentage(mountingCost, val));
+    },
+    [watchTotalMountingCost],
+  );
 
   const watchPlace = formContext.watch('place');
 
-  const onSubmit = async formData => {
+  const { setBookingData, data } = useBookingStore(
+    state => ({
+      setBookingData: state.setBookingData,
+      data: state.bookingData,
+    }),
+    shallow,
+  );
+  const bookingData = useMemo(() => {
+    const formData = form.watch();
+    return data?.map(place => {
+      if (place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)) {
+        return {
+          ...place,
+          ...formData,
+          price: totalPrice,
+          totalArea,
+          discountedTotalPrice: totalPrice,
+          priceChanged: true,
+        };
+      }
+
+      const area = calculateTotalArea(place, place?.unit);
+      const updatedTotalPrintingCost = area * formData.printingCostPerSqft;
+      const updatedTotalMountingCost = area * formData.mountingCostPerSqft;
+
+      if (formData.applyPrintingMountingCostForAll && formData.applyDiscountForAll) {
+        const updatedTotalPrice = calculateTotalCostOfBooking(
+          {
+            ...place,
+            printingCostPerSqft: formData.printingCostPerSqft,
+            printingGstPercentage: formData.printingGstPercentage,
+            mountingCostPerSqft: formData.mountingCostPerSqft,
+            mountingGstPercentage: formData.mountingGstPercentage,
+            discountOn: formData.discountOn,
+            discount: formData.discount,
+          },
+          place?.unit,
+          place.startDate,
+          place.endDate,
+        );
+        return {
+          ...place,
+          printingCostPerSqft: formData.printingCostPerSqft,
+          printingGstPercentage: formData.printingGstPercentage,
+          mountingGstPercentage: formData.mountingGstPercentage,
+          mountingCostPerSqft: formData.mountingCostPerSqft,
+          totalPrintingCost: calculateTotalAmountWithPercentage(
+            updatedTotalPrintingCost,
+            formData.printingGstPercentage,
+          ),
+          totalMountingCost: calculateTotalAmountWithPercentage(
+            updatedTotalMountingCost,
+            formData.mountingGstPercentage,
+          ),
+          price: updatedTotalPrice,
+          discountOn: formData.discountOn,
+          discount: formData.discount,
+        };
+      }
+
+      if (formData.applyPrintingMountingCostForAll) {
+        const updatedTotalPrice = calculateTotalCostOfBooking(
+          {
+            ...place,
+            printingCostPerSqft: formData.printingCostPerSqft,
+            printingGstPercentage: formData.printingGstPercentage,
+            mountingCostPerSqft: formData.mountingCostPerSqft,
+            mountingGstPercentage: formData.mountingGstPercentage,
+          },
+          place?.unit,
+          place.startDate,
+          place.endDate,
+        );
+        return {
+          ...place,
+          printingCostPerSqft: area > 0 && Number(formData.printingCostPerSqft?.toFixed(2)),
+          printingGstPercentage: formData.printingGstPercentage,
+          mountingGstPercentage: formData.mountingGstPercentage,
+          mountingCostPerSqft: area > 0 && Number(formData.mountingCostPerSqft?.toFixed(2)),
+          totalPrintingCost: calculateTotalAmountWithPercentage(
+            updatedTotalPrintingCost,
+            formData.printingGstPercentage,
+          ),
+          totalMountingCost: calculateTotalAmountWithPercentage(
+            updatedTotalMountingCost,
+            formData.mountingGstPercentage,
+          ),
+          price: updatedTotalPrice,
+        };
+      }
+
+      if (formData.applyDiscountForAll) {
+        const updatedTotalPrice = calculateTotalCostOfBooking(
+          {
+            ...place,
+            discount: formData.discount,
+            discountOn: formData.discountOn,
+          },
+          place?.unit,
+          place.startDate,
+          place.endDate,
+        );
+        return {
+          ...place,
+          price: updatedTotalPrice,
+          discountOn: formData.discountOn,
+          discount: formData.discount,
+          applyDiscountForAll: true,
+        };
+      }
+
+      return place;
+    });
+  }, [JSON.stringify(form.watch())]);
+
+  useEffect(() => {
+    setBookingData(watchPlace);
+  }, [watchPlace]);
+
+  useEffect(() => {
+    setBookingData(bookingData);
+  }, [bookingData]);
+
+  const { setProposalData, proposalData } = useProposalStore(
+    state => ({
+      setProposalData: state.setProposalData,
+      proposalData: state.proposalData,
+    }),
+    shallow,
+  );
+
+  const memoizedProposalData = useMemo(() => {
+    const formData = form.watch();
+
+    return proposalData?.map(place => {
+      const area = calculateTotalArea(place, place?.unit);
+
+      const updatedTotalPrintingCost = area * formData.printingCostPerSqft;
+      const updatedTotalMountingCost = area * formData.mountingCostPerSqft;
+
+      const updatedTotalPrice = calculateTotalCostOfBooking(
+        {
+          ...place,
+          printingCostPerSqft: formData.printingCostPerSqft,
+          mountingCostPerSqft: formData.mountingCostPerSqft,
+        },
+        place?.unit,
+        place.startDate,
+        place.endDate,
+      );
+
+      return place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)
+        ? {
+            ...place,
+            displayCostPerMonth: formData.displayCostPerMonth,
+            totalDisplayCost: formData.totalDisplayCost,
+            displayCostPerSqFt: formData.displayCostPerSqFt,
+            printingCostPerSqft: formData.printingCostPerSqft,
+            totalPrintingCost: formData.totalPrintingCost,
+            mountingCostPerSqft: formData.mountingCostPerSqft,
+            totalMountingCost: formData.totalMountingCost,
+            oneTimeInstallationCost: formData.oneTimeInstallationCost,
+            monthlyAdditionalCost: formData.monthlyAdditionalCost,
+            otherCharges: formData.otherCharges,
+            subjectToExtension: formData.subjectToExtension,
+            price: totalPrice,
+            totalArea,
+            priceChanged: true,
+            discountedDisplayCost: formData.discountedDisplayCost,
+          }
+        : formData.applyPrintingMountingCostForAll
+        ? {
+            ...place,
+            printingCostPerSqft: formData.printingCostPerSqft,
+            mountingCostPerSqft: formData.mountingCostPerSqft,
+            totalPrintingCost: updatedTotalPrintingCost,
+            totalMountingCost: updatedTotalMountingCost,
+            price: updatedTotalPrice,
+          }
+        : place;
+    });
+  }, [JSON.stringify(form.watch())]);
+
+  useEffect(() => {
+    setProposalData(selectedInventories);
+  }, [selectedInventories]);
+
+  useEffect(() => {
+    setProposalData(memoizedProposalData);
+  }, [memoizedProposalData]);
+
+  const onSubmit = async () => {
     if (type === 'bookings') {
-      formContext.setValue(
-        'place',
-        watchPlace?.map(place => {
-          if (place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)) {
-            return {
-              ...place,
-              ...formData,
-              price: totalPrice,
-              totalArea,
-              discountedTotalPrice: totalPrice,
-              priceChanged: true,
-            };
-          }
-          if (watchApplyPrintingMountingCostForAll && watchApplyDiscountForAll) {
-            const totalMonthsOfPlace = calculateTotalMonths(place.startDate, place.endDate);
-            const area =
-              (place?.dimension?.reduce(
-                (accumulator, dimension) => accumulator + dimension.height * dimension.width,
-                0,
-              ) || 0) *
-                (place?.unit || 1) *
-                (place?.facing?.toLowerCase().includes('single') ||
-                place?.location?.facing?.name?.toLowerCase().includes('single')
-                  ? 1
-                  : place?.facing?.toLowerCase().includes('double') ||
-                    place?.location?.facing?.name?.toLowerCase().includes('double')
-                  ? 2
-                  : place?.facing?.toLowerCase().includes('four') ||
-                    place?.location?.facing?.name.toLowerCase().includes('four')
-                  ? 4
-                  : 1) || 0;
-
-            const updatedTotalPrintingCost =
-              Number(area?.toFixed(2) || 0) *
-              Number(formData.printingCostPerSqft?.toFixed(2)) *
-              (Number(totalMonthsOfPlace?.toFixed(2)) || 0);
-
-            const updatedTotalMountingCost =
-              Number(area?.toFixed(2) || 0) *
-              Number(formData.mountingCostPerSqft?.toFixed(2)) *
-              (Number(totalMonthsOfPlace?.toFixed(2)) || 0);
-
-            const updatedDisplayCost =
-              area > 0
-                ? Number(place.displayCostPerMonth?.toFixed(2)) +
-                  Number(place.displayCostPerMonth?.toFixed(2)) *
-                    ((Number(place.displayCostGstPercentages?.toFixed(2)) || 0) / 100)
-                : 0;
-
-            const discountedDisplayCost =
-              watchDiscountOn === 'displayCost'
-                ? (updatedDisplayCost || 0) * ((watchDiscount || 0) / 100)
-                : 0;
-            let updatedTotalPrice = Number(
-              (updatedDisplayCost || 0) +
-                (Number(updatedTotalPrintingCost?.toFixed(2)) +
-                  Number(updatedTotalPrintingCost?.toFixed(2)) *
-                    ((formData.printingGstPercentage || 0) / 100)) +
-                (Number(updatedTotalMountingCost?.toFixed(2)) +
-                  Number(updatedTotalMountingCost?.toFixed(2)) *
-                    ((formData.mountingGstPercentage || 0) / 100)) +
-                (place.oneTimeInstallationCost || 0) +
-                (place.monthlyAdditionalCost || 0) * totalMonths -
-                (place.otherCharges || 0),
-            );
-            updatedTotalPrice -= discountedDisplayCost;
-
-            return {
-              ...place,
-              printingCostPerSqft: area > 0 ? Number(formData.printingCostPerSqft?.toFixed(2)) : 0,
-              printingGstPercentage: formData.printingGstPercentage,
-              printingGst: formData.printingGst,
-              mountingGstPercentage: formData.mountingGstPercentage,
-              mountingGst: formData.mountingGst,
-              mountingCostPerSqft: area > 0 ? Number(formData.mountingCostPerSqft?.toFixed(2)) : 0,
-              totalPrintingCost:
-                Number(updatedTotalPrintingCost?.toFixed(2)) +
-                Number(updatedTotalPrintingCost?.toFixed(2)) *
-                  (formData.printingGstPercentage / 100),
-              totalMountingCost:
-                Number(updatedTotalMountingCost?.toFixed(2)) +
-                Number(updatedTotalMountingCost?.toFixed(2)) *
-                  (formData.mountingGstPercentage / 100),
-
-              price:
-                updatedTotalPrice -
-                (formData.discountOn === 'totalPrice'
-                  ? updatedTotalPrice * ((watchDiscount || 0) / 100)
-                  : 0),
-              discountOn: formData.discountOn,
-              discountedTotalPrice: Number(
-                place.price -
-                  (formData.discountOn === 'displayCost'
-                    ? place.totalDisplayCost * ((formData.discount || 0) / 100)
-                    : formData.discountOn === 'totalPrice'
-                    ? place.price * ((formData.discount || 0) / 100)
-                    : 0),
-              )?.toFixed(2),
-              discount: formData.discount,
-            };
-          }
-
-          if (watchApplyPrintingMountingCostForAll) {
-            const totalMonthsOfPlace = calculateTotalMonths(place.startDate, place.endDate);
-            const area =
-              (place?.dimension?.reduce(
-                (accumulator, dimension) => accumulator + dimension.height * dimension.width,
-                0,
-              ) || 0) *
-                (place?.unit || 1) *
-                (place?.facing?.toLowerCase().includes('single') ||
-                place?.location?.facing?.name?.toLowerCase().includes('single')
-                  ? 1
-                  : place?.facing?.toLowerCase().includes('double') ||
-                    place?.location?.facing?.name?.toLowerCase().includes('double')
-                  ? 2
-                  : place?.facing?.toLowerCase().includes('four') ||
-                    place?.location?.facing?.name.toLowerCase().includes('four')
-                  ? 4
-                  : 1) || 0;
-
-            const updatedTotalPrintingCost =
-              area * formData.printingCostPerSqft * (totalMonthsOfPlace || 0);
-
-            const updatedTotalMountingCost =
-              area * formData.mountingCostPerSqft * (totalMonthsOfPlace || 0);
-
-            const updatedDisplayCost =
-              area > 0
-                ? Number(place.displayCostPerMonth?.toFixed(2)) +
-                  Number(place.displayCostPerMonth?.toFixed(2)) *
-                    ((Number(place.displayCostGstPercentages?.toFixed(2)) || 0) / 100)
-                : 0;
-
-            const discountedDisplayCost =
-              watchDiscountOn === 'displayCost'
-                ? (updatedDisplayCost || 0) * ((watchDiscount || 0) / 100)
-                : 0;
-            let updatedTotalPrice = Number(
-              (updatedDisplayCost || 0) +
-                (Number(updatedTotalPrintingCost?.toFixed(2)) +
-                  Number(updatedTotalPrintingCost?.toFixed(2)) *
-                    ((formData.printingGstPercentage || 0) / 100)) +
-                (Number(updatedTotalMountingCost?.toFixed(2)) +
-                  Number(updatedTotalMountingCost?.toFixed(2)) *
-                    ((formData.mountingGstPercentage || 0) / 100)) +
-                (place.oneTimeInstallationCost || 0) +
-                (place.monthlyAdditionalCost || 0) * totalMonths -
-                (place.otherCharges || 0),
-            );
-            updatedTotalPrice -= discountedDisplayCost;
-            return {
-              ...place,
-              printingCostPerSqft: area > 0 && Number(formData.printingCostPerSqft?.toFixed(2)),
-              printingGstPercentage: formData.printingGstPercentage,
-              printingGst: formData.printingGst,
-              mountingGstPercentage: formData.mountingGstPercentage,
-              mountingGst: formData.mountingGst,
-              mountingCostPerSqft: area > 0 && Number(formData.mountingCostPerSqft?.toFixed(2)),
-              totalPrintingCost:
-                Number(updatedTotalPrintingCost?.toFixed(2)) +
-                Number(updatedTotalPrintingCost?.toFixed(2)) *
-                  (formData.printingGstPercentage / 100),
-              totalMountingCost:
-                Number(updatedTotalMountingCost?.toFixed(2)) +
-                Number(updatedTotalMountingCost?.toFixed(2)) *
-                  (formData.mountingGstPercentage / 100),
-              price:
-                updatedTotalPrice -
-                (formData.discountOn === 'totalPrice'
-                  ? updatedTotalPrice * ((formData.discount || 0) / 100)
-                  : 0),
-            };
-          }
-
-          if (watchApplyDiscountForAll) {
-            return {
-              ...place,
-              price:
-                place.price -
-                (formData.discountOn === 'displayCost'
-                  ? place.totalDisplayCost * ((formData.discount || 0) / 100)
-                  : formData.discountOn === 'totalPrice'
-                  ? place.price * ((formData.discount || 0) / 100)
-                  : 0),
-              discountOn: formData.discountOn,
-              discountedTotalPrice: Number(
-                place.price -
-                  (formData.discountOn === 'displayCost'
-                    ? Number(
-                        Number(place.totalDisplayCost?.toFixed(2)) *
-                          ((Number(formData.discount?.toFixed(2)) || 0) / 100),
-                      )
-                    : formData.discountOn === 'totalPrice'
-                    ? Number(place.price?.toFixed(2)) *
-                      ((Number(formData.discount?.toFixed(2)) || 0) / 100)
-                    : 0),
-              ),
-              discount: formData.discount,
-            };
-          }
-
-          return place;
-        }),
-      );
+      formContext.setValue('place', data);
     } else {
-      formContext.setValue(
-        'spaces',
-        selectedInventories?.map(place => {
-          const totalMonthsOfPlace = calculateTotalMonths(place.startDate, place.endDate);
-
-          const area =
-            (place?.dimension?.reduce(
-              (accumulator, dimension) => accumulator + dimension.height * dimension.width,
-              0,
-            ) || 0) *
-              (place?.unit || 1) *
-              (place?.facing?.toLowerCase().includes('single') ||
-              place?.location?.facing?.name?.toLowerCase().includes('single')
-                ? 1
-                : place?.facing?.toLowerCase().includes('double') ||
-                  place?.location?.facing?.name?.toLowerCase().includes('double')
-                ? 2
-                : place?.facing?.toLowerCase().includes('four') ||
-                  place?.location?.facing?.name.toLowerCase().includes('four')
-                ? 4
-                : 1) || 0;
-
-          const updatedTotalPrintingCost =
-            area * formData.printingCostPerSqft * (totalMonthsOfPlace || 0);
-          const updatedTotalMountingCost =
-            area * formData.mountingCostPerSqft * (totalMonthsOfPlace || 0);
-
-          const updatedTotalPrice =
-            (Number(place.totalDisplayCost?.toFixed(2)) || 0) +
-            Number(updatedTotalPrintingCost?.toFixed(2)) +
-            Number(updatedTotalMountingCost?.toFixed(2)) +
-            (Number(place.oneTimeInstallationCost?.toFixed(2)) || 0) +
-            Number(place.monthlyAdditionalCost?.toFixed(2) || 0) *
-              (Number(totalMonthsOfPlace?.toFixed(2)) || 0);
-
-          return place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)
-            ? {
-                ...place,
-                displayCostPerMonth: formData.displayCostPerMonth,
-                totalDisplayCost: formData.totalDisplayCost,
-                displayCostPerSqFt: Number(formData.displayCostPerSqFt.toFixed()),
-                displayCostGstPercentage: formData.displayCostGstPercentage,
-                displayCostGst: formData.displayCostGst,
-                printingCostPerSqft: Number(formData.printingCostPerSqft?.toFixed(2)),
-                printingGstPercentage: formData.printingGstPercentage,
-                printingGst: formData.printingGst,
-                totalPrintingCost: formData.totalPrintingCost,
-                mountingCostPerSqft: Number(formData.mountingCostPerSqft?.toFixed(2)),
-                mountingGstPercentage: formData.mountingGstPercentage,
-                mountingGst: formData.mountingGst,
-                totalMountingCost: formData.totalMountingCost,
-                oneTimeInstallationCost: formData.oneTimeInstallationCost,
-                monthlyAdditionalCost: formData.monthlyAdditionalCost,
-                otherCharges: formData.otherCharges,
-                tradedAmount: formData.tradedAmount,
-                subjectToExtension: formData.subjectToExtension,
-                price: totalPrice,
-                totalArea,
-                priceChanged: true,
-                discountedDisplayCost: formData.discountedDisplayCost || 0,
-              }
-            : watchApplyPrintingMountingCostForAll
-            ? {
-                ...place,
-                printingCostPerSqft: Number(formData.printingCostPerSqft?.toFixed(2)),
-                printingGst: formData.printingGst,
-                printingGstPercentage: formData.printingGstPercentage,
-                mountingCostPerSqft: Number(formData.mountingCostPerSqft?.toFixed(2)),
-                mountingGstPercentage: formData.mountingGstPercentage,
-                mountingGst: formData.mountingGst,
-                totalPrintingCost:
-                  Number(updatedTotalPrintingCost?.toFixed(2)) +
-                  Number(updatedTotalPrintingCost?.toFixed(2)) *
-                    ((formData.printingGstPercentage || 0) / 100),
-                totalMountingCost:
-                  Number(updatedTotalMountingCost?.toFixed(2)) +
-                  Number(updatedTotalMountingCost?.toFixed(2)) *
-                    ((formData.mountingGstPercentage || 0) / 100),
-                discountedDisplayCost: formData.discountedDisplayCost || 0,
-                price: updatedTotalPrice || 0,
-              }
-            : place;
-        }),
-      );
+      formContext.setValue('spaces', proposalData);
     }
 
     onClose();
@@ -618,7 +434,59 @@ const AddEditPriceDrawer = ({
   };
 
   useEffect(() => {
-    if (
+    const filteredBookingData = data.filter(doc => doc?._id === selectedInventory?._id);
+    const filteredProposalData = proposalData.filter(doc => doc?._id === selectedInventory?._id);
+
+    if (filteredBookingData.length > 0 && type === 'bookings') {
+      const inventory = filteredBookingData[0];
+      form.reset({
+        displayCostPerMonth: inventory.displayCostPerMonth || 0,
+        totalDisplayCost: inventory.totalDisplayCost || 0,
+        displayCostPerSqFt: inventory.displayCostPerSqFt || 0,
+        displayCostGstPercentage: inventory.displayCostGstPercentage || 0,
+        displayCostGst: inventory.displayCostGst || 0,
+        printingCostPerSqft: inventory.printingCostPerSqft || 0,
+        printingGstPercentage: inventory.printingGstPercentage || 0,
+        printingGst: inventory.printingGst || 0,
+        totalPrintingCost: inventory.totalPrintingCost || 0,
+        mountingCostPerSqft: inventory.mountingCostPerSqft || null,
+        mountingGstPercentage: inventory.mountingGstPercentage || 0,
+        mountingGst: inventory.mountingGst || 0,
+        totalMountingCost: inventory.totalMountingCost || 0,
+        oneTimeInstallationCost: inventory.oneTimeInstallationCost || 0,
+        monthlyAdditionalCost: inventory.monthlyAdditionalCost || 0,
+        otherCharges: inventory.otherCharges || 0,
+        tradedAmount: inventory.tradedAmount || 0,
+        applyPrintingMountingCostForAll: inventory.applyPrintingMountingCostForAll || false,
+        subjectToExtension: inventory.subjectToExtension || false,
+        discountOn: inventory.discountOn || 'displayCost',
+        discount: inventory.discount || 0,
+        applyDiscountForAll: inventory.applyDiscountForAll || false,
+        discountedDisplayCost: inventory.discountedDisplayCost || 0,
+      });
+    } else if (filteredProposalData.length > 0 && type === 'proposal') {
+      const inventory = filteredProposalData[0];
+      form.reset({
+        displayCostPerMonth: inventory.displayCostPerMonth || 0,
+        totalDisplayCost: inventory.totalDisplayCost || 0,
+        displayCostPerSqFt: inventory.displayCostPerSqFt || 0,
+        displayCostGstPercentage: inventory.displayCostGstPercentage || 0,
+        displayCostGst: inventory.displayCostGst || 0,
+        printingCostPerSqft: inventory.printingCostPerSqft || 0,
+        printingGstPercentage: inventory.printingGstPercentage || 0,
+        printingGst: inventory.printingGst || 0,
+        totalPrintingCost: inventory.totalPrintingCost || 0,
+        mountingCostPerSqft: inventory.mountingCostPerSqft || null,
+        mountingGstPercentage: inventory.mountingGstPercentage || 0,
+        mountingGst: inventory.mountingGst || 0,
+        totalMountingCost: inventory.totalMountingCost || 0,
+        oneTimeInstallationCost: inventory.oneTimeInstallationCost || 0,
+        monthlyAdditionalCost: inventory.monthlyAdditionalCost || 0,
+        otherCharges: inventory.otherCharges || 0,
+        applyPrintingMountingCostForAll: inventory.applyPrintingMountingCostForAll,
+        subjectToExtension: inventory.subjectToExtension || false,
+      });
+    } else if (
       selectedInventory?.priceChanged ||
       selectedInventory?.displayCostPerMonth ||
       selectedInventory?.totalPrintingCost ||
@@ -650,17 +518,17 @@ const AddEditPriceDrawer = ({
         monthlyAdditionalCost: selectedInventory.monthlyAdditionalCost || 0,
         otherCharges: selectedInventory.otherCharges || 0,
         tradedAmount: selectedInventory.tradedAmount || 0,
-        applyPrintingMountingCostForAll: selectedInventory.applyPrintingMountingCostForAll || true,
+        applyPrintingMountingCostForAll: selectedInventory.applyPrintingMountingCostForAll || false,
         subjectToExtension: selectedInventory.subjectToExtension || false,
         discountOn: selectedInventory.discountOn || 'displayCost',
         discount: selectedInventory.discount || 0,
-        applyDiscountForAll: selectedInventory.applyDiscountForAll || true,
+        applyDiscountForAll: selectedInventory.applyDiscountForAll || false,
         discountedDisplayCost: selectedInventory.discountedDisplayCost || 0,
       });
     } else {
       form.reset(defaultValues);
     }
-  }, [selectedInventory, activeSlide]);
+  }, [selectedInventory, activeSlide, isOpened]);
 
   return (
     <Drawer
@@ -750,7 +618,7 @@ const AddEditPriceDrawer = ({
                     classNames={{ label: 'text-base font-bold' }}
                     className={classNames(type === 'bookings' ? 'w-3/4' : 'w-full')}
                     thousandSeparator=","
-                    onKeyUp={onChangeDisplayCostPerMonth}
+                    onKeyUp={e => onChangeDisplayCostPerMonth(Number(e.target.value).toFixed(2))}
                   />
                   {type === 'bookings' ? (
                     <ControlledNumberInput
@@ -762,7 +630,9 @@ const AddEditPriceDrawer = ({
                       classNames={{ label: 'text-base font-bold' }}
                       className="w-1/4"
                       rightSection="%"
-                      onKeyUp={onChangeDisplayCostPercentage}
+                      onKeyUp={e =>
+                        onChangeDisplayCostPercentage(Number(e.target.value).toFixed(2))
+                      }
                       max={100}
                     />
                   ) : null}
@@ -788,7 +658,7 @@ const AddEditPriceDrawer = ({
                     classNames={{ label: 'text-base font-bold' }}
                     className={classNames(type === 'bookings' ? 'w-3/4' : 'w-full')}
                     thousandSeparator=","
-                    onKeyUp={onChangeDisplayCostPerSqFt}
+                    onKeyUp={e => onChangeDisplayCostPerSqFt(Number(e.target.value).toFixed(2))}
                   />
                   {type === 'bookings' ? (
                     <ControlledNumberInput
@@ -800,7 +670,9 @@ const AddEditPriceDrawer = ({
                       classNames={{ label: 'text-base font-bold' }}
                       className="w-1/4"
                       rightSection="%"
-                      onKeyUp={onChangeDisplayCostPercentage}
+                      onKeyUp={e =>
+                        onChangeDisplayCostPercentage(Number(e.target.value).toFixed(2))
+                      }
                       max={100}
                     />
                   ) : null}
@@ -856,7 +728,7 @@ const AddEditPriceDrawer = ({
                     hideControls
                     classNames={{ label: 'text-base font-bold' }}
                     className={classNames(type === 'bookings' ? 'w-3/4' : 'w-full')}
-                    onKeyUp={onChangePrintingCost}
+                    onKeyUp={e => onChangePrintingCost(Number(e.target.value).toFixed(2))}
                   />
                   {type === 'bookings' ? (
                     <ControlledNumberInput
@@ -868,7 +740,7 @@ const AddEditPriceDrawer = ({
                       className="w-1/4"
                       rightSection="%"
                       max={100}
-                      onKeyUp={onChangePrintingCostGst}
+                      onKeyUp={e => onChangePrintingCostGst(Number(e.target.value).toFixed(2))}
                     />
                   ) : null}
                 </div>
@@ -890,7 +762,7 @@ const AddEditPriceDrawer = ({
                     hideControls
                     classNames={{ label: 'text-base font-bold' }}
                     className={classNames(type === 'bookings' ? 'w-3/4' : 'w-full')}
-                    onKeyUp={onChangeMountingCost}
+                    onKeyUp={e => onChangeMountingCost(Number(e.target.value).toFixed(2))}
                   />
                   {type === 'bookings' ? (
                     <ControlledNumberInput
@@ -902,7 +774,7 @@ const AddEditPriceDrawer = ({
                       className="w-1/4"
                       rightSection="%"
                       max={100}
-                      onKeyUp={onChangeMountingCostGst}
+                      onKeyUp={e => onChangeMountingCostGst(Number(e.target.value).toFixed(2))}
                     />
                   ) : null}
                 </div>
