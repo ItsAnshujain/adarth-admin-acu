@@ -233,26 +233,24 @@ const SelectSpace = () => {
       const arr2 = [];
 
       const finalSpaces = [];
-
       for (const item of spaces) {
         const selectionItem = watchPlace?.find(pl => pl._id === item._id);
-
         const obj = {};
         obj.photo = item.basicInformation?.spacePhoto;
         obj._id = item._id;
-        obj.spaceName = item.basicInformation?.spaceName;
+        obj.spaceName = item?.spaceName || item.basicInformation?.spaceName;
         obj.inventoryId = item?.inventoryId;
         obj.isUnderMaintenance = item?.isUnderMaintenance;
         obj.additionalTags = item?.specifications?.additionalTags;
-        obj.category = item?.basicInformation?.category?.name;
-        obj.subCategory = item?.basicInformation?.subCategory?.name;
+        obj.category = item?.category || item?.basicInformation?.category?.[0]?.name;
+        obj.subCategory = item?.subCategory || item?.basicInformation?.subCategory?.name;
         obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
         obj.peer = item?.basicInformation?.peerMediaOwner || '-';
         obj.dimension = item.specifications?.size;
         obj.originalUnit = item?.specifications?.unit || 1;
         obj.unit = item?.specifications?.unit || 1;
         obj.faciaTowards = item?.location?.faciaTowards;
-        obj.location = item?.location?.city;
+        obj.location = item?.location;
         obj.mediaType = item.basicInformation?.mediaType?.name;
         obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
         obj.tradedAmount = selectionItem?.tradedAmount ?? 0;
@@ -264,6 +262,7 @@ const SelectSpace = () => {
         obj.spacing = item.location.spacing;
         finalSpaces.push(obj);
       }
+
       rows.forEach(item => {
         if (finalSpaces.some(space => space._id === item._id)) {
           arr1.push(item);
@@ -271,7 +270,6 @@ const SelectSpace = () => {
           arr2.push(item);
         }
       });
-
       if (arr1?.length < finalSpaces.length) {
         return [...finalSpaces, ...arr2];
       }
@@ -301,15 +299,23 @@ const SelectSpace = () => {
   );
 
   const RenderNameCell = useCallback(({ row }) => {
-    const { photo, spaceName, isUnderMaintenance, bookingRange, originalUnit, _id } = row.original;
+    const {
+      photo,
+      spaceName,
+      isUnderMaintenance,
+      bookingRange,
+      originalUnit,
+      _id,
+      basicInformation,
+    } = row.original;
     const unitLeft = getAvailableUnits(bookingRange, currentDate, currentDate, originalUnit);
     const occupiedState = getOccupiedState(unitLeft, originalUnit);
 
     return (
       <SpaceNamePhotoContent
         id={_id}
-        spaceName={spaceName}
-        spacePhoto={photo}
+        spaceName={spaceName || basicInformation?.spaceName}
+        spacePhoto={photo || basicInformation?.spacePhoto}
         occupiedStateLabel={occupiedState}
         isUnderMaintenance={isUnderMaintenance}
         togglePreviewModal={togglePreviewModal}
@@ -320,7 +326,7 @@ const SelectSpace = () => {
 
   const RenderFaciaTowardsCell = useCallback(({ row }) => row.original.faciaTowards || '-', []);
 
-  const RenderCityCell = useCallback(({ row }) => row.original.location?.city || '-', []);
+  const RenderCityCell = useCallback(({ row }) => row.original.location.city || '-', []);
 
   const RenderAdditionalTagsCell = useCallback(
     ({ row }) => <AdditionalTagsContent list={row.original.additionalTags || []} />,
@@ -666,12 +672,10 @@ const SelectSpace = () => {
     if (inventoryQuery.data?.docs) {
       const { docs, ...page } = inventoryQuery.data;
       const finalData = [];
-
       for (const item of docs) {
         const selectionItem = watchPlace?.find(pl => pl._id === item._id);
-
         const obj = {};
-        obj.photo = item.basicInformation.spacePhoto;
+        obj.photo = item.basicInformation?.spacePhoto;
         obj._id = item._id;
         obj.spaceName = item.basicInformation?.spaceName;
         obj.inventoryId = item?.inventoryId;
@@ -685,7 +689,7 @@ const SelectSpace = () => {
         obj.originalUnit = item?.specifications?.unit || 1;
         obj.unit = item?.specifications?.unit || 1;
         obj.faciaTowards = item?.location?.faciaTowards;
-        obj.location = item?.location?.city;
+        obj.location = item?.location;
         obj.mediaType = item.basicInformation?.mediaType?.name;
         obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
         obj.tradedAmount = selectionItem?.tradedAmount ?? 0;
