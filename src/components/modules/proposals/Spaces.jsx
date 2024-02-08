@@ -415,11 +415,18 @@ const Spaces = () => {
       },
       {
         Header: 'TOTAL PRICE',
-        accessor: 'basicInformation.price',
+        accessor: 'price',
         Cell: ({ row: { original } }) =>
           useMemo(() => {
+            // const place = watchSpaces.filter(item => item._id === original._id)?.[0];
+            // return place?.price || 0;
             const place = watchSpaces.filter(item => item._id === original._id)?.[0];
-            return place?.price;
+            return calculateTotalCostOfBooking(
+              place,
+              place?.unit,
+              place?.startDate,
+              place?.endDate,
+            );
           }, []),
       },
       {

@@ -232,13 +232,13 @@ const SelectSpace = () => {
       const arr1 = [];
       const arr2 = [];
 
-      const spacesData = [];
+      const finalSpaces = [];
 
       for (const item of spaces) {
         const selectionItem = watchPlace?.find(pl => pl._id === item._id);
 
         const obj = {};
-        obj.photo = item?.basicInformation?.spacePhoto;
+        obj.photo = item.basicInformation?.spacePhoto;
         obj._id = item._id;
         obj.spaceName = item.basicInformation?.spaceName;
         obj.inventoryId = item?.inventoryId;
@@ -262,18 +262,18 @@ const SelectSpace = () => {
         obj.endDate = getDate(selectionItem, item, 'endDate');
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
         obj.spacing = item.location.spacing;
-        spacesData.push(obj);
+        finalSpaces.push(obj);
       }
-
       rows.forEach(item => {
-        if (spacesData.some(space => space._id === item._id)) {
+        if (finalSpaces.some(space => space._id === item._id)) {
           arr1.push(item);
         } else {
           arr2.push(item);
         }
       });
-      if (arr1?.length < spacesData.length) {
-        return [...spacesData, ...arr2];
+
+      if (arr1?.length < finalSpaces.length) {
+        return [...finalSpaces, ...arr2];
       }
       return [...arr1, ...arr2];
     });
@@ -320,7 +320,7 @@ const SelectSpace = () => {
 
   const RenderFaciaTowardsCell = useCallback(({ row }) => row.original.faciaTowards || '-', []);
 
-  const RenderCityCell = useCallback(({ row }) => row.original.location.city || '-', []);
+  const RenderCityCell = useCallback(({ row }) => row.original.location?.city || '-', []);
 
   const RenderAdditionalTagsCell = useCallback(
     ({ row }) => <AdditionalTagsContent list={row.original.additionalTags || []} />,
