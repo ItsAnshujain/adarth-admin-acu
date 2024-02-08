@@ -238,7 +238,7 @@ const SelectSpace = () => {
         const selectionItem = watchPlace?.find(pl => pl._id === item._id);
 
         const obj = {};
-        obj.photo = item.basicInformation.spacePhoto;
+        obj.photo = item?.basicInformation?.spacePhoto;
         obj._id = item._id;
         obj.spaceName = item.basicInformation?.spaceName;
         obj.inventoryId = item?.inventoryId;
