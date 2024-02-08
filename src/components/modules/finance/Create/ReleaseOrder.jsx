@@ -37,7 +37,7 @@ const ReleaseOrder = ({
   setUpdatedForm = () => {},
 }) => {
   const toWords = new ToWords();
-  const { errors, values } = useFormContext();
+  const { values } = useFormContext();
   const handleDeleteSpaceItem = spaceId => {
     setAddSpaceItem(addSpaceItem?.filter(item => item.itemId !== spaceId));
   };
@@ -198,11 +198,9 @@ const ReleaseOrder = ({
             () => (
               <div className="flex gap-x-2">
                 {info.row.original.size.length ? (
-                  <p>
+                  <p className="max-w-[300px]">
                     {info.row.original.size
-                      .map((item, index) =>
-                        index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
-                      )
+                      .map(item => `${item?.width || 0}ft x ${item?.height || 0}ft`)
                       .filter(item => item !== null)
                       .join(', ')}
                   </p>

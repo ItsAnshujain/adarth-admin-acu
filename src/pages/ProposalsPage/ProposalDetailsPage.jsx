@@ -7,6 +7,7 @@ import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
+import GoogleMapReact from 'google-map-react';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Header from '../../components/modules/proposals/ViewProposal/Header';
@@ -20,6 +21,7 @@ import {
   generateSlNo,
   getAvailableUnits,
   getOccupiedState,
+  indianMapCoordinates,
   stringToColour,
 } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
@@ -30,6 +32,8 @@ import useLayoutView from '../../store/layout.store';
 import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
 import VersionsDrawer from '../../components/modules/proposals/ViewProposal/VersionsDrawer';
 import ShareContent from '../../components/modules/proposals/ViewProposal/ShareContent';
+import MarkerIcon from '../../assets/pin.svg';
+import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -41,8 +45,19 @@ const updatedModalConfig = {
   },
 };
 
+const defaultProps = {
+  center: {
+    lat: 28.70406,
+    lng: 77.102493,
+  },
+  zoom: 10,
+};
+
+const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
+
 const ProposalDetailsPage = () => {
   const modals = useModals();
+  const [mapInstance, setMapInstance] = useState(null);
   const userId = useUserStore(state => state.id);
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
@@ -234,11 +249,9 @@ const ProposalDetailsPage = () => {
         }) =>
           useMemo(
             () => (
-              <p>
+              <p className="max-w-[300px]">
                 {size
-                  .map((item, index) =>
-                    index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
-                  )
+                  .map(item => `${item?.width || 0}ft x ${item?.height || 0}ft`)
                   .filter(item => item !== null)
                   .join(', ')}
               </p>
@@ -375,6 +388,21 @@ const ProposalDetailsPage = () => {
     }
   }, [debouncedSearch]);
 
+  useEffect(() => {
+    if (mapInstance && proposalData?.inventories?.docs?.length) {
+      const bounds = new mapInstance.maps.LatLngBounds();
+
+      // default coordinates
+      bounds.extend({
+        lat: indianMapCoordinates.latitude,
+        lng: indianMapCoordinates.longitude,
+      });
+
+      mapInstance.map.fitBounds(bounds);
+      mapInstance.map.setCenter(bounds.getCenter());
+      mapInstance.map.setZoom(Math.min(5, mapInstance.map.getZoom()));
+    }
+  }, [proposalData?.inventories?.docs?.length, mapInstance]);
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <Header
@@ -391,6 +419,27 @@ const ProposalDetailsPage = () => {
         inventoryData={proposalData?.inventories}
         proposalId={proposalId}
       />
+
+      <p className="text-lg font-bold py-2">Location Details</p>
+
+      <div className="mt-1 mb-4 h-[40vh]">
+        <GoogleMapReact
+          bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY, libraries: 'places' }}
+          defaultCenter={defaultProps.center}
+          defaultZoom={defaultProps.zoom}
+          yesIWantToUseGoogleMapApiInternals
+          onGoogleApiLoaded={({ map, maps }) => setMapInstance({ map, maps })}
+        >
+          {proposalData?.inventories?.docs?.map(item => (
+            <Marker
+              key={item._id}
+              lat={item.latitude && Number(item.latitude)}
+              lng={item.longitude && Number(item.longitude)}
+            />
+          ))}
+        </GoogleMapReact>
+      </div>
+
       <div className="flex justify-between mt-4">
         <Text size="xl" weight="bolder">
           Selected Inventory
