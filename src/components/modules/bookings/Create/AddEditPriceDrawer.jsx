@@ -282,8 +282,6 @@ const AddEditPriceDrawer = ({
           price: updatedTotalPrice,
           discountOn: formData.discountOn,
           discount: formData.discount,
-          applyPrintingMountingCostForAll: formData.applyPrintingMountingCostForAll,
-          applyDiscountForAll: formData.applyDiscountForAll,
         };
       }
 
@@ -315,7 +313,6 @@ const AddEditPriceDrawer = ({
             formData.mountingGstPercentage,
           ),
           price: updatedTotalPrice,
-          applyPrintingMountingCostForAll: formData.applyPrintingMountingCostForAll,
         };
       }
 
@@ -397,7 +394,6 @@ const AddEditPriceDrawer = ({
             totalArea,
             priceChanged: true,
             discountedDisplayCost: formData.discountedDisplayCost,
-            applyPrintingMountingCostForAll: formData.applyPrintingMountingCostForAll,
           }
         : formData.applyPrintingMountingCostForAll
         ? {
@@ -407,7 +403,6 @@ const AddEditPriceDrawer = ({
             totalPrintingCost: updatedTotalPrintingCost,
             totalMountingCost: updatedTotalMountingCost,
             price: updatedTotalPrice,
-            applyPrintingMountingCostForAll: formData.applyPrintingMountingCostForAll,
           }
         : place;
     });
