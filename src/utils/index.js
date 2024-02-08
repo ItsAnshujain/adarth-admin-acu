@@ -602,7 +602,10 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   const updatedTotalMonths = calculateTotalMonths(startDate, endDate);
   const updatedTotalPrintingCost = updatedTotalArea * (item?.printingCostPerSqft || 0);
   const updatedTotalMountingCost = updatedTotalArea * (item?.mountingCostPerSqft || 0);
-  const displayCost = (item?.displayCostPerMonth || 0) * updatedTotalMonths;
+  let displayCost = (item?.displayCostPerMonth || 0) * updatedTotalMonths;
+  if (item?.discountOn === 'displayCost') {
+    displayCost -= (displayCost || 0) * ((item?.discount || 0) / 100);
+  }
   const totalDisplayCost =
     updatedTotalArea > 0
       ? calculateTotalAmountWithPercentage(displayCost, item?.displayCostGstPercentage)
@@ -616,10 +619,7 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
       calculateTotalAmountWithPercentage(updatedTotalMountingCost, item?.mountingGstPercentage) +
       (item?.oneTimeInstallationCost || 0) +
       (item?.monthlyAdditionalCost || 0) * updatedTotalMonths -
-      (item?.otherCharges || 0) -
-      (item?.discountOn === 'displayCost'
-        ? (item?.displayCostPerMonth || 0) * ((item?.discount || 0) / 100)
-        : 0),
+      (item?.otherCharges || 0),
   );
 
   return item?.discountOn === 'totalPrice'
