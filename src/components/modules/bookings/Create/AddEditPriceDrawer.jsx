@@ -522,7 +522,7 @@ const AddEditPriceDrawer = ({
     } else {
       form.reset(defaultValues);
     }
-  }, [selectedInventory, activeSlide]);
+  }, [selectedInventory, activeSlide, isOpened]);
 
   return (
     <Drawer
