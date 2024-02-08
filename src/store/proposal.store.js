@@ -8,7 +8,6 @@ const useProposalStore = create(
     },
     set => ({
       setProposalData: proposalData => set(() => ({ proposalData })),
-      resetProposalData: () => set(() => ({ proposalData: [] })),
     }),
   ),
   {

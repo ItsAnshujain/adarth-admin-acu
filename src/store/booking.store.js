@@ -8,7 +8,6 @@ const useBookingStore = create(
     },
     set => ({
       setBookingData: bookingData => set(() => ({ bookingData })),
-      resetBookingData: () => set(() => ({ bookingData: [] })),
     }),
   ),
   {

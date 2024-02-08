@@ -9,7 +9,7 @@ import classNames from 'classnames';
 import shallow from 'zustand/shallow';
 import ControlledNumberInput from '../../../shared/FormInputs/Controlled/ControlledNumberInput';
 import {
-  calculatePercentage,
+  calculateTotalAmountWithPercentage,
   calculateTotalArea,
   calculateTotalCostOfBooking,
   calculateTotalMonths,
@@ -153,7 +153,7 @@ const AddEditPriceDrawer = ({
       if (totalArea && totalArea > 0) {
         form.setValue(
           'totalDisplayCost',
-          calculatePercentage(displayCostPerMonth, watchDisplayCostGstPercentage),
+          calculateTotalAmountWithPercentage(displayCostPerMonth, watchDisplayCostGstPercentage),
         );
       }
     },
@@ -169,7 +169,10 @@ const AddEditPriceDrawer = ({
       if (totalArea && totalArea > 0) {
         form.setValue(
           'totalDisplayCost',
-          calculatePercentage(displayCostPerSqFt * totalMonths, watchDisplayCostGstPercentage),
+          calculateTotalAmountWithPercentage(
+            displayCostPerSqFt * totalMonths,
+            watchDisplayCostGstPercentage,
+          ),
         );
       }
     },
@@ -180,7 +183,10 @@ const AddEditPriceDrawer = ({
     val => {
       const displayCostPerMonth = watchDisplayCostPerMonth * Number(totalMonths) || 0;
 
-      form.setValue('totalDisplayCost', calculatePercentage(displayCostPerMonth, val));
+      form.setValue(
+        'totalDisplayCost',
+        calculateTotalAmountWithPercentage(displayCostPerMonth, val),
+      );
     },
     [watchDisplayCostGstPercentage, totalArea],
   );
@@ -190,7 +196,7 @@ const AddEditPriceDrawer = ({
       const printingCost = val * totalArea;
       form.setValue(
         'totalPrintingCost',
-        calculatePercentage(printingCost, watchPrintingGstPercentage),
+        calculateTotalAmountWithPercentage(printingCost, watchPrintingGstPercentage),
       );
     },
     [watchPrintingGstPercentage, totalArea],
@@ -199,7 +205,7 @@ const AddEditPriceDrawer = ({
   const onChangePrintingCostGst = useCallback(
     val => {
       const printingCost = watchPrintingCostPerSqft * totalArea;
-      form.setValue('totalPrintingCost', calculatePercentage(printingCost, val));
+      form.setValue('totalPrintingCost', calculateTotalAmountWithPercentage(printingCost, val));
     },
     [watchPrintingCostPerSqft, totalArea],
   );
@@ -209,7 +215,7 @@ const AddEditPriceDrawer = ({
       const mountingCost = val * totalArea;
       form.setValue(
         'totalMountingCost',
-        calculatePercentage(mountingCost, watchMountingGstPercentage),
+        calculateTotalAmountWithPercentage(mountingCost, watchMountingGstPercentage),
       );
     },
     [watchMountingGstPercentage, totalArea],
@@ -218,7 +224,7 @@ const AddEditPriceDrawer = ({
   const onChangeMountingCostGst = useCallback(
     val => {
       const mountingCost = watchMountingCostPerSqft * totalArea;
-      form.setValue('totalMountingCost', calculatePercentage(mountingCost, val));
+      form.setValue('totalMountingCost', calculateTotalAmountWithPercentage(mountingCost, val));
     },
     [watchTotalMountingCost],
   );
@@ -271,11 +277,11 @@ const AddEditPriceDrawer = ({
           printingGstPercentage: formData.printingGstPercentage,
           mountingGstPercentage: formData.mountingGstPercentage,
           mountingCostPerSqft: formData.mountingCostPerSqft,
-          totalPrintingCost: calculatePercentage(
+          totalPrintingCost: calculateTotalAmountWithPercentage(
             updatedTotalPrintingCost,
             formData.printingGstPercentage,
           ),
-          totalMountingCost: calculatePercentage(
+          totalMountingCost: calculateTotalAmountWithPercentage(
             updatedTotalMountingCost,
             formData.mountingGstPercentage,
           ),
@@ -304,11 +310,11 @@ const AddEditPriceDrawer = ({
           printingGstPercentage: formData.printingGstPercentage,
           mountingGstPercentage: formData.mountingGstPercentage,
           mountingCostPerSqft: area > 0 && Number(formData.mountingCostPerSqft?.toFixed(2)),
-          totalPrintingCost: calculatePercentage(
+          totalPrintingCost: calculateTotalAmountWithPercentage(
             updatedTotalPrintingCost,
             formData.printingGstPercentage,
           ),
-          totalMountingCost: calculatePercentage(
+          totalMountingCost: calculateTotalAmountWithPercentage(
             updatedTotalMountingCost,
             formData.mountingGstPercentage,
           ),

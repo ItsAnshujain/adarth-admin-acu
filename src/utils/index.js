@@ -533,7 +533,7 @@ export const formLabelStyles = {
   input: 'border-gray-450',
 };
 
-export const calculatePercentage = (value, percentage) => {
+export const calculateTotalAmountWithPercentage = (value, percentage) => {
   if (percentage > 0) {
     return Number(
       ((Number(value) || 0) + (Number(value) || 0) * (Number(percentage) / 100)).toFixed(2),
@@ -593,7 +593,7 @@ export const calculateTotalPrintingOrMountingCost = (
   const updatedTotalMonths = calculateTotalMonths(startDate, endDate);
   const totalDisplayCost = costPerSqft * updatedTotalArea * updatedTotalMonths || 0;
 
-  return calculatePercentage(totalDisplayCost, gstPercentage);
+  return calculateTotalAmountWithPercentage(totalDisplayCost, gstPercentage);
 };
 
 export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
@@ -604,14 +604,16 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   const updatedTotalMountingCost = updatedTotalArea * (item?.mountingCostPerSqft || 0);
   const displayCost = (item?.displayCostPerMonth || 0) * updatedTotalMonths;
   const totalDisplayCost =
-    updatedTotalArea > 0 ? calculatePercentage(displayCost, item?.displayCostGstPercentage) : 0;
+    updatedTotalArea > 0
+      ? calculateTotalAmountWithPercentage(displayCost, item?.displayCostGstPercentage)
+      : 0;
 
   const totalCost = Number(
     (item?.discountedDisplayCost > 0
       ? (item?.discountedDisplayCost || 0) * updatedTotalMonths
       : totalDisplayCost || 0) +
-      calculatePercentage(updatedTotalPrintingCost, item?.printingGstPercentage) +
-      calculatePercentage(updatedTotalMountingCost, item?.mountingGstPercentage) +
+      calculateTotalAmountWithPercentage(updatedTotalPrintingCost, item?.printingGstPercentage) +
+      calculateTotalAmountWithPercentage(updatedTotalMountingCost, item?.mountingGstPercentage) +
       (item?.oneTimeInstallationCost || 0) +
       (item?.monthlyAdditionalCost || 0) * updatedTotalMonths -
       (item?.otherCharges || 0) -
