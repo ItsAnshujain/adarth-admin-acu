@@ -1,6 +1,8 @@
 import { Button } from '@mantine/core';
 import { ArrowLeft, Share2, ChevronDown } from 'react-feather';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import shallow from 'zustand/shallow';
+import useProposalStore from '../../../../store/proposal.store';
 
 const Header = ({
   isPeer,
@@ -14,6 +16,12 @@ const Header = ({
   const { id } = useParams();
   const handleBack = () => navigate(-1);
 
+  const { setProposalData } = useProposalStore(
+    state => ({
+      setProposalData: state.setProposalData,
+    }),
+    shallow,
+  );
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <div>
@@ -41,6 +49,7 @@ const Header = ({
             <Link
               to={`/proposals/edit-details/${id}`}
               className="bg-purple-450 flex items-center text-white rounded-md px-4 h-full font-bold text-sm"
+              onClick={() => setProposalData([])}
             >
               Edit Proposal
             </Link>
