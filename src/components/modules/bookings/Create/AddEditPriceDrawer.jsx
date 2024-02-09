@@ -568,7 +568,8 @@ const AddEditPriceDrawer = ({
                   {inventory.spaceName || inventory?.basicInformation?.spaceName}
                 </div>
                 <div className="text-lg text-gray-400">
-                  City <span className="text-black">{inventory.location?.city}</span>
+                  City{' '}
+                  <span className="text-black">{inventory.location?.city || inventory?.city}</span>
                 </div>
                 <div className="text-lg text-gray-400 flex">
                   <div>
