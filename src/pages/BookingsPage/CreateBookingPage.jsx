@@ -7,6 +7,7 @@ import validator from 'validator';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
+import shallow from 'zustand/shallow';
 import BasicInformationForm from '../../components/modules/bookings/Create/BasicInformationForm';
 import SelectSpaces from '../../components/modules/bookings/Create/SelectSpaces';
 import OrderInformationForm from '../../components/modules/bookings/Create/OrderInformationForm';
@@ -23,8 +24,10 @@ import {
   isValidURL,
   serialize,
   calculateTotalPrice,
+  getAvailableUnits,
 } from '../../utils';
 import { useFetchProposalById } from '../../apis/queries/proposal.queries';
+import useBookingStore from '../../store/booking.store';
 
 const defaultValues = {
   client: {
@@ -104,13 +107,20 @@ const CreateBookingPage = () => {
   const proposalId = searchParams.get('proposalId');
   const proposalLimit = searchParams.get('proposalLimit');
   const proposalById = useFetchProposalById(
-    `${proposalId}?${serialize({ ...proposalByIdQuery, limit: proposalLimit })}`,
+    `${proposalId}?${serialize({ ...proposalByIdQuery, limit: proposalLimit || 0 })}`,
     !!proposalId,
   );
 
   const watchPlace = form.watch('place') || [];
 
-  const handleSubmit = form.handleSubmit(async formData => {
+  const { setBookingData } = useBookingStore(
+    state => ({
+      setBookingData: state.setBookingData,
+    }),
+    shallow,
+  );
+
+  const onSubmit = form.handleSubmit(async formData => {
     setFormStep(prevState => prevState + 1);
     if (formStep === 3) {
       const data = { ...formData };
@@ -146,32 +156,37 @@ const CreateBookingPage = () => {
         return;
       }
 
-      if (
+      const isExceeded = () =>
         data.place?.some(item =>
           bookingId
             ? item.unit > item.initialUnit + item.availableUnit
             : item.unit > item.availableUnit,
-        )
-      ) {
+        );
+
+      if (isExceeded()) {
         showNotification({
           title: 'Exceeded maximum units available for selected date range for one or more places',
           color: 'blue',
         });
         return;
       }
-
-      data.place = watchPlace?.map(item => ({
+      // eslint-disable-next-line no-unused-vars
+      data.place = watchPlace?.map(({ bookingRange, campaigns, ...item }) => ({
+        ...item,
         id: item._id,
-        price: +item.price,
+        price: +Number(item.price?.toFixed(2) || 0),
         media: isValidURL(item.media) ? item.media : undefined,
         startDate: item.startDate
           ? dayjs(item.startDate).startOf('day').toISOString()
           : dayjs().startOf('day').toISOString(),
-        endDate: item.startDate
+        endDate: item.endDate
           ? dayjs(item.endDate).endOf('day').toISOString()
           : dayjs().endOf('day').toISOString(),
         tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
         unit: item?.unit ? +item.unit : 1,
+        discountPercentage: item.discount,
+        totalPrintingCost: Number(Number(item.totalPrintingCost)?.toFixed(2)) || 0,
+        discountedTotalPrice: Number(Number(item.discountedTotalPrice)?.toFixed(2)) || 0,
       }));
 
       if (data.place.some(item => item.price === 0 || !item.price)) {
@@ -205,7 +220,7 @@ const CreateBookingPage = () => {
 
       const totalPrice = calculateTotalPrice(watchPlace);
       const gstCalculation = totalPrice * 0.18;
-      data.price = totalPrice + gstCalculation;
+      data.price = Number((totalPrice + gstCalculation)?.toFixed(2)) || 0;
 
       Object.keys(data).forEach(k => {
         if (data[k] === '') {
@@ -213,11 +228,13 @@ const CreateBookingPage = () => {
         }
       });
 
-      Object.keys(data.client).forEach(k => {
-        if (data.client[k] === '') {
-          delete data.client[k];
-        }
-      });
+      if (data.client) {
+        Object.keys(data.client).forEach(k => {
+          if (data.client[k] === '') {
+            delete data.client[k];
+          }
+        });
+      }
 
       if (bookingId) {
         updateBooking.mutate(
@@ -233,6 +250,7 @@ const CreateBookingPage = () => {
           {
             onSuccess: () => {
               queryClient.invalidateQueries(['bookings']);
+              setBookingData([]);
               form.reset();
               setTimeout(() => {
                 navigate('/bookings');
@@ -252,6 +270,7 @@ const CreateBookingPage = () => {
           {
             onSuccess: () => {
               setOpenSuccessModal(true);
+              setBookingData([]);
               setTimeout(() => {
                 navigate('/bookings');
                 form.reset();
@@ -293,18 +312,21 @@ const CreateBookingPage = () => {
         description: campaign?.description || '',
         place:
           campaign?.spaces?.map(item => ({
+            ...item,
+            location: item?.location,
+            dimension: item?.specifications?.size,
             _id: item._id,
-            price: +item.campaignPrice,
+            price: +Number(item.campaignPrice.toFixed(2)),
             media: isValidURL(item.media) ? item.media : undefined,
-            startDate: item.startDate,
-            endDate: item.endDate,
             tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
-            unit: item?.unit,
             availableUnit:
               item?.specifications?.unit && item.unit
                 ? item.specifications.unit - item.unit
                 : item.unit,
-            initialUnit: item?.unit || 0,
+            initialUnit: item?.unit,
+            discount: item?.discountPercentage,
+            startDate: new Date(item.startDate),
+            endDate: new Date(item.endDate),
           })) || [],
         industry: campaign?.industry?._id || '',
         displayBrands: displayBrands?.[0] || '',
@@ -320,15 +342,24 @@ const CreateBookingPage = () => {
         campaignName: proposalById.data?.proposal?.name || '',
         description: proposalById.data?.proposal?.description || '',
         place: proposalById.data?.inventories.docs.map(item => ({
+          ...item,
+          ...item.pricingDetails,
+          startDate: new Date(item.startDate),
+          endDate: new Date(item.endDate),
           _id: item._id,
           price: item.price,
           media: isValidURL(item.media) ? item.media : undefined,
-          startDate: item.startDate,
-          endDate: item.endDate,
           tradedAmount: item?.tradedAmount ? item.tradedAmount : 0,
           unit: item?.bookedUnits,
-          availableUnit: item?.remainingUnits,
+          availableUnit: getAvailableUnits(
+            item.bookingRange,
+            item.startDate,
+            item.endDate,
+            item.unit,
+          ),
           initialUnit: item?.bookedUnits || 0,
+          location: { city: item.location },
+          dimension: item.size,
         })),
       });
     }
@@ -337,7 +368,7 @@ const CreateBookingPage = () => {
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <FormProvider {...form}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onSubmit}>
           <Header
             setFormStep={setFormStep}
             formStep={formStep}

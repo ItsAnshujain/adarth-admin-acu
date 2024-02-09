@@ -165,3 +165,28 @@ export const monthsInShort = [
   { label: 'Nov', value: '11' },
   { label: 'Dec', value: '12' },
 ];
+
+export const proposalColumns = [
+  { name: 'Space Name', enum: 'spaceName', mandatory: true },
+  { name: 'Width (in ft.)', enum: 'widthInFt', mandatory: true },
+  { name: 'Height (in ft.)', enum: 'heightInFt', mandatory: true },
+  { name: 'Medium', enum: 'subCategory', mandatory: true },
+  { name: 'City', enum: 'city', mandatory: true },
+  { name: 'Serial Number', enum: 'serialNo', mandatory: false },
+  { name: 'Facia Towards', enum: 'faciaTowards', mandatory: false },
+  { name: 'State', enum: 'state', mandatory: false },
+  { name: 'Location', enum: 'location', mandatory: false },
+  { name: 'Illumination', enum: 'illumination', mandatory: false },
+  { name: 'Units', enum: 'units', mandatory: false },
+  { name: 'Facing', enum: 'facing', mandatory: false },
+  { name: 'Area (in sq. ft.)', enum: 'areaInSqFt', mandatory: false },
+  { name: 'Installation cost', enum: 'installationCost', mandatory: false },
+  { name: 'Monthly Additional Cost', enum: 'monthlyAdditionalCost', mandatory: false },
+  { name: 'Display Price (per month)', enum: 'displayPrice', mandatory: false },
+  { name: 'Display Price (per sq. ft)', enum: 'displayPricePerSqft', mandatory: false },
+  { name: 'Discounted Display Price', enum: 'discountedDisplayPrice', mandatory: false },
+  { name: 'Printing Cost', enum: 'printingCost', mandatory: false },
+  { name: 'Mounting Cost', enum: 'mountingCost', mandatory: false },
+  { name: 'Availability', enum: 'availability', mandatory: false },
+  { name: 'Extension', enum: 'extension', mandatory: false },
+];

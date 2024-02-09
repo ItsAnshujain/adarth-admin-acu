@@ -102,7 +102,8 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
         <Text size="xl" weight="bold">
           Proposal Details
         </Text>
-        {!proposalData?.bookingId ? (
+
+        {!proposalData?.bookingId && !proposalData?.parentProposalId ? (
           <Link
             to={`/bookings/create-order?proposalId=${proposalId}&proposalLimit=${proposalData?.totalSpaces}`}
             className="bg-gray-450 px-2 py-1 rounded-md shadow-sm flex items-center"
@@ -110,7 +111,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
             <Key className="h-4" />
             <p className="text-sm font-medium">Convert to Booking</p>
           </Link>
-        ) : (
+        ) : !proposalData?.parentProposalId ? (
           <Link
             to={`/bookings/view-details/${proposalData?.bookingId}`}
             className="bg-gray-450 px-2 py-1 rounded-md shadow-sm flex items-center"
@@ -118,7 +119,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
             <Book className="h-4" />
             <p className="text-sm font-medium">Booking Link</p>
           </Link>
-        )}
+        ) : null}
       </Group>
       {isProposalDataLoading ? (
         <SkeletonTopWrapper />
@@ -178,7 +179,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
                   <Text>
                     {proposalData?.description
                       ? proposalData.description
-                      : `Our outdoor advertisementcampaign is the perfect way to get your brand in front of a large audience. 
+                      : `Our outdoor advertisement campaign is the perfect way to get your brand in front of a large audience. 
                         With eye-catching graphics and strategic placement, our billboards and digital displays will capture the attention of anyone passing by. 
                         Our team will work with you to create a curated campaign that perfectly showcases your brand's message and identity.
                          From busy city streets to suburban highways, our outdoor advertising options are the perfect way to increase your brand's visibility and reach.

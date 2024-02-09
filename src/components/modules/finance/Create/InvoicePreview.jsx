@@ -1,11 +1,16 @@
 import { Group, Text } from '@mantine/core';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ToWords } from 'to-words';
 import { v4 as uuidv4 } from 'uuid';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 
 const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookingId }) => {
   const toWords = new ToWords();
+
+  const memoizedTotalPrice = useMemo(
+    () => Number((totalPrice + totalPrice * 0.18).toFixed(2)),
+    [totalPrice],
+  );
 
   return (
     <div className="px-5">
@@ -155,47 +160,45 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
                   </div>
                 ))
               : previewData?.spaces?.map((item, index) => (
-                  <div className="grid grid-cols-2" key={uuidv4()}>
-                    <Group>
+                  <Group className="grid grid-cols-8" key={uuidv4()}>
+                    <div className="flex items-center gap-4">
                       <p className="text-lg">{index + 1}</p>
                       <div>
-                        <Text
-                          className="overflow-hidden text-ellipsis max-w-[280px]"
-                          lineClamp={1}
-                          title={item?.name}
-                        >
-                          {item?.name}
-                        </Text>
-                        <Text
-                          className="overflow-hidden text-ellipsis max-w-[180px]"
-                          lineClamp={1}
-                          title={item?.location}
-                        >
-                          {item?.location}
-                        </Text>
+                        <p>City:</p>
+                        <p>{item?.city || '-'}</p>
                       </div>
-                    </Group>
-                    <Group className="grid grid-cols-4">
-                      <div>
-                        <p>HSN:</p>
-                        <p>{item?.hsn || '-'}</p>
-                      </div>
-                      <div>
-                        <p>Quantity:</p>
-                        <p>{item?.quantity}</p>
-                      </div>
-                      <div>
-                        <p>Rate:</p>
-                        <p>{item?.rate}</p>
-                      </div>
-                      <div>
-                        <p>Total Amount:</p>
-                        <p>{item?.price}</p>
-                      </div>
-                    </Group>
-                  </div>
+                    </div>
+                    <div>
+                      <p>Location:</p>
+                      <p>{item?.location || '-'}</p>
+                    </div>
+                    <div>
+                      <p>Hsn:</p>
+                      <p>{item?.hsn || '-'}</p>
+                    </div>
+                    <div>
+                      <p>Dimension:</p>
+                      <p>{`${item?.dimensions?.[0]?.height}x${item?.dimensions?.[0]?.width}`}</p>
+                    </div>
+                    <div>
+                      <p>Area:</p>
+                      <p>{item?.areaInSqFt}</p>
+                    </div>
+                    <div>
+                      <p>Total Display Cost/Month:</p>
+                      <p>{toIndianCurrency(item?.displayCostPerMonth)}</p>
+                    </div>
+                    <div>
+                      <p>Printing Cost:</p>
+                      <p>{toIndianCurrency(item?.totalPrintingCost)}</p>
+                    </div>
+                    <div>
+                      <p>Mounting Cost:</p>
+                      <p>{toIndianCurrency(item?.totalMountingCost)}</p>
+                    </div>
+                  </Group>
                 ))}
-            <div className="flex justify-end">
+            <div className="flex justify-end mt-4">
               <p className="text-lg font-bold">Amount:</p>
               <p className="text-lg ml-2">{toIndianCurrency(totalPrice) || 0}</p>
             </div>
@@ -205,18 +208,14 @@ const InvoicePreview = ({ previewData, previewSpaces = [], totalPrice, hasBookin
             </div>
             <div className="flex justify-end">
               <p className="text-lg font-bold">Total:</p>
-              <p className="text-lg ml-2">
-                {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
-              </p>
+              <p className="text-lg ml-2">{toIndianCurrency(memoizedTotalPrice) || 0}</p>
             </div>
           </section>
         </article>
 
         <article className="my-3 p-5 bg-gray-100 flex mb-1">
           <p className="text-lg font-bold">Amount Chargeable (in words):</p>
-          <p className="text-lg ml-2">
-            {(totalPrice && toWords.convert(Math.round(totalPrice + totalPrice * 0.18))) || 0}
-          </p>
+          <p className="text-lg ml-2">{(totalPrice && toWords.convert(memoizedTotalPrice)) || 0}</p>
         </article>
 
         <article className="my-3">

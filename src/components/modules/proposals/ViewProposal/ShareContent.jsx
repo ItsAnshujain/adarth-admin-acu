@@ -78,6 +78,11 @@ const initialCopyLinkValues = {
   name: '',
 };
 
+const downloadExcelFileValues = {
+  subject: '',
+  clientCompany: '',
+};
+
 const emailSchema = yup.object({
   name: yup.string().trim().required('Name is required'),
   to: yup.string().trim().required('Email is required'),
@@ -109,11 +114,17 @@ const downloadLinkSchema = yup.object({
   name: yup.string().trim(),
 });
 
+const downloadExcelFileSchema = yup.object({
+  subject: yup.string().trim().max(300),
+  clientCompany: yup.string().trim(),
+});
+
 const initialValues = {
   email: initialEmailValues,
   whatsapp: initialWhatsAppValues,
   message: initialMessageValues,
   copy_link: initialCopyLinkValues,
+  download_excel_file: downloadExcelFileValues,
 };
 
 const schemas = {
@@ -122,6 +133,7 @@ const schemas = {
   message: messageSchema,
   copy_link: copyLinkSchema,
   download: downloadLinkSchema,
+  download_excel_file: downloadExcelFileSchema,
 };
 
 const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
@@ -130,8 +142,8 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
   const [loaderType, setLoaderType] = useState(-1);
 
   const form = useForm({
-    resolver: yupResolver(schemas[activeShare]),
-    defaultValues: initialValues[activeShare],
+    resolver: activeShare && yupResolver(schemas[activeShare]),
+    defaultValues: activeShare && initialValues[activeShare],
   });
 
   const shareProposal = useShareProposal();
@@ -141,8 +153,14 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
     let tempArr = [...activeFileType]; // TODO: use immmer
     if (tempArr.some(item => item === value)) {
       tempArr = tempArr.filter(item => item !== value);
+      setActiveShare('');
     } else {
       tempArr.push(value);
+      if (value === 'Excel') {
+        setActiveShare('download_excel_file');
+      } else {
+        setActiveShare('');
+      }
     }
     setActiveFileType(tempArr);
   };
@@ -152,7 +170,7 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
   const watchAspectRatio = form.watch('aspectRatio');
 
   const onSubmit = form.handleSubmit(async formData => {
-    const data = { ...formData };
+    const data = { ...formData, clientCompanyName: formData.clientCompany || undefined };
     if (!activeFileType.length) {
       showNotification({
         title: 'Please select a file type to continue',
@@ -276,7 +294,7 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
     }
   });
 
-  const handleDownload = async () => {
+  const handleDownload = form.handleSubmit(async formData => {
     if (!activeFileType.length) {
       showNotification({
         title: 'Please select a file type to continue',
@@ -302,6 +320,8 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
       shareVia: 'copy_link',
       aspectRatio: 'fill',
       templateType: 'generic',
+      subject: formData.subject,
+      clientCompanyName: formData.clientCompany || undefined,
     };
 
     if (watchAspectRatio) {
@@ -341,7 +361,7 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
       });
 
       const inventoryResponse = await shareInventory.mutateAsync(
-        { queries: serialize({ ...params, utcOffset: dayjs().utcOffset() }), data },
+        { queries: serialize({ ...params, page: 1, utcOffset: dayjs().utcOffset() }), data },
         {
           onSuccess: () => {
             setActiveFileType([]);
@@ -361,7 +381,7 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
         });
       }
     }
-  };
+  });
 
   useEffect(() => {
     form.clearErrors();
@@ -401,6 +421,19 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
             />
           </div>
 
+          {activeFileType.some(fileType => fileType === 'Excel') ? (
+            <>
+              <div>
+                <p className="font-medium text-xl mb-2">Subject</p>
+                <ControlledTextInput name="subject" placeholder="Enter..." className="mb-2" />
+              </div>
+              <div>
+                <p className="font-medium text-xl mb-2">Client company name</p>
+                <ControlledTextInput name="clientCompany" placeholder="Enter..." className="mb-2" />
+              </div>
+            </>
+          ) : null}
+
           <Button
             className="primary-button font-medium text-base mt-2 w-full"
             onClick={handleDownload}
@@ -409,6 +442,7 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
             leftIcon={
               <Image src={DownloadIcon} alt="download" height={24} width={24} fit="contain" />
             }
+            type="submit"
           >
             Download
           </Button>

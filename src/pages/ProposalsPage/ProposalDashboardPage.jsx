@@ -209,7 +209,7 @@ const ProposalDashboardPage = () => {
           row: {
             original: { price },
           },
-        }) => useMemo(() => <p>{price ? toIndianCurrency(Number.parseInt(price, 10)) : 0}</p>, []),
+        }) => useMemo(() => <p>{price ? toIndianCurrency(price, 10) : 0}</p>, []),
       },
       {
         Header: 'ACTION',

@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import StatusNode from './StatusNode';
 
 const ProcessPipeline = ({ bookingData }) => {
+  console.log(bookingData);
   const pipelineList = useMemo(
     () => [
       {
@@ -22,21 +23,26 @@ const ProcessPipeline = ({ bookingData }) => {
           {
             status: 'Purchase Order',
             date: bookingData?.purchaseOrderUpdatedAt,
-            isSuccess: bookingData?.purchaseOrder,
+            isSuccess:
+              bookingData?.outStandingPurchaseOrder !== null &&
+              bookingData?.outStandingPurchaseOrder <= 0,
             className: 'ml-[55px]',
             hasBottomEdge: false,
           },
           {
             status: 'Release Order',
             date: bookingData?.releaseOrderUpdatedAt,
-            isSuccess: bookingData?.releaseOrder,
+            isSuccess:
+              bookingData?.outStandingReleaseOrder !== null &&
+              bookingData?.outStandingReleaseOrder <= 0,
             hasBottomEdge: false,
             className: 'ml-[55px]',
           },
           {
             status: 'Invoice',
             date: bookingData?.invoiceUpdatedAt,
-            isSuccess: bookingData?.invoice,
+            isSuccess:
+              bookingData?.outStandingInvoice !== null && bookingData?.outStandingInvoice <= 0,
             hasRightEdge: false,
             hasBottomEdge: false,
             className: 'ml-[55px]',

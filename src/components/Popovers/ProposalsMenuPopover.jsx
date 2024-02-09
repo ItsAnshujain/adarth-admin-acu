@@ -2,10 +2,12 @@ import { Button, Menu } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { Link } from 'react-router-dom';
 import { Eye, Edit2, Trash, Key, Book } from 'react-feather';
+import shallow from 'zustand/shallow';
 import modalConfig from '../../utils/modalConfig';
 import DeleteProposalContent from '../DeleteProposalContent';
 import MenuIcon from '../Menu';
 import { handleStopPropagation } from '../../utils';
+import useProposalStore from '../../store/proposal.store';
 
 const ProposalsMenuPopover = ({
   itemId,
@@ -28,6 +30,13 @@ const ProposalsMenuPopover = ({
       },
       ...modalConfig,
     });
+
+  const { setProposalData } = useProposalStore(
+    state => ({
+      setProposalData: state.setProposalData,
+    }),
+    shallow,
+  );
 
   return (
     <Menu shadow="md" width={150} withinPortal>
@@ -68,7 +77,7 @@ const ProposalsMenuPopover = ({
           </Link>
         ) : null}
         {enableEdit && !bookingId ? (
-          <Link to={`/proposals/edit-details/${itemId}`}>
+          <Link to={`/proposals/edit-details/${itemId}`} onClick={() => setProposalData([])}>
             <Menu.Item
               icon={<Edit2 className="h-4" />}
               className="cursor-pointer flex items-center gap-1"

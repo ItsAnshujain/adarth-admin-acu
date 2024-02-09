@@ -410,8 +410,8 @@ export const currentDate = new Date().toISOString();
 
 export const validateFilterRange = (bookingRange, fromDate, toDate) => {
   let filterRange;
-  if (bookingRange.length) {
-    filterRange = bookingRange.filter(
+  if (bookingRange?.length) {
+    filterRange = bookingRange?.filter(
       item =>
         (dayjs(dayjs(fromDate)).isSameOrAfter(dayjs(item?.startDate).format(DATE_FORMAT)) &&
           dayjs(dayjs(fromDate)).isSameOrBefore(dayjs(item?.endDate).format(DATE_FORMAT))) ||
@@ -524,7 +524,7 @@ export const calculateDaysListByMonth = (month, year) => {
 export const timeLegend = {
   dayOfWeek: 'Days',
   dayOfMonth: 'Days',
-  quarter: 'Months',
+  quarter: 'Quarters',
   month: 'Months',
 };
 
@@ -533,8 +533,96 @@ export const formLabelStyles = {
   input: 'border-gray-450',
 };
 
+export const calculateTotalAmountWithPercentage = (value, percentage) => {
+  if (percentage > 0) {
+    return Number(
+      ((Number(value) || 0) + (Number(value) || 0) * (Number(percentage) / 100)).toFixed(2),
+    );
+  }
+
+  return Number(value);
+};
+
 export const calculateTotalPrice = (option = []) => {
   if (!option.length) return 0;
   const totalPrice = option.reduce((acc, item) => acc + +(item.price || 0), 0);
-  return totalPrice;
+  return Number(totalPrice?.toFixed(2)) || 0;
+};
+
+export const calculateTotalMonths = (startDate, endDate) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const yearDiff = end.getFullYear() - start.getFullYear();
+  const monthDiff = end.getMonth() - start.getMonth();
+  const dayDiff = end.getDate() - start.getDate() + 1;
+
+  const totalMonths = yearDiff * 12 + monthDiff;
+
+  const fractionOfMonth = dayDiff / new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate();
+
+  return totalMonths + fractionOfMonth;
+};
+
+export const calculateTotalArea = (place, unit) =>
+  (place?.dimension?.reduce(
+    (accumulator, dimension) => accumulator + (dimension.height || 0) * (dimension.width || 0),
+    0,
+  ) || 0) *
+    (unit || 1) *
+    (place?.facing?.toLowerCase().includes('single') ||
+    place?.location?.facing?.name?.toLowerCase().includes('single')
+      ? 1
+      : place?.facing?.toLowerCase().includes('double') ||
+        place?.location?.facing?.name?.toLowerCase().includes('double')
+      ? 2
+      : place?.facing?.toLowerCase().includes('four') ||
+        place?.location?.facing?.name.toLowerCase().includes('four')
+      ? 4
+      : 1) || 0;
+
+export const calculateTotalPrintingOrMountingCost = (
+  item,
+  unit,
+  startDate,
+  endDate,
+  costPerSqft,
+  gstPercentage,
+) => {
+  const updatedTotalArea = calculateTotalArea(item, unit);
+  const updatedTotalMonths = calculateTotalMonths(startDate, endDate);
+  const totalDisplayCost = costPerSqft * updatedTotalArea * updatedTotalMonths || 0;
+
+  return calculateTotalAmountWithPercentage(totalDisplayCost, gstPercentage);
+};
+
+export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
+  if (!item) return 0;
+  const updatedTotalArea = calculateTotalArea(item, unit);
+  const updatedTotalMonths = calculateTotalMonths(startDate, endDate);
+  const updatedTotalPrintingCost = updatedTotalArea * (item?.printingCostPerSqft || 0);
+  const updatedTotalMountingCost = updatedTotalArea * (item?.mountingCostPerSqft || 0);
+  let displayCost = (item?.displayCostPerMonth || 0) * updatedTotalMonths;
+  if (item?.discountOn === 'displayCost') {
+    displayCost -= (displayCost || 0) * ((item?.discount || 0) / 100);
+  }
+  const totalDisplayCost =
+    updatedTotalArea > 0
+      ? calculateTotalAmountWithPercentage(displayCost, item?.displayCostGstPercentage)
+      : 0;
+
+  const totalCost = Number(
+    (item?.discountedDisplayCost > 0
+      ? (item?.discountedDisplayCost || 0) * updatedTotalMonths
+      : totalDisplayCost || 0) +
+      calculateTotalAmountWithPercentage(updatedTotalPrintingCost, item?.printingGstPercentage) +
+      calculateTotalAmountWithPercentage(updatedTotalMountingCost, item?.mountingGstPercentage) +
+      (item?.oneTimeInstallationCost || 0) +
+      (item?.monthlyAdditionalCost || 0) * updatedTotalMonths -
+      (item?.otherCharges || 0),
+  );
+
+  return item?.discountOn === 'totalPrice'
+    ? Number(((totalCost || 0) - (totalCost || 0) * ((item?.discount || 0) / 100))?.toFixed(2) || 0)
+    : Number(totalCost?.toFixed(2)) || 0;
 };

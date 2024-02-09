@@ -2,18 +2,20 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Image, NumberInput, Loader, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
 import { useModals } from '@mantine/modals';
 import shallow from 'zustand/shallow';
 import { useFormContext } from 'react-hook-form';
+import { showNotification } from '@mantine/notifications';
 import Search from '../../../Search';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import {
-  calculateTotalPrice,
+  calculateTotalCostOfBooking,
+  calculateTotalPrintingOrMountingCost,
   currentDate,
   debounce,
   generateSlNo,
@@ -34,6 +36,7 @@ import CategoryContent from '../../inventory/CategoryContent';
 import SubCategoryContent from '../../inventory/SubCategoryContent';
 import UploadMediaContent from '../../inventory/UploadMediaContent';
 import DimensionContent from '../../inventory/DimensionContent';
+import AddEditPriceDrawer from './AddEditPriceDrawer';
 
 dayjs.extend(isBetween);
 
@@ -55,6 +58,7 @@ const SelectSpace = () => {
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showFilter, setShowFilter] = useState(false);
+  const [selectedInventoryId, setSelectedInventoryId] = useState('');
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
       activeLayout: state.activeLayout,
@@ -63,7 +67,7 @@ const SelectSpace = () => {
     shallow,
   );
   const watchPlace = form.watch('place') || [];
-
+  const [drawerOpened, drawerActions] = useDisclosure();
   const selectedInventoryIds = useMemo(() => watchPlace.map(space => space._id));
 
   const [searchParams, setSearchParams] = useSearchParams({
@@ -81,6 +85,23 @@ const SelectSpace = () => {
 
   const [updatedInventoryData, setUpdatedInventoryData] = useState([]);
 
+  const calculateTotalArea = (place, unit) =>
+    (place?.dimension?.reduce(
+      (accumulator, dimension) => accumulator + dimension.height * dimension.width,
+      0,
+    ) || 0) *
+      (unit || 1) *
+      (place?.facing?.toLowerCase().includes('single') ||
+      place?.location?.facing?.name?.toLowerCase().includes('single')
+        ? 1
+        : place?.facing?.toLowerCase().includes('double') ||
+          place?.location?.facing?.name?.toLowerCase().includes('double')
+        ? 2
+        : place?.facing?.toLowerCase().includes('four') ||
+          place?.location?.facing?.name.toLowerCase().includes('four')
+        ? 4
+        : 1) || 0;
+
   const updateData = debounce((key, val, id, inputId) => {
     if (key === 'dateRange') {
       let availableUnit = 0;
@@ -96,7 +117,6 @@ const SelectSpace = () => {
           newList[index].originalUnit,
         );
         newList[index] = { ...newList[index], availableUnit };
-
         return newList;
       });
 
@@ -110,6 +130,28 @@ const SelectSpace = () => {
                 endDate: val[1],
                 ...(!hasChangedUnit ? { unit: availableUnit } : {}),
                 availableUnit,
+                price: calculateTotalCostOfBooking(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  val[0],
+                  val[1],
+                ),
+                totalPrintingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  val[0],
+                  val[1],
+                  item.printingCostPerSqft,
+                  item.printingGstPercentage,
+                ),
+                totalMountingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  val[0],
+                  val[1],
+                  item.mountingCostPerSqft,
+                  item.mountingGstPercentage,
+                ),
               }
             : item,
         ),
@@ -127,7 +169,43 @@ const SelectSpace = () => {
         'place',
         watchPlace.map(item =>
           item._id === id
-            ? { ...item, [key]: val, ...(key === 'unit' ? { hasChangedUnit: true } : {}) }
+            ? {
+                ...item,
+                tradedAmount: key === 'tradedAmount' ? val : item.tradedAmount,
+                printingCostPerSqft: item.printingCostPerSqft,
+                printingGst: item.printingGst,
+                printingGstPercentage: item.printingGstPercentage,
+
+                totalPrintingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.startDate,
+                  item.endDate,
+                  item.printingCostPerSqft,
+                  item.printingGstPercentage,
+                ),
+                totalMountingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.startDate,
+                  item.endDate,
+                  item.mountingCostPerSqft,
+                  item.mountingGstPercentage,
+                ),
+                mountingCostPerSqft: item.mountingCostPerSqft,
+                mountingGst: item.mountingGst,
+                mountingGstPercentage: item.mountingGstPercentage,
+
+                totalArea: calculateTotalArea(item, item.unit),
+                price: calculateTotalCostOfBooking(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.startDate,
+                  item.endDate,
+                ),
+                [key]: val,
+                ...(key === 'unit' ? { hasChangedUnit: true } : {}),
+              }
             : item,
         ),
       );
@@ -138,32 +216,69 @@ const SelectSpace = () => {
     }
   }, 500);
 
-  const memoizedCalculateTotalPrice = useMemo(
-    () => calculateTotalPrice(watchPlace),
-    [watchPlace.length, updateData],
-  );
+  const getTotalPrice = (places = []) => {
+    const totalPrice = places.reduce(
+      (acc, item) =>
+        item.startDate &&
+        item.endDate &&
+        acc + +(item?.price || item?.basicInformation?.price || 0),
+      0,
+    );
+    return totalPrice || 0;
+  };
 
-  const handleSortRowsOnTop = (ids, rows) => {
+  const handleSortRowsOnTop = (spaces, rows) => {
     setUpdatedInventoryData(() => {
       const arr1 = [];
       const arr2 = [];
+
+      const finalSpaces = [];
+      for (const item of spaces) {
+        const selectionItem = watchPlace?.find(pl => pl._id === item._id);
+        const obj = {};
+        obj.photo = item.basicInformation?.spacePhoto;
+        obj._id = item._id;
+        obj.spaceName = item?.spaceName || item.basicInformation?.spaceName;
+        obj.inventoryId = item?.inventoryId;
+        obj.isUnderMaintenance = item?.isUnderMaintenance;
+        obj.additionalTags = item?.specifications?.additionalTags;
+        obj.category = item?.category || item?.basicInformation?.category?.[0]?.name;
+        obj.subCategory = item?.subCategory || item?.basicInformation?.subCategory?.name;
+        obj.mediaOwner = item?.basicInformation?.mediaOwner?.name || '-';
+        obj.peer = item?.basicInformation?.peerMediaOwner || '-';
+        obj.dimension = item.specifications?.size;
+        obj.originalUnit = item?.specifications?.unit || 1;
+        obj.unit = item?.specifications?.unit || 1;
+        obj.faciaTowards = item?.location?.faciaTowards;
+        obj.location = item?.location;
+        obj.mediaType = item.basicInformation?.mediaType?.name;
+        obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
+        obj.tradedAmount = selectionItem?.tradedAmount ?? 0;
+        obj.campaigns = item?.campaigns;
+        obj.facing = item?.location?.facing?.name;
+        obj.startDate = getDate(selectionItem, item, 'startDate');
+        obj.endDate = getDate(selectionItem, item, 'endDate');
+        obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
+        obj.spacing = item.location.spacing;
+        finalSpaces.push(obj);
+      }
+
       rows.forEach(item => {
-        if (ids.includes(item._id)) {
+        if (finalSpaces.some(space => space._id === item._id)) {
           arr1.push(item);
         } else {
           arr2.push(item);
         }
       });
-
+      if (arr1?.length < finalSpaces.length) {
+        return [...finalSpaces, ...arr2];
+      }
       return [...arr1, ...arr2];
     });
   };
 
   const handleSelection = selectedRows => {
-    handleSortRowsOnTop(
-      selectedRows?.map(item => item._id),
-      updatedInventoryData,
-    );
+    handleSortRowsOnTop(selectedRows, updatedInventoryData);
 
     form.setValue('place', selectedRows);
   };
@@ -184,15 +299,23 @@ const SelectSpace = () => {
   );
 
   const RenderNameCell = useCallback(({ row }) => {
-    const { photo, spaceName, isUnderMaintenance, bookingRange, originalUnit, _id } = row.original;
+    const {
+      photo,
+      spaceName,
+      isUnderMaintenance,
+      bookingRange,
+      originalUnit,
+      _id,
+      basicInformation,
+    } = row.original;
     const unitLeft = getAvailableUnits(bookingRange, currentDate, currentDate, originalUnit);
     const occupiedState = getOccupiedState(unitLeft, originalUnit);
 
     return (
       <SpaceNamePhotoContent
         id={_id}
-        spaceName={spaceName}
-        spacePhoto={photo}
+        spaceName={spaceName || basicInformation?.spaceName}
+        spacePhoto={photo || basicInformation?.spacePhoto}
         occupiedStateLabel={occupiedState}
         isUnderMaintenance={isUnderMaintenance}
         togglePreviewModal={togglePreviewModal}
@@ -203,7 +326,7 @@ const SelectSpace = () => {
 
   const RenderFaciaTowardsCell = useCallback(({ row }) => row.original.faciaTowards || '-', []);
 
-  const RenderCityCell = useCallback(({ row }) => row.original.location || '-', []);
+  const RenderCityCell = useCallback(({ row }) => row.original.location.city || '-', []);
 
   const RenderAdditionalTagsCell = useCallback(
     ({ row }) => <AdditionalTagsContent list={row.original.additionalTags || []} />,
@@ -237,6 +360,22 @@ const SelectSpace = () => {
     ({ row }) => <UploadMediaContent id={row.original._id} updateData={updateData} />,
     [updateData],
   );
+
+  const onClickAddPrice = () => {
+    if (!watchPlace?.length) {
+      showNotification({
+        title: 'Please select atleast one place to add price',
+        color: 'blue',
+      });
+    } else if (watchPlace.some(item => !(item.startDate || item.endDate))) {
+      showNotification({
+        title: 'Please select the occupancy date to add price',
+        color: 'blue',
+      });
+    } else {
+      drawerActions.open();
+    }
+  };
 
   const COLUMNS = useMemo(
     () => [
@@ -308,7 +447,7 @@ const SelectSpace = () => {
                 />
               </div>
             );
-          }, []),
+          }, [startDate, endDate, bookingRange, unit, _id]),
       },
       {
         Header: 'UNIT',
@@ -325,18 +464,19 @@ const SelectSpace = () => {
             const unitLeft = getAvailableUnits(bookingRange, startDate, endDate, originalUnit);
             const data = watchPlace ? watchPlace.find(item => item._id === _id) : {};
             const isExceeded =
-              data?.unit > (bookingId ? unitLeft + (data?.initialUnit || 0) : data?.availableUnit);
-
+              data?.startDate &&
+              data?.endDate &&
+              data?.unit > (bookingId ? unitLeft + (data?.initialUnit || 0) : unitLeft);
             return (
               <Tooltip
                 label={
-                  data?.hasChangedUnit && isExceeded
+                  isExceeded
                     ? 'Exceeded maximum units available for selected date range'
                     : !unit
                     ? 'Field cannot be empty'
                     : null
                 }
-                opened={(data?.hasChangedUnit && isExceeded) || !unit}
+                opened={isExceeded || !unit}
                 transition="slide-left"
                 position="right"
                 color="red"
@@ -351,7 +491,7 @@ const SelectSpace = () => {
                   onChange={e => updateData('unit', e, _id, `unit-${_id}`)}
                   className="w-[100px]"
                   disabled={isDisabled}
-                  error={(data?.hasChangedUnit && isExceeded) || !unit}
+                  error={isExceeded || !unit}
                 />
               </Tooltip>
             );
@@ -382,25 +522,60 @@ const SelectSpace = () => {
           ),
       },
       {
-        Header: 'PRICING',
-        accessor: 'basicInformation.price',
-        Cell: ({
-          row: {
-            original: { price, _id },
-          },
-        }) =>
+        Header: 'PRICE',
+        Cell: ({ row: { original } }) =>
           useMemo(() => {
-            const isPriceZero =
-              watchPlace?.some(item => item._id === _id) && (price === 0 || !price);
-
+            const place = watchPlace.filter(item => item._id === original._id)?.[0];
+            if (
+              place?.priceChanged ||
+              place?.displayCostPerMonth ||
+              place?.totalPrintingCost ||
+              place?.totalMountingCost ||
+              place?.oneTimeInstallationCost ||
+              place?.monthlyAdditionalCost ||
+              place?.otherCharges ||
+              place?.discountPercentage
+            ) {
+              return (
+                <Button
+                  onClick={() => {
+                    onClickAddPrice();
+                    setSelectedInventoryId(original._id);
+                  }}
+                  className="bg-purple-450 order-3"
+                  size="xs"
+                  disabled={!watchPlace.some(item => item._id === original._id)}
+                >
+                  Edit Price
+                </Button>
+              );
+            }
             return (
-              <NumberInput
-                id={`price-${_id}`}
-                hideControls
-                defaultValue={+(price || 0)}
-                onChange={e => updateData('price', e, _id, `price-${_id}`)}
-                error={isPriceZero}
-              />
+              <Button
+                onClick={() => {
+                  onClickAddPrice();
+                  setSelectedInventoryId(original._id);
+                }}
+                className="bg-purple-450 order-3"
+                size="xs"
+                disabled={!watchPlace.some(item => item._id === original._id)}
+              >
+                Add Price
+              </Button>
+            );
+          }, [watchPlace]),
+      },
+      {
+        Header: 'TOTAL PRICE',
+        accessor: 'basicInformation.price',
+        Cell: ({ row: { original } }) =>
+          useMemo(() => {
+            const place = watchPlace.filter(item => item._id === original._id)?.[0];
+            return calculateTotalCostOfBooking(
+              place,
+              place?.unit,
+              place?.startDate,
+              place?.endDate,
             );
           }, []),
       },
@@ -452,7 +627,7 @@ const SelectSpace = () => {
           ),
       },
     ],
-    [updatedInventoryData, watchPlace.length],
+    [updatedInventoryData, watchPlace],
   );
 
   const toggleFilter = () => setShowFilter(!showFilter);
@@ -497,12 +672,10 @@ const SelectSpace = () => {
     if (inventoryQuery.data?.docs) {
       const { docs, ...page } = inventoryQuery.data;
       const finalData = [];
-
       for (const item of docs) {
         const selectionItem = watchPlace?.find(pl => pl._id === item._id);
-
         const obj = {};
-        obj.photo = item.basicInformation.spacePhoto;
+        obj.photo = item.basicInformation?.spacePhoto;
         obj._id = item._id;
         obj.spaceName = item.basicInformation?.spaceName;
         obj.inventoryId = item?.inventoryId;
@@ -516,7 +689,7 @@ const SelectSpace = () => {
         obj.originalUnit = item?.specifications?.unit || 1;
         obj.unit = item?.specifications?.unit || 1;
         obj.faciaTowards = item?.location?.faciaTowards;
-        obj.location = item?.location?.city;
+        obj.location = item?.location;
         obj.mediaType = item.basicInformation?.mediaType?.name;
         obj.price = selectionItem?.price ?? (item?.basicInformation?.price || 0);
         obj.tradedAmount = selectionItem?.tradedAmount ?? 0;
@@ -525,16 +698,31 @@ const SelectSpace = () => {
         obj.startDate = getDate(selectionItem, item, 'startDate');
         obj.endDate = getDate(selectionItem, item, 'endDate');
         obj.bookingRange = item?.bookingRange ? item.bookingRange : [];
+        obj.spacing = item.location.spacing;
         finalData.push(obj);
       }
 
-      handleSortRowsOnTop(
-        watchPlace?.map(item => item._id),
-        finalData,
-      );
+      handleSortRowsOnTop(watchPlace, finalData);
       setPagination(page);
     }
   }, [inventoryQuery.data?.docs]);
+
+  useEffect(() => {
+    if (watchPlace?.length) {
+      watchPlace.map(place =>
+        setUpdatedInventoryData(prev =>
+          prev.map(item =>
+            item?._id === place?._id
+              ? {
+                  ...item,
+                  ...place,
+                }
+              : item,
+          ),
+        ),
+      );
+    }
+  }, [drawerOpened, watchPlace]);
 
   return (
     <>
@@ -543,9 +731,17 @@ const SelectSpace = () => {
           <div>
             <p className="text-lg font-bold">Select Place for Order</p>
           </div>
-          <div>
+          <div className="flex items-center">
+            <Button
+              className="bg-black mr-1"
+              onClick={() => {
+                onClickAddPrice();
+              }}
+            >
+              Add Price
+            </Button>
             <Button onClick={toggleFilter} variant="default">
-              <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
+              <ChevronDown size={16} className="mr-1" /> Filter
             </Button>
             {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
           </div>
@@ -558,8 +754,8 @@ const SelectSpace = () => {
           <div>
             <p className="text-slate-400">Total Price</p>
             <Group>
-              <p className="font-bold">{toIndianCurrency(memoizedCalculateTotalPrice)}</p>
-              <p className="text-xs">**additional gst to be included</p>
+              <p className="font-bold">{toIndianCurrency(getTotalPrice(watchPlace))}</p>
+              <p className="text-xs italic text-blue-500">** inclusive of GST</p>
             </Group>
           </div>
         </div>
@@ -607,6 +803,14 @@ const SelectSpace = () => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
       ) : null}
+      <AddEditPriceDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        selectedInventories={watchPlace}
+        data={updatedInventoryData}
+        selectedInventoryId={selectedInventoryId}
+        type="bookings"
+      />
     </>
   );
 };

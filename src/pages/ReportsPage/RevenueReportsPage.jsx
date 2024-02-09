@@ -293,21 +293,21 @@ const RevenueReportsPage = () => {
       revenueGraphData?.forEach(item => {
         if (item._id) {
           if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
-            tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+            tempData.datasets[0].data[item._id - 1] = item.total || 0;
           } else if (groupBy === 'quarter') {
             if (dayjs().quarter() === 1) {
-              tempData.datasets[0].data[item._id + 3] = item.total / 100000 || 0;
+              tempData.datasets[0].data[item._id + 3] = item.total || 0;
             } else if (dayjs().quarter() === 4) {
-              tempData.datasets[0].data[item._id - 3] = item.total / 100000 || 0;
+              tempData.datasets[0].data[item._id - 3] = item.total || 0;
             } else {
-              tempData.datasets[0].data[item._id - 1] = item.total / 100000 || 0;
+              tempData.datasets[0].data[item._id - 1] = item.total || 0;
             }
           } else if (item._id < 4) {
             // For financial year. if the month is less than 4 then it will be in the next year
-            tempData.datasets[0].data[item._id + 8] = item.total / 100000 || 0;
+            tempData.datasets[0].data[item._id + 8] = item.total || 0;
           } else {
             // For financial year. if the month is greater than 4 then it will be in the same year
-            tempData.datasets[0].data[item._id - 4] = item.total / 100000 || 0;
+            tempData.datasets[0].data[item._id - 4] = item.total || 0;
           }
         }
       });
@@ -399,8 +399,8 @@ const RevenueReportsPage = () => {
               <Loader className="m-auto" />
             ) : (
               <div className="flex flex-col pl-7 relative">
-                <p className="transform rotate-[-90deg] absolute left-[-25px] top-[40%]">
-                  In Lakhs &gt;
+                <p className="transform rotate-[-90deg] absolute left-[-38px] top-[40%] text-sm">
+                  Amount in INR &gt;
                 </p>
                 <div className="max-h-[350px]">
                   <Line
@@ -410,7 +410,7 @@ const RevenueReportsPage = () => {
                     className="w-full"
                   />
                 </div>
-                <p className="text-center">{timeLegend[groupBy]} &gt;</p>
+                <p className="text-center text-sm">{timeLegend[groupBy]} &gt;</p>
               </div>
             )}
           </div>
@@ -464,7 +464,7 @@ const RevenueReportsPage = () => {
                 />
               </div>
             )}
-            <p className="text-center">City or State &gt;</p>
+            <p className="text-center capitalize">{searchParams.get('by')} &gt;</p>
           </div>
         </div>
       </div>

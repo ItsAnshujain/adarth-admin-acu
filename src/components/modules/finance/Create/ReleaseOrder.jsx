@@ -41,7 +41,6 @@ const ReleaseOrder = ({
   const handleDeleteSpaceItem = spaceId => {
     setAddSpaceItem(addSpaceItem?.filter(item => item.itemId !== spaceId));
   };
-
   const COLUMNS = useMemo(
     () => [
       {
@@ -191,28 +190,6 @@ const ReleaseOrder = ({
           ),
       },
       {
-        Header: 'MEDIA',
-        accessor: 'media',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { media },
-          },
-        }) =>
-          useMemo(
-            () => (
-              <Text
-                className="overflow-hidden text-ellipsis max-w-[180px]"
-                lineClamp={1}
-                title={media}
-              >
-                {media}
-              </Text>
-            ),
-            [],
-          ),
-      },
-      {
         Header: 'DIMENSION (WxH)',
         accessor: 'dimensions',
         disableSortBy: true,
@@ -221,11 +198,9 @@ const ReleaseOrder = ({
             () => (
               <div className="flex gap-x-2">
                 {info.row.original.size.length ? (
-                  <p>
+                  <p className="max-w-[300px]">
                     {info.row.original.size
-                      .map((item, index) =>
-                        index < 2 ? `${item?.width || 0}ft x ${item?.height || 0}ft` : null,
-                      )
+                      .map(item => `${item?.width || 0}ft x ${item?.height || 0}ft`)
                       .filter(item => item !== null)
                       .join(', ')}
                   </p>
@@ -241,6 +216,11 @@ const ReleaseOrder = ({
         Header: 'AREA',
         accessor: 'area',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { area },
+          },
+        }) => useMemo(() => <p>{area?.toFixed(2)} sq.ft.</p>, []),
       },
       {
         Header: 'TOTAL DISPLAY COST/MONTH',
@@ -248,9 +228,9 @@ const ReleaseOrder = ({
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { displayCost },
+            original: { displayCostPerMonth },
           },
-        }) => useMemo(() => <p>{displayCost}</p>, []),
+        }) => useMemo(() => <p>{toIndianCurrency(displayCostPerMonth)}</p>, []),
       },
       {
         Header: 'PRINTING COST',
@@ -260,7 +240,7 @@ const ReleaseOrder = ({
           row: {
             original: { printingCost },
           },
-        }) => useMemo(() => <p>{printingCost}</p>, []),
+        }) => useMemo(() => <p>{toIndianCurrency(printingCost)}</p>, []),
       },
       {
         Header: 'MOUNTING COST',
@@ -270,7 +250,7 @@ const ReleaseOrder = ({
           row: {
             original: { mountingCost },
           },
-        }) => useMemo(() => <p>{mountingCost}</p>, []),
+        }) => useMemo(() => <p>{toIndianCurrency(mountingCost)}</p>, []),
       },
       {
         Header: 'ACTION',
@@ -279,17 +259,30 @@ const ReleaseOrder = ({
         Cell: ({
           row: {
             original: {
-              area,
-              city,
-              displayCost,
-              itemId,
+              displayCostDiscount,
+              mountingCostDiscount,
+              printingCostDiscount,
+              name,
               location,
-              media,
-              mountingCost,
-              printingCost,
+              startDate,
+              endDate,
+              quantity,
+              rate,
+              per,
+              price,
+              itemId,
+              hsn,
+              city,
+              state,
               size,
               unit,
+              category,
               facing,
+              area,
+              printingCost,
+              mountingCost,
+              totalDisplayCost,
+              displayCostPerMonth,
             },
           },
         }) =>
@@ -306,21 +299,34 @@ const ReleaseOrder = ({
                   <Menu.Item
                     className="cursor-pointer flex items-center gap-1"
                     icon={<Edit2 className="h-4" />}
-                    onClick={() =>
+                    onClick={() => {
                       onClickAddItems({
-                        area,
-                        city,
-                        displayCost,
-                        itemId,
+                        displayCostDiscount,
+                        mountingCostDiscount,
+                        printingCostDiscount,
+                        name,
                         location,
-                        media,
-                        mountingCost,
-                        printingCost,
+                        startDate,
+                        endDate,
+                        quantity,
+                        rate,
+                        per,
+                        price,
+                        itemId,
+                        hsn,
+                        city,
+                        state,
                         size,
                         unit,
+                        category,
                         facing,
-                      })
-                    }
+                        area,
+                        printingCost,
+                        mountingCost,
+                        totalDisplayCost,
+                        displayCostPerMonth,
+                      });
+                    }}
                   >
                     <span className="ml-1">Edit</span>
                   </Menu.Item>
@@ -374,6 +380,7 @@ const ReleaseOrder = ({
         printing: 0,
         mounting: 0,
       },
+      printingGstPercentage: 0,
       mountingGstPercentage: 0,
       grandTotal: 0,
       grandTotalInWords: '',
@@ -381,14 +388,15 @@ const ReleaseOrder = ({
 
     if (addSpaceItem?.length) {
       addSpaceItem.forEach(item => {
-        if (item?.displayCost) {
-          tempInitialTotal.initTotal.display += item.displayCost || 0;
+        if (item?.totalDisplayCost) {
+          tempInitialTotal.initTotal.display +=
+            item.totalDisplayCost - item.displayCostDiscount || 0;
         }
         if (item?.printingCost) {
-          tempInitialTotal.initTotal.printing += item.printingCost || 0;
+          tempInitialTotal.initTotal.printing += item.printingCost - item.printingCostDiscount || 0;
         }
         if (item?.mountingCost) {
-          tempInitialTotal.initTotal.mounting += item.mountingCost || 0;
+          tempInitialTotal.initTotal.mounting += item.mountingCost - item.mountingCostDiscount || 0;
         }
       });
     }
@@ -410,9 +418,16 @@ const ReleaseOrder = ({
     );
 
     tempInitialTotal.mountingGstPercentage = values.mountingGstPercentage;
+    tempInitialTotal.printingGstPercentage = values.printingGstPercentage;
 
     tempInitialTotal.gst.display = Math.round(tempInitialTotal.subTotal.display * 0.18);
-    tempInitialTotal.gst.printing = Math.round(tempInitialTotal.subTotal.printing * 0.18);
+    tempInitialTotal.gst.printing =
+      values.printingGstPercentage > 0
+        ? Math.round(
+            tempInitialTotal.subTotal.printing * (tempInitialTotal.printingGstPercentage / 100),
+          )
+        : Math.round(tempInitialTotal.subTotal.printing * 0.18);
+
     tempInitialTotal.gst.mounting =
       values.mountingGstPercentage > 0
         ? Math.round(
@@ -435,9 +450,10 @@ const ReleaseOrder = ({
       tempInitialTotal.threeMonthTotal.display +
       tempInitialTotal.threeMonthTotal.printing +
       tempInitialTotal.threeMonthTotal.mounting;
-
     tempInitialTotal.grandTotalInWords = toWords.convert(
-      !Number.isNaN(tempInitialTotal.grandTotal) ? Math.round(tempInitialTotal.grandTotal) : 0,
+      !Number.isNaN(tempInitialTotal.grandTotal)
+        ? Number(tempInitialTotal.grandTotal.toFixed(2))
+        : 0,
     );
     return tempInitialTotal;
   }, [addSpaceItem, values.discount, values.forMonths]);
@@ -455,6 +471,11 @@ const ReleaseOrder = ({
       })),
     );
   }, [values.printingSqftCost, values.mountingSqftCost]);
+
+  const memoizedTotalPrice = useMemo(
+    () => Number((totalPrice + totalPrice * 0.18).toFixed(2)),
+    [totalPrice],
+  );
 
   return (
     <div>
@@ -586,34 +607,48 @@ const ReleaseOrder = ({
         </Group>
 
         {!bookingIdFromFinance ? (
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-4 gap-4 mb-4">
             <NumberInput
               styles={styles}
-              label="Printing ft&sup2; Cost"
+              label="Printing/ ft&sup2; Cost"
               name="printingSqftCost"
               withAsterisk
               placeholder="Write..."
               min={0}
+              precision={2}
             />
             <NumberInput
               styles={styles}
-              label="Mounting ft&sup2; Cost"
+              label="Printing GST %"
+              name="printingGstPercentage"
+              placeholder="Write..."
+              min={0}
+              precision={2}
+              max={100}
+              withAsterisk
+            />
+            <NumberInput
+              styles={styles}
+              label="Mounting/ ft&sup2; Cost"
               name="mountingSqftCost"
               withAsterisk
               placeholder="Write..."
               min={0}
+              precision={2}
             />
             <NumberInput
               styles={styles}
-              label="Mounting GST Charges in %"
+              label="Mounting GST %"
               name="mountingGstPercentage"
               placeholder="Write..."
               min={0}
+              precision={2}
               max={100}
+              withAsterisk
             />
           </div>
         ) : null}
-        {!bookingIdFromFinance && addSpaceItem?.length ? (
+        {!bookingIdFromFinance ? (
           <div className="grid grid-cols-3 gap-4 mb-4">
             <NumberInput
               styles={styles}
@@ -621,7 +656,9 @@ const ReleaseOrder = ({
               name="discount.display"
               placeholder="Write..."
               min={0}
+              precision={2}
               max={calculatedData?.initTotal?.display}
+              value={calculatedData.discount.display}
             />
             <NumberInput
               styles={styles}
@@ -629,7 +666,9 @@ const ReleaseOrder = ({
               name="discount.printing"
               placeholder="Write..."
               min={0}
+              precision={2}
               max={calculatedData?.initTotal?.printing}
+              value={calculatedData.discount.printing}
             />
             <NumberInput
               styles={styles}
@@ -637,7 +676,9 @@ const ReleaseOrder = ({
               name="discount.mounting"
               placeholder="Write..."
               min={0}
+              precision={2}
               max={calculatedData?.initTotal?.mounting}
+              value={calculatedData.discount.mounting}
             />
           </div>
         ) : null}
@@ -665,9 +706,7 @@ const ReleaseOrder = ({
                 </div>
                 <div className="flex justify-end">
                   <p className="text-lg font-bold">Total:</p>
-                  <p className="text-lg ml-2">
-                    {toIndianCurrency(totalPrice + totalPrice * 0.18) || 0}
-                  </p>
+                  <p className="text-lg ml-2">{toIndianCurrency(memoizedTotalPrice) || 0}</p>
                 </div>
               </div>
             )}
@@ -686,7 +725,7 @@ const ReleaseOrder = ({
           placeholder="Write..."
           value={
             bookingIdFromFinance
-              ? toWords.convert(Math.round(totalPrice + totalPrice * 0.18))
+              ? toWords.convert(memoizedTotalPrice)
               : calculatedData?.grandTotalInWords
               ? calculatedData.grandTotalInWords
               : ''
