@@ -348,7 +348,7 @@ const AddEditPriceDrawer = ({
 
   useEffect(() => {
     setBookingData(watchPlace);
-  }, [watchPlace]);
+  }, [formContext.watch()]);
 
   useEffect(() => {
     setBookingData(bookingData);
@@ -415,7 +415,9 @@ const AddEditPriceDrawer = ({
   }, [JSON.stringify(form.watch())]);
 
   useEffect(() => {
-    setProposalData(selectedInventories);
+    setTimeout(() => {
+      setProposalData(selectedInventories);
+    }, 1000);
   }, [selectedInventories]);
 
   useEffect(() => {
@@ -434,10 +436,10 @@ const AddEditPriceDrawer = ({
   };
 
   useEffect(() => {
-    const filteredBookingData = data.filter(doc => doc?._id === selectedInventory?._id);
-    const filteredProposalData = proposalData.filter(doc => doc?._id === selectedInventory?._id);
+    const filteredBookingData = data?.filter(doc => doc?._id === selectedInventory?._id);
+    const filteredProposalData = proposalData?.filter(doc => doc?._id === selectedInventory?._id);
 
-    if (filteredBookingData.length > 0 && type === 'bookings') {
+    if (filteredBookingData?.length > 0 && type === 'bookings') {
       const inventory = filteredBookingData[0];
       form.reset({
         displayCostPerMonth: inventory.displayCostPerMonth || 0,
@@ -462,9 +464,8 @@ const AddEditPriceDrawer = ({
         discountOn: inventory.discountOn || 'displayCost',
         discount: inventory.discount || 0,
         applyDiscountForAll: inventory.applyDiscountForAll || false,
-        discountedDisplayCost: inventory.discountedDisplayCost || 0,
       });
-    } else if (filteredProposalData.length > 0 && type === 'proposal') {
+    } else if (filteredProposalData?.length > 0 && type === 'proposal') {
       const inventory = filteredProposalData[0];
       form.reset({
         displayCostPerMonth: inventory.displayCostPerMonth || 0,
@@ -485,6 +486,7 @@ const AddEditPriceDrawer = ({
         otherCharges: inventory.otherCharges || 0,
         applyPrintingMountingCostForAll: inventory.applyPrintingMountingCostForAll,
         subjectToExtension: inventory.subjectToExtension || false,
+        discountedDisplayCost: inventory.discountedDisplayCost || 0,
       });
     } else if (
       selectedInventory?.priceChanged ||
