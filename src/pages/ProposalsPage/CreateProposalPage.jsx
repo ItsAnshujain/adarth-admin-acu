@@ -5,6 +5,7 @@ import { showNotification } from '@mantine/notifications';
 import dayjs from 'dayjs';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import shallow from 'zustand/shallow';
 import BasicInfo from '../../components/modules/proposals/CreateProposal/BasicInfo';
 import Spaces from '../../components/modules/proposals/Spaces';
 import SuccessModal from '../../components/shared/Modal';
@@ -18,6 +19,7 @@ import { useFetchUsersById } from '../../apis/queries/users.queries';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
 import { serialize } from '../../utils';
 import useUserStore from '../../store/user.store';
+import useProposalStore from '../../store/proposal.store';
 
 const initialValues = {
   name: '',
@@ -73,6 +75,13 @@ const CreateProposalPage = () => {
 
   const getForm = () =>
     formStep === 1 ? <BasicInfo proposalId={proposalId} userData={userData} /> : <Spaces />;
+
+  const { setProposalData } = useProposalStore(
+    state => ({
+      setProposalData: state.setProposalData,
+    }),
+    shallow,
+  );
 
   const onSubmit = form.handleSubmit(formData => {
     let data = {};
@@ -163,6 +172,7 @@ const CreateProposalPage = () => {
           { proposalId, data },
           {
             onSuccess: () => {
+              setProposalData([]);
               setTimeout(() => {
                 navigate('/proposals');
                 form.reset();
@@ -184,6 +194,7 @@ const CreateProposalPage = () => {
 
         create(data, {
           onSuccess: () => {
+            setProposalData([]);
             setTimeout(() => {
               navigate('/proposals');
               form.reset();

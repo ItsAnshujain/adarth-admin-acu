@@ -7,6 +7,7 @@ import validator from 'validator';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
+import shallow from 'zustand/shallow';
 import BasicInformationForm from '../../components/modules/bookings/Create/BasicInformationForm';
 import SelectSpaces from '../../components/modules/bookings/Create/SelectSpaces';
 import OrderInformationForm from '../../components/modules/bookings/Create/OrderInformationForm';
@@ -26,6 +27,7 @@ import {
   getAvailableUnits,
 } from '../../utils';
 import { useFetchProposalById } from '../../apis/queries/proposal.queries';
+import useBookingStore from '../../store/booking.store';
 
 const defaultValues = {
   client: {
@@ -110,6 +112,13 @@ const CreateBookingPage = () => {
   );
 
   const watchPlace = form.watch('place') || [];
+
+  const { setBookingData } = useBookingStore(
+    state => ({
+      setBookingData: state.setBookingData,
+    }),
+    shallow,
+  );
 
   const onSubmit = form.handleSubmit(async formData => {
     setFormStep(prevState => prevState + 1);
@@ -241,6 +250,7 @@ const CreateBookingPage = () => {
           {
             onSuccess: () => {
               queryClient.invalidateQueries(['bookings']);
+              setBookingData([]);
               form.reset();
               setTimeout(() => {
                 navigate('/bookings');
@@ -260,6 +270,7 @@ const CreateBookingPage = () => {
           {
             onSuccess: () => {
               setOpenSuccessModal(true);
+              setBookingData([]);
               setTimeout(() => {
                 navigate('/bookings');
                 form.reset();
