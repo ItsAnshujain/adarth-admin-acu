@@ -436,10 +436,10 @@ const AddEditPriceDrawer = ({
   };
 
   useEffect(() => {
-    const filteredBookingData = data.filter(doc => doc?._id === selectedInventory?._id);
-    const filteredProposalData = proposalData.filter(doc => doc?._id === selectedInventory?._id);
+    const filteredBookingData = data?.filter(doc => doc?._id === selectedInventory?._id);
+    const filteredProposalData = proposalData?.filter(doc => doc?._id === selectedInventory?._id);
 
-    if (filteredBookingData.length > 0 && type === 'bookings') {
+    if (filteredBookingData?.length > 0 && type === 'bookings') {
       const inventory = filteredBookingData[0];
       form.reset({
         displayCostPerMonth: inventory.displayCostPerMonth || 0,
@@ -465,7 +465,7 @@ const AddEditPriceDrawer = ({
         discount: inventory.discount || 0,
         applyDiscountForAll: inventory.applyDiscountForAll || false,
       });
-    } else if (filteredProposalData.length > 0 && type === 'proposal') {
+    } else if (filteredProposalData?.length > 0 && type === 'proposal') {
       const inventory = filteredProposalData[0];
       form.reset({
         displayCostPerMonth: inventory.displayCostPerMonth || 0,
