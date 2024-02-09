@@ -271,9 +271,9 @@ const Spaces = () => {
         accessor: 'location.city',
         Cell: ({
           row: {
-            original: { location },
+            original: { location, city },
           },
-        }) => useMemo(() => <p>{location.city || '-'}</p>, []),
+        }) => useMemo(() => <p>{location.city || city || '-'}</p>, []),
       },
       {
         Header: 'ADDITIONAL TAGS',
