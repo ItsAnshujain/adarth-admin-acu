@@ -441,7 +441,8 @@ const PublicLinkPage = () => {
         accessor: 'price',
         disableSortBy: true,
         show: true,
-        Cell: ({ row: { original } }) => useMemo(() => calculateTotalPrice(original), []),
+        Cell: ({ row: { original } }) =>
+          useMemo(() => (calculateTotalPrice(original) ? calculateTotalPrice(original) : ''), []),
       },
       {
         Header: 'AVAILABILITY',
