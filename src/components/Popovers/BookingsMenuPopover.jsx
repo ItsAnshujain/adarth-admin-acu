@@ -2,7 +2,6 @@ import { Button, Menu } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { Link } from 'react-router-dom';
 import { Edit2, Eye, Trash } from 'react-feather';
-import shallow from 'zustand/shallow';
 import modalConfig from '../../utils/modalConfig';
 import MenuIcon from '../Menu';
 import RoleBased from '../RoleBased';
@@ -29,12 +28,7 @@ const BookingsMenuPopover = ({
       ...modalConfig,
     });
 
-  const { setBookingData } = useBookingStore(
-    state => ({
-      setBookingData: state.setBookingData,
-    }),
-    shallow,
-  );
+  const setBookingData = useBookingStore(state => state.setBookingData);
 
   return (
     <Menu shadow="md" width={120}>

@@ -88,24 +88,24 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
     [inventoryData],
   );
 
-  const discount = useMemo(
+  const discountAmount = useMemo(
     () =>
-      inventoryData?.docs.reduce((acc, { pricingDetails }) => {
-        if (pricingDetails.discountOn === 'displayCost') {
-          return (
-            acc +
-            calculateTotalAmountWithPercentage(
-              pricingDetails.displayCostPerMonth,
-              pricingDetails.discount || 0,
-            )
-          );
-        }
-        return acc + 0;
-      }, 0),
+      inventoryData?.docs.reduce(
+        (acc, { pricingDetails: { discountOn, displayCostPerMonth, discount } }) => {
+          if (discountOn === 'displayCost') {
+            return acc + calculateTotalAmountWithPercentage(displayCostPerMonth, discount || 0);
+          }
+          return acc + 0;
+        },
+        0,
+      ),
     [inventoryData],
   );
 
-  const finalDisplayCost = useMemo(() => totalDisplayCost - discount, [inventoryData]);
+  const finalDisplayCost = useMemo(
+    () => totalDisplayCost - discountAmount,
+    [totalDisplayCost, discountAmount],
+  );
 
   const totalPrintingCost = useMemo(
     () =>
@@ -245,7 +245,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                         <div className="flex justify-between py-1">
                           <Text weight="400">Discount</Text>
                           <Text weight="bolder" className="text-lg" color="green">
-                            {toIndianCurrency(discount)}
+                            {toIndianCurrency(discountAmount)}
                           </Text>{' '}
                         </div>
                         <div className="flex justify-between py-1">
