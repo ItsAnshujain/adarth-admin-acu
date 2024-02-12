@@ -148,11 +148,7 @@ const PublicLinkPage = () => {
                 ) : (
                   <Image src={null} withPlaceholder height={32} width={32} />
                 )}
-                <Text
-                  className="overflow-hidden text-ellipsis underline"
-                  lineClamp={1}
-                  title={spaceName}
-                >
+                <Text className="overflow-hidden text-ellipsis" lineClamp={1} title={spaceName}>
                   {spaceName}
                 </Text>
               </div>
@@ -445,7 +441,8 @@ const PublicLinkPage = () => {
         accessor: 'price',
         disableSortBy: true,
         show: true,
-        Cell: ({ row: { original } }) => useMemo(() => calculateTotalPrice(original), []),
+        Cell: ({ row: { original } }) =>
+          useMemo(() => (calculateTotalPrice(original) ? calculateTotalPrice(original) : ''), []),
       },
       {
         Header: 'AVAILABILITY',
@@ -471,7 +468,11 @@ const PublicLinkPage = () => {
           },
         }) =>
           useMemo(
-            () => <p className="italic">{subjectToExtension ? 'Subject to extension' : null}</p>,
+            () => (
+              <p className="italic font-light">
+                {subjectToExtension ? 'Subject to extension' : null}
+              </p>
+            ),
             [],
           ),
       },
