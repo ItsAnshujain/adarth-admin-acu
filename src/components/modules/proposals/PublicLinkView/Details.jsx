@@ -245,7 +245,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                         <div className="flex justify-between py-1">
                           <Text weight="400">Discount</Text>
                           <Text weight="bolder" className="text-lg" color="green">
-                            {toIndianCurrency(discountAmount)}
+                            -{toIndianCurrency(discountAmount)}
                           </Text>{' '}
                         </div>
                         <div className="flex justify-between py-1">
