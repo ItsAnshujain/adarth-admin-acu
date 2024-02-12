@@ -372,7 +372,13 @@ const BasicInfo = ({
                     <Text color="gray" size="xs" weight="300">
                       Resolution
                     </Text>
-                    <Text>{inventoryDetails?.specifications?.resolutions || 'NA'}</Text>
+                    <Text className="mb-4">
+                      {inventoryDetails?.specifications?.resolutions || 'NA'}
+                    </Text>
+                    <Text color="gray" size="xs" weight="300">
+                      Facing
+                    </Text>
+                    <Text>{inventoryDetails?.location?.facing?.name || 'NA'}</Text>{' '}
                   </div>
                   <div>
                     <Text color="gray" size="xs" weight="300">
