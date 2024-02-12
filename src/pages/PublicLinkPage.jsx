@@ -1,24 +1,21 @@
 import { useSearchParams, useParams } from 'react-router-dom';
 import { useMemo, useState, useEffect } from 'react';
-import { Image } from '@mantine/core';
+import { Image, Text } from '@mantine/core';
 import GoogleMapReact from 'google-map-react';
 import { Loader } from 'react-feather';
 import { useDebouncedValue } from '@mantine/hooks';
 import shallow from 'zustand/shallow';
-import { useModals } from '@mantine/modals';
 import dayjs from 'dayjs';
 import { useProposalByVersionName } from '../apis/queries/proposal.queries';
 import Table from '../components/Table/Table';
 import { calculateTotalMonths, generateSlNo, indianMapCoordinates } from '../utils';
 import { GOOGLE_MAPS_API_KEY } from '../utils/config';
-import modalConfig from '../utils/modalConfig';
 import MarkerIcon from '../assets/pin.svg';
 import RowsPerPage from '../components/RowsPerPage';
 import Search from '../components/Search';
 import useLayoutView from '../store/layout.store';
 import Details from '../components/modules/proposals/PublicLinkView/Details';
 import Header from '../components/modules/proposals/PublicLinkView/Header';
-import SpaceNamePhotoContent from '../components/modules/inventory/SpaceNamePhotoContent';
 import toIndianCurrency from '../utils/currencyFormat';
 
 const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
@@ -31,21 +28,10 @@ const defaultProps = {
   zoom: 10,
 };
 
-const updatedModalConfig = {
-  ...modalConfig,
-  classNames: {
-    title: 'font-dmSans text-xl px-4',
-    header: 'px-4 pt-4',
-    body: '',
-    close: 'mr-4',
-  },
-};
-
 const PublicLinkPage = () => {
   const [mapInstance, setMapInstance] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
-  const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
     owner: 'all',
     page: 1,
@@ -106,15 +92,6 @@ const PublicLinkPage = () => {
     }
   }, [debouncedSearch]);
 
-  const togglePreviewModal = imgSrc =>
-    modals.openModal({
-      title: 'Preview',
-      children: (
-        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
-      ),
-      ...updatedModalConfig,
-    });
-
   const displayCost = place => {
     if (
       proposalData?.proposal?.displayColumns?.some(col => col === 'discountedDisplayPrice') &&
@@ -165,12 +142,20 @@ const PublicLinkPage = () => {
         }) =>
           useMemo(
             () => (
-              <SpaceNamePhotoContent
-                id={_id}
-                spaceName={spaceName}
-                spacePhoto={spacePhoto}
-                togglePreviewModal={togglePreviewModal}
-              />
+              <div className="flex gap-4 items-center">
+                {spacePhoto ? (
+                  <Image src={spacePhoto} alt="img" height={32} width={32} />
+                ) : (
+                  <Image src={null} withPlaceholder height={32} width={32} />
+                )}
+                <Text
+                  className="overflow-hidden text-ellipsis underline"
+                  lineClamp={1}
+                  title={spaceName}
+                >
+                  {spaceName}
+                </Text>
+              </div>
             ),
             [],
           ),
@@ -480,7 +465,9 @@ const PublicLinkPage = () => {
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'extension'),
         Cell: ({
           row: {
-            original: { subjectToExtension },
+            original: {
+              pricingDetails: { subjectToExtension },
+            },
           },
         }) =>
           useMemo(
