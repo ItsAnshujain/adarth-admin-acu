@@ -2,7 +2,6 @@ import { Button, Menu } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { Link } from 'react-router-dom';
 import { Eye, Edit2, Trash, Key, Book } from 'react-feather';
-import shallow from 'zustand/shallow';
 import modalConfig from '../../utils/modalConfig';
 import DeleteProposalContent from '../DeleteProposalContent';
 import MenuIcon from '../Menu';
@@ -31,12 +30,7 @@ const ProposalsMenuPopover = ({
       ...modalConfig,
     });
 
-  const { setProposalData } = useProposalStore(
-    state => ({
-      setProposalData: state.setProposalData,
-    }),
-    shallow,
-  );
+  const setProposalData = useProposalStore(state => state.setProposalData);
 
   return (
     <Menu shadow="md" width={150} withinPortal>
