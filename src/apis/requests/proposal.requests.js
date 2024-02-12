@@ -31,3 +31,10 @@ export const deleteProposalVersion = versionId => http.delete(`/proposal/version
 
 export const restoreProposal = (proposalId, versionId) =>
   http.post(`/proposal/${proposalId}/restore/${versionId}`);
+
+// For Public link
+
+export const fetchProposalByVersionName = versionId => http.get(`/proposal/public/${versionId}`);
+
+export const generatePublicProposalDoc = (id, queries, data) =>
+  http.post(`/proposal/public/${id}/share?${queries}`, data);

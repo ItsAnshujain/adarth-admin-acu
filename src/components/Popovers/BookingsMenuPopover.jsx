@@ -2,11 +2,13 @@ import { Button, Menu } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { Link } from 'react-router-dom';
 import { Edit2, Eye, Trash } from 'react-feather';
+import shallow from 'zustand/shallow';
 import modalConfig from '../../utils/modalConfig';
 import MenuIcon from '../Menu';
 import RoleBased from '../RoleBased';
 import { ROLES } from '../../utils';
 import DeleteBookingContent from '../DeleteBookingContent';
+import useBookingStore from '../../store/booking.store';
 
 const BookingsMenuPopover = ({
   itemId,
@@ -27,6 +29,13 @@ const BookingsMenuPopover = ({
       ...modalConfig,
     });
 
+  const { setBookingData } = useBookingStore(
+    state => ({
+      setBookingData: state.setBookingData,
+    }),
+    shallow,
+  );
+
   return (
     <Menu shadow="md" width={120}>
       <Menu.Target>
@@ -41,7 +50,7 @@ const BookingsMenuPopover = ({
           </Link>
         ) : null}
         {enableEdit ? (
-          <Link to={`/bookings/edit-details/${itemId}`}>
+          <Link to={`/bookings/edit-details/${itemId}`} onClick={() => setBookingData([])}>
             <Menu.Item icon={<Edit2 className="h-4" />}>Edit</Menu.Item>
           </Link>
         ) : null}

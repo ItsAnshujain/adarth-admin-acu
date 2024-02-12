@@ -11,6 +11,7 @@ const Header = ({
   toggleShareOptions,
   parentProposalId,
   version = '',
+  isLoading = false,
 }) => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -38,8 +39,9 @@ const Header = ({
         <div className="relative">
           <Button
             className="bg-black"
-            onClick={() => toggleShareOptions(id)}
+            onClick={() => toggleShareOptions(id, version)}
             leftIcon={<Share2 className="h-5" />}
+            disabled={isLoading}
           >
             Share and Download
           </Button>

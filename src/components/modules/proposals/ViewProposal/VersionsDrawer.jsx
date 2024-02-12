@@ -61,8 +61,8 @@ const VersionsDrawer = ({
     onClose();
   };
 
-  const shareVersion = id => {
-    toggleShareOptions(id);
+  const shareVersion = (id, version) => {
+    toggleShareOptions(id, version);
   };
 
   const restoreProposal = (id, parentPropId) => {
@@ -168,7 +168,7 @@ const VersionsDrawer = ({
                   size="xs"
                   title="Share"
                   className="text-black px-2"
-                  onClick={() => shareVersion(_id)}
+                  onClick={() => shareVersion(_id, versionTitle)}
                 >
                   <IconShare size={22} />
                 </Button>

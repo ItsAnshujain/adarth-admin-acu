@@ -14,6 +14,8 @@ import {
   deleteProposalVersion,
   fetchProposalVersions,
   restoreProposal,
+  fetchProposalByVersionName,
+  generatePublicProposalDoc,
 } from '../requests/proposal.requests';
 import { onApiError } from '../../utils';
 
@@ -237,3 +239,23 @@ export const useRestoreProposal = () => {
     onError: onApiError,
   });
 };
+
+// For public link
+
+export const useProposalByVersionName = (versionId, enabled = true) =>
+  useQuery(
+    ['proposals-by-version', versionId],
+    async () => {
+      const res = await fetchProposalByVersionName(versionId);
+      return res?.data;
+    },
+    {
+      enabled,
+    },
+  );
+
+export const useGeneratePublicProposal = () =>
+  useMutation(async ({ proposalId, queries, payload }) => {
+    const res = await generatePublicProposalDoc(proposalId, queries, payload);
+    return res?.data;
+  });
