@@ -9,6 +9,7 @@ import Filter from './Filter';
 import useLayoutView from '../../../store/layout.store';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
+import useProposalStore from '../../../store/proposal.store';
 
 const Header = ({ text }) => {
   const [showFilter, setShowFilter] = useState(false);
@@ -20,6 +21,13 @@ const Header = ({ text }) => {
     state => ({
       activeLayout: state.activeLayout,
       setActiveLayout: state.setActiveLayout,
+    }),
+    shallow,
+  );
+
+  const { setProposalData } = useProposalStore(
+    state => ({
+      setProposalData: state.setProposalData,
     }),
     shallow,
   );
@@ -88,6 +96,9 @@ const Header = ({ text }) => {
           <Link
             to="/proposals/create-proposals"
             className="bg-purple-450 flex items-center text-white rounded-md px-4 h-full font-medium"
+            onClick={() => {
+              setProposalData([]);
+            }}
           >
             <Plus size={16} className="mr-1" />
             <span className="text-sm">Create Proposals</span>
