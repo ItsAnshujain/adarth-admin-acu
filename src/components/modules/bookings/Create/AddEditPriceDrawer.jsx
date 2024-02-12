@@ -347,12 +347,12 @@ const AddEditPriceDrawer = ({
   }, [JSON.stringify(form.watch())]);
 
   useEffect(() => {
-    setBookingData(watchPlace);
-  }, [formContext.watch()]);
-
-  useEffect(() => {
     setBookingData(bookingData);
   }, [bookingData]);
+
+  useEffect(() => {
+    setBookingData(watchPlace);
+  }, [watchPlace]);
 
   const { setProposalData, proposalData } = useProposalStore(
     state => ({
@@ -415,14 +415,12 @@ const AddEditPriceDrawer = ({
   }, [JSON.stringify(form.watch())]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setProposalData(selectedInventories);
-    }, 1000);
-  }, [selectedInventories]);
-
-  useEffect(() => {
     setProposalData(memoizedProposalData);
   }, [memoizedProposalData]);
+
+  useEffect(() => {
+    setProposalData(selectedInventories);
+  }, [selectedInventories]);
 
   const onSubmit = async () => {
     if (type === 'bookings') {
