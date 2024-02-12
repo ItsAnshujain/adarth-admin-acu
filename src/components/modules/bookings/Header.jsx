@@ -4,12 +4,14 @@ import { Button, Menu, Radio } from '@mantine/core';
 import { Plus, ChevronDown, DownloadCloud } from 'react-feather';
 import { useClickOutside, useDisclosure } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
+import shallow from 'zustand/shallow';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
 import Filter from './Filter';
 import RoleBased from '../../RoleBased';
 import { ROLES, downloadPdf } from '../../../utils';
 import { useExportBookings } from '../../../apis/queries/booking.queries';
+import useBookingStore from '../../../store/booking.store';
 
 const AreaHeader = ({ text }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -24,6 +26,13 @@ const AreaHeader = ({ text }) => {
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
 
   const exportBookingsHandler = useExportBookings();
+
+  const { setBookingData } = useBookingStore(
+    state => ({
+      setBookingData: state.setBookingData,
+    }),
+    shallow,
+  );
 
   const exportBookings = async () => {
     if (exportType) {
@@ -138,6 +147,7 @@ const AreaHeader = ({ text }) => {
             <Link
               to="/bookings/create-order"
               className="bg-purple-450 flex items-center text-white rounded-md px-4 h-full font-medium"
+              onClick={() => setBookingData([])}
             >
               <Plus size={16} className="mr-1" />
               <span className="text-sm">Create Order</span>
