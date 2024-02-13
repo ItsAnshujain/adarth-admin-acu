@@ -280,7 +280,7 @@ const PublicLinkPage = () => {
       },
       {
         Header: 'AREA (IN SQ. FT.)',
-        accessor: 'area',
+        accessor: 'pricingDetails.totalArea',
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'areaInSqFt'),
         Cell: ({ row: { original } }) =>
           useMemo(
