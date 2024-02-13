@@ -137,8 +137,7 @@ const PublicLinkPage = () => {
     const dataColumns = [
       {
         Header: '#',
-        accessor: 'id',
-        disableSortBy: true,
+        accessor: 'createdAt',
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'serialNo'),
         Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
@@ -171,13 +170,11 @@ const PublicLinkPage = () => {
         Header: 'FACIA TOWARDS',
         accessor: 'faciaTowards',
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'faciaTowards'),
-        disableSortBy: true,
         Cell: info => useMemo(() => <p>{info.row.original.faciaTowards || '-'}</p>, []),
       },
       {
         Header: 'MEDIUM',
         accessor: 'subCategory',
-        disableSortBy: true,
         show: true,
         Cell: ({
           row: {
@@ -198,7 +195,6 @@ const PublicLinkPage = () => {
       {
         Header: 'STATE',
         accessor: 'state',
-        disableSortBy: true,
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'state'),
         Cell: ({
           row: {
@@ -209,7 +205,6 @@ const PublicLinkPage = () => {
       {
         Header: 'ILLUMINATION',
         accessor: 'illumination',
-        disableSortBy: true,
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'illumination'),
         Cell: ({
           row: {
@@ -220,7 +215,6 @@ const PublicLinkPage = () => {
       {
         Header: 'LOCATION',
         accessor: 'landmark',
-        disableSortBy: true,
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'location'),
         Cell: ({
           row: {
@@ -231,7 +225,6 @@ const PublicLinkPage = () => {
       {
         Header: 'UNITS',
         accessor: 'pricingDetails.unit',
-        disableSortBy: true,
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'units'),
         Cell: ({
           row: {
@@ -244,7 +237,6 @@ const PublicLinkPage = () => {
       {
         Header: 'FACING',
         accessor: 'facing',
-        disableSortBy: true,
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'facing'),
         Cell: ({
           row: {
@@ -288,8 +280,7 @@ const PublicLinkPage = () => {
       },
       {
         Header: 'AREA (IN SQ. FT.)',
-        accessor: 'area',
-        disableSortBy: true,
+        accessor: 'pricingDetails.totalArea',
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'areaInSqFt'),
         Cell: ({ row: { original } }) =>
           useMemo(
@@ -307,7 +298,6 @@ const PublicLinkPage = () => {
       {
         Header: 'DISPLAY COST / MONTH',
         accessor: 'pricingDetails.displayCostPerMonth',
-        disableSortBy: true,
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'displayPrice'),
         Cell: ({
           row: {
@@ -329,7 +319,6 @@ const PublicLinkPage = () => {
         Header: 'DISPLAY COST / SQ. FT',
         accessor: 'pricingDetails.displayCostPerSqFt',
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'displayPricePerSqft'),
-        disableSortBy: true,
         Cell: ({
           row: {
             original: { pricingDetails },
@@ -350,7 +339,6 @@ const PublicLinkPage = () => {
         Header: 'DISCOUNTED DISPLAY COST',
         accessor: 'pricingDetails.discountedDisplayCost',
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'discountedDisplayPrice'),
-        disableSortBy: true,
         Cell: ({
           row: {
             original: { pricingDetails },
@@ -369,9 +357,8 @@ const PublicLinkPage = () => {
       },
       {
         Header: 'PRINTING COST',
-        accessor: 'pricingDetails.totalPrintingCost',
+        accessor: 'pricingDetails.printingCostPerSqft',
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'printingCost'),
-        disableSortBy: true,
         Cell: ({
           row: {
             original: { pricingDetails },
@@ -390,9 +377,8 @@ const PublicLinkPage = () => {
       },
       {
         Header: 'MOUNTING COST',
-        accessor: 'pricingDetails.totalMountingCost',
+        accessor: 'pricingDetails.mountingCostPerSqft',
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'mountingCost'),
-        disableSortBy: true,
         Cell: ({
           row: {
             original: { pricingDetails },
@@ -412,7 +398,6 @@ const PublicLinkPage = () => {
       {
         Header: 'ONE TIME INSTALLATION COST',
         accessor: 'pricingDetails.oneTimeInstallationCost',
-        disableSortBy: true,
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'installationCost'),
         Cell: ({
           row: {
@@ -433,7 +418,6 @@ const PublicLinkPage = () => {
       {
         Header: 'MONTHLY ADDITIONAL COST',
         accessor: 'pricingDetails.monthlyAdditionalCost',
-        disableSortBy: true,
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'monthlyAdditionalCost'),
         Cell: ({
           row: {
@@ -454,7 +438,6 @@ const PublicLinkPage = () => {
       {
         Header: 'TOTAL PRICE',
         accessor: 'price',
-        disableSortBy: true,
         show: true,
         Cell: ({ row: { original } }) =>
           useMemo(
@@ -466,7 +449,6 @@ const PublicLinkPage = () => {
       {
         Header: 'AVAILABILITY',
         accessor: 'startDate',
-        disableSortBy: true,
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'availability'),
         Cell: ({
           row: {
@@ -476,8 +458,7 @@ const PublicLinkPage = () => {
       },
       {
         Header: 'SUBJECT TO EXTENSION',
-        accessor: 'subjectToExtension',
-        disableSortBy: true,
+        accessor: 'pricingDetails.subjectToExtension',
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'extension'),
         Cell: ({
           row: {
