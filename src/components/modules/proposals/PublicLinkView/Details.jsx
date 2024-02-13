@@ -129,7 +129,10 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
   const totalPrintingCost = useMemo(
     () =>
       inventoryData?.docs.reduce((acc, place) => {
-        const area = calculateTotalArea({ ...place, dimension: place.size }, place.unit);
+        const area = calculateTotalArea(
+          { ...place, dimension: place.size },
+          place.pricingDetails.unit,
+        );
         return acc + place.pricingDetails.printingCostPerSqft * area;
       }, 0),
     [inventoryData],
@@ -138,7 +141,10 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
   const totalMountingCost = useMemo(
     () =>
       inventoryData?.docs.reduce((acc, place) => {
-        const area = calculateTotalArea({ ...place, dimension: place.size }, place.unit);
+        const area = calculateTotalArea(
+          { ...place, dimension: place.size },
+          place.pricingDetails.unit,
+        );
         return acc + place.pricingDetails.mountingCostPerSqft * area;
       }, 0),
     [inventoryData],
@@ -182,6 +188,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
     ],
   );
 
+  console.log(inventoryData);
   return (
     <div>
       {isProposalDataLoading ? (

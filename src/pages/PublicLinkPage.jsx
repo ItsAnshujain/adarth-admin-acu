@@ -115,7 +115,7 @@ const PublicLinkPage = () => {
   };
 
   const calculateTotalPrice = place => {
-    const area = calculateTotalArea({ ...place, dimension: place.size }, place.unit);
+    const area = calculateTotalArea({ ...place, dimension: place.size }, place.pricingDetails.unit);
     const totalMonths = calculateTotalMonths(place.startDate, place.endDate);
     return (
       (displayCost(place) ? displayCost(place) : 0) +
@@ -230,12 +230,14 @@ const PublicLinkPage = () => {
       },
       {
         Header: 'UNITS',
-        accessor: 'unit',
+        accessor: 'pricingDetails.unit',
         disableSortBy: true,
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'units'),
         Cell: ({
           row: {
-            original: { unit },
+            original: {
+              pricingDetails: { unit },
+            },
           },
         }) => useMemo(() => <p>{unit || '-'}</p>, []),
       },
@@ -292,7 +294,12 @@ const PublicLinkPage = () => {
         Cell: ({ row: { original } }) =>
           useMemo(
             () => (
-              <p>{calculateTotalArea({ ...original, dimension: original.size }, original.unit)}</p>
+              <p>
+                {calculateTotalArea(
+                  { ...original, dimension: original.size },
+                  original.pricingDetails.unit,
+                )}
+              </p>
             ),
             [],
           ),
