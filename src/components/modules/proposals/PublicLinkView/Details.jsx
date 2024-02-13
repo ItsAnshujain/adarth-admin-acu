@@ -8,11 +8,7 @@ import { ChevronLeft, ChevronRight } from 'react-feather';
 import { useDisclosure } from '@mantine/hooks';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import modalConfig from '../../../../utils/modalConfig';
-import {
-  calculateTotalAmountWithPercentage,
-  calculateTotalArea,
-  calculateTotalMonths,
-} from '../../../../utils';
+import { calculateTotalArea, calculateTotalMonths } from '../../../../utils';
 
 const TRANSITION_DURATION = 200;
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
@@ -82,12 +78,13 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
     setPreviewSpacesPhotos(result);
   }, [inventoryData]);
 
-  const totalDisplayCost = useMemo(
+  const memoizedTotalDisplayCost = useMemo(
     () =>
       inventoryData?.docs.reduce((acc, place) => {
         if (
           proposalData?.displayColumns?.some(col => col === 'discountedDisplayPrice') &&
-          place.pricingDetails.discountedDisplayCost > 0
+          place.pricingDetails.discountedDisplayCost > 0 &&
+          place.totalDisplayCost <= 0
         ) {
           return (
             acc +
@@ -95,6 +92,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
               calculateTotalMonths(place.startDate, place.endDate)
           );
         }
+
         if (proposalData?.displayColumns?.some(col => col === 'displayPrice')) {
           return acc + place.pricingDetails.totalDisplayCost;
         }
@@ -107,17 +105,15 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
   const discountAmount = useMemo(
     () =>
       inventoryData?.docs.reduce(
-        (
-          acc,
-          { pricingDetails: { discountOn, displayCostPerMonth, discount, discountedDisplayCost } },
-        ) => {
+        (acc, { pricingDetails: { discountedDisplayCost, totalDisplayCost } }) => {
           if (
-            discountOn === 'displayCost' &&
-            !proposalData?.displayColumns?.some(col => col === 'discountedDisplayPrice') &&
-            discountedDisplayCost <= 0
+            proposalData?.displayColumns?.some(col => col === 'discountedDisplayPrice') &&
+            totalDisplayCost > 0 &&
+            discountedDisplayCost > 0
           ) {
-            return acc + calculateTotalAmountWithPercentage(displayCostPerMonth, discount || 0);
+            return acc + (totalDisplayCost - discountedDisplayCost);
           }
+
           return acc + 0;
         },
         0,
@@ -126,8 +122,8 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
   );
 
   const finalDisplayCost = useMemo(
-    () => totalDisplayCost - discountAmount,
-    [totalDisplayCost, discountAmount],
+    () => memoizedTotalDisplayCost - discountAmount,
+    [memoizedTotalDisplayCost, discountAmount],
   );
 
   const totalPrintingCost = useMemo(
@@ -257,12 +253,14 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
               <div className="mb-3">
                 {viewBreakdown ? (
                   <div>
-                    {proposalData?.displayColumns?.some(col => col === 'displayPrice') ? (
+                    {proposalData?.displayColumns?.some(col => col === 'displayPrice') ||
+                    proposalData?.displayColumns?.some(col => col === 'displayPricePerSqft') ||
+                    proposalData?.displayColumns?.some(col => col === 'discountedDisplayPrice') ? (
                       <div className="flex flex-col justify-end border border-gray-200 p-4 rounded-t-lg">
                         <div className="flex justify-between py-1">
                           <Text weight="400">Total Display Cost</Text>
                           <Text weight="bolder" className="text-lg">
-                            {toIndianCurrency(totalDisplayCost)}
+                            {toIndianCurrency(memoizedTotalDisplayCost)}
                           </Text>{' '}
                         </div>
                         <div className="flex justify-between py-1">
