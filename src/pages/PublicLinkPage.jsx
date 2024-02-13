@@ -8,7 +8,12 @@ import shallow from 'zustand/shallow';
 import dayjs from 'dayjs';
 import { useProposalByVersionName } from '../apis/queries/proposal.queries';
 import Table from '../components/Table/Table';
-import { calculateTotalMonths, generateSlNo, indianMapCoordinates } from '../utils';
+import {
+  calculateTotalArea,
+  calculateTotalMonths,
+  generateSlNo,
+  indianMapCoordinates,
+} from '../utils';
 import { GOOGLE_MAPS_API_KEY } from '../utils/config';
 import MarkerIcon from '../assets/pin.svg';
 import RowsPerPage from '../components/RowsPerPage';
@@ -99,29 +104,35 @@ const PublicLinkPage = () => {
     ) {
       return (
         place.pricingDetails.discountedDisplayCost *
-        calculateTotalMonths(place.pricingDetails.startDate, place.pricingDetails.endDate)
+        calculateTotalMonths(place.startDate, place.endDate)
       );
     }
-    return place.pricingDetails.totalDisplayCost;
+    if (proposalData?.proposal?.displayColumns?.some(col => col === 'displayPrice')) {
+      return place.pricingDetails.totalDisplayCost;
+    }
+
+    return 0;
   };
 
-  const calculateTotalPrice = place =>
-    (proposalData?.proposal?.displayColumns?.some(col => col === 'displayPrice')
-      ? displayCost(place)
-      : 0) +
-      (proposalData?.proposal?.displayColumns?.some(col => col === 'printingCost')
-        ? place.pricingDetails.totalPrintingCost
-        : 0) +
-      (proposalData?.proposal?.displayColumns?.some(col => col === 'mountingCost')
-        ? place.pricingDetails.totalMountingCost
-        : 0) +
-      (proposalData?.proposal?.displayColumns?.some(col => col === 'installationCost')
-        ? place.pricingDetails.oneTimeInstallationCost
-        : 0) +
-      (proposalData?.proposal?.displayColumns?.some(col => col === 'monthlyAdditionalCost')
-        ? place.pricingDetails.monthlyAdditionalCost
-        : 0) || 0;
-
+  const calculateTotalPrice = place => {
+    const area = calculateTotalArea({ ...place, dimension: place.size }, place.pricingDetails.unit);
+    const totalMonths = calculateTotalMonths(place.startDate, place.endDate);
+    return (
+      (displayCost(place) ? displayCost(place) : 0) +
+        (proposalData?.proposal?.displayColumns?.some(col => col === 'printingCost')
+          ? place.pricingDetails.printingCostPerSqft * area
+          : 0) +
+        (proposalData?.proposal?.displayColumns?.some(col => col === 'mountingCost')
+          ? place.pricingDetails.mountingCostPerSqft * area
+          : 0) +
+        (proposalData?.proposal?.displayColumns?.some(col => col === 'installationCost')
+          ? place.pricingDetails.oneTimeInstallationCost
+          : 0) +
+        (proposalData?.proposal?.displayColumns?.some(col => col === 'monthlyAdditionalCost')
+          ? place.pricingDetails.monthlyAdditionalCost * totalMonths
+          : 0) || 0
+    );
+  };
   const COLUMNS = useMemo(() => {
     const dataColumns = [
       {
@@ -219,12 +230,14 @@ const PublicLinkPage = () => {
       },
       {
         Header: 'UNITS',
-        accessor: 'unit',
+        accessor: 'pricingDetails.unit',
         disableSortBy: true,
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'units'),
         Cell: ({
           row: {
-            original: { unit },
+            original: {
+              pricingDetails: { unit },
+            },
           },
         }) => useMemo(() => <p>{unit || '-'}</p>, []),
       },
@@ -278,17 +291,13 @@ const PublicLinkPage = () => {
         accessor: 'area',
         disableSortBy: true,
         show: proposalData?.proposal?.displayColumns?.some(col => col === 'areaInSqFt'),
-        Cell: ({
-          row: {
-            original: { size },
-          },
-        }) =>
+        Cell: ({ row: { original } }) =>
           useMemo(
             () => (
               <p>
-                {size?.reduce(
-                  (accumulator, dimension) => accumulator + dimension.height * dimension.width,
-                  0,
+                {calculateTotalArea(
+                  { ...original, dimension: original.size },
+                  original.pricingDetails.unit,
                 )}
               </p>
             ),
@@ -371,8 +380,8 @@ const PublicLinkPage = () => {
           useMemo(
             () => (
               <p>
-                {pricingDetails.totalPrintingCost
-                  ? toIndianCurrency(pricingDetails.totalPrintingCost)
+                {pricingDetails.printingCostPerSqft
+                  ? toIndianCurrency(pricingDetails.printingCostPerSqft)
                   : null}
               </p>
             ),
@@ -392,8 +401,8 @@ const PublicLinkPage = () => {
           useMemo(
             () => (
               <p>
-                {pricingDetails.totalMountingCost
-                  ? toIndianCurrency(pricingDetails.totalMountingCost)
+                {pricingDetails.mountingCostPerSqft
+                  ? toIndianCurrency(pricingDetails.mountingCostPerSqft)
                   : null}
               </p>
             ),
@@ -411,7 +420,13 @@ const PublicLinkPage = () => {
           },
         }) =>
           useMemo(
-            () => <p>{pricingDetails.oneTimeInstallationCost ? toIndianCurrency() : null}</p>,
+            () => (
+              <p>
+                {pricingDetails.oneTimeInstallationCost
+                  ? toIndianCurrency(pricingDetails.oneTimeInstallationCost)
+                  : null}
+              </p>
+            ),
             [],
           ),
       },
@@ -442,7 +457,11 @@ const PublicLinkPage = () => {
         disableSortBy: true,
         show: true,
         Cell: ({ row: { original } }) =>
-          useMemo(() => (calculateTotalPrice(original) ? calculateTotalPrice(original) : ''), []),
+          useMemo(
+            () =>
+              calculateTotalPrice(original) ? toIndianCurrency(calculateTotalPrice(original)) : '',
+            [],
+          ),
       },
       {
         Header: 'AVAILABILITY',
