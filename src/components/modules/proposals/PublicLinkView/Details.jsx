@@ -84,7 +84,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
         if (
           proposalData?.displayColumns?.some(col => col === 'discountedDisplayPrice') &&
           place.pricingDetails.discountedDisplayCost > 0 &&
-          place.totalDisplayCost <= 0
+          place.pricingDetails.totalDisplayCost <= 0
         ) {
           return (
             acc +
@@ -188,7 +188,6 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
     ],
   );
 
-  console.log(inventoryData);
   return (
     <div>
       {isProposalDataLoading ? (
