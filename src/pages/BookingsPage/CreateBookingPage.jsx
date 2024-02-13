@@ -7,7 +7,6 @@ import validator from 'validator';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
-import shallow from 'zustand/shallow';
 import BasicInformationForm from '../../components/modules/bookings/Create/BasicInformationForm';
 import SelectSpaces from '../../components/modules/bookings/Create/SelectSpaces';
 import OrderInformationForm from '../../components/modules/bookings/Create/OrderInformationForm';
@@ -113,12 +112,7 @@ const CreateBookingPage = () => {
 
   const watchPlace = form.watch('place') || [];
 
-  const { setBookingData } = useBookingStore(
-    state => ({
-      setBookingData: state.setBookingData,
-    }),
-    shallow,
-  );
+  const setBookingData = useBookingStore(state => state.setBookingData);
 
   const onSubmit = form.handleSubmit(async formData => {
     setFormStep(prevState => prevState + 1);

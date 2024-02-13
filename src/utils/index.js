@@ -576,11 +576,13 @@ export const calculateTotalArea = (place, unit) =>
       : place?.facing?.toLowerCase().includes('double') ||
         place?.location?.facing?.name?.toLowerCase().includes('double')
       ? 2
+      : place?.facing?.toLowerCase().includes('triple') ||
+        place?.location?.facing?.name.toLowerCase().includes('triple')
+      ? 3
       : place?.facing?.toLowerCase().includes('four') ||
         place?.location?.facing?.name.toLowerCase().includes('four')
       ? 4
       : 1) || 0;
-
 export const calculateTotalPrintingOrMountingCost = (
   item,
   unit,

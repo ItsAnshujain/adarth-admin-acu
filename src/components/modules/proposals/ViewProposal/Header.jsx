@@ -1,7 +1,6 @@
 import { Button } from '@mantine/core';
 import { ArrowLeft, Share2, ChevronDown } from 'react-feather';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import shallow from 'zustand/shallow';
 import useProposalStore from '../../../../store/proposal.store';
 
 const Header = ({
@@ -11,17 +10,13 @@ const Header = ({
   toggleShareOptions,
   parentProposalId,
   version = '',
+  isLoading = false,
 }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const handleBack = () => navigate(-1);
+  const setProposalData = useProposalStore(state => state.setProposalData);
 
-  const { setProposalData } = useProposalStore(
-    state => ({
-      setProposalData: state.setProposalData,
-    }),
-    shallow,
-  );
   return (
     <div className="h-[60px] border-b border-gray-450 flex justify-between items-center">
       <div>
@@ -38,13 +33,14 @@ const Header = ({
         <div className="relative">
           <Button
             className="bg-black"
-            onClick={() => toggleShareOptions(id)}
+            onClick={() => toggleShareOptions(id, version)}
             leftIcon={<Share2 className="h-5" />}
+            disabled={isLoading}
           >
             Share and Download
           </Button>
         </div>
-        {!isPeer && !bookingId && !parentProposalId ? (
+        {!isPeer || (!bookingId && !parentProposalId) ? (
           <div>
             <Link
               to={`/proposals/edit-details/${id}`}

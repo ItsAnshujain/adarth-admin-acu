@@ -569,11 +569,6 @@ const CreateFinancePage = () => {
             },
             {
               onSuccess: () => {
-                close();
-                setBookingIdFromFinance();
-                setPreviewData();
-                setAddSpaceItem([]);
-                form.reset();
                 redirectToHome();
               },
             },

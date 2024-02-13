@@ -4,7 +4,6 @@ import { Button, Menu, Radio } from '@mantine/core';
 import { Plus, ChevronDown, DownloadCloud } from 'react-feather';
 import { useClickOutside, useDisclosure } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
-import shallow from 'zustand/shallow';
 import calendar from '../../../assets/data-table.svg';
 import DateRange from '../../DateRange';
 import Filter from './Filter';
@@ -27,12 +26,7 @@ const AreaHeader = ({ text }) => {
 
   const exportBookingsHandler = useExportBookings();
 
-  const { setBookingData } = useBookingStore(
-    state => ({
-      setBookingData: state.setBookingData,
-    }),
-    shallow,
-  );
+  const setBookingData = useBookingStore(state => state.setBookingData);
 
   const exportBookings = async () => {
     if (exportType) {

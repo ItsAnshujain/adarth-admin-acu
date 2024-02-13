@@ -25,12 +25,7 @@ const Header = ({ text }) => {
     shallow,
   );
 
-  const { setProposalData } = useProposalStore(
-    state => ({
-      setProposalData: state.setProposalData,
-    }),
-    shallow,
-  );
+  const setProposalData = useProposalStore(state => state.setProposalData);
 
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const handleListClick = () => setActiveLayout({ ...activeLayout, proposal: 'list' });

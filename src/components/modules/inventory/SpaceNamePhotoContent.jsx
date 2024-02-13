@@ -13,14 +13,14 @@ const SpaceNamePhotoContent = ({
   togglePreviewModal,
   isTargetBlank = false,
 }) => (
-  <div className="flex items-center justify-between gap-2 w-96 mr-4">
+  <div className="flex items-center justify-between gap-2 mr-4">
     <div className="flex justify-start items-center flex-1">
       <Box
         className={classNames('bg-white border rounded-md', spacePhoto ? 'cursor-zoom-in' : '')}
         onClick={() => (spacePhoto ? togglePreviewModal(spacePhoto) : null)}
       >
         {spacePhoto ? (
-          <Image src={spacePhoto} alt="banner" height={32} width={32} />
+          <Image src={spacePhoto} alt="img" height={32} width={32} />
         ) : (
           <Image src={null} withPlaceholder height={32} width={32} />
         )}

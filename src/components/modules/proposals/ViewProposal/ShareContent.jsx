@@ -9,6 +9,7 @@ import { showNotification } from '@mantine/notifications';
 import validator from 'validator';
 import dayjs from 'dayjs';
 import { FormProvider, useForm } from 'react-hook-form';
+import { IconCopy } from '@tabler/icons';
 import whatsapp from '../../../../assets/whatsapp.svg';
 import { useShareProposal } from '../../../../apis/queries/proposal.queries';
 import { useShareInventory } from '../../../../apis/queries/inventory.queries';
@@ -136,7 +137,14 @@ const schemas = {
   download_excel_file: downloadExcelFileSchema,
 };
 
-const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
+const ShareContent = ({
+  shareType,
+  searchParamQueries,
+  id,
+  onClose,
+  versionTitle,
+  mediaOwner = 'media',
+}) => {
   const [activeFileType, setActiveFileType] = useState([]);
   const [activeShare, setActiveShare] = useState('');
   const [loaderType, setLoaderType] = useState(-1);
@@ -389,10 +397,62 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
     form.setValue('to', '');
   }, [activeShare]);
 
+  useEffect(() => {
+    form.setValue(
+      'publicLink',
+      `${import.meta.env.VITE_APP_BASE_URL}/${mediaOwner}/${versionTitle}`,
+    );
+  }, [versionTitle, mediaOwner]);
+
+  const copyPublicLink = () => {
+    const watchClientCompanyName = form.watch('publicClientCompanyName');
+    if (!watchClientCompanyName) {
+      showNotification({
+        message: 'Client company name is required',
+      });
+      return;
+    }
+    navigator.clipboard.writeText(
+      `${
+        import.meta.env.VITE_APP_BASE_URL
+      }/${mediaOwner}/${versionTitle}/${watchClientCompanyName}`,
+    );
+    showNotification({
+      title: 'Public link copied!',
+      color: 'green',
+    });
+  };
+
   return (
     <Box className="flex flex-col px-7">
       <FormProvider {...form}>
         <form onSubmit={onSubmit}>
+          {shareType === 'proposal' ? (
+            <>
+              <div>
+                <p className="font-medium text-xl mb-3">Copy public link:</p>
+                <div className="flex items-center gap-2">
+                  <ControlledTextInput name="publicLink" readonly className="w-3/4" disabled />
+                  /
+                  <ControlledTextInput
+                    name="publicClientCompanyName"
+                    className="w-1/4"
+                    placeholder="Client company name"
+                    title="Client company name"
+                  />
+                </div>
+                <Button
+                  className="primary-button font-medium text-base mt-2 w-full"
+                  onClick={copyPublicLink}
+                  leftIcon={<IconCopy size={24} />}
+                  size="xs"
+                >
+                  Copy public link
+                </Button>
+              </div>
+              <div className="text-center my-2">OR</div>
+            </>
+          ) : null}
           <div>
             <p className="font-medium text-xl mb-3">Select file type:</p>
             <div className="grid grid-cols-3 gap-2 mb-5">
@@ -408,7 +468,6 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
               ))}
             </div>
           </div>
-
           <div>
             <p className="font-medium text-xl mb-2">Select a template</p>
             <ControlledSelect
@@ -420,7 +479,6 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
               defaultValue="fill;generic"
             />
           </div>
-
           {activeFileType.some(fileType => fileType === 'Excel') ? (
             <>
               <div>
@@ -433,7 +491,6 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
               </div>
             </>
           ) : null}
-
           <Button
             className="primary-button font-medium text-base mt-2 w-full"
             onClick={handleDownload}
@@ -443,13 +500,13 @@ const ShareContent = ({ shareType, searchParamQueries, id, onClose }) => {
               <Image src={DownloadIcon} alt="download" height={24} width={24} fit="contain" />
             }
             type="submit"
+            size="xs"
           >
             Download
           </Button>
           <p className="mt-2 text-sm text-red-450">
             *You can choose only one file format when downloading
           </p>
-
           <div className="mt-5">
             <p className="font-medium text-xl mb-2">Share via:</p>
             <Group className="grid grid-cols-2">
