@@ -54,6 +54,7 @@ import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/modules/reports/ShareContent';
 import { DATE_FORMAT } from '../../utils/constants';
 import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
+import { useBookingReportByRevenueGraph } from '../../apis/queries/booking.queries';
 
 dayjs.extend(quarterOfYear);
 
@@ -146,11 +147,12 @@ const InventoryReportsPage = () => {
   };
 
   const { data: inventoryStats, isLoading: isInventoryStatsLoading } = useInventoryStats('');
-  const {
-    data: inventoryReports,
-    isLoading: isInventoryReportLoading,
-    isSuccess,
-  } = useInventoryReport(removeUnwantedQueries(unwantedQueriesForReveueGraph));
+  const { data: inventoryReports, isSuccess } = useInventoryReport(
+    removeUnwantedQueries(unwantedQueriesForReveueGraph),
+  );
+
+  const { data: revenueGraphData, isLoading: isRevenueGraphLoading } =
+    useBookingReportByRevenueGraph(removeUnwantedQueries('by'));
 
   const { data: inventoryReportList, isLoading: inventoryReportListLoading } =
     useFetchInventoryReportList(removeUnwantedQueries(unwantedQuriesForInventories));
@@ -545,31 +547,31 @@ const InventoryReportsPage = () => {
 
       tempAreaData.datasets[0].data = Array.from({ length: dayjs().daysInMonth() }, () => 0);
 
-      inventoryReports.revenue?.forEach(item => {
-        if (item._id) {
+      revenueGraphData?.forEach(item => {
+        if (Number(item._id)) {
           if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
-            tempAreaData.datasets[0].data[item._id - 1] = item?.total;
+            tempAreaData.datasets[0].data[Number(item._id) - 1] = item.total || 0;
           } else if (groupBy === 'quarter') {
-            if (dayjs().quarter() === 1) {
-              tempAreaData.datasets[0].data[item._id + 3] = item.total;
-            } else if (dayjs().quarter() === 4) {
-              tempAreaData.datasets[0].data[item._id - 3] = item.total;
+            if (dayjs().quarter() === 1 && Number(item._id) === 1) {
+              tempAreaData.datasets[0].data[Number(item._id) + 3] = item.total || 0;
+            } else if (dayjs().quarter() === 4 && Number(item._id) === 4) {
+              tempAreaData.datasets[0].data[Number(item._id) - 3] = item.total || 0;
             } else {
-              tempAreaData.datasets[0].data[item._id - 1] = item.total;
+              tempAreaData.datasets[0].data[Number(item._id) - 1] = item.total || 0;
             }
-          } else if (item._id < 4) {
+          } else if (Number(item._id) < 4) {
             // For financial year. if the month is less than 4 then it will be in the next year
-            tempAreaData.datasets[0].data[item._id + 8] = item.total;
+            tempAreaData.datasets[0].data[Number(item._id) + 8] = item.total || 0;
           } else {
             // For financial year. if the month is greater than 4 then it will be in the same year
-            tempAreaData.datasets[0].data[item._id - 4] = item.total;
+            tempAreaData.datasets[0].data[Number(item._id) - 4] = item.total || 0;
           }
         }
       });
 
       setAreaData(tempAreaData);
     }
-  }, [inventoryReports]);
+  }, [inventoryReports, revenueGraphData]);
 
   const toggleShareOptions = () => {
     modals.openContextModal('basic', {
@@ -645,7 +647,7 @@ const InventoryReportsPage = () => {
     }
 
     calculateLineData();
-  }, [inventoryReports, isSuccess]);
+  }, [inventoryReports, isSuccess, revenueGraphData]);
 
   return (
     <div
@@ -673,7 +675,7 @@ const InventoryReportsPage = () => {
               <p className="font-bold">Revenue Graph</p>
               {share !== 'report' ? <ViewByFilter handleViewBy={handleViewBy} /> : null}
             </div>
-            {isInventoryReportLoading ? (
+            {isRevenueGraphLoading ? (
               <Loader className="mx-auto mt-10" />
             ) : (
               <div className="flex flex-col pl-7 relative">
