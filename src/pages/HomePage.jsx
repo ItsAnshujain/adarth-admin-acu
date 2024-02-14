@@ -290,9 +290,9 @@ const HomePage = () => {
           if (queryByTime.groupBy === 'dayOfMonth' || queryByTime.groupBy === 'dayOfWeek') {
             tempData.datasets[0].data[Number(item._id) - 1] = item.total || 0;
           } else if (queryByTime.groupBy === 'quarter') {
-            if (dayjs().quarter() === 1 && item._id === 1) {
+            if (dayjs().quarter() === 1 && Number(item._id) === 1) {
               tempData.datasets[0].data[Number(item._id) + 3] = item.total || 0;
-            } else if (dayjs().quarter() === 4 && item._id === 4) {
+            } else if (dayjs().quarter() === 4 && Number(item._id) === 4) {
               tempData.datasets[0].data[Number(item._id) - 3] = item.total || 0;
             } else {
               tempData.datasets[0].data[Number(item._id) - 1] = item.total || 0;
