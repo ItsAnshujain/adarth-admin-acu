@@ -27,8 +27,8 @@ import VacantSpaceIcon from '../assets/vacant-space.svg';
 import OccupiedSpaceIcon from '../assets/occupied-space.svg';
 import useUserStore from '../store/user.store';
 import {
+  useBookingReportByRevenueGraph,
   useBookingStats,
-  useFetchBookingRevenue,
   useUserSalesByUserId,
 } from '../apis/queries/booking.queries';
 import { useInventoryStats } from '../apis/queries/inventory.queries';
@@ -130,9 +130,10 @@ const HomePage = () => {
 
   const bookingStats = useBookingStats('');
   const inventoryStats = useInventoryStats('');
-  const { data: bookingRevenue, isLoading: isBookingRevenueLoading } = useFetchBookingRevenue(
-    serialize(queryByTime),
-  );
+
+  const { data: revenueGraphData, isLoading: isRevenueGraphLoading } =
+    useBookingReportByRevenueGraph(serialize(queryByTime));
+
   const userSales = useUserSalesByUserId({
     startDate: financialStartDate,
     endDate: financialEndDate,
@@ -260,7 +261,7 @@ const HomePage = () => {
   useEffect(() => handleUpdatedInventoryChart(), [inventoryStats.data]);
 
   useEffect(() => {
-    if (bookingRevenue) {
+    if (revenueGraphData) {
       const tempData = {
         labels: monthsInShort,
         datasets: [
@@ -284,31 +285,31 @@ const HomePage = () => {
 
       tempData.datasets[0].data = Array.from({ length: dayjs().daysInMonth() }, () => 0);
 
-      bookingRevenue?.forEach(item => {
-        if (item._id) {
+      revenueGraphData?.forEach(item => {
+        if (Number(item._id)) {
           if (queryByTime.groupBy === 'dayOfMonth' || queryByTime.groupBy === 'dayOfWeek') {
-            tempData.datasets[0].data[item._id - 1] = item.total || 0;
+            tempData.datasets[0].data[Number(item._id) - 1] = item.total || 0;
           } else if (queryByTime.groupBy === 'quarter') {
-            if (dayjs().quarter() === 1) {
-              tempData.datasets[0].data[item._id + 3] = item.total || 0;
-            } else if (dayjs().quarter() === 4) {
-              tempData.datasets[0].data[item._id - 3] = item.total || 0;
+            if (dayjs().quarter() === 1 && Number(item._id) === 1) {
+              tempData.datasets[0].data[Number(item._id) + 3] = item.total || 0;
+            } else if (dayjs().quarter() === 4 && Number(item._id) === 4) {
+              tempData.datasets[0].data[Number(item._id) - 3] = item.total || 0;
             } else {
-              tempData.datasets[0].data[item._id - 1] = item.total || 0;
+              tempData.datasets[0].data[Number(item._id) - 1] = item.total || 0;
             }
-          } else if (item._id < 4) {
+          } else if (Number(item._id) < 4) {
             // For financial year. if the month is less than 4 then it will be in the next year
-            tempData.datasets[0].data[item._id + 8] = item.total || 0;
+            tempData.datasets[0].data[Number(item._id) + 8] = item.total || 0;
           } else {
             // For financial year. if the month is greater than 4 then it will be in the same year
-            tempData.datasets[0].data[item._id - 4] = item.total || 0;
+            tempData.datasets[0].data[Number(item._id) - 4] = item.total || 0;
           }
         }
       });
 
       setUpdatedLineData(tempData);
     }
-  }, [bookingRevenue]);
+  }, [revenueGraphData]);
 
   return (
     <div>
@@ -415,7 +416,7 @@ const HomePage = () => {
                 <p className="font-bold">Revenue Graph</p>
                 <ViewByFilter handleViewBy={handleViewBy} />
               </div>
-              {isBookingRevenueLoading ? (
+              {isRevenueGraphLoading ? (
                 <Loader className="mx-auto" mt={80} />
               ) : (
                 <div className="flex flex-col pl-7 relative">

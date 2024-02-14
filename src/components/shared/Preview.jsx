@@ -210,8 +210,8 @@ const Preview = () => {
                     <p className="mb-4">{values?.specifications?.illuminations?.label}</p>
                     <p className="text-slate-400 text-md font-light">Unit</p>
                     <p className="mb-4">{values?.specifications?.unit}</p>
-                    <p className="text-slate-400 text-md font-light">Media Type</p>
-                    <p>{values?.basicInformation?.mediaType?.label || 'NA'}</p>
+                    <p className="text-slate-400 text-md font-light">Facing</p>
+                    <p>{values?.location?.facing?.label || 'NA'}</p>
                   </div>
                 </div>
               </div>
