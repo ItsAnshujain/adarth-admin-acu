@@ -113,7 +113,6 @@ const CreateBookingPage = () => {
   const watchPlace = form.watch('place') || [];
 
   const setBookingData = useBookingStore(state => state.setBookingData);
-
   const onSubmit = form.handleSubmit(async formData => {
     setFormStep(prevState => prevState + 1);
     if (formStep === 3) {
@@ -213,8 +212,7 @@ const CreateBookingPage = () => {
       }
 
       const totalPrice = calculateTotalPrice(watchPlace);
-      const gstCalculation = totalPrice * 0.18;
-      data.price = Number((totalPrice + gstCalculation)?.toFixed(2)) || 0;
+      data.price = totalPrice;
 
       Object.keys(data).forEach(k => {
         if (data[k] === '') {
