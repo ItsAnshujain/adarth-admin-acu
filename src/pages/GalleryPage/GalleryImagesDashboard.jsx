@@ -1,13 +1,17 @@
 import { Button, Pagination } from '@mantine/core';
 import { IconTrash } from '@tabler/icons';
 import { useModals } from '@mantine/modals';
+import { useState } from 'react';
 import ImagesList from '../../components/modules/gallery/ImagesList';
 import Header from '../../components/modules/gallery/Header';
 import ImagesPerPage from '../../components/modules/gallery/ImagesPerPage';
 import ConfirmContent from '../../components/shared/ConfirmContent';
 import modalConfig from '../../utils/modalConfig';
+import dummy from '../../assets/dummy3.png';
 
 const GalleryImagesDashboardPage = () => {
+  const [selectedImages, setSelectedImages] = useState([]);
+
   const modals = useModals();
   const toggleDelete = () => {
     modals.openModal({
@@ -25,9 +29,21 @@ const GalleryImagesDashboardPage = () => {
       size: 'md',
     });
   };
+
+  const images = [
+    {
+      link: dummy,
+      id: 1,
+    },
+    {
+      link: dummy,
+      id: 2,
+    },
+  ];
+
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
-      <Header />
+      <Header setSelectedImages={setSelectedImages} imagesData={images} />
       <div className="w-full px-5">
         <div className="flex items-center gap-3 text-sm text-gray-6 font-medium text-gray-500 justify-between w-full">
           <div className="flex items-center gap-3">
@@ -57,7 +73,11 @@ const GalleryImagesDashboardPage = () => {
             />
           </div>
         </div>
-        <ImagesList />
+        <ImagesList
+          selectedImages={selectedImages}
+          imagesData={images}
+          setSelectedImages={setSelectedImages}
+        />
       </div>
     </div>
   );

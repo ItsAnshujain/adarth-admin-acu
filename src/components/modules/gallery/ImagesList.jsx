@@ -1,19 +1,14 @@
-import dummy from '../../../assets/dummy3.png';
 import ImageCard from './ImageCard';
 
-const images = [
-  {
-    link: dummy,
-  },
-  {
-    link: dummy,
-  },
-];
-
-const ImagesList = () => (
+const ImagesList = ({ imagesData, selectedImages, setSelectedImages }) => (
   <div className="grid grid-cols-5 gap-2">
-    {images.map(image => (
-      <ImageCard image={image} />
+    {imagesData.map(image => (
+      <ImageCard
+        image={image}
+        selectedImages={selectedImages}
+        setSelectedImages={setSelectedImages}
+        checked={selectedImages.some(id => id === image.id)}
+      />
     ))}
   </div>
 );
