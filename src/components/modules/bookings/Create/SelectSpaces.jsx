@@ -113,8 +113,15 @@ const SelectSpace = () => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
         newList[index] = { ...newList[index], startDate: val[0], endDate: val[1] };
+        const updatedBookingRange = newList[index].bookingRange.filter(
+          range =>
+            range.startDate !==
+              dayjs(new Date(newList[index].startDate)).startOf('day').toISOString() &&
+            range.endDate !== dayjs(new Date(newList[index].endDate)).startOf('day').toISOString(),
+        );
+
         availableUnit = getAvailableUnits(
-          newList[index].bookingRange,
+          updatedBookingRange,
           newList[index].startDate,
           newList[index].endDate,
           newList[index].originalUnit,
@@ -438,7 +445,13 @@ const SelectSpace = () => {
           useMemo(() => {
             const isDisabled =
               watchPlace?.some(item => item._id === _id) && (!startDate || !endDate);
-            const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
+
+            const updatedBookingRange = bookingRange.filter(
+              range =>
+                range.startDate !== dayjs(new Date(startDate)).startOf('day').toISOString() &&
+                range.endDate !== dayjs(new Date(endDate)).startOf('day').toISOString(),
+            );
+            const everyDayUnitsData = getEveryDayUnits(updatedBookingRange, unit);
 
             return (
               <div className="min-w-[300px]">
