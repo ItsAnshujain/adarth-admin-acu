@@ -40,7 +40,7 @@ const Header = ({
             Share and Download
           </Button>
         </div>
-        {!isPeer || (!bookingId && !parentProposalId) ? (
+        {!isPeer && !bookingId && !parentProposalId ? (
           <div>
             <Link
               to={`/proposals/edit-details/${id}`}
