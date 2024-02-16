@@ -449,7 +449,7 @@ const AddEditPriceDrawer = ({
         printingGstPercentage: inventory.printingGstPercentage || 0,
         printingGst: inventory.printingGst || 0,
         totalPrintingCost: inventory.totalPrintingCost || 0,
-        mountingCostPerSqft: inventory.mountingCostPerSqft || null,
+        mountingCostPerSqft: inventory.mountingCostPerSqft || '',
         mountingGstPercentage: inventory.mountingGstPercentage || 0,
         mountingGst: inventory.mountingGst || 0,
         totalMountingCost: inventory.totalMountingCost || 0,
@@ -475,7 +475,7 @@ const AddEditPriceDrawer = ({
         printingGstPercentage: inventory.printingGstPercentage || 0,
         printingGst: inventory.printingGst || 0,
         totalPrintingCost: inventory.totalPrintingCost || 0,
-        mountingCostPerSqft: inventory.mountingCostPerSqft || null,
+        mountingCostPerSqft: inventory.mountingCostPerSqft || '',
         mountingGstPercentage: inventory.mountingGstPercentage || 0,
         mountingGst: inventory.mountingGst || 0,
         totalMountingCost: inventory.totalMountingCost || 0,
@@ -510,7 +510,7 @@ const AddEditPriceDrawer = ({
         printingGstPercentage: selectedInventory.printingGstPercentage || 0,
         printingGst: selectedInventory.printingGst || 0,
         totalPrintingCost: selectedInventory.totalPrintingCost || 0,
-        mountingCostPerSqft: selectedInventory.mountingCostPerSqft || null,
+        mountingCostPerSqft: selectedInventory.mountingCostPerSqft || '',
         mountingGstPercentage: selectedInventory.mountingGstPercentage || 0,
         mountingGst: selectedInventory.mountingGst || 0,
         totalMountingCost: selectedInventory.totalMountingCost || 0,
@@ -535,7 +535,7 @@ const AddEditPriceDrawer = ({
       className="overflow-auto"
       overlayOpacity={0.1}
       overlayBlur={0}
-      size="xl"
+      size="md"
       position="right"
       opened={isOpened}
       styles={styles}

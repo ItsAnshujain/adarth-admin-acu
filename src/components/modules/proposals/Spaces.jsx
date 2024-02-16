@@ -481,7 +481,7 @@ const Spaces = () => {
                     : null
                 }
                 opened={(data?.hasChangedUnit && isExceeded) || !unit}
-                transition="slide-left"
+                transitionProps={{ transition: 'slide-left' }}
                 position="right"
                 color="red"
                 radius="sm"
