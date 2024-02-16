@@ -1,11 +1,10 @@
-import { Checkbox, RangeSlider } from '@mantine/core';
+import { Checkbox } from '@mantine/core';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import { serialize } from '../../../../utils/index';
 import TextInput from '../../../shared/TextInput';
 import TextareaInput from '../../../shared/TextareaInput';
 import MultiSelect from '../../../shared/MultiSelect';
 import { useFormContext } from '../../../../context/formContext';
-import NumberInput from '../../../shared/NumberInput';
 
 const styles = {
   label: {
@@ -21,15 +20,6 @@ const textAreaStyles = {
   },
   input: {
     height: '127px',
-  },
-};
-
-const sliderStyle = {
-  bar: {
-    backgroundColor: 'black',
-  },
-  thumb: {
-    backgroundColor: 'white',
   },
 };
 
@@ -97,28 +87,7 @@ const BasicInformationForm = () => {
         data={brandData?.docs.map(item => ({ label: item.name, value: item._id })) || []}
         name="previousBrands"
       />
-      <p className="text-sm font-bolder">Impressions</p>
-      <div className="flex gap-4 items-center">
-        <div>
-          <NumberInput name="minImpression" errors={errors} className="w-24" />
-          <p className="text-slate-400">Min</p>
-        </div>
-        <RangeSlider
-          onChangeEnd={val => {
-            setFieldValue('minImpression', val[0]);
-            setFieldValue('maxImpression', val[1]);
-          }}
-          styles={sliderStyle}
-          className="mb-5 flex-auto"
-          min={0}
-          max={1800000}
-          value={[values?.minImpression || 0, values?.maxImpression || 1800000]}
-        />
-        <div>
-          <NumberInput name="maxImpression" errors={errors} className="w-24" />
-          <p className="text-right text-slate-400">Max</p>
-        </div>
-      </div>
+
       <MultiSelect
         styles={multiSelectStyles}
         label="Tags"

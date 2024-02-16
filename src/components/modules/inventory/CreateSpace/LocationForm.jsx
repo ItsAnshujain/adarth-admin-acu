@@ -71,6 +71,7 @@ const LocationForm = () => {
               longitudeKeyName="location.longitude"
               cityKeyName="location.city"
               stateKeyName="location.state"
+              zipCodeName="location.zip"
             />
           ) : (
             <TextInput

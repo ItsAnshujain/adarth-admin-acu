@@ -97,6 +97,9 @@ const SelectSpace = () => {
         : place?.facing?.toLowerCase().includes('double') ||
           place?.location?.facing?.name?.toLowerCase().includes('double')
         ? 2
+        : place?.facing?.toLowerCase().includes('triple') ||
+          place?.location?.facing?.name.toLowerCase().includes('triple')
+        ? 3
         : place?.facing?.toLowerCase().includes('four') ||
           place?.location?.facing?.name.toLowerCase().includes('four')
         ? 4
@@ -116,6 +119,7 @@ const SelectSpace = () => {
               dayjs(new Date(newList[index].startDate)).startOf('day').toISOString() &&
             range.endDate !== dayjs(new Date(newList[index].endDate)).startOf('day').toISOString(),
         );
+
         availableUnit = getAvailableUnits(
           updatedBookingRange,
           newList[index].startDate,
@@ -441,12 +445,14 @@ const SelectSpace = () => {
           useMemo(() => {
             const isDisabled =
               watchPlace?.some(item => item._id === _id) && (!startDate || !endDate);
+
             const updatedBookingRange = bookingRange.filter(
               range =>
                 range.startDate !== dayjs(new Date(startDate)).startOf('day').toISOString() &&
                 range.endDate !== dayjs(new Date(endDate)).startOf('day').toISOString(),
             );
             const everyDayUnitsData = getEveryDayUnits(updatedBookingRange, unit);
+
             return (
               <div className="min-w-[300px]">
                 <DateRangeSelector

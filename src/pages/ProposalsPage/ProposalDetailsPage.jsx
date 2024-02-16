@@ -98,7 +98,7 @@ const ProposalDetailsPage = () => {
       ...updatedModalConfig,
     });
 
-  const toggleShareOptions = id => {
+  const toggleShareOptions = (id, versionTitle) => {
     modals.openModal({
       modalId: 'shareProposalOption',
       title: 'Share and Download Option',
@@ -107,6 +107,8 @@ const ProposalDetailsPage = () => {
           shareType="proposal"
           id={id}
           onClose={() => modals.closeModal('shareProposalOption')}
+          versionTitle={versionTitle}
+          mediaOwner={proposalData?.proposal?.creator?.name.replace(' ', '_')}
         />
       ),
       ...modalConfig,
@@ -351,7 +353,6 @@ const ProposalDetailsPage = () => {
     ],
     [proposalData?.inventories?.docs],
   );
-
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
       searchParams.set('sortOrder', 'asc');
@@ -403,6 +404,7 @@ const ProposalDetailsPage = () => {
       mapInstance.map.setZoom(Math.min(5, mapInstance.map.getZoom()));
     }
   }, [proposalData?.inventories?.docs?.length, mapInstance]);
+
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <Header
@@ -412,6 +414,7 @@ const ProposalDetailsPage = () => {
         toggleShareOptions={toggleShareOptions}
         parentProposalId={proposalData?.proposal?.parentProposalId}
         version={proposalData?.proposal?.versionTitle}
+        isLoading={isProposalDataLoading}
       />
       <Details
         proposalData={proposalData?.proposal}

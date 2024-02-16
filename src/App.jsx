@@ -80,6 +80,10 @@ const components = {
       comp: lazy(() => import('./pages/TermsAndConditionsPage')),
       path: '/terms-conditions',
     },
+    {
+      comp: lazy(() => import('./pages/PublicLinkPage')),
+      path: '/:media_owner_company_name/:proposal_version_name/:client_company_name',
+    },
   ],
 };
 
