@@ -245,9 +245,9 @@ const CreateBookingPage = () => {
             onSuccess: () => {
               queryClient.invalidateQueries(['bookings']);
               setBookingData([]);
-              form.reset();
               setTimeout(() => {
                 navigate('/bookings');
+                form.reset();
               }, 1000);
             },
           },

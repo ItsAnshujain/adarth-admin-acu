@@ -14,7 +14,9 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import {
+  calculateTotalAmountWithPercentage,
   calculateTotalCostOfBooking,
+  calculateTotalMonths,
   calculateTotalPrintingOrMountingCost,
   currentDate,
   debounce,
@@ -130,6 +132,8 @@ const SelectSpace = () => {
         return newList;
       });
 
+      const totalMonths = calculateTotalMonths(val[0], val[1]);
+
       form.setValue(
         'place',
         watchPlace.map(item =>
@@ -138,6 +142,8 @@ const SelectSpace = () => {
                 ...item,
                 startDate: val[0],
                 endDate: val[1],
+                previousStartDate: !val[0] ? item.startDate : null,
+                previousEndDate: !val[1] ? item.endDate : null,
                 ...(!hasChangedUnit ? { unit: availableUnit } : {}),
                 availableUnit,
                 price: calculateTotalCostOfBooking(
@@ -146,19 +152,19 @@ const SelectSpace = () => {
                   val[0],
                   val[1],
                 ),
+                totalDisplayCost: calculateTotalAmountWithPercentage(
+                  item.displayCostPerMonth * totalMonths,
+                  item.displayCostGstPercentage,
+                ),
                 totalPrintingCost: calculateTotalPrintingOrMountingCost(
                   item,
                   key === 'unit' ? val : item.unit,
-                  val[0],
-                  val[1],
                   item.printingCostPerSqft,
                   item.printingGstPercentage,
                 ),
                 totalMountingCost: calculateTotalPrintingOrMountingCost(
                   item,
                   key === 'unit' ? val : item.unit,
-                  val[0],
-                  val[1],
                   item.mountingCostPerSqft,
                   item.mountingGstPercentage,
                 ),
@@ -186,19 +192,19 @@ const SelectSpace = () => {
                 printingGst: item.printingGst,
                 printingGstPercentage: item.printingGstPercentage,
 
+                totalDisplayCost: calculateTotalAmountWithPercentage(
+                  item.displayCostPerMonth * calculateTotalMonths(item.startDate, item.endDate),
+                  item.displayCostGstPercentage,
+                ),
                 totalPrintingCost: calculateTotalPrintingOrMountingCost(
                   item,
                   key === 'unit' ? val : item.unit,
-                  item.startDate,
-                  item.endDate,
                   item.printingCostPerSqft,
                   item.printingGstPercentage,
                 ),
                 totalMountingCost: calculateTotalPrintingOrMountingCost(
                   item,
                   key === 'unit' ? val : item.unit,
-                  item.startDate,
-                  item.endDate,
                   item.mountingCostPerSqft,
                   item.mountingGstPercentage,
                 ),
@@ -229,11 +235,10 @@ const SelectSpace = () => {
   const getTotalPrice = (places = []) => {
     const totalPrice = places.reduce(
       (acc, item) =>
-        item.startDate &&
-        item.endDate &&
-        acc + +(item?.price || item?.basicInformation?.price || 0),
+        acc + calculateTotalCostOfBooking(item, item?.unit, item?.startDate, item?.endDate),
       0,
     );
+
     return totalPrice || 0;
   };
 
@@ -439,7 +444,15 @@ const SelectSpace = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { bookingRange, startDate, endDate, unit, _id },
+            original: {
+              bookingRange,
+              startDate,
+              endDate,
+              previousStartDate,
+              previousEndDate,
+              unit,
+              _id,
+            },
           },
         }) =>
           useMemo(() => {
@@ -448,8 +461,14 @@ const SelectSpace = () => {
 
             const updatedBookingRange = bookingRange.filter(
               range =>
-                range.startDate !== dayjs(new Date(startDate)).startOf('day').toISOString() &&
-                range.endDate !== dayjs(new Date(endDate)).startOf('day').toISOString(),
+                range.startDate !==
+                  dayjs(new Date(previousStartDate || startDate))
+                    .startOf('day')
+                    .toISOString() &&
+                range.endDate !==
+                  dayjs(new Date(previousEndDate || endDate))
+                    .startOf('day')
+                    .toISOString(),
             );
             const everyDayUnitsData = getEveryDayUnits(updatedBookingRange, unit);
 
