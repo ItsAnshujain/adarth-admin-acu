@@ -3,11 +3,11 @@ import { Dropzone } from '@mantine/dropzone';
 import { Indicator, Image, useMantineTheme, ActionIcon } from '@mantine/core';
 import { IconBan, IconCircleCheck, IconFile, IconPhoto, IconX } from '@tabler/icons';
 import classNames from 'classnames';
+import { useFormContext } from 'react-hook-form';
 
 const ImageDropPicker = ({
   multiple = true,
   value,
-  onChange,
   error,
   imgUrl,
   onRemoveImage,
@@ -18,6 +18,7 @@ const ImageDropPicker = ({
   ...props
 }) => {
   const theme = useMantineTheme();
+  const form = useFormContext();
 
   const [files, setFiles] = React.useState([]);
   const preview = React.useMemo(() => {
@@ -87,8 +88,8 @@ const ImageDropPicker = ({
   const handleFileDrop = droppedFiles => {
     setFiles(droppedFiles);
 
-    if (multiple === true) onChange?.(droppedFiles);
-    else onChange?.(droppedFiles[0]);
+    if (multiple === true) form.setValue('files', droppedFiles);
+    else form.setValue('files', droppedFiles[0]);
   };
 
   return (
