@@ -113,6 +113,7 @@ const SelectSpace = () => {
       const place = watchPlace.find(item => item._id === id);
 
       const hasChangedUnit = place?.hasChangedUnit;
+      console.log(place);
       setUpdatedInventoryData(prev => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
@@ -120,8 +121,13 @@ const SelectSpace = () => {
         const updatedBookingRange = newList[index].bookingRange.filter(
           range =>
             range.startDate !==
-              dayjs(new Date(place.initialStartDate)).endOf('day').toISOString() &&
-            range.endDate !== dayjs(new Date(place.initialEndDate)).endOf('day').toISOString(),
+              dayjs(new Date(place.initialStartDate || newList[index].startDate))
+                .endOf('day')
+                .toISOString() &&
+            range.endDate !==
+              dayjs(new Date(place.initialEndDate || newList[index].endDate))
+                .endOf('day')
+                .toISOString(),
         );
 
         availableUnit = getAvailableUnits(
