@@ -550,6 +550,7 @@ export const calculateTotalPrice = (option = []) => {
 };
 
 export const calculateTotalMonths = (startDate, endDate) => {
+  if (!startDate || !endDate) return 0;
   const start = new Date(startDate);
   const end = new Date(endDate);
 
@@ -583,17 +584,9 @@ export const calculateTotalArea = (place, unit) =>
         place?.location?.facing?.name.toLowerCase().includes('four')
       ? 4
       : 1) || 0;
-export const calculateTotalPrintingOrMountingCost = (
-  item,
-  unit,
-  startDate,
-  endDate,
-  costPerSqft,
-  gstPercentage,
-) => {
+export const calculateTotalPrintingOrMountingCost = (item, unit, costPerSqft, gstPercentage) => {
   const updatedTotalArea = calculateTotalArea(item, unit);
-  const updatedTotalMonths = calculateTotalMonths(startDate, endDate);
-  const totalDisplayCost = costPerSqft * updatedTotalArea * updatedTotalMonths || 0;
+  const totalDisplayCost = costPerSqft * updatedTotalArea || 0;
 
   return calculateTotalAmountWithPercentage(totalDisplayCost, gstPercentage);
 };
@@ -612,7 +605,6 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
     updatedTotalArea > 0
       ? calculateTotalAmountWithPercentage(displayCost, item?.displayCostGstPercentage)
       : 0;
-
   const totalCost = Number(
     (item?.discountedDisplayCost > 0
       ? (item?.discountedDisplayCost || 0) * updatedTotalMonths

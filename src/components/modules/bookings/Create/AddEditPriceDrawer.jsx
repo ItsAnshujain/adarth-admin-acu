@@ -148,7 +148,7 @@ const AddEditPriceDrawer = ({
     val => {
       const displayCostPerMonth = val * totalMonths;
       const displayCostPerSqFt = Number((val / totalArea).toFixed(2));
-      form.setValue('displayCostPerSqFt', displayCostPerSqFt);
+      form.setValue('displayCostPerSqFt', totalArea > 0 ? displayCostPerSqFt : 0);
 
       if (totalArea && totalArea > 0) {
         form.setValue(
