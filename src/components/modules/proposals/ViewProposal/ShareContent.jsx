@@ -430,7 +430,7 @@ const ShareContent = ({
           {shareType === 'proposal' ? (
             <>
               <div>
-                <p className="font-medium text-xl mb-3">Copy public link:</p>
+                <p className="font-medium text-xl my-3">Copy public link:</p>
                 <div className="flex items-center gap-2">
                   <ControlledTextInput name="publicLink" readonly className="w-3/4" disabled />
                   /
@@ -450,11 +450,11 @@ const ShareContent = ({
                   Copy public link
                 </Button>
               </div>
-              <div className="text-center my-2">OR</div>
+              <div className="text-center mt-3">OR</div>
             </>
           ) : null}
           <div>
-            <p className="font-medium text-xl mb-3">Select file type:</p>
+            <p className="font-medium text-xl my-3">Select file type:</p>
             <div className="grid grid-cols-3 gap-2 mb-5">
               {FILE_TYPE_LIST.map(item => (
                 <Checkbox

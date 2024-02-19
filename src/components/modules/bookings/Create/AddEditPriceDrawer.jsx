@@ -535,7 +535,7 @@ const AddEditPriceDrawer = ({
       className="overflow-auto"
       overlayOpacity={0.1}
       overlayBlur={0}
-      size="md"
+      size="510px"
       position="right"
       opened={isOpened}
       styles={styles}
@@ -545,6 +545,7 @@ const AddEditPriceDrawer = ({
         title: 'text-xl font-semibold',
         header: 'px-6 mb-0 z-20 h-16 sticky top-0 bg-white',
         closeButton: 'text-black',
+        body: 'p-0',
       }}
     >
       <div className="sticky top-16 bg-white z-10">
