@@ -20,6 +20,32 @@ const SkeletonTopWrapper = () => (
   </div>
 );
 
+export const ProposalNameAndDescription = ({ name, description, className }) => (
+  <div className={className}>
+    <Text weight="bold" className="capitalize text-4xl truncate">
+      {name}
+    </Text>
+    <div className="grid grid-cols-1 my-2">
+      <Spoiler
+        maxHeight={45}
+        showLabel="Read more"
+        hideLabel="Read less"
+        className="text-purple-450 font-medium text-[14px]"
+        classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
+      >
+        <Text>
+          {description ||
+            `Our outdoor advertisement campaign is the perfect way to get your brand in front of a large audience. 
+                        With eye-catching graphics and strategic placement, our billboards and digital displays will capture the attention of anyone passing by. 
+                        Our team will work with you to create a curated campaign that perfectly showcases your brand's message and identity.
+                         From busy city streets to suburban highways, our outdoor advertising options are the perfect way to increase your brand's visibility and reach.
+                       Don't miss out on the opportunity to make a lasting impression with your target audience.`}
+        </Text>
+      </Spoiler>
+    </div>
+  </div>
+);
+
 const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
   const modals = useModals();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
@@ -194,6 +220,11 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
         <SkeletonTopWrapper />
       ) : (
         <div className="mt-2 flex flex-col gap-4">
+          <ProposalNameAndDescription
+            name={proposalData?.name}
+            description={proposalData?.description}
+            className="md:hidden"
+          />
           <div
             className={classNames(
               'grid gap-3 auto-cols-min',
@@ -234,28 +265,11 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
               </div>
             </div>
             <div className="pt-0 h-fit">
-              <Text weight="bold" className="capitalize text-4xl truncate">
-                {proposalData?.name}
-              </Text>
-              <div className="grid grid-cols-1 my-2">
-                <Spoiler
-                  maxHeight={45}
-                  showLabel="Read more"
-                  hideLabel="Read less"
-                  className="text-purple-450 font-medium text-[14px]"
-                  classNames={{ content: 'text-slate-400 font-light text-[14px]' }}
-                >
-                  <Text>
-                    {proposalData?.description
-                      ? proposalData.description
-                      : `Our outdoor advertisement campaign is the perfect way to get your brand in front of a large audience. 
-                        With eye-catching graphics and strategic placement, our billboards and digital displays will capture the attention of anyone passing by. 
-                        Our team will work with you to create a curated campaign that perfectly showcases your brand's message and identity.
-                         From busy city streets to suburban highways, our outdoor advertising options are the perfect way to increase your brand's visibility and reach.
-                       Don't miss out on the opportunity to make a lasting impression with your target audience.`}
-                  </Text>
-                </Spoiler>
-              </div>
+              <ProposalNameAndDescription
+                name={proposalData?.name}
+                description={proposalData?.description}
+                className="hidden md:block"
+              />
               <div className="mb-3">
                 {viewBreakdown ? (
                   <div>

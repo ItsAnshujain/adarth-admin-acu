@@ -413,9 +413,13 @@ const ShareContent = ({
       return;
     }
     navigator.clipboard.writeText(
-      `${
-        import.meta.env.VITE_APP_BASE_URL
-      }/${mediaOwner}/${versionTitle}/${watchClientCompanyName}`,
+      new URL(
+        `${
+          import.meta.env.VITE_APP_BASE_URL
+        }/${mediaOwner}/${versionTitle}/${watchClientCompanyName}?template=${
+          form.getValues('aspectRatio') || 'fill;generic'
+        }`,
+      ),
     );
     showNotification({
       title: 'Public link copied!',
@@ -427,32 +431,6 @@ const ShareContent = ({
     <Box className="flex flex-col px-7">
       <FormProvider {...form}>
         <form onSubmit={onSubmit}>
-          {shareType === 'proposal' ? (
-            <>
-              <div>
-                <p className="font-medium text-xl mb-3">Copy public link:</p>
-                <div className="flex items-center gap-2">
-                  <ControlledTextInput name="publicLink" readonly className="w-3/4" disabled />
-                  /
-                  <ControlledTextInput
-                    name="publicClientCompanyName"
-                    className="w-1/4"
-                    placeholder="Client company name"
-                    title="Client company name"
-                  />
-                </div>
-                <Button
-                  className="primary-button font-medium text-base mt-2 w-full"
-                  onClick={copyPublicLink}
-                  leftIcon={<IconCopy size={24} />}
-                  size="xs"
-                >
-                  Copy public link
-                </Button>
-              </div>
-              <div className="text-center my-2">OR</div>
-            </>
-          ) : null}
           <div>
             <p className="font-medium text-xl mb-3">Select file type:</p>
             <div className="grid grid-cols-3 gap-2 mb-5">
@@ -469,7 +447,7 @@ const ShareContent = ({
             </div>
           </div>
           <div>
-            <p className="font-medium text-xl mb-2">Select a template</p>
+            <p className="font-medium text-lg mb-2">Select a template</p>
             <ControlledSelect
               name="aspectRatio"
               data={OBJECT_FIT_LIST_V2}
@@ -482,13 +460,40 @@ const ShareContent = ({
           {activeFileType.some(fileType => fileType === 'Excel') ? (
             <>
               <div>
-                <p className="font-medium text-xl mb-2">Subject</p>
+                <p className="font-medium text-lg mb-2">Subject</p>
                 <ControlledTextInput name="subject" placeholder="Enter..." className="mb-2" />
               </div>
               <div>
-                <p className="font-medium text-xl mb-2">Client company name</p>
+                <p className="font-medium text-lg mb-2">Client company name</p>
                 <ControlledTextInput name="clientCompany" placeholder="Enter..." className="mb-2" />
               </div>
+            </>
+          ) : null}
+          {shareType === 'proposal' ? (
+            <>
+              <div>
+                <p className="font-medium text-lg mb-2">Copy public link</p>
+
+                <div className="flex items-center gap-2">
+                  <ControlledTextInput name="publicLink" readonly className="w-3/4" disabled />
+                  /
+                  <ControlledTextInput
+                    name="publicClientCompanyName"
+                    className="w-1/4"
+                    placeholder="Client company name"
+                    title="Client company name"
+                  />
+                </div>
+                <Button
+                  className="primary-button font-medium text-base mt-3 w-full"
+                  onClick={copyPublicLink}
+                  leftIcon={<IconCopy size={24} />}
+                  size="xs"
+                >
+                  Copy public link
+                </Button>
+              </div>
+              <div className="text-center my-2">OR</div>
             </>
           ) : null}
           <Button
