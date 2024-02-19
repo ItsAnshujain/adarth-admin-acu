@@ -113,7 +113,6 @@ const SelectSpace = () => {
       const place = watchPlace.find(item => item._id === id);
 
       const hasChangedUnit = place?.hasChangedUnit;
-      console.log(place);
       setUpdatedInventoryData(prev => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
