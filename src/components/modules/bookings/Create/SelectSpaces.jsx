@@ -110,7 +110,9 @@ const SelectSpace = () => {
   const updateData = debounce((key, val, id, inputId) => {
     if (key === 'dateRange') {
       let availableUnit = 0;
-      const hasChangedUnit = watchPlace.find(item => item._id === id)?.hasChangedUnit;
+      const place = watchPlace.find(item => item._id === id);
+
+      const hasChangedUnit = place?.hasChangedUnit;
       setUpdatedInventoryData(prev => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
@@ -118,8 +120,8 @@ const SelectSpace = () => {
         const updatedBookingRange = newList[index].bookingRange.filter(
           range =>
             range.startDate !==
-              dayjs(new Date(newList[index].startDate)).startOf('day').toISOString() &&
-            range.endDate !== dayjs(new Date(newList[index].endDate)).startOf('day').toISOString(),
+              dayjs(new Date(place.initialStartDate)).endOf('day').toISOString() &&
+            range.endDate !== dayjs(new Date(place.initialEndDate)).endOf('day').toISOString(),
         );
 
         availableUnit = getAvailableUnits(
@@ -452,24 +454,26 @@ const SelectSpace = () => {
               previousEndDate,
               unit,
               _id,
+              initialStartDate,
+              initialEndDate,
             },
           },
         }) =>
           useMemo(() => {
             const isDisabled =
               watchPlace?.some(item => item._id === _id) && (!startDate || !endDate);
-
             const updatedBookingRange = bookingRange.filter(
               range =>
                 range.startDate !==
-                  dayjs(new Date(previousStartDate || startDate))
-                    .startOf('day')
+                  dayjs(new Date(previousStartDate || initialStartDate || startDate))
+                    .endOf('day')
                     .toISOString() &&
                 range.endDate !==
-                  dayjs(new Date(previousEndDate || endDate))
-                    .startOf('day')
+                  dayjs(new Date(previousEndDate || initialEndDate || endDate))
+                    .endOf('day')
                     .toISOString(),
             );
+
             const everyDayUnitsData = getEveryDayUnits(updatedBookingRange, unit);
 
             return (
