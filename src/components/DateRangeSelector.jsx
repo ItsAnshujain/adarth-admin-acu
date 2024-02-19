@@ -45,6 +45,7 @@ const DateRangeSelector = ({ dateValue, onChange, everyDayUnitsData = {}, ...pro
       excludeDate={excludeBookedDates}
       disableOutsideEvents
       allowSingleDateInRange
+      hideOutsideDates
       defaultValue={dateValue}
       dayClassName={(_, modifiers) =>
         cx({

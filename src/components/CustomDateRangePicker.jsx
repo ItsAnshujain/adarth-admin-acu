@@ -18,6 +18,7 @@ const CustomDateRangePicker = ({
         type="range"
         value={value}
         disableOutsideEvents
+        hideOutsideDates
         onChange={handleRangeSetting}
         dayClassName={(_, modifiers) =>
           cx({
@@ -41,6 +42,7 @@ const CustomDateRangePicker = ({
         icon={<Calendar className="text-black absolute left-[500%]" />}
         styles={styles}
         disableOutsideEvents
+        hideOutsideDates
         dayClassName={(_, modifiers) =>
           cx({
             [classes?.outside]: modifiers.outside,
@@ -60,6 +62,7 @@ const CustomDateRangePicker = ({
         icon={<Calendar className="text-black absolute left-[500%]" />}
         styles={styles}
         disableOutsideEvents
+        hideOutsideDates
         dayClassName={(_, modifiers) =>
           cx({
             [classes?.outside]: modifiers.outside,
