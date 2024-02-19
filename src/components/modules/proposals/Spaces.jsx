@@ -115,6 +115,8 @@ const Spaces = () => {
         return newList;
       });
 
+      const totalMonths = calculateTotalMonths(val[0], val[1]);
+
       form.setValue(
         'spaces',
         watchSpaces.map(item =>
@@ -125,11 +127,12 @@ const Spaces = () => {
                 endDate: val[1],
                 ...(!hasChangedUnit ? { unit: availableUnit } : {}),
                 availableUnit,
+                totalDisplayCost: item.displayCostPerMonth * totalMonths,
                 price: calculateTotalCostOfBooking(
                   item,
                   key === 'unit' ? val : item.unit,
-                  item.startDate,
-                  item.endDate,
+                  val[0],
+                  val[1],
                 ),
               }
             : item,
@@ -207,11 +210,10 @@ const Spaces = () => {
   const getTotalPrice = (places = []) => {
     const totalPrice = places.reduce(
       (acc, item) =>
-        item.startDate &&
-        item.endDate &&
-        acc + +(item?.price || item?.basicInformation?.price || 0),
+        acc + calculateTotalCostOfBooking(item, item?.unit, item?.startDate, item?.endDate),
       0,
     );
+
     return totalPrice || 0;
   };
 
