@@ -99,18 +99,25 @@ const Spaces = () => {
 
     if (key === 'dateRange') {
       let availableUnit = 0;
-      const hasChangedUnit = watchSpaces.find(item => item._id === id)?.hasChangedUnit;
+      const space = watchSpaces.find(item => item._id === id);
+      const hasChangedUnit = space?.hasChangedUnit;
+
       setUpdatedInventoryData(prev => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
         newList[index] = { ...newList[index], startDate: val[0], endDate: val[1] };
+
         availableUnit = getAvailableUnits(
           newList[index].bookingRange,
           newList[index].startDate,
           newList[index].endDate,
           newList[index].originalUnit,
         );
-        newList[index] = { ...newList[index], availableUnit };
+        newList[index] = {
+          ...newList[index],
+          availableUnit,
+          displayCostPerMonth: space.displayCostPerMonth,
+        };
 
         return newList;
       });
@@ -423,12 +430,15 @@ const Spaces = () => {
             // const place = watchSpaces.filter(item => item._id === original._id)?.[0];
             // return place?.price || 0;
             const place = watchSpaces.filter(item => item._id === original._id)?.[0];
-            return calculateTotalCostOfBooking(
+            const totalPrice = calculateTotalCostOfBooking(
               place,
               place?.unit,
               place?.startDate,
               place?.endDate,
             );
+            return place?.startDate && place?.endDate && totalPrice > 0
+              ? toIndianCurrency(totalPrice)
+              : '-';
           }, []),
       },
       {
@@ -441,17 +451,18 @@ const Spaces = () => {
           },
         }) =>
           useMemo(() => {
-            const isDisabled =
-              watchSpaces.some(item => item._id === _id) && (!startDate || !endDate);
+            const isError = watchSpaces.some(item => item._id === _id) && (!startDate || !endDate);
+            const isDisabled = !watchSpaces.some(item => item._id === _id);
             const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
 
             return (
               <div className="min-w-[300px]">
                 <DateRangeSelector
-                  error={isDisabled}
+                  error={isError}
                   dateValue={[startDate || null, endDate || null]}
                   onChange={val => updateData('dateRange', val, _id)}
                   everyDayUnitsData={everyDayUnitsData}
+                  disabled={isDisabled}
                 />
               </div>
             );
@@ -576,8 +587,12 @@ const Spaces = () => {
   };
 
   const handleSelection = selectedRows => {
-    handleSortRowsOnTop(selectedRows, updatedInventoryData);
-    form.setValue('spaces', selectedRows);
+    const updatedSelectedRows = selectedRows.map(row => ({
+      ...row,
+      displayCostPerMonth: row.displayCostPerMonth || (!row.priceChanged && row.price),
+    }));
+    handleSortRowsOnTop(updatedSelectedRows, updatedInventoryData);
+    form.setValue('spaces', updatedSelectedRows);
   };
 
   const handleSortByColumn = colId => {
@@ -712,7 +727,11 @@ const Spaces = () => {
           <div>
             <Text color="gray">Total Price</Text>
             <Group>
-              <Text weight="bold">{toIndianCurrency(getTotalPrice(watchSpaces))}</Text>
+              <Text weight="bold">
+                {getTotalPrice(watchSpaces) > 0
+                  ? toIndianCurrency(getTotalPrice(watchSpaces))
+                  : '-'}
+              </Text>
               <p className="text-xs italic text-blue-500">** exclusive of GST</p>
             </Group>
           </div>
