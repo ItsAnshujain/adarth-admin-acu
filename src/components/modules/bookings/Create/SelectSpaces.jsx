@@ -117,20 +117,9 @@ const SelectSpace = () => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
         newList[index] = { ...newList[index], startDate: val[0], endDate: val[1] };
-        const updatedBookingRange = newList[index].bookingRange.filter(
-          range =>
-            range.startDate !==
-              dayjs(new Date(place.initialStartDate || newList[index].startDate))
-                .endOf('day')
-                .toISOString() &&
-            range.endDate !==
-              dayjs(new Date(place.initialEndDate || newList[index].endDate))
-                .endOf('day')
-                .toISOString(),
-        );
 
         availableUnit = getAvailableUnits(
-          updatedBookingRange,
+          newList[index].bookingRange,
           newList[index].startDate,
           newList[index].endDate,
           newList[index].originalUnit,

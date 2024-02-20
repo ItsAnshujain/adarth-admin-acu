@@ -170,7 +170,6 @@ const BasicInfo = ({ proposalId, userData }) => {
           <Radio.Group
             name="uploadType"
             label="Upload existing Letter Header/Footer or add new one for this proposal"
-            withAsterisk
             styles={styles}
             value={watchUploadType || 'new'}
             // {...getInputProps('uploadType')}
@@ -400,7 +399,6 @@ const BasicInfo = ({ proposalId, userData }) => {
               <ControlledSelect
                 label="Select Terms and Conditions"
                 name="proposalTermsId"
-                withAsterisk
                 data={memoizedProposalTerms}
                 placeholder="Select..."
                 rightSection={<ChevronDown size={16} />}
