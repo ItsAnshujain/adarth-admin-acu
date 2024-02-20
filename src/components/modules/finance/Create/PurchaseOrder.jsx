@@ -118,6 +118,7 @@ const PurchaseOrder = ({
           useMemo(
             () => (
               <DatePicker
+                hideOutsideDates
                 defaultValue={endDate || new Date()}
                 placeholder="Month Day, Year"
                 minDate={new Date()}
