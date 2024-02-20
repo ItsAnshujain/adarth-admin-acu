@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Checkbox, Image, Menu } from '@mantine/core';
+import { ActionIcon, Button, Card, Checkbox, Image, Menu } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { useClickOutside, useDisclosure } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
@@ -7,7 +7,7 @@ import ConfirmContent from '../../shared/ConfirmContent';
 import modalConfig from '../../../utils/modalConfig';
 import { useDeleteImages } from '../../../apis/queries/gallery.queries';
 
-const ImageCard = ({ image, checked, setSelectedImages, selectedImages }) => {
+const ImageCard = ({ image, checked, setSelectedImages, selectedImages, onClick }) => {
   const modals = useModals();
   const [menuOpened, menuActions] = useDisclosure();
   const deleteImagesQuery = useDeleteImages();
@@ -60,8 +60,13 @@ const ImageCard = ({ image, checked, setSelectedImages, selectedImages }) => {
   };
 
   return (
-    <div className="rounded-lg border border-gray-200">
-      <Image src={image?.url} classNames={{ image: 'rounded-t-lg' }} height={200} />
+    <Card className="rounded-lg border border-gray-200 p-0">
+      <Image
+        src={image?.thumbnail}
+        classNames={{ image: 'rounded-t-lg' }}
+        height={200}
+        onClick={onClick}
+      />
       <div className="p-4 flex justify-between items-center w-full">
         <Checkbox
           checked={checked}
@@ -99,7 +104,7 @@ const ImageCard = ({ image, checked, setSelectedImages, selectedImages }) => {
           </Menu>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 
