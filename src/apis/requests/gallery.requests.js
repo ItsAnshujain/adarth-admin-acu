@@ -6,3 +6,7 @@ export const uploadImages = data =>
     hasFiles: true,
     headers: { 'Content-Type': 'multipart/form-data' },
   });
+
+export const fetchGalleryImages = query => http.get(`/gallery?${query}`);
+
+export const deleteImages = ids => http.delete(`/gallery/${ids}`);

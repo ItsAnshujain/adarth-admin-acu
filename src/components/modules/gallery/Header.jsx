@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const Header = ({ setSelectedImages, imagesData }) => {
   const handleSelectAll = checked => {
     if (checked) {
-      setSelectedImages(imagesData.map(image => image.id));
+      setSelectedImages(imagesData);
     } else {
       setSelectedImages([]);
     }

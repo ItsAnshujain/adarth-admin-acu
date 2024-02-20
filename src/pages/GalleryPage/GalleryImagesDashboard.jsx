@@ -1,27 +1,70 @@
-import { Button, Pagination } from '@mantine/core';
+import { Button, Loader, Pagination } from '@mantine/core';
 import { IconTrash } from '@tabler/icons';
 import { useModals } from '@mantine/modals';
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { showNotification } from '@mantine/notifications';
 import ImagesList from '../../components/modules/gallery/ImagesList';
 import Header from '../../components/modules/gallery/Header';
 import ImagesPerPage from '../../components/modules/gallery/ImagesPerPage';
 import ConfirmContent from '../../components/shared/ConfirmContent';
 import modalConfig from '../../utils/modalConfig';
-import dummy from '../../assets/dummy3.png';
+import { useDeleteImages, useFetchGalleryImages } from '../../apis/queries/gallery.queries';
+import { serialize } from '../../utils';
 
 const GalleryImagesDashboardPage = () => {
   const [selectedImages, setSelectedImages] = useState([]);
+  const deleteImagesQuery = useDeleteImages();
+  const [searchParams, setSearchParams] = useSearchParams({
+    'page': 1,
+    'limit': 10,
+    'sortBy': 'createdAt',
+    'sortOrder': 'desc',
+  });
+
+  const page = searchParams.get('page');
+  const limit = searchParams.get('limit');
+  const sortBy = searchParams.get('sortBy');
+  const sortOrder = searchParams.get('sortOrder');
+
+  const imagesQuery = useFetchGalleryImages(
+    serialize({
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+    }),
+  );
 
   const modals = useModals();
+
+  const deleteImage = () => {
+    modals.closeModal('deleteImageModal');
+    deleteImagesQuery.mutate(selectedImages?.[0]?._id, {
+      onSuccess: () => {
+        showNotification({
+          message: 'Image deleted successfully',
+          color: 'green',
+        });
+        setSelectedImages(selectedImages.filter(({ _id }) => _id !== selectedImages?.[0]?._id));
+      },
+    });
+  };
+
   const toggleDelete = () => {
-    modals.openModal({
-      modalId: 'deleteVersionModal',
+    if (!selectedImages.length)
+      return showNotification({
+        message: 'Please select images',
+      });
+
+    return modals.openModal({
+      modalId: 'deleteImageModal',
       title: 'Delete Images',
       children: (
         <ConfirmContent
-          onConfirm={() => {}}
-          onCancel={() => modals.closeModal('deleteVersionModal')}
-          loading={false} // query isLoading
+          onConfirm={deleteImage}
+          onCancel={() => modals.closeModal('deleteImageModal')}
+          loading={deleteImagesQuery.isLoading}
           classNames="px-6"
         />
       ),
@@ -30,24 +73,34 @@ const GalleryImagesDashboardPage = () => {
     });
   };
 
-  const images = [
-    {
-      link: dummy,
-      id: 1,
-    },
-    {
-      link: dummy,
-      id: 2,
-    },
-  ];
+  const handlePagination = (key, val) => {
+    if (val !== '') {
+      searchParams.set(key, val);
+    } else {
+      searchParams.delete(key);
+    }
+    setSearchParams(searchParams);
+  };
+
+  const copyLink = () => {
+    if (!selectedImages.length) return showNotification({ message: 'Please select images' });
+
+    navigator.clipboard.writeText(selectedImages?.[0]?.url);
+    return showNotification({
+      message: 'Link copied!',
+    });
+  };
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
-      <Header setSelectedImages={setSelectedImages} imagesData={images} />
+      <Header setSelectedImages={setSelectedImages} imagesData={imagesQuery?.data?.docs} />
       <div className="w-full px-5">
         <div className="flex items-center gap-3 text-sm text-gray-6 font-medium text-gray-500 justify-between w-full">
           <div className="flex items-center gap-3">
-            <ImagesPerPage count="10" />
+            <ImagesPerPage
+              count="10"
+              setCount={currentLimit => handlePagination('limit', currentLimit)}
+            />
             <Button
               variant="default"
               className="text-purple-450 p-0 border-none"
@@ -55,7 +108,7 @@ const GalleryImagesDashboardPage = () => {
             >
               <IconTrash size={24} />
             </Button>
-            <Button variant="filled" className="bg-black">
+            <Button variant="filled" className="bg-black" onClick={copyLink}>
               Copy link
             </Button>
           </div>
@@ -67,17 +120,24 @@ const GalleryImagesDashboardPage = () => {
                   fontWeight: 700,
                 },
               })}
-              page={1}
-              onChange={() => {}}
-              total={10}
+              page={imagesQuery?.data?.page}
+              onChange={val => {
+                searchParams.set('page', val);
+                setSearchParams(searchParams);
+              }}
+              total={imagesQuery?.data?.totalPages || 1}
             />
           </div>
         </div>
-        <ImagesList
-          selectedImages={selectedImages}
-          imagesData={images}
-          setSelectedImages={setSelectedImages}
-        />
+        {imagesQuery.isLoading || imagesQuery.isFetching ? (
+          <Loader className="mx-auto" />
+        ) : (
+          <ImagesList
+            selectedImages={selectedImages}
+            imagesData={imagesQuery?.data?.docs}
+            setSelectedImages={setSelectedImages}
+          />
+        )}
       </div>
     </div>
   );
