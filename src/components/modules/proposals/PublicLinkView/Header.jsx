@@ -1,41 +1,43 @@
 import { Button, Image, Menu } from '@mantine/core';
 import { IconDownload } from '@tabler/icons';
-import { useModals } from '@mantine/modals';
+import dayjs from 'dayjs';
+import { showNotification } from '@mantine/notifications';
+import { useState } from 'react';
 import logoWhite from '../../../../assets/logo.svg';
 import powerpoint from '../../../../assets/powerpoint.svg';
 import excel from '../../../../assets/excel.svg';
 import pdf from '../../../../assets/pdfIc.svg';
-import modalConfig from '../../../../utils/modalConfig';
-import ShareContent from './ShareContent';
+import { useGeneratePublicProposal } from '../../../../apis/queries/proposal.queries';
+import { downloadPdf, serialize } from '../../../../utils';
 
-const updatedModalConfig = {
-  ...modalConfig,
-  classNames: {
-    title: 'font-dmSans text-xl px-4',
-    header: 'px-4 pt-4',
-    body: 'px-8',
-    close: 'mr-4',
-  },
-};
+const DownloadButtons = ({ proposalId, clientCompanyName, template, subject }) => {
+  const [fileType, setFileType] = useState();
+  const genProposalHandler = useGeneratePublicProposal();
+  const download = async type => {
+    const payload = {
+      format: type,
+      shareVia: 'copy_link',
+      to: '',
+      cc: '',
+      name: '',
+      aspectRatio: template?.split(';')[0] || 'fill',
+      templateType: template?.split(';')[1] || 'generic',
+      clientCompanyName,
+      subject,
+    };
 
-const DownloadButtons = ({ proposalId, clientCompanyName }) => {
-  const modals = useModals();
-
-  const toggleShareOptions = fileType => {
-    modals.openModal({
-      modalId: 'downloadProposalOption',
-      title: `Download ${fileType}`,
-      children: (
-        <ShareContent
-          shareType="proposal"
-          fileType={fileType}
-          proposalId={proposalId}
-          onClose={() => modals.closeModal('downloadProposalOption')}
-          clientCompanyName={clientCompanyName}
-        />
-      ),
-      ...updatedModalConfig,
-    });
+    await genProposalHandler.mutateAsync(
+      { proposalId, queries: serialize({ utcOffset: dayjs().utcOffset() }), payload },
+      {
+        onSuccess: res => {
+          downloadPdf(res.link[type]);
+          showNotification({
+            title: 'Download successful',
+            color: 'green',
+          });
+        },
+      },
+    );
   };
 
   return (
@@ -45,8 +47,11 @@ const DownloadButtons = ({ proposalId, clientCompanyName }) => {
         className="border-none md:border-solid md:border md:border-black text-black font-normal"
         leftIcon={<Image src={powerpoint} alt="powerpoint" />}
         onClick={() => {
-          toggleShareOptions('PPT');
+          download('PPT');
+          setFileType('PPT');
         }}
+        disabled={genProposalHandler.isLoading}
+        loading={genProposalHandler.isLoading && fileType === 'PPT'}
       >
         Download PPT
       </Button>
@@ -55,8 +60,11 @@ const DownloadButtons = ({ proposalId, clientCompanyName }) => {
         className="border-none md:border-solid md:border md:border-black text-black font-normal"
         leftIcon={<Image src={pdf} alt="pdf" />}
         onClick={() => {
-          toggleShareOptions('PDF');
+          download('PDF');
+          setFileType('PDF');
         }}
+        disabled={genProposalHandler.isLoading}
+        loading={genProposalHandler.isLoading && fileType === 'PDF'}
       >
         Download PDF
       </Button>
@@ -65,8 +73,11 @@ const DownloadButtons = ({ proposalId, clientCompanyName }) => {
         className="border-none md:border-solid md:border md:border-black text-black font-normal"
         leftIcon={<Image src={excel} alt="excel" />}
         onClick={() => {
-          toggleShareOptions('Excel');
+          download('Excel');
+          setFileType('Excel');
         }}
+        disabled={genProposalHandler.isLoading}
+        loading={genProposalHandler.isLoading && fileType === 'Excel'}
       >
         Download Excel
       </Button>
@@ -74,11 +85,15 @@ const DownloadButtons = ({ proposalId, clientCompanyName }) => {
   );
 };
 
-const Header = ({ proposalId, clientCompanyName }) => (
+const Header = ({ proposalId, clientCompanyName, template, subject }) => (
   <div className="flex justify-between my-4 md:my-8">
     <Image className="w-24 lg:w-28" src={logoWhite} alt="logo" />
     <div className="hidden md:flex">
-      <DownloadButtons proposalId={proposalId} clientCompanyName={clientCompanyName} />
+      <DownloadButtons
+        proposalId={proposalId}
+        clientCompanyName={clientCompanyName}
+        template={template}
+      />
     </div>
     <Menu shadow="md" classNames={{ item: 'cursor-pointer' }} className="md:hidden">
       <Menu.Target>
@@ -92,7 +107,12 @@ const Header = ({ proposalId, clientCompanyName }) => (
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <DownloadButtons proposalId={proposalId} clientCompanyName={clientCompanyName} />
+        <DownloadButtons
+          proposalId={proposalId}
+          clientCompanyName={clientCompanyName}
+          template={template}
+          subject={subject}
+        />
       </Menu.Dropdown>
     </Menu>
   </div>
