@@ -498,7 +498,11 @@ const PublicLinkPage = () => {
 
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-4  md:pb-10 md:px-14">
-      <Header proposalId={proposalData?.proposal?._id} clientCompanyName={client_company_name} />
+      <Header
+        proposalId={proposalData?.proposal?._id}
+        clientCompanyName={client_company_name}
+        template={searchParams.get('template')}
+      />
       <Details
         proposalData={proposalData?.proposal}
         isProposalDataLoading={isProposalDataLoading}
