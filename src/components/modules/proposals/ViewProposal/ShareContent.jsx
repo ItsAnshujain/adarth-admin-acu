@@ -432,21 +432,6 @@ const ShareContent = ({
       <FormProvider {...form}>
         <form onSubmit={onSubmit}>
           <div>
-            <p className="font-medium text-xl mb-3">Select file type:</p>
-            <div className="grid grid-cols-3 gap-2 mb-5">
-              {FILE_TYPE_LIST.map(item => (
-                <Checkbox
-                  key={uuidv4()}
-                  onChange={event => handleActiveFileType(event.target.value)}
-                  label={item.name}
-                  defaultValue={item._id}
-                  className="font-medium"
-                  checked={activeFileType.includes(item._id)}
-                />
-              ))}
-            </div>
-          </div>
-          <div>
             <p className="font-medium text-lg mb-2">Select a template</p>
             <ControlledSelect
               name="aspectRatio"
@@ -457,18 +442,7 @@ const ShareContent = ({
               defaultValue="fill;generic"
             />
           </div>
-          {activeFileType.some(fileType => fileType === 'Excel') ? (
-            <>
-              <div>
-                <p className="font-medium text-lg mb-2">Subject</p>
-                <ControlledTextInput name="subject" placeholder="Enter..." className="mb-2" />
-              </div>
-              <div>
-                <p className="font-medium text-lg mb-2">Client company name</p>
-                <ControlledTextInput name="clientCompany" placeholder="Enter..." className="mb-2" />
-              </div>
-            </>
-          ) : null}
+
           {shareType === 'proposal' ? (
             <>
               <div>
@@ -493,9 +467,38 @@ const ShareContent = ({
                   Copy public link
                 </Button>
               </div>
-              <div className="text-center my-2">OR</div>
+              <div className="text-center mt-2">OR</div>
             </>
           ) : null}
+
+          <div>
+            <p className="font-medium text-xl mb-3">Select file type:</p>
+            <div className="grid grid-cols-3 gap-2 mb-5">
+              {FILE_TYPE_LIST.map(item => (
+                <Checkbox
+                  key={uuidv4()}
+                  onChange={event => handleActiveFileType(event.target.value)}
+                  label={item.name}
+                  defaultValue={item._id}
+                  className="font-medium"
+                  checked={activeFileType.includes(item._id)}
+                />
+              ))}
+            </div>
+          </div>
+          {activeFileType.some(fileType => fileType === 'Excel') ? (
+            <>
+              <div>
+                <p className="font-medium text-lg mb-2">Subject</p>
+                <ControlledTextInput name="subject" placeholder="Enter..." className="mb-2" />
+              </div>
+              <div>
+                <p className="font-medium text-lg mb-2">Client company name</p>
+                <ControlledTextInput name="clientCompany" placeholder="Enter..." className="mb-2" />
+              </div>
+            </>
+          ) : null}
+
           <Button
             className="primary-button font-medium text-base mt-2 w-full"
             onClick={handleDownload}
