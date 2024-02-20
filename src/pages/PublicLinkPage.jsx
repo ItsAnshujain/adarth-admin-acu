@@ -1,11 +1,12 @@
 import { useSearchParams, useParams } from 'react-router-dom';
 import { useMemo, useState, useEffect } from 'react';
-import { Image, Text } from '@mantine/core';
+import { ActionIcon, Image, Select, Text } from '@mantine/core';
 import GoogleMapReact from 'google-map-react';
-import { Loader } from 'react-feather';
+import { Loader, ChevronDown } from 'react-feather';
 import { useDebouncedValue } from '@mantine/hooks';
 import shallow from 'zustand/shallow';
 import dayjs from 'dayjs';
+import { IconX } from '@tabler/icons';
 import { useProposalByVersionName } from '../apis/queries/proposal.queries';
 import Table from '../components/Table/Table';
 import {
@@ -13,6 +14,7 @@ import {
   calculateTotalMonths,
   generateSlNo,
   indianMapCoordinates,
+  serialize,
 } from '../utils';
 import { GOOGLE_MAPS_API_KEY } from '../utils/config';
 import MarkerIcon from '../assets/pin.svg';
@@ -22,6 +24,7 @@ import useLayoutView from '../store/layout.store';
 import Details from '../components/modules/proposals/PublicLinkView/Details';
 import Header from '../components/modules/proposals/PublicLinkView/Header';
 import toIndianCurrency from '../utils/currencyFormat';
+import { useFetchMasters } from '../apis/queries/masters.queries';
 
 const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
@@ -43,6 +46,7 @@ const PublicLinkPage = () => {
     limit: 10,
     sortBy: 'createdAt',
     sortOrder: 'desc',
+    category: '',
   });
 
   const { activeLayout, setActiveLayout } = useLayoutView(
@@ -53,12 +57,23 @@ const PublicLinkPage = () => {
     shallow,
   );
 
+  const query = {
+    parentId: null,
+    limit: 100,
+    page: 1,
+    sortBy: 'name',
+    sortOrder: 'asc',
+  };
+
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
   const { proposal_version_name, client_company_name } = useParams();
   const { data: proposalData, isLoading: isProposalDataLoading } = useProposalByVersionName(
     `${proposal_version_name}?${searchParams.toString()}`,
+  );
+  const { data: categoryData, isSuccess: isCategoryLoaded } = useFetchMasters(
+    serialize({ type: 'category', ...query }),
   );
 
   const handlePagination = (key, val) => {
@@ -513,7 +528,40 @@ const PublicLinkPage = () => {
       <p className="text-base font-light text-slate-400">
         All the places being covered in this campaign
       </p>
-      <div className="mt-1 mb-4 h-[40vh]">
+      <div className="mt-1 mb-4 h-[40vh] relative">
+        <div className="absolute z-40 top-3 right-14">
+          <Select
+            data={
+              isCategoryLoaded
+                ? categoryData?.docs?.map(category => ({
+                    label: category.name,
+                    value: category._id,
+                  }))
+                : []
+            }
+            rightSection={
+              searchParams.get('category') ? (
+                <ActionIcon
+                  onClick={() => {
+                    searchParams.set('category', '');
+                    setSearchParams(searchParams, { replace: true });
+                  }}
+                >
+                  <IconX size={20} />
+                </ActionIcon>
+              ) : (
+                <ChevronDown />
+              )
+            }
+            placeholder="Select Category"
+            clearable
+            value={searchParams.get('category')}
+            onChange={val => {
+              searchParams.set('category', val);
+              setSearchParams(searchParams, { replace: true });
+            }}
+          />
+        </div>
         <GoogleMapReact
           bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY, libraries: 'places' }}
           defaultCenter={defaultProps.center}
