@@ -1,4 +1,4 @@
-import { RangeCalendar, DatePicker } from '@mantine/dates';
+import { DatePicker, DatePickerInput } from '@mantine/dates';
 import { Calendar } from 'react-feather';
 
 const CustomDateRangePicker = ({
@@ -14,9 +14,11 @@ const CustomDateRangePicker = ({
 }) => (
   <div className="flex gap-8 pt-4">
     <div className="border rounded-md flex-1 p-4 py-6">
-      <RangeCalendar
+      <DatePicker
+        type="range"
         value={value}
         disableOutsideEvents
+        hideOutsideDates
         onChange={handleRangeSetting}
         dayClassName={(_, modifiers) =>
           cx({
@@ -33,13 +35,14 @@ const CustomDateRangePicker = ({
     <div className="flex-1 flex flex-col items-start gap-2">
       <p className="text-lg font-bold">Picked Date</p>
       <p className="font-bold">Date From</p>
-      <DatePicker
+      <DatePickerInput
         clearable={false}
         onChange={handleSetStartDate}
         value={value?.[0]}
         icon={<Calendar className="text-black absolute left-[500%]" />}
         styles={styles}
         disableOutsideEvents
+        hideOutsideDates
         dayClassName={(_, modifiers) =>
           cx({
             [classes?.outside]: modifiers.outside,
@@ -52,13 +55,14 @@ const CustomDateRangePicker = ({
         placeholder="Month Day, Year"
       />
       <p className="font-bold mt-3">Date To</p>
-      <DatePicker
+      <DatePickerInput
         clearable={false}
         onChange={handleSetEndDate}
         value={value?.[1]}
         icon={<Calendar className="text-black absolute left-[500%]" />}
         styles={styles}
         disableOutsideEvents
+        hideOutsideDates
         dayClassName={(_, modifiers) =>
           cx({
             [classes?.outside]: modifiers.outside,

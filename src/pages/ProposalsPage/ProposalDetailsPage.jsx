@@ -395,8 +395,8 @@ const ProposalDetailsPage = () => {
 
       // default coordinates
       bounds.extend({
-        lat: indianMapCoordinates.latitude,
-        lng: indianMapCoordinates.longitude,
+        lat: indianMapCoordinates?.latitude,
+        lng: indianMapCoordinates?.longitude,
       });
 
       mapInstance.map.fitBounds(bounds);
@@ -436,8 +436,8 @@ const ProposalDetailsPage = () => {
           {proposalData?.inventories?.docs?.map(item => (
             <Marker
               key={item._id}
-              lat={item.latitude && Number(item.latitude)}
-              lng={item.longitude && Number(item.longitude)}
+              lat={item?.latitude && Number(item?.latitude)}
+              lng={item?.longitude && Number(item?.longitude)}
             />
           ))}
         </GoogleMapReact>

@@ -26,7 +26,7 @@ const orderView = {
 
 const initialPurchaseValues = {
   supplierName: '',
-  invoiceNo: null,
+  invoiceNo: '',
   buyerName: '',
   total: 0,
 };
@@ -62,7 +62,7 @@ const releaseSchema = yup.object({
 });
 
 const initialInvoiceValues = {
-  invoiceNo: null,
+  invoiceNo: '',
   supplierName: '',
   supplierRefNo: '',
   buyerName: '',

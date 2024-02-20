@@ -120,7 +120,7 @@ const VersionsDrawer = ({
   return (
     <Drawer
       className="overflow-auto"
-      size="xl"
+      size="sm"
       padding="xl"
       position="right"
       opened={isOpened}
