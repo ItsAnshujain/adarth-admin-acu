@@ -134,6 +134,14 @@ const Spaces = () => {
                 endDate: val[1],
                 ...(!hasChangedUnit ? { unit: availableUnit } : {}),
                 availableUnit,
+                displayCostPerSqFt:
+                  calculateTotalArea(item, item?.unit) > 0
+                    ? Number(
+                        (item.displayCostPerMonth / calculateTotalArea(item, item?.unit)).toFixed(
+                          2,
+                        ),
+                      )
+                    : 0,
                 totalDisplayCost: item.displayCostPerMonth * totalMonths,
                 price: calculateTotalCostOfBooking(
                   item,
@@ -589,7 +597,8 @@ const Spaces = () => {
   const handleSelection = selectedRows => {
     const updatedSelectedRows = selectedRows.map(row => ({
       ...row,
-      displayCostPerMonth: row.displayCostPerMonth || (!row.priceChanged && row.price),
+      displayCostPerMonth:
+        row.displayCostPerMonth || (!row.priceChanged && !row?.pricingDetails?.price && row.price),
     }));
     handleSortRowsOnTop(updatedSelectedRows, updatedInventoryData);
     form.setValue('spaces', updatedSelectedRows);
@@ -698,7 +707,9 @@ const Spaces = () => {
                 className="bg-black mr-1"
                 onClick={() => {
                   onClickAddPrice();
+                  setSelectedInventoryId(watchSpaces?.[0]?.id);
                 }}
+                disabled={isLoading}
               >
                 Add Price
               </Button>
@@ -728,7 +739,8 @@ const Spaces = () => {
             <Text color="gray">Total Price</Text>
             <Group>
               <Text weight="bold">
-                {getTotalPrice(watchSpaces) > 0
+                {getTotalPrice(watchSpaces) > 0 &&
+                !watchSpaces.some(item => !(item.startDate || item.endDate))
                   ? toIndianCurrency(getTotalPrice(watchSpaces))
                   : '-'}
               </Text>
