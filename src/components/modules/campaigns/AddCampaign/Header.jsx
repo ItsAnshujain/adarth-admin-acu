@@ -51,8 +51,9 @@ const Header = ({ setFormStep, formStep, handleFormSubmit, disabled, loading }) 
             color="gray"
             radius="xs"
             size="md"
+            classNames={{ label: 'bg-transparent' }}
           >
-            <span className={classNames(index + 1 <= formStep ? 'text-purple-450' : '')}>
+            <span className={classNames(index + 1 <= formStep ? 'text-purple-450' : 'text-black')}>
               {val}
             </span>
           </Chip>

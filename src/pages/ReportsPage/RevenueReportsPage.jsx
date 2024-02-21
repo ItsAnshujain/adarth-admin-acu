@@ -289,25 +289,24 @@ const RevenueReportsPage = () => {
           : monthsInShort;
 
       tempData.datasets[0].data = Array.from({ length: dayjs().daysInMonth() }, () => 0);
-
       revenueGraphData?.forEach(item => {
-        if (item._id) {
+        if (Number(item._id)) {
           if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
-            tempData.datasets[0].data[item._id - 1] = item.total || 0;
+            tempData.datasets[0].data[Number(item._id) - 1] = Number(item.total).toFixed(2) || 0;
           } else if (groupBy === 'quarter') {
-            if (dayjs().quarter() === 1) {
-              tempData.datasets[0].data[item._id + 3] = item.total || 0;
-            } else if (dayjs().quarter() === 4) {
-              tempData.datasets[0].data[item._id - 3] = item.total || 0;
+            if (dayjs().quarter() === 1 && Number(item._id) === 1) {
+              tempData.datasets[0].data[Number(item._id) + 3] = Number(item.total).toFixed(2) || 0;
+            } else if (dayjs().quarter() === 4 && Number(item._id) === 4) {
+              tempData.datasets[0].data[Number(item._id) - 3] = Number(item.total).toFixed(2) || 0;
             } else {
-              tempData.datasets[0].data[item._id - 1] = item.total || 0;
+              tempData.datasets[0].data[Number(item._id) - 1] = Number(item.total).toFixed(2) || 0;
             }
-          } else if (item._id < 4) {
+          } else if (Number(item._id) < 4) {
             // For financial year. if the month is less than 4 then it will be in the next year
-            tempData.datasets[0].data[item._id + 8] = item.total || 0;
+            tempData.datasets[0].data[Number(item._id) + 8] = Number(item.total).toFixed(2) || 0;
           } else {
             // For financial year. if the month is greater than 4 then it will be in the same year
-            tempData.datasets[0].data[item._id - 4] = item.total || 0;
+            tempData.datasets[0].data[Number(item._id) - 4] = Number(item.total).toFixed(2) || 0;
           }
         }
       });

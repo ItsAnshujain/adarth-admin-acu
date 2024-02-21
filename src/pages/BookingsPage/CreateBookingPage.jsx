@@ -113,7 +113,6 @@ const CreateBookingPage = () => {
   const watchPlace = form.watch('place') || [];
 
   const setBookingData = useBookingStore(state => state.setBookingData);
-
   const onSubmit = form.handleSubmit(async formData => {
     setFormStep(prevState => prevState + 1);
     if (formStep === 3) {
@@ -171,8 +170,8 @@ const CreateBookingPage = () => {
         price: +Number(item.price?.toFixed(2) || 0),
         media: isValidURL(item.media) ? item.media : undefined,
         startDate: item.startDate
-          ? dayjs(item.startDate).startOf('day').toISOString()
-          : dayjs().startOf('day').toISOString(),
+          ? dayjs(item.startDate).endOf('day').toISOString()
+          : dayjs().endOf('day').toISOString(),
         endDate: item.endDate
           ? dayjs(item.endDate).endOf('day').toISOString()
           : dayjs().endOf('day').toISOString(),
@@ -213,8 +212,7 @@ const CreateBookingPage = () => {
       }
 
       const totalPrice = calculateTotalPrice(watchPlace);
-      const gstCalculation = totalPrice * 0.18;
-      data.price = Number((totalPrice + gstCalculation)?.toFixed(2)) || 0;
+      data.price = totalPrice;
 
       Object.keys(data).forEach(k => {
         if (data[k] === '') {
@@ -245,9 +243,9 @@ const CreateBookingPage = () => {
             onSuccess: () => {
               queryClient.invalidateQueries(['bookings']);
               setBookingData([]);
-              form.reset();
               setTimeout(() => {
                 navigate('/bookings');
+                form.reset();
               }, 1000);
             },
           },
@@ -321,6 +319,8 @@ const CreateBookingPage = () => {
             discount: item?.discountPercentage,
             startDate: new Date(item.startDate),
             endDate: new Date(item.endDate),
+            initialStartDate: new Date(item.startDate),
+            initialEndDate: new Date(item.endDate),
           })) || [],
         industry: campaign?.industry?._id || '',
         displayBrands: displayBrands?.[0] || '',

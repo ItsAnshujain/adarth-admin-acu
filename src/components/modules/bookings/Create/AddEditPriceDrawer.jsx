@@ -148,7 +148,7 @@ const AddEditPriceDrawer = ({
     val => {
       const displayCostPerMonth = val * totalMonths;
       const displayCostPerSqFt = Number((val / totalArea).toFixed(2));
-      form.setValue('displayCostPerSqFt', displayCostPerSqFt);
+      form.setValue('displayCostPerSqFt', totalArea > 0 ? displayCostPerSqFt : 0);
 
       if (totalArea && totalArea > 0) {
         form.setValue(
@@ -449,7 +449,7 @@ const AddEditPriceDrawer = ({
         printingGstPercentage: inventory.printingGstPercentage || 0,
         printingGst: inventory.printingGst || 0,
         totalPrintingCost: inventory.totalPrintingCost || 0,
-        mountingCostPerSqft: inventory.mountingCostPerSqft || null,
+        mountingCostPerSqft: inventory.mountingCostPerSqft || '',
         mountingGstPercentage: inventory.mountingGstPercentage || 0,
         mountingGst: inventory.mountingGst || 0,
         totalMountingCost: inventory.totalMountingCost || 0,
@@ -475,7 +475,7 @@ const AddEditPriceDrawer = ({
         printingGstPercentage: inventory.printingGstPercentage || 0,
         printingGst: inventory.printingGst || 0,
         totalPrintingCost: inventory.totalPrintingCost || 0,
-        mountingCostPerSqft: inventory.mountingCostPerSqft || null,
+        mountingCostPerSqft: inventory.mountingCostPerSqft || '',
         mountingGstPercentage: inventory.mountingGstPercentage || 0,
         mountingGst: inventory.mountingGst || 0,
         totalMountingCost: inventory.totalMountingCost || 0,
@@ -510,7 +510,7 @@ const AddEditPriceDrawer = ({
         printingGstPercentage: selectedInventory.printingGstPercentage || 0,
         printingGst: selectedInventory.printingGst || 0,
         totalPrintingCost: selectedInventory.totalPrintingCost || 0,
-        mountingCostPerSqft: selectedInventory.mountingCostPerSqft || null,
+        mountingCostPerSqft: selectedInventory.mountingCostPerSqft || '',
         mountingGstPercentage: selectedInventory.mountingGstPercentage || 0,
         mountingGst: selectedInventory.mountingGst || 0,
         totalMountingCost: selectedInventory.totalMountingCost || 0,
@@ -535,7 +535,7 @@ const AddEditPriceDrawer = ({
       className="overflow-auto"
       overlayOpacity={0.1}
       overlayBlur={0}
-      size="xl"
+      size="510px"
       position="right"
       opened={isOpened}
       styles={styles}
@@ -545,6 +545,7 @@ const AddEditPriceDrawer = ({
         title: 'text-xl font-semibold',
         header: 'px-6 mb-0 z-20 h-16 sticky top-0 bg-white',
         closeButton: 'text-black',
+        body: 'p-0',
       }}
     >
       <div className="sticky top-16 bg-white z-10">
@@ -564,7 +565,10 @@ const AddEditPriceDrawer = ({
           {selectedInventories?.map(inventory => (
             <Carousel.Slide>
               <div className="bg-gray-200 h-full rounded-lg p-4 w-3/4 m-auto flex flex-col justify-between">
-                <div className="text-xl">
+                <div
+                  className="text-xl truncate w-80"
+                  title={inventory.spaceName || inventory?.basicInformation?.spaceName}
+                >
                   {inventory.spaceName || inventory?.basicInformation?.spaceName}
                 </div>
                 <div className="text-lg text-gray-400">
