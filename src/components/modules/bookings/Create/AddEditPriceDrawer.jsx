@@ -565,7 +565,10 @@ const AddEditPriceDrawer = ({
           {selectedInventories?.map(inventory => (
             <Carousel.Slide>
               <div className="bg-gray-200 h-full rounded-lg p-4 w-3/4 m-auto flex flex-col justify-between">
-                <div className="text-xl">
+                <div
+                  className="text-xl truncate w-80"
+                  title={inventory.spaceName || inventory?.basicInformation?.spaceName}
+                >
                   {inventory.spaceName || inventory?.basicInformation?.spaceName}
                 </div>
                 <div className="text-lg text-gray-400">
