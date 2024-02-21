@@ -1,10 +1,10 @@
 import { ActionIcon, Button } from '@mantine/core';
-import { IconArrowLeft } from '@tabler/icons';
+import { IconArrowLeft, IconX } from '@tabler/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { FormProvider, useForm } from 'react-hook-form';
 import { showNotification } from '@mantine/notifications';
-import ImageDropPicker from './ImageDropPicker';
 import { useUploadImages } from '../../apis/queries/gallery.queries';
+import DropzoneComponent from '../../components/shared/Dropzone';
 
 const UploadImagesPage = () => {
   const form = useForm();
@@ -14,7 +14,7 @@ const UploadImagesPage = () => {
 
   const uploadImages = form.handleSubmit(async () => {
     if (!form.getValues('files')?.length) {
-      showNotification({
+      return showNotification({
         message: 'Please select images',
         color: 'red',
       });
@@ -29,6 +29,7 @@ const UploadImagesPage = () => {
         form.reset();
       },
     });
+    return null;
   });
 
   return (
@@ -45,7 +46,39 @@ const UploadImagesPage = () => {
           </div>
           <div className="px-5 pt-8 flex flex-col justify-center w-1/2 m-auto gap-4">
             <div className="text-xl font-bold">Upload up to 30 images (max 30 MB/image)</div>
-            <ImageDropPicker names="files" />
+            <DropzoneComponent
+              name="spacePhoto"
+              onDrop={files => form.setValue('files', files)}
+              accept={['image/png', 'image/jpeg', 'image/jpg']}
+              maxSize={30 * 1024 ** 2}
+              maxFiles={30}
+              className="h-96 bg-white"
+              multiple
+              addExtraContent={
+                form.watch('files')?.length ? (
+                  <div className="border px-2 py-1 rounded-md flex items-center gap-3 w-fit m-auto">
+                    <div className="font-normal">{form.watch('files')?.length} images selected</div>
+                    <ActionIcon
+                      onClick={e => {
+                        e.stopPropagation();
+                        form.setValue('files', []);
+                      }}
+                      disabled={uploadImagesHandler.isLoading}
+                    >
+                      <IconX size={20} color="black" />
+                    </ActionIcon>
+                  </div>
+                ) : (
+                  <div>
+                    <p>
+                      Drag and drop the files directly into the upload area or{' '}
+                      <span className="text-purple-450 border-none">browse</span>
+                    </p>
+                    <p className="text-gray-400 text-center">(JPEG, JPG, PNG)</p>
+                  </div>
+                )
+              }
+            />
             <div className="flex gap-3 w-full">
               <Button
                 variant="filled"
