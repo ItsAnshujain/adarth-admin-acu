@@ -142,7 +142,10 @@ const Spaces = () => {
                         ),
                       )
                     : 0,
-                totalDisplayCost: item.displayCostPerMonth * totalMonths,
+                totalDisplayCost:
+                  calculateTotalArea(item, item?.unit) > 0
+                    ? item.displayCostPerMonth * totalMonths
+                    : 0,
                 price: calculateTotalCostOfBooking(
                   item,
                   key === 'unit' ? val : item.unit,
