@@ -769,6 +769,7 @@ const SelectSpace = () => {
               className="bg-black mr-1"
               onClick={() => {
                 onClickAddPrice();
+                setSelectedInventoryId(watchPlace?.[0]?._id);
               }}
             >
               Add Price

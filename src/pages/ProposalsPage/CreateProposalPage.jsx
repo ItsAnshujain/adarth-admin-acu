@@ -185,7 +185,6 @@ const CreateProposalPage = () => {
           startDate: dayjs(minDate).endOf('day').toISOString(),
           endDate: dayjs(maxDate).endOf('day').toISOString(),
         };
-
         create(data, {
           onSuccess: () => {
             setProposalData([]);
