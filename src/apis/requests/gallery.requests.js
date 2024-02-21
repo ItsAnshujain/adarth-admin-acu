@@ -9,4 +9,6 @@ export const uploadImages = data =>
 
 export const fetchGalleryImages = query => http.get(`/gallery?${query}`);
 
-export const deleteImages = ids => http.delete(`/gallery/${ids}`);
+export const deleteImage = ids => http.delete(`/gallery/${ids}`);
+
+export const deleteMultipleImages = ids => http.delete(`/gallery/multi?ids=${ids}`);

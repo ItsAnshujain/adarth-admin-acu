@@ -5,12 +5,12 @@ import { showNotification } from '@mantine/notifications';
 import MenuIcon from '../../Menu';
 import ConfirmContent from '../../shared/ConfirmContent';
 import modalConfig from '../../../utils/modalConfig';
-import { useDeleteImages } from '../../../apis/queries/gallery.queries';
+import { useDeleteImage } from '../../../apis/queries/gallery.queries';
 
 const ImageCard = ({ image, checked, setSelectedImages, selectedImages, onClick }) => {
   const modals = useModals();
   const [menuOpened, menuActions] = useDisclosure();
-  const deleteImagesQuery = useDeleteImages();
+  const deleteImagesQuery = useDeleteImage();
   const ref = useClickOutside(() => menuActions.close());
 
   const deleteImage = () => {

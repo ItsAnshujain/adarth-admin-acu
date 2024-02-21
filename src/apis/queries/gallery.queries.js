@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { deleteImages, fetchGalleryImages, uploadImages } from '../requests/gallery.requests';
+import {
+  deleteImage,
+  deleteMultipleImages,
+  fetchGalleryImages,
+  uploadImages,
+} from '../requests/gallery.requests';
 
 // eslint-disable-next-line import/prefer-default-export
 export const useUploadImages = () =>
@@ -26,12 +31,26 @@ export const useFetchGalleryImages = (query, enabled = true, retry = false) =>
     },
   );
 
+export const useDeleteImage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ids => {
+      const res = await deleteImage(ids);
+      return res;
+    },
+    {
+      onSuccess: () => queryClient.invalidateQueries(['galleryImages']),
+    },
+  );
+};
+
 export const useDeleteImages = () => {
   const queryClient = useQueryClient();
 
   return useMutation(
     async ids => {
-      const res = await deleteImages(ids);
+      const res = await deleteMultipleImages(ids);
       return res;
     },
     {

@@ -40,13 +40,13 @@ const GalleryImagesDashboardPage = () => {
 
   const deleteImage = () => {
     modals.closeModal('deleteImageModal');
-    deleteImagesQuery.mutate(selectedImages?.[0]?._id, {
+    deleteImagesQuery.mutate(selectedImages?.map(image => image._id).join(','), {
       onSuccess: () => {
         showNotification({
           message: 'Image deleted successfully',
           color: 'green',
         });
-        setSelectedImages(selectedImages.filter(({ _id }) => _id !== selectedImages?.[0]?._id));
+        setSelectedImages([]);
       },
     });
   };
@@ -94,7 +94,7 @@ const GalleryImagesDashboardPage = () => {
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
       <Header setSelectedImages={setSelectedImages} imagesData={imagesQuery?.data?.docs} />
       <div className="w-full px-5">
-        <div className="flex items-center gap-3 text-sm text-gray-6 font-medium text-gray-500 justify-between w-full">
+        <div className="flex items-center gap-3 text-sm text-gray-6 font-medium text-gray-500 justify-between w-full  my-4">
           <div className="flex items-center gap-3">
             <ImagesPerPage
               count="10"
@@ -111,24 +111,29 @@ const GalleryImagesDashboardPage = () => {
               Copy link
             </Button>
           </div>
-          <div className="flex justify-end my-4">
-            <Pagination
-              styles={theme => ({
-                item: {
-                  color: theme.colors.gray[5],
-                  fontWeight: 700,
-                },
-              })}
-              page={imagesQuery?.data?.page}
-              onChange={val => {
-                searchParams.set('page', val);
-                setSearchParams(searchParams);
-              }}
-              total={imagesQuery?.data?.totalPages || 1}
-            />
-          </div>
+          {imagesQuery?.data?.docs.length > 0 ? (
+            <div className="flex justify-end">
+              <Pagination
+                styles={theme => ({
+                  item: {
+                    color: theme.colors.gray[5],
+                    fontWeight: 700,
+                  },
+                })}
+                page={imagesQuery?.data?.page}
+                onChange={val => {
+                  searchParams.set('page', val);
+                  setSearchParams(searchParams);
+                }}
+                total={imagesQuery?.data?.totalPages || 1}
+              />
+            </div>
+          ) : null}
         </div>
-        {imagesQuery.isLoading || imagesQuery.isFetching ? (
+        {imagesQuery?.data?.docs.length <= 0 ? (
+          <div className="text-center">No images available</div>
+        ) : null}
+        {imagesQuery.isLoading || imagesQuery.isFetching || deleteImagesQuery.isLoading ? (
           <Loader className="mx-auto" />
         ) : (
           <ImagesList
