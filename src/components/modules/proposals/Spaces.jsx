@@ -710,7 +710,8 @@ const Spaces = () => {
                 className="bg-black mr-1"
                 onClick={() => {
                   onClickAddPrice();
-                  setSelectedInventoryId(watchSpaces?.[0]?.id);
+                  console.log(watchSpaces);
+                  setSelectedInventoryId(watchSpaces?.[0]?.id || watchSpaces?.[0]?._id);
                 }}
                 disabled={isLoading}
               >
