@@ -552,9 +552,10 @@ const InventoryReportsPage = () => {
           if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
             tempAreaData.datasets[0].data[Number(item._id) - 1] = Number(item?.total).toFixed(2);
           } else if (groupBy === 'quarter') {
-            if (dayjs().quarter() === 1) {
-              tempAreaData.datasets[0].data[Number(item._id) + 3] = Number(item?.total).toFixed(2);
-            } else if (dayjs().quarter() === 4) {
+            if (dayjs().quarter() === 1 && Number(item._id) === 1) {
+              tempAreaData.datasets[0].data[Number(item._id) + 3] =
+                Number(item.total).toFixed(2) || 0;
+            } else if (dayjs().quarter() === 4 && Number(item._id) === 4) {
               tempAreaData.datasets[0].data[Number(item._id) - 3] = Number(item?.total).toFixed(2);
             } else {
               tempAreaData.datasets[0].data[Number(item._id) - 1] = Number(item?.total).toFixed(2);
