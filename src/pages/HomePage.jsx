@@ -130,7 +130,6 @@ const HomePage = () => {
 
   const bookingStats = useBookingStats('');
   const inventoryStats = useInventoryStats('');
-
   const { data: revenueGraphData, isLoading: isRevenueGraphLoading } =
     useBookingReportByRevenueGraph(serialize(queryByTime));
 
@@ -288,21 +287,21 @@ const HomePage = () => {
       revenueGraphData?.forEach(item => {
         if (Number(item._id)) {
           if (queryByTime.groupBy === 'dayOfMonth' || queryByTime.groupBy === 'dayOfWeek') {
-            tempData.datasets[0].data[Number(item._id) - 1] = item.total || 0;
+            tempData.datasets[0].data[Number(item._id) - 1] = Number(item.total).toFixed(2) || 0;
           } else if (queryByTime.groupBy === 'quarter') {
-            if (dayjs().quarter() === 1 && Number(item._id) === 1) {
-              tempData.datasets[0].data[Number(item._id) + 3] = item.total || 0;
-            } else if (dayjs().quarter() === 4 && Number(item._id) === 4) {
-              tempData.datasets[0].data[Number(item._id) - 3] = item.total || 0;
+            if (dayjs().quarter() === 1) {
+              tempData.datasets[0].data[Number(item._id) + 3] = Number(item.total).toFixed(2) || 0;
+            } else if (dayjs().quarter() === 4) {
+              tempData.datasets[0].data[Number(item._id) - 3] = Number(item.total).toFixed(2) || 0;
             } else {
-              tempData.datasets[0].data[Number(item._id) - 1] = item.total || 0;
+              tempData.datasets[0].data[Number(item._id) - 1] = Number(item.total).toFixed(2) || 0;
             }
           } else if (Number(item._id) < 4) {
             // For financial year. if the month is less than 4 then it will be in the next year
-            tempData.datasets[0].data[Number(item._id) + 8] = item.total || 0;
+            tempData.datasets[0].data[Number(item._id) + 8] = Number(item.total).toFixed(2) || 0;
           } else {
             // For financial year. if the month is greater than 4 then it will be in the same year
-            tempData.datasets[0].data[Number(item._id) - 4] = item.total || 0;
+            tempData.datasets[0].data[Number(item._id) - 4] = Number(item.total).toFixed(2) || 0;
           }
         }
       });

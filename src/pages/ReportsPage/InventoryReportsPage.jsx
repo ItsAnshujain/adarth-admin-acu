@@ -550,21 +550,21 @@ const InventoryReportsPage = () => {
       revenueGraphData?.forEach(item => {
         if (Number(item._id)) {
           if (groupBy === 'dayOfMonth' || groupBy === 'dayOfWeek') {
-            tempAreaData.datasets[0].data[Number(item._id) - 1] = item.total || 0;
+            tempAreaData.datasets[0].data[Number(item._id) - 1] = Number(item?.total).toFixed(2);
           } else if (groupBy === 'quarter') {
-            if (dayjs().quarter() === 1 && Number(item._id) === 1) {
-              tempAreaData.datasets[0].data[Number(item._id) + 3] = item.total || 0;
-            } else if (dayjs().quarter() === 4 && Number(item._id) === 4) {
-              tempAreaData.datasets[0].data[Number(item._id) - 3] = item.total || 0;
+            if (dayjs().quarter() === 1) {
+              tempAreaData.datasets[0].data[Number(item._id) + 3] = Number(item?.total).toFixed(2);
+            } else if (dayjs().quarter() === 4) {
+              tempAreaData.datasets[0].data[Number(item._id) - 3] = Number(item?.total).toFixed(2);
             } else {
-              tempAreaData.datasets[0].data[Number(item._id) - 1] = item.total || 0;
+              tempAreaData.datasets[0].data[Number(item._id) - 1] = Number(item?.total).toFixed(2);
             }
           } else if (Number(item._id) < 4) {
             // For financial year. if the month is less than 4 then it will be in the next year
-            tempAreaData.datasets[0].data[Number(item._id) + 8] = item.total || 0;
+            tempAreaData.datasets[0].data[Number(item._id) + 8] = Number(item?.total).toFixed(2);
           } else {
             // For financial year. if the month is greater than 4 then it will be in the same year
-            tempAreaData.datasets[0].data[Number(item._id) - 4] = item.total || 0;
+            tempAreaData.datasets[0].data[Number(item._id) - 4] = Number(item?.total).toFixed(2);
           }
         }
       });
