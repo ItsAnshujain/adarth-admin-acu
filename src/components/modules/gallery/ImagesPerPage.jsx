@@ -13,8 +13,8 @@ const ImagesPerPage = ({ setCount, count = '10' }) => (
       onChange={setCount}
       classNames={{
         input: 'text-gray-500',
-        wrapper: 'w-[60px]',
-        rightSection: 'pointer-events-none w-[65px]',
+        wrapper: 'w-[65px]',
+        rightSection: 'pointer-events-none',
       }}
       rightSection={<ChevronDown size={16} />}
     />
