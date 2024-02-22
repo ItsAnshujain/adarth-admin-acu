@@ -76,6 +76,7 @@ const GalleryImagesDashboardPage = () => {
   const handlePagination = (key, val) => {
     if (val !== '') {
       searchParams.set(key, val);
+      searchParams.set('page', 1);
     } else {
       searchParams.delete(key);
     }
@@ -119,7 +120,7 @@ const GalleryImagesDashboardPage = () => {
                   fontWeight: 700,
                 },
               })}
-              page={searchParams.get('page')}
+              page={imagesQuery?.data?.page}
               onChange={val => {
                 searchParams.set('page', val);
                 setSearchParams(searchParams);
