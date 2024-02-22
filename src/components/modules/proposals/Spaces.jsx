@@ -17,6 +17,7 @@ import { useFetchInventory } from '../../../apis/queries/inventory.queries';
 import {
   calculateTotalCostOfBooking,
   calculateTotalMonths,
+  calculateTotalPrintingOrMountingCost,
   categoryColors,
   currentDate,
   debounce,
@@ -146,6 +147,18 @@ const Spaces = () => {
                   calculateTotalArea(item, item?.unit) > 0
                     ? item.displayCostPerMonth * totalMonths
                     : 0,
+                totalPrintingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.printingCostPerSqft,
+                  0,
+                ),
+                totalMountingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.mountingCostPerSqft,
+                  0,
+                ),
                 price: calculateTotalCostOfBooking(
                   item,
                   key === 'unit' ? val : item.unit,
@@ -169,17 +182,22 @@ const Spaces = () => {
         'spaces',
         watchSpaces.map(item => {
           const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
-          const updatedTotalMonths = calculateTotalMonths(item?.startDate, item?.endDate);
           return item._id === id
             ? {
                 ...item,
                 printingCostPerSqft: item.printingCostPerSqft,
-                totalPrintingCost: Number(
-                  (item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths).toFixed(2),
-                ),
                 mountingCostPerSqft: item.mountingCostPerSqft,
-                totalMountingCost: Number(
-                  (item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths).toFixed(2),
+                totalPrintingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.printingCostPerSqft,
+                  0,
+                ),
+                totalMountingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.mountingCostPerSqft,
+                  0,
                 ),
                 totalArea: updatedTotalArea,
                 price: calculateTotalCostOfBooking(
