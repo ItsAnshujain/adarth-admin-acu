@@ -35,8 +35,8 @@ export const useDeleteImage = () => {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async ids => {
-      const res = await deleteImage(ids);
+    async id => {
+      const res = await deleteImage(id);
       return res;
     },
     {

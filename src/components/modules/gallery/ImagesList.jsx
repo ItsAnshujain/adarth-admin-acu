@@ -50,6 +50,7 @@ const ImagesList = ({ imagesData, selectedImages, setSelectedImages }) => {
     <div className="grid grid-cols-5 gap-2">
       {imagesData?.map((image, idx) => (
         <ImageCard
+          key={uuidv4()}
           image={image}
           selectedImages={selectedImages}
           setSelectedImages={setSelectedImages}
