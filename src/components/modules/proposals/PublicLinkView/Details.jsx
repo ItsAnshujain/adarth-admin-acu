@@ -131,13 +131,19 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
   const discountAmount = useMemo(
     () =>
       inventoryData?.docs.reduce(
-        (acc, { pricingDetails: { discountedDisplayCost, totalDisplayCost } }) => {
+        (
+          acc,
+          { pricingDetails: { discountedDisplayCost, totalDisplayCost, startDate, endDate } },
+        ) => {
           if (
             proposalData?.displayColumns?.some(col => col === 'discountedDisplayPrice') &&
             totalDisplayCost > 0 &&
             discountedDisplayCost > 0
           ) {
-            return acc + (totalDisplayCost - discountedDisplayCost);
+            return (
+              acc +
+              (totalDisplayCost - discountedDisplayCost * calculateTotalMonths(startDate, endDate))
+            );
           }
 
           return acc + 0;
