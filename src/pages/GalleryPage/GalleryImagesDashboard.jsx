@@ -111,24 +111,22 @@ const GalleryImagesDashboardPage = () => {
               Copy link
             </Button>
           </div>
-          {imagesQuery?.data?.docs.length > 0 ? (
-            <div className="flex justify-end">
-              <Pagination
-                styles={theme => ({
-                  item: {
-                    color: theme.colors.gray[5],
-                    fontWeight: 700,
-                  },
-                })}
-                page={imagesQuery?.data?.page}
-                onChange={val => {
-                  searchParams.set('page', val);
-                  setSearchParams(searchParams);
-                }}
-                total={imagesQuery?.data?.totalPages || 1}
-              />
-            </div>
-          ) : null}
+          <div className="flex justify-end">
+            <Pagination
+              styles={theme => ({
+                item: {
+                  color: theme.colors.gray[5],
+                  fontWeight: 700,
+                },
+              })}
+              page={searchParams.get('page')}
+              onChange={val => {
+                searchParams.set('page', val);
+                setSearchParams(searchParams);
+              }}
+              total={imagesQuery?.data?.totalPages}
+            />
+          </div>
         </div>
         {imagesQuery?.data?.docs.length <= 0 ? (
           <div className="text-center">No images available</div>
