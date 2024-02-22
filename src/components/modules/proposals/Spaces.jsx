@@ -458,14 +458,13 @@ const Spaces = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { bookingRange, startDate, endDate, unit, _id },
+            original: { bookingRange, startDate, endDate, _id, originalUnit },
           },
         }) =>
           useMemo(() => {
             const isError = watchSpaces.some(item => item._id === _id) && (!startDate || !endDate);
             const isDisabled = !watchSpaces.some(item => item._id === _id);
-            const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
-
+            const everyDayUnitsData = getEveryDayUnits(bookingRange, originalUnit);
             return (
               <div className="min-w-[300px]">
                 <DateRangeSelector
