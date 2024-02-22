@@ -191,13 +191,13 @@ const Spaces = () => {
                   item,
                   key === 'unit' ? val : item.unit,
                   item.printingCostPerSqft,
-                  item.printingGstPercentage,
+                  0,
                 ),
                 totalMountingCost: calculateTotalPrintingOrMountingCost(
                   item,
                   key === 'unit' ? val : item.unit,
                   item.mountingCostPerSqft,
-                  item.mountingGstPercentage,
+                  0,
                 ),
                 totalArea: updatedTotalArea,
                 price: calculateTotalCostOfBooking(
