@@ -446,7 +446,7 @@ const SelectSpace = () => {
               endDate,
               previousStartDate,
               previousEndDate,
-              unit,
+              originalUnit,
               _id,
               initialStartDate,
               initialEndDate,
@@ -468,7 +468,7 @@ const SelectSpace = () => {
                     .toISOString(),
             );
 
-            const everyDayUnitsData = getEveryDayUnits(updatedBookingRange, unit);
+            const everyDayUnitsData = getEveryDayUnits(updatedBookingRange, originalUnit);
 
             return (
               <div className="min-w-[300px]">
@@ -480,7 +480,7 @@ const SelectSpace = () => {
                 />
               </div>
             );
-          }, [startDate, endDate, bookingRange, unit, _id]),
+          }, [startDate, endDate, bookingRange, originalUnit, _id]),
       },
       {
         Header: 'UNIT',
