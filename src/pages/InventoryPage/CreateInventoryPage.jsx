@@ -29,7 +29,7 @@ const initialValues = {
     description: '',
     spacePhoto: '',
     otherPhotos: [],
-    footFall: null,
+    footFall: '',
     demographic: { label: '', value: '' },
     audience: [],
   },
@@ -48,8 +48,8 @@ const initialValues = {
     additionalTags: [],
   },
   location: {
-    latitude: null,
-    longitude: null,
+    latitude: '',
+    longitude: '',
     address: '',
     city: '',
     state: '',
@@ -296,7 +296,6 @@ const CreateInventoryPage = () => {
         label: item?.name,
         value: item?._id,
       }));
-
       form.setValues({
         basicInformation: {
           spaceName: basicInformation?.spaceName || '',
@@ -307,7 +306,7 @@ const CreateInventoryPage = () => {
           },
           peerMediaOwner: basicInformation?.peerMediaOwner || undefined,
           description: basicInformation?.description || '',
-          footFall: basicInformation?.footFall ? parseInt(basicInformation.footFall, 10) : null,
+          footFall: basicInformation?.footFall ? parseInt(basicInformation.footFall, 10) : '',
           price: basicInformation?.price ? parseInt(basicInformation?.price, 10) : undefined,
           category: {
             label: basicInformation?.category?.name || '',
@@ -340,7 +339,7 @@ const CreateInventoryPage = () => {
             label: specifications?.illuminations?.name || '',
             value: specifications?.illuminations?._id || '',
           },
-          unit: specifications?.unit ? parseInt(specifications.unit, 10) : null,
+          unit: specifications?.unit ? parseInt(specifications.unit, 10) : '',
           resolutions: specifications?.resolutions || '',
           size: Array.isArray(specifications?.size)
             ? specifications?.size?.map(item => ({
@@ -353,8 +352,8 @@ const CreateInventoryPage = () => {
           additionalTags: specifications?.additionalTags || [],
         },
         location: {
-          latitude: location?.latitude ? parseFloat(location.latitude, 10) : null,
-          longitude: location?.longitude ? parseFloat(location.longitude) : null,
+          latitude: location?.latitude ? parseFloat(location.latitude, 10) : '',
+          longitude: location?.longitude ? parseFloat(location.longitude) : '',
           address: location?.address || '',
           city: location?.city || '',
           state: location?.state || '',

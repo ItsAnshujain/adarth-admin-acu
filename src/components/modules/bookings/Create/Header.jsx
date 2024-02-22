@@ -26,7 +26,7 @@ const Header = ({ setFormStep, formStep, isLoading, isEditable }) => {
         {initialState.map((val, index) => (
           <Chip
             className={classNames(
-              'relative',
+              'relative bg-transparent',
               formStep >= 3 &&
                 index === 1 &&
                 'after:content-[""] after:absolute after:h-[2px] after:w-8 after:top-[50%] after:bg-purple-450 before:content-[""] before:absolute before:h-[2px] before:-left-6 before:w-6 before:top-[50%] before:bg-purple-450',
@@ -53,8 +53,9 @@ const Header = ({ setFormStep, formStep, isLoading, isEditable }) => {
             color="gray"
             radius="xs"
             size="md"
+            classNames={{ label: 'bg-transparent' }}
           >
-            <span className={classNames(index + 1 <= formStep ? 'text-purple-450' : '')}>
+            <span className={classNames(index + 1 <= formStep ? 'text-purple-450' : 'text-black')}>
               {val}
             </span>
           </Chip>

@@ -126,8 +126,8 @@ const Overview = ({ bookingData = {}, isLoading }) => {
 
       // default coordinates
       bounds.extend({
-        lat: indianMapCoordinates.latitude,
-        lng: indianMapCoordinates.longitude,
+        lat: indianMapCoordinates?.latitude,
+        lng: indianMapCoordinates?.longitude,
       });
 
       mapInstance.map.fitBounds(bounds);
@@ -235,8 +235,8 @@ const Overview = ({ bookingData = {}, isLoading }) => {
             {bookingData?.campaign?.spaces?.map(item => (
               <Marker
                 key={item._id}
-                lat={item.location?.latitude && Number(item.location.latitude)}
-                lng={item.location?.longitude && Number(item.location.longitude)}
+                lat={item.location?.latitude && Number(item?.location?.latitude)}
+                lng={item.location?.longitude && Number(item?.location?.longitude)}
               />
             ))}
           </GoogleMapReact>

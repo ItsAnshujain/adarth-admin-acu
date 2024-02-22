@@ -28,7 +28,7 @@ const Header = ({ setFormStep, formStep, isProposalLoading, proposalId }) => {
         {initialState.map((val, index) => (
           <Chip
             className={classNames(
-              'relative',
+              'relative bg-transparent',
               formStep > 1 &&
                 index === 0 &&
                 'after:content-[""] after:absolute after:h-[2px] after:w-8 after:top-[50%] after:bg-purple-450',
@@ -52,8 +52,9 @@ const Header = ({ setFormStep, formStep, isProposalLoading, proposalId }) => {
             color="gray"
             radius="xs"
             size="md"
+            classNames={{ label: 'bg-transparent' }}
           >
-            <span className={classNames(index + 1 <= formStep ? 'text-purple-450' : '')}>
+            <span className={classNames(index + 1 <= formStep ? 'text-purple-450' : 'text-black')}>
               {val}
             </span>
           </Chip>

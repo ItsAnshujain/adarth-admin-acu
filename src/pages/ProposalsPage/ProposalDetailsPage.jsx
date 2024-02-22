@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Badge, Button, Image, Loader, Text } from '@mantine/core';
+import { ActionIcon, Badge, Button, Image, Loader, Select, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
 import GoogleMapReact from 'google-map-react';
+import { IconX } from '@tabler/icons';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Header from '../../components/modules/proposals/ViewProposal/Header';
@@ -22,6 +23,7 @@ import {
   getAvailableUnits,
   getOccupiedState,
   indianMapCoordinates,
+  serialize,
   stringToColour,
 } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
@@ -34,6 +36,7 @@ import VersionsDrawer from '../../components/modules/proposals/ViewProposal/Vers
 import ShareContent from '../../components/modules/proposals/ViewProposal/ShareContent';
 import MarkerIcon from '../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
+import { useFetchMasters } from '../../apis/queries/masters.queries';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -76,6 +79,13 @@ const ProposalDetailsPage = () => {
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });
+  const query = {
+    parentId: null,
+    limit: 100,
+    page: 1,
+    sortBy: 'name',
+    sortOrder: 'asc',
+  };
 
   const toggleFilter = () => setShowFilter(!showFilter);
 
@@ -84,6 +94,9 @@ const ProposalDetailsPage = () => {
   const { id: proposalId } = useParams();
   const { data: proposalData, isLoading: isProposalDataLoading } = useFetchProposalById(
     `${proposalId}?${searchParams.toString()}`,
+  );
+  const { data: categoryData, isSuccess: isCategoryLoaded } = useFetchMasters(
+    serialize({ type: 'category', ...query }),
   );
 
   const page = searchParams.get('page');
@@ -395,8 +408,8 @@ const ProposalDetailsPage = () => {
 
       // default coordinates
       bounds.extend({
-        lat: indianMapCoordinates.latitude,
-        lng: indianMapCoordinates.longitude,
+        lat: indianMapCoordinates?.latitude,
+        lng: indianMapCoordinates?.longitude,
       });
 
       mapInstance.map.fitBounds(bounds);
@@ -425,7 +438,40 @@ const ProposalDetailsPage = () => {
 
       <p className="text-lg font-bold py-2">Location Details</p>
 
-      <div className="mt-1 mb-4 h-[40vh]">
+      <div className="mt-1 mb-4 h-[40vh] relative">
+        <div className="absolute z-40 top-3 right-14">
+          <Select
+            data={
+              isCategoryLoaded
+                ? categoryData?.docs?.map(category => ({
+                    label: category.name,
+                    value: category._id,
+                  }))
+                : []
+            }
+            rightSection={
+              searchParams.get('category') ? (
+                <ActionIcon
+                  onClick={() => {
+                    searchParams.set('category', '');
+                    setSearchParams(searchParams, { replace: true });
+                  }}
+                >
+                  <IconX size={20} />
+                </ActionIcon>
+              ) : (
+                <ChevronDown />
+              )
+            }
+            placeholder="Select Category"
+            clearable
+            value={searchParams.get('category')}
+            onChange={val => {
+              searchParams.set('category', val);
+              setSearchParams(searchParams, { replace: true });
+            }}
+          />
+        </div>
         <GoogleMapReact
           bootstrapURLKeys={{ key: GOOGLE_MAPS_API_KEY, libraries: 'places' }}
           defaultCenter={defaultProps.center}
@@ -436,8 +482,8 @@ const ProposalDetailsPage = () => {
           {proposalData?.inventories?.docs?.map(item => (
             <Marker
               key={item._id}
-              lat={item.latitude && Number(item.latitude)}
-              lng={item.longitude && Number(item.longitude)}
+              lat={item?.latitude && Number(item?.latitude)}
+              lng={item?.longitude && Number(item?.longitude)}
             />
           ))}
         </GoogleMapReact>

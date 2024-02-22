@@ -33,7 +33,7 @@ const SelectColumns = ({ isOpened, styles, onClose, columns }) => {
       className="overflow-auto"
       overlayOpacity={0.1}
       overlayBlur={0}
-      size="lg"
+      size="sm"
       transition="slide-down"
       transitionDuration={1350}
       transitionTimingFunction="ease-in-out"

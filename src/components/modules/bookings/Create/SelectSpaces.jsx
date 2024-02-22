@@ -14,7 +14,9 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 import Table from '../../../Table/Table';
 import { useFetchInventory } from '../../../../apis/queries/inventory.queries';
 import {
+  calculateTotalAmountWithPercentage,
   calculateTotalCostOfBooking,
+  calculateTotalMonths,
   calculateTotalPrintingOrMountingCost,
   currentDate,
   debounce,
@@ -108,20 +110,16 @@ const SelectSpace = () => {
   const updateData = debounce((key, val, id, inputId) => {
     if (key === 'dateRange') {
       let availableUnit = 0;
-      const hasChangedUnit = watchPlace.find(item => item._id === id)?.hasChangedUnit;
+      const place = watchPlace.find(item => item._id === id);
+
+      const hasChangedUnit = place?.hasChangedUnit;
       setUpdatedInventoryData(prev => {
         const newList = [...prev];
         const index = newList.findIndex(item => item._id === id);
         newList[index] = { ...newList[index], startDate: val[0], endDate: val[1] };
-        const updatedBookingRange = newList[index].bookingRange.filter(
-          range =>
-            range.startDate !==
-              dayjs(new Date(newList[index].startDate)).startOf('day').toISOString() &&
-            range.endDate !== dayjs(new Date(newList[index].endDate)).startOf('day').toISOString(),
-        );
 
         availableUnit = getAvailableUnits(
-          updatedBookingRange,
+          newList[index].bookingRange,
           newList[index].startDate,
           newList[index].endDate,
           newList[index].originalUnit,
@@ -129,6 +127,8 @@ const SelectSpace = () => {
         newList[index] = { ...newList[index], availableUnit };
         return newList;
       });
+
+      const totalMonths = calculateTotalMonths(val[0], val[1]);
 
       form.setValue(
         'place',
@@ -138,6 +138,8 @@ const SelectSpace = () => {
                 ...item,
                 startDate: val[0],
                 endDate: val[1],
+                previousStartDate: !val[0] ? item.startDate : null,
+                previousEndDate: !val[1] ? item.endDate : null,
                 ...(!hasChangedUnit ? { unit: availableUnit } : {}),
                 availableUnit,
                 price: calculateTotalCostOfBooking(
@@ -146,19 +148,19 @@ const SelectSpace = () => {
                   val[0],
                   val[1],
                 ),
+                totalDisplayCost: calculateTotalAmountWithPercentage(
+                  item.displayCostPerMonth * totalMonths,
+                  item.displayCostGstPercentage,
+                ),
                 totalPrintingCost: calculateTotalPrintingOrMountingCost(
                   item,
                   key === 'unit' ? val : item.unit,
-                  val[0],
-                  val[1],
                   item.printingCostPerSqft,
                   item.printingGstPercentage,
                 ),
                 totalMountingCost: calculateTotalPrintingOrMountingCost(
                   item,
                   key === 'unit' ? val : item.unit,
-                  val[0],
-                  val[1],
                   item.mountingCostPerSqft,
                   item.mountingGstPercentage,
                 ),
@@ -186,19 +188,19 @@ const SelectSpace = () => {
                 printingGst: item.printingGst,
                 printingGstPercentage: item.printingGstPercentage,
 
+                totalDisplayCost: calculateTotalAmountWithPercentage(
+                  item.displayCostPerMonth * calculateTotalMonths(item.startDate, item.endDate),
+                  item.displayCostGstPercentage,
+                ),
                 totalPrintingCost: calculateTotalPrintingOrMountingCost(
                   item,
                   key === 'unit' ? val : item.unit,
-                  item.startDate,
-                  item.endDate,
                   item.printingCostPerSqft,
                   item.printingGstPercentage,
                 ),
                 totalMountingCost: calculateTotalPrintingOrMountingCost(
                   item,
                   key === 'unit' ? val : item.unit,
-                  item.startDate,
-                  item.endDate,
                   item.mountingCostPerSqft,
                   item.mountingGstPercentage,
                 ),
@@ -229,11 +231,10 @@ const SelectSpace = () => {
   const getTotalPrice = (places = []) => {
     const totalPrice = places.reduce(
       (acc, item) =>
-        item.startDate &&
-        item.endDate &&
-        acc + +(item?.price || item?.basicInformation?.price || 0),
+        acc + calculateTotalCostOfBooking(item, item?.unit, item?.startDate, item?.endDate),
       0,
     );
+
     return totalPrice || 0;
   };
 
@@ -439,18 +440,34 @@ const SelectSpace = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { bookingRange, startDate, endDate, unit, _id },
+            original: {
+              bookingRange,
+              startDate,
+              endDate,
+              previousStartDate,
+              previousEndDate,
+              unit,
+              _id,
+              initialStartDate,
+              initialEndDate,
+            },
           },
         }) =>
           useMemo(() => {
             const isDisabled =
               watchPlace?.some(item => item._id === _id) && (!startDate || !endDate);
-
             const updatedBookingRange = bookingRange.filter(
               range =>
-                range.startDate !== dayjs(new Date(startDate)).startOf('day').toISOString() &&
-                range.endDate !== dayjs(new Date(endDate)).startOf('day').toISOString(),
+                range.startDate !==
+                  dayjs(new Date(previousStartDate || initialStartDate || startDate))
+                    .endOf('day')
+                    .toISOString() &&
+                range.endDate !==
+                  dayjs(new Date(previousEndDate || initialEndDate || endDate))
+                    .endOf('day')
+                    .toISOString(),
             );
+
             const everyDayUnitsData = getEveryDayUnits(updatedBookingRange, unit);
 
             return (
@@ -493,7 +510,7 @@ const SelectSpace = () => {
                     : null
                 }
                 opened={isExceeded || !unit}
-                transition="slide-left"
+                transitionProps={{ transition: 'slide-left' }}
                 position="right"
                 color="red"
                 radius="sm"
@@ -752,6 +769,7 @@ const SelectSpace = () => {
               className="bg-black mr-1"
               onClick={() => {
                 onClickAddPrice();
+                setSelectedInventoryId(watchPlace?.[0]?.id || watchPlace?.[0]?._id);
               }}
             >
               Add Price

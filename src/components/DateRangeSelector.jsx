@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
-import { DateRangePicker } from '@mantine/dates';
+import { DatePickerInput } from '@mantine/dates';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import { createStyles } from '@mantine/core';
@@ -38,12 +38,14 @@ const DateRangeSelector = ({ dateValue, onChange, everyDayUnitsData = {}, ...pro
   };
 
   return (
-    <DateRangePicker
+    <DatePickerInput
+      type="range"
       placeholder="Pick dates range"
       onChange={handleChange}
       excludeDate={excludeBookedDates}
       disableOutsideEvents
       allowSingleDateInRange
+      hideOutsideDates
       defaultValue={dateValue}
       dayClassName={(_, modifiers) =>
         cx({
@@ -54,6 +56,8 @@ const DateRangeSelector = ({ dateValue, onChange, everyDayUnitsData = {}, ...pro
         })
       }
       {...props}
+      clearable
+      classNames={{ calendar: 'h-[290px]' }}
     />
   );
 };

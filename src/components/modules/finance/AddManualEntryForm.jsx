@@ -403,6 +403,7 @@ const PurchaseAndInvoiceContent = ({
 
       <div className="grid grid-cols-2 gap-x-4">
         <DatePicker
+          hideOutsideDates
           label="Start Date"
           name="startDate"
           withAsterisk
@@ -413,6 +414,7 @@ const PurchaseAndInvoiceContent = ({
           className="mb-4"
         />
         <DatePicker
+          hideOutsideDates
           label="End Date"
           name="endDate"
           withAsterisk
@@ -718,6 +720,7 @@ const ReleaseContent = ({
 
       <div className="grid grid-cols-2 gap-x-4">
         <DatePicker
+          hideOutsideDates
           label="Start Date"
           name="startDate"
           withAsterisk
@@ -728,6 +731,7 @@ const ReleaseContent = ({
           className="mb-4"
         />
         <DatePicker
+          hideOutsideDates
           label="End Date"
           name="endDate"
           withAsterisk

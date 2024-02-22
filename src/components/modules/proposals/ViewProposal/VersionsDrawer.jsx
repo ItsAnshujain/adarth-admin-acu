@@ -120,7 +120,7 @@ const VersionsDrawer = ({
   return (
     <Drawer
       className="overflow-auto"
-      size="xl"
+      size="450px"
       padding="xl"
       position="right"
       opened={isOpened}
@@ -149,7 +149,7 @@ const VersionsDrawer = ({
                     <div className="text-sm ">{dayjs(createdAt).format(DATE_FORMAT)}</div>
                   </div>
                 }
-                classNames={{ inner: 'mt-2', root: 'w-1/2', label: 'w-[280px]' }}
+                classNames={{ inner: 'mt-2', root: 'w-1/2', label: 'w-[240px]' }}
                 onClick={() => onVersionClick(_id, index, parentProposalId)}
                 checked={proposalId === _id || parentVersionTitle === versionTitle}
               />
