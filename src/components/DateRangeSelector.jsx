@@ -57,6 +57,7 @@ const DateRangeSelector = ({ dateValue, onChange, everyDayUnitsData = {}, ...pro
       }
       {...props}
       clearable
+      classNames={{ calendar: 'h-[290px]' }}
     />
   );
 };
