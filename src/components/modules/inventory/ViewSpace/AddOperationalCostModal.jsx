@@ -36,7 +36,7 @@ const styles = {
 
 const initialValues = {
   type: { label: '', value: '' },
-  amount: null,
+  amount: '',
   description: '',
   inventoryId: '',
   bookingId: '',
