@@ -115,7 +115,7 @@ const SidebarContent = ({ className }) => {
         label: 'Gallery',
         path: '/gallery',
         icon: GalleryIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR],
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
     ],
     [isMasterLoaded],

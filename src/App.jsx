@@ -303,13 +303,9 @@ const App = () => {
         <Route
           path="gallery"
           element={
-            <ProtectedRoute
-              accepted={[ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE]}
-            >
-              <Suspense fallback={<HeaderSidebarLoader />}>
-                <GalleryPage />
-              </Suspense>
-            </ProtectedRoute>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <GalleryPage />
+            </Suspense>
           }
         >
           <Route
