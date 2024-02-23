@@ -13,6 +13,8 @@ import {
   calculateTotalArea,
   calculateTotalCostOfBooking,
   calculateTotalMonths,
+  getUpdatedBookingData,
+  getUpdatedProposalData,
   indianCurrencyInDecimals,
 } from '../../../../utils';
 import useBookingStore from '../../../../store/booking.store';
@@ -230,7 +232,6 @@ const AddEditPriceDrawer = ({
   );
 
   const watchPlace = formContext.watch('place');
-
   const { setBookingData, data } = useBookingStore(
     state => ({
       setBookingData: state.setBookingData,
@@ -240,115 +241,13 @@ const AddEditPriceDrawer = ({
   );
   const bookingData = useMemo(() => {
     const formData = form.watch();
-    return data?.map(place => {
-      if (place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)) {
-        return {
-          ...place,
-          ...formData,
-          price: totalPrice,
-          totalArea,
-          discountedTotalPrice: totalPrice,
-          priceChanged: true,
-        };
-      }
-
-      const area = calculateTotalArea(place, place?.unit);
-      const updatedTotalPrintingCost = area * formData.printingCostPerSqft;
-      const updatedTotalMountingCost = area * formData.mountingCostPerSqft;
-
-      if (formData.applyPrintingMountingCostForAll && formData.applyDiscountForAll) {
-        const updatedTotalPrice = calculateTotalCostOfBooking(
-          {
-            ...place,
-            printingCostPerSqft: formData.printingCostPerSqft,
-            printingGstPercentage: formData.printingGstPercentage,
-            mountingCostPerSqft: formData.mountingCostPerSqft,
-            mountingGstPercentage: formData.mountingGstPercentage,
-            discountOn: formData.discountOn,
-            discount: formData.discount,
-          },
-          place?.unit,
-          place.startDate,
-          place.endDate,
-        );
-        return {
-          ...place,
-          printingCostPerSqft: formData.printingCostPerSqft,
-          printingGstPercentage: formData.printingGstPercentage,
-          mountingGstPercentage: formData.mountingGstPercentage,
-          mountingCostPerSqft: formData.mountingCostPerSqft,
-          totalPrintingCost: calculateTotalAmountWithPercentage(
-            updatedTotalPrintingCost,
-            formData.printingGstPercentage,
-          ),
-          totalMountingCost: calculateTotalAmountWithPercentage(
-            updatedTotalMountingCost,
-            formData.mountingGstPercentage,
-          ),
-          price: updatedTotalPrice,
-          discountOn: formData.discountOn,
-          discount: formData.discount,
-          applyPrintingMountingCostForAll: true,
-          applyDiscountForAll: true,
-        };
-      }
-
-      if (formData.applyPrintingMountingCostForAll) {
-        const updatedTotalPrice = calculateTotalCostOfBooking(
-          {
-            ...place,
-            printingCostPerSqft: formData.printingCostPerSqft,
-            printingGstPercentage: formData.printingGstPercentage,
-            mountingCostPerSqft: formData.mountingCostPerSqft,
-            mountingGstPercentage: formData.mountingGstPercentage,
-          },
-          place?.unit,
-          place.startDate,
-          place.endDate,
-        );
-        return {
-          ...place,
-          printingCostPerSqft: area > 0 && Number(formData.printingCostPerSqft?.toFixed(2)),
-          printingGstPercentage: formData.printingGstPercentage,
-          mountingGstPercentage: formData.mountingGstPercentage,
-          mountingCostPerSqft: area > 0 && Number(formData.mountingCostPerSqft?.toFixed(2)),
-          totalPrintingCost: calculateTotalAmountWithPercentage(
-            updatedTotalPrintingCost,
-            formData.printingGstPercentage,
-          ),
-          totalMountingCost: calculateTotalAmountWithPercentage(
-            updatedTotalMountingCost,
-            formData.mountingGstPercentage,
-          ),
-          price: updatedTotalPrice,
-          applyPrintingMountingCostForAll: true,
-          applyDiscountForAll: false,
-        };
-      }
-
-      if (formData.applyDiscountForAll) {
-        const updatedTotalPrice = calculateTotalCostOfBooking(
-          {
-            ...place,
-            discount: formData.discount,
-            discountOn: formData.discountOn,
-          },
-          place?.unit,
-          place.startDate,
-          place.endDate,
-        );
-        return {
-          ...place,
-          price: updatedTotalPrice,
-          discountOn: formData.discountOn,
-          discount: formData.discount,
-          applyDiscountForAll: true,
-          applyPrintingMountingCostForAll: false,
-        };
-      }
-
-      return { ...place, applyPrintingMountingCostForAll: false, applyDiscountForAll: false };
-    });
+    return getUpdatedBookingData(
+      formData,
+      activeSlide ? selectedInventory?._id : selectedInventoryId,
+      data,
+      totalPrice,
+      totalArea,
+    );
   }, [JSON.stringify(form.watch()), watchPlace]);
 
   useEffect(() => {
@@ -370,55 +269,13 @@ const AddEditPriceDrawer = ({
   const memoizedProposalData = useMemo(() => {
     const formData = form.watch();
 
-    return proposalData?.map(place => {
-      const area = calculateTotalArea(place, place?.unit);
-
-      const updatedTotalPrintingCost = area * formData.printingCostPerSqft;
-      const updatedTotalMountingCost = area * formData.mountingCostPerSqft;
-
-      const updatedTotalPrice = calculateTotalCostOfBooking(
-        {
-          ...place,
-          printingCostPerSqft: formData.printingCostPerSqft,
-          mountingCostPerSqft: formData.mountingCostPerSqft,
-        },
-        place?.unit,
-        place.startDate,
-        place.endDate,
-      );
-
-      return place?._id === (activeSlide ? selectedInventory?._id : selectedInventoryId)
-        ? {
-            ...place,
-            displayCostPerMonth: formData.displayCostPerMonth,
-            totalDisplayCost: formData.totalDisplayCost,
-            displayCostPerSqFt: formData.displayCostPerSqFt,
-            printingCostPerSqft: formData.printingCostPerSqft,
-            totalPrintingCost: formData.totalPrintingCost,
-            mountingCostPerSqft: formData.mountingCostPerSqft,
-            totalMountingCost: formData.totalMountingCost,
-            oneTimeInstallationCost: formData.oneTimeInstallationCost,
-            monthlyAdditionalCost: formData.monthlyAdditionalCost,
-            otherCharges: formData.otherCharges,
-            subjectToExtension: formData.subjectToExtension,
-            price: totalPrice,
-            totalArea,
-            priceChanged: true,
-            discountedDisplayCost: formData.discountedDisplayCost,
-            applyPrintingMountingCostForAll: formData.applyPrintingMountingCostForAll,
-          }
-        : formData.applyPrintingMountingCostForAll
-        ? {
-            ...place,
-            printingCostPerSqft: formData.printingCostPerSqft,
-            mountingCostPerSqft: formData.mountingCostPerSqft,
-            totalPrintingCost: updatedTotalPrintingCost,
-            totalMountingCost: updatedTotalMountingCost,
-            price: updatedTotalPrice,
-            applyPrintingMountingCostForAll: true,
-          }
-        : { ...place, applyPrintingMountingCostForAll: false };
-    });
+    return getUpdatedProposalData(
+      formData,
+      activeSlide ? selectedInventory?._id : selectedInventoryId,
+      proposalData,
+      totalPrice,
+      totalArea,
+    );
   }, [JSON.stringify(form.watch())]);
 
   useEffect(() => {

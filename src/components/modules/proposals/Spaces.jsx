@@ -15,6 +15,7 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 import { useFetchInventory } from '../../../apis/queries/inventory.queries';
 import {
+  calculateTotalArea,
   calculateTotalCostOfBooking,
   calculateTotalMonths,
   categoryColors,
@@ -25,6 +26,7 @@ import {
   getDate,
   getEveryDayUnits,
   getOccupiedState,
+  getUpdatedProposalData,
   stringToColour,
 } from '../../../utils';
 import Filter from '../inventory/Filter';
@@ -89,14 +91,6 @@ const Spaces = () => {
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const updateData = debounce((key, val, id, inputId) => {
-    const calculateTotalArea = (place, unit) =>
-      (place?.dimension?.reduce(
-        (accumulator, dimension) => accumulator + dimension.height * dimension.width,
-        0,
-      ) || 0) *
-        (unit || 1) *
-        (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) || 0;
-
     if (key === 'dateRange') {
       let availableUnit = 0;
       const space = watchSpaces.find(item => item._id === id);
@@ -603,8 +597,33 @@ const Spaces = () => {
       displayCostPerMonth:
         row.displayCostPerMonth || (!row.priceChanged && !row?.pricingDetails?.price && row.price),
     }));
-    handleSortRowsOnTop(updatedSelectedRows, updatedInventoryData);
-    form.setValue('spaces', updatedSelectedRows);
+
+    const newAddedRow = selectedRows.filter(
+      selectedRow => !watchSpaces.find(addedRow => selectedRow._id === addedRow._id),
+    );
+    const filteredRowWithApplyToAll = selectedRows.filter(
+      row => row.applyPrintingMountingCostForAll || row.applyDiscountForAll,
+    );
+
+    if (filteredRowWithApplyToAll?.length > 0 && newAddedRow.length > 0) {
+      const updatedSelectedRowsForApplyToAll = getUpdatedProposalData(
+        filteredRowWithApplyToAll?.[0],
+        filteredRowWithApplyToAll?.[0]?._id,
+        selectedRows,
+        calculateTotalCostOfBooking(
+          { ...filteredRowWithApplyToAll?.[0], ...form.watch() },
+          filteredRowWithApplyToAll?.[0]?.unit,
+          filteredRowWithApplyToAll?.[0]?.startDate,
+          filteredRowWithApplyToAll?.[0]?.endDate,
+        ),
+        calculateTotalArea(filteredRowWithApplyToAll?.[0], filteredRowWithApplyToAll?.[0]?.unit),
+      );
+      form.setValue('place', updatedSelectedRowsForApplyToAll);
+      handleSortRowsOnTop(updatedSelectedRowsForApplyToAll, updatedInventoryData);
+    } else {
+      handleSortRowsOnTop(updatedSelectedRows, updatedInventoryData);
+      form.setValue('spaces', updatedSelectedRows);
+    }
   };
 
   const handleSortByColumn = colId => {
