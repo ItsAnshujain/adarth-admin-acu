@@ -288,6 +288,8 @@ const AddEditPriceDrawer = ({
           price: updatedTotalPrice,
           discountOn: formData.discountOn,
           discount: formData.discount,
+          applyPrintingMountingCostForAll: true,
+          applyDiscountForAll: true,
         };
       }
 
@@ -319,6 +321,8 @@ const AddEditPriceDrawer = ({
             formData.mountingGstPercentage,
           ),
           price: updatedTotalPrice,
+          applyPrintingMountingCostForAll: true,
+          applyDiscountForAll: false,
         };
       }
 
@@ -339,12 +343,13 @@ const AddEditPriceDrawer = ({
           discountOn: formData.discountOn,
           discount: formData.discount,
           applyDiscountForAll: true,
+          applyPrintingMountingCostForAll: false,
         };
       }
 
-      return place;
+      return { ...place, applyPrintingMountingCostForAll: false, applyDiscountForAll: false };
     });
-  }, [JSON.stringify(form.watch())]);
+  }, [JSON.stringify(form.watch()), watchPlace]);
 
   useEffect(() => {
     setBookingData(bookingData);
@@ -400,6 +405,7 @@ const AddEditPriceDrawer = ({
             totalArea,
             priceChanged: true,
             discountedDisplayCost: formData.discountedDisplayCost,
+            applyPrintingMountingCostForAll: formData.applyPrintingMountingCostForAll,
           }
         : formData.applyPrintingMountingCostForAll
         ? {
@@ -409,8 +415,9 @@ const AddEditPriceDrawer = ({
             totalPrintingCost: updatedTotalPrintingCost,
             totalMountingCost: updatedTotalMountingCost,
             price: updatedTotalPrice,
+            applyPrintingMountingCostForAll: true,
           }
-        : place;
+        : { ...place, applyPrintingMountingCostForAll: false };
     });
   }, [JSON.stringify(form.watch())]);
 
@@ -436,7 +443,6 @@ const AddEditPriceDrawer = ({
   useEffect(() => {
     const filteredBookingData = data?.filter(doc => doc?._id === selectedInventory?._id);
     const filteredProposalData = proposalData?.filter(doc => doc?._id === selectedInventory?._id);
-
     if (filteredBookingData?.length > 0 && type === 'bookings') {
       const inventory = filteredBookingData[0];
       form.reset({
@@ -449,7 +455,7 @@ const AddEditPriceDrawer = ({
         printingGstPercentage: inventory.printingGstPercentage || 0,
         printingGst: inventory.printingGst || 0,
         totalPrintingCost: inventory.totalPrintingCost || 0,
-        mountingCostPerSqft: inventory.mountingCostPerSqft || '',
+        mountingCostPerSqft: inventory.mountingCostPerSqft || 0,
         mountingGstPercentage: inventory.mountingGstPercentage || 0,
         mountingGst: inventory.mountingGst || 0,
         totalMountingCost: inventory.totalMountingCost || 0,
@@ -475,16 +481,16 @@ const AddEditPriceDrawer = ({
         printingGstPercentage: inventory.printingGstPercentage || 0,
         printingGst: inventory.printingGst || 0,
         totalPrintingCost: inventory.totalPrintingCost || 0,
-        mountingCostPerSqft: inventory.mountingCostPerSqft || '',
+        mountingCostPerSqft: inventory.mountingCostPerSqft || 0,
         mountingGstPercentage: inventory.mountingGstPercentage || 0,
         mountingGst: inventory.mountingGst || 0,
         totalMountingCost: inventory.totalMountingCost || 0,
         oneTimeInstallationCost: inventory.oneTimeInstallationCost || 0,
         monthlyAdditionalCost: inventory.monthlyAdditionalCost || 0,
         otherCharges: inventory.otherCharges || 0,
-        applyPrintingMountingCostForAll: inventory.applyPrintingMountingCostForAll,
         subjectToExtension: inventory.subjectToExtension || false,
         discountedDisplayCost: inventory.discountedDisplayCost || 0,
+        applyPrintingMountingCostForAll: inventory.applyPrintingMountingCostForAll || false,
       });
     } else if (
       selectedInventory?.priceChanged ||
