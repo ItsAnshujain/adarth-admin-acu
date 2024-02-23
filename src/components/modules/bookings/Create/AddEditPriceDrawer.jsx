@@ -12,6 +12,7 @@ import {
   calculateTotalAmountWithPercentage,
   calculateTotalArea,
   calculateTotalCostOfBooking,
+  calculateTotalDisplayCost,
   calculateTotalMonths,
   getUpdatedBookingData,
   getUpdatedProposalData,
@@ -304,7 +305,13 @@ const AddEditPriceDrawer = ({
       const inventory = filteredBookingData[0];
       form.reset({
         displayCostPerMonth: inventory.displayCostPerMonth || 0,
-        totalDisplayCost: inventory.totalDisplayCost || 0,
+        totalDisplayCost:
+          calculateTotalDisplayCost(
+            inventory,
+            inventory.startDate,
+            inventory.endDate,
+            inventory.displayCostGstPercentage,
+          ) || 0,
         displayCostPerSqFt: inventory.displayCostPerSqFt || 0,
         displayCostGstPercentage: inventory.displayCostGstPercentage || 0,
         displayCostGst: inventory.displayCostGst || 0,
@@ -330,7 +337,8 @@ const AddEditPriceDrawer = ({
       const inventory = filteredProposalData[0];
       form.reset({
         displayCostPerMonth: inventory.displayCostPerMonth || 0,
-        totalDisplayCost: inventory.totalDisplayCost || 0,
+        totalDisplayCost:
+          calculateTotalDisplayCost(inventory, inventory.startDate, inventory.endDate, 0) || 0,
         displayCostPerSqFt: inventory.displayCostPerSqFt || 0,
         displayCostGstPercentage: inventory.displayCostGstPercentage || 0,
         displayCostGst: inventory.displayCostGst || 0,

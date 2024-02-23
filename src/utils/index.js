@@ -584,9 +584,19 @@ export const calculateTotalArea = (place, unit) =>
         place?.location?.facing?.name.toLowerCase().includes('four')
       ? 4
       : 1) || 0;
+
 export const calculateTotalPrintingOrMountingCost = (item, unit, costPerSqft, gstPercentage) => {
   const updatedTotalArea = calculateTotalArea(item, unit);
   const totalDisplayCost = costPerSqft * updatedTotalArea || 0;
+
+  return calculateTotalAmountWithPercentage(totalDisplayCost, gstPercentage);
+};
+
+export const calculateTotalDisplayCost = (item, startDate, endDate, gstPercentage) => {
+  const totalMonths = calculateTotalMonths(startDate, endDate);
+
+  const totalDisplayCost =
+    calculateTotalArea(item, item?.unit) > 0 ? item.displayCostPerMonth * totalMonths : 0;
 
   return calculateTotalAmountWithPercentage(totalDisplayCost, gstPercentage);
 };
