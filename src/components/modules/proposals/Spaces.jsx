@@ -598,18 +598,18 @@ const Spaces = () => {
         row.displayCostPerMonth || (!row.priceChanged && !row?.pricingDetails?.price && row.price),
     }));
 
-    const newAddedRow = selectedRows.filter(
+    const newAddedRow = updatedSelectedRows.filter(
       selectedRow => !watchSpaces.find(addedRow => selectedRow._id === addedRow._id),
     );
-    const filteredRowWithApplyToAll = selectedRows.filter(
-      row => row.applyPrintingMountingCostForAll || row.applyDiscountForAll,
+    const filteredRowWithApplyToAll = updatedSelectedRows.filter(
+      row => row.applyPrintingMountingCostForAll,
     );
 
     if (filteredRowWithApplyToAll?.length > 0 && newAddedRow.length > 0) {
       const updatedSelectedRowsForApplyToAll = getUpdatedProposalData(
         filteredRowWithApplyToAll?.[0],
         filteredRowWithApplyToAll?.[0]?._id,
-        selectedRows,
+        updatedSelectedRows,
         calculateTotalCostOfBooking(
           { ...filteredRowWithApplyToAll?.[0], ...form.watch() },
           filteredRowWithApplyToAll?.[0]?.unit,
@@ -618,7 +618,7 @@ const Spaces = () => {
         ),
         calculateTotalArea(filteredRowWithApplyToAll?.[0], filteredRowWithApplyToAll?.[0]?.unit),
       );
-      form.setValue('place', updatedSelectedRowsForApplyToAll);
+      form.setValue('spaces', updatedSelectedRowsForApplyToAll);
       handleSortRowsOnTop(updatedSelectedRowsForApplyToAll, updatedInventoryData);
     } else {
       handleSortRowsOnTop(updatedSelectedRows, updatedInventoryData);
