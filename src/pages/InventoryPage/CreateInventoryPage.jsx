@@ -29,7 +29,6 @@ const initialValues = {
     description: '',
     spacePhoto: '',
     otherPhotos: [],
-    footFall: '',
     demographic: { label: '', value: '' },
     audience: [],
   },
@@ -306,7 +305,9 @@ const CreateInventoryPage = () => {
           },
           peerMediaOwner: basicInformation?.peerMediaOwner || undefined,
           description: basicInformation?.description || '',
-          footFall: basicInformation?.footFall ? parseInt(basicInformation.footFall, 10) : '',
+          footFall: basicInformation?.footFall
+            ? parseInt(basicInformation.footFall, 10)
+            : undefined,
           price: basicInformation?.price ? parseInt(basicInformation?.price, 10) : undefined,
           category: {
             label: basicInformation?.category?.name || '',
