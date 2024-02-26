@@ -2,7 +2,7 @@ import { Button } from '@mantine/core';
 import { IconPlus } from '@tabler/icons';
 
 const Header = () => (
-  <div className="flex justify-between items-center py-4">
+  <div className="flex justify-between items-center pt-4">
     <div className="font-bold text-lg">Terms and Conditions</div>
     <Button
       variant="default"
