@@ -12,6 +12,11 @@ import { ROLES } from './utils';
 import FileUpload from './components/modules/finance/Create/FileUpload';
 import useUserStore from './store/user.store';
 import { useFetchUsersById } from './apis/queries/users.queries';
+import RepositoryPage from './pages/RepositoryPage';
+import CompanyPage from './pages/RepositoryPage/CompanyPage';
+import CoCompanyPage from './pages/RepositoryPage/Co-Company';
+import ContactPage from './pages/RepositoryPage/Contact';
+import TermsAndConditionsPage from './pages/RepositoryPage/TermsAndConditionsPage';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -473,6 +478,47 @@ const App = () => {
             element={
               <Suspense fallback={<CustomLoader />}>
                 <FileUpload />
+              </Suspense>
+            }
+          />
+        </Route>
+        <Route
+          path="/repository"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <RepositoryPage />
+            </Suspense>
+          }
+        >
+          <Route
+            path="terms-and-conditions"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <TermsAndConditionsPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="company"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <CompanyPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="co-company"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <CoCompanyPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="contact"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <ContactPage />
               </Suspense>
             }
           />

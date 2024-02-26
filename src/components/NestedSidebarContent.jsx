@@ -23,13 +23,16 @@ const NestedSidebarContent = ({ list, path, toggleNestedTab }) => {
     if (masterTypes[type] === label) return true;
     return false;
   };
-
   return (
     <Collapse in={isActive && toggleNestedTab}>
       <div
         className={classNames(
           'flex flex-col items-start pl-5 bg-darkPurple-450 overflow-y-auto max-h-[260px] rounded-b-[4px]',
-          pathname.includes('masters') || pathname.includes('reports') ? 'py-3' : '',
+          pathname.includes('masters') ||
+            pathname.includes('reports') ||
+            pathname.includes('repository')
+            ? 'py-3'
+            : '',
         )}
       >
         {list.map(item => (
@@ -38,7 +41,11 @@ const NestedSidebarContent = ({ list, path, toggleNestedTab }) => {
             to={item.subPath ? `${path}${item.subPath}` : path}
             className={classNames(
               checkActive(item?.label, item?.subPath) ? 'text-white' : 'text-gray-550',
-              pathname.includes('masters') ? 'mb-2' : pathname.includes('reports') ? 'mb-2' : '',
+              pathname.includes('masters') ||
+                pathname.includes('reports') ||
+                pathname.includes('repository')
+                ? 'mb-2'
+                : '',
               item?.label === 'Payment Status' ? 'hidden' : '',
               'font-medium text-base pl-[28px]',
             )}
