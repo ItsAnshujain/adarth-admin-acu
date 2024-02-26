@@ -18,7 +18,7 @@ const updatedModalConfig = {
   size: '1000px',
   classNames: {
     title: 'font-dmSans text-2xl font-bold px-4',
-    header: 'px-4 pt-4',
+    header: 'px-4 py-4 border-b border-gray-450',
     body: '',
     close: 'mr-4',
   },
@@ -36,66 +36,6 @@ const Header = () => {
     sortOrder: 'desc',
     search: debouncedSearch,
   });
-
-  const columns = useMemo(
-    () => [
-      {
-        Header: '#',
-        accessor: 'id',
-        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, 1, 10)}</p>, []),
-      },
-      {
-        Header: 'COMPANY NAME',
-        accessor: 'companyName',
-      },
-      {
-        Header: 'CITY',
-        accessor: 'city',
-      },
-      {
-        Header: 'STATE & STATE CODE',
-        accessor: 'state',
-      },
-      {
-        Header: 'GSTIN',
-        accessor: 'gst',
-        disableSortBy: true,
-      },
-      {
-        Header: 'COMPANY TYPE',
-        accessor: 'companyType',
-      },
-      {
-        Header: 'PARENT COMPANY',
-        accessor: 'parentCompany',
-      },
-      {
-        Header: 'NATURE OF ACCOUNT',
-        accessor: 'natureOfAccount',
-      },
-      {
-        Header: 'CONTACT NUMBER',
-        accessor: 'contact',
-        disableSortBy: true,
-      },
-      {
-        Header: 'EMAIL',
-        accessor: 'email',
-        disableSortBy: true,
-      },
-      {
-        Header: 'ACTION',
-        accessor: 'action',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id },
-          },
-        }) => useMemo(() => <CompanyMenuPopover itemId={_id} />, []),
-      },
-    ],
-    [],
-  );
 
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
@@ -123,12 +63,141 @@ const Header = () => {
     modals.openModal({
       title: 'Add Company',
       modalId: 'addCompanyModal',
-      children: <AddCompanyContent />,
+      children: (
+        <AddCompanyContent type="company" onCancel={() => modals.closeModal('addCompanyModal')} />
+      ),
       ...updatedModalConfig,
     });
   };
 
-  const toggleAddParentCompanyModal = () => {};
+  const toggleAddParentCompanyModal = () => {
+    modals.openModal({
+      title: 'Add Parent Company',
+      modalId: 'addCompanyModal',
+      children: (
+        <AddCompanyContent
+          type="parentCompany"
+          onCancel={() => modals.closeModal('addCompanyModal')}
+        />
+      ),
+      ...updatedModalConfig,
+    });
+  };
+
+  const toggleEditCompanyModal = () => {
+    modals.openModal({
+      title: 'Edit Company',
+      modalId: 'editCompanyModal',
+      children: (
+        <AddCompanyContent type="company" onCancel={() => modals.closeModal('editCompanyModal')} />
+      ),
+      ...updatedModalConfig,
+    });
+  };
+
+  const toggleEditParentCompanyModal = () => {
+    modals.openModal({
+      title: 'Edit Parent Company',
+      modalId: 'editCompanyModal',
+      children: (
+        <AddCompanyContent
+          type="parentCompany"
+          onCancel={() => modals.closeModal('editCompanyModal')}
+        />
+      ),
+      ...updatedModalConfig,
+    });
+  };
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: '#',
+        show: true,
+        accessor: 'id',
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, 1, 10)}</p>, []),
+      },
+      {
+        Header: 'COMPANY NAME',
+        show: true,
+        accessor: 'companyName',
+      },
+      {
+        Header: 'CITY',
+        show: true,
+        accessor: 'city',
+      },
+      {
+        Header: 'STATE & STATE CODE',
+        show: true,
+        accessor: 'state',
+      },
+      {
+        Header: 'GSTIN',
+        show: true,
+        accessor: 'gst',
+        disableSortBy: true,
+      },
+      {
+        Header: 'COMPANY TYPE',
+        show: true,
+        accessor: 'companyType',
+      },
+      {
+        Header: 'PARENT COMPANY',
+        show: activeTab === 'companies',
+        accessor: 'parentCompany',
+      },
+      {
+        Header: 'NATURE OF ACCOUNT',
+        show: true,
+        accessor: 'natureOfAccount',
+      },
+      {
+        Header: 'CONTACT NUMBER',
+        show: true,
+        accessor: 'contact',
+        disableSortBy: true,
+      },
+      {
+        Header: 'EMAIL',
+        show: true,
+        accessor: 'email',
+        disableSortBy: true,
+      },
+      {
+        Header: 'ACTION',
+        show: true,
+        accessor: 'action',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <CompanyMenuPopover
+                itemId={_id}
+                type={activeTab}
+                toggleEdit={
+                  activeTab === 'companies' ? toggleEditCompanyModal : toggleEditParentCompanyModal
+                }
+              />
+            ),
+            [],
+          ),
+      },
+    ],
+    [activeTab],
+  );
+
+  const memoizedColumns = useMemo(() => {
+    if (activeTab === 'companies') {
+      return columns;
+    }
+    return columns.filter(col => col.show);
+  }, [activeTab]);
 
   return (
     <div className="flex justify-between py-4">
@@ -147,12 +216,12 @@ const Header = () => {
                 Companies
               </Tabs.Tab>
               <Tabs.Tab
-                value="parentCompanies"
+                value="parent-companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  activeTab === 'parentCompanies' ? 'border border-b-2 border-purple-450' : '',
+                  activeTab === 'parent-companies' ? 'border border-b-2 border-purple-450' : '',
                 )}
-                onClick={() => setActiveTab('parentCompanies')}
+                onClick={() => setActiveTab('parent-companies')}
               >
                 Parent Companies
               </Tabs.Tab>
@@ -202,8 +271,8 @@ const Header = () => {
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
           <Table
-            data={[]}
-            COLUMNS={columns}
+            data={[{}]}
+            COLUMNS={memoizedColumns}
             activePage={1}
             totalPages={1}
             setActivePage={() => {}}
@@ -211,7 +280,7 @@ const Header = () => {
             handleSorting={handleSortByColumn}
           />
         </Tabs.Panel>
-        <Tabs.Panel value="parentCompanies">
+        <Tabs.Panel value="parent-companies">
           <div className="mt-4 text-lg font-bold">Parent Companies List</div>
           <div className="flex justify-between h-20 items-center">
             <RowsPerPage
@@ -223,8 +292,8 @@ const Header = () => {
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
           <Table
-            data={[]}
-            COLUMNS={columns}
+            data={[{}]}
+            COLUMNS={memoizedColumns}
             activePage={1}
             totalPages={1}
             setActivePage={() => {}}

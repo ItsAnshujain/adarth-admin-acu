@@ -14,9 +14,10 @@ import useUserStore from './store/user.store';
 import { useFetchUsersById } from './apis/queries/users.queries';
 import RepositoryPage from './pages/RepositoryPage';
 import CompanyPage from './pages/RepositoryPage/CompanyPage';
-import CoCompanyPage from './pages/RepositoryPage/Co-Company';
-import ContactPage from './pages/RepositoryPage/Contact';
+import CoCompanyPage from './pages/RepositoryPage/CoCompanyPage';
+import ContactPage from './pages/RepositoryPage/ContactPage';
 import TermsAndConditionsPage from './pages/RepositoryPage/TermsAndConditionsPage';
+import ViewCompanyPage from './pages/RepositoryPage/ViewCompanyPage';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -503,6 +504,22 @@ const App = () => {
             element={
               <Suspense fallback={<CustomLoader />}>
                 <CompanyPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="companies/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <ViewCompanyPage type="company" />
+              </Suspense>
+            }
+          />
+          <Route
+            path="parent-companies/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <ViewCompanyPage type="parent-company" />
               </Suspense>
             }
           />
