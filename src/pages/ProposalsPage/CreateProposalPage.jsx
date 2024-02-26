@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { useState, useEffect } from 'react';
 import * as yup from 'yup';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -106,18 +107,33 @@ const CreateProposalPage = () => {
 
       data.spaces = watchSpaces.map(
         // eslint-disable-next-line no-unused-vars
-        ({ pricingDetails, createdBy, campaigns, bookingRange, ...item }) => ({
-          ...item,
-          id: item._id,
-          price: +item.price.toFixed(2) || 0,
-          startDate: item.startDate
-            ? dayjs(item.startDate).endOf('day').toISOString()
-            : dayjs().endOf('day').toISOString(),
-          endDate: item.startDate
-            ? dayjs(item.endDate).endOf('day').toISOString()
-            : dayjs().endOf('day').toISOString(),
-          unit: item?.unit ? +item.unit : 1,
-        }),
+        ({ ...item }) => {
+          delete item.pricingDetails;
+          delete item.bookingRange;
+          delete item.createdBy;
+          delete item.campaigns;
+          delete item.location;
+          delete item.additionalTags;
+          delete item.previousEndDate;
+          delete item.previousStartDate;
+          delete item.dimension;
+          delete item.category;
+          delete item.mediaType;
+          delete item.mediaOwner;
+          delete item.isUnderMaintenance;
+          return {
+            ...item,
+            id: item._id,
+            price: +item.price.toFixed(2) || 0,
+            startDate: item.startDate
+              ? dayjs(item.startDate).endOf('day').toISOString()
+              : dayjs().endOf('day').toISOString(),
+            endDate: item.startDate
+              ? dayjs(item.endDate).endOf('day').toISOString()
+              : dayjs().endOf('day').toISOString(),
+            unit: item?.unit ? +item.unit : 1,
+          };
+        },
       );
 
       if (data.uploadType === 'existing') {
