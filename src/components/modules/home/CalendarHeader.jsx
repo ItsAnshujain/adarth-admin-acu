@@ -91,7 +91,7 @@ const CalendarHeader = ({
                   )}
                   onClick={() => handleActiveMonth(month)}
                 >
-                  {month.label} {activeYear}
+                  {month.label}
                 </Button>
               ))}
             </Group>
