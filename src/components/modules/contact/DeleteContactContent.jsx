@@ -5,7 +5,7 @@ import CheckIcon from '../../../assets/check.svg';
 import TrashIcon from '../../../assets/trash.svg';
 import { useDeleteBooking } from '../../../apis/queries/booking.queries';
 
-const DeleteCompanyContent = ({ onClickCancel = () => {}, id }) => {
+const DeleteContactContent = ({ onClickCancel = () => {}, id }) => {
   const modals = useModals();
   const [accept, setAccept] = useState(false);
   const { mutateAsync: deleteBooking, isLoading } = useDeleteBooking();
@@ -48,4 +48,4 @@ const DeleteCompanyContent = ({ onClickCancel = () => {}, id }) => {
   );
 };
 
-export default DeleteCompanyContent;
+export default DeleteContactContent;

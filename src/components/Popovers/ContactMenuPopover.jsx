@@ -5,18 +5,18 @@ import modalConfig from '../../utils/modalConfig';
 import MenuIcon from '../Menu';
 import DeleteCompanyContent from '../modules/company/DeleteCompanyContent';
 
-const CompanyMenuPopover = ({ itemId, toggleEdit, type }) => {
+const ContactMenuPopover = ({ itemId, toggleEdit }) => {
   const modals = useModals();
 
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
-      modalId: 'deleteTermsAndConditions',
+      modalId: 'deleteContactContent',
       innerProps: {
         modalBody: (
           <DeleteCompanyContent
             bookingId={itemId}
             classNames="px-8 mt-4"
-            onClickCancel={() => modals.closeModal('deleteTermsAndConditions')}
+            onClickCancel={() => modals.closeModal('deleteContactContent')}
           />
         ),
       },
@@ -31,10 +31,10 @@ const CompanyMenuPopover = ({ itemId, toggleEdit, type }) => {
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <Link to={`/repository/${type}/${123}`} className="p-0">
+        <Link to={`/repository/contact/${123}`} className="p-0">
           <Menu.Item>View</Menu.Item>
         </Link>
-        <Card onClick={toggleEdit} className="p-0">
+        <Card onClick={() => toggleEdit('Edit')} className="p-0">
           <Menu.Item>Edit</Menu.Item>
         </Card>
         <Card onClick={toggleDeleteModal} className="p-0">
@@ -45,4 +45,4 @@ const CompanyMenuPopover = ({ itemId, toggleEdit, type }) => {
   );
 };
 
-export default CompanyMenuPopover;
+export default ContactMenuPopover;

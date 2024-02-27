@@ -21,6 +21,7 @@ import CoCompanyPage from './pages/RepositoryPage/CoCompanyPage';
 import ContactPage from './pages/RepositoryPage/ContactPage';
 import TermsAndConditionsPage from './pages/RepositoryPage/TermsAndConditionsPage';
 import ViewCompanyPage from './pages/RepositoryPage/ViewCompanyPage';
+import ViewContactPage from './pages/RepositoryPage/ViewContactPage';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -533,6 +534,14 @@ const App = () => {
             element={
               <Suspense fallback={<CustomLoader />}>
                 <CompanyPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="contact/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <ViewContactPage type="company" />
               </Suspense>
             }
           />
