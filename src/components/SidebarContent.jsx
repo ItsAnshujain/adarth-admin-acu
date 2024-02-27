@@ -15,6 +15,7 @@ import CampaignIcon from '../assets/campaign-default.svg';
 import ReportIcon from '../assets/report-default.svg';
 import CloudIcon from '../assets/cloud.svg';
 import FinanceIcon from '../assets/finance-default.svg';
+import GalleryIcon from '../assets/gallery-default.svg';
 import RoleBased from './RoleBased';
 import { masterTypes, ROLES, serialize } from '../utils';
 import { useFetchMastersTypes } from '../apis/queries/masters.queries';
@@ -110,6 +111,12 @@ const SidebarContent = ({ className }) => {
         path: '/finance',
         icon: FinanceIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR],
+      },
+      {
+        label: 'Gallery',
+        path: '/gallery',
+        icon: GalleryIcon,
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
       {
         label: 'Repository',

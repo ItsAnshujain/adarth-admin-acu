@@ -17,6 +17,9 @@ import CompanyPage from './pages/RepositoryPage/CompanyPage';
 import CoCompanyPage from './pages/RepositoryPage/Co-Company';
 import ContactPage from './pages/RepositoryPage/Contact';
 import TermsAndConditionsPage from './pages/RepositoryPage/TermsAndConditionsPage';
+import GalleryPage from './pages/GalleryPage';
+import UploadImagesPage from './pages/GalleryPage/UploadImagesPage';
+import GalleryImagesDashboardPage from './pages/GalleryPage/GalleryImagesDashboard';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -298,6 +301,32 @@ const App = () => {
             element={
               <Suspense fallback={<CustomLoader />}>
                 <CreateBookingPage />
+              </Suspense>
+            }
+          />
+        </Route>
+        <Route
+          path="gallery"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <GalleryPage />
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <GalleryImagesDashboardPage />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="upload-images"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <UploadImagesPage />
               </Suspense>
             }
           />

@@ -569,13 +569,17 @@ const PublicLinkPage = () => {
           yesIWantToUseGoogleMapApiInternals
           onGoogleApiLoaded={({ map, maps }) => setMapInstance({ map, maps })}
         >
-          {proposalData?.inventories?.docs?.map(item => (
-            <Marker
-              key={item._id}
-              lat={item.latitude && Number(item.latitude)}
-              lng={item.longitude && Number(item.longitude)}
-            />
-          ))}
+          {proposalData?.inventories?.docs?.map(
+            item =>
+              Number(item.latitude) &&
+              Number(item.longitude) && (
+                <Marker
+                  key={item._id}
+                  lat={item.latitude && Number(item.latitude)}
+                  lng={item.longitude && Number(item.longitude)}
+                />
+              ),
+          )}
         </GoogleMapReact>
       </div>
 
