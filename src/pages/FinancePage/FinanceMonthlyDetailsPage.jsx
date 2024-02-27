@@ -79,10 +79,11 @@ const FinanceMonthlyDetailsPage = () => {
   const toggleApproveModal = (financeId, value) =>
     modals.openContextModal('basic', {
       title: '',
+      modalId: financeId,
       innerProps: {
         modalBody: (
           <VerifyApprovalContent
-            onClickCancel={id => modals.closeModal(id)}
+            onClickCancel={() => modals.closeModal(financeId)}
             financeId={financeId}
             value={value}
           />
