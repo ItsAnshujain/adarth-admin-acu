@@ -15,8 +15,10 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import Table from '../../Table/Table';
 import { useFetchInventory } from '../../../apis/queries/inventory.queries';
 import {
+  calculateTotalArea,
   calculateTotalCostOfBooking,
   calculateTotalMonths,
+  calculateTotalPrintingOrMountingCost,
   categoryColors,
   currentDate,
   debounce,
@@ -25,6 +27,7 @@ import {
   getDate,
   getEveryDayUnits,
   getOccupiedState,
+  getUpdatedProposalData,
   stringToColour,
 } from '../../../utils';
 import Filter from '../inventory/Filter';
@@ -89,14 +92,6 @@ const Spaces = () => {
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const updateData = debounce((key, val, id, inputId) => {
-    const calculateTotalArea = (place, unit) =>
-      (place?.dimension?.reduce(
-        (accumulator, dimension) => accumulator + dimension.height * dimension.width,
-        0,
-      ) || 0) *
-        (unit || 1) *
-        (place?.facing === 'Single' ? 1 : place?.facing === 'Double' ? 2 : 4) || 0;
-
     if (key === 'dateRange') {
       let availableUnit = 0;
       const space = watchSpaces.find(item => item._id === id);
@@ -146,6 +141,18 @@ const Spaces = () => {
                   calculateTotalArea(item, item?.unit) > 0
                     ? item.displayCostPerMonth * totalMonths
                     : 0,
+                totalPrintingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.printingCostPerSqft,
+                  0,
+                ),
+                totalMountingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.mountingCostPerSqft,
+                  0,
+                ),
                 price: calculateTotalCostOfBooking(
                   item,
                   key === 'unit' ? val : item.unit,
@@ -169,17 +176,22 @@ const Spaces = () => {
         'spaces',
         watchSpaces.map(item => {
           const updatedTotalArea = calculateTotalArea(item, key === 'unit' ? val : item.unit);
-          const updatedTotalMonths = calculateTotalMonths(item?.startDate, item?.endDate);
           return item._id === id
             ? {
                 ...item,
                 printingCostPerSqft: item.printingCostPerSqft,
-                totalPrintingCost: Number(
-                  (item.printingCostPerSqft * updatedTotalArea * updatedTotalMonths).toFixed(2),
-                ),
                 mountingCostPerSqft: item.mountingCostPerSqft,
-                totalMountingCost: Number(
-                  (item.mountingCostPerSqft * updatedTotalArea * updatedTotalMonths).toFixed(2),
+                totalPrintingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.printingCostPerSqft,
+                  0,
+                ),
+                totalMountingCost: calculateTotalPrintingOrMountingCost(
+                  item,
+                  key === 'unit' ? val : item.unit,
+                  item.mountingCostPerSqft,
+                  0,
                 ),
                 totalArea: updatedTotalArea,
                 price: calculateTotalCostOfBooking(
@@ -458,14 +470,13 @@ const Spaces = () => {
         disableSortBy: true,
         Cell: ({
           row: {
-            original: { bookingRange, startDate, endDate, unit, _id },
+            original: { bookingRange, startDate, endDate, _id, originalUnit },
           },
         }) =>
           useMemo(() => {
             const isError = watchSpaces.some(item => item._id === _id) && (!startDate || !endDate);
             const isDisabled = !watchSpaces.some(item => item._id === _id);
-            const everyDayUnitsData = getEveryDayUnits(bookingRange, unit);
-
+            const everyDayUnitsData = getEveryDayUnits(bookingRange, originalUnit);
             return (
               <div className="min-w-[300px]">
                 <DateRangeSelector
@@ -603,8 +614,33 @@ const Spaces = () => {
       displayCostPerMonth:
         row.displayCostPerMonth || (!row.priceChanged && !row?.pricingDetails?.price && row.price),
     }));
-    handleSortRowsOnTop(updatedSelectedRows, updatedInventoryData);
-    form.setValue('spaces', updatedSelectedRows);
+
+    const newAddedRow = updatedSelectedRows.filter(
+      selectedRow => !watchSpaces.find(addedRow => selectedRow._id === addedRow._id),
+    );
+    const filteredRowWithApplyToAll = updatedSelectedRows.filter(
+      row => row.applyPrintingMountingCostForAll,
+    );
+
+    if (filteredRowWithApplyToAll?.length > 0 && newAddedRow.length > 0) {
+      const updatedSelectedRowsForApplyToAll = getUpdatedProposalData(
+        filteredRowWithApplyToAll?.[0],
+        filteredRowWithApplyToAll?.[0]?._id,
+        updatedSelectedRows,
+        calculateTotalCostOfBooking(
+          { ...filteredRowWithApplyToAll?.[0], ...form.watch() },
+          filteredRowWithApplyToAll?.[0]?.unit,
+          filteredRowWithApplyToAll?.[0]?.startDate,
+          filteredRowWithApplyToAll?.[0]?.endDate,
+        ),
+        calculateTotalArea(filteredRowWithApplyToAll?.[0], filteredRowWithApplyToAll?.[0]?.unit),
+      );
+      form.setValue('spaces', updatedSelectedRowsForApplyToAll);
+      handleSortRowsOnTop(updatedSelectedRowsForApplyToAll, updatedInventoryData);
+    } else {
+      handleSortRowsOnTop(updatedSelectedRows, updatedInventoryData);
+      form.setValue('spaces', updatedSelectedRows);
+    }
   };
 
   const handleSortByColumn = colId => {
