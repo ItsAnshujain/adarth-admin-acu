@@ -11,7 +11,7 @@ import CompanyMenuPopover from '../../Popovers/CompanyMenuPopover';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import modalConfig from '../../../utils/modalConfig';
-import AddCompanyContent from './AddCompanyContent';
+import AddCoCompanyContent from './AddCoCompanyContent';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -26,7 +26,7 @@ const updatedModalConfig = {
 
 const Header = () => {
   const modals = useModals();
-  const [activeTab, setActiveTab] = useState('companies');
+  const [activeTab, setActiveTab] = useState('parent-companies');
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -59,23 +59,12 @@ const Header = () => {
     setSearchParams(searchParams);
   };
 
-  const toggleAddCompanyModal = () => {
-    modals.openModal({
-      title: 'Add Company',
-      modalId: 'addCompanyModal',
-      children: (
-        <AddCompanyContent type="company" onCancel={() => modals.closeModal('addCompanyModal')} />
-      ),
-      ...updatedModalConfig,
-    });
-  };
-
   const toggleAddParentCompanyModal = () => {
     modals.openModal({
       title: 'Add Parent Company',
       modalId: 'addCompanyModal',
       children: (
-        <AddCompanyContent
+        <AddCoCompanyContent
           type="parentCompany"
           onCancel={() => modals.closeModal('addCompanyModal')}
         />
@@ -84,12 +73,15 @@ const Header = () => {
     });
   };
 
-  const toggleEditCompanyModal = () => {
+  const toggleAddSisterCompanyModal = () => {
     modals.openModal({
-      title: 'Edit Company',
-      modalId: 'editCompanyModal',
+      title: 'Add Sister Company',
+      modalId: 'addCompanyModal',
       children: (
-        <AddCompanyContent type="company" onCancel={() => modals.closeModal('editCompanyModal')} />
+        <AddCoCompanyContent
+          type="sisterCompany"
+          onCancel={() => modals.closeModal('addCompanyModal')}
+        />
       ),
       ...updatedModalConfig,
     });
@@ -100,8 +92,22 @@ const Header = () => {
       title: 'Edit Parent Company',
       modalId: 'editCompanyModal',
       children: (
-        <AddCompanyContent
+        <AddCoCompanyContent
           type="parentCompany"
+          onCancel={() => modals.closeModal('editCompanyModal')}
+        />
+      ),
+      ...updatedModalConfig,
+    });
+  };
+
+  const toggleEditSisterCompanyModal = () => {
+    modals.openModal({
+      title: 'Edit Sister Company',
+      modalId: 'editCompanyModal',
+      children: (
+        <AddCoCompanyContent
+          type="sisterCompany"
           onCancel={() => modals.closeModal('editCompanyModal')}
         />
       ),
@@ -145,7 +151,7 @@ const Header = () => {
       },
       {
         Header: 'PARENT COMPANY',
-        show: activeTab === 'companies',
+        show: activeTab === 'sister-companies',
         accessor: 'parentCompany',
       },
       {
@@ -181,7 +187,9 @@ const Header = () => {
                 itemId={_id}
                 type={activeTab}
                 toggleEdit={
-                  activeTab === 'companies' ? toggleEditCompanyModal : toggleEditParentCompanyModal
+                  activeTab === 'parent-companies'
+                    ? toggleEditParentCompanyModal
+                    : toggleEditSisterCompanyModal
                 }
               />
             ),
@@ -193,28 +201,17 @@ const Header = () => {
   );
 
   const memoizedColumns = useMemo(() => {
-    if (activeTab === 'companies') {
+    if (activeTab === 'sister-companies') {
       return columns;
     }
     return columns.filter(col => col.show);
   }, [activeTab]);
-
   return (
     <div className="flex justify-between py-4">
       <Tabs className="w-full" value={activeTab}>
         <Tabs.List className="border-b">
           <div className="flex justify-between w-full pb-0">
             <div className="flex gap-4 mb-0">
-              <Tabs.Tab
-                value="companies"
-                className={classNames(
-                  'p-0 border-0 text-lg pb-2',
-                  activeTab === 'companies' ? 'border border-b-2 border-purple-450' : '',
-                )}
-                onClick={() => setActiveTab('companies')}
-              >
-                Companies
-              </Tabs.Tab>
               <Tabs.Tab
                 value="parent-companies"
                 className={classNames(
@@ -225,6 +222,16 @@ const Header = () => {
               >
                 Parent Companies
               </Tabs.Tab>
+              <Tabs.Tab
+                value="sister-companies"
+                className={classNames(
+                  'p-0 border-0 text-lg pb-2',
+                  activeTab === 'sister-companies' ? 'border border-b-2 border-purple-450' : '',
+                )}
+                onClick={() => setActiveTab('sister-companies')}
+              >
+                Sister Companies
+              </Tabs.Tab>
             </div>
             <Menu>
               <Menu.Target>
@@ -233,7 +240,7 @@ const Header = () => {
                   className="bg-purple-450 text-white font-normal rounded-md mb-2"
                   leftIcon={<IconChevronDown size={20} />}
                 >
-                  Add Company
+                  Add Co-Company
                 </Button>
               </Menu.Target>
               <Menu.Dropdown>
@@ -241,28 +248,26 @@ const Header = () => {
                   <Button
                     variant="default"
                     className="w-full border-0 font-normal"
-                    classNames={{ label: 'w-full' }}
-                    onClick={toggleAddCompanyModal}
+                    onClick={toggleAddParentCompanyModal}
                   >
-                    Add Company
+                    Add Parent Company
                   </Button>
                 </Menu.Item>
                 <Menu.Item className="p-0 justify-start">
                   <Button
                     variant="default"
                     className="w-full border-0 font-normal"
-                    classNames={{ label: 'w-full' }}
-                    onClick={toggleAddParentCompanyModal}
+                    onClick={toggleAddSisterCompanyModal}
                   >
-                    Add Parent Company
+                    Add Sister Company
                   </Button>
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>
           </div>
         </Tabs.List>
-        <Tabs.Panel value="companies">
-          <div className="mt-4 text-lg font-bold">Companies List</div>
+        <Tabs.Panel value="parent-companies">
+          <div className="mt-4 text-lg font-bold">Parent Companies List</div>
           <div className="flex justify-between h-20 items-center">
             <RowsPerPage
               setCount={currentLimit => {
@@ -282,8 +287,8 @@ const Header = () => {
             handleSorting={handleSortByColumn}
           />
         </Tabs.Panel>
-        <Tabs.Panel value="parent-companies">
-          <div className="mt-4 text-lg font-bold">Parent Companies List</div>
+        <Tabs.Panel value="sister-companies">
+          <div className="mt-4 text-lg font-bold">Sister Companies List</div>
           <div className="flex justify-between h-20 items-center">
             <RowsPerPage
               setCount={currentLimit => {
