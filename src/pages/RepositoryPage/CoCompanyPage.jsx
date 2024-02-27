@@ -1,6 +1,6 @@
-import Header from '../../components/modules/company/Header';
+import Header from '../../components/modules/co-company/Header';
 
-const CompanyPage = () => (
+const CoCompanyPage = () => (
   <div className="overflow-y-auto px-3 col-span-10">
     <div className="overflow-y-auto px-3 col-span-10">
       <Header />
@@ -8,4 +8,4 @@ const CompanyPage = () => (
   </div>
 );
 
-export default CompanyPage;
+export default CoCompanyPage;

@@ -10,12 +10,16 @@ const RepositoryPage = () => {
     <div>
       {share !== 'repository' && location.pathname.includes('terms-and-conditions') ? (
         <Header title="Repository" />
-      ) : location.pathname.includes('company') ? (
-        <Header title="Companies" />
       ) : location.pathname.includes('co-company') ? (
         <Header title="Co-Companies" />
+      ) : location.pathname.includes('company') ? (
+        <Header title="Companies" />
       ) : location.pathname.includes('contact') ? (
         <Header title="Contacts" />
+      ) : location.pathname.includes('parent-companies') ? (
+        <Header title="Parent Company Details" />
+      ) : location.pathname.includes('companies') ? (
+        <Header title="Company Details" />
       ) : null}
       <div className="grid grid-cols-12 h-[calc(100vh-60px)]">
         {share !== 'repository' ? <Sidebar /> : null}
