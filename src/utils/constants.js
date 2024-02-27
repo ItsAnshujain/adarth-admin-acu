@@ -187,6 +187,7 @@ export const proposalColumns = [
   { name: 'Discounted Display Price', enum: 'discountedDisplayPrice', mandatory: false },
   { name: 'Printing Cost', enum: 'printingCost', mandatory: false },
   { name: 'Mounting Cost', enum: 'mountingCost', mandatory: false },
+  { name: 'Total Price', enum: 'totalPrice', mandatory: false },
   { name: 'Availability', enum: 'availability', mandatory: false },
   { name: 'Extension', enum: 'extension', mandatory: false },
 ];
