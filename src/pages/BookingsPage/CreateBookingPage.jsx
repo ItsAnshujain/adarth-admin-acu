@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { useCallback, useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -163,24 +164,48 @@ const CreateBookingPage = () => {
         });
         return;
       }
-      // eslint-disable-next-line no-unused-vars
-      data.place = watchPlace?.map(({ bookingRange, campaigns, ...item }) => ({
-        ...item,
-        id: item._id,
-        price: +Number(item.price?.toFixed(2) || 0),
-        media: isValidURL(item.media) ? item.media : undefined,
-        startDate: item.startDate
-          ? dayjs(item.startDate).endOf('day').toISOString()
-          : dayjs().endOf('day').toISOString(),
-        endDate: item.endDate
-          ? dayjs(item.endDate).endOf('day').toISOString()
-          : dayjs().endOf('day').toISOString(),
-        tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
-        unit: item?.unit ? +item.unit : 1,
-        discountPercentage: item.discount,
-        totalPrintingCost: Number(Number(item.totalPrintingCost)?.toFixed(2)) || 0,
-        discountedTotalPrice: Number(Number(item.discountedTotalPrice)?.toFixed(2)) || 0,
-      }));
+      data.place = watchPlace?.map(({ ...item }) => {
+        delete item.basicInformation;
+        delete item.deletedAt;
+        delete item.isActive;
+        delete item.isDeleted;
+        delete item.specifications;
+        delete item.peer;
+        delete item.bookingRange;
+        delete item.campaigns;
+        delete item.location;
+        delete item.additionalTags;
+        delete item.displayCostGst;
+        delete item.mountingGst;
+        delete item.printingGst;
+        delete item.previousEndDate;
+        delete item.previousStartDate;
+        delete item.dimension;
+        delete item.category;
+        delete item.mediaType;
+        delete item.mediaOwner;
+        delete item.isUnderMaintenance;
+        delete item.updatedAt;
+        delete item.createdAt;
+        delete item.createdBy;
+        return {
+          ...item,
+          id: item._id,
+          price: +Number(item.price?.toFixed(2) || 0),
+          media: isValidURL(item.media) ? item.media : undefined,
+          startDate: item.startDate
+            ? dayjs(item.startDate).endOf('day').toISOString()
+            : dayjs().endOf('day').toISOString(),
+          endDate: item.endDate
+            ? dayjs(item.endDate).endOf('day').toISOString()
+            : dayjs().endOf('day').toISOString(),
+          tradedAmount: item?.tradedAmount ? +item.tradedAmount : 0,
+          unit: item?.unit ? +item.unit : 1,
+          discountPercentage: item.discount,
+          totalPrintingCost: Number(Number(item.totalPrintingCost)?.toFixed(2)) || 0,
+          discountedTotalPrice: Number(Number(item.discountedTotalPrice)?.toFixed(2)) || 0,
+        };
+      });
 
       if (data.place.some(item => item.price === 0 || !item.price)) {
         showNotification({
