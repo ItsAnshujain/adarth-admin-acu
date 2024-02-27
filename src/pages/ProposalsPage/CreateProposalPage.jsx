@@ -105,36 +105,47 @@ const CreateProposalPage = () => {
         return;
       }
 
-      data.spaces = watchSpaces.map(
-        // eslint-disable-next-line no-unused-vars
-        ({ ...item }) => {
-          delete item.pricingDetails;
-          delete item.bookingRange;
-          delete item.createdBy;
-          delete item.campaigns;
-          delete item.location;
-          delete item.additionalTags;
-          delete item.previousEndDate;
-          delete item.previousStartDate;
-          delete item.dimension;
-          delete item.category;
-          delete item.mediaType;
-          delete item.mediaOwner;
-          delete item.isUnderMaintenance;
-          return {
-            ...item,
-            id: item._id,
-            price: +item.price.toFixed(2) || 0,
-            startDate: item.startDate
-              ? dayjs(item.startDate).endOf('day').toISOString()
-              : dayjs().endOf('day').toISOString(),
-            endDate: item.startDate
-              ? dayjs(item.endDate).endOf('day').toISOString()
-              : dayjs().endOf('day').toISOString(),
-            unit: item?.unit ? +item.unit : 1,
-          };
-        },
-      );
+      data.spaces = watchSpaces.map(({ ...item }) => {
+        delete item.city;
+        delete item.address;
+        delete item.bookedUnits;
+        delete item.availableUnit;
+        delete item.initialUnit;
+        delete item.inventoryId;
+        delete item.latitude;
+        delete item.longitude;
+        delete item.peerId;
+        delete item.peerMediaOwner;
+        delete item.spaceName;
+        delete item.state;
+        delete item.size;
+        delete item.pricingDetails;
+        delete item.bookingRange;
+        delete item.createdBy;
+        delete item.campaigns;
+        delete item.location;
+        delete item.additionalTags;
+        delete item.previousEndDate;
+        delete item.previousStartDate;
+        delete item.dimension;
+        delete item.category;
+        delete item.mediaType;
+        delete item.mediaOwner;
+        delete item.isUnderMaintenance;
+        return {
+          ...item,
+          id: item._id,
+          price: +item.price.toFixed(2) || 0,
+          totalPrice: +item.price.toFixed(2) || 0,
+          startDate: item.startDate
+            ? dayjs(item.startDate).endOf('day').toISOString()
+            : dayjs().endOf('day').toISOString(),
+          endDate: item.startDate
+            ? dayjs(item.endDate).endOf('day').toISOString()
+            : dayjs().endOf('day').toISOString(),
+          unit: item?.unit ? +item.unit : 1,
+        };
+      });
 
       if (data.uploadType === 'existing') {
         data.letterHead = userData?.proposalHead;

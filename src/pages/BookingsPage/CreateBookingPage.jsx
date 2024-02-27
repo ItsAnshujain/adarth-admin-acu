@@ -164,8 +164,12 @@ const CreateBookingPage = () => {
         });
         return;
       }
-
       data.place = watchPlace?.map(({ ...item }) => {
+        delete item.basicInformation;
+        delete item.deletedAt;
+        delete item.isActive;
+        delete item.isDeleted;
+        delete item.specifications;
         delete item.peer;
         delete item.bookingRange;
         delete item.campaigns;
@@ -181,6 +185,9 @@ const CreateBookingPage = () => {
         delete item.mediaType;
         delete item.mediaOwner;
         delete item.isUnderMaintenance;
+        delete item.updatedAt;
+        delete item.createdAt;
+        delete item.createdBy;
         return {
           ...item,
           id: item._id,
