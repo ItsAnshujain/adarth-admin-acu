@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { DatePicker as MantineDatePicker } from '@mantine/dates';
+import { DatePickerInput as MantineDatePicker } from '@mantine/dates';
 import { createStyles } from '@mantine/core';
 
 export const useStyles = createStyles({
