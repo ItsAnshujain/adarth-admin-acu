@@ -1,5 +1,5 @@
 import { Avatar, Button, Image, Menu as MenuProfile } from '@mantine/core';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Menu } from 'react-feather';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import shallow from 'zustand/shallow';
@@ -13,6 +13,7 @@ import NotificationsIcon from '../assets/notifications.svg';
 import SettingsIcon from '../assets/settings.svg';
 import UserImage from '../assets/placeholders/user.png';
 import useLayoutView from '../store/layout.store';
+import RepositoryMenuPopover from './Popovers/RepositoryMenuPopover';
 
 const Header = ({ title }) => {
   const { pathname } = useLocation();
@@ -72,7 +73,10 @@ const Header = ({ title }) => {
           <div className="pl-5">
             <p className="text-2xl font-bold tracking-wide hidden md:block">{title}</p>
           </div>
+
           <div className="flex items-center mr-2 md:mr-5">
+            <RepositoryMenuPopover />
+
             <Link to="/notification" className="flex items-center">
               <Image src={NotificationsIcon} height={24} width={24} />
               <span

@@ -242,13 +242,17 @@ const Overview = ({ bookingData = {}, isLoading }) => {
             yesIWantToUseGoogleMapApiInternals
             onGoogleApiLoaded={({ map, maps }) => setMapInstance({ map, maps })}
           >
-            {bookingData?.campaign?.spaces?.map(item => (
-              <Marker
-                key={item._id}
-                lat={item.location?.latitude && Number(item?.location?.latitude)}
-                lng={item.location?.longitude && Number(item?.location?.longitude)}
-              />
-            ))}
+            {bookingData?.campaign?.spaces?.map(
+              item =>
+                Number(item?.location?.latitude) &&
+                Number(item?.location?.longitude) && (
+                  <Marker
+                    key={item._id}
+                    lat={item.location?.latitude && Number(item?.location?.latitude)}
+                    lng={item.location?.longitude && Number(item?.location?.longitude)}
+                  />
+                ),
+            )}
           </GoogleMapReact>
         </div>
         <p className="text-lg font-bold">Places in the campaign</p>

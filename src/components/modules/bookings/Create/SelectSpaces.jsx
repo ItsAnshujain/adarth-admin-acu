@@ -25,6 +25,7 @@ import {
   getDate,
   getEveryDayUnits,
   getOccupiedState,
+  getUpdatedBookingData,
 } from '../../../../utils';
 import Filter from '../../inventory/Filter';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
@@ -289,9 +290,31 @@ const SelectSpace = () => {
   };
 
   const handleSelection = selectedRows => {
-    handleSortRowsOnTop(selectedRows, updatedInventoryData);
-
-    form.setValue('place', selectedRows);
+    const newAddedRow = selectedRows.filter(
+      selectedRow => !watchPlace.find(addedRow => selectedRow._id === addedRow._id),
+    );
+    const filteredRowWithApplyToAll = selectedRows.filter(
+      row => row.applyPrintingMountingCostForAll || row.applyDiscountForAll,
+    );
+    if (filteredRowWithApplyToAll?.length > 0 && newAddedRow.length > 0) {
+      const updatedSelectedRows = getUpdatedBookingData(
+        filteredRowWithApplyToAll?.[0],
+        filteredRowWithApplyToAll?.[0]?._id,
+        selectedRows,
+        calculateTotalCostOfBooking(
+          { ...filteredRowWithApplyToAll?.[0], ...form.watch() },
+          filteredRowWithApplyToAll?.[0]?.unit,
+          filteredRowWithApplyToAll?.[0]?.startDate,
+          filteredRowWithApplyToAll?.[0]?.endDate,
+        ),
+        calculateTotalArea(filteredRowWithApplyToAll?.[0], filteredRowWithApplyToAll?.[0]?.unit),
+      );
+      form.setValue('place', updatedSelectedRows);
+      handleSortRowsOnTop(updatedSelectedRows, updatedInventoryData);
+    } else {
+      handleSortRowsOnTop(selectedRows, updatedInventoryData);
+      form.setValue('place', selectedRows);
+    }
   };
 
   const togglePreviewModal = imgSrc =>
@@ -446,7 +469,7 @@ const SelectSpace = () => {
               endDate,
               previousStartDate,
               previousEndDate,
-              unit,
+              originalUnit,
               _id,
               initialStartDate,
               initialEndDate,
@@ -468,7 +491,7 @@ const SelectSpace = () => {
                     .toISOString(),
             );
 
-            const everyDayUnitsData = getEveryDayUnits(updatedBookingRange, unit);
+            const everyDayUnitsData = getEveryDayUnits(updatedBookingRange, originalUnit);
 
             return (
               <div className="min-w-[300px]">
@@ -480,7 +503,7 @@ const SelectSpace = () => {
                 />
               </div>
             );
-          }, [startDate, endDate, bookingRange, unit, _id]),
+          }, [startDate, endDate, bookingRange, originalUnit, _id]),
       },
       {
         Header: 'UNIT',

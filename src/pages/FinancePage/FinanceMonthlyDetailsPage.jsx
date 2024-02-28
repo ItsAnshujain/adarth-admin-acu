@@ -79,10 +79,11 @@ const FinanceMonthlyDetailsPage = () => {
   const toggleApproveModal = (financeId, value) =>
     modals.openContextModal('basic', {
       title: '',
+      modalId: financeId,
       innerProps: {
         modalBody: (
           <VerifyApprovalContent
-            onClickCancel={id => modals.closeModal(id)}
+            onClickCancel={() => modals.closeModal(financeId)}
             financeId={financeId}
             value={value}
           />
@@ -187,7 +188,11 @@ const FinanceMonthlyDetailsPage = () => {
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
                   <p
                     className={classNames(
-                      approvalStatus === 'approved' ? 'text-green-400' : 'text-purple-450',
+                      approvalStatus === 'approved'
+                        ? 'text-green-400'
+                        : approvalStatus === 'rejected'
+                        ? 'text-red-450'
+                        : 'text-purple-450',
                       'font-medium',
                     )}
                   >
@@ -195,6 +200,8 @@ const FinanceMonthlyDetailsPage = () => {
                       ? 'Sent for Approval'
                       : approvalStatus === 'approved'
                       ? 'Approved'
+                      : approvalStatus === 'rejected'
+                      ? 'Rejected'
                       : '-'}
                   </p>
                 </RoleBased>
@@ -372,7 +379,11 @@ const FinanceMonthlyDetailsPage = () => {
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
                   <p
                     className={classNames(
-                      approvalStatus === 'approved' ? 'text-green-400' : 'text-purple-450',
+                      approvalStatus === 'approved'
+                        ? 'text-green-400'
+                        : approvalStatus === 'rejected'
+                        ? 'text-red-450'
+                        : 'text-purple-450',
                       'font-medium',
                     )}
                   >
@@ -380,6 +391,8 @@ const FinanceMonthlyDetailsPage = () => {
                       ? 'Sent for Approval'
                       : approvalStatus === 'approved'
                       ? 'Approved'
+                      : approvalStatus === 'rejected'
+                      ? 'Rejected'
                       : '-'}
                   </p>
                 </RoleBased>
@@ -557,7 +570,11 @@ const FinanceMonthlyDetailsPage = () => {
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
                   <p
                     className={classNames(
-                      approvalStatus === 'approved' ? 'text-green-400' : 'text-purple-450',
+                      approvalStatus === 'approved'
+                        ? 'text-green-400'
+                        : approvalStatus === 'rejected'
+                        ? 'text-red-450'
+                        : 'text-purple-450',
                       'font-medium',
                     )}
                   >
@@ -565,6 +582,8 @@ const FinanceMonthlyDetailsPage = () => {
                       ? 'Sent for Approval'
                       : approvalStatus === 'approved'
                       ? 'Approved'
+                      : approvalStatus === 'rejected'
+                      ? 'Rejected'
                       : '-'}
                   </p>
                 </RoleBased>

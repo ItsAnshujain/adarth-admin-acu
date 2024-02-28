@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { ToWords } from 'to-words';
-import { DatePicker } from '@mantine/dates';
+import { DatePickerInput } from '@mantine/dates';
 import { ActionIcon, Button, Group, Menu, Text } from '@mantine/core';
 import { Edit2, Trash2 } from 'react-feather';
 import Table from '../../../Table/Table';
@@ -117,9 +117,9 @@ const PurchaseOrder = ({
         }) =>
           useMemo(
             () => (
-              <DatePicker
+              <DatePickerInput
                 hideOutsideDates
-                defaultValue={endDate || new Date()}
+                defaultValue={new Date(endDate)}
                 placeholder="Month Day, Year"
                 minDate={new Date()}
                 onChange={val => updateData('endDate', val, _id)}

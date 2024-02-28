@@ -4,7 +4,6 @@ import React, { useEffect, useMemo } from 'react';
 import * as yup from 'yup';
 import { v4 as uuidv4 } from 'uuid';
 import { showNotification } from '@mantine/notifications';
-import DatePicker from '../../shared/DatePicker';
 import NumberInput from '../../shared/NumberInput';
 import TextInput from '../../shared/TextInput';
 import { FormProvider, useForm, useFormContext } from '../../../context/formContext';
@@ -14,6 +13,7 @@ import { calculateTotalMonths, serialize } from '../../../utils';
 import Select from '../../shared/Select';
 import { FACING_VALUE_LIST } from '../../../utils/constants';
 import TextareaInput from '../../shared/TextareaInput';
+import DatePickerInput from '../../shared/DatePickerInput';
 
 const query = {
   parentId: null,
@@ -26,21 +26,21 @@ const query = {
 const initialPurchaseValues = {
   name: '',
   location: '',
-  startDate: '',
-  endDate: '',
-  quantity: null,
+  startDate: null,
+  endDate: null,
+  quantity: '',
   city: '',
   state: '',
   unit: 0,
   displayCostPerMonth: 0,
   size: [
     {
-      height: null,
-      width: null,
+      height: '',
+      width: '',
       key: uuidv4(),
     },
   ],
-  width: null,
+  width: '',
   facing: {
     value: '',
     label: '',
@@ -54,8 +54,12 @@ const initialPurchaseValues = {
 const purchaseSchema = yup.object({
   name: yup.string().trim().required('Description is required'),
   location: yup.string().trim().required('Location is required'),
-  startDate: yup.string().trim().required('Start Date is required'),
-  endDate: yup.string().trim().required('End Date is required'),
+  startDate: yup
+    .string()
+    .trim()
+    .typeError('Start Date is required')
+    .required('Start Date is required'),
+  endDate: yup.string().trim().typeError('End Date is required').required('End Date is required'),
   city: yup.string().trim().required('City is required'),
   state: yup.string().trim().required('State is required'),
   unit: yup
@@ -107,21 +111,21 @@ const purchaseSchema = yup.object({
 const initialReleaseValues = {
   name: '',
   location: '',
-  startDate: '',
-  endDate: '',
-  quantity: null,
+  startDate: null,
+  endDate: null,
+  quantity: '',
   city: '',
   state: '',
   unit: 0,
   displayCostPerMonth: 0,
   size: [
     {
-      height: null,
-      width: null,
+      height: '',
+      width: '',
       key: uuidv4(),
     },
   ],
-  width: null,
+  width: '',
   facing: {
     value: '',
     label: '',
@@ -135,8 +139,12 @@ const initialReleaseValues = {
 const releaseSchema = yup.object({
   name: yup.string().trim().required('Description is required'),
   location: yup.string().trim().required('Location is required'),
-  startDate: yup.string().trim().required('Start Date is required'),
-  endDate: yup.string().trim().required('End Date is required'),
+  startDate: yup
+    .string()
+    .trim()
+    .typeError('Start Date is required')
+    .required('Start Date is required'),
+  endDate: yup.string().trim().typeError('End Date is required').required('End Date is required'),
   city: yup.string().trim().required('City is required'),
   state: yup.string().trim().required('State is required'),
   unit: yup
@@ -188,21 +196,21 @@ const releaseSchema = yup.object({
 const initialInvoiceValues = {
   name: '',
   location: '',
-  startDate: '',
-  endDate: '',
-  quantity: null,
+  startDate: null,
+  endDate: null,
+  quantity: '',
   city: '',
   state: '',
   unit: 0,
   displayCostPerMonth: 0,
   size: [
     {
-      height: null,
-      width: null,
+      height: '',
+      width: '',
       key: uuidv4(),
     },
   ],
-  width: null,
+  width: '',
   facing: {
     value: '',
     label: '',
@@ -216,8 +224,12 @@ const initialInvoiceValues = {
 const invoiceSchema = yup.object({
   name: yup.string().trim().required('Description is required'),
   location: yup.string().trim().required('Location is required'),
-  startDate: yup.string().trim().required('Start Date is required'),
-  endDate: yup.string().trim().required('End Date is required'),
+  startDate: yup
+    .string()
+    .trim()
+    .typeError('Start Date is required')
+    .required('Start Date is required'),
+  endDate: yup.string().trim().typeError('End Date is required').required('End Date is required'),
   city: yup.string().trim().required('City is required'),
   state: yup.string().trim().required('State is required'),
   unit: yup
@@ -402,25 +414,25 @@ const PurchaseAndInvoiceContent = ({
       </div>
 
       <div className="grid grid-cols-2 gap-x-4">
-        <DatePicker
+        <DatePickerInput
           hideOutsideDates
           label="Start Date"
           name="startDate"
           withAsterisk
           placeholder="DD/MM/YYYY"
           minDate={new Date()}
-          errors={errors}
+          error={errors.startDate}
           size="md"
           className="mb-4"
         />
-        <DatePicker
+        <DatePickerInput
           hideOutsideDates
           label="End Date"
           name="endDate"
           withAsterisk
           placeholder="DD/MM/YYYY"
           minDate={new Date()}
-          errors={errors}
+          error={errors.endDate}
           size="md"
           className="mb-4"
         />
@@ -596,6 +608,7 @@ const ReleaseContent = ({
 }) => {
   const { errors, values, setFieldValue, setValues, insertListItem, removeListItem } =
     useFormContext();
+
   const {
     data: facingData,
     isLoading: isFacingLoading,
@@ -719,25 +732,25 @@ const ReleaseContent = ({
       </div>
 
       <div className="grid grid-cols-2 gap-x-4">
-        <DatePicker
+        <DatePickerInput
           hideOutsideDates
           label="Start Date"
           name="startDate"
           withAsterisk
           placeholder="DD/MM/YYYY"
           minDate={new Date()}
-          errors={errors}
+          error={errors.startDate}
           size="md"
           className="mb-4"
         />
-        <DatePicker
+        <DatePickerInput
           hideOutsideDates
           label="End Date"
           name="endDate"
           withAsterisk
           placeholder="DD/MM/YYYY"
           minDate={new Date()}
-          errors={errors}
+          error={errors.endDate}
           size="md"
           className="mb-4"
         />
