@@ -20,7 +20,7 @@ const RepositoryMenuPopover = () => (
         component={Link}
         to="/repository/terms-and-conditions"
       >
-        <span className="text-sm">Terms & Conditions</span>
+        <span className="text-sm">Terms &amp; Conditions</span>
       </Menu.Item>
       <Menu.Item className="text-white hover:text-black" component={Link} to="/repository/company">
         <span className="text-sm">Company</span>
