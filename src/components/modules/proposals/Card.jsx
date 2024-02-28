@@ -1,7 +1,8 @@
-import { Text, Card as MantineCard } from '@mantine/core';
+import { Text, Card as MantineCard, ActionIcon } from '@mantine/core';
+import { IconEye } from '@tabler/icons';
 import ProposalsMenuPopover from '../../Popovers/ProposalsMenuPopover';
 
-const Card = ({ proposalData }) => (
+const Card = ({ proposalData, onOpen, setSelectedProposalData = () => {} }) => (
   <MantineCard
     className="flex flex-col bg-white w-[270px] max-h-[380px]"
     withBorder
@@ -26,7 +27,20 @@ const Card = ({ proposalData }) => (
         </div>
       </div>
       <div className="flex justify-between items-center">
-        <p className="text-purple-450 font-bold">₹{proposalData?.price || 0}</p>
+        <div className="flex items-center">
+          <p className="text-purple-450 font-bold">₹{proposalData?.price || 0}</p>
+          <ActionIcon
+            onClick={e => {
+              e.preventDefault();
+              setSelectedProposalData(proposalData?.spaces);
+              onOpen();
+            }}
+            withinPortal
+          >
+            <IconEye color="black" size={20} />
+          </ActionIcon>
+        </div>
+
         <ProposalsMenuPopover
           itemId={proposalData?._id}
           enableEdit={proposalData?.creator && !proposalData?.creator?.isPeer}

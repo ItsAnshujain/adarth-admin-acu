@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
 import shallow from 'zustand/shallow';
 import GoogleMapReact from 'google-map-react';
-import { IconX } from '@tabler/icons';
+import { IconEye, IconX } from '@tabler/icons';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Header from '../../components/modules/proposals/ViewProposal/Header';
@@ -37,6 +37,7 @@ import ShareContent from '../../components/modules/proposals/ViewProposal/ShareC
 import MarkerIcon from '../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
+import AddEditPriceDrawer from '../../components/modules/bookings/Create/AddEditPriceDrawer';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -60,6 +61,8 @@ const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const ProposalDetailsPage = () => {
   const modals = useModals();
+  const [inventoryPriceDrawerOpened, inventoryPriceDrawerActions] = useDisclosure();
+  const [selectedInventoryId, setSelectedInventoryId] = useState('');
   const [mapInstance, setMapInstance] = useState(null);
   const userId = useUserStore(state => state.id);
   const [searchInput, setSearchInput] = useState('');
@@ -279,9 +282,26 @@ const ProposalDetailsPage = () => {
         accessor: 'price',
         Cell: ({
           row: {
-            original: { price },
+            original: { price, _id },
           },
-        }) => useMemo(() => <p>{price ? toIndianCurrency(price) : 0}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center">
+                <p>{price ? toIndianCurrency(price) : 0}</p>{' '}
+                <ActionIcon
+                  title="Preview Media"
+                  onClick={() => {
+                    inventoryPriceDrawerActions.open();
+                    setSelectedInventoryId(_id);
+                  }}
+                >
+                  <IconEye color="black" size={20} />
+                </ActionIcon>
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'UNIT',
@@ -418,6 +438,16 @@ const ProposalDetailsPage = () => {
     }
   }, [proposalData?.inventories?.docs?.length, mapInstance]);
 
+  const memoizedInventoryData = useMemo(
+    () =>
+      proposalData?.inventories?.docs?.map(doc => ({
+        ...doc,
+        dimension: doc.size,
+        ...doc.pricingDetails,
+      })),
+    [proposalData?.inventories?.docs],
+  );
+
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <Header
@@ -435,9 +465,7 @@ const ProposalDetailsPage = () => {
         inventoryData={proposalData?.inventories}
         proposalId={proposalId}
       />
-
       <p className="text-lg font-bold py-2">Location Details</p>
-
       <div className="mt-1 mb-4 h-[40vh] relative">
         <div className="absolute z-40 top-3 right-14">
           <Select
@@ -492,7 +520,6 @@ const ProposalDetailsPage = () => {
           )}
         </GoogleMapReact>
       </div>
-
       <div className="flex justify-between mt-4">
         <Text size="xl" weight="bolder">
           Selected Inventory
@@ -506,7 +533,6 @@ const ProposalDetailsPage = () => {
           </div>
         </div>
       </div>
-
       <div className="flex justify-between h-20 items-center">
         <RowsPerPage
           setCount={currentLimit => {
@@ -547,6 +573,14 @@ const ProposalDetailsPage = () => {
         parentId={proposalData?.proposal?.parentProposalId}
         parentVersionTitle={proposalData?.proposal?.versionTitle}
       />
+      <AddEditPriceDrawer
+        isOpened={inventoryPriceDrawerOpened}
+        onClose={inventoryPriceDrawerActions.close}
+        selectedInventories={memoizedInventoryData}
+        selectedInventoryId={selectedInventoryId}
+        type="proposal"
+        mode="view"
+      />{' '}
     </div>
   );
 };
