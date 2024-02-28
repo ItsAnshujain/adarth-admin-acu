@@ -543,6 +543,14 @@ export const calculateTotalAmountWithPercentage = (value, percentage) => {
   return Number(value);
 };
 
+export const calculateGst = (value, percentage) => {
+  if (percentage > 0) {
+    return Number(((Number(value) || 0) * (Number(percentage) / 100)).toFixed(2));
+  }
+
+  return 0;
+};
+
 export const calculateTotalPrice = (option = []) => {
   if (!option.length) return 0;
   const totalPrice = option.reduce((acc, item) => acc + +(item.price || 0), 0);

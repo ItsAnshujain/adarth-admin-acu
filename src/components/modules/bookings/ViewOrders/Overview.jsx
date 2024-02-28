@@ -27,6 +27,7 @@ import NoData from '../../../shared/NoData';
 import modalConfig from '../../../../utils/modalConfig';
 import { indianMapCoordinates } from '../../../../utils';
 import PriceBreakdownDrawer from './PriceBreakdownDrawer';
+import AddEditPriceDrawer from '../Create/AddEditPriceDrawer';
 
 const TRANSITION_DURATION = 200;
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
@@ -55,6 +56,8 @@ const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 const Overview = ({ bookingData = {}, isLoading }) => {
   const modals = useModals();
   const [drawerOpened, drawerActions] = useDisclosure();
+  const [inventoryPriceDrawerOpened, inventoryPriceDrawerActions] = useDisclosure();
+  const [selectedInventoryId, setSelectedInventoryId] = useState('');
   const [mapInstance, setMapInstance] = useState(null);
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -145,6 +148,16 @@ const Overview = ({ bookingData = {}, isLoading }) => {
     const result = getAllSpacePhotos();
     setPreviewSpacesPhotos(result);
   }, [bookingData]);
+
+  const memoizedInventoryData = useMemo(
+    () =>
+      bookingData?.campaign?.spaces.map(space => ({
+        ...space,
+        dimension: space.specifications.size,
+        discount: space.discountPercentage,
+      })),
+    [bookingData?.campaign?.spaces],
+  );
 
   return (
     <>
@@ -272,6 +285,8 @@ const Overview = ({ bookingData = {}, isLoading }) => {
                     (!!bookingData?.paymentStatus && !bookingData?.paymentStatus?.Unpaid) ||
                     (!!bookingData?.paymentStatus && bookingData?.paymentStatus?.Paid)
                   }
+                  showInventoryPriceDrawer={inventoryPriceDrawerActions.open}
+                  setSelectedInventoryId={setSelectedInventoryId}
                 />
               ))
               .sort((a, b) => {
@@ -300,7 +315,20 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           />
         ) : null}
       </div>
-      <PriceBreakdownDrawer isOpened={drawerOpened} onClose={drawerActions.close} />
+      <PriceBreakdownDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        type="booking"
+        spaces={memoizedInventoryData}
+      />
+      <AddEditPriceDrawer
+        isOpened={inventoryPriceDrawerOpened}
+        onClose={inventoryPriceDrawerActions.close}
+        selectedInventories={memoizedInventoryData}
+        selectedInventoryId={selectedInventoryId}
+        type="bookings"
+        mode="view"
+      />
     </>
   );
 };
