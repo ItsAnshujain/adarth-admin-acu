@@ -12,6 +12,7 @@ import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import modalConfig from '../../../utils/modalConfig';
 import AddCoCompanyContent from './AddCoCompanyContent';
+import useCompanies from '../../../apis/queries/companies.queries';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -35,6 +36,20 @@ const Header = () => {
     sortBy: 'createdAt',
     sortOrder: 'desc',
     search: debouncedSearch,
+  });
+
+  const page = searchParams.get('page');
+  const limit = searchParams.get('limit');
+  const sortBy = searchParams.get('sortBy');
+  const sortOrder = searchParams.get('sortOrder');
+
+  const coCompaniesQuery = useCompanies({
+    page,
+    limit,
+    sortBy,
+    sortOrder,
+    search: debouncedSearch,
+    type: 'co-company',
   });
 
   const handleSortByColumn = colId => {
@@ -206,6 +221,7 @@ const Header = () => {
     }
     return columns.filter(col => col.show);
   }, [activeTab]);
+
   return (
     <div className="flex justify-between py-4">
       <Tabs className="w-full" value={activeTab}>
@@ -273,16 +289,16 @@ const Header = () => {
               setCount={currentLimit => {
                 handlePagination('limit', currentLimit);
               }}
-              count={10}
+              count="10"
             />
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
           <Table
-            data={[{}]}
+            data={coCompaniesQuery.data.docs || []}
             COLUMNS={memoizedColumns}
-            activePage={1}
-            totalPages={1}
-            setActivePage={() => {}}
+            activePage={searchParams.get('page')}
+            totalPages={coCompaniesQuery?.data?.totalPages || 1}
+            setActivePage={currentPage => handlePagination('page', currentPage)}
             rowCountLimit={10}
             handleSorting={handleSortByColumn}
           />
@@ -294,16 +310,16 @@ const Header = () => {
               setCount={currentLimit => {
                 handlePagination('limit', currentLimit);
               }}
-              count={10}
+              count="10"
             />
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
           <Table
-            data={[{}]}
+            data={coCompaniesQuery.data.docs || []}
             COLUMNS={memoizedColumns}
-            activePage={1}
-            totalPages={1}
-            setActivePage={() => {}}
+            activePage={searchParams.get('page')}
+            totalPages={coCompaniesQuery?.data?.totalPages || 1}
+            setActivePage={currentPage => handlePagination('page', currentPage)}
             rowCountLimit={10}
             handleSorting={handleSortByColumn}
           />
