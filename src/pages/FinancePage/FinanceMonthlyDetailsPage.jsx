@@ -373,7 +373,7 @@ const FinanceMonthlyDetailsPage = () => {
                     rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                     rightSectionWidth={40}
                     onChange={e => toggleApproveModal(_id, e)}
-                    defaultValue={approvalStatus || ''}
+                    value={approvalStatus || ''}
                   />
                 </RoleBased>
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
@@ -564,7 +564,7 @@ const FinanceMonthlyDetailsPage = () => {
                     rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                     rightSectionWidth={40}
                     onChange={e => toggleApproveModal(_id, e)}
-                    defaultValue={approvalStatus || ''}
+                    value={approvalStatus || ''}
                   />
                 </RoleBased>
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
