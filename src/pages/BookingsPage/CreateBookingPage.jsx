@@ -120,6 +120,7 @@ const CreateBookingPage = () => {
       const data = { ...formData };
 
       setFormStep(3);
+
       if (!watchPlace?.length) {
         showNotification({
           title: 'Please select atleast one place to continue',
@@ -192,6 +193,7 @@ const CreateBookingPage = () => {
           ...item,
           id: item._id,
           price: +Number(item.price?.toFixed(2) || 0),
+          totalPrice: +Number(item.price?.toFixed(2) || 0),
           media: isValidURL(item.media) ? item.media : undefined,
           startDate: item.startDate
             ? dayjs(item.startDate).endOf('day').toISOString()
@@ -207,12 +209,23 @@ const CreateBookingPage = () => {
         };
       });
 
-      if (data.place.some(item => item.price === 0 || !item.price)) {
+      if (
+        data.place.some(
+          item =>
+            (item.totalDisplayCost === 0 || !item.totalDisplayCost) &&
+            (item.totalPrintingCost === 0 || !item.totalPrintingCost) &&
+            (item.totalMountingCost === 0 || !item.totalMountingCost) &&
+            (item.oneTimeInstallationCost === 0 || !item.oneTimeInstallationCost) &&
+            (item.monthlyAdditionalCost === 0 || !item.monthlyAdditionalCost) &&
+            (item.otherCharges === 0 || !item.otherCharges),
+        )
+      ) {
         showNotification({
-          title: 'One of your space price is zero. Please add the price to continue',
+          title: 'Warning',
+          message: 'Please review the booking as one or more inventory prices are zero.',
           color: 'blue',
+          autoClose: 6000,
         });
-        return;
       }
 
       data.place.forEach(item => {
