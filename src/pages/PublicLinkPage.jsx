@@ -452,8 +452,8 @@ const PublicLinkPage = () => {
       },
       {
         Header: 'TOTAL PRICE',
+        show: proposalData?.proposal?.displayColumns?.some(col => col === 'totalPrice'),
         accessor: 'price',
-        show: true,
         Cell: ({ row: { original } }) =>
           useMemo(
             () =>
