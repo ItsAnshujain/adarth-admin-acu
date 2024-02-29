@@ -22,19 +22,28 @@ const PriceBreakdownDrawer = ({ isOpened, styles, onClose, type, spaces }) => {
 
     spaces?.forEach(space => {
       const totalDisplayCost =
-        Number(space.totalDisplayCost) / (1 + space.displayCostGstPercentage / 100) || 0;
+        Number(Number(space.totalDisplayCost).toFixed(2)) /
+          (1 + space.displayCostGstPercentage / 100) || 0;
       const displayCostGst = calculateGst(totalDisplayCost, space.displayCostGstPercentage) || 0;
       const totalPrintingCost =
-        Number(space.totalPrintingCost) / (1 + space.printingGstPercentage / 100) || 0;
+        Number(
+          (Number(space.totalPrintingCost) / (1 + space.printingGstPercentage / 100)).toFixed(2),
+        ) || 0;
+
       const printingCostGst = calculateGst(totalPrintingCost, space.printingGstPercentage) || 0;
 
       const totalMountingCost =
-        Number(space.totalMountingCost) / (1 + space.mountingGstPercentage / 100) || 0;
+        Number(
+          (Number(space.totalMountingCost) / (1 + space.mountingGstPercentage / 100)).toFixed(2),
+        ) || 0;
       const mountingCostGst = calculateGst(totalMountingCost, space.mountingGstPercentage) || 0;
 
       const discountedDisplayCost =
-        Number(space.discountedDisplayCost) *
-          calculateTotalMonths(space.startDate, space.endDate) || 0;
+        space.discountedDisplayCost > 0
+          ? Number(space.discountedDisplayCost) *
+            calculateTotalMonths(space.startDate, space.endDate)
+          : totalDisplayCost;
+
       const totalMonthlyAdditionalCost =
         Number(space.monthlyAdditionalCost) *
           calculateTotalMonths(space.startDate, space.endDate) || 0;
@@ -50,9 +59,10 @@ const PriceBreakdownDrawer = ({ isOpened, styles, onClose, type, spaces }) => {
       calculatedData.monthlyAdditionalCost += totalMonthlyAdditionalCost;
       calculatedData.otherCharges += Number(space.otherCharges) || 0;
       calculatedData.totalPrice += Number(space.campaignPrice) || Number(space.price) || 0;
+
       calculatedData.discount +=
         space.discountOn === 'displayCost'
-          ? calculateGst(space.displayCostPerMonth, Number(space.discountPercentage)) || 0
+          ? calculateGst(space.totalDisplayCost, Number(space.discountPercentage)) || 0
           : 0;
     });
     return calculatedData;

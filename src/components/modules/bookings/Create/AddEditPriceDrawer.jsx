@@ -481,9 +481,11 @@ const AddEditPriceDrawer = ({
             <div className="border border-yellow-350 bg-yellow-250 m-6 p-4 rounded-lg flex flex-col gap-4">
               <div>
                 <div className="text-lg font-bold">Apply Display Cost</div>
-                <div className="text-gray-500 text-base">
-                  Please select either Display Cost (per month) or Display Cost (per sq. ft.)
-                </div>
+                {mode !== 'view' ? (
+                  <div className="text-gray-500 text-base">
+                    Please select either Display Cost (per month) or Display Cost (per sq. ft.)
+                  </div>
+                ) : null}
               </div>
               <div className="text-base font-bold">Display Cost (per month)</div>
               <div className="flex flex-col gap-4">
