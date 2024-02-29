@@ -750,16 +750,14 @@ const InventoryReportsPage = () => {
                     <p className="text-xl">No records found</p>
                   </div>
                 ) : null}
-                {inventoryReportList?.docs?.length ? (
-                  <Table
-                    COLUMNS={inventoryColumn}
-                    data={inventoryReportList?.docs || []}
-                    handleSorting={handleSortByColumn}
-                    activePage={inventoryReportList?.page || 1}
-                    totalPages={inventoryReportList?.totalPages || 1}
-                    setActivePage={currentPage => handlePagination('page', currentPage)}
-                  />
-                ) : null}
+                <Table
+                  COLUMNS={inventoryColumn}
+                  data={inventoryReportList?.docs || []}
+                  handleSorting={handleSortByColumn}
+                  activePage={inventoryReportList?.page || 1}
+                  totalPages={inventoryReportList?.totalPages || 1}
+                  setActivePage={currentPage => handlePagination('page', currentPage)}
+                />
               </Tabs.Panel>
               <Tabs.Panel value="messages" pt="lg">
                 {!inventoryStats?.best?.length && !isInventoryStatsLoading ? (
@@ -767,13 +765,11 @@ const InventoryReportsPage = () => {
                     <p className="text-xl">No records found</p>
                   </div>
                 ) : null}
-                {inventoryStats?.best?.length ? (
-                  <Table
-                    COLUMNS={performingInventoryColumn}
-                    data={inventoryStats?.best || []}
-                    showPagination={false}
-                  />
-                ) : null}
+                <Table
+                  COLUMNS={performingInventoryColumn}
+                  data={inventoryStats?.best || []}
+                  showPagination={false}
+                />
               </Tabs.Panel>
               <Tabs.Panel value="settings" pt="lg">
                 {!inventoryStats?.worst?.length && !isInventoryStatsLoading ? (
@@ -781,13 +777,11 @@ const InventoryReportsPage = () => {
                     <p className="text-xl">No records found</p>
                   </div>
                 ) : null}
-                {inventoryStats?.worst?.length ? (
-                  <Table
-                    COLUMNS={performingInventoryColumn}
-                    data={inventoryStats?.worst || []}
-                    showPagination={false}
-                  />
-                ) : null}
+                <Table
+                  COLUMNS={performingInventoryColumn}
+                  data={inventoryStats?.worst || []}
+                  showPagination={false}
+                />
               </Tabs.Panel>
             </Tabs>
           </div>

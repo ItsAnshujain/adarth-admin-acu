@@ -12,6 +12,9 @@ import { ROLES } from './utils';
 import FileUpload from './components/modules/finance/Create/FileUpload';
 import useUserStore from './store/user.store';
 import { useFetchUsersById } from './apis/queries/users.queries';
+import GalleryPage from './pages/GalleryPage';
+import UploadImagesPage from './pages/GalleryPage/UploadImagesPage';
+import GalleryImagesDashboardPage from './pages/GalleryPage/GalleryImagesDashboard';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -293,6 +296,32 @@ const App = () => {
             element={
               <Suspense fallback={<CustomLoader />}>
                 <CreateBookingPage />
+              </Suspense>
+            }
+          />
+        </Route>
+        <Route
+          path="gallery"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <GalleryPage />
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <GalleryImagesDashboardPage />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="upload-images"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <UploadImagesPage />
               </Suspense>
             }
           />
