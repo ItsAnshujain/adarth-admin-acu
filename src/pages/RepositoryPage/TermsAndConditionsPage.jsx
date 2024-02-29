@@ -7,15 +7,29 @@ import { generateSlNo } from '../../utils';
 import TermsAndConditionsMenuPopover from '../../components/Popovers/TermsAndConditionsMenuPopover';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
+import { useProposalTerms } from '../../apis/queries/proposal.queries';
 
 const TermsAndConditionsPage = () => {
   const [searchInput, setSearchInput] = useState('');
-  const [debouncedSearch] = useDebouncedValue(searchInput, 800);
+  const [debouncedSearch] = useDebouncedValue(searchInput, 200);
+
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
     limit: 10,
-    sortBy: 'createdAt',
+    sortBy: 'isGlobal',
     sortOrder: 'desc',
+  });
+
+  const page = searchParams.get('page');
+  const limit = searchParams.get('limit');
+  const sortBy = searchParams.get('sortBy');
+  const sortOrder = searchParams.get('sortOrder');
+
+  const proposalTermsQuery = useProposalTerms({
+    page,
+    limit,
+    sortBy,
+    sortOrder,
     search: debouncedSearch,
   });
 
@@ -28,7 +42,7 @@ const TermsAndConditionsPage = () => {
       },
       {
         Header: 'TERMS AND CONDITIONS',
-        accessor: 'termsAndCondition',
+        accessor: 'name',
       },
       {
         Header: 'ACTION',
@@ -65,6 +79,7 @@ const TermsAndConditionsPage = () => {
     else searchParams.delete(key);
     setSearchParams(searchParams);
   };
+
   return (
     <div className="overflow-y-auto px-5 col-span-10">
       <Header />
@@ -75,19 +90,23 @@ const TermsAndConditionsPage = () => {
           }}
           count={10}
         />
-        <Search search={searchInput} setSearch={setSearchInput} />
+        <Search
+          search={searchInput}
+          setSearch={val => {
+            setSearchInput(val);
+            searchParams.set('page', 1);
+            setSearchParams(searchParams, {
+              replace: true,
+            });
+          }}
+        />
       </div>
       <Table
-        data={[
-          {
-            id: 10,
-            termsAndCondition: 'asd',
-          },
-        ]}
+        data={proposalTermsQuery?.data?.docs || []}
         COLUMNS={columns}
-        activePage={1}
-        totalPages={1}
-        setActivePage={() => {}}
+        activePage={searchParams.get('page')}
+        totalPages={proposalTermsQuery?.data?.totalPages || 1}
+        setActivePage={currentPage => handlePagination('page', currentPage)}
         rowCountLimit={10}
         handleSorting={handleSortByColumn}
       />

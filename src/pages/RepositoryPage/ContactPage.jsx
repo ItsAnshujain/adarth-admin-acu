@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
+import dayjs from 'dayjs';
 import { useModals } from '@mantine/modals';
 import Table from '../../components/Table/Table';
 import { generateSlNo } from '../../utils';
@@ -8,6 +9,8 @@ import ContactMenuPopover from '../../components/Popovers/ContactMenuPopover';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
 import Header from '../../components/modules/contact/Header';
+import useContacts from '../../apis/queries/contacts.queries';
+import { DATE_SECOND_FORMAT } from '../../utils/constants';
 import modalConfig from '../../utils/modalConfig';
 import AddContactContent from '../../components/modules/contact/AddContactContent';
 
@@ -30,6 +33,19 @@ const ContactPage = () => {
     limit: 10,
     sortBy: 'createdAt',
     sortOrder: 'desc',
+    search: debouncedSearch,
+  });
+
+  const page = searchParams.get('page');
+  const limit = searchParams.get('limit');
+  const sortBy = searchParams.get('sortBy');
+  const sortOrder = searchParams.get('sortOrder');
+
+  const contactsQuery = useContacts({
+    page,
+    limit,
+    sortBy,
+    sortOrder,
     search: debouncedSearch,
   });
 
@@ -71,23 +87,47 @@ const ContactPage = () => {
       },
       {
         Header: 'COMPANY NAME',
-        accessor: 'companyName',
+        accessor: 'company.companyName',
       },
       {
         Header: 'PARENT COMPANY NAME',
-        accessor: 'parentCompanyName',
+        accessor: 'parentCompany.companyName',
       },
       {
         Header: 'CITY',
-        accessor: 'city',
+        accessor: 'address.city',
       },
       {
         Header: 'STATE & STATE CODE',
-        accessor: 'state',
+        accessor: 'address.state',
+        Cell: ({
+          row: {
+            original: {
+              address: { state, stateCode },
+            },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div>
+                ({stateCode}) {state}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'BIRTHDAY',
-        accessor: 'birthday',
+        accessor: 'birthDate',
+        Cell: ({
+          row: {
+            original: { birthDate },
+          },
+        }) =>
+          useMemo(
+            () => <p className="bg-gray-450 px-1">{dayjs(birthDate).format(DATE_SECOND_FORMAT)}</p>,
+            [],
+          ),
       },
       {
         Header: 'ACTION',
@@ -133,21 +173,16 @@ const ContactPage = () => {
             setCount={currentLimit => {
               handlePagination('limit', currentLimit);
             }}
-            count={10}
+            count="10"
           />
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
         <Table
-          data={[
-            {
-              id: 10,
-              termsAndCondition: 'asd',
-            },
-          ]}
+          data={contactsQuery?.data?.docs || []}
           COLUMNS={columns}
-          activePage={1}
-          totalPages={1}
-          setActivePage={() => {}}
+          activePage={searchParams.get('page')}
+          totalPages={contactsQuery?.data?.totalPages || 1}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={10}
           handleSorting={handleSortByColumn}
         />
