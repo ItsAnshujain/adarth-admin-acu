@@ -12,6 +12,7 @@ import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import modalConfig from '../../../utils/modalConfig';
 import AddCompanyContent from './AddCompanyContent';
+import useCompanies from '../../../apis/queries/companies.queries';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -29,6 +30,7 @@ const Header = () => {
   const [activeTab, setActiveTab] = useState('companies');
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
+
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
     limit: 10,
@@ -36,6 +38,23 @@ const Header = () => {
     sortOrder: 'desc',
     search: debouncedSearch,
   });
+
+  const page = searchParams.get('page');
+  const limit = searchParams.get('limit');
+  const sortBy = searchParams.get('sortBy');
+  const sortOrder = searchParams.get('sortOrder');
+
+  const companiesQuery = useCompanies({
+    page,
+    limit,
+    sortBy,
+    sortOrder,
+    search: debouncedSearch,
+    type: 'lead-company',
+    isParent: activeTab === 'parent-companies',
+  });
+
+  console.log(companiesQuery);
 
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
@@ -268,16 +287,16 @@ const Header = () => {
               setCount={currentLimit => {
                 handlePagination('limit', currentLimit);
               }}
-              count={10}
+              count="10"
             />
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
           <Table
-            data={[{}]}
+            data={[]} // companiesQuery?.data?.docs ||
             COLUMNS={memoizedColumns}
-            activePage={1}
-            totalPages={1}
-            setActivePage={() => {}}
+            activePage={searchParams.get('page') || 1}
+            totalPages={companiesQuery?.data?.totalPages || 1}
+            setActivePage={currentPage => handlePagination('page', currentPage)}
             rowCountLimit={10}
             handleSorting={handleSortByColumn}
           />
@@ -289,16 +308,16 @@ const Header = () => {
               setCount={currentLimit => {
                 handlePagination('limit', currentLimit);
               }}
-              count={10}
+              count="10"
             />
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
           <Table
-            data={[{}]}
+            data={[]} // companiesQuery?.data?.docs ||
             COLUMNS={memoizedColumns}
-            activePage={1}
-            totalPages={1}
-            setActivePage={() => {}}
+            activePage={searchParams.get('page') || 1}
+            totalPages={companiesQuery?.data?.totalPages || 1}
+            setActivePage={currentPage => handlePagination('page', currentPage)}
             rowCountLimit={10}
             handleSorting={handleSortByColumn}
           />

@@ -3,4 +3,8 @@ import http from '../http';
 
 const fetchCompanies = payload => http.get(urlcat('/companies', payload));
 
+export const addCompany = payload => http.post(urlcat('/companies', payload));
+
+export const fetchStateAndStateCode = search => http.get(urlcat(`/states?search=${search}`));
+
 export default fetchCompanies;

@@ -191,3 +191,15 @@ export const proposalColumns = [
   { name: 'Availability', enum: 'availability', mandatory: false },
   { name: 'Extension', enum: 'extension', mandatory: false },
 ];
+
+export const NatureOfAccountOptions = ['Debitor', 'Creditor'];
+
+export const CompanyTypeOptions = [
+  'National Agency',
+  'Local Agency',
+  'Direct Client',
+  'Government',
+  'Media Owner',
+  'Mounter, Printer',
+  'Others',
+];
