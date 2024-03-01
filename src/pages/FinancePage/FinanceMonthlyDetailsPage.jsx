@@ -79,10 +79,11 @@ const FinanceMonthlyDetailsPage = () => {
   const toggleApproveModal = (financeId, value) =>
     modals.openContextModal('basic', {
       title: '',
+      modalId: financeId,
       innerProps: {
         modalBody: (
           <VerifyApprovalContent
-            onClickCancel={id => modals.closeModal(id)}
+            onClickCancel={() => modals.closeModal(financeId)}
             financeId={financeId}
             value={value}
           />
@@ -372,7 +373,7 @@ const FinanceMonthlyDetailsPage = () => {
                     rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                     rightSectionWidth={40}
                     onChange={e => toggleApproveModal(_id, e)}
-                    defaultValue={approvalStatus || ''}
+                    value={approvalStatus || ''}
                   />
                 </RoleBased>
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
@@ -563,7 +564,7 @@ const FinanceMonthlyDetailsPage = () => {
                     rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                     rightSectionWidth={40}
                     onChange={e => toggleApproveModal(_id, e)}
-                    defaultValue={approvalStatus || ''}
+                    value={approvalStatus || ''}
                   />
                 </RoleBased>
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
