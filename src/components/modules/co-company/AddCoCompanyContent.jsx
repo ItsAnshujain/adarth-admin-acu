@@ -27,7 +27,7 @@ const AddCoCompanyContent = ({ type, onCancel }) => {
             <ControlledTextInput name="companyName" label="Company Name" withAsterisk />
             <ControlledTextInput name="email" label="Email" />
             <ControlledTextInput name="contactNumber" label="Contact Number" />
-            <ControlledTextInput name="faxNumber" label="Fax Name" />
+            <ControlledTextInput name="faxNumber" label="Fax Number" />
             <ControlledTextInput name="pan" label="PAN" />
             <ControlledTextInput name="gstin" label="GSTIN" />
             <ControlledSelect name="natureOfAccount" label="Nature of Account" data={[]} />

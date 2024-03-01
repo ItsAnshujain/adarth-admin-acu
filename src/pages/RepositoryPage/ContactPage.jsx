@@ -185,6 +185,7 @@ const ContactPage = () => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={10}
           handleSorting={handleSortByColumn}
+          loading={contactsQuery.isLoading}
         />
       </div>
     </div>

@@ -50,6 +50,7 @@ const Header = () => {
     sortOrder,
     search: debouncedSearch,
     type: 'co-company',
+    isParent: activeTab === 'sister-companies',
   });
 
   const handleSortByColumn = colId => {
@@ -301,6 +302,7 @@ const Header = () => {
             setActivePage={currentPage => handlePagination('page', currentPage)}
             rowCountLimit={10}
             handleSorting={handleSortByColumn}
+            loading={coCompaniesQuery.isLoading}
           />
         </Tabs.Panel>
         <Tabs.Panel value="sister-companies">
@@ -322,6 +324,7 @@ const Header = () => {
             setActivePage={currentPage => handlePagination('page', currentPage)}
             rowCountLimit={10}
             handleSorting={handleSortByColumn}
+            loading={coCompaniesQuery.isLoading}
           />
         </Tabs.Panel>
       </Tabs>

@@ -30,7 +30,7 @@ const DeleteCompanyContent = ({ onClickCancel = () => {}, onConfirm = () => {}, 
         <div className="flex gap-2  justify-end">
           <Button
             onClick={onClickCancel}
-            className="bg-black text-white rounded-md text-sm px-8 py-3"
+            className="bg-black text-white text-sm px-6 py-3"
             disabled={isLoading}
           >
             No
