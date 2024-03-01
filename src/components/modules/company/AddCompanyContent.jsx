@@ -25,7 +25,7 @@ const schema = yup.object({
   email: yup.string().trim().email('Invalid Email'),
 });
 
-const AddCompanyContent = ({ type, onCancel }) => {
+const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
   const form = useForm({
     resolver: yupResolver(schema),
   });
@@ -104,15 +104,18 @@ const AddCompanyContent = ({ type, onCancel }) => {
         stateCode,
       },
     };
-    addCompanyHandler.mutate(data, {
-      onSuccess: () => {
-        showNotification({
-          title: 'Company added successfully',
-          color: 'green',
-        });
-        onCancel();
-      },
-    });
+
+    if (mode === 'add') {
+      addCompanyHandler.mutate(data, {
+        onSuccess: () => {
+          showNotification({
+            title: 'Company added successfully',
+            color: 'green',
+          });
+          onCancel();
+        },
+      });
+    }
   });
 
   const memoizedStateAndStateCodeList = useMemo(
@@ -128,6 +131,16 @@ const AddCompanyContent = ({ type, onCancel }) => {
   useEffect(() => {
     form.setValue('stateCode', '');
   }, [form.watch('state')]);
+
+  useEffect(() => {
+    form.reset({
+      ...companyData,
+      ...companyData?.companyAddress,
+      ...companyData?.parentCompany,
+      ...companyData?.bankAccountDetails?.[0],
+      parentCompany: companyData?.parentCompany?._id,
+    });
+  }, [companyData]);
 
   const parentCompaniesDropdown = useMemo(
     () =>

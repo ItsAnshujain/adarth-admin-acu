@@ -81,7 +81,11 @@ const Header = () => {
       title: 'Add Company',
       modalId: 'addCompanyModal',
       children: (
-        <AddCompanyContent type="company" onCancel={() => modals.closeModal('addCompanyModal')} />
+        <AddCompanyContent
+          mode="add"
+          type="company"
+          onCancel={() => modals.closeModal('addCompanyModal')}
+        />
       ),
       ...updatedModalConfig,
     });
@@ -93,6 +97,7 @@ const Header = () => {
       modalId: 'addCompanyModal',
       children: (
         <AddCompanyContent
+          mode="add"
           type="parentCompany"
           onCancel={() => modals.closeModal('addCompanyModal')}
         />
@@ -101,24 +106,31 @@ const Header = () => {
     });
   };
 
-  const toggleEditCompanyModal = () => {
+  const toggleEditCompanyModal = companyData => {
     modals.openModal({
       title: 'Edit Company',
       modalId: 'editCompanyModal',
       children: (
-        <AddCompanyContent type="company" onCancel={() => modals.closeModal('editCompanyModal')} />
+        <AddCompanyContent
+          mode="edit"
+          type="company"
+          companyData={companyData}
+          onCancel={() => modals.closeModal('editCompanyModal')}
+        />
       ),
       ...updatedModalConfig,
     });
   };
 
-  const toggleEditParentCompanyModal = () => {
+  const toggleEditParentCompanyModal = companyData => {
     modals.openModal({
       title: 'Edit Parent Company',
       modalId: 'editCompanyModal',
       children: (
         <AddCompanyContent
+          mode="edit"
           type="parentCompany"
+          companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
         />
       ),
@@ -187,18 +199,16 @@ const Header = () => {
         show: true,
         accessor: 'action',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id },
-          },
-        }) =>
+        Cell: ({ row: { original } }) =>
           useMemo(
             () => (
               <CompanyMenuPopover
-                itemId={_id}
+                itemId={original._id}
                 type={activeTab}
-                toggleEdit={
-                  activeTab === 'companies' ? toggleEditCompanyModal : toggleEditParentCompanyModal
+                toggleEdit={() =>
+                  activeTab === 'companies'
+                    ? toggleEditCompanyModal(original)
+                    : toggleEditParentCompanyModal(original)
                 }
               />
             ),
@@ -250,7 +260,7 @@ const Header = () => {
                   className="bg-purple-450 text-white font-normal rounded-md mb-2"
                   leftIcon={<IconChevronDown size={20} />}
                 >
-                  Add Company
+                  {activeTab === 'companies' ? 'Add Company' : 'Add Parent Company'}
                 </Button>
               </Menu.Target>
               <Menu.Dropdown>
