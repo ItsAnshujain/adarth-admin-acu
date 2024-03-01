@@ -54,8 +54,6 @@ const Header = () => {
     isParent: activeTab === 'parent-companies',
   });
 
-  console.log(companiesQuery);
-
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
       searchParams.set('sortOrder', 'asc');
@@ -144,17 +142,17 @@ const Header = () => {
       {
         Header: 'CITY',
         show: true,
-        accessor: 'city',
+        accessor: 'companyAddress.city',
       },
       {
         Header: 'STATE & STATE CODE',
         show: true,
-        accessor: 'state',
+        accessor: 'companyAddress.state',
       },
       {
         Header: 'GSTIN',
         show: true,
-        accessor: 'gst',
+        accessor: 'companyGstNumber',
         disableSortBy: true,
       },
       {
@@ -165,7 +163,7 @@ const Header = () => {
       {
         Header: 'PARENT COMPANY',
         show: activeTab === 'companies',
-        accessor: 'parentCompany',
+        accessor: 'parentCompany.companyName',
       },
       {
         Header: 'NATURE OF ACCOUNT',
@@ -175,7 +173,7 @@ const Header = () => {
       {
         Header: 'CONTACT NUMBER',
         show: true,
-        accessor: 'contact',
+        accessor: 'contactNumber',
         disableSortBy: true,
       },
       {
@@ -292,7 +290,7 @@ const Header = () => {
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
           <Table
-            data={[]} // companiesQuery?.data?.docs ||
+            data={companiesQuery?.data?.docs || []}
             COLUMNS={memoizedColumns}
             activePage={searchParams.get('page') || 1}
             totalPages={companiesQuery?.data?.totalPages || 1}
@@ -313,7 +311,7 @@ const Header = () => {
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
           <Table
-            data={[]} // companiesQuery?.data?.docs ||
+            data={companiesQuery?.data?.docs || []}
             COLUMNS={memoizedColumns}
             activePage={searchParams.get('page') || 1}
             totalPages={companiesQuery?.data?.totalPages || 1}

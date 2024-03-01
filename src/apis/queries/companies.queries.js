@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { onApiError } from '../../utils';
 import fetchCompanies, { addCompany, fetchStateAndStateCode } from '../requests/companies.requests';
 
@@ -13,12 +13,33 @@ const useCompanies = (query, enabled = true) =>
     onError: onApiError,
   });
 
-export const useAddCompany = () =>
-  useMutation(async data => {
-    const res = await addCompany(data);
-    return res;
+export const useInfiniteCompanies = ({ ...query }, enabled = true) =>
+  useInfiniteQuery({
+    queryKey: ['infinite-companies', query],
+    queryFn: async ({ pageParam = 0 }) => {
+      const res = await fetchCompanies({ ...query, page: pageParam || 1 });
+
+      return res.data;
+    },
+    enabled,
+    getNextPageParam: lastPage => (lastPage.hasNextPage ? +lastPage.pagingCounter + 1 : undefined),
   });
 
+export const useAddCompany = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async data => {
+      const res = await addCompany(data);
+      return res;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['companies']);
+      },
+      onError: onApiError,
+    },
+  );
+};
 export const useStateAndStateCode = (search, enabled = true) =>
   useQuery({
     queryKey: ['state-and-state-code', search],

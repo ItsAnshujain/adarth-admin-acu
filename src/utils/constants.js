@@ -195,11 +195,12 @@ export const proposalColumns = [
 export const NatureOfAccountOptions = ['Debitor', 'Creditor'];
 
 export const CompanyTypeOptions = [
-  'National Agency',
-  'Local Agency',
-  'Direct Client',
-  'Government',
-  'Media Owner',
-  'Mounter, Printer',
-  'Others',
+  { label: 'National Agency', value: 'nationalAgency' },
+  { label: 'Local Agency', value: 'localAgency' },
+  { label: 'Direct Client', value: 'directClient' },
+  { label: 'Government', value: 'government' },
+  { label: 'Media Owner', value: 'mediaOwner' },
+  { label: 'Mounter', value: 'mounter' },
+  { label: 'Printer', value: 'printer' },
+  { label: 'Others', value: 'others' },
 ];
