@@ -818,7 +818,7 @@ const CreateFinancePage = () => {
           index,
           name: item.name,
           location: item.location,
-          hsn: item.hsn.toString(),
+          hsn: item?.hsn?.toString(),
           descriptionOfGoodsAndServices: item.name,
           startDate: item.startDate, //
           endDate: item.endDate, //
