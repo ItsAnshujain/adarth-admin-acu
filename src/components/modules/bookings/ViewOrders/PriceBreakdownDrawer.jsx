@@ -27,14 +27,20 @@ const PriceBreakdownDrawer = ({ isOpened, styles, onClose, type, spaces }) => {
       const displayCostGst = calculateGst(totalDisplayCost, space.displayCostGstPercentage) || 0;
       const totalPrintingCost =
         Number(
-          (Number(space.totalPrintingCost) / (1 + space.printingGstPercentage / 100)).toFixed(2),
+          (
+            Number(space.totalPrintingCost) /
+            (1 + (space.printingGstPercentage || null) / 100)
+          ).toFixed(2),
         ) || 0;
 
       const printingCostGst = calculateGst(totalPrintingCost, space.printingGstPercentage) || 0;
 
       const totalMountingCost =
         Number(
-          (Number(space.totalMountingCost) / (1 + space.mountingGstPercentage / 100)).toFixed(2),
+          (
+            Number(space.totalMountingCost) /
+            (1 + (space.mountingGstPercentage || null) / 100)
+          ).toFixed(2),
         ) || 0;
       const mountingCostGst = calculateGst(totalMountingCost, space.mountingGstPercentage) || 0;
 

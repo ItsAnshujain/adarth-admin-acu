@@ -1,11 +1,12 @@
-import { Button, Loader, Select } from '@mantine/core';
-import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
+import { ActionIcon, Button, Loader, Select } from '@mantine/core';
+import { useClickOutside, useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { useParams, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
 import { useModals } from '@mantine/modals';
+import { IconEye } from '@tabler/icons';
 import Header from '../../components/modules/finance/Header';
 import Search from '../../components/Search';
 import DateRange from '../../components/DateRange';
@@ -19,6 +20,7 @@ import RoleBased from '../../components/RoleBased';
 import modalConfig from '../../utils/modalConfig';
 import PreviewContent from '../../components/modules/finance/PreviewContent';
 import VerifyApprovalContent from '../../components/VerifyApprovalContent';
+import PriceBreakdownDrawer from '../../components/modules/bookings/ViewOrders/PriceBreakdownDrawer';
 
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
 
@@ -49,6 +51,9 @@ const FinanceMonthlyDetailsPage = () => {
 
   const ref = useClickOutside(() => setShowDatePicker(false));
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
+
+  const [selectedBookingData, setSelectedBookingData] = useState([]);
+  const [drawerOpened, drawerActions] = useDisclosure();
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
@@ -223,11 +228,30 @@ const FinanceMonthlyDetailsPage = () => {
         Header: 'TOTAL AMOUNT',
         disableSortBy: true,
         accessor: 'total',
-        Cell: ({
-          row: {
-            original: { total },
-          },
-        }) => useMemo(() => <p>{toIndianCurrency(total || 0)}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original.total || 0)}
+                <ActionIcon
+                  onClick={() => {
+                    setSelectedBookingData(
+                      original.spaces.map(space => ({
+                        ...space,
+                        mountingGstPercentage: original.mountingGstPercentage,
+                        printingGstPercentage: original.printingGstPercentage,
+                        price: original.total,
+                      })),
+                    );
+                    drawerActions.open();
+                  }}
+                >
+                  <IconEye color="black" size={20} />
+                </ActionIcon>
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT METHOD',
@@ -404,11 +428,31 @@ const FinanceMonthlyDetailsPage = () => {
         Header: 'TOTAL AMOUNT',
         accessor: 'total',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { total },
-          },
-        }) => useMemo(() => <p>{toIndianCurrency(total || 0)}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original.total || 0)}
+                <ActionIcon
+                  onClick={() => {
+                    setSelectedBookingData(
+                      original.spaces.map(space => ({
+                        ...space,
+                        mountingGstPercentage: original.mountingGstPercentage,
+                        displayCostGstPercentage: 18,
+                        printingGstPercentage: original.printingGstPercentage,
+                        price: original.total,
+                      })),
+                    );
+                    drawerActions.open();
+                  }}
+                >
+                  <IconEye color="black" size={20} />
+                </ActionIcon>
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT METHOD',
@@ -595,11 +639,30 @@ const FinanceMonthlyDetailsPage = () => {
         Header: 'TOTAL AMOUNT',
         accessor: 'total',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { total },
-          },
-        }) => useMemo(() => <p>{toIndianCurrency(total || 0)}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original.total || 0)}
+                <ActionIcon
+                  onClick={() => {
+                    setSelectedBookingData(
+                      original.spaces.map(space => ({
+                        ...space,
+                        mountingGstPercentage: original.mountingGstPercentage,
+                        printingGstPercentage: original.printingGstPercentage,
+                        price: original.total,
+                      })),
+                    );
+                    drawerActions.open();
+                  }}
+                >
+                  <IconEye color="black" size={20} />
+                </ActionIcon>
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT METHOD',
@@ -758,6 +821,12 @@ const FinanceMonthlyDetailsPage = () => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
         />
       ) : null}
+      <PriceBreakdownDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        spaces={selectedBookingData}
+        type="booking"
+      />
     </div>
   );
 };

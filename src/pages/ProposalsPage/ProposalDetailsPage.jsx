@@ -37,7 +37,7 @@ import ShareContent from '../../components/modules/proposals/ViewProposal/ShareC
 import MarkerIcon from '../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
-import AddEditPriceDrawer from '../../components/modules/bookings/Create/AddEditPriceDrawer';
+import ViewPriceDrawer from '../../components/modules/proposals/ViewProposal/ViewPriceDrawer';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -573,7 +573,7 @@ const ProposalDetailsPage = () => {
         parentId={proposalData?.proposal?.parentProposalId}
         parentVersionTitle={proposalData?.proposal?.versionTitle}
       />
-      <AddEditPriceDrawer
+      <ViewPriceDrawer
         isOpened={inventoryPriceDrawerOpened}
         onClose={inventoryPriceDrawerActions.close}
         selectedInventories={memoizedInventoryData}
