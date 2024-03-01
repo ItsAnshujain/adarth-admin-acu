@@ -10,13 +10,13 @@ const CompanyMenuPopover = ({ itemId, toggleEdit, type }) => {
 
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
-      modalId: 'deleteTermsAndConditions',
+      modalId: 'deleteCompany',
       innerProps: {
         modalBody: (
           <DeleteCompanyContent
-            bookingId={itemId}
+            id={itemId}
             classNames="px-8 mt-4"
-            onClickCancel={() => modals.closeModal('deleteTermsAndConditions')}
+            onClickCancel={() => modals.closeModal('deleteCompany')}
           />
         ),
       },
@@ -31,7 +31,7 @@ const CompanyMenuPopover = ({ itemId, toggleEdit, type }) => {
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <Link to={`/repository/${type}/${123}`} className="p-0">
+        <Link to={`/repository/${type}/${itemId}`} className="p-0">
           <Menu.Item>View</Menu.Item>
         </Link>
         <Card onClick={toggleEdit} className="p-0">

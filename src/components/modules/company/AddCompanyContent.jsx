@@ -12,6 +12,7 @@ import {
   useAddCompany,
   useInfiniteCompanies,
   useStateAndStateCode,
+  useUpdateCompany,
 } from '../../../apis/queries/companies.queries';
 import { CompanyTypeOptions, NatureOfAccountOptions } from '../../../utils/constants';
 import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler';
@@ -34,6 +35,7 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
   const stateAndStateCodeQuery = useStateAndStateCode(debouncedState);
 
   const addCompanyHandler = useAddCompany();
+  const updateCompanyHandler = useUpdateCompany();
 
   const parentCompaniesQuery = useInfiniteCompanies({
     page: 1,
@@ -103,6 +105,7 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
         pincode,
         stateCode,
       },
+      id: companyData ? companyData?._id : undefined,
     };
 
     if (mode === 'add') {
@@ -110,6 +113,16 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
         onSuccess: () => {
           showNotification({
             title: 'Company added successfully',
+            color: 'green',
+          });
+          onCancel();
+        },
+      });
+    } else {
+      updateCompanyHandler.mutate(data, {
+        onSuccess: () => {
+          showNotification({
+            title: 'Company updated successfully',
             color: 'green',
           });
           onCancel();
@@ -206,7 +219,11 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
             <Button className="bg-black" onClick={onCancel}>
               Cancel
             </Button>
-            <Button className="bg-purple-450" type="submit" loading={addCompanyHandler.isLoading}>
+            <Button
+              className="bg-purple-450"
+              type="submit"
+              loading={addCompanyHandler.isLoading || updateCompanyHandler.isLoading}
+            >
               Save
             </Button>
           </div>

@@ -33,7 +33,7 @@ const Header = () => {
 
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
-    limit: 10,
+    limit: 1,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     search: debouncedSearch,
@@ -238,7 +238,10 @@ const Header = () => {
                   'p-0 border-0 text-lg pb-2',
                   activeTab === 'companies' ? 'border border-b-2 border-purple-450' : '',
                 )}
-                onClick={() => setActiveTab('companies')}
+                onClick={() => {
+                  setActiveTab('companies');
+                  setSearchParams({ ...searchParams, page: 1 }, { replace: true });
+                }}
               >
                 Companies
               </Tabs.Tab>
@@ -248,7 +251,10 @@ const Header = () => {
                   'p-0 border-0 text-lg pb-2',
                   activeTab === 'parent-companies' ? 'border border-b-2 border-purple-450' : '',
                 )}
-                onClick={() => setActiveTab('parent-companies')}
+                onClick={() => {
+                  setActiveTab('parent-companies');
+                  setSearchParams({ ...searchParams, page: 1 }, { replace: true });
+                }}
               >
                 Parent Companies
               </Tabs.Tab>
@@ -299,15 +305,19 @@ const Header = () => {
             />
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
-          <Table
-            data={companiesQuery?.data?.docs || []}
-            COLUMNS={memoizedColumns}
-            activePage={searchParams.get('page') || 1}
-            totalPages={companiesQuery?.data?.totalPages || 1}
-            setActivePage={currentPage => handlePagination('page', currentPage)}
-            rowCountLimit={10}
-            handleSorting={handleSortByColumn}
-          />
+
+          {activeTab !== 'parent-companies' ? (
+            <Table
+              data={companiesQuery?.data?.docs || []}
+              COLUMNS={memoizedColumns}
+              activePage={companiesQuery?.data?.page}
+              totalPages={companiesQuery?.data?.totalPages || 1}
+              setActivePage={currentPage => handlePagination('page', currentPage)}
+              rowCountLimit={10}
+              handleSorting={handleSortByColumn}
+              loading={companiesQuery?.isLoading}
+            />
+          ) : null}
         </Tabs.Panel>
         <Tabs.Panel value="parent-companies">
           <div className="mt-4 text-lg font-bold">Parent Companies List</div>
@@ -320,15 +330,18 @@ const Header = () => {
             />
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
-          <Table
-            data={companiesQuery?.data?.docs || []}
-            COLUMNS={memoizedColumns}
-            activePage={searchParams.get('page') || 1}
-            totalPages={companiesQuery?.data?.totalPages || 1}
-            setActivePage={currentPage => handlePagination('page', currentPage)}
-            rowCountLimit={10}
-            handleSorting={handleSortByColumn}
-          />
+          {activeTab === 'parent-companies' ? (
+            <Table
+              data={companiesQuery?.data?.docs || []}
+              COLUMNS={memoizedColumns}
+              activePage={companiesQuery?.data?.page}
+              totalPages={companiesQuery?.data?.totalPages || 1}
+              setActivePage={currentPage => handlePagination('page', currentPage)}
+              rowCountLimit={10}
+              handleSorting={handleSortByColumn}
+              loading={companiesQuery?.isLoading}
+            />
+          ) : null}
         </Tabs.Panel>
       </Tabs>
     </div>
