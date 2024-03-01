@@ -23,7 +23,6 @@ import {
   getAvailableUnits,
   getOccupiedState,
   indianMapCoordinates,
-  serialize,
   stringToColour,
 } from '../../utils';
 import modalConfig from '../../utils/modalConfig';
@@ -36,7 +35,7 @@ import VersionsDrawer from '../../components/modules/proposals/ViewProposal/Vers
 import ShareContent from '../../components/modules/proposals/ViewProposal/ShareContent';
 import MarkerIcon from '../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
-import { useFetchMasters } from '../../apis/queries/masters.queries';
+import { useFetchMasterById } from '../../apis/queries/masters.queries';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -79,13 +78,6 @@ const ProposalDetailsPage = () => {
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });
-  const query = {
-    parentId: null,
-    limit: 100,
-    page: 1,
-    sortBy: 'name',
-    sortOrder: 'asc',
-  };
 
   const toggleFilter = () => setShowFilter(!showFilter);
 
@@ -95,9 +87,9 @@ const ProposalDetailsPage = () => {
   const { data: proposalData, isLoading: isProposalDataLoading } = useFetchProposalById(
     `${proposalId}?${searchParams.toString()}`,
   );
-  const { data: categoryData, isSuccess: isCategoryLoaded } = useFetchMasters(
-    serialize({ type: 'category', ...query }),
-  );
+
+  const { data: subCategoryData, isSuccess: isSubCategoryLoaded } =
+    useFetchMasterById('all-subcategory');
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
@@ -442,18 +434,18 @@ const ProposalDetailsPage = () => {
         <div className="absolute z-40 top-3 right-14">
           <Select
             data={
-              isCategoryLoaded
-                ? categoryData?.docs?.map(category => ({
+              isSubCategoryLoaded
+                ? subCategoryData?.map(category => ({
                     label: category.name,
                     value: category._id,
                   }))
                 : []
             }
             rightSection={
-              searchParams.get('category') ? (
+              searchParams.get('subCategory') ? (
                 <ActionIcon
                   onClick={() => {
-                    searchParams.set('category', '');
+                    searchParams.set('subCategory', '');
                     setSearchParams(searchParams, { replace: true });
                   }}
                 >
@@ -463,11 +455,12 @@ const ProposalDetailsPage = () => {
                 <ChevronDown />
               )
             }
-            placeholder="Select Category"
+            placeholder="Select Medium"
             clearable
-            value={searchParams.get('category')}
+            searchable
+            value={searchParams.get('subCategory')}
             onChange={val => {
-              searchParams.set('category', val);
+              searchParams.set('subCategory', val || '');
               setSearchParams(searchParams, { replace: true });
             }}
           />

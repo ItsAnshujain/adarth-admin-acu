@@ -14,7 +14,6 @@ import {
   calculateTotalMonths,
   generateSlNo,
   indianMapCoordinates,
-  serialize,
 } from '../utils';
 import { GOOGLE_MAPS_API_KEY } from '../utils/config';
 import MarkerIcon from '../assets/pin.svg';
@@ -24,7 +23,7 @@ import useLayoutView from '../store/layout.store';
 import Details from '../components/modules/proposals/PublicLinkView/Details';
 import Header from '../components/modules/proposals/PublicLinkView/Header';
 import toIndianCurrency from '../utils/currencyFormat';
-import { useFetchMasters } from '../apis/queries/masters.queries';
+import { useFetchMasterById } from '../apis/queries/masters.queries';
 
 const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
@@ -57,14 +56,6 @@ const PublicLinkPage = () => {
     shallow,
   );
 
-  const query = {
-    parentId: null,
-    limit: 100,
-    page: 1,
-    sortBy: 'name',
-    sortOrder: 'asc',
-  };
-
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
@@ -72,9 +63,9 @@ const PublicLinkPage = () => {
   const { data: proposalData, isLoading: isProposalDataLoading } = useProposalByVersionName(
     `${proposal_version_name}?${searchParams.toString()}`,
   );
-  const { data: categoryData, isSuccess: isCategoryLoaded } = useFetchMasters(
-    serialize({ type: 'category', ...query }),
-  );
+
+  const { data: subCategoryData, isSuccess: isSubCategoryLoaded } =
+    useFetchMasterById('all-subcategory');
 
   const handlePagination = (key, val) => {
     if (val !== '') searchParams.set(key, val);
@@ -532,18 +523,18 @@ const PublicLinkPage = () => {
         <div className="absolute z-40 top-3 right-14">
           <Select
             data={
-              isCategoryLoaded
-                ? categoryData?.docs?.map(category => ({
+              isSubCategoryLoaded
+                ? subCategoryData?.map(category => ({
                     label: category.name,
                     value: category._id,
                   }))
                 : []
             }
             rightSection={
-              searchParams.get('category') ? (
+              searchParams.get('subCategory') ? (
                 <ActionIcon
                   onClick={() => {
-                    searchParams.set('category', '');
+                    searchParams.set('subCategory', '');
                     setSearchParams(searchParams, { replace: true });
                   }}
                 >
@@ -553,11 +544,12 @@ const PublicLinkPage = () => {
                 <ChevronDown />
               )
             }
-            placeholder="Select Category"
+            placeholder="Select Medium"
             clearable
-            value={searchParams.get('category')}
+            searchable
+            value={searchParams.get('subCategory')}
             onChange={val => {
-              searchParams.set('category', val);
+              searchParams.set('subCategory', val || '');
               setSearchParams(searchParams, { replace: true });
             }}
           />
