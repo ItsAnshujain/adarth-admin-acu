@@ -439,6 +439,7 @@ const FinanceMonthlyDetailsPage = () => {
                       original.spaces.map(space => ({
                         ...space,
                         mountingGstPercentage: original.mountingGstPercentage,
+                        displayCostGstPercentage: 18,
                         printingGstPercentage: original.printingGstPercentage,
                         price: original.total,
                       })),
