@@ -235,7 +235,14 @@ const FinanceMonthlyDetailsPage = () => {
                 {toIndianCurrency(original.total || 0)}
                 <ActionIcon
                   onClick={() => {
-                    setSelectedBookingData(original.spaces);
+                    setSelectedBookingData(
+                      original.spaces.map(space => ({
+                        ...space,
+                        mountingGstPercentage: original.mountingGstPercentage,
+                        printingGstPercentage: original.printingGstPercentage,
+                        price: original.total,
+                      })),
+                    );
                     drawerActions.open();
                   }}
                 >
@@ -428,7 +435,14 @@ const FinanceMonthlyDetailsPage = () => {
                 {toIndianCurrency(original.total || 0)}
                 <ActionIcon
                   onClick={() => {
-                    setSelectedBookingData(original.spaces);
+                    setSelectedBookingData(
+                      original.spaces.map(space => ({
+                        ...space,
+                        mountingGstPercentage: original.mountingGstPercentage,
+                        printingGstPercentage: original.printingGstPercentage,
+                        price: original.total,
+                      })),
+                    );
                     drawerActions.open();
                   }}
                 >
@@ -631,7 +645,14 @@ const FinanceMonthlyDetailsPage = () => {
                 {toIndianCurrency(original.total || 0)}
                 <ActionIcon
                   onClick={() => {
-                    setSelectedBookingData(original.spaces);
+                    setSelectedBookingData(
+                      original.spaces.map(space => ({
+                        ...space,
+                        mountingGstPercentage: original.mountingGstPercentage,
+                        printingGstPercentage: original.printingGstPercentage,
+                        price: original.total,
+                      })),
+                    );
                     drawerActions.open();
                   }}
                 >
