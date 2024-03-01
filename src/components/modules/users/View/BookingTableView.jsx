@@ -1,11 +1,12 @@
-import { useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Button, Group, Loader, Select, Text } from '@mantine/core';
+import { ActionIcon, Button, Group, Loader, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import { Link, useSearchParams } from 'react-router-dom';
 import multiDownload from 'multi-download';
+import { IconEye } from '@tabler/icons';
 import { checkCampaignStats, generateSlNo, serialize } from '../../../../utils';
 import { useUpdateBooking, useUpdateBookingStatus } from '../../../../apis/queries/booking.queries';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
@@ -17,6 +18,7 @@ import NoData from '../../../shared/NoData';
 import BookingsMenuPopover from '../../../Popovers/BookingsMenuPopover';
 import { BOOKING_PAID_STATUS } from '../../../../utils/constants';
 import DateAndFilterHeader from './DateAndFilterHeader';
+import PriceBreakdownDrawer from '../../bookings/ViewOrders/PriceBreakdownDrawer';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -37,6 +39,8 @@ const sortOrders = order => {
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const BookingTableView = ({ data: bookingData, isLoading, activeChildTab }) => {
+  const [selectedBookingData, setSelectedBookingData] = useState([]);
+  const [drawerOpened, drawerActions] = useDisclosure();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
@@ -348,7 +352,23 @@ const BookingTableView = ({ data: bookingData, isLoading, activeChildTab }) => {
           row: {
             original: { campaign },
           },
-        }) => useMemo(() => toIndianCurrency(campaign?.price || 0), []),
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(campaign?.totalPrice || 0)}
+                <ActionIcon
+                  onClick={() => {
+                    setSelectedBookingData(campaign?.spaces);
+                    drawerActions.open();
+                  }}
+                >
+                  <IconEye color="black" size={20} />
+                </ActionIcon>
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'SCHEDULE',
@@ -576,6 +596,12 @@ const BookingTableView = ({ data: bookingData, isLoading, activeChildTab }) => {
           handleSorting={handleSortByColumn}
         />
       ) : null}
+      <PriceBreakdownDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        spaces={selectedBookingData}
+        type="booking"
+      />
     </div>
   );
 };

@@ -197,6 +197,7 @@ const RevenueReportsPage = () => {
     isLoading: isRevenueGraphLoading,
     isSuccess,
   } = useBookingReportByRevenueGraph(removeUnwantedQueries(['by']));
+
   const { data: revenueDataByLocation, isLoading: isByLocationLoading } =
     useBookingRevenueByLocation(removeUnwantedQueries(['groupBy']));
   const { data: revenueDataByIndustry, isLoading: isByIndustryLoading } =

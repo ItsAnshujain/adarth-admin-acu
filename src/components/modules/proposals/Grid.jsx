@@ -14,12 +14,19 @@ const GridView = ({
   activePage = 1,
   setActivePage = () => {},
   isLoadingList,
+  onOpen = () => {},
+  setSelectedProposalData = () => {},
 }) => (
   <div>
     <div className="flex flex-wrap gap-6 h-[70%] overflow-y-auto pb-2">
       {list.map(item => (
-        <Link to={`view-details/${item?._id}`} key={item._id}>
-          <Card proposalData={item} />
+        <Link to={`view-details/${item?._id}`}>
+          <Card
+            proposalData={item}
+            onOpen={onOpen}
+            key={item._id}
+            setSelectedProposalData={setSelectedProposalData}
+          />
         </Link>
       ))}
       {isLoadingList ? skeletonList() : null}
