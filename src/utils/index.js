@@ -609,6 +609,22 @@ export const calculateTotalDisplayCost = (item, startDate, endDate, gstPercentag
   return calculateTotalAmountWithPercentage(totalDisplayCost, gstPercentage);
 };
 
+export const calculateDiscountOnDisplayCost = (
+  discountOn,
+  value,
+  discountPercentage,
+  gstPercentage,
+) => {
+  if (discountOn === 'displayCost') {
+    const discountOnValue = Number(value) * (Number(discountPercentage || null) / 100);
+    if (gstPercentage > 0) {
+      return calculateTotalAmountWithPercentage(discountOnValue, gstPercentage);
+    }
+    return Number(discountOnValue);
+  }
+
+  return 0;
+};
 export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   if (!item) return 0;
   const updatedTotalArea = calculateTotalArea(item, unit);
