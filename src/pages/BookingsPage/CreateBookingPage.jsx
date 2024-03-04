@@ -225,7 +225,6 @@ const CreateBookingPage = () => {
           color: 'blue',
           autoClose: 6000,
         });
-        return;
       }
 
       data.place.forEach(item => {
