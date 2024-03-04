@@ -366,24 +366,27 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                   </div>
                 ) : null}
 
-                <div
-                  className={classNames(
-                    'flex justify-between border border-gray-200 p-4 rounded-b-lg bg-green-100',
-                    !viewBreakdown
-                      ? 'rounded-lg'
-                      : proposalData?.displayColumns?.some(col => col === 'installationCost') &&
-                        proposalData?.displayColumns?.some(col => col === 'monthlyAdditionalCost')
-                      ? 'border-t-0'
-                      : 'rounded-lg',
-                  )}
-                >
-                  <Text weight="400" className="font-semibold">
-                    Total Price
-                  </Text>
-                  <Text weight="bolder" className="text-xl text-purple-450">
-                    {totalPrice ? toIndianCurrency(totalPrice) : '-'}
-                  </Text>{' '}
-                </div>
+                {proposalData?.displayColumns?.some(col => col === 'totalPrice') ? (
+                  <div
+                    className={classNames(
+                      'flex justify-between border border-gray-200 p-4 rounded-b-lg bg-green-100',
+                      !viewBreakdown
+                        ? 'rounded-lg'
+                        : proposalData?.displayColumns?.some(col => col === 'installationCost') &&
+                          proposalData?.displayColumns?.some(col => col === 'monthlyAdditionalCost')
+                        ? 'border-t-0'
+                        : 'rounded-lg',
+                    )}
+                  >
+                    <Text weight="400" className="font-semibold">
+                      Total Price
+                    </Text>
+                    <Text weight="bolder" className="text-xl text-purple-450">
+                      {totalPrice ? toIndianCurrency(totalPrice) : '-'}
+                    </Text>{' '}
+                  </div>
+                ) : null}
+
                 <div className="flex justify-between">
                   <div className="font-normal italic text-sm py-2">
                     **Prices are exclusive of GST
