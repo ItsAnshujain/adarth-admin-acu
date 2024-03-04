@@ -14,7 +14,7 @@ const RowsPerPage = ({ setCount, count }) => (
       styles={{
         rightSection: { pointerEvents: 'none' },
       }}
-      classNames={{ wrapper: 'w-[50px] md:w-[60px] pl-1 md:pl-0' }}
+      classNames={{ wrapper: 'w-[50px] md:w-[63px] pl-1 md:pl-0' }}
       rightSection={<ChevronDown size={16} className="md:mt-[1px] mr-1" />}
     />
   </div>

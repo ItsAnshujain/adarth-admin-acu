@@ -37,7 +37,7 @@ const ViewCompanyHeader = ({ type }) => {
           <DeleteCompanyContent
             classNames="px-8 mt-4"
             onClickCancel={() => modals.closeModal('deleteTermsAndConditions')}
-            onConfirm={() => navigate('/repository/company')}
+            onConfirm={() => navigate(`/repository/${type}`)}
             id={companyQuery?.data?._id}
           />
         ),
@@ -81,7 +81,7 @@ const ViewCompanyHeader = ({ type }) => {
         <Tabs.List className="border-b">
           <div className="flex justify-between w-full pb-0">
             <div className="flex gap-4 mb-0">
-              <ActionIcon component={Link} to="/repository/company">
+              <ActionIcon component={Link} to={`/repository/${type}`}>
                 <IconArrowLeft color="black" />
               </ActionIcon>
               <Tabs.Tab
@@ -102,10 +102,11 @@ const ViewCompanyHeader = ({ type }) => {
                 onClick={() =>
                   type === 'company' ? toggleEditCompanyModal() : toggleEditParentCompanyModal()
                 }
+                disabled={companyQuery.isLoading}
               >
                 <IconPencil color="black" />
               </ActionIcon>
-              <ActionIcon onClick={toggleDeleteModal}>
+              <ActionIcon onClick={toggleDeleteModal} disabled={companyQuery.isLoading}>
                 <IconTrash className="text-purple-450" />
               </ActionIcon>
             </div>

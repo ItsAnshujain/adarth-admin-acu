@@ -33,7 +33,7 @@ const Header = () => {
 
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
-    limit: 1,
+    limit: 10,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     search: debouncedSearch,
@@ -160,6 +160,17 @@ const Header = () => {
         Header: 'STATE & STATE CODE',
         show: true,
         accessor: 'companyAddress.state',
+        Cell: info =>
+          useMemo(
+            () => (
+              <p>
+                {info.row.original.companyAddress.stateCode
+                  ? `(${info.row.original.companyAddress.stateCode}) ${info.row.original.companyAddress.state}`
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'GSTIN',

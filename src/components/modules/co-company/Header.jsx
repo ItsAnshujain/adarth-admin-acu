@@ -50,6 +50,7 @@ const Header = () => {
     sortOrder,
     search: debouncedSearch,
     type: 'co-company',
+    isParent: activeTab === 'parent-companies',
   });
 
   const handleSortByColumn = colId => {
@@ -80,6 +81,7 @@ const Header = () => {
       modalId: 'addCompanyModal',
       children: (
         <AddCoCompanyContent
+          mode="add"
           type="parentCompany"
           onCancel={() => modals.closeModal('addCompanyModal')}
         />
@@ -94,6 +96,7 @@ const Header = () => {
       modalId: 'addCompanyModal',
       children: (
         <AddCoCompanyContent
+          mode="add"
           type="sisterCompany"
           onCancel={() => modals.closeModal('addCompanyModal')}
         />
@@ -102,13 +105,15 @@ const Header = () => {
     });
   };
 
-  const toggleEditParentCompanyModal = () => {
+  const toggleEditParentCompanyModal = companyData => {
     modals.openModal({
       title: 'Edit Parent Company',
       modalId: 'editCompanyModal',
       children: (
         <AddCoCompanyContent
+          mode="edit"
           type="parentCompany"
+          companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
         />
       ),
@@ -116,13 +121,15 @@ const Header = () => {
     });
   };
 
-  const toggleEditSisterCompanyModal = () => {
+  const toggleEditSisterCompanyModal = companyData => {
     modals.openModal({
       title: 'Edit Sister Company',
       modalId: 'editCompanyModal',
       children: (
         <AddCoCompanyContent
+          mode="edit"
           type="sisterCompany"
+          companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
         />
       ),
@@ -146,17 +153,28 @@ const Header = () => {
       {
         Header: 'CITY',
         show: true,
-        accessor: 'city',
+        accessor: 'companyAddress.city',
       },
       {
         Header: 'STATE & STATE CODE',
         show: true,
-        accessor: 'state',
+        accessor: 'companyAddress.state',
+        Cell: info =>
+          useMemo(
+            () => (
+              <p>
+                {info.row.original.companyAddress.stateCode
+                  ? `(${info.row.original.companyAddress.stateCode}) ${info.row.original.companyAddress.state}`
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'GSTIN',
         show: true,
-        accessor: 'gst',
+        accessor: 'companyGstNumber',
         disableSortBy: true,
       },
       {
@@ -167,7 +185,7 @@ const Header = () => {
       {
         Header: 'PARENT COMPANY',
         show: activeTab === 'sister-companies',
-        accessor: 'parentCompany',
+        accessor: 'parentCompany.companyName',
       },
       {
         Header: 'NATURE OF ACCOUNT',
@@ -177,7 +195,7 @@ const Header = () => {
       {
         Header: 'CONTACT NUMBER',
         show: true,
-        accessor: 'contact',
+        accessor: 'contactNumber',
         disableSortBy: true,
       },
       {
@@ -191,20 +209,16 @@ const Header = () => {
         show: true,
         accessor: 'action',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id },
-          },
-        }) =>
+        Cell: ({ row: { original } }) =>
           useMemo(
             () => (
               <CompanyMenuPopover
-                itemId={_id}
+                itemId={original._id}
                 type={activeTab}
-                toggleEdit={
+                toggleEdit={() =>
                   activeTab === 'parent-companies'
-                    ? toggleEditParentCompanyModal
-                    : toggleEditSisterCompanyModal
+                    ? toggleEditParentCompanyModal(original)
+                    : toggleEditSisterCompanyModal(original)
                 }
               />
             ),
@@ -301,6 +315,7 @@ const Header = () => {
             setActivePage={currentPage => handlePagination('page', currentPage)}
             rowCountLimit={10}
             handleSorting={handleSortByColumn}
+            loading={coCompaniesQuery.isLoading}
           />
         </Tabs.Panel>
         <Tabs.Panel value="sister-companies">
@@ -322,6 +337,7 @@ const Header = () => {
             setActivePage={currentPage => handlePagination('page', currentPage)}
             rowCountLimit={10}
             handleSorting={handleSortByColumn}
+            loading={coCompaniesQuery.isLoading}
           />
         </Tabs.Panel>
       </Tabs>

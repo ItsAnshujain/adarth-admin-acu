@@ -4,7 +4,6 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { showNotification } from '@mantine/notifications';
 import { useEffect, useMemo } from 'react';
-import { useDebouncedValue } from '@mantine/hooks';
 import ControlledTextInput from '../../shared/FormInputs/Controlled/ControlledTextInput';
 import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelect';
 import { gstRegexMatch } from '../../../utils';
@@ -30,9 +29,8 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
   const form = useForm({
     resolver: yupResolver(schema),
   });
-  const [debouncedState] = useDebouncedValue(form.watch('state'), 500);
 
-  const stateAndStateCodeQuery = useStateAndStateCode(debouncedState);
+  const stateAndStateCodeQuery = useStateAndStateCode('');
 
   const addCompanyHandler = useAddCompany();
   const updateCompanyHandler = useUpdateCompany();
@@ -73,37 +71,40 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
       ifsc,
       address,
       city,
-      state,
       pincode,
-      stateCode,
+      stateAndStateCode,
       natureOfAccount,
+      bankName,
     } = formData;
 
     const data = {
       companyName,
-      email,
+      email: email || undefined,
       contactNumber,
       fax,
       companyPanNumber,
       companyGstNumber,
       parentCompany: type === 'company' ? parentCompany : null,
       natureOfAccount,
-      companyType,
+      companyType: companyType || undefined,
       type: 'lead-company',
-      bankAccountDetails: [
-        {
-          accountNo,
-          accountHolderName,
-          ifsc,
-          bankName: 'bank',
-        },
-      ],
+      bankAccountDetails:
+        accountNo || accountHolderName || ifsc
+          ? [
+              {
+                accountNo: accountNo || undefined,
+                accountHolderName: accountHolderName || undefined,
+                ifsc: ifsc || undefined,
+                bankName: bankName || '-',
+              },
+            ]
+          : [],
       companyAddress: {
         address,
         city,
-        state,
         pincode,
-        stateCode,
+        stateCode: stateAndStateCode?.split(/\((\d+)\)\s*(.+)/)?.[1],
+        state: stateAndStateCode?.split(/\((\d+)\)\s*(.+)/)?.[2],
       },
       id: companyData ? companyData?._id : undefined,
     };
@@ -152,6 +153,7 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
       ...companyData?.parentCompany,
       ...companyData?.bankAccountDetails?.[0],
       parentCompany: companyData?.parentCompany?._id,
+      stateAndStateCode: `(${companyData?.companyAddress?.stateCode}) ${companyData?.companyAddress?.state}`,
     });
   }, [companyData]);
 
@@ -178,15 +180,25 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
             <ControlledTextInput name="companyPanNumber" label="PAN" />
             <ControlledTextInput name="companyGstNumber" label="GSTIN" />
             <ControlledSelect
+              clearable
+              searchable
               name="natureOfAccount"
               label="Nature of Account"
               data={NatureOfAccountOptions}
             />
-            <ControlledSelect name="companyType" label="Company Type" data={CompanyTypeOptions} />
+            <ControlledSelect
+              clearable
+              searchable
+              name="companyType"
+              label="Company Type"
+              data={CompanyTypeOptions}
+            />
           </div>
 
           {type === 'company' ? (
             <ControlledSelect
+              clearable
+              searchable
               name="parentCompany"
               label="Parent Company"
               dropdownComponent={parentCompaniesDropdown}
@@ -201,8 +213,9 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
           </div>
 
           <div className="grid grid-cols-2 py-4 gap-2">
-            <ControlledTextInput name="state" label="State" />
             <ControlledSelect
+              clearable
+              searchable
               name="stateCode"
               label="State & State Code"
               data={memoizedStateAndStateCodeList}
