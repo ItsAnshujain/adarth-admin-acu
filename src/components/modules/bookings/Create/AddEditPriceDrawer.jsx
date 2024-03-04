@@ -9,6 +9,7 @@ import classNames from 'classnames';
 import shallow from 'zustand/shallow';
 import ControlledNumberInput from '../../../shared/FormInputs/Controlled/ControlledNumberInput';
 import {
+  calculateDiscountOnDisplayCost,
   calculateTotalAmountWithPercentage,
   calculateTotalArea,
   calculateTotalCostOfBooking,
@@ -332,8 +333,17 @@ const AddEditPriceDrawer = ({
         applyPrintingMountingCostForAll: inventory.applyPrintingMountingCostForAll || false,
         subjectToExtension: inventory.subjectToExtension || false,
         discountOn: inventory.discountOn || 'displayCost',
-        discount: inventory.discount || 0,
+        discount:
+          mode === 'view' && type === 'bookings' && selectedInventory.discountOn === 'totalPrice'
+            ? 0
+            : selectedInventory.discount || 0,
         applyDiscountForAll: inventory.applyDiscountForAll || false,
+        discountedPriceOverDisplayCost: calculateDiscountOnDisplayCost({
+          discountOn: inventory.discountOn,
+          value: inventory.displayCostPerMonth,
+          discountPercentage: inventory.discount,
+          gstPercentage: 0,
+        }),
       });
     } else if (filteredProposalData?.length > 0 && type === 'proposal') {
       const inventory = filteredProposalData[0];
@@ -394,9 +404,18 @@ const AddEditPriceDrawer = ({
         applyPrintingMountingCostForAll: selectedInventory.applyPrintingMountingCostForAll || false,
         subjectToExtension: selectedInventory.subjectToExtension || false,
         discountOn: selectedInventory.discountOn || 'displayCost',
-        discount: selectedInventory.discount || 0,
+        discount:
+          mode === 'view' && type === 'bookings' && selectedInventory.discountOn === 'totalPrice'
+            ? 0
+            : selectedInventory.discount || 0,
         applyDiscountForAll: selectedInventory.applyDiscountForAll || false,
         discountedDisplayCost: selectedInventory.discountedDisplayCost || 0,
+        discountedPriceOverDisplayCost: calculateDiscountOnDisplayCost({
+          discountOn: selectedInventory.discountOn,
+          value: selectedInventory.displayCostPerMonth,
+          discountPercentage: selectedInventory.discount,
+          gstPercentage: 0,
+        }),
       });
     } else {
       form.reset(defaultValues);
@@ -479,12 +498,14 @@ const AddEditPriceDrawer = ({
         >
           <div className="h-fit overflow-auto">
             <div className="border border-yellow-350 bg-yellow-250 m-6 p-4 rounded-lg flex flex-col gap-4">
-              <div>
-                <div className="text-lg font-bold">Apply Display Cost</div>
-                <div className="text-gray-500 text-base">
-                  Please select either Display Cost (per month) or Display Cost (per sq. ft.)
+              {mode !== 'view' ? (
+                <div>
+                  <div className="text-lg font-bold">Apply Display Cost</div>
+                  <div className="text-gray-500 text-base">
+                    Please select either Display Cost (per month) or Display Cost (per sq. ft.)
+                  </div>
                 </div>
-              </div>
+              ) : null}
               <div className="text-base font-bold">Display Cost (per month)</div>
               <div className="flex flex-col gap-4">
                 <div className="flex gap-4">
@@ -735,22 +756,25 @@ const AddEditPriceDrawer = ({
                   </>
                 ) : null}
 
-                <div className="flex items-center gap-4">
-                  <div className="text-base font-medium">Display Cost</div>
-                  <Switch
-                    size="lg"
-                    classNames={{ track: 'border-2 border-slate' }}
-                    checked={watchDiscountOn === 'totalPrice'}
-                    onChange={() => {
-                      if (mode === 'view') return;
-                      form.setValue(
-                        'discountOn',
-                        watchDiscountOn === 'displayCost' ? 'totalPrice' : 'displayCost',
-                      );
-                    }}
-                  />
-                  <div className="text-base font-medium">Total Price</div>
-                </div>
+                {mode !== 'view' ? (
+                  <div className="flex items-center gap-4">
+                    <div className="text-base font-medium">Display Cost</div>
+                    <Switch
+                      size="lg"
+                      classNames={{ track: 'border-2 border-slate' }}
+                      checked={watchDiscountOn === 'totalPrice'}
+                      onChange={() => {
+                        if (mode === 'view') return;
+                        form.setValue(
+                          'discountOn',
+                          watchDiscountOn === 'displayCost' ? 'totalPrice' : 'displayCost',
+                        );
+                      }}
+                    />
+                    <div className="text-base font-medium">Total Price</div>
+                  </div>
+                ) : null}
+
                 <ControlledNumberInput
                   disabled={mode === 'view'}
                   precision={2}
@@ -759,6 +783,17 @@ const AddEditPriceDrawer = ({
                   hideControls
                   classNames={{ label: 'text-base font-bold' }}
                 />
+
+                {mode === 'view' ? (
+                  <ControlledNumberInput
+                    disabled
+                    precision={2}
+                    label="Discounted Price Over Display Cost"
+                    name="discountedPriceOverDisplayCost"
+                    hideControls
+                    classNames={{ label: 'text-base font-bold' }}
+                  />
+                ) : null}
               </div>
             ) : (
               <div className="border border-green-350 bg-green-100 m-6 p-4 rounded-lg flex flex-col gap-4">

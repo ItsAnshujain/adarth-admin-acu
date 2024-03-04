@@ -223,11 +223,15 @@ const FinanceMonthlyDetailsPage = () => {
         Header: 'TOTAL AMOUNT',
         disableSortBy: true,
         accessor: 'total',
-        Cell: ({
-          row: {
-            original: { total },
-          },
-        }) => useMemo(() => <p>{toIndianCurrency(total || 0)}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original.total || 0)}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT METHOD',
@@ -373,7 +377,7 @@ const FinanceMonthlyDetailsPage = () => {
                     rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                     rightSectionWidth={40}
                     onChange={e => toggleApproveModal(_id, e)}
-                    defaultValue={approvalStatus || ''}
+                    value={approvalStatus || ''}
                   />
                 </RoleBased>
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
@@ -404,11 +408,15 @@ const FinanceMonthlyDetailsPage = () => {
         Header: 'TOTAL AMOUNT',
         accessor: 'total',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { total },
-          },
-        }) => useMemo(() => <p>{toIndianCurrency(total || 0)}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original.total || 0)}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT METHOD',
@@ -564,7 +572,7 @@ const FinanceMonthlyDetailsPage = () => {
                     rightSection={<ChevronDown size={16} className="mt-[1px] mr-1" />}
                     rightSectionWidth={40}
                     onChange={e => toggleApproveModal(_id, e)}
-                    defaultValue={approvalStatus || ''}
+                    value={approvalStatus || ''}
                   />
                 </RoleBased>
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
@@ -595,11 +603,15 @@ const FinanceMonthlyDetailsPage = () => {
         Header: 'TOTAL AMOUNT',
         accessor: 'total',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { total },
-          },
-        }) => useMemo(() => <p>{toIndianCurrency(total || 0)}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original.total || 0)}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT METHOD',
