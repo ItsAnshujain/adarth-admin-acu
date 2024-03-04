@@ -2,12 +2,13 @@ import { ActionIcon, Tabs } from '@mantine/core';
 import { IconArrowLeft, IconPencil, IconTrash } from '@tabler/icons';
 import classNames from 'classnames';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useModals } from '@mantine/modals';
 import ViewCompany from './ViewCompany';
 import DeleteCompanyContent from './DeleteCompanyContent';
 import modalConfig from '../../../utils/modalConfig';
 import AddCompanyContent from './AddCompanyContent';
+import { useCompanyById } from '../../../apis/queries/companies.queries';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -22,8 +23,12 @@ const updatedModalConfig = {
 
 const ViewCompanyHeader = ({ type }) => {
   const [activeTab, setActiveTab] = useState('overview');
-
+  const navigate = useNavigate();
   const modals = useModals();
+
+  const { id } = useParams();
+  const companyQuery = useCompanyById(id, !!id);
+
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
       modalId: 'deleteTermsAndConditions',
@@ -32,6 +37,8 @@ const ViewCompanyHeader = ({ type }) => {
           <DeleteCompanyContent
             classNames="px-8 mt-4"
             onClickCancel={() => modals.closeModal('deleteTermsAndConditions')}
+            onConfirm={() => navigate('/repository/company')}
+            id={companyQuery?.data?._id}
           />
         ),
       },
@@ -43,7 +50,11 @@ const ViewCompanyHeader = ({ type }) => {
       title: 'Edit Company',
       modalId: 'editCompanyModal',
       children: (
-        <AddCompanyContent type="company" onCancel={() => modals.closeModal('editCompanyModal')} />
+        <AddCompanyContent
+          type="company"
+          onCancel={() => modals.closeModal('editCompanyModal')}
+          companyData={companyQuery?.data}
+        />
       ),
       ...updatedModalConfig,
     });
@@ -57,6 +68,7 @@ const ViewCompanyHeader = ({ type }) => {
         <AddCompanyContent
           type="parentCompany"
           onCancel={() => modals.closeModal('editCompanyModal')}
+          companyData={companyQuery?.data}
         />
       ),
       ...updatedModalConfig,
@@ -87,7 +99,9 @@ const ViewCompanyHeader = ({ type }) => {
             </div>
             <div className="flex">
               <ActionIcon
-                onClick={type === 'company' ? toggleEditCompanyModal : toggleEditParentCompanyModal}
+                onClick={() =>
+                  type === 'company' ? toggleEditCompanyModal() : toggleEditParentCompanyModal()
+                }
               >
                 <IconPencil color="black" />
               </ActionIcon>
@@ -98,7 +112,11 @@ const ViewCompanyHeader = ({ type }) => {
           </div>
         </Tabs.List>
         <Tabs.Panel value="overview">
-          <ViewCompany type={type} />
+          <ViewCompany
+            type={type}
+            companyData={companyQuery?.data}
+            isLoading={companyQuery.isLoading}
+          />
         </Tabs.Panel>
       </Tabs>
     </div>

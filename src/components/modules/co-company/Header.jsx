@@ -294,7 +294,7 @@ const Header = () => {
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
           <Table
-            data={coCompaniesQuery.data.docs || []}
+            data={coCompaniesQuery?.data?.docs || []}
             COLUMNS={memoizedColumns}
             activePage={searchParams.get('page')}
             totalPages={coCompaniesQuery?.data?.totalPages || 1}
@@ -315,7 +315,7 @@ const Header = () => {
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
           <Table
-            data={coCompaniesQuery.data.docs || []}
+            data={coCompaniesQuery?.data?.docs || []}
             COLUMNS={memoizedColumns}
             activePage={searchParams.get('page')}
             totalPages={coCompaniesQuery?.data?.totalPages || 1}

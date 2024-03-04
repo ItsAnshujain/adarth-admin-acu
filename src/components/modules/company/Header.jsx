@@ -12,6 +12,7 @@ import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
 import modalConfig from '../../../utils/modalConfig';
 import AddCompanyContent from './AddCompanyContent';
+import useCompanies from '../../../apis/queries/companies.queries';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -29,12 +30,28 @@ const Header = () => {
   const [activeTab, setActiveTab] = useState('companies');
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
+
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
-    limit: 10,
+    limit: 1,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     search: debouncedSearch,
+  });
+
+  const page = searchParams.get('page');
+  const limit = searchParams.get('limit');
+  const sortBy = searchParams.get('sortBy');
+  const sortOrder = searchParams.get('sortOrder');
+
+  const companiesQuery = useCompanies({
+    page,
+    limit,
+    sortBy,
+    sortOrder,
+    search: debouncedSearch,
+    type: 'lead-company',
+    isParent: activeTab === 'parent-companies',
   });
 
   const handleSortByColumn = colId => {
@@ -64,7 +81,11 @@ const Header = () => {
       title: 'Add Company',
       modalId: 'addCompanyModal',
       children: (
-        <AddCompanyContent type="company" onCancel={() => modals.closeModal('addCompanyModal')} />
+        <AddCompanyContent
+          mode="add"
+          type="company"
+          onCancel={() => modals.closeModal('addCompanyModal')}
+        />
       ),
       ...updatedModalConfig,
     });
@@ -76,6 +97,7 @@ const Header = () => {
       modalId: 'addCompanyModal',
       children: (
         <AddCompanyContent
+          mode="add"
           type="parentCompany"
           onCancel={() => modals.closeModal('addCompanyModal')}
         />
@@ -84,24 +106,31 @@ const Header = () => {
     });
   };
 
-  const toggleEditCompanyModal = () => {
+  const toggleEditCompanyModal = companyData => {
     modals.openModal({
       title: 'Edit Company',
       modalId: 'editCompanyModal',
       children: (
-        <AddCompanyContent type="company" onCancel={() => modals.closeModal('editCompanyModal')} />
+        <AddCompanyContent
+          mode="edit"
+          type="company"
+          companyData={companyData}
+          onCancel={() => modals.closeModal('editCompanyModal')}
+        />
       ),
       ...updatedModalConfig,
     });
   };
 
-  const toggleEditParentCompanyModal = () => {
+  const toggleEditParentCompanyModal = companyData => {
     modals.openModal({
       title: 'Edit Parent Company',
       modalId: 'editCompanyModal',
       children: (
         <AddCompanyContent
+          mode="edit"
           type="parentCompany"
+          companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
         />
       ),
@@ -125,17 +154,17 @@ const Header = () => {
       {
         Header: 'CITY',
         show: true,
-        accessor: 'city',
+        accessor: 'companyAddress.city',
       },
       {
         Header: 'STATE & STATE CODE',
         show: true,
-        accessor: 'state',
+        accessor: 'companyAddress.state',
       },
       {
         Header: 'GSTIN',
         show: true,
-        accessor: 'gst',
+        accessor: 'companyGstNumber',
         disableSortBy: true,
       },
       {
@@ -146,7 +175,7 @@ const Header = () => {
       {
         Header: 'PARENT COMPANY',
         show: activeTab === 'companies',
-        accessor: 'parentCompany',
+        accessor: 'parentCompany.companyName',
       },
       {
         Header: 'NATURE OF ACCOUNT',
@@ -156,7 +185,7 @@ const Header = () => {
       {
         Header: 'CONTACT NUMBER',
         show: true,
-        accessor: 'contact',
+        accessor: 'contactNumber',
         disableSortBy: true,
       },
       {
@@ -170,18 +199,16 @@ const Header = () => {
         show: true,
         accessor: 'action',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id },
-          },
-        }) =>
+        Cell: ({ row: { original } }) =>
           useMemo(
             () => (
               <CompanyMenuPopover
-                itemId={_id}
+                itemId={original._id}
                 type={activeTab}
-                toggleEdit={
-                  activeTab === 'companies' ? toggleEditCompanyModal : toggleEditParentCompanyModal
+                toggleEdit={() =>
+                  activeTab === 'companies'
+                    ? toggleEditCompanyModal(original)
+                    : toggleEditParentCompanyModal(original)
                 }
               />
             ),
@@ -211,7 +238,10 @@ const Header = () => {
                   'p-0 border-0 text-lg pb-2',
                   activeTab === 'companies' ? 'border border-b-2 border-purple-450' : '',
                 )}
-                onClick={() => setActiveTab('companies')}
+                onClick={() => {
+                  setActiveTab('companies');
+                  setSearchParams({ ...searchParams, page: 1 }, { replace: true });
+                }}
               >
                 Companies
               </Tabs.Tab>
@@ -221,7 +251,10 @@ const Header = () => {
                   'p-0 border-0 text-lg pb-2',
                   activeTab === 'parent-companies' ? 'border border-b-2 border-purple-450' : '',
                 )}
-                onClick={() => setActiveTab('parent-companies')}
+                onClick={() => {
+                  setActiveTab('parent-companies');
+                  setSearchParams({ ...searchParams, page: 1 }, { replace: true });
+                }}
               >
                 Parent Companies
               </Tabs.Tab>
@@ -233,7 +266,7 @@ const Header = () => {
                   className="bg-purple-450 text-white font-normal rounded-md mb-2"
                   leftIcon={<IconChevronDown size={20} />}
                 >
-                  Add Company
+                  {activeTab === 'companies' ? 'Add Company' : 'Add Parent Company'}
                 </Button>
               </Menu.Target>
               <Menu.Dropdown>
@@ -268,19 +301,23 @@ const Header = () => {
               setCount={currentLimit => {
                 handlePagination('limit', currentLimit);
               }}
-              count={10}
+              count="10"
             />
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
-          <Table
-            data={[{}]}
-            COLUMNS={memoizedColumns}
-            activePage={1}
-            totalPages={1}
-            setActivePage={() => {}}
-            rowCountLimit={10}
-            handleSorting={handleSortByColumn}
-          />
+
+          {activeTab !== 'parent-companies' ? (
+            <Table
+              data={companiesQuery?.data?.docs || []}
+              COLUMNS={memoizedColumns}
+              activePage={companiesQuery?.data?.page}
+              totalPages={companiesQuery?.data?.totalPages || 1}
+              setActivePage={currentPage => handlePagination('page', currentPage)}
+              rowCountLimit={10}
+              handleSorting={handleSortByColumn}
+              loading={companiesQuery?.isLoading}
+            />
+          ) : null}
         </Tabs.Panel>
         <Tabs.Panel value="parent-companies">
           <div className="mt-4 text-lg font-bold">Parent Companies List</div>
@@ -289,19 +326,22 @@ const Header = () => {
               setCount={currentLimit => {
                 handlePagination('limit', currentLimit);
               }}
-              count={10}
+              count="10"
             />
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
-          <Table
-            data={[{}]}
-            COLUMNS={memoizedColumns}
-            activePage={1}
-            totalPages={1}
-            setActivePage={() => {}}
-            rowCountLimit={10}
-            handleSorting={handleSortByColumn}
-          />
+          {activeTab === 'parent-companies' ? (
+            <Table
+              data={companiesQuery?.data?.docs || []}
+              COLUMNS={memoizedColumns}
+              activePage={companiesQuery?.data?.page}
+              totalPages={companiesQuery?.data?.totalPages || 1}
+              setActivePage={currentPage => handlePagination('page', currentPage)}
+              rowCountLimit={10}
+              handleSorting={handleSortByColumn}
+              loading={companiesQuery?.isLoading}
+            />
+          ) : null}
         </Tabs.Panel>
       </Tabs>
     </div>

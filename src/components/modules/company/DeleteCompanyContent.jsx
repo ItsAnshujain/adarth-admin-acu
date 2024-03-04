@@ -1,20 +1,21 @@
 import { Button, Image } from '@mantine/core';
-import { useModals } from '@mantine/modals';
 import React, { useState } from 'react';
 import CheckIcon from '../../../assets/check.svg';
 import TrashIcon from '../../../assets/trash.svg';
-import { useDeleteBooking } from '../../../apis/queries/booking.queries';
+import { useDeleteCompany } from '../../../apis/queries/companies.queries';
 
-const DeleteCompanyContent = ({ onClickCancel = () => {}, id }) => {
-  const modals = useModals();
+const DeleteCompanyContent = ({ onClickCancel = () => {}, onConfirm = () => {}, id }) => {
   const [accept, setAccept] = useState(false);
-  const { mutateAsync: deleteBooking, isLoading } = useDeleteBooking();
+  const { mutateAsync: deleteBooking, isLoading } = useDeleteCompany();
 
   const handleConfirm = () => {
     deleteBooking(id, {
       onSuccess: () => {
         setAccept(true);
-        setTimeout(() => modals.closeModal(), 2000);
+        setTimeout(() => {
+          onClickCancel();
+          onConfirm();
+        }, 2000);
       },
     });
   };
