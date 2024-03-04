@@ -151,7 +151,7 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
       ...companyData?.companyAddress,
       ...companyData?.parentCompany,
       ...companyData?.bankAccountDetails?.[0],
-      parentCompany: companyData?.parentCompany?._id,
+      parentCompany: companyData?.parentCompany?._id || companyData?.parentCompany,
     });
   }, [companyData]);
 
@@ -164,7 +164,6 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
       ),
     [parentCompaniesQuery],
   );
-
   return (
     <FormProvider {...form}>
       <form onSubmit={onSubmit}>
@@ -174,7 +173,7 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
             <ControlledTextInput name="companyName" label="Company Name" withAsterisk />
             <ControlledTextInput name="email" label="Email" />
             <ControlledTextInput name="contactNumber" label="Contact Number" />
-            <ControlledTextInput name="fax" label="Fax Name" />
+            <ControlledTextInput name="fax" label="Fax Number" />
             <ControlledTextInput name="companyPanNumber" label="PAN" />
             <ControlledTextInput name="companyGstNumber" label="GSTIN" />
             <ControlledSelect
