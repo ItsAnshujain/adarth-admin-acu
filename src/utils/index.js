@@ -550,19 +550,29 @@ export const calculateTotalPrice = (option = []) => {
 };
 
 export const calculateTotalMonths = (startDate, endDate) => {
-  if (!startDate || !endDate) return 0;
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  if (!startDate || !endDate) return;
 
-  const yearDiff = end.getFullYear() - start.getFullYear();
-  const monthDiff = end.getMonth() - start.getMonth();
-  const dayDiff = end.getDate() - start.getDate() + 1;
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
 
-  const totalMonths = yearDiff * 12 + monthDiff;
+  let totalMonths = 0;
 
-  const fractionOfMonth = dayDiff / new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate();
+  let currDate = start;
 
-  return totalMonths + fractionOfMonth;
+  while (currDate.isBefore(end) || currDate.isSame(end, 'month')) {
+    const daysInMonth = currDate.daysInMonth();
+    const daysSelectedInStartMonth = daysInMonth - currDate.date() + 1;
+
+    if (currDate.isSame(end, 'month')) {
+      totalMonths += end.date() / daysInMonth;
+    } else {
+      totalMonths += daysSelectedInStartMonth / daysInMonth;
+    }
+    currDate = currDate.add(1, 'month').startOf('month');
+  }
+
+  // eslint-disable-next-line consistent-return
+  return totalMonths;
 };
 
 export const calculateTotalArea = (place, unit) =>
@@ -601,6 +611,12 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   if (item?.discountOn === 'displayCost') {
     displayCost -= (displayCost || 0) * ((item?.discount || 0) / 100);
   }
+
+  calculateTotalMonths(
+    'Thu Jan 01 2023 23:59:59 GMT+0530 (India Standard Time)',
+    'Sat Jan 31 2024 23:59:59 GMT+0530 (India Standard Time)',
+  );
+
   const totalDisplayCost =
     updatedTotalArea > 0
       ? calculateTotalAmountWithPercentage(displayCost, item?.displayCostGstPercentage)
