@@ -85,7 +85,7 @@ const GalleryImagesDashboardPage = () => {
 
   const copyLink = () => {
     if (!selectedImages.length) return showNotification({ message: 'Please select images' });
-    navigator.clipboard.writeText(selectedImages.map(image => image.url).join(';'));
+    navigator.clipboard.writeText(selectedImages.map(image => image.url).join('\n'));
     return showNotification({
       message: 'Link copied!',
     });
