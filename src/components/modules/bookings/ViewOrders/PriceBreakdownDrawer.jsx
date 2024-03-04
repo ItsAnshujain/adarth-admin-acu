@@ -24,7 +24,16 @@ const PriceBreakdownDrawer = ({ isOpened, styles, onClose, type, spaces }) => {
       const totalDisplayCost =
         Number(Number(space.totalDisplayCost).toFixed(2)) /
           (1 + (space.displayCostGstPercentage || 0) / 100) || 0;
-      const displayCostGst = calculateGst(totalDisplayCost, space.displayCostGstPercentage) || 0;
+
+      const discountOnDisplayCost =
+        space.discountOn === 'displayCost'
+          ? calculateGst(totalDisplayCost, Number(space.discountPercentage)) || 0
+          : 0;
+
+      const displayCostGst =
+        calculateGst(totalDisplayCost, space.displayCostGstPercentage) -
+          calculateGst(discountOnDisplayCost, space.displayCostGstPercentage) || 0;
+
       const totalPrintingCost =
         Number(
           (
@@ -66,10 +75,7 @@ const PriceBreakdownDrawer = ({ isOpened, styles, onClose, type, spaces }) => {
       calculatedData.otherCharges += Number(space.otherCharges) || 0;
       calculatedData.totalPrice += Number(space.campaignPrice) || Number(space.price) || 0;
 
-      calculatedData.discount +=
-        space.discountOn === 'displayCost'
-          ? calculateGst(space.totalDisplayCost, Number(space.discountPercentage)) || 0
-          : 0;
+      calculatedData.discount += discountOnDisplayCost;
     });
     return calculatedData;
   }, [spaces]);
