@@ -1,8 +1,10 @@
-import { Loader, Select, Text } from '@mantine/core';
+import { ActionIcon, Loader, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
+import { IconEye } from '@tabler/icons';
+import { useDisclosure } from '@mantine/hooks';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
 import { useUpdateProposal } from '../../../../apis/queries/proposal.queries';
 import { generateSlNo, serialize } from '../../../../utils';
@@ -10,6 +12,7 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 import ProposalsMenuPopover from '../../../Popovers/ProposalsMenuPopover';
 import Table from '../../../Table/Table';
 import DateAndFilterHeader from './DateAndFilterHeader';
+import PriceBreakdownDrawer from '../../bookings/ViewOrders/PriceBreakdownDrawer';
 
 const nativeSelectStyles = {
   rightSection: { pointerEvents: 'none' },
@@ -30,6 +33,8 @@ const sortOrders = order => {
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const ProposalTableView = ({ data, isLoading, activeChildTab }) => {
+  const [drawerOpened, drawerActions] = useDisclosure();
+  const [selectedProposalData, setSelectedProposalData] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const { mutate: update, isLoading: isUpdateProposalLoading } = useUpdateProposal();
   const { data: proposalStatusData, isLoading: isProposalStatusLoading } = useFetchMasters(
@@ -203,9 +208,25 @@ const ProposalTableView = ({ data, isLoading, activeChildTab }) => {
         accessor: 'price',
         Cell: ({
           row: {
-            original: { price },
+            original: { price, spaces },
           },
-        }) => useMemo(() => <p>{price ? toIndianCurrency(price) : 0}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(price || 0)}
+                <ActionIcon
+                  onClick={() => {
+                    setSelectedProposalData(spaces);
+                    drawerActions.open();
+                  }}
+                >
+                  <IconEye color="black" size={20} />
+                </ActionIcon>
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'ACTION',
@@ -260,6 +281,12 @@ const ProposalTableView = ({ data, isLoading, activeChildTab }) => {
           handleSorting={handleSortByColumn}
         />
       ) : null}
+      <PriceBreakdownDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        type="proposal"
+        spaces={selectedProposalData || []}
+      />
     </div>
   );
 };

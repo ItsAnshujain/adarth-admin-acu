@@ -10,7 +10,9 @@ const ViewCompany = ({ type, companyData, isLoading }) => {
       <div className="text-lg font-bold">Basic Information</div>
       <div className="grid grid-cols-2 py-4 gap-4">
         <div>
-          <div className="text-base text-gray-400 font-normal">Company Name</div>
+          <div className="text-base text-gray-400 font-normal">
+            Company Name <span className="text-red-450">*</span>
+          </div>
           <div>{companyData?.companyName || '-'} </div>
         </div>
         <div>

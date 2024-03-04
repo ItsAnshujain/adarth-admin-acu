@@ -88,7 +88,7 @@ const TermsAndConditionsPage = () => {
           setCount={currentLimit => {
             handlePagination('limit', currentLimit);
           }}
-          count={10}
+          count="10"
         />
         <Search
           search={searchInput}
@@ -109,6 +109,7 @@ const TermsAndConditionsPage = () => {
         setActivePage={currentPage => handlePagination('page', currentPage)}
         rowCountLimit={10}
         handleSorting={handleSortByColumn}
+        loading={proposalTermsQuery.isLoading}
       />
     </div>
   );

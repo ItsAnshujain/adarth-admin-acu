@@ -609,6 +609,22 @@ export const calculateTotalDisplayCost = (item, startDate, endDate, gstPercentag
   return calculateTotalAmountWithPercentage(totalDisplayCost, gstPercentage);
 };
 
+export const calculateDiscountOnDisplayCost = ({
+  discountOn,
+  value,
+  discountPercentage,
+  gstPercentage,
+}) => {
+  if (discountOn === 'displayCost') {
+    const discountOnValue = Number(value) * (Number(discountPercentage || null) / 100);
+    if (gstPercentage > 0) {
+      return calculateTotalAmountWithPercentage(discountOnValue, gstPercentage);
+    }
+    return Number(discountOnValue);
+  }
+
+  return 0;
+};
 export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   if (!item) return 0;
   const updatedTotalArea = calculateTotalArea(item, unit);
@@ -651,7 +667,6 @@ export const getUpdatedBookingData = (formData, selectedInventoryId, data, total
         priceChanged: true,
       };
     }
-
     const area = calculateTotalArea(place, place?.unit);
     const updatedTotalPrintingCost = area * formData.printingCostPerSqft;
     const updatedTotalMountingCost = area * formData.mountingCostPerSqft;
@@ -708,10 +723,10 @@ export const getUpdatedBookingData = (formData, selectedInventoryId, data, total
       );
       return {
         ...place,
-        printingCostPerSqft: area > 0 && Number(formData.printingCostPerSqft?.toFixed(2)),
+        printingCostPerSqft: Number(formData.printingCostPerSqft?.toFixed(2)),
         printingGstPercentage: formData.printingGstPercentage,
         mountingGstPercentage: formData.mountingGstPercentage,
-        mountingCostPerSqft: area > 0 && Number(formData.mountingCostPerSqft?.toFixed(2)),
+        mountingCostPerSqft: Number(formData.mountingCostPerSqft?.toFixed(2)),
         totalPrintingCost: calculateTotalAmountWithPercentage(
           updatedTotalPrintingCost,
           formData.printingGstPercentage,

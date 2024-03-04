@@ -655,7 +655,6 @@ const CreateFinancePage = () => {
             'printingSqftCost',
             'mountingSqftCost',
             'forMonths',
-            'mountingGstPercentage',
             'spaces',
           ];
           Object.keys(data).forEach(key => {
@@ -741,9 +740,17 @@ const CreateFinancePage = () => {
             areaInSqFt: item.area,
             printingCost: parseFloat(item.totalPrintingCost.toFixed(2)),
             mountingCost: parseFloat(item.totalMountingCost.toFixed(2)),
-            totalDisplayCost: parseFloat(item.totalDisplayCost.toFixed(2)),
-            totalPrintingCost: parseFloat(item.totalPrintingCost.toFixed(2)),
-            totalMountingCost: parseFloat(item.totalMountingCost.toFixed(2)),
+            totalDisplayCost:
+              parseFloat(item.totalDisplayCost.toFixed(2)) +
+              parseFloat(item.totalDisplayCost.toFixed(2)) * 0.18,
+            totalPrintingCost:
+              parseFloat(item.totalPrintingCost.toFixed(2)) +
+              parseFloat(item.totalPrintingCost.toFixed(2)) *
+                (Number(updatedForm?.printingGstPercentage) / 100),
+            totalMountingCost:
+              parseFloat(item.totalMountingCost.toFixed(2)) +
+              parseFloat(item.totalMountingCost.toFixed(2)) *
+                (Number(updatedForm?.mountingGstPercentage) / 100),
             price: parseFloat(item.totalDisplayCost.toFixed(2)),
             displayCostPerMonth: parseFloat(item.displayCostPerMonth.toFixed(2)),
             displayCostDiscount: item.displayCostDiscount || 0,
@@ -818,7 +825,7 @@ const CreateFinancePage = () => {
           index,
           name: item.name,
           location: item.location,
-          hsn: item.hsn.toString(),
+          hsn: item?.hsn?.toString(),
           descriptionOfGoodsAndServices: item.name,
           startDate: item.startDate, //
           endDate: item.endDate, //
