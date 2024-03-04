@@ -23,7 +23,7 @@ const PriceBreakdownDrawer = ({ isOpened, styles, onClose, type, spaces }) => {
     spaces?.forEach(space => {
       const totalDisplayCost =
         Number(Number(space.totalDisplayCost).toFixed(2)) /
-          (1 + space.displayCostGstPercentage / 100) || 0;
+          (1 + (space.displayCostGstPercentage || 0) / 100) || 0;
       const displayCostGst = calculateGst(totalDisplayCost, space.displayCostGstPercentage) || 0;
       const totalPrintingCost =
         Number(
