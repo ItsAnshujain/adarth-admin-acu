@@ -157,7 +157,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode }) => {
       ...companyData?.companyAddress,
       ...companyData?.parentCompany,
       ...companyData?.bankAccountDetails?.[0],
-      parentCompany: companyData?.parentCompany?._id,
+      parentCompany: companyData?.parentCompany?._id || companyData?.parentCompany,
       stateAndStateCode: `(${companyData?.companyAddress?.stateCode}) ${companyData?.companyAddress?.state}`,
     });
   }, [companyData]);
