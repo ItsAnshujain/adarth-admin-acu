@@ -609,12 +609,12 @@ export const calculateTotalDisplayCost = (item, startDate, endDate, gstPercentag
   return calculateTotalAmountWithPercentage(totalDisplayCost, gstPercentage);
 };
 
-export const calculateDiscountOnDisplayCost = (
+export const calculateDiscountOnDisplayCost = ({
   discountOn,
   value,
   discountPercentage,
   gstPercentage,
-) => {
+}) => {
   if (discountOn === 'displayCost') {
     const discountOnValue = Number(value) * (Number(discountPercentage || null) / 100);
     if (gstPercentage > 0) {

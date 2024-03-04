@@ -338,12 +338,12 @@ const AddEditPriceDrawer = ({
             ? 0
             : selectedInventory.discount || 0,
         applyDiscountForAll: inventory.applyDiscountForAll || false,
-        discountedPriceOverDisplayCost: calculateDiscountOnDisplayCost(
-          inventory.discountOn,
-          inventory.displayCostPerMonth,
-          inventory.discount,
-          inventory.displayCostGstPercentage,
-        ),
+        discountedPriceOverDisplayCost: calculateDiscountOnDisplayCost({
+          discountOn: inventory.discountOn,
+          value: inventory.displayCostPerMonth,
+          discountPercentage: inventory.discount,
+          gstPercentage: inventory.displayCostGstPercentage,
+        }),
       });
     } else if (filteredProposalData?.length > 0 && type === 'proposal') {
       const inventory = filteredProposalData[0];
@@ -410,12 +410,12 @@ const AddEditPriceDrawer = ({
             : selectedInventory.discount || 0,
         applyDiscountForAll: selectedInventory.applyDiscountForAll || false,
         discountedDisplayCost: selectedInventory.discountedDisplayCost || 0,
-        discountedPriceOverDisplayCost: calculateDiscountOnDisplayCost(
-          selectedInventory.discountOn,
-          selectedInventory.displayCostPerMonth,
-          selectedInventory.discount,
-          selectedInventory.displayCostGstPercentage,
-        ),
+        discountedPriceOverDisplayCost: calculateDiscountOnDisplayCost({
+          discountOn: selectedInventory.discountOn,
+          value: selectedInventory.displayCostPerMonth,
+          discountPercentage: selectedInventory.discount,
+          gstPercentage: selectedInventory.displayCostGstPercentage,
+        }),
       });
     } else {
       form.reset(defaultValues);
