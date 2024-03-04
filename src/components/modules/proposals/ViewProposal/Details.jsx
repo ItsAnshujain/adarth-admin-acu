@@ -1,5 +1,14 @@
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
-import { BackgroundImage, Center, Group, Image, Skeleton, Spoiler, Text } from '@mantine/core';
+import {
+  BackgroundImage,
+  Center,
+  Group,
+  Image,
+  Skeleton,
+  Spoiler,
+  Text,
+  ActionIcon,
+} from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
@@ -7,8 +16,11 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Book, ChevronLeft, ChevronRight, Key } from 'react-feather';
 import { Link } from 'react-router-dom';
+import { IconEye } from '@tabler/icons';
+import { useDisclosure } from '@mantine/hooks';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import modalConfig from '../../../../utils/modalConfig';
+import PriceBreakdownDrawer from '../../bookings/ViewOrders/PriceBreakdownDrawer';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 const TRANSITION_DURATION = 200;
@@ -25,6 +37,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
   const modals = useModals();
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
   const [embla, setEmbla] = useState(null);
+  const [drawerOpened, drawerActions] = useDisclosure();
 
   useAnimationOffsetEffect(embla, TRANSITION_DURATION);
 
@@ -96,6 +109,10 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
     setPreviewSpacesPhotos(result);
   }, [inventoryData]);
 
+  const memoizedInventoryData = useMemo(
+    () => inventoryData?.docs?.map(doc => ({ ...doc, ...doc.pricingDetails, dimension: doc.size })),
+    [inventoryData?.docs],
+  );
   return (
     <div className="mt-4">
       <Group position="apart">
@@ -200,9 +217,14 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
                   <Text color="grey" weight="400">
                     Price
                   </Text>
-                  <Text weight="bolder">
-                    {proposalData?.price ? toIndianCurrency(proposalData.price) : 0}
-                  </Text>
+                  <div className="flex items-center">
+                    <Text weight="bolder">
+                      {proposalData?.price ? toIndianCurrency(proposalData.price) : 0}
+                    </Text>
+                    <ActionIcon onClick={drawerActions.open}>
+                      <IconEye color="black" size={20} />
+                    </ActionIcon>
+                  </div>
                 </div>
                 <div>
                   <Text color="grey" weight="400">
@@ -235,6 +257,12 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
           </div>
         </div>
       )}
+      <PriceBreakdownDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        type="proposal"
+        spaces={memoizedInventoryData}
+      />
     </div>
   );
 };

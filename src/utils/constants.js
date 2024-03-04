@@ -191,3 +191,16 @@ export const proposalColumns = [
   { name: 'Availability', enum: 'availability', mandatory: false },
   { name: 'Extension', enum: 'extension', mandatory: false },
 ];
+
+export const NatureOfAccountOptions = ['Debitor', 'Creditor'];
+
+export const CompanyTypeOptions = [
+  { label: 'National Agency', value: 'nationalAgency' },
+  { label: 'Local Agency', value: 'localAgency' },
+  { label: 'Direct Client', value: 'directClient' },
+  { label: 'Government', value: 'government' },
+  { label: 'Media Owner', value: 'mediaOwner' },
+  { label: 'Mounter', value: 'mounter' },
+  { label: 'Printer', value: 'printer' },
+  { label: 'Others', value: 'others' },
+];

@@ -120,6 +120,7 @@ const CreateBookingPage = () => {
       const data = { ...formData };
 
       setFormStep(3);
+
       if (!watchPlace?.length) {
         showNotification({
           title: 'Please select atleast one place to continue',

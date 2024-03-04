@@ -79,6 +79,7 @@ const FinanceMonthlyDetailsPage = () => {
   const toggleApproveModal = (financeId, value) =>
     modals.openContextModal('basic', {
       title: '',
+      modalId: financeId,
       innerProps: {
         modalBody: (
           <VerifyApprovalContent
@@ -187,7 +188,11 @@ const FinanceMonthlyDetailsPage = () => {
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
                   <p
                     className={classNames(
-                      approvalStatus === 'approved' ? 'text-green-400' : 'text-purple-450',
+                      approvalStatus === 'approved'
+                        ? 'text-green-400'
+                        : approvalStatus === 'rejected'
+                        ? 'text-red-450'
+                        : 'text-purple-450',
                       'font-medium',
                     )}
                   >
@@ -195,6 +200,8 @@ const FinanceMonthlyDetailsPage = () => {
                       ? 'Sent for Approval'
                       : approvalStatus === 'approved'
                       ? 'Approved'
+                      : approvalStatus === 'rejected'
+                      ? 'Rejected'
                       : '-'}
                   </p>
                 </RoleBased>
@@ -216,11 +223,15 @@ const FinanceMonthlyDetailsPage = () => {
         Header: 'TOTAL AMOUNT',
         disableSortBy: true,
         accessor: 'total',
-        Cell: ({
-          row: {
-            original: { total },
-          },
-        }) => useMemo(() => <p>{toIndianCurrency(total || 0)}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original.total || 0)}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT METHOD',
@@ -372,7 +383,11 @@ const FinanceMonthlyDetailsPage = () => {
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
                   <p
                     className={classNames(
-                      approvalStatus === 'approved' ? 'text-green-400' : 'text-purple-450',
+                      approvalStatus === 'approved'
+                        ? 'text-green-400'
+                        : approvalStatus === 'rejected'
+                        ? 'text-red-450'
+                        : 'text-purple-450',
                       'font-medium',
                     )}
                   >
@@ -380,6 +395,8 @@ const FinanceMonthlyDetailsPage = () => {
                       ? 'Sent for Approval'
                       : approvalStatus === 'approved'
                       ? 'Approved'
+                      : approvalStatus === 'rejected'
+                      ? 'Rejected'
                       : '-'}
                   </p>
                 </RoleBased>
@@ -391,11 +408,15 @@ const FinanceMonthlyDetailsPage = () => {
         Header: 'TOTAL AMOUNT',
         accessor: 'total',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { total },
-          },
-        }) => useMemo(() => <p>{toIndianCurrency(total || 0)}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original.total || 0)}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT METHOD',
@@ -557,7 +578,11 @@ const FinanceMonthlyDetailsPage = () => {
                 <RoleBased acceptedRoles={[ROLES.SUPERVISOR, ROLES.ASSOCIATE]}>
                   <p
                     className={classNames(
-                      approvalStatus === 'approved' ? 'text-green-400' : 'text-purple-450',
+                      approvalStatus === 'approved'
+                        ? 'text-green-400'
+                        : approvalStatus === 'rejected'
+                        ? 'text-red-450'
+                        : 'text-purple-450',
                       'font-medium',
                     )}
                   >
@@ -565,6 +590,8 @@ const FinanceMonthlyDetailsPage = () => {
                       ? 'Sent for Approval'
                       : approvalStatus === 'approved'
                       ? 'Approved'
+                      : approvalStatus === 'rejected'
+                      ? 'Rejected'
                       : '-'}
                   </p>
                 </RoleBased>
@@ -576,11 +603,15 @@ const FinanceMonthlyDetailsPage = () => {
         Header: 'TOTAL AMOUNT',
         accessor: 'total',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { total },
-          },
-        }) => useMemo(() => <p>{toIndianCurrency(total || 0)}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original.total || 0)}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT METHOD',
