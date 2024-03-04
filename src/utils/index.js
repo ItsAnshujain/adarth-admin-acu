@@ -567,7 +567,7 @@ export const calculateTotalMonths = (startDate, endDate) => {
 
   let currDate = start;
 
-  while (currDate.isBefore(end) || currDate.isSame(end, 'month')) {
+  while (currDate.isSameOrBefore(end, 'month')) {
     const daysInMonth = currDate.daysInMonth();
     const daysSelectedInStartMonth = daysInMonth - currDate.date() + 1;
 
@@ -645,11 +645,6 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   if (item?.discountOn === 'displayCost') {
     displayCost -= (displayCost || 0) * ((item?.discount || 0) / 100);
   }
-
-  calculateTotalMonths(
-    'Thu Jan 01 2023 23:59:59 GMT+0530 (India Standard Time)',
-    'Sat Jan 31 2024 23:59:59 GMT+0530 (India Standard Time)',
-  );
 
   const totalDisplayCost =
     updatedTotalArea > 0
