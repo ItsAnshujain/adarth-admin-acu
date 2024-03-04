@@ -342,7 +342,7 @@ const AddEditPriceDrawer = ({
           discountOn: inventory.discountOn,
           value: inventory.displayCostPerMonth,
           discountPercentage: inventory.discount,
-          gstPercentage: inventory.displayCostGstPercentage,
+          gstPercentage: 0,
         }),
       });
     } else if (filteredProposalData?.length > 0 && type === 'proposal') {
@@ -414,7 +414,7 @@ const AddEditPriceDrawer = ({
           discountOn: selectedInventory.discountOn,
           value: selectedInventory.displayCostPerMonth,
           discountPercentage: selectedInventory.discount,
-          gstPercentage: selectedInventory.displayCostGstPercentage,
+          gstPercentage: 0,
         }),
       });
     } else {
