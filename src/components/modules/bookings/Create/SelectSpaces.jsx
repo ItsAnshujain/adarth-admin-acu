@@ -296,6 +296,7 @@ const SelectSpace = () => {
     const filteredRowWithApplyToAll = selectedRows.filter(
       row => row.applyPrintingMountingCostForAll || row.applyDiscountForAll,
     );
+
     if (filteredRowWithApplyToAll?.length > 0 && newAddedRow.length > 0) {
       const updatedSelectedRows = getUpdatedBookingData(
         filteredRowWithApplyToAll?.[0],
@@ -309,8 +310,9 @@ const SelectSpace = () => {
         ),
         calculateTotalArea(filteredRowWithApplyToAll?.[0], filteredRowWithApplyToAll?.[0]?.unit),
       );
-      form.setValue('place', updatedSelectedRows);
+
       handleSortRowsOnTop(updatedSelectedRows, updatedInventoryData);
+      form.setValue('place', updatedSelectedRows);
     } else {
       handleSortRowsOnTop(selectedRows, updatedInventoryData);
       form.setValue('place', selectedRows);
