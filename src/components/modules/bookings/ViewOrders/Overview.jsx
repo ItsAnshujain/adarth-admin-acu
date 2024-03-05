@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
+  ActionIcon,
   BackgroundImage,
   Center,
   Group,
@@ -16,6 +17,8 @@ import ReactPlayer from 'react-player';
 import { useModals } from '@mantine/modals';
 import { ChevronLeft, ChevronRight } from 'react-feather';
 import { Carousel, useAnimationOffsetEffect } from '@mantine/carousel';
+import { IconEye } from '@tabler/icons';
+import { useDisclosure } from '@mantine/hooks';
 import Places from './Places';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import MarkerIcon from '../../../../assets/pin.svg';
@@ -23,6 +26,8 @@ import { GOOGLE_MAPS_API_KEY } from '../../../../utils/config';
 import NoData from '../../../shared/NoData';
 import modalConfig from '../../../../utils/modalConfig';
 import { indianMapCoordinates } from '../../../../utils';
+import PriceBreakdownDrawer from './PriceBreakdownDrawer';
+import AddEditPriceDrawer from '../Create/AddEditPriceDrawer';
 
 const TRANSITION_DURATION = 200;
 const updatedModalConfig = { ...modalConfig, size: 'xl' };
@@ -50,6 +55,9 @@ const Marker = () => <Image src={MarkerIcon} height={28} width={28} />;
 
 const Overview = ({ bookingData = {}, isLoading }) => {
   const modals = useModals();
+  const [drawerOpened, drawerActions] = useDisclosure();
+  const [inventoryPriceDrawerOpened, inventoryPriceDrawerActions] = useDisclosure();
+  const [selectedInventoryId, setSelectedInventoryId] = useState('');
   const [mapInstance, setMapInstance] = useState(null);
   const [previewSpacesPhotos, setPreviewSpacesPhotos] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -141,6 +149,16 @@ const Overview = ({ bookingData = {}, isLoading }) => {
     setPreviewSpacesPhotos(result);
   }, [bookingData]);
 
+  const memoizedInventoryData = useMemo(
+    () =>
+      bookingData?.campaign?.spaces.map(space => ({
+        ...space,
+        dimension: space.specifications.size,
+        discount: space.discountPercentage,
+      })),
+    [bookingData?.campaign?.spaces],
+  );
+
   return (
     <>
       <div className="flex gap-4 mt-5">
@@ -197,7 +215,12 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           </Spoiler>
           <div className="flex flex-col mt-4 w-[300px] border">
             <Group className="justify-between bg-gray-25 px-4 py-2">
-              <p className="text-black font-semibold text-sm">Total Price</p>
+              <div className="flex items-center gap-2">
+                <p className="text-black font-semibold text-sm">Total Price</p>
+                <ActionIcon onClick={drawerActions.open}>
+                  <IconEye color="black" size={20} />
+                </ActionIcon>
+              </div>
               <p className="font-bold text-purple-450 text-lg">
                 {toIndianCurrency(bookingData?.campaign?.totalPrice)}
               </p>
@@ -262,6 +285,8 @@ const Overview = ({ bookingData = {}, isLoading }) => {
                     (!!bookingData?.paymentStatus && !bookingData?.paymentStatus?.Unpaid) ||
                     (!!bookingData?.paymentStatus && bookingData?.paymentStatus?.Paid)
                   }
+                  showInventoryPriceDrawer={inventoryPriceDrawerActions.open}
+                  setSelectedInventoryId={setSelectedInventoryId}
                 />
               ))
               .sort((a, b) => {
@@ -290,6 +315,20 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           />
         ) : null}
       </div>
+      <PriceBreakdownDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        type="booking"
+        spaces={memoizedInventoryData}
+      />
+      <AddEditPriceDrawer
+        isOpened={inventoryPriceDrawerOpened}
+        onClose={inventoryPriceDrawerActions.close}
+        selectedInventories={memoizedInventoryData}
+        selectedInventoryId={selectedInventoryId}
+        type="bookings"
+        mode="view"
+      />
     </>
   );
 };

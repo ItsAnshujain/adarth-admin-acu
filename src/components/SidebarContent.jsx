@@ -22,7 +22,7 @@ import { useFetchMastersTypes } from '../apis/queries/masters.queries';
 const SidebarContent = ({ className }) => {
   const { pathname } = useLocation();
   const [toggleNestedTab, setToggleNestedTab] = useState(
-    pathname.includes('masters') || pathname.includes('reports'),
+    pathname.includes('masters') || pathname.includes('reports') || pathname.includes('repository'),
   );
   const { data, isSuccess: isMasterLoaded } = useFetchMastersTypes();
 
@@ -117,6 +117,21 @@ const SidebarContent = ({ className }) => {
         icon: GalleryIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
+      {
+        /* TODO: Remove comment for repository */
+      },
+      // {
+      //   label: 'Repository',
+      //   path: '/repository',
+      //   nested: [
+      //     { label: 'Terms & Conditions', subPath: '/terms-and-conditions' },
+      //     { label: 'Company', subPath: '/company' },
+      //     { label: 'Co-Company', subPath: '/co-company' },
+      //     { label: 'Contact', subPath: '/contact' },
+      //   ],
+      //   icon: CloudIcon,
+      //   acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR],
+      // },
     ],
     [isMasterLoaded],
   );

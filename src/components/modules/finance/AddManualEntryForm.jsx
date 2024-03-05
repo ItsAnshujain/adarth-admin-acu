@@ -139,6 +139,7 @@ const initialReleaseValues = {
 const releaseSchema = yup.object({
   name: yup.string().trim().required('Description is required'),
   location: yup.string().trim().required('Location is required'),
+
   startDate: yup
     .string()
     .trim()
@@ -608,7 +609,6 @@ const ReleaseContent = ({
 }) => {
   const { errors, values, setFieldValue, setValues, insertListItem, removeListItem } =
     useFormContext();
-
   const {
     data: facingData,
     isLoading: isFacingLoading,

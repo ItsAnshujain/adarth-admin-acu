@@ -1,10 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Text, Button, Image, Loader } from '@mantine/core';
+import { Text, Button, Image, Loader, ActionIcon } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
+import { useClickOutside, useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
+import { IconEye } from '@tabler/icons';
 import DateRange from '../../../DateRange';
 import Filter from '../../bookings/Filter';
 import calendar from '../../../../assets/data-table.svg';
@@ -16,15 +17,19 @@ import { useFetchBookingsByInventoryId } from '../../../../apis/queries/inventor
 import NoData from '../../../shared/NoData';
 import BookingsMenuPopover from '../../../Popovers/BookingsMenuPopover';
 import { generateSlNo } from '../../../../utils';
+import PriceBreakdownDrawer from '../../bookings/ViewOrders/PriceBreakdownDrawer';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const Booking = ({ inventoryId }) => {
   const [searchInput, setSearchInput] = useState('');
+  const [selectedBookingData, setSelectedBookingData] = useState([]);
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const ref = useClickOutside(() => setShowDatePicker(false));
+  const [drawerOpened, drawerActions] = useDisclosure();
+
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
@@ -248,9 +253,25 @@ const Booking = ({ inventoryId }) => {
         accessor: 'totalPrice',
         Cell: ({
           row: {
-            original: { totalPrice },
+            original: { totalPrice, currentInventory },
           },
-        }) => useMemo(() => <p>{totalPrice ? toIndianCurrency(totalPrice) : 0}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(totalPrice || 0)}
+                <ActionIcon
+                  onClick={() => {
+                    drawerActions.open();
+                    setSelectedBookingData([currentInventory]);
+                  }}
+                >
+                  <IconEye color="black" size={20} />
+                </ActionIcon>
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'ACTION',
@@ -362,6 +383,12 @@ const Booking = ({ inventoryId }) => {
           handleSorting={handleSortByColumn}
         />
       ) : null}
+      <PriceBreakdownDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        spaces={selectedBookingData}
+        type="booking"
+      />
     </div>
   );
 };

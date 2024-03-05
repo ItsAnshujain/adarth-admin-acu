@@ -1,8 +1,6 @@
-import { showNotification } from '@mantine/notifications';
-import { useCallback, useEffect } from 'react';
 import { useFormContext } from '../../../../context/formContext';
 import { useFetchMasters } from '../../../../apis/queries/masters.queries';
-import { debounce, getAddressByLatLng, serialize, tierList } from '../../../../utils';
+import { serialize, tierList } from '../../../../utils';
 import AutoCompleteLocationInput from '../../../AutoCompleteLocationInput';
 import NumberInput from '../../../shared/NumberInput';
 import TextInput from '../../../shared/TextInput';
@@ -38,22 +36,6 @@ const LocationForm = () => {
     isLoading: isFacingLoading,
     isSuccess: isFacingLoaded,
   } = useFetchMasters(serialize({ type: 'facing', ...query }));
-
-  const verifyCoordinates = useCallback(
-    debounce(async (latitude, longitude) => {
-      const res = await getAddressByLatLng(latitude, longitude);
-      if (!res?.formatted_address.toLowerCase().includes('india')) {
-        showNotification({ title: 'Coordinates cannot be outside India' });
-      }
-    }, 1000),
-    [],
-  );
-
-  useEffect(() => {
-    if (values?.location?.latitude && values?.location?.longitude) {
-      verifyCoordinates(values?.location?.latitude, values?.location?.longitude);
-    }
-  }, [values?.location]);
 
   return (
     <div className="flex flex-col pl-5 pr-7 pt-4 mb-10">

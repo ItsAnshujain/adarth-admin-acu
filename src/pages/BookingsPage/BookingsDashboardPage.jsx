@@ -1,12 +1,13 @@
-import { useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Loader, Button, Select, Text } from '@mantine/core';
+import { Loader, Button, Select, Text, ActionIcon } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import multiDownload from 'multi-download';
 import shallow from 'zustand/shallow';
+import { IconEye } from '@tabler/icons';
 import Table from '../../components/Table/Table';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
@@ -25,6 +26,7 @@ import NoData from '../../components/shared/NoData';
 import BookingsMenuPopover from '../../components/Popovers/BookingsMenuPopover';
 import useLayoutView from '../../store/layout.store';
 import { BOOKING_PAID_STATUS } from '../../utils/constants';
+import PriceBreakdownDrawer from '../../components/modules/bookings/ViewOrders/PriceBreakdownDrawer';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -34,7 +36,9 @@ const DATE_FORMAT = 'DD MMM YYYY';
 
 const BookingsDashboardPage = () => {
   const [searchInput, setSearchInput] = useState('');
+  const [selectedBookingData, setSelectedBookingData] = useState([]);
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
+  const [drawerOpened, drawerActions] = useDisclosure();
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
       activeLayout: state.activeLayout,
@@ -361,9 +365,25 @@ const BookingsDashboardPage = () => {
         accessor: 'campaign.price',
         Cell: ({
           row: {
-            original: { campaign },
+            original: { campaign, _id },
           },
-        }) => useMemo(() => toIndianCurrency(campaign?.totalPrice || 0), []),
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(campaign?.totalPrice || 0)}
+                <ActionIcon
+                  onClick={() => {
+                    setSelectedBookingData(campaign?.spaces);
+                    drawerActions.open();
+                  }}
+                >
+                  <IconEye color="black" size={20} />
+                </ActionIcon>
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'OUTSTANDING PO',
@@ -626,6 +646,12 @@ const BookingsDashboardPage = () => {
           handleSorting={handleSortByColumn}
         />
       ) : null}
+      <PriceBreakdownDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        spaces={selectedBookingData}
+        type="booking"
+      />
     </div>
   );
 };

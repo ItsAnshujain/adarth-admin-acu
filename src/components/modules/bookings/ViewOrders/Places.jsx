@@ -22,6 +22,7 @@ import ReactPlayer from 'react-player';
 import { useModals } from '@mantine/modals';
 import { Link } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
+import { IconEye } from '@tabler/icons';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import uploadIcon from '../../../../assets/upload.svg';
 import uploadWhiteIcon from '../../../../assets/upload-white.svg';
@@ -53,7 +54,14 @@ const styles = {
 
 const DATE_FORMAT = 'DD-MM-YYYY';
 
-const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
+const Places = ({
+  data,
+  campaignId,
+  bookingId,
+  hasPaymentType,
+  showInventoryPriceDrawer,
+  setSelectedInventoryId,
+}) => {
   const modals = useModals();
   const queryClient = useQueryClient();
   const { mutateAsync: upload, isLoading } = useUploadFile();
@@ -288,9 +296,19 @@ const Places = ({ data, campaignId, bookingId, hasPaymentType }) => {
             ) : null}
             <Group>
               <p className="text-sm font-light text-slate-400">Booked Amount</p>
-              <p className="font-bold">
-                {data?.campaignPrice ? toIndianCurrency(data.campaignPrice, 10) : 0}
-              </p>
+              <div className="flex items-center">
+                <p className="font-bold">
+                  {data?.campaignPrice ? toIndianCurrency(data.campaignPrice, 10) : 0}
+                </p>
+                <ActionIcon
+                  onClick={() => {
+                    showInventoryPriceDrawer();
+                    setSelectedInventoryId(data?._id);
+                  }}
+                >
+                  <IconEye color="black" size={20} />
+                </ActionIcon>
+              </div>
             </Group>
           </div>
           <div>

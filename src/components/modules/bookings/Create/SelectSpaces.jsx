@@ -149,6 +149,15 @@ const SelectSpace = () => {
                   val[0],
                   val[1],
                 ),
+                displayCostPerSqFt:
+                  calculateTotalArea(item, item?.unit) > 0
+                    ? Number(
+                        (
+                          item.displayCostPerMonth /
+                          calculateTotalArea(item, key === 'unit' ? val : item?.unit)
+                        ).toFixed(2),
+                      )
+                    : 0,
                 totalDisplayCost: calculateTotalAmountWithPercentage(
                   item.displayCostPerMonth * totalMonths,
                   item.displayCostGstPercentage,
@@ -193,6 +202,15 @@ const SelectSpace = () => {
                   item.displayCostPerMonth * calculateTotalMonths(item.startDate, item.endDate),
                   item.displayCostGstPercentage,
                 ),
+                displayCostPerSqFt:
+                  calculateTotalArea(item, item?.unit) > 0
+                    ? Number(
+                        (
+                          item.displayCostPerMonth /
+                          calculateTotalArea(item, key === 'unit' ? val : item?.unit)
+                        ).toFixed(2),
+                      )
+                    : 0,
                 totalPrintingCost: calculateTotalPrintingOrMountingCost(
                   item,
                   key === 'unit' ? val : item.unit,
@@ -296,6 +314,7 @@ const SelectSpace = () => {
     const filteredRowWithApplyToAll = selectedRows.filter(
       row => row.applyPrintingMountingCostForAll || row.applyDiscountForAll,
     );
+
     if (filteredRowWithApplyToAll?.length > 0 && newAddedRow.length > 0) {
       const updatedSelectedRows = getUpdatedBookingData(
         filteredRowWithApplyToAll?.[0],
@@ -309,8 +328,9 @@ const SelectSpace = () => {
         ),
         calculateTotalArea(filteredRowWithApplyToAll?.[0], filteredRowWithApplyToAll?.[0]?.unit),
       );
-      form.setValue('place', updatedSelectedRows);
+
       handleSortRowsOnTop(updatedSelectedRows, updatedInventoryData);
+      form.setValue('place', updatedSelectedRows);
     } else {
       handleSortRowsOnTop(selectedRows, updatedInventoryData);
       form.setValue('place', selectedRows);

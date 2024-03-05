@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useDebouncedValue } from '@mantine/hooks';
-import { Loader, Select, Text } from '@mantine/core';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
+import { Loader, Select, Text, ActionIcon } from '@mantine/core';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
 import shallow from 'zustand/shallow';
+import { IconEye } from '@tabler/icons';
 import AreaHeader from '../../components/modules/proposals/Header';
 import RowsPerPage from '../../components/RowsPerPage';
 import Search from '../../components/Search';
@@ -16,6 +17,7 @@ import toIndianCurrency from '../../utils/currencyFormat';
 import { generateSlNo, serialize } from '../../utils';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
 import ProposalsMenuPopover from '../../components/Popovers/ProposalsMenuPopover';
+import PriceBreakdownDrawer from '../../components/modules/bookings/ViewOrders/PriceBreakdownDrawer';
 
 const nativeSelectStyles = {
   rightSection: { pointerEvents: 'none' },
@@ -23,6 +25,8 @@ const nativeSelectStyles = {
 const DATE_FORMAT = 'DD MMM YYYY';
 
 const ProposalDashboardPage = () => {
+  const [drawerOpened, drawerActions] = useDisclosure();
+  const [selectedProposalData, setSelectedProposalData] = useState([]);
   const { activeLayout, setActiveLayout } = useLayoutView(
     state => ({
       activeLayout: state.activeLayout,
@@ -205,11 +209,23 @@ const ProposalDashboardPage = () => {
       {
         Header: 'PRICING',
         accessor: 'price',
-        Cell: ({
-          row: {
-            original: { price },
-          },
-        }) => useMemo(() => <p>{price ? toIndianCurrency(price, 10) : 0}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original?.price || 0)}
+                <ActionIcon
+                  onClick={() => {
+                    setSelectedProposalData(original?.spaces);
+                    drawerActions.open();
+                  }}
+                >
+                  <IconEye color="black" size={20} />
+                </ActionIcon>
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'ACTION',
@@ -303,8 +319,16 @@ const ProposalDashboardPage = () => {
           totalPages={proposalsData?.totalPages}
           setActivePage={currentPage => handlePagination('page', currentPage)}
           isLoadingList={isLoadingProposalsData}
+          setSelectedProposalData={setSelectedProposalData}
+          onOpen={drawerActions.open}
         />
       ) : null}
+      <PriceBreakdownDrawer
+        isOpened={drawerOpened}
+        onClose={drawerActions.close}
+        type="proposal"
+        spaces={selectedProposalData || []}
+      />
     </div>
   );
 };

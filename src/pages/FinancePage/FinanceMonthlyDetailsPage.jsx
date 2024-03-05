@@ -223,11 +223,15 @@ const FinanceMonthlyDetailsPage = () => {
         Header: 'TOTAL AMOUNT',
         disableSortBy: true,
         accessor: 'total',
-        Cell: ({
-          row: {
-            original: { total },
-          },
-        }) => useMemo(() => <p>{toIndianCurrency(total || 0)}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original.total || 0)}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT METHOD',
@@ -404,11 +408,15 @@ const FinanceMonthlyDetailsPage = () => {
         Header: 'TOTAL AMOUNT',
         accessor: 'total',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { total },
-          },
-        }) => useMemo(() => <p>{toIndianCurrency(total || 0)}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original.total || 0)}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT METHOD',
@@ -595,11 +603,15 @@ const FinanceMonthlyDetailsPage = () => {
         Header: 'TOTAL AMOUNT',
         accessor: 'total',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { total },
-          },
-        }) => useMemo(() => <p>{toIndianCurrency(total || 0)}</p>, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(original.total || 0)}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PAYMENT METHOD',

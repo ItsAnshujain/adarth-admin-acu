@@ -543,6 +543,14 @@ export const calculateTotalAmountWithPercentage = (value, percentage) => {
   return Number(value);
 };
 
+export const calculateGst = (value, percentage) => {
+  if (percentage > 0) {
+    return Number(((Number(value) || 0) * (Number(percentage) / 100)).toFixed(2));
+  }
+
+  return 0;
+};
+
 export const calculateTotalPrice = (option = []) => {
   if (!option.length) return 0;
   const totalPrice = option.reduce((acc, item) => acc + +(item.price || 0), 0);
@@ -550,19 +558,29 @@ export const calculateTotalPrice = (option = []) => {
 };
 
 export const calculateTotalMonths = (startDate, endDate) => {
-  if (!startDate || !endDate) return 0;
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  if (!startDate || !endDate) return;
 
-  const yearDiff = end.getFullYear() - start.getFullYear();
-  const monthDiff = end.getMonth() - start.getMonth();
-  const dayDiff = end.getDate() - start.getDate() + 1;
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
 
-  const totalMonths = yearDiff * 12 + monthDiff;
+  let totalMonths = 0;
 
-  const fractionOfMonth = dayDiff / new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate();
+  let currDate = start;
 
-  return totalMonths + fractionOfMonth;
+  while (currDate.isSameOrBefore(end, 'month')) {
+    const daysInMonth = currDate.daysInMonth();
+    const daysSelectedInStartMonth = daysInMonth - currDate.date() + 1;
+
+    if (currDate.isSame(end, 'month')) {
+      totalMonths += end.date() / daysInMonth;
+    } else {
+      totalMonths += daysSelectedInStartMonth / daysInMonth;
+    }
+    currDate = currDate.add(1, 'month').startOf('month');
+  }
+
+  // eslint-disable-next-line consistent-return
+  return totalMonths;
 };
 
 export const calculateTotalArea = (place, unit) =>
@@ -601,6 +619,22 @@ export const calculateTotalDisplayCost = (item, startDate, endDate, gstPercentag
   return calculateTotalAmountWithPercentage(totalDisplayCost, gstPercentage);
 };
 
+export const calculateDiscountOnDisplayCost = ({
+  discountOn,
+  value,
+  discountPercentage,
+  gstPercentage,
+}) => {
+  if (discountOn === 'displayCost') {
+    const discountOnValue = Number(value) * (Number(discountPercentage || null) / 100);
+    if (gstPercentage > 0) {
+      return calculateTotalAmountWithPercentage(discountOnValue, gstPercentage);
+    }
+    return Number(discountOnValue);
+  }
+
+  return 0;
+};
 export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   if (!item) return 0;
   const updatedTotalArea = calculateTotalArea(item, unit);
@@ -611,6 +645,7 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
   if (item?.discountOn === 'displayCost') {
     displayCost -= (displayCost || 0) * ((item?.discount || 0) / 100);
   }
+
   const totalDisplayCost =
     updatedTotalArea > 0
       ? calculateTotalAmountWithPercentage(displayCost, item?.displayCostGstPercentage)
@@ -643,7 +678,6 @@ export const getUpdatedBookingData = (formData, selectedInventoryId, data, total
         priceChanged: true,
       };
     }
-
     const area = calculateTotalArea(place, place?.unit);
     const updatedTotalPrintingCost = area * formData.printingCostPerSqft;
     const updatedTotalMountingCost = area * formData.mountingCostPerSqft;
@@ -700,10 +734,10 @@ export const getUpdatedBookingData = (formData, selectedInventoryId, data, total
       );
       return {
         ...place,
-        printingCostPerSqft: area > 0 && Number(formData.printingCostPerSqft?.toFixed(2)),
+        printingCostPerSqft: Number(formData.printingCostPerSqft?.toFixed(2)),
         printingGstPercentage: formData.printingGstPercentage,
         mountingGstPercentage: formData.mountingGstPercentage,
-        mountingCostPerSqft: area > 0 && Number(formData.mountingCostPerSqft?.toFixed(2)),
+        mountingCostPerSqft: Number(formData.mountingCostPerSqft?.toFixed(2)),
         totalPrintingCost: calculateTotalAmountWithPercentage(
           updatedTotalPrintingCost,
           formData.printingGstPercentage,

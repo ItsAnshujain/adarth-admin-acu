@@ -72,7 +72,11 @@ const Header = ({ title }) => {
           <div className="pl-5">
             <p className="text-2xl font-bold tracking-wide hidden md:block">{title}</p>
           </div>
+
           <div className="flex items-center mr-2 md:mr-5">
+            {/* TODO: Remove comment for repository */}
+            {/* <RepositoryMenuPopover /> */}
+
             <Link to="/notification" className="flex items-center">
               <Image src={NotificationsIcon} height={24} width={24} />
               <span

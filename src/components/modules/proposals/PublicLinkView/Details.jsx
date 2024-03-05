@@ -386,6 +386,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
                     </Text>{' '}
                   </div>
                 ) : null}
+
                 <div className="flex justify-between">
                   <div className="font-normal italic text-sm py-2">
                     **Prices are exclusive of GST

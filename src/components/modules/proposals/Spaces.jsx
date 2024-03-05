@@ -179,6 +179,15 @@ const Spaces = () => {
           return item._id === id
             ? {
                 ...item,
+                displayCostPerSqFt:
+                  calculateTotalArea(item, item?.unit) > 0
+                    ? Number(
+                        (
+                          item.displayCostPerMonth /
+                          calculateTotalArea(item, key === 'unit' ? val : item?.unit)
+                        ).toFixed(2),
+                      )
+                    : 0,
                 printingCostPerSqft: item.printingCostPerSqft,
                 mountingCostPerSqft: item.mountingCostPerSqft,
                 totalPrintingCost: calculateTotalPrintingOrMountingCost(
@@ -633,7 +642,6 @@ const Spaces = () => {
           filteredRowWithApplyToAll?.[0]?.startDate,
           filteredRowWithApplyToAll?.[0]?.endDate,
         ),
-        calculateTotalArea(filteredRowWithApplyToAll?.[0], filteredRowWithApplyToAll?.[0]?.unit),
       );
       form.setValue('spaces', updatedSelectedRowsForApplyToAll);
       handleSortRowsOnTop(updatedSelectedRowsForApplyToAll, updatedInventoryData);
