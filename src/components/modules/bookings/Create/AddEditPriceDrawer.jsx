@@ -340,7 +340,9 @@ const AddEditPriceDrawer = ({
         applyDiscountForAll: inventory.applyDiscountForAll || false,
         discountedPriceOverDisplayCost: calculateDiscountOnDisplayCost({
           discountOn: inventory.discountOn,
-          value: inventory.displayCostPerMonth,
+          value:
+            inventory.displayCostPerMonth *
+            calculateTotalMonths(inventory?.startDate, inventory?.endDate),
           discountPercentage: inventory.discount,
           gstPercentage: 0,
         }),
@@ -412,7 +414,9 @@ const AddEditPriceDrawer = ({
         discountedDisplayCost: selectedInventory.discountedDisplayCost || 0,
         discountedPriceOverDisplayCost: calculateDiscountOnDisplayCost({
           discountOn: selectedInventory.discountOn,
-          value: selectedInventory.displayCostPerMonth,
+          value:
+            selectedInventory.displayCostPerMonth *
+            calculateTotalMonths(selectedInventory?.startDate, selectedInventory?.endDate),
           discountPercentage: selectedInventory.discount,
           gstPercentage: 0,
         }),
