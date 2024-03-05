@@ -149,6 +149,15 @@ const SelectSpace = () => {
                   val[0],
                   val[1],
                 ),
+                displayCostPerSqFt:
+                  calculateTotalArea(item, item?.unit) > 0
+                    ? Number(
+                        (
+                          item.displayCostPerMonth /
+                          calculateTotalArea(item, key === 'unit' ? val : item?.unit)
+                        ).toFixed(2),
+                      )
+                    : 0,
                 totalDisplayCost: calculateTotalAmountWithPercentage(
                   item.displayCostPerMonth * totalMonths,
                   item.displayCostGstPercentage,
@@ -193,6 +202,15 @@ const SelectSpace = () => {
                   item.displayCostPerMonth * calculateTotalMonths(item.startDate, item.endDate),
                   item.displayCostGstPercentage,
                 ),
+                displayCostPerSqFt:
+                  calculateTotalArea(item, item?.unit) > 0
+                    ? Number(
+                        (
+                          item.displayCostPerMonth /
+                          calculateTotalArea(item, key === 'unit' ? val : item?.unit)
+                        ).toFixed(2),
+                      )
+                    : 0,
                 totalPrintingCost: calculateTotalPrintingOrMountingCost(
                   item,
                   key === 'unit' ? val : item.unit,

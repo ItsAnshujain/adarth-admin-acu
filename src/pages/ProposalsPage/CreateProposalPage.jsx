@@ -17,7 +17,7 @@ import {
 } from '../../apis/queries/proposal.queries';
 import { useFetchUsersById } from '../../apis/queries/users.queries';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
-import { serialize } from '../../utils';
+import { calculateTotalArea, calculateTotalPrintingOrMountingCost, serialize } from '../../utils';
 import useUserStore from '../../store/user.store';
 import useProposalStore from '../../store/proposal.store';
 
@@ -104,8 +104,8 @@ const CreateProposalPage = () => {
         });
         return;
       }
-
       data.spaces = watchSpaces.map(({ ...item }) => {
+        const totalArea = calculateTotalArea(item, item?.unit ? +item.unit : 1);
         delete item.city;
         delete item.address;
         delete item.bookedUnits;
@@ -144,6 +144,7 @@ const CreateProposalPage = () => {
             ? dayjs(item.endDate).endOf('day').toISOString()
             : dayjs().endOf('day').toISOString(),
           unit: item?.unit ? +item.unit : 1,
+          totalArea,
         };
       });
 
@@ -181,7 +182,6 @@ const CreateProposalPage = () => {
       });
 
       delete data.uploadType;
-
       if (proposalId) {
         data = {
           ...data,
@@ -250,6 +250,18 @@ const CreateProposalPage = () => {
             availableUnit: item?.remainingUnits,
             initialUnit: item?.bookedUnits || 0,
             dimension: item.size,
+            totalPrintingCost: calculateTotalPrintingOrMountingCost(
+              { ...item, dimension: item.size },
+              item.unit,
+              item.pricingDetails.printingCostPerSqft,
+              0,
+            ),
+            totalMountingCost: calculateTotalPrintingOrMountingCost(
+              { ...item, dimension: item.size },
+              item.unit,
+              item.pricingDetails.mountingCostPerSqft,
+              0,
+            ),
           })) || [],
         letterHead: proposalData?.proposal?.letterHead,
         letterFooter: proposalData?.proposal?.letterFooter,
