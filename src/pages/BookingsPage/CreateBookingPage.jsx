@@ -25,6 +25,7 @@ import {
   serialize,
   calculateTotalPrice,
   getAvailableUnits,
+  calculateTotalPrintingOrMountingCost,
 } from '../../utils';
 import { useFetchProposalById } from '../../apis/queries/proposal.queries';
 import useBookingStore from '../../store/booking.store';
@@ -327,7 +328,6 @@ const CreateBookingPage = () => {
   useEffect(() => {
     if (bookingById.data) {
       const { client, displayBrands, campaign } = bookingById.data;
-
       form.reset({
         // ...form.values,
         client: {
@@ -359,6 +359,18 @@ const CreateBookingPage = () => {
             endDate: new Date(item.endDate),
             initialStartDate: new Date(item.startDate),
             initialEndDate: new Date(item.endDate),
+            totalPrintingCost: calculateTotalPrintingOrMountingCost(
+              { ...item, dimension: item?.specifications?.size },
+              item.unit,
+              item?.printingCostPerSqft,
+              item.printingGstPercentage,
+            ),
+            totalMountingCost: calculateTotalPrintingOrMountingCost(
+              { ...item, dimension: item?.specifications?.size },
+              item.unit,
+              item?.mountingCostPerSqft,
+              item.mountingGstPercentage,
+            ),
           })) || [],
         industry: campaign?.industry?._id || '',
         displayBrands: displayBrands?.[0] || '',
@@ -392,6 +404,18 @@ const CreateBookingPage = () => {
           initialUnit: item?.bookedUnits || 0,
           location: { city: item.location },
           dimension: item.size,
+          totalPrintingCost: calculateTotalPrintingOrMountingCost(
+            { ...item, dimension: item.size },
+            item.unit,
+            item.pricingDetails.printingCostPerSqft,
+            item.printingGstPercentage,
+          ),
+          totalMountingCost: calculateTotalPrintingOrMountingCost(
+            { ...item, dimension: item.size },
+            item.unit,
+            item.pricingDetails.mountingCostPerSqft,
+            item.mountingGstPercentage,
+          ),
         })),
       });
     }
