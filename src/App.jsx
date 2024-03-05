@@ -557,7 +557,15 @@ const App = () => {
             path="parent-companies/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ViewCompanyPage type="parent-company" />
+                <ViewCompanyPage type="co-company" />
+              </Suspense>
+            }
+          />
+          <Route
+            path="sister-companies/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <ViewCompanyPage type="co-company" />
               </Suspense>
             }
           />

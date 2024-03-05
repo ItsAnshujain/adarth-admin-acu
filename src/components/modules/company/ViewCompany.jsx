@@ -4,6 +4,7 @@ const ViewCompany = ({ type, companyData, isLoading }) => {
   if (isLoading) {
     return <Loader className="mx-auto my-4" />;
   }
+
   return (
     <div className="py-4">
       <div className="text-lg font-bold">Basic Information</div>
@@ -60,10 +61,13 @@ const ViewCompany = ({ type, companyData, isLoading }) => {
           <div className="text-base text-gray-400 font-normal">State Code</div>
           <div>{companyData?.companyAddress?.stateCode || '-'} </div>
         </div>
-        <div>
-          <div className="text-base text-gray-400 font-normal">Parent Account</div>
-          <div>{companyData?.parentCompany?.name || '-'} </div>
-        </div>
+        {companyData?.parentCompany?.name ? (
+          <div>
+            <div className="text-base text-gray-400 font-normal">Parent Account</div>
+            <div>{companyData?.parentCompany?.name || '-'} </div>
+          </div>
+        ) : null}
+
         <div>
           <div className="text-base text-gray-400 font-normal">Address</div>
           <div>{companyData?.companyAddress?.address || '-'} </div>
