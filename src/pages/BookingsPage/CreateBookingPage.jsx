@@ -406,13 +406,13 @@ const CreateBookingPage = () => {
           dimension: item.size,
           totalPrintingCost: calculateTotalPrintingOrMountingCost(
             { ...item, dimension: item.size },
-            item.unit,
+            item.pricingDetails.unit,
             item.pricingDetails.printingCostPerSqft,
             item.printingGstPercentage,
           ),
           totalMountingCost: calculateTotalPrintingOrMountingCost(
             { ...item, dimension: item.size },
-            item.unit,
+            item.pricingDetails.unit,
             item.pricingDetails.mountingCostPerSqft,
             item.mountingGstPercentage,
           ),
