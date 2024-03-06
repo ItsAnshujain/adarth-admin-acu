@@ -571,7 +571,7 @@ export const calculateTotalMonths = (startDate, endDate) => {
     const daysInMonth = currDate.daysInMonth();
     const daysSelectedInStartMonth = daysInMonth - currDate.date() + 1;
 
-    if (currDate.isSame(end, 'month')) {
+    if (currDate.isSame(end, 'month') && !start.isSame(end, 'month')) {
       totalMonths += end.date() / daysInMonth;
     } else {
       totalMonths += daysSelectedInStartMonth / daysInMonth;
