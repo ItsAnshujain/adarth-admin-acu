@@ -1,5 +1,5 @@
 import { Avatar, Button, Image, Menu as MenuProfile } from '@mantine/core';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Menu } from 'react-feather';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import shallow from 'zustand/shallow';
