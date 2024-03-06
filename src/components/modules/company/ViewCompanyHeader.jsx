@@ -21,7 +21,7 @@ const updatedModalConfig = {
   },
 };
 
-const ViewCompanyHeader = ({ type }) => {
+const ViewCompanyHeader = ({ type, tab }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const navigate = useNavigate();
   const modals = useModals();
@@ -37,7 +37,7 @@ const ViewCompanyHeader = ({ type }) => {
           <DeleteCompanyContent
             classNames="px-8 mt-4"
             onClickCancel={() => modals.closeModal('deleteTermsAndConditions')}
-            onConfirm={() => navigate(`/repository/${type}`)}
+            onConfirm={() => navigate(`/repository/${type}?tab=${tab}`)}
             id={companyQuery?.data?._id}
           />
         ),
@@ -51,7 +51,8 @@ const ViewCompanyHeader = ({ type }) => {
       modalId: 'editCompanyModal',
       children: (
         <AddCompanyContent
-          type="company"
+          type={type}
+          tab="company"
           onCancel={() => modals.closeModal('editCompanyModal')}
           companyData={companyQuery?.data}
         />
@@ -66,7 +67,8 @@ const ViewCompanyHeader = ({ type }) => {
       modalId: 'editCompanyModal',
       children: (
         <AddCompanyContent
-          type="parentCompany"
+          type={type}
+          tab="parentCompany"
           onCancel={() => modals.closeModal('editCompanyModal')}
           companyData={companyQuery?.data}
         />
@@ -81,7 +83,7 @@ const ViewCompanyHeader = ({ type }) => {
         <Tabs.List className="border-b">
           <div className="flex justify-between w-full pb-0">
             <div className="flex gap-4 mb-0">
-              <ActionIcon component={Link} to={`/repository/${type}`}>
+              <ActionIcon component={Link} to={`/repository/${type}?tab=${tab}`}>
                 <IconArrowLeft color="black" />
               </ActionIcon>
               <Tabs.Tab

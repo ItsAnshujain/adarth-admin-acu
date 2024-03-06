@@ -16,7 +16,7 @@ import {
 import { CompanyTypeOptions, NatureOfAccountOptions } from '../../../utils/constants';
 import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler';
 
-const AddCoCompanyContent = ({ type, onCancel, companyData, mode }) => {
+const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = () => {} }) => {
   const schema = yup.object({
     companyName: yup.string().trim().required('Company name is required'),
     companyGstNumber: yup
@@ -126,6 +126,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode }) => {
             color: 'green',
           });
           onCancel();
+          onSuccess();
         },
       });
     } else {
@@ -180,6 +181,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode }) => {
               name="natureOfAccount"
               label="Nature of Account"
               data={NatureOfAccountOptions}
+              placeholder="Select..."
             />
             <ControlledSelect
               clearable
@@ -187,6 +189,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode }) => {
               name="companyType"
               label="Company Type"
               data={CompanyTypeOptions}
+              placeholder="Select..."
             />
           </div>
 
@@ -199,6 +202,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode }) => {
                 label="Parent Company"
                 data={parentCompanies}
                 dropdownComponent={parentCompaniesDropdown}
+                placeholder="Select..."
               />
             ) : null}
             <ControlledTextInput name="address" label="Address" />
@@ -211,10 +215,11 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode }) => {
               name="stateAndStateCode"
               label="State & State Code"
               data={memoizedStateAndStateCodeList}
+              placeholder="Select..."
             />
             <ControlledTextInput name="city" label="City" />
           </div>
-          <div className="text-2xl font-bold">Bank Information</div>
+          <div className="text-2xl font-bold mt-8">Bank Information</div>
           <div className="grid grid-cols-2 py-4 gap-2">
             <ControlledTextInput name="accountNo" label="Account No" />
             <ControlledTextInput name="accountHolderName" label="Account Holder Name" />

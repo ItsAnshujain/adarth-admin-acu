@@ -13,6 +13,7 @@ import Search from '../../Search';
 import modalConfig from '../../../utils/modalConfig';
 import AddCoCompanyContent from './AddCoCompanyContent';
 import useCompanies from '../../../apis/queries/companies.queries';
+import SuccessModal from '../../shared/Modal';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -27,7 +28,7 @@ const updatedModalConfig = {
 
 const Header = () => {
   const modals = useModals();
-  const [activeTab, setActiveTab] = useState('parent-companies');
+  const [open, setOpenSuccessModal] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -36,8 +37,10 @@ const Header = () => {
     sortBy: 'createdAt',
     sortOrder: 'desc',
     search: debouncedSearch,
+    tab: 'parent-companies',
   });
 
+  const tab = searchParams.get('tab');
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
   const sortBy = searchParams.get('sortBy');
@@ -50,7 +53,7 @@ const Header = () => {
     sortOrder,
     search: debouncedSearch,
     type: 'co-company',
-    isParent: activeTab === 'parent-companies',
+    isParent: tab === 'parent-companies',
   });
 
   const handleSortByColumn = colId => {
@@ -84,6 +87,7 @@ const Header = () => {
           mode="add"
           type="parentCompany"
           onCancel={() => modals.closeModal('addCompanyModal')}
+          onSuccess={() => setOpenSuccessModal('Parent Company')}
         />
       ),
       ...updatedModalConfig,
@@ -99,6 +103,7 @@ const Header = () => {
           mode="add"
           type="sisterCompany"
           onCancel={() => modals.closeModal('addCompanyModal')}
+          onSuccess={() => setOpenSuccessModal('Sister Company')}
         />
       ),
       ...updatedModalConfig,
@@ -158,18 +163,13 @@ const Header = () => {
       {
         Header: 'STATE & STATE CODE',
         show: true,
-        accessor: 'companyAddress.state',
-        Cell: info =>
-          useMemo(
-            () => (
-              <p>
-                {info.row.original.companyAddress.stateCode
-                  ? `(${info.row.original.companyAddress.stateCode}) ${info.row.original.companyAddress.state}`
-                  : '-'}
-              </p>
-            ),
-            [],
-          ),
+        Cell: ({
+          row: {
+            original: {
+              companyAddress: { state, stateCode },
+            },
+          },
+        }) => useMemo(() => <p>{stateCode ? `(${stateCode}) ${state}` : '-'}</p>, []),
       },
       {
         Header: 'GSTIN',
@@ -184,7 +184,7 @@ const Header = () => {
       },
       {
         Header: 'PARENT COMPANY',
-        show: activeTab === 'sister-companies',
+        show: tab === 'sister-companies',
         accessor: 'parentCompany.companyName',
       },
       {
@@ -214,9 +214,10 @@ const Header = () => {
             () => (
               <CompanyMenuPopover
                 itemId={original._id}
-                type={activeTab}
+                type="co-company"
+                tab={tab}
                 toggleEdit={() =>
-                  activeTab === 'parent-companies'
+                  tab === 'parent-companies'
                     ? toggleEditParentCompanyModal(original)
                     : toggleEditSisterCompanyModal(original)
                 }
@@ -226,19 +227,19 @@ const Header = () => {
           ),
       },
     ],
-    [activeTab],
+    [tab, coCompaniesQuery?.data?.docs],
   );
 
   const memoizedColumns = useMemo(() => {
-    if (activeTab === 'sister-companies') {
+    if (tab === 'sister-companies') {
       return columns;
     }
     return columns.filter(col => col.show);
-  }, [activeTab]);
+  }, [tab, coCompaniesQuery?.data?.docs]);
 
   return (
     <div className="flex justify-between py-4">
-      <Tabs className="w-full" value={activeTab}>
+      <Tabs className="w-full" value={tab}>
         <Tabs.List className="border-b">
           <div className="flex justify-between w-full pb-0">
             <div className="flex gap-4 mb-0">
@@ -246,9 +247,13 @@ const Header = () => {
                 value="parent-companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  activeTab === 'parent-companies' ? 'border border-b-2 border-purple-450' : '',
+                  tab === 'parent-companies' ? 'border border-b-2 border-purple-450' : '',
                 )}
-                onClick={() => setActiveTab('parent-companies')}
+                onClick={() => {
+                  searchParams.set('tab', 'parent-companies');
+                  searchParams.set('page', 1);
+                  setSearchParams(searchParams, { replace: true });
+                }}
               >
                 Parent Companies
               </Tabs.Tab>
@@ -256,9 +261,13 @@ const Header = () => {
                 value="sister-companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  activeTab === 'sister-companies' ? 'border border-b-2 border-purple-450' : '',
+                  tab === 'sister-companies' ? 'border border-b-2 border-purple-450' : '',
                 )}
-                onClick={() => setActiveTab('sister-companies')}
+                onClick={() => {
+                  searchParams.set('tab', 'sister-companies');
+                  searchParams.set('page', 1);
+                  setSearchParams(searchParams, { replace: true });
+                }}
               >
                 Sister Companies
               </Tabs.Tab>
@@ -341,6 +350,12 @@ const Header = () => {
           />
         </Tabs.Panel>
       </Tabs>
+      <SuccessModal
+        title={`${open} Successfully Added`}
+        prompt="Close"
+        open={!!open}
+        setOpenSuccessModal={setOpenSuccessModal}
+      />
     </div>
   );
 };
