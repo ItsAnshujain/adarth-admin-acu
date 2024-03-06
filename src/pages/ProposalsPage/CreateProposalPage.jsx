@@ -252,13 +252,13 @@ const CreateProposalPage = () => {
             dimension: item.size,
             totalPrintingCost: calculateTotalPrintingOrMountingCost(
               { ...item, dimension: item.size },
-              item.unit,
+              item.pricingDetails.unit,
               item.pricingDetails.printingCostPerSqft,
               0,
             ),
             totalMountingCost: calculateTotalPrintingOrMountingCost(
               { ...item, dimension: item.size },
-              item.unit,
+              item.pricingDetails.unit,
               item.pricingDetails.mountingCostPerSqft,
               0,
             ),
