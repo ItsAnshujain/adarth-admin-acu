@@ -569,11 +569,14 @@ export const calculateTotalMonths = (startDate, endDate) => {
 
   while (currDate.isSameOrBefore(end, 'month')) {
     const daysInMonth = currDate.daysInMonth();
-    const daysSelectedInStartMonth = daysInMonth - currDate.date() + 1;
 
-    if (currDate.isSame(end, 'month') && !start.isSame(end, 'month')) {
+    if (start.isSame(end, 'month')) {
+      const daysSelectedInMonth = end.date() - start.date() + 1;
+      totalMonths += daysSelectedInMonth / daysInMonth;
+    } else if (currDate.isSame(end, 'month')) {
       totalMonths += end.date() / daysInMonth;
     } else {
+      const daysSelectedInStartMonth = daysInMonth - currDate.date() + 1;
       totalMonths += daysSelectedInStartMonth / daysInMonth;
     }
     currDate = currDate.add(1, 'month').startOf('month');
