@@ -142,7 +142,7 @@ const locationValues = yup.object({
     address: yup.string().trim(),
     city: yup.string().trim().required('City is required'),
     state: yup.string().trim().required('State is required'),
-    zip: yup.number().typeError('Zip must be a number').positive('Zip must be a positive number'),
+    zip: yup.string().trim().required('Zip is required'),
     zone: yup
       .object({
         label: yup.string().trim(),
@@ -346,7 +346,7 @@ const CreateInventoryPage = () => {
           address: location?.address || '',
           city: location?.city || '',
           state: location?.state || '',
-          zip: location?.zip ? parseInt(location.zip, 10) : undefined,
+          zip: location?.zip ? location.zip : undefined,
           zone: {
             label: location?.zone?.name || '',
             value: location?.zone?._id || '',
