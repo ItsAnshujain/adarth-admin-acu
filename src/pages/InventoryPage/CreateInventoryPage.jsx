@@ -142,19 +142,7 @@ const locationValues = yup.object({
     address: yup.string().trim(),
     city: yup.string().trim().required('City is required'),
     state: yup.string().trim().required('State is required'),
-    zip: yup
-      .number()
-      .typeError('Zip must be a number')
-
-      .test('is-specific-length', 'Zip must be 6 digits', val => {
-        if (val === undefined || val === null || val === '') {
-          return true;
-        }
-
-        const stringVal = val.toString();
-        return stringVal.length === 6;
-      })
-      .positive('Zip must be a positive number'),
+    zip: yup.number().typeError('Zip must be a number').positive('Zip must be a positive number'),
     zone: yup
       .object({
         label: yup.string().trim(),
