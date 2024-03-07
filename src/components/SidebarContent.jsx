@@ -16,6 +16,7 @@ import ReportIcon from '../assets/report-default.svg';
 import CloudIcon from '../assets/cloud.svg';
 import FinanceIcon from '../assets/finance-default.svg';
 import GalleryIcon from '../assets/gallery-default.svg';
+import LeadsIcon from '../assets/leadsIcon.svg';
 import RoleBased from './RoleBased';
 import { masterTypes, ROLES, serialize } from '../utils';
 import { useFetchMastersTypes } from '../apis/queries/masters.queries';
@@ -116,6 +117,12 @@ const SidebarContent = ({ className }) => {
         label: 'Gallery',
         path: '/gallery',
         icon: GalleryIcon,
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+      },
+      {
+        label: 'Leads',
+        path: '/leads',
+        icon: LeadsIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
       {
