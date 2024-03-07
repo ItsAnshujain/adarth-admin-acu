@@ -1,20 +1,21 @@
 import { Button, Image } from '@mantine/core';
-import { useModals } from '@mantine/modals';
 import React, { useState } from 'react';
 import CheckIcon from '../../../assets/check.svg';
 import TrashIcon from '../../../assets/trash.svg';
-import { useDeleteBooking } from '../../../apis/queries/booking.queries';
+import { useDeleteContact } from '../../../apis/queries/contacts.queries';
 
-const DeleteContactContent = ({ onClickCancel = () => {}, id }) => {
-  const modals = useModals();
+const DeleteContactContent = ({ onClickCancel = () => {}, onConfirm = () => {}, id }) => {
   const [accept, setAccept] = useState(false);
-  const { mutateAsync: deleteBooking, isLoading } = useDeleteBooking();
+  const { mutateAsync: deleteContact, isLoading } = useDeleteContact();
 
   const handleConfirm = () => {
-    deleteBooking(id, {
+    deleteContact(id, {
       onSuccess: () => {
         setAccept(true);
-        setTimeout(() => modals.closeModal(), 2000);
+        setTimeout(() => {
+          onClickCancel();
+          onConfirm();
+        }, 2000);
       },
     });
   };
@@ -29,7 +30,7 @@ const DeleteContactContent = ({ onClickCancel = () => {}, id }) => {
         <div className="flex gap-2  justify-end">
           <Button
             onClick={onClickCancel}
-            className="bg-black text-white rounded-md text-sm px-8 py-3"
+            className="bg-black text-white rounded-md text-sm px-6 py-3"
             disabled={isLoading}
           >
             No

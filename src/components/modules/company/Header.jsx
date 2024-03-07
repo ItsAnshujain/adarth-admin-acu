@@ -13,6 +13,7 @@ import Search from '../../Search';
 import modalConfig from '../../../utils/modalConfig';
 import AddCompanyContent from './AddCompanyContent';
 import useCompanies from '../../../apis/queries/companies.queries';
+import SuccessModal from '../../shared/Modal';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -27,7 +28,7 @@ const updatedModalConfig = {
 
 const Header = () => {
   const modals = useModals();
-  const [activeTab, setActiveTab] = useState('companies');
+  const [open, setOpenSuccessModal] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
 
@@ -37,12 +38,14 @@ const Header = () => {
     sortBy: 'createdAt',
     sortOrder: 'desc',
     search: debouncedSearch,
+    tab: 'companies',
   });
 
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
   const sortBy = searchParams.get('sortBy');
   const sortOrder = searchParams.get('sortOrder');
+  const tab = searchParams.get('tab');
 
   const companiesQuery = useCompanies({
     page,
@@ -51,7 +54,7 @@ const Header = () => {
     sortOrder,
     search: debouncedSearch,
     type: 'lead-company',
-    isParent: activeTab === 'parent-companies',
+    isParent: tab === 'parent-companies',
   });
 
   const handleSortByColumn = colId => {
@@ -82,9 +85,11 @@ const Header = () => {
       modalId: 'addCompanyModal',
       children: (
         <AddCompanyContent
-          mode="add"
           type="company"
+          mode="add"
+          tab="company"
           onCancel={() => modals.closeModal('addCompanyModal')}
+          onSuccess={() => setOpenSuccessModal('Company')}
         />
       ),
       ...updatedModalConfig,
@@ -97,9 +102,11 @@ const Header = () => {
       modalId: 'addCompanyModal',
       children: (
         <AddCompanyContent
+          type="company"
           mode="add"
-          type="parentCompany"
+          tab="parentCompany"
           onCancel={() => modals.closeModal('addCompanyModal')}
+          onSuccess={() => setOpenSuccessModal('Parent Company')}
         />
       ),
       ...updatedModalConfig,
@@ -112,8 +119,9 @@ const Header = () => {
       modalId: 'editCompanyModal',
       children: (
         <AddCompanyContent
-          mode="edit"
           type="company"
+          mode="edit"
+          tab="company"
           companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
         />
@@ -128,8 +136,9 @@ const Header = () => {
       modalId: 'editCompanyModal',
       children: (
         <AddCompanyContent
+          type="company"
           mode="edit"
-          type="parentCompany"
+          tab="parentCompany"
           companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
         />
@@ -160,17 +169,13 @@ const Header = () => {
         Header: 'STATE & STATE CODE',
         show: true,
         accessor: 'companyAddress.state',
-        Cell: info =>
-          useMemo(
-            () => (
-              <p>
-                {info.row.original.companyAddress.stateCode
-                  ? `(${info.row.original.companyAddress.stateCode}) ${info.row.original.companyAddress.state}`
-                  : '-'}
-              </p>
-            ),
-            [],
-          ),
+        Cell: ({
+          row: {
+            original: {
+              companyAddress: { state, stateCode },
+            },
+          },
+        }) => useMemo(() => <p>{stateCode ? `(${stateCode}) ${state}` : '-'}</p>, []),
       },
       {
         Header: 'GSTIN',
@@ -185,7 +190,7 @@ const Header = () => {
       },
       {
         Header: 'PARENT COMPANY',
-        show: activeTab === 'companies',
+        show: tab === 'companies',
         accessor: 'parentCompany.companyName',
       },
       {
@@ -215,9 +220,10 @@ const Header = () => {
             () => (
               <CompanyMenuPopover
                 itemId={original._id}
-                type={activeTab}
+                type="company"
+                tab={tab}
                 toggleEdit={() =>
-                  activeTab === 'companies'
+                  tab === 'companies'
                     ? toggleEditCompanyModal(original)
                     : toggleEditParentCompanyModal(original)
                 }
@@ -227,19 +233,19 @@ const Header = () => {
           ),
       },
     ],
-    [activeTab],
+    [tab, companiesQuery?.data?.docs],
   );
 
   const memoizedColumns = useMemo(() => {
-    if (activeTab === 'companies') {
+    if (tab === 'companies') {
       return columns;
     }
     return columns.filter(col => col.show);
-  }, [activeTab]);
+  }, [tab, companiesQuery?.data?.docs]);
 
   return (
     <div className="flex justify-between py-4">
-      <Tabs className="w-full" value={activeTab}>
+      <Tabs className="w-full" value={tab}>
         <Tabs.List className="border-b">
           <div className="flex justify-between w-full pb-0">
             <div className="flex gap-4 mb-0">
@@ -247,11 +253,12 @@ const Header = () => {
                 value="companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  activeTab === 'companies' ? 'border border-b-2 border-purple-450' : '',
+                  tab === 'companies' ? 'border border-b-2 border-purple-450' : '',
                 )}
                 onClick={() => {
-                  setActiveTab('companies');
-                  setSearchParams({ ...searchParams, page: 1 }, { replace: true });
+                  searchParams.set('tab', 'companies');
+                  searchParams.set('page', 1);
+                  setSearchParams(searchParams, { replace: true });
                 }}
               >
                 Companies
@@ -260,11 +267,12 @@ const Header = () => {
                 value="parent-companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  activeTab === 'parent-companies' ? 'border border-b-2 border-purple-450' : '',
+                  tab === 'parent-companies' ? 'border border-b-2 border-purple-450' : '',
                 )}
                 onClick={() => {
-                  setActiveTab('parent-companies');
-                  setSearchParams({ ...searchParams, page: 1 }, { replace: true });
+                  searchParams.set('tab', 'parent-companies');
+                  searchParams.set('page', 1);
+                  setSearchParams(searchParams, { replace: true });
                 }}
               >
                 Parent Companies
@@ -277,7 +285,7 @@ const Header = () => {
                   className="bg-purple-450 text-white font-normal rounded-md mb-2"
                   leftIcon={<IconChevronDown size={20} />}
                 >
-                  {activeTab === 'companies' ? 'Add Company' : 'Add Parent Company'}
+                  {tab === 'companies' ? 'Add Company' : 'Add Parent Company'}
                 </Button>
               </Menu.Target>
               <Menu.Dropdown>
@@ -317,7 +325,7 @@ const Header = () => {
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
 
-          {activeTab !== 'parent-companies' ? (
+          {tab !== 'parent-companies' ? (
             <Table
               data={companiesQuery?.data?.docs || []}
               COLUMNS={memoizedColumns}
@@ -341,7 +349,7 @@ const Header = () => {
             />
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
-          {activeTab === 'parent-companies' ? (
+          {tab === 'parent-companies' ? (
             <Table
               data={companiesQuery?.data?.docs || []}
               COLUMNS={memoizedColumns}
@@ -355,6 +363,12 @@ const Header = () => {
           ) : null}
         </Tabs.Panel>
       </Tabs>
+      <SuccessModal
+        title={`${open} Successfully Added`}
+        prompt="Close"
+        open={!!open}
+        setOpenSuccessModal={setOpenSuccessModal}
+      />
     </div>
   );
 };

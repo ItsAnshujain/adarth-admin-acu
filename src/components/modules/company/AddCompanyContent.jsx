@@ -25,7 +25,7 @@ const schema = yup.object({
   email: yup.string().trim().email('Invalid Email'),
 });
 
-const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
+const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess = () => {} }) => {
   const form = useForm({
     resolver: yupResolver(schema),
   });
@@ -84,10 +84,10 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
       fax,
       companyPanNumber,
       companyGstNumber,
-      parentCompany: type === 'company' ? parentCompany : null,
+      parentCompany: tab === 'company' ? parentCompany : null,
       natureOfAccount,
       companyType: companyType || undefined,
-      type: 'lead-company',
+      type: type === 'company' ? 'lead-company' : 'co-company',
       bankAccountDetails:
         accountNo || accountHolderName || ifsc
           ? [
@@ -117,6 +117,7 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
             color: 'green',
           });
           onCancel();
+          onSuccess();
         },
       });
     } else {
@@ -136,7 +137,7 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
     () =>
       stateAndStateCodeQuery?.data?.map(stateDoc => ({
         label: `(${stateDoc.gstCode}) ${stateDoc.name}`,
-        value: stateDoc.gstCode.toString(),
+        value: `(${stateDoc.gstCode}) ${stateDoc.name}`,
         ...stateDoc,
       })) || [],
     [stateAndStateCodeQuery?.data],
@@ -184,6 +185,7 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
               name="natureOfAccount"
               label="Nature of Account"
               data={NatureOfAccountOptions}
+              placeholder="Select..."
             />
             <ControlledSelect
               clearable
@@ -191,10 +193,11 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
               name="companyType"
               label="Company Type"
               data={CompanyTypeOptions}
+              placeholder="Select..."
             />
           </div>
 
-          {type === 'company' ? (
+          {tab === 'company' ? (
             <ControlledSelect
               clearable
               searchable
@@ -202,26 +205,27 @@ const AddCompanyContent = ({ type, onCancel, companyData, mode }) => {
               label="Parent Company"
               dropdownComponent={parentCompaniesDropdown}
               data={parentCompanies}
+              placeholder="Select..."
             />
           ) : null}
 
-          <div className="grid grid-cols-2 gap-2 pt-4">
+          <div className="grid grid-cols-1 pt-4 gap-2">
             <ControlledTextInput name="address" label="Address" />
-
-            <ControlledTextInput name="city" label="City" />
           </div>
 
           <div className="grid grid-cols-2 py-4 gap-2">
             <ControlledSelect
               clearable
               searchable
-              name="stateCode"
+              name="stateAndStateCode"
               label="State & State Code"
               data={memoizedStateAndStateCodeList}
+              placeholder="Select..."
             />
+            <ControlledTextInput name="city" label="City" />
           </div>
 
-          <div className="text-2xl font-bold">Bank Information</div>
+          <div className="text-2xl font-bold mt-8">Bank Information</div>
           <div className="grid grid-cols-2 py-4 gap-2">
             <ControlledTextInput name="accountNo" label="Account No" />
             <ControlledTextInput name="accountHolderName" label="Account Holder Name" />
