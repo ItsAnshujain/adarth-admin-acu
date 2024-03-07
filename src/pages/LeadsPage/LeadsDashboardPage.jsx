@@ -1,5 +1,11 @@
+import LeadsList from '../../components/modules/leads/LeadsList';
+import LeadsStats from '../../components/modules/leads/LeadsStats';
+
 const LeadsDashboardPage = () => (
-  <div className="m-4 p-4 rounded-md border border-gray-200">as</div>
+  <div className="overflow-y-auto px-3 col-span-10">
+    <LeadsStats />
+    <LeadsList />
+  </div>
 );
 
 export default LeadsDashboardPage;

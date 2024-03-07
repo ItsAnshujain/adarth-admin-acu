@@ -531,6 +531,14 @@ const App = () => {
               </Suspense>
             }
           />
+          <Route
+            path="/add-lead"
+            element={
+              <Suspense fallback={<HeaderSidebarLoader />}>
+                <LeadsDashboardPage />
+              </Suspense>
+            }
+          />
         </Route>
         <Route
           path="/repository"
