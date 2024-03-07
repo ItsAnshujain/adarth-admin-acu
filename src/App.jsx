@@ -22,6 +22,8 @@ import ContactPage from './pages/RepositoryPage/ContactPage';
 import TermsAndConditionsPage from './pages/RepositoryPage/TermsAndConditionsPage';
 import ViewCompanyPage from './pages/RepositoryPage/ViewCompanyPage';
 import ViewContactPage from './pages/RepositoryPage/ViewContactPage';
+import LeadsPage from './pages/LeadsPage';
+import LeadsDashboardPage from './pages/LeadsPage/LeadsDashboardPage';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -509,6 +511,23 @@ const App = () => {
             element={
               <Suspense fallback={<CustomLoader />}>
                 <FileUpload />
+              </Suspense>
+            }
+          />
+        </Route>
+        <Route
+          path="/"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <LeadsPage />
+            </Suspense>
+          }
+        >
+          <Route
+            path="/leads"
+            element={
+              <Suspense fallback={<HeaderSidebarLoader />}>
+                <LeadsDashboardPage />
               </Suspense>
             }
           />
