@@ -39,11 +39,14 @@ const AutoCompleteLocationInput = ({
       if (postalCodeComponent && postalCodeComponent.long_name) {
         setFieldValue(
           zipCodeName,
-          postalCodeComponent.long_name && Number(postalCodeComponent.long_name.replace(' ', '')),
+          postalCodeComponent.long_name && postalCodeComponent.long_name.replace(' ', ''),
         );
+      } else {
+        setFieldValue(zipCodeName, '');
       }
     } else {
       setFieldValue(addressKeyName, '');
+      setFieldValue(zipCodeName, '');
     }
   };
 
