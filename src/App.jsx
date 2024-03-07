@@ -546,26 +546,36 @@ const App = () => {
             }
           />
           <Route
-            path="companies/:id"
+            path="company/companies/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ViewCompanyPage type="company" />
+                <ViewCompanyPage type="company" tab="companies" />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="company/parent-companies/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <ViewCompanyPage type="company" tab="parent-companies" />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="co-company/parent-companies/:id"
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <ViewCompanyPage type="co-company" tab="parent-companies" />
               </Suspense>
             }
           />
           <Route
-            path="parent-companies/:id"
+            path="co-company/sister-companies/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ViewCompanyPage type="co-company" />
-              </Suspense>
-            }
-          />
-          <Route
-            path="sister-companies/:id"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <ViewCompanyPage type="co-company" />
+                <ViewCompanyPage type="co-company" tab="sister-companies" />
               </Suspense>
             }
           />

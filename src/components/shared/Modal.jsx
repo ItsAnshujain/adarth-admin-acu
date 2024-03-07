@@ -12,7 +12,16 @@ const SuccessModal = ({ open, setOpenSuccessModal, title, text, prompt, path }) 
           {title}
         </Text>
         <Text className="text-gray-500">{text}</Text>
-        <Button className="bg-purple-450 text-white mb-2" onClick={() => navigate(`/${path}`)}>
+        <Button
+          className="bg-purple-450 text-white mb-2"
+          onClick={() => {
+            if (path) {
+              navigate(`/${path}`);
+            } else {
+              setOpenSuccessModal(false);
+            }
+          }}
+        >
           {prompt}
         </Button>
       </div>
