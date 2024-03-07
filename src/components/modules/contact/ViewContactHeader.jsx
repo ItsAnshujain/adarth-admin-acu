@@ -2,12 +2,13 @@ import { ActionIcon, Tabs } from '@mantine/core';
 import { IconArrowLeft, IconPencil, IconTrash } from '@tabler/icons';
 import classNames from 'classnames';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useModals } from '@mantine/modals';
 import ViewContact from './ViewContact';
 import modalConfig from '../../../utils/modalConfig';
 import AddContactContent from './AddContactContent';
 import DeleteContactContent from './DeleteContactContent';
+import { useContactById } from '../../../apis/queries/contacts.queries';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -22,28 +23,37 @@ const updatedModalConfig = {
 
 const ViewContactHeader = ({ type }) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const contactQuery = useContactById(id, !!id);
 
   const modals = useModals();
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
-      modalId: 'deleteTermsAndConditions',
+      modalId: 'deleteContact',
       innerProps: {
         modalBody: (
           <DeleteContactContent
+            id={id}
             classNames="px-8 mt-4"
-            onClickCancel={() => modals.closeModal('deleteTermsAndConditions')}
+            onClickCancel={() => modals.closeModal('deleteContact')}
+            onConfirm={() => navigate('/repository/contact')}
           />
         ),
       },
       ...modalConfig,
     });
 
-  const toggleEditContactModal = () => {
+  const toggleEditContact = mode => {
     modals.openModal({
-      title: 'Edit Contact',
-      modalId: 'editContactModal',
+      title: `${mode} Contact`,
+      modalId: 'editContact',
       children: (
-        <AddContactContent mode="Edit" onCancel={() => modals.closeModal('editContactModal')} />
+        <AddContactContent
+          contactData={contactQuery.data}
+          mode="edit"
+          onCancel={() => modals.closeModal('editContact')}
+        />
       ),
       ...updatedModalConfig,
     });
@@ -72,17 +82,20 @@ const ViewContactHeader = ({ type }) => {
               </Tabs.Tab>
             </div>
             <div className="flex">
-              <ActionIcon onClick={toggleEditContactModal}>
+              <ActionIcon
+                onClick={() => toggleEditContact('Edit')}
+                disabled={contactQuery.isLoading}
+              >
                 <IconPencil color="black" />
               </ActionIcon>
-              <ActionIcon onClick={toggleDeleteModal}>
+              <ActionIcon onClick={toggleDeleteModal} disabled={contactQuery.isLoading}>
                 <IconTrash className="text-purple-450" />
               </ActionIcon>
             </div>
           </div>
         </Tabs.List>
         <Tabs.Panel value="overview">
-          <ViewContact type={type} />
+          <ViewContact type={type} contactData={contactQuery.data} />
         </Tabs.Panel>
       </Tabs>
     </div>

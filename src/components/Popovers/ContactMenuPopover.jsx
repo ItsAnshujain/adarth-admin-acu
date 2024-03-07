@@ -1,22 +1,24 @@
 import { Button, Card, Menu } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import modalConfig from '../../utils/modalConfig';
 import MenuIcon from '../Menu';
-import DeleteCompanyContent from '../modules/company/DeleteCompanyContent';
+import DeleteContactContent from '../modules/contact/DeleteContactContent';
 
 const ContactMenuPopover = ({ itemId, toggleEdit }) => {
   const modals = useModals();
+  const navigate = useNavigate();
 
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
       modalId: 'deleteContactContent',
       innerProps: {
         modalBody: (
-          <DeleteCompanyContent
-            bookingId={itemId}
+          <DeleteContactContent
+            id={itemId}
             classNames="px-8 mt-4"
             onClickCancel={() => modals.closeModal('deleteContactContent')}
+            onConfirm={() => navigate('/repository/contact')}
           />
         ),
       },
@@ -31,7 +33,7 @@ const ContactMenuPopover = ({ itemId, toggleEdit }) => {
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <Link to={`/repository/contact/${123}`} className="p-0">
+        <Link to={`/repository/contact/${itemId}`} className="p-0">
           <Menu.Item>View</Menu.Item>
         </Link>
         <Card onClick={() => toggleEdit('Edit')} className="p-0">

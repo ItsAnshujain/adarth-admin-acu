@@ -2,12 +2,21 @@ import { Button } from '@mantine/core';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { showNotification } from '@mantine/notifications';
+import { useEffect, useMemo } from 'react';
+import dayjs from 'dayjs';
 import ControlledTextInput from '../../shared/FormInputs/Controlled/ControlledTextInput';
 import ControlledNumberInput from '../../shared/FormInputs/Controlled/ControlledNumberInput';
 import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelect';
-import DatePicker from '../../shared/FormInputs/DatePicker';
+import { useAddContact, useUpdateContact } from '../../../apis/queries/contacts.queries';
+import {
+  useInfiniteCompanies,
+  useStateAndStateCode,
+} from '../../../apis/queries/companies.queries';
+import ControlledDatePickerInput from '../../shared/FormInputs/Controlled/ControlledDatePickerInput';
+import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler';
 
-const AddContactContent = ({ onCancel }) => {
+const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
   const schema = yup.object({
     name: yup.string().trim().required('Name is required'),
   });
@@ -16,8 +25,124 @@ const AddContactContent = ({ onCancel }) => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = form.handleSubmit(_formData => {});
+  const addContactHandler = useAddContact();
+  const updateContactHandler = useUpdateContact();
+  const stateAndStateCodeQuery = useStateAndStateCode('');
+  const companiesQuery = useInfiniteCompanies({
+    page: 1,
+    limit: 10,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+    type: 'lead-company',
+    isParent: false,
+  });
 
+  const onSubmit = form.handleSubmit(formData => {
+    const {
+      name,
+      email,
+      contactNumber,
+      department,
+      city,
+      stateAndStateCode,
+      birthDate,
+      company,
+      parentCompanyId,
+    } = formData;
+    const data = {
+      name,
+      email: email || undefined,
+      contactNumber: contactNumber ? contactNumber?.toString() : '',
+      department,
+      birthDate: dayjs(birthDate).endOf('day')?.toISOString(),
+      company,
+      parentCompany: parentCompanyId,
+      address: {
+        address: null,
+        city,
+        pincode: null,
+        stateCode: stateAndStateCode?.split(/\((\d+)\)\s*(.+)/)?.[1],
+        state: stateAndStateCode?.split(/\((\d+)\)\s*(.+)/)?.[2],
+      },
+      id: contactData?._id,
+    };
+
+    if (mode === 'add') {
+      addContactHandler.mutate(data, {
+        onSuccess: () => {
+          showNotification({
+            title: 'Contact added successfully',
+            color: 'green',
+          });
+          onCancel();
+          onSuccess();
+        },
+      });
+    } else {
+      updateContactHandler.mutate(data, {
+        onSuccess: () => {
+          showNotification({
+            title: 'Contact updated successfully',
+            color: 'green',
+          });
+          onCancel();
+        },
+      });
+    }
+  });
+
+  const memoizedStateAndStateCodeList = useMemo(
+    () =>
+      stateAndStateCodeQuery?.data?.map(stateDoc => ({
+        label: `(${stateDoc.gstCode}) ${stateDoc.name}`,
+        value: `(${stateDoc.gstCode}) ${stateDoc.name}`,
+        ...stateDoc,
+      })) || [],
+    [stateAndStateCodeQuery?.data],
+  );
+
+  const memoizedCompanies = useMemo(
+    () =>
+      companiesQuery.data?.pages
+        .reduce((acc, { docs }) => [...acc, ...docs], [])
+        .map(doc => ({
+          ...doc,
+          label: doc.companyName,
+          value: doc._id,
+        })) || [],
+    [companiesQuery?.data],
+  );
+  const companiesDropdown = useMemo(
+    () =>
+      DropdownWithHandler(
+        () => companiesQuery.fetchNextPage(),
+        companiesQuery.isFetchingNextPage,
+        companiesQuery.hasNextPage,
+      ),
+    [companiesQuery],
+  );
+
+  useEffect(() => {
+    const company = memoizedCompanies.filter(({ value }) => value === form.watch('company'))?.[0];
+
+    form.setValue('parentCompany', company?.parentCompany?.companyName);
+    form.setValue('parentCompanyId', company?.parentCompany?._id);
+  }, [form.watch('company')]);
+
+  useEffect(() => {
+    if (contactData) {
+      form.reset({
+        ...contactData,
+        ...contactData?.address,
+        parentCompany: contactData?.parentCompany?.companyName,
+        parentCompanyId: contactData?.parentCompany?._id,
+        company: contactData?.company?._id,
+        stateAndStateCode: `(${contactData?.address?.stateCode}) ${contactData?.address?.state}`,
+        contactNumber: Number(contactData?.contactNumber),
+        birthDate: new Date(contactData?.birthDate),
+      });
+    }
+  }, [contactData]);
   return (
     <FormProvider {...form}>
       <form onSubmit={onSubmit}>
@@ -29,27 +154,42 @@ const AddContactContent = ({ onCancel }) => {
             <ControlledTextInput name="email" label="Email" />
             <ControlledTextInput name="department" label="Department" />
             <ControlledSelect
-              data={[]}
-              name="companyName"
+              dropdownComponent={companiesDropdown}
+              data={memoizedCompanies}
+              name="company"
               label="Company Name"
               placeholder="Select..."
+              clearable
+              searchable
             />
-            <ControlledTextInput name="parentCompanyName" label="Parent Company Name" disabled />
+            <ControlledTextInput name="parentCompany" label="Parent Company Name" disabled />
+
             <ControlledSelect
-              data={[]}
+              data={memoizedStateAndStateCodeList}
               name="stateAndStateCode"
               label="State & State Code"
               placeholder="Select..."
+              clearable
+              searchable
             />
             <ControlledTextInput name="city" label="City" />
-            <DatePicker label="Birthday" name="birthday" errors={form.errors} clearable />
+            <ControlledDatePickerInput
+              label="Birthday"
+              name="birthDate"
+              errors={form.errors}
+              clearable
+            />
           </div>
 
           <div className="flex gap-2 py-4 float-right">
             <Button className="bg-black" onClick={onCancel}>
               Cancel
             </Button>
-            <Button className="bg-purple-450" type="submit">
+            <Button
+              className="bg-purple-450"
+              type="submit"
+              loading={addContactHandler.isLoading || updateContactHandler.isLoading}
+            >
               Save
             </Button>
           </div>

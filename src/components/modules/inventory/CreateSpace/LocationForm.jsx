@@ -135,7 +135,7 @@ const LocationForm = () => {
             placeholder="Write..."
             className="mb-7"
           />
-          <NumberInput
+          <TextInput
             label="Zip"
             name="location.zip"
             styles={styles}

@@ -37,10 +37,16 @@ const AutoCompleteLocationInput = ({
         setFieldValue(stateKeyName, e.value.terms[e.value.terms.length - 2].value);
       }
       if (postalCodeComponent && postalCodeComponent.long_name) {
-        setFieldValue(zipCodeName, Number(postalCodeComponent.long_name));
+        setFieldValue(
+          zipCodeName,
+          postalCodeComponent.long_name && postalCodeComponent.long_name.replace(' ', ''),
+        );
+      } else {
+        setFieldValue(zipCodeName, '');
       }
     } else {
       setFieldValue(addressKeyName, '');
+      setFieldValue(zipCodeName, '');
     }
   };
 
@@ -48,7 +54,6 @@ const AutoCompleteLocationInput = ({
     <>
       <GooglePlacesAutocomplete
         apiKey={GOOGLE_MAPS_API_KEY}
-        autocompletionRequest={{ componentRestrictions: { country: 'in' } }}
         debounce={1000}
         selectProps={{
           defaultInputValue: values.location.address || '',

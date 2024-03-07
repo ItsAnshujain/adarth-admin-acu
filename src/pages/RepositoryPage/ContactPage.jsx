@@ -13,6 +13,7 @@ import useContacts from '../../apis/queries/contacts.queries';
 import { DATE_SECOND_FORMAT } from '../../utils/constants';
 import modalConfig from '../../utils/modalConfig';
 import AddContactContent from '../../components/modules/contact/AddContactContent';
+import SuccessModal from '../../components/shared/Modal';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -27,6 +28,7 @@ const updatedModalConfig = {
 
 const ContactPage = () => {
   const [searchInput, setSearchInput] = useState('');
+  const [open, setOpenSuccessModal] = useState(false);
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
@@ -55,7 +57,28 @@ const ContactPage = () => {
     modals.openModal({
       title: `${mode} Contact`,
       modalId: 'addContact',
-      children: <AddContactContent onCancel={() => modals.closeModal('addContact')} />,
+      children: (
+        <AddContactContent
+          mode="add"
+          onCancel={() => modals.closeModal('addContact')}
+          onSuccess={() => setOpenSuccessModal(true)}
+        />
+      ),
+      ...updatedModalConfig,
+    });
+  };
+
+  const toggleEditContact = (contactData, mode) => {
+    modals.openModal({
+      title: `${mode} Contact`,
+      modalId: 'addContact',
+      children: (
+        <AddContactContent
+          contactData={contactData}
+          mode="edit"
+          onCancel={() => modals.closeModal('addContact')}
+        />
+      ),
       ...updatedModalConfig,
     });
   };
@@ -106,15 +129,7 @@ const ContactPage = () => {
               address: { state, stateCode },
             },
           },
-        }) =>
-          useMemo(
-            () => (
-              <div>
-                ({stateCode}) {state}
-              </div>
-            ),
-            [],
-          ),
+        }) => useMemo(() => <p>{stateCode ? `(${stateCode}) ${state}` : '-'}</p>, []),
       },
       {
         Header: 'BIRTHDAY',
@@ -133,14 +148,19 @@ const ContactPage = () => {
         Header: 'ACTION',
         accessor: 'action',
         disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { _id },
-          },
-        }) => useMemo(() => <ContactMenuPopover toggleEdit={toggleAddContact} itemId={_id} />, []),
+        Cell: ({ row: { original } }) =>
+          useMemo(
+            () => (
+              <ContactMenuPopover
+                toggleEdit={() => toggleEditContact(original, 'Edit')}
+                itemId={original._id}
+              />
+            ),
+            [],
+          ),
       },
     ],
-    [],
+    [contactsQuery?.data?.docs],
   );
 
   const handleSortByColumn = colId => {
@@ -188,6 +208,12 @@ const ContactPage = () => {
           loading={contactsQuery.isLoading}
         />
       </div>
+      <SuccessModal
+        title="Contact Successfully Added"
+        prompt="Close"
+        open={!!open}
+        setOpenSuccessModal={setOpenSuccessModal}
+      />
     </div>
   );
 };
