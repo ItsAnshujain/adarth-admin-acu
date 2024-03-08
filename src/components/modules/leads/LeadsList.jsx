@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useModals } from '@mantine/modals';
 import { useSearchParams } from 'react-router-dom';
+import { useDisclosure } from '@mantine/hooks';
 import { generateSlNo } from '../../../utils';
 import Table from '../../Table/Table';
 import LeadsListHeader from './LeadsListHeader';
@@ -9,6 +10,7 @@ import modalConfig from '../../../utils/modalConfig';
 import AddFollowUpContent from './AddFollowUpContent';
 import RowsPerPage from '../../RowsPerPage';
 import Search from '../../Search';
+import ViewLeadDrawer from './ViewLeadDrawer';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -25,6 +27,7 @@ const LeadsList = () => {
   const modals = useModals();
   const [searchInput, setSearchInput] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
+  const [viewLeadDrawerOpened, viewLeadDrawerActions] = useDisclosure();
 
   const toggleAddFollowUp = () =>
     modals.openModal({
@@ -101,7 +104,13 @@ const LeadsList = () => {
         disableSortBy: true,
         Cell: ({ row: { original } }) =>
           useMemo(
-            () => <LeadMenuPopover itemId={original._id} toggleAddFollowUp={toggleAddFollowUp} />,
+            () => (
+              <LeadMenuPopover
+                itemId={original._id}
+                toggleAddFollowUp={toggleAddFollowUp}
+                toggleViewLead={viewLeadDrawerActions.toggle}
+              />
+            ),
             [],
           ),
       },
@@ -130,6 +139,7 @@ const LeadsList = () => {
         // handleSorting={handleSortByColumn}
         // loading={companiesQuery?.isLoading}
       />
+      <ViewLeadDrawer isOpened={viewLeadDrawerOpened} onClose={viewLeadDrawerActions.close} />
     </div>
   );
 };
