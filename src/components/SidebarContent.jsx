@@ -121,7 +121,7 @@ const SidebarContent = ({ className }) => {
       },
       {
         label: 'Leads',
-        path: '/leads',
+        path: '/leads/leads-dashboard',
         icon: LeadsIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
