@@ -17,8 +17,8 @@ const LeadsListHeader = () => {
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
 
   return (
-    <div className="flex justify-between pb-6">
-      <div>Lead List</div>
+    <div className="flex items-center justify-between">
+      <div className="font-bold text-lg">Lead List</div>
       <div className="flex">
         <div ref={ref} className="relative mr-2">
           <Button onClick={toggleDatePicker} variant="default">

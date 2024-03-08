@@ -1,26 +1,112 @@
 import { Button, Divider, Image, MultiSelect } from '@mantine/core';
 import { FormProvider, useForm } from 'react-hook-form';
 import { DatePickerInput } from '@mantine/dates';
+import { ChevronDown } from 'react-feather';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useNavigate } from 'react-router-dom';
 import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelect';
 import ControlledTextInput from '../../shared/FormInputs/Controlled/ControlledTextInput';
 import CalendarIcon from '../../../assets/calendar.svg';
 import ControlledTextarea from '../../shared/FormInputs/Controlled/ControlledTextarea';
 
+const schema = yup.object({
+  leadCompany: yup.string().trim().required('Lead company is required'),
+  contactPersonName: yup.string().trim().required('Contact person is required'),
+});
+
 const AddLeadForm = () => {
-  const form = useForm();
+  const navigate = useNavigate();
+  const form = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = form.handleSubmit(_formData => {});
+
   return (
     <FormProvider {...form}>
-      <form onSubmit={() => {}}>
+      <form onSubmit={onSubmit}>
         <div className="flex items-center justify-between py-2 px-6">
           <div className="text-xl font-bold">Create Lead</div>
           <div className="flex gap-2">
-            <Button variant="default">Cancel</Button>
-            <Button className="bg-purple-450">Save</Button>
+            <Button variant="default" onClick={() => navigate(-1)}>
+              Cancel
+            </Button>
+            <Button className="bg-purple-450" type="submit">
+              Save
+            </Button>
           </div>
         </div>
         <Divider />
         <div className="py-2 px-6">
-          <div className="text-xl font-bold">Basic Information</div>
+          <div className="flex gap-3 justify-end py-4">
+            <div />
+            <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
+              <div>Primary Incharge - </div>
+              <ControlledSelect
+                clearable
+                searchable
+                placeholder="Select..."
+                name="primaryIncharge"
+                data={[]}
+                withAsterisk
+                classNames={{
+                  input: 'border-none',
+                }}
+                rightSection={<ChevronDown size={20} />}
+                className="w-28"
+              />
+            </div>
+            <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
+              <div>Secondary Incharge - </div>
+              <ControlledSelect
+                clearable
+                searchable
+                placeholder="Select..."
+                name="secondaryIncharge"
+                data={[]}
+                withAsterisk
+                classNames={{
+                  input: 'border-none',
+                }}
+                rightSection={<ChevronDown size={20} />}
+                className="w-28"
+              />
+            </div>
+            <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
+              <div>Priority - </div>
+              <ControlledSelect
+                clearable
+                searchable
+                placeholder="Select..."
+                name="priority"
+                data={[]}
+                withAsterisk
+                classNames={{
+                  input: 'border-none',
+                }}
+                rightSection={<ChevronDown size={20} />}
+                className="w-28"
+              />
+            </div>
+            <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
+              <div>Stage - </div>
+              <ControlledSelect
+                clearable
+                searchable
+                placeholder="Select..."
+                name="stage"
+                data={[]}
+                withAsterisk
+                classNames={{
+                  input: 'border-none',
+                }}
+                rightSection={<ChevronDown size={20} />}
+                className="w-28"
+              />
+            </div>
+          </div>
+          <div className="text-xl font-bold w-full">Basic Information</div>
           <div className="grid grid-cols-2 pt-4 gap-2">
             <ControlledSelect
               clearable

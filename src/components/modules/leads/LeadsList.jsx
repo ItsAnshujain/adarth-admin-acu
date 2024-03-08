@@ -1,10 +1,45 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { useModals } from '@mantine/modals';
+import { useSearchParams } from 'react-router-dom';
 import { generateSlNo } from '../../../utils';
 import Table from '../../Table/Table';
 import LeadsListHeader from './LeadsListHeader';
 import LeadMenuPopover from '../../Popovers/LeadMenuPopover';
+import modalConfig from '../../../utils/modalConfig';
+import AddFollowUpContent from './AddFollowUpContent';
+import RowsPerPage from '../../RowsPerPage';
+import Search from '../../Search';
+
+const updatedModalConfig = {
+  ...modalConfig,
+  classNames: {
+    title: 'font-dmSans text-xl px-4',
+    header: 'px-4 pt-4',
+    body: 'px-8',
+    close: 'mr-4',
+  },
+  size: 800,
+};
 
 const LeadsList = () => {
+  const modals = useModals();
+  const [searchInput, setSearchInput] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const toggleAddFollowUp = () =>
+    modals.openModal({
+      title: 'Add Follow Up',
+      modalId: 'addFollowUpModal',
+      children: <AddFollowUpContent onCancel={() => modals.closeModal('addFollowUpModal')} />,
+      ...updatedModalConfig,
+    });
+
+  const handlePagination = (key, val) => {
+    if (val !== '') searchParams.set(key, val);
+    else searchParams.delete(key);
+
+    setSearchParams(searchParams);
+  };
   const columns = useMemo(
     () => [
       {
@@ -65,7 +100,10 @@ const LeadsList = () => {
         accessor: 'action',
         disableSortBy: true,
         Cell: ({ row: { original } }) =>
-          useMemo(() => <LeadMenuPopover itemId={original._id} toggleEdit={() => {}} />, []),
+          useMemo(
+            () => <LeadMenuPopover itemId={original._id} toggleAddFollowUp={toggleAddFollowUp} />,
+            [],
+          ),
       },
     ],
     [],
@@ -73,8 +111,17 @@ const LeadsList = () => {
   return (
     <div className="mx-2 px-4">
       <LeadsListHeader />
+      <div className="flex justify-between h-20 items-center">
+        <RowsPerPage
+          setCount={currentLimit => {
+            handlePagination('limit', currentLimit);
+          }}
+          count="10"
+        />
+        <Search search={searchInput} setSearch={setSearchInput} />
+      </div>
       <Table
-        data={[]}
+        data={[{}]}
         COLUMNS={columns}
         activePage={1}
         totalPages={1}

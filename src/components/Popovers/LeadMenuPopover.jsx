@@ -5,7 +5,7 @@ import modalConfig from '../../utils/modalConfig';
 import MenuIcon from '../Menu';
 import DeleteCompanyContent from '../modules/company/DeleteCompanyContent';
 
-const LeadMenuPopover = ({ itemId, toggleEdit, tab, type }) => {
+const LeadMenuPopover = ({ itemId, toggleAddFollowUp, tab, type }) => {
   const modals = useModals();
   const navigate = useNavigate();
 
@@ -33,15 +33,15 @@ const LeadMenuPopover = ({ itemId, toggleEdit, tab, type }) => {
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <Link to={`/repository/${type}/${tab}/${itemId}`} className="p-0">
+        <Link to={`add-lead?id=${itemId}`} className="p-0">
           <Menu.Item>View</Menu.Item>
         </Link>
-        <Card onClick={toggleEdit} className="p-0">
+        <Card onClick={toggleAddFollowUp} className="p-0">
           <Menu.Item>Add Follow Up</Menu.Item>
         </Card>
-        <Card onClick={toggleEdit} className="p-0">
+        <Link to={`/leads/add-lead?id=${itemId}`} className="p-0">
           <Menu.Item>Edit</Menu.Item>
-        </Card>
+        </Link>
         <Card onClick={toggleDeleteModal} className="p-0">
           <Menu.Item>Delete</Menu.Item>
         </Card>
