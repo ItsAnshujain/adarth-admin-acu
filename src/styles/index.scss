@@ -97,7 +97,7 @@
 
 .leadStepper .stepperItem {
   margin: 0 0 0 -19px;
-  -webkit-clip-path: polygon(
+  clip-path: polygon(
     20px 50%,
     0% 0%,
     calc(100% - 20px) 0%,
@@ -108,17 +108,11 @@
 
   &:first-child {
     padding: 20px;
-    -webkit-clip-path: polygon(
-      0% 0%,
-      calc(100% - 20px) 0%,
-      100% 50%,
-      calc(100% - 20px) 100%,
-      0% 100%
-    );
+    clip-path: polygon(0% 0%, calc(100% - 20px) 0%, 100% 50%, calc(100% - 20px) 100%, 0% 100%);
   }
 
   &:last-child {
-    -webkit-clip-path: polygon(
+    clip-path: polygon(
       20px 50%,
       0% 0%,
       calc(100% - 20px) 0%,
