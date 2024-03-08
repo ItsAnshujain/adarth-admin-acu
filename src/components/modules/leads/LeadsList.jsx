@@ -74,7 +74,7 @@ const LeadsList = () => {
     <div className="mx-2 px-4">
       <LeadsListHeader />
       <Table
-        data={[{}]}
+        data={[]}
         COLUMNS={columns}
         activePage={1}
         totalPages={1}

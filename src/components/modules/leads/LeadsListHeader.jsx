@@ -41,7 +41,12 @@ const LeadsListHeader = () => {
           </Button>
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
         </div>
-        <Button component={Link} to="/add-lead" leftIcon={<IconPlus />} className="bg-purple-450">
+        <Button
+          component={Link}
+          to="/leads/add-lead"
+          leftIcon={<IconPlus />}
+          className="bg-purple-450"
+        >
           Add Lead
         </Button>
       </div>
