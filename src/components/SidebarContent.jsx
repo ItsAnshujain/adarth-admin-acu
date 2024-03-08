@@ -15,6 +15,7 @@ import CampaignIcon from '../assets/campaign-default.svg';
 import ReportIcon from '../assets/report-default.svg';
 import FinanceIcon from '../assets/finance-default.svg';
 import GalleryIcon from '../assets/gallery-default.svg';
+import LeadsIcon from '../assets/leadsIcon.svg';
 import RoleBased from './RoleBased';
 import { masterTypes, ROLES, serialize } from '../utils';
 import { useFetchMastersTypes } from '../apis/queries/masters.queries';
@@ -120,6 +121,12 @@ const SidebarContent = ({ className }) => {
       {
         /* TODO: Remove comment for repository */
       },
+      // {
+      //   label: 'Leads',
+      //   path: '/leads',
+      //   icon: LeadsIcon,
+      //   acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+      // },
       // {
       //   label: 'Repository',
       //   path: '/repository',
