@@ -334,9 +334,9 @@ const AddEditPriceDrawer = ({
         subjectToExtension: inventory.subjectToExtension || false,
         discountOn: inventory.discountOn || 'displayCost',
         discount:
-          mode === 'view' && type === 'bookings' && selectedInventory.discountOn === 'totalPrice'
+          mode === 'view' && type === 'bookings' && inventory.discountOn === 'totalPrice'
             ? 0
-            : selectedInventory.discount || 0,
+            : inventory.discount || 0,
         applyDiscountForAll: inventory.applyDiscountForAll || false,
         discountedPriceOverDisplayCost: calculateDiscountOnDisplayCost({
           discountOn: inventory.discountOn,
