@@ -33,9 +33,11 @@ const LeadMenuPopover = ({ itemId, toggleAddFollowUp, toggleViewLead, tab, type 
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <Card onClick={toggleViewLead} className="p-0">
-          <Menu.Item>View</Menu.Item>
-        </Card>
+        {toggleViewLead ? (
+          <Card onClick={toggleViewLead} className="p-0">
+            <Menu.Item>View</Menu.Item>
+          </Card>
+        ) : null}
         <Card onClick={toggleAddFollowUp} className="p-0">
           <Menu.Item>Add Follow Up</Menu.Item>
         </Card>

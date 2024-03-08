@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import { useModals } from '@mantine/modals';
 import { useSearchParams } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
+import { ActionIcon } from '@mantine/core';
+import { IconChevronLeft } from '@tabler/icons';
 import { generateSlNo } from '../../../utils';
 import Table from '../../Table/Table';
 import LeadsListHeader from './LeadsListHeader';
@@ -110,6 +112,21 @@ const LeadsList = () => {
                 toggleAddFollowUp={toggleAddFollowUp}
                 toggleViewLead={viewLeadDrawerActions.toggle}
               />
+            ),
+            [],
+          ),
+      },
+      {
+        Header: '',
+        accessor: 'action1',
+        disableSortBy: true,
+        sticky: true,
+        Cell: () =>
+          useMemo(
+            () => (
+              <ActionIcon className="bg-purple-450" onClick={viewLeadDrawerActions.open}>
+                <IconChevronLeft size={20} color="white" />
+              </ActionIcon>
             ),
             [],
           ),
