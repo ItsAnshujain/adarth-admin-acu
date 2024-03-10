@@ -1,4 +1,5 @@
 import { Divider, Loader } from '@mantine/core';
+import { CompanyTypeOptions } from '../../../utils/constants';
 
 const ViewCompany = ({ type, companyData, isLoading }) => {
   if (isLoading) {
@@ -47,7 +48,10 @@ const ViewCompany = ({ type, companyData, isLoading }) => {
         </div>
         <div>
           <div className="text-base text-gray-400 font-normal">Company Type</div>
-          <div>{companyData?.companyType || '-'} </div>
+          <div>
+            {CompanyTypeOptions?.filter(({ value }) => value === companyData?.companyType)?.[0]
+              ?.label || '-'}
+          </div>
         </div>
         <div>
           <div className="text-base text-gray-400 font-normal">City</div>

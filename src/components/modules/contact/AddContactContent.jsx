@@ -15,10 +15,17 @@ import {
 } from '../../../apis/queries/companies.queries';
 import ControlledDatePickerInput from '../../shared/FormInputs/Controlled/ControlledDatePickerInput';
 import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler';
+import { mobileRegexMatch } from '../../../utils';
 
 const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
   const schema = yup.object({
     name: yup.string().trim().required('Name is required'),
+    email: yup.string().trim().email('Invalid Email'),
+    contactNumber: yup
+      .string()
+      .trim()
+      .matches(mobileRegexMatch, { message: 'Must be a valid number', excludeEmptyString: true })
+      .notRequired(),
   });
 
   const form = useForm({
@@ -54,7 +61,7 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
       email: email || undefined,
       contactNumber: contactNumber ? contactNumber?.toString() : '',
       department,
-      birthDate: dayjs(birthDate).endOf('day')?.toISOString(),
+      birthDate: birthDate && dayjs(birthDate).endOf('day')?.toISOString(),
       company,
       parentCompany: parentCompanyId,
       address: {
@@ -139,7 +146,7 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
         company: contactData?.company?._id,
         stateAndStateCode: `(${contactData?.address?.stateCode}) ${contactData?.address?.state}`,
         contactNumber: Number(contactData?.contactNumber),
-        birthDate: new Date(contactData?.birthDate),
+        birthDate: contactData?.birthDate && new Date(contactData?.birthDate),
       });
     }
   }, [contactData]);

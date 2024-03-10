@@ -185,8 +185,8 @@ const ContactPage = () => {
     setSearchParams(searchParams);
   };
   return (
-    <div className="overflow-y-auto px-3 col-span-10">
-      <div className="overflow-y-auto px-3 col-span-10">
+    <div className="overflow-y-auto px-2 col-span-10">
+      <div className="overflow-y-auto px-2 col-span-10">
         <Header toggleAddContact={toggleAddContact} />
         <div className="flex justify-between h-20 items-center">
           <RowsPerPage

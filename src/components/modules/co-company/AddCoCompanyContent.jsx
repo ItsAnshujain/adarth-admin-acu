@@ -6,7 +6,13 @@ import { showNotification } from '@mantine/notifications';
 import { useEffect, useMemo } from 'react';
 import ControlledTextInput from '../../shared/FormInputs/Controlled/ControlledTextInput';
 import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelect';
-import { gstRegexMatch } from '../../../utils';
+import {
+  faxRegexMatch,
+  gstRegexMatch,
+  ifscRegexMatch,
+  mobileRegexMatch,
+  panRegexMatch,
+} from '../../../utils';
 import {
   useAddCompany,
   useInfiniteCompanies,
@@ -24,6 +30,35 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
       .trim()
       .matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
     email: yup.string().trim().email('Invalid Email'),
+    contactNumber: yup
+      .string()
+      .trim()
+      .matches(mobileRegexMatch, { message: 'Must be a valid number', excludeEmptyString: true })
+      .notRequired(),
+    companyPanNumber: yup
+      .string()
+      .trim()
+      .matches(panRegexMatch, {
+        message: 'Must be a valid PAN',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
+    fax: yup
+      .string()
+      .trim()
+      .matches(faxRegexMatch, {
+        message: 'Must be a valid Fax number',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
+    ifsc: yup
+      .string()
+      .trim()
+      .matches(ifscRegexMatch, {
+        message: 'Must be a valid IFSC',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
   });
 
   const form = useForm({
@@ -116,6 +151,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
         state: stateAndStateCode?.split(/\((\d+)\)\s*(.+)/)?.[2],
       },
       id: companyData ? companyData?._id : undefined,
+      isParent: type !== 'sisterCompany',
     };
 
     if (mode === 'add') {
@@ -172,17 +208,22 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
             <ControlledTextInput name="companyName" label="Company Name" withAsterisk />
             <ControlledTextInput name="email" label="Email" />
             <ControlledTextInput name="contactNumber" label="Contact Number" />
-            <ControlledTextInput name="fax" label="Fax Number" />
+            {type !== 'sisterCompany' ? (
+              <ControlledTextInput name="fax" label="Fax Number" />
+            ) : null}
+
             <ControlledTextInput name="companyPanNumber" label="PAN" />
             <ControlledTextInput name="companyGstNumber" label="GSTIN" />
-            <ControlledSelect
-              clearable
-              searchable
-              name="natureOfAccount"
-              label="Nature of Account"
-              data={NatureOfAccountOptions}
-              placeholder="Select..."
-            />
+            {type !== 'sisterCompany' ? (
+              <ControlledSelect
+                clearable
+                searchable
+                name="natureOfAccount"
+                label="Nature of Account"
+                data={NatureOfAccountOptions}
+                placeholder="Select..."
+              />
+            ) : null}
             <ControlledSelect
               clearable
               searchable

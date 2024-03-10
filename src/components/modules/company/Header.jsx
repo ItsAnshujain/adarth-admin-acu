@@ -14,6 +14,7 @@ import modalConfig from '../../../utils/modalConfig';
 import AddCompanyContent from './AddCompanyContent';
 import useCompanies from '../../../apis/queries/companies.queries';
 import SuccessModal from '../../shared/Modal';
+import { CompanyTypeOptions } from '../../../utils/constants';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -187,6 +188,20 @@ const Header = () => {
         Header: 'COMPANY TYPE',
         show: true,
         accessor: 'companyType',
+        Cell: ({
+          row: {
+            original: { companyType },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p>
+                {CompanyTypeOptions?.filter(({ value }) => value === companyType)?.[0]?.label ||
+                  '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PARENT COMPANY',

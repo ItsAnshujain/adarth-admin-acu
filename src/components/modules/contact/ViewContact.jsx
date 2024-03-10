@@ -24,11 +24,11 @@ const ViewContact = ({ contactData }) => (
       </div>
       <div>
         <div className="text-base text-gray-400 font-normal">Company Name</div>
-        <div>{contactData?.companyName || '-'} </div>
+        <div>{contactData?.company?.companyName || '-'} </div>
       </div>
       <div>
         <div className="text-base text-gray-400 font-normal">Parent Company Name</div>
-        <div>{contactData?.parentCompanyName || '-'} </div>
+        <div>{contactData?.parentCompany?.companyName || '-'} </div>
       </div>
 
       <div>

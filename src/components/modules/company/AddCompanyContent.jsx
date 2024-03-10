@@ -6,7 +6,13 @@ import { showNotification } from '@mantine/notifications';
 import { useEffect, useMemo } from 'react';
 import ControlledTextInput from '../../shared/FormInputs/Controlled/ControlledTextInput';
 import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelect';
-import { gstRegexMatch } from '../../../utils';
+import {
+  faxRegexMatch,
+  gstRegexMatch,
+  ifscRegexMatch,
+  mobileRegexMatch,
+  panRegexMatch,
+} from '../../../utils';
 import {
   useAddCompany,
   useInfiniteCompanies,
@@ -23,6 +29,35 @@ const schema = yup.object({
     .trim()
     .matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
   email: yup.string().trim().email('Invalid Email'),
+  contactNumber: yup
+    .string()
+    .trim()
+    .matches(mobileRegexMatch, { message: 'Must be a valid number', excludeEmptyString: true })
+    .notRequired(),
+  companyPanNumber: yup
+    .string()
+    .trim()
+    .matches(panRegexMatch, {
+      message: 'Must be a valid PAN',
+      excludeEmptyString: true,
+    })
+    .notRequired(),
+  fax: yup
+    .string()
+    .trim()
+    .matches(faxRegexMatch, {
+      message: 'Must be a valid Fax number',
+      excludeEmptyString: true,
+    })
+    .notRequired(),
+  ifsc: yup
+    .string()
+    .trim()
+    .matches(ifscRegexMatch, {
+      message: 'Must be a valid IFSC',
+      excludeEmptyString: true,
+    })
+    .notRequired(),
 });
 
 const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess = () => {} }) => {
@@ -107,6 +142,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
         state: stateAndStateCode?.split(/\((\d+)\)\s*(.+)/)?.[2],
       },
       id: companyData ? companyData?._id : undefined,
+      isParent: tab !== 'company',
     };
 
     if (mode === 'add') {
@@ -153,6 +189,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
       ...companyData?.companyAddress,
       ...companyData?.parentCompany,
       ...companyData?.bankAccountDetails?.[0],
+      companyType: companyData.companyType,
       parentCompany: companyData?.parentCompany?._id || companyData?.parentCompany,
       stateAndStateCode: `(${companyData?.companyAddress?.stateCode}) ${companyData?.companyAddress?.state}`,
     });
@@ -167,6 +204,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
       ),
     [parentCompaniesQuery],
   );
+
   return (
     <FormProvider {...form}>
       <form onSubmit={onSubmit}>
