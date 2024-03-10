@@ -189,7 +189,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
       ...companyData?.companyAddress,
       ...companyData?.parentCompany,
       ...companyData?.bankAccountDetails?.[0],
-      companyType: companyData.companyType,
+      companyType: companyData?.companyType,
       parentCompany: companyData?.parentCompany?._id || companyData?.parentCompany,
       stateAndStateCode: `(${companyData?.companyAddress?.stateCode}) ${companyData?.companyAddress?.state}`,
     });
@@ -211,12 +211,33 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
         <div className="px-8 pt-4">
           <div className="text-2xl font-bold">Basic information</div>
           <div className="grid grid-cols-2 py-4 gap-2">
-            <ControlledTextInput name="companyName" label="Company Name" withAsterisk />
-            <ControlledTextInput name="email" label="Email" />
-            <ControlledTextInput name="contactNumber" label="Contact Number" />
-            <ControlledTextInput name="fax" label="Fax Number" />
-            <ControlledTextInput name="companyPanNumber" label="PAN" />
-            <ControlledTextInput name="companyGstNumber" label="GSTIN" />
+            <ControlledTextInput
+              name="companyName"
+              label="Company Name"
+              withAsterisk
+              classNames={{ label: 'font-bold' }}
+            />
+            <ControlledTextInput name="email" label="Email" classNames={{ label: 'font-bold' }} />
+            <ControlledTextInput
+              name="contactNumber"
+              label="Contact Number"
+              classNames={{ label: 'font-bold' }}
+            />
+            <ControlledTextInput
+              name="fax"
+              label="Fax Number"
+              classNames={{ label: 'font-bold' }}
+            />
+            <ControlledTextInput
+              name="companyPanNumber"
+              label="PAN"
+              classNames={{ label: 'font-bold' }}
+            />
+            <ControlledTextInput
+              name="companyGstNumber"
+              label="GSTIN"
+              classNames={{ label: 'font-bold' }}
+            />
             <ControlledSelect
               clearable
               searchable
@@ -224,6 +245,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               label="Nature of Account"
               data={NatureOfAccountOptions}
               placeholder="Select..."
+              classNames={{ label: 'font-bold' }}
             />
             <ControlledSelect
               clearable
@@ -232,6 +254,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               label="Company Type"
               data={CompanyTypeOptions}
               placeholder="Select..."
+              classNames={{ label: 'font-bold' }}
             />
           </div>
 
@@ -244,11 +267,16 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               dropdownComponent={parentCompaniesDropdown}
               data={parentCompanies}
               placeholder="Select..."
+              classNames={{ label: 'font-bold' }}
             />
           ) : null}
 
           <div className="grid grid-cols-1 pt-4 gap-2">
-            <ControlledTextInput name="address" label="Address" />
+            <ControlledTextInput
+              name="address"
+              label="Address"
+              classNames={{ label: 'font-bold' }}
+            />
           </div>
 
           <div className="grid grid-cols-2 py-4 gap-2">
@@ -259,16 +287,25 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               label="State & State Code"
               data={memoizedStateAndStateCodeList}
               placeholder="Select..."
+              classNames={{ label: 'font-bold' }}
             />
-            <ControlledTextInput name="city" label="City" />
+            <ControlledTextInput name="city" label="City" classNames={{ label: 'font-bold' }} />
           </div>
 
           <div className="text-2xl font-bold mt-8">Bank Information</div>
           <div className="grid grid-cols-2 py-4 gap-2">
-            <ControlledTextInput name="accountNo" label="Account No" />
-            <ControlledTextInput name="accountHolderName" label="Account Holder Name" />
+            <ControlledTextInput
+              name="accountNo"
+              label="Account No"
+              classNames={{ label: 'font-bold' }}
+            />
+            <ControlledTextInput
+              name="accountHolderName"
+              label="Account Holder Name"
+              classNames={{ label: 'font-bold' }}
+            />
           </div>
-          <ControlledTextInput name="ifsc" label="IFSC" />
+          <ControlledTextInput name="ifsc" label="IFSC" classNames={{ label: 'font-bold' }} />
           <div className="flex gap-2 py-4 float-right">
             <Button className="bg-black" onClick={onCancel}>
               Cancel

@@ -156,10 +156,24 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
         <div className="px-8 pt-4">
           <div className="text-2xl font-bold">Basic information</div>
           <div className="grid grid-cols-2 py-4 gap-2">
-            <ControlledTextInput name="name" label="Name" withAsterisk />
-            <ControlledNumberInput type="number" name="contactNumber" label="Contact Number" />
-            <ControlledTextInput name="email" label="Email" />
-            <ControlledTextInput name="department" label="Department" />
+            <ControlledTextInput
+              name="name"
+              label="Name"
+              withAsterisk
+              classNames={{ label: 'font-bold' }}
+            />
+            <ControlledNumberInput
+              type="number"
+              name="contactNumber"
+              label="Contact Number"
+              classNames={{ label: 'font-bold' }}
+            />
+            <ControlledTextInput name="email" label="Email" classNames={{ label: 'font-bold' }} />
+            <ControlledTextInput
+              name="department"
+              label="Department"
+              classNames={{ label: 'font-bold' }}
+            />
             <ControlledSelect
               dropdownComponent={companiesDropdown}
               data={memoizedCompanies}
@@ -168,8 +182,14 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
               placeholder="Select..."
               clearable
               searchable
+              classNames={{ label: 'font-bold' }}
             />
-            <ControlledTextInput name="parentCompany" label="Parent Company Name" disabled />
+            <ControlledTextInput
+              name="parentCompany"
+              label="Parent Company Name"
+              disabled
+              classNames={{ label: 'font-bold' }}
+            />
 
             <ControlledSelect
               data={memoizedStateAndStateCodeList}
@@ -178,13 +198,15 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
               placeholder="Select..."
               clearable
               searchable
+              classNames={{ label: 'font-bold' }}
             />
-            <ControlledTextInput name="city" label="City" />
+            <ControlledTextInput name="city" label="City" classNames={{ label: 'font-bold' }} />
             <ControlledDatePickerInput
               label="Birthday"
               name="birthDate"
               errors={form.errors}
               clearable
+              classNames={{ label: 'font-bold' }}
             />
           </div>
 
