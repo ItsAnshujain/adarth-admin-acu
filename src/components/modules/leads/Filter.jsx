@@ -1,6 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Accordion, Button, Checkbox, Drawer } from '@mantine/core';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Accordion, Button, Checkbox, Drawer, Pagination } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  CompanyTypeOptions,
+  leadPriorityOptions,
+  leadStageOptions,
+} from '../../../utils/constants';
+import { useFetchUsers } from '../../../apis/queries/users.queries';
+import { serialize } from '../../../utils';
+import useUserStore from '../../../store/user.store';
 
 const styles = { title: { fontWeight: 'bold' } };
 
@@ -8,35 +17,48 @@ const defaultValue = {
   leadSource: [],
   priority: [],
   companyRepresenting: [],
-  leadStage: [],
-  addedBy: [],
-  clientCompanyType: [],
+  stage: [],
+  createdByIds: [],
+  companyType: [],
 };
 
 const leadSourceOptions = [];
-const priorityOptions = ['High', 'Medium', 'Low'];
 const companyRepresentingOptions = [];
-const leadStageOptions = [];
-const addedByOptions = [];
-const clientCompanyTypeOptions = [
-  'National Agency',
-  'Local Agency',
-  'Direct Client',
-  'Government',
-  'Printer',
-  'Mounter',
-  'Others',
-];
 
 const Filter = ({ isOpened, setShowFilter }) => {
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const [filterOptions, setFilterOptions] = useState(defaultValue);
-  const leadSource = searchParams.get('leadSource') || [];
-  const priority = searchParams.get('priority') || [];
-  const companyRepresenting = searchParams.get('companyRepresenting') || [];
-  const leadStage = searchParams.get('leadStage') || [];
-  const addedBy = searchParams.get('addedBy') || [];
-  const clientCompanyType = searchParams.get('clientCompanyType') || [];
+  const [activePage, setActivePage] = useState(1);
+  const meId = useUserStore(state => state.id);
+  const myDetails = queryClient.getQueryData(['users-by-id', meId]);
+
+  const leadSource = searchParams.get('leadSource');
+  const priority = searchParams.get('priority');
+  const companyRepresenting = searchParams.get('companyRepresenting');
+  const stage = searchParams.get('stage');
+  const createdByIds = searchParams.get('createdByIds');
+  const companyType = searchParams.get('companyType');
+
+  const usersQuery = useFetchUsers(
+    serialize({
+      page: activePage,
+      limit: 10,
+      sortBy: 'createdAt',
+      sortOrder: 'desc',
+      filter: 'team',
+    }),
+  );
+
+  const memoizedUsers = useMemo(
+    () =>
+      usersQuery?.data?.docs?.map(doc => ({
+        ...doc,
+        label: doc.name,
+        value: doc._id,
+      })) || [],
+    [usersQuery?.data],
+  );
 
   const handleStatusArr = (stat, key) => {
     let tempArr = [...filterOptions[`${key}`]]; // TODO: use immmer
@@ -51,17 +73,63 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const renderOptions = useCallback(
     (data, filterKey) =>
       data?.map(item => (
-        <div className="flex gap-2 mb-2" key={item}>
+        <div className="flex gap-2 mb-2" key={item.value}>
           <Checkbox
             onChange={event => handleStatusArr(event.target.value, filterKey)}
-            label={item}
-            defaultValue={item}
-            checked={filterOptions[filterKey]?.includes(item)}
+            label={item.label}
+            defaultValue={item.value}
+            checked={filterOptions[filterKey]?.includes(item.value)}
           />
         </div>
       )),
-    [filterOptions],
+    [
+      filterOptions.priority,
+      filterOptions.stage,
+      filterOptions.leadSource,
+      filterOptions.companyRepresenting,
+      filterOptions.companyType,
+      filterOptions.createdByIds,
+    ],
   );
+
+  const renderAddedByOptions = useCallback(
+    (data, filterKey) => (
+      <div>
+        {data?.map(item => (
+          <div className="flex gap-2 mb-2" key={item.value}>
+            <Checkbox
+              onChange={event => handleStatusArr(event.target.value, filterKey)}
+              label={item.label}
+              defaultValue={item.value}
+              checked={filterOptions[filterKey]?.includes(item.value)}
+            />
+          </div>
+        ))}
+        <Pagination
+          styles={theme => ({
+            item: {
+              color: theme.colors.gray[5],
+              fontWeight: 700,
+            },
+          })}
+          page={activePage}
+          onChange={setActivePage}
+          total={usersQuery?.data?.totalPages || 1}
+          size="xs"
+          className="ml-auto w-fit"
+        />
+      </div>
+    ),
+    [
+      filterOptions.priority,
+      filterOptions.stage,
+      filterOptions.leadSource,
+      filterOptions.companyRepresenting,
+      filterOptions.companyType,
+      filterOptions.createdByIds,
+    ],
+  );
+
   const handleNavigationByFilter = () => {
     Object.keys(filterOptions).forEach(item => {
       searchParams.delete(item);
@@ -88,12 +156,12 @@ const Filter = ({ isOpened, setShowFilter }) => {
   useEffect(() => {
     setFilterOptions(prevState => ({
       ...prevState,
-      leadSource,
-      priority,
-      companyRepresenting,
-      leadStage,
-      addedBy,
-      clientCompanyType,
+      leadSource: leadSource?.split(',') || [],
+      priority: priority?.split(',') || [],
+      companyRepresenting: companyRepresenting?.split(',') || [],
+      stage: stage?.split(',') || [],
+      createdByIds: createdByIds?.split(',') || [],
+      companyType: companyType?.split(',') || [],
     }));
   }, [searchParams]);
 
@@ -140,7 +208,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <p className="text-lg">Priority</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderOptions(priorityOptions, 'priority')}</div>
+              <div className="mt-2">{renderOptions(leadPriorityOptions, 'priority')}</div>
             </Accordion.Panel>
           </Accordion.Item>
           <Accordion.Item value="companyRepresenting" className="mb-4 rounded-xl border">
@@ -153,30 +221,30 @@ const Filter = ({ isOpened, setShowFilter }) => {
               </div>
             </Accordion.Panel>
           </Accordion.Item>
-          <Accordion.Item value="leadStage" className="mb-4 rounded-xl border">
+          <Accordion.Item value="stage" className="mb-4 rounded-xl border">
             <Accordion.Control>
               <p className="text-lg">Lead Stage</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">{renderOptions(leadStageOptions, 'leadStage')}</div>
+              <div className="mt-2">{renderOptions(leadStageOptions, 'stage')}</div>
             </Accordion.Panel>
           </Accordion.Item>
-          <Accordion.Item value="addedBy" className="mb-4 rounded-xl border">
-            <Accordion.Control>
-              <p className="text-lg">Added By</p>
-            </Accordion.Control>
-            <Accordion.Panel>
-              <div className="mt-2">{renderOptions(addedByOptions, 'addedBy')}</div>
-            </Accordion.Panel>
-          </Accordion.Item>
-          <Accordion.Item value="clientCompanyType" className="mb-4 rounded-xl border">
+          {myDetails?.role === 'admin' ? (
+            <Accordion.Item value="createdByIds" className="mb-4 rounded-xl border">
+              <Accordion.Control>
+                <p className="text-lg">Added By</p>
+              </Accordion.Control>
+              <Accordion.Panel>
+                <div className="mt-2">{renderAddedByOptions(memoizedUsers, 'createdByIds')}</div>
+              </Accordion.Panel>
+            </Accordion.Item>
+          ) : null}
+          <Accordion.Item value="companyType" className="mb-4 rounded-xl border">
             <Accordion.Control>
               <p className="text-lg">Client Company Type</p>
             </Accordion.Control>
             <Accordion.Panel>
-              <div className="mt-2">
-                {renderOptions(clientCompanyTypeOptions, 'clientCompanyType')}
-              </div>
+              <div className="mt-2">{renderOptions(CompanyTypeOptions, 'companyType')}</div>
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>

@@ -57,7 +57,6 @@ const Header = () => {
     type: 'lead-company',
     isParent: tab === 'parent-companies',
   });
-
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
       searchParams.set('sortOrder', 'asc');
@@ -218,6 +217,11 @@ const Header = () => {
         show: true,
         accessor: 'contactNumber',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { contactNumber },
+          },
+        }) => useMemo(() => <p>{contactNumber ? `+91 ${contactNumber}` : '-'}</p>, []),
       },
       {
         Header: 'EMAIL',

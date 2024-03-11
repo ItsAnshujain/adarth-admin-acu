@@ -22,62 +22,71 @@ import {
 import { CompanyTypeOptions, NatureOfAccountOptions } from '../../../utils/constants';
 import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler';
 
-const schema = yup.object({
-  companyName: yup.string().trim().required('Company name is required'),
-  companyGstNumber: yup
-    .string()
-    .trim()
-    .matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
-  email: yup.string().trim().email('Invalid Email'),
-  contactNumber: yup
-    .string()
-    .trim()
-    .matches(mobileRegexMatch, { message: 'Must be a valid number', excludeEmptyString: true })
-    .notRequired(),
-  companyPanNumber: yup
-    .string()
-    .trim()
-    .matches(panRegexMatch, {
-      message: 'Must be a valid PAN',
-      excludeEmptyString: true,
-    })
-    .notRequired(),
-  fax: yup
-    .string()
-    .trim()
-    .matches(faxRegexMatch, {
-      message: 'Must be a valid Fax number',
-      excludeEmptyString: true,
-    })
-    .notRequired(),
-  ifsc: yup
-    .string()
-    .trim()
-    .matches(ifscRegexMatch, {
-      message: 'Must be a valid IFSC',
-      excludeEmptyString: true,
-    })
-    .notRequired(),
-});
+const AddSisterCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = () => {} }) => {
+  const schema = yup.object({
+    companyName: yup.string().trim().required('Company name is required'),
+    companyGstNumber: yup
+      .string()
+      .trim()
+      .matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
+    email: yup.string().trim().email('Invalid Email'),
+    contactNumber: yup
+      .string()
+      .trim()
+      .matches(mobileRegexMatch, { message: 'Must be a valid number', excludeEmptyString: true })
+      .notRequired(),
+    companyPanNumber: yup
+      .string()
+      .trim()
+      .matches(panRegexMatch, {
+        message: 'Must be a valid PAN',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
+    fax: yup
+      .string()
+      .trim()
+      .matches(faxRegexMatch, {
+        message: 'Must be a valid Fax number',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
+    ifsc: yup
+      .string()
+      .trim()
+      .matches(ifscRegexMatch, {
+        message: 'Must be a valid IFSC',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
+  });
 
-const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess = () => {} }) => {
   const form = useForm({
     resolver: yupResolver(schema),
   });
-
-  const stateAndStateCodeQuery = useStateAndStateCode('');
-
-  const addCompanyHandler = useAddCompany();
-  const updateCompanyHandler = useUpdateCompany();
 
   const parentCompaniesQuery = useInfiniteCompanies({
     page: 1,
     limit: 10,
     sortBy: 'createdAt',
     sortOrder: 'desc',
-    type: 'lead-company',
+    type: 'co-company',
     isParent: true,
   });
+  const addCompanyHandler = useAddCompany();
+  const updateCompanyHandler = useUpdateCompany();
+
+  const stateAndStateCodeQuery = useStateAndStateCode('');
+
+  const memoizedStateAndStateCodeList = useMemo(
+    () =>
+      stateAndStateCodeQuery?.data?.map(stateDoc => ({
+        label: `(${stateDoc.gstCode}) ${stateDoc.name}`,
+        value: `(${stateDoc.gstCode}) ${stateDoc.name}`,
+        ...stateDoc,
+      })) || [],
+    [stateAndStateCodeQuery?.data],
+  );
 
   const parentCompanies = useMemo(
     () =>
@@ -119,10 +128,10 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
       fax,
       companyPanNumber,
       companyGstNumber,
-      parentCompany: tab === 'company' ? parentCompany : null,
+      parentCompany: type === 'sisterCompany' ? parentCompany : null,
       natureOfAccount,
       companyType: companyType || undefined,
-      type: type === 'company' ? 'lead-company' : 'co-company',
+      type: 'co-company',
       bankAccountDetails:
         accountNo || accountHolderName || ifsc
           ? [
@@ -142,7 +151,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
         state: stateAndStateCode?.split(/\((\d+)\)\s*(.+)/)?.[2],
       },
       id: companyData ? companyData?._id : undefined,
-      isParent: tab !== 'company',
+      isParent: type !== 'sisterCompany',
     };
 
     if (mode === 'add') {
@@ -169,36 +178,6 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
     }
   });
 
-  const memoizedStateAndStateCodeList = useMemo(
-    () =>
-      stateAndStateCodeQuery?.data?.map(stateDoc => ({
-        label: `(${stateDoc.gstCode}) ${stateDoc.name}`,
-        value: `(${stateDoc.gstCode}) ${stateDoc.name}`,
-        ...stateDoc,
-      })) || [],
-    [stateAndStateCodeQuery?.data],
-  );
-
-  useEffect(() => {
-    form.setValue('stateCode', '');
-  }, [form.watch('state')]);
-
-  useEffect(() => {
-    form.reset({
-      ...companyData,
-      ...companyData?.companyAddress,
-      ...companyData?.parentCompany,
-      ...companyData?.bankAccountDetails?.[0],
-      companyType: companyData?.companyType,
-      contactNumber: companyData?.contactNumber,
-      fax: companyData?.fax,
-      companyPanNumber: companyData?.companyPanNumber,
-      companyGstNumber: companyData?.companyGstNumber,
-      parentCompany: companyData?.parentCompany?._id || companyData?.parentCompany,
-      stateAndStateCode: `(${companyData?.companyAddress?.stateCode}) ${companyData?.companyAddress?.state}`,
-    });
-  }, [companyData]);
-
   const parentCompaniesDropdown = useMemo(
     () =>
       DropdownWithHandler(
@@ -208,6 +187,17 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
       ),
     [parentCompaniesQuery],
   );
+
+  useEffect(() => {
+    form.reset({
+      ...companyData,
+      ...companyData?.companyAddress,
+      ...companyData?.parentCompany,
+      ...companyData?.bankAccountDetails?.[0],
+      parentCompany: companyData?.parentCompany?._id || companyData?.parentCompany,
+      stateAndStateCode: `(${companyData?.companyAddress?.stateCode}) ${companyData?.companyAddress?.state}`,
+    });
+  }, [companyData]);
 
   return (
     <FormProvider {...form}>
@@ -227,9 +217,21 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               label="Contact Number"
               classNames={{ label: 'font-bold' }}
             />
-            <ControlledTextInput
-              name="fax"
-              label="Fax Number"
+            {type !== 'sisterCompany' ? (
+              <ControlledTextInput
+                name="fax"
+                label="Fax Number"
+                classNames={{ label: 'font-bold' }}
+              />
+            ) : null}
+
+            <ControlledSelect
+              clearable
+              searchable
+              name="companyType"
+              label="Company Type"
+              data={CompanyTypeOptions}
+              placeholder="Select..."
               classNames={{ label: 'font-bold' }}
             />
             <ControlledTextInput
@@ -242,40 +244,32 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               label="GSTIN"
               classNames={{ label: 'font-bold' }}
             />
-            <ControlledSelect
-              clearable
-              searchable
-              name="natureOfAccount"
-              label="Nature of Account"
-              data={NatureOfAccountOptions}
-              placeholder="Select..."
-              classNames={{ label: 'font-bold' }}
-            />
-            <ControlledSelect
-              clearable
-              searchable
-              name="companyType"
-              label="Company Type"
-              data={CompanyTypeOptions}
-              placeholder="Select..."
-              classNames={{ label: 'font-bold' }}
-            />
+            {type !== 'sisterCompany' ? (
+              <ControlledSelect
+                clearable
+                searchable
+                name="natureOfAccount"
+                label="Nature of Account"
+                data={NatureOfAccountOptions}
+                placeholder="Select..."
+                classNames={{ label: 'font-bold' }}
+              />
+            ) : null}
           </div>
 
-          {tab === 'company' ? (
-            <ControlledSelect
-              clearable
-              searchable
-              name="parentCompany"
-              label="Parent Company"
-              dropdownComponent={parentCompaniesDropdown}
-              data={parentCompanies}
-              placeholder="Select..."
-              classNames={{ label: 'font-bold' }}
-            />
-          ) : null}
-
-          <div className="grid grid-cols-1 pt-4 gap-2">
+          <div className="flex flex-col gap-4">
+            {type === 'sisterCompany' ? (
+              <ControlledSelect
+                clearable
+                searchable
+                name="parentCompany"
+                label="Parent Company"
+                data={parentCompanies}
+                dropdownComponent={parentCompaniesDropdown}
+                placeholder="Select..."
+                classNames={{ label: 'font-bold' }}
+              />
+            ) : null}
             <ControlledTextInput
               name="address"
               label="Address"
@@ -295,7 +289,6 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
             />
             <ControlledTextInput name="city" label="City" classNames={{ label: 'font-bold' }} />
           </div>
-
           <div className="text-2xl font-bold mt-8">Bank Information</div>
           <div className="grid grid-cols-2 py-4 gap-2">
             <ControlledTextInput
@@ -328,4 +321,4 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
   );
 };
 
-export default AddCompanyContent;
+export default AddSisterCompanyContent;

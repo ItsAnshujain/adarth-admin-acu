@@ -26,12 +26,7 @@ const LeadsListHeader = () => {
           </Button>
           {showDatePicker && (
             <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
-              <DateRange
-                handleClose={toggleDatePicker}
-                dateKeys={['from', 'to']}
-                rangeCalendarMinDate={new Date()}
-                datePickerMinDate={new Date()}
-              />
+              <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
             </div>
           )}
         </div>

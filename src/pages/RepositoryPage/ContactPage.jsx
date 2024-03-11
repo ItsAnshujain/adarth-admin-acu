@@ -98,6 +98,11 @@ const ContactPage = () => {
         Header: 'CONTACT NUMBER',
         accessor: 'contactNumber',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { contactNumber },
+          },
+        }) => useMemo(() => <p>{contactNumber ? `+91 ${contactNumber}` : '-'}</p>, []),
       },
       {
         Header: 'EMAIL',
@@ -140,7 +145,11 @@ const ContactPage = () => {
           },
         }) =>
           useMemo(
-            () => <p className="bg-gray-450 px-1">{dayjs(birthDate).format(DATE_SECOND_FORMAT)}</p>,
+            () => (
+              <p className="bg-gray-450 px-1">
+                {birthDate ? dayjs(birthDate).format(DATE_SECOND_FORMAT) : '-'}
+              </p>
+            ),
             [],
           ),
       },

@@ -145,7 +145,7 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
         parentCompanyId: contactData?.parentCompany?._id,
         company: contactData?.company?._id,
         stateAndStateCode: `(${contactData?.address?.stateCode}) ${contactData?.address?.state}`,
-        contactNumber: Number(contactData?.contactNumber),
+        contactNumber: Number(contactData?.contactNumber) || '',
         birthDate: contactData?.birthDate && new Date(contactData?.birthDate),
       });
     }

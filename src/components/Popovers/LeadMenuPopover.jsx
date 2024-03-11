@@ -3,22 +3,22 @@ import { useModals } from '@mantine/modals';
 import { Link, useNavigate } from 'react-router-dom';
 import modalConfig from '../../utils/modalConfig';
 import MenuIcon from '../Menu';
-import DeleteCompanyContent from '../modules/company/DeleteCompanyContent';
+import DeleteLeadContent from '../modules/leads/DeleteLeadContent';
 
-const LeadMenuPopover = ({ itemId, toggleAddFollowUp, toggleViewLead, tab, type }) => {
+const LeadMenuPopover = ({ itemId, toggleAddFollowUp, toggleViewLead }) => {
   const modals = useModals();
   const navigate = useNavigate();
 
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
-      modalId: 'deleteCompany',
+      modalId: 'deleteLead',
       innerProps: {
         modalBody: (
-          <DeleteCompanyContent
+          <DeleteLeadContent
             id={itemId}
             classNames="px-8 mt-4"
-            onClickCancel={() => modals.closeModal('deleteCompany')}
-            onConfirm={() => navigate(`/repository/${type}?tab=${tab}`)}
+            onClickCancel={() => modals.closeModal('deleteLead')}
+            onConfirm={() => navigate('/leads/leads-dashboard')}
           />
         ),
       },
