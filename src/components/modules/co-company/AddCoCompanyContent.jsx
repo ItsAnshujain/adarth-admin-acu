@@ -204,7 +204,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
       <form onSubmit={onSubmit}>
         <div className="px-8 pt-4">
           <div className="text-2xl font-bold">Basic information</div>
-          <div className="grid grid-cols-2 py-4 gap-2">
+          <div className="grid grid-cols-2 pt-4 gap-2">
             <ControlledTextInput
               name="companyName"
               label="Company Name"
@@ -277,7 +277,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
             />
           </div>
 
-          <div className="grid grid-cols-2 py-4 gap-2">
+          <div className="grid grid-cols-2 pb-4 gap-2">
             <ControlledSelect
               clearable
               searchable

@@ -195,6 +195,11 @@ const Header = () => {
         Header: 'EMAIL',
         accessor: 'email',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { email },
+          },
+        }) => useMemo(() => <p className="text-blue-350">{email || '-'}</p>, []),
       },
       {
         Header: 'ACTION',
