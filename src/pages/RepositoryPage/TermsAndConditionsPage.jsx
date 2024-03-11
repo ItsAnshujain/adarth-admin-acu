@@ -81,7 +81,7 @@ const TermsAndConditionsPage = () => {
   };
 
   return (
-    <div className="overflow-y-auto px-5 col-span-10">
+    <div className="overflow-y-auto px-4 col-span-10">
       <Header />
       <div className="flex justify-between h-20 items-center">
         <RowsPerPage

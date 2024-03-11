@@ -5,7 +5,7 @@ import modalConfig from '../../utils/modalConfig';
 import MenuIcon from '../Menu';
 import DeleteCompanyContent from '../modules/company/DeleteCompanyContent';
 
-const LeadMenuPopover = ({ itemId, toggleAddFollowUp, tab, type }) => {
+const LeadMenuPopover = ({ itemId, toggleAddFollowUp, toggleViewLead, tab, type }) => {
   const modals = useModals();
   const navigate = useNavigate();
 
@@ -33,9 +33,11 @@ const LeadMenuPopover = ({ itemId, toggleAddFollowUp, tab, type }) => {
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <Link to={`add-lead?id=${itemId}`} className="p-0">
-          <Menu.Item>View</Menu.Item>
-        </Link>
+        {toggleViewLead ? (
+          <Card onClick={toggleViewLead} className="p-0">
+            <Menu.Item>View</Menu.Item>
+          </Card>
+        ) : null}
         <Card onClick={toggleAddFollowUp} className="p-0">
           <Menu.Item>Add Follow Up</Menu.Item>
         </Card>

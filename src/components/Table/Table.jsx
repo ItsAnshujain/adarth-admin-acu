@@ -73,7 +73,6 @@ const Table = ({
 
     setSelectedFlatRows([...selectedRowData, row]);
   };
-
   return (
     <div className={classNames('min-h-[450px] flex flex-col justify-between', classNameWrapper)}>
       <div className={classNames('overflow-x-auto', className)}>
@@ -95,7 +94,12 @@ const Table = ({
 
                   {headerGroup.headers.map(header => (
                     <th
-                      className="text-sm"
+                      className={classNames(
+                        'text-sm',
+                        header.sticky
+                          ? 'sticky right-0 top-0 z-10 bg-inherit action text-center w-28'
+                          : '',
+                      )}
                       {...header.getHeaderProps(header.getSortByToggleProps())}
                       onClick={() => {
                         if (header.id.includes('selection') || header.disableSortBy) return;
@@ -148,7 +152,15 @@ const Table = ({
                       </th>
                     )}
                     {row.cells.map(cell => (
-                      <td className="px-2 py-2" {...cell.getCellProps()}>
+                      <td
+                        className={classNames(
+                          'px-2 py-2',
+                          cell.column.sticky
+                            ? 'sticky right-0 top-0 z-10 bg-inherit action text-center w-28'
+                            : '',
+                        )}
+                        {...cell.getCellProps()}
+                      >
                         <div className="w-max">{cell.render('Cell')}</div>
                       </td>
                     ))}

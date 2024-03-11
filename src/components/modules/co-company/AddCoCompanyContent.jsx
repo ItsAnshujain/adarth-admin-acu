@@ -6,7 +6,13 @@ import { showNotification } from '@mantine/notifications';
 import { useEffect, useMemo } from 'react';
 import ControlledTextInput from '../../shared/FormInputs/Controlled/ControlledTextInput';
 import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelect';
-import { gstRegexMatch } from '../../../utils';
+import {
+  faxRegexMatch,
+  gstRegexMatch,
+  ifscRegexMatch,
+  mobileRegexMatch,
+  panRegexMatch,
+} from '../../../utils';
 import {
   useAddCompany,
   useInfiniteCompanies,
@@ -24,6 +30,35 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
       .trim()
       .matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
     email: yup.string().trim().email('Invalid Email'),
+    contactNumber: yup
+      .string()
+      .trim()
+      .matches(mobileRegexMatch, { message: 'Must be a valid number', excludeEmptyString: true })
+      .notRequired(),
+    companyPanNumber: yup
+      .string()
+      .trim()
+      .matches(panRegexMatch, {
+        message: 'Must be a valid PAN',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
+    fax: yup
+      .string()
+      .trim()
+      .matches(faxRegexMatch, {
+        message: 'Must be a valid Fax number',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
+    ifsc: yup
+      .string()
+      .trim()
+      .matches(ifscRegexMatch, {
+        message: 'Must be a valid IFSC',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
   });
 
   const form = useForm({
@@ -116,6 +151,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
         state: stateAndStateCode?.split(/\((\d+)\)\s*(.+)/)?.[2],
       },
       id: companyData ? companyData?._id : undefined,
+      isParent: type !== 'sisterCompany',
     };
 
     if (mode === 'add') {
@@ -169,20 +205,47 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
         <div className="px-8 pt-4">
           <div className="text-2xl font-bold">Basic information</div>
           <div className="grid grid-cols-2 py-4 gap-2">
-            <ControlledTextInput name="companyName" label="Company Name" withAsterisk />
-            <ControlledTextInput name="email" label="Email" />
-            <ControlledTextInput name="contactNumber" label="Contact Number" />
-            <ControlledTextInput name="fax" label="Fax Number" />
-            <ControlledTextInput name="companyPanNumber" label="PAN" />
-            <ControlledTextInput name="companyGstNumber" label="GSTIN" />
-            <ControlledSelect
-              clearable
-              searchable
-              name="natureOfAccount"
-              label="Nature of Account"
-              data={NatureOfAccountOptions}
-              placeholder="Select..."
+            <ControlledTextInput
+              name="companyName"
+              label="Company Name"
+              withAsterisk
+              classNames={{ label: 'font-bold' }}
             />
+            <ControlledTextInput name="email" label="Email" classNames={{ label: 'font-bold' }} />
+            <ControlledTextInput
+              name="contactNumber"
+              label="Contact Number"
+              classNames={{ label: 'font-bold' }}
+            />
+            {type !== 'sisterCompany' ? (
+              <ControlledTextInput
+                name="fax"
+                label="Fax Number"
+                classNames={{ label: 'font-bold' }}
+              />
+            ) : null}
+
+            <ControlledTextInput
+              name="companyPanNumber"
+              label="PAN"
+              classNames={{ label: 'font-bold' }}
+            />
+            <ControlledTextInput
+              name="companyGstNumber"
+              label="GSTIN"
+              classNames={{ label: 'font-bold' }}
+            />
+            {type !== 'sisterCompany' ? (
+              <ControlledSelect
+                clearable
+                searchable
+                name="natureOfAccount"
+                label="Nature of Account"
+                data={NatureOfAccountOptions}
+                placeholder="Select..."
+                classNames={{ label: 'font-bold' }}
+              />
+            ) : null}
             <ControlledSelect
               clearable
               searchable
@@ -190,6 +253,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
               label="Company Type"
               data={CompanyTypeOptions}
               placeholder="Select..."
+              classNames={{ label: 'font-bold' }}
             />
           </div>
 
@@ -203,9 +267,14 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
                 data={parentCompanies}
                 dropdownComponent={parentCompaniesDropdown}
                 placeholder="Select..."
+                classNames={{ label: 'font-bold' }}
               />
             ) : null}
-            <ControlledTextInput name="address" label="Address" />
+            <ControlledTextInput
+              name="address"
+              label="Address"
+              classNames={{ label: 'font-bold' }}
+            />
           </div>
 
           <div className="grid grid-cols-2 py-4 gap-2">
@@ -216,15 +285,24 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
               label="State & State Code"
               data={memoizedStateAndStateCodeList}
               placeholder="Select..."
+              classNames={{ label: 'font-bold' }}
             />
-            <ControlledTextInput name="city" label="City" />
+            <ControlledTextInput name="city" label="City" classNames={{ label: 'font-bold' }} />
           </div>
           <div className="text-2xl font-bold mt-8">Bank Information</div>
           <div className="grid grid-cols-2 py-4 gap-2">
-            <ControlledTextInput name="accountNo" label="Account No" />
-            <ControlledTextInput name="accountHolderName" label="Account Holder Name" />
+            <ControlledTextInput
+              name="accountNo"
+              label="Account No"
+              classNames={{ label: 'font-bold' }}
+            />
+            <ControlledTextInput
+              name="accountHolderName"
+              label="Account Holder Name"
+              classNames={{ label: 'font-bold' }}
+            />
           </div>
-          <ControlledTextInput name="ifsc" label="IFSC" />
+          <ControlledTextInput name="ifsc" label="IFSC" classNames={{ label: 'font-bold' }} />
           <div className="flex gap-2 py-4 float-right">
             <Button className="bg-black" onClick={onCancel}>
               Cancel
