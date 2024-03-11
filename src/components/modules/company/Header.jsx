@@ -277,7 +277,7 @@ const Header = () => {
                 value="companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  tab === 'companies' ? 'border border-b-2 border-purple-450' : '',
+                  tab === 'companies' ? 'border border-b-2 border-purple-450 text-purple-450' : '',
                 )}
                 onClick={() => {
                   searchParams.set('tab', 'companies');
@@ -291,7 +291,9 @@ const Header = () => {
                 value="parent-companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  tab === 'parent-companies' ? 'border border-b-2 border-purple-450' : '',
+                  tab === 'parent-companies'
+                    ? 'border border-b-2 border-purple-450 text-purple-450'
+                    : '',
                 )}
                 onClick={() => {
                   searchParams.set('tab', 'parent-companies');
