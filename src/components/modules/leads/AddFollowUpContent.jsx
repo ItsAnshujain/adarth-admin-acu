@@ -22,6 +22,7 @@ const AddFollowUpContent = ({ onCancel }) => {
               name="leadStage"
               label="Lead Stage"
               data={[]}
+              classNames={{ label: 'font-bold' }}
             />
             <ControlledSelect
               clearable
@@ -30,9 +31,18 @@ const AddFollowUpContent = ({ onCancel }) => {
               name="communicationType"
               label="Communication Type"
               data={[]}
+              classNames={{ label: 'font-bold' }}
             />
-            <DatePickerInput name="followUpDate" label="Follow Up Date" />
-            <DatePickerInput name="nextFollowUpDate" label="Next Follow Up Date" />
+            <DatePickerInput
+              name="followUpDate"
+              label="Follow Up Date"
+              classNames={{ label: 'font-bold' }}
+            />
+            <DatePickerInput
+              name="nextFollowUpDate"
+              label="Next Follow Up Date"
+              classNames={{ label: 'font-bold' }}
+            />
             <ControlledSelect
               clearable
               searchable
@@ -40,6 +50,7 @@ const AddFollowUpContent = ({ onCancel }) => {
               name="primaryInCharge"
               label="Primary Incharge"
               data={[]}
+              classNames={{ label: 'font-bold' }}
             />
             <ControlledSelect
               clearable
@@ -48,9 +59,16 @@ const AddFollowUpContent = ({ onCancel }) => {
               name="secondaryInCharge"
               label="Secondary Incharge"
               data={[]}
+              classNames={{ label: 'font-bold' }}
             />
           </div>
-          <ControlledTextarea name="notes" label="Notes" minRows={4} className="pt-2" />
+          <ControlledTextarea
+            name="notes"
+            label="Notes"
+            minRows={4}
+            className="pt-2"
+            classNames={{ label: 'font-bold' }}
+          />
           <div className="py-4 flex gap-4 justify-end">
             <Button variant="default" color="dark" className="font-normal" onClick={onCancel}>
               Cancel

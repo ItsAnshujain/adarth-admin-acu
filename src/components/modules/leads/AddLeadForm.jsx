@@ -78,7 +78,6 @@ const AddLeadForm = () => {
     sortBy: 'createdAt',
     sortOrder: 'desc',
     type: 'lead-company',
-    isParent: false,
   });
 
   const companyRepresentingQuery = useInfiniteCompanies({
@@ -87,7 +86,6 @@ const AddLeadForm = () => {
     sortBy: 'createdAt',
     sortOrder: 'desc',
     type: 'co-company',
-    isParent: true,
   });
 
   const memoizedUsers = useMemo(
@@ -324,7 +322,20 @@ const AddLeadForm = () => {
                 searchable
                 placeholder="Select..."
                 name="primaryInCharge"
-                data={memoizedUsers}
+                data={
+                  leadByIdQuery?.data?.primaryInCharge?._id &&
+                  memoizedUsers?.filter(
+                    item => item.value === leadByIdQuery?.data?.primaryInCharge?._id,
+                  ).length <= 0
+                    ? [
+                        ...memoizedUsers,
+                        {
+                          value: leadByIdQuery?.data?.primaryInCharge?._id,
+                          label: leadByIdQuery?.data?.primaryInCharge?.name,
+                        },
+                      ] || []
+                    : memoizedUsers || []
+                }
                 withAsterisk
                 className="w-32"
                 classNames={{
@@ -342,7 +353,20 @@ const AddLeadForm = () => {
                 searchable
                 placeholder="Select..."
                 name="secondaryInCharge"
-                data={memoizedUsers}
+                data={
+                  leadByIdQuery?.data?.secondaryInCharge?._id &&
+                  memoizedUsers?.filter(
+                    item => item.value === leadByIdQuery?.data?.secondaryInCharge?._id,
+                  ).length <= 0
+                    ? [
+                        ...memoizedUsers,
+                        {
+                          value: leadByIdQuery?.data?.secondaryInCharge?._id,
+                          label: leadByIdQuery?.data?.secondaryInCharge?.name,
+                        },
+                      ] || []
+                    : memoizedUsers || []
+                }
                 withAsterisk
                 className="w-32"
                 classNames={{
