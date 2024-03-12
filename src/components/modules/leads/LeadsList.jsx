@@ -35,6 +35,7 @@ const updatedModalConfig = {
 const LeadsList = () => {
   const modals = useModals();
   const [searchInput, setSearchInput] = useState('');
+  const [leadId, setLeadId] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [viewLeadDrawerOpened, viewLeadDrawerActions] = useDisclosure();
   const [searchParams, setSearchParams] = useSearchParams({
@@ -183,7 +184,10 @@ const LeadsList = () => {
               <LeadMenuPopover
                 itemId={original._id}
                 toggleAddFollowUp={() => toggleAddFollowUp(original._id)}
-                toggleViewLead={viewLeadDrawerActions.toggle}
+                toggleViewLead={() => {
+                  setLeadId(original._id);
+                  viewLeadDrawerActions.toggle();
+                }}
               />
             ),
             [],
@@ -194,10 +198,16 @@ const LeadsList = () => {
         accessor: 'action1',
         disableSortBy: true,
         sticky: true,
-        Cell: () =>
+        Cell: ({ row: { original } }) =>
           useMemo(
             () => (
-              <ActionIcon className="bg-purple-450" onClick={viewLeadDrawerActions.open}>
+              <ActionIcon
+                className="bg-purple-450"
+                onClick={() => {
+                  setLeadId(original._id);
+                  viewLeadDrawerActions.open();
+                }}
+              >
                 <IconChevronLeft size={20} color="white" />
               </ActionIcon>
             ),
@@ -207,6 +217,7 @@ const LeadsList = () => {
     ],
     [leadsQuery?.data?.docs],
   );
+
   return (
     <div className="mx-2 px-4">
       <LeadsListHeader />
@@ -230,7 +241,11 @@ const LeadsList = () => {
         loading={leadsQuery?.isLoading}
       />
 
-      <ViewLeadDrawer isOpened={viewLeadDrawerOpened} onClose={viewLeadDrawerActions.close} />
+      <ViewLeadDrawer
+        isOpened={viewLeadDrawerOpened}
+        onClose={viewLeadDrawerActions.close}
+        leadId={leadId}
+      />
     </div>
   );
 };

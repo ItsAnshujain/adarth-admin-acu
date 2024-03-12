@@ -3,7 +3,7 @@ import { IconX } from '@tabler/icons';
 import classNames from 'classnames';
 import { useSearchParams } from 'react-router-dom';
 import { ChevronDown } from 'react-feather';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useModals } from '@mantine/modals';
 import { useClickOutside } from '@mantine/hooks';
 import Select from '../../shared/FormInputs/Select';
@@ -13,6 +13,8 @@ import LeadFollowUps from './LeadFollowUps';
 import LeadMenuPopover from '../../Popovers/LeadMenuPopover';
 import AddFollowUpContent from './AddFollowUpContent';
 import modalConfig from '../../../utils/modalConfig';
+import { useLeadById } from '../../../apis/queries/leads.queries';
+import { leadPriorityOptions, leadStageOptions } from '../../../utils/constants';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -25,13 +27,14 @@ const updatedModalConfig = {
   size: 800,
 };
 
-const ViewLeadDrawer = ({ isOpened, styles, onClose }) => {
+const ViewLeadDrawer = ({ isOpened, styles, onClose, leadId }) => {
+  const leadByIdQuery = useLeadById(leadId, !!leadId);
   const modals = useModals();
-  const ref = useClickOutside(() => onClose());
+  const ref = useClickOutside(() => modals.closeModal('addFollowUpModal'));
   const [searchParams, setSearchParams] = useSearchParams({
     leadDetailTab: 'overview',
   });
-  const [activeStep, setActiveStep] = useState('In Progress');
+  const [activeStep, setActiveStep] = useState('');
   const leadDetailTab = searchParams.get('leadDetailTab');
 
   const toggleAddFollowUp = () =>
@@ -42,6 +45,7 @@ const ViewLeadDrawer = ({ isOpened, styles, onClose }) => {
       ...updatedModalConfig,
     });
 
+  useEffect(() => setActiveStep(leadByIdQuery?.data?.stage), [leadByIdQuery?.data]);
   return (
     <Drawer
       className="overflow-auto"
@@ -117,13 +121,16 @@ const ViewLeadDrawer = ({ isOpened, styles, onClose }) => {
                       searchable
                       placeholder="Select..."
                       name="stage"
-                      data={[]}
+                      data={leadStageOptions}
+                      value={leadByIdQuery?.data?.stage}
                       withAsterisk
-                      classNames={{
-                        input: 'border-none',
-                      }}
                       rightSection={<ChevronDown size={20} />}
                       className="w-28"
+                      readOnly
+                      classNames={{
+                        input: 'border-none',
+                        dropdown: 'w-40',
+                      }}
                     />
                   </div>
                   <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
@@ -133,21 +140,24 @@ const ViewLeadDrawer = ({ isOpened, styles, onClose }) => {
                       searchable
                       placeholder="Select..."
                       name="priority"
-                      data={[]}
+                      data={leadPriorityOptions}
+                      value={leadByIdQuery?.data?.priority}
                       withAsterisk
-                      classNames={{
-                        input: 'border-none',
-                      }}
                       rightSection={<ChevronDown size={20} />}
                       className="w-28"
+                      readOnly
+                      classNames={{
+                        input: 'border-none',
+                        dropdown: 'w-40',
+                      }}
                     />
                   </div>
                 </div>
               </div>
             </Tabs.List>
             <Tabs.Panel value="overview">
-              <ViewLeadStepper activeStep={activeStep.replace(' ', '')} />
-              <LeadsOverview />
+              <ViewLeadStepper activeStep={activeStep?.replace(' ', '')} />
+              <LeadsOverview leadData={leadByIdQuery?.data} />
             </Tabs.Panel>
             <Tabs.Panel value="followUps">
               <LeadFollowUps />

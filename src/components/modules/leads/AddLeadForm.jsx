@@ -204,6 +204,12 @@ const AddLeadForm = () => {
   }, [user]);
 
   useEffect(() => {
+    setBrandCompetitorsOptions(
+      leadByIdQuery?.data?.brandCompetitors?.map(competitor => ({
+        label: competitor,
+        value: competitor,
+      })),
+    );
     form.reset({
       ...leadByIdQuery.data,
       companyRepresenting: leadByIdQuery?.data?.companyRepresenting?._id,
@@ -211,8 +217,8 @@ const AddLeadForm = () => {
       leadCompany: leadByIdQuery?.data?.leadCompany?._id,
       primaryInCharge: leadByIdQuery?.data?.primaryInCharge?._id,
       secondaryInCharge: leadByIdQuery?.data?.secondaryInCharge?._id,
-      targetAudience: leadByIdQuery?.data?.targetAudience?.[0] || '',
-      brandCompetitors: leadByIdQuery?.data?.brandCompetitors?.[0] || '',
+      targetAudience: leadByIdQuery?.data?.targetAudience,
+      brandCompetitors: leadByIdQuery?.data?.brandCompetitors,
       targetStartDate:
         leadByIdQuery?.data?.targetStartDate && new Date(leadByIdQuery?.data?.targetStartDate),
       targetEndDate:
@@ -280,7 +286,7 @@ const AddLeadForm = () => {
       secondaryInCharge,
       priority,
       stage,
-      overallBudget,
+      overallBudget: Number(overallBudget) ? Number(overallBudget) : undefined,
       leadCloseDate: leadCloseDate && dayjs(leadCloseDate)?.endOf('day'),
       targetAudience: [targetAudience],
       brandCompetitors: brandCompetitors || [''],
