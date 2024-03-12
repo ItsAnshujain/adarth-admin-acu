@@ -64,7 +64,8 @@ const AddLeadForm = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
-  const [open, setOpenSuccessModal] = useState(false);
+  const [successModalOpened, setOpenSuccessModal] = useState(false);
+  const [successModalText, setSuccessModalText] = useState('');
   const [brandCompetitor, setBrandCompetitor] = useState('');
   const [brandCompetitorsOptions, setBrandCompetitorsOptions] = useState([]);
   const userId = useUserStore(state => state.id);
@@ -221,6 +222,11 @@ const AddLeadForm = () => {
     });
   }, [leadByIdQuery.data]);
 
+  const handleOnSuccess = text => {
+    setOpenSuccessModal(true);
+    setSuccessModalText(text);
+  };
+
   const onSubmit = form.handleSubmit(formData => {
     const {
       leadCompany,
@@ -292,7 +298,7 @@ const AddLeadForm = () => {
           showNotification({
             message: 'Lead added successfully',
           });
-          setOpenSuccessModal('Lead');
+          handleOnSuccess('Lead');
           setTimeout(() => {
             navigate(-1);
           }, 2000);
@@ -323,14 +329,18 @@ const AddLeadForm = () => {
               <Button
                 variant="default"
                 onClick={() => navigate(-1)}
-                disabled={addLeadHandler.isLoading || updateLeadHandler.isLoading || !!open}
+                disabled={
+                  addLeadHandler.isLoading || updateLeadHandler.isLoading || !!successModalOpened
+                }
               >
                 Cancel
               </Button>
               <Button
                 className="bg-purple-450"
                 type="submit"
-                disabled={addLeadHandler.isLoading || updateLeadHandler.isLoading || !!open}
+                disabled={
+                  addLeadHandler.isLoading || updateLeadHandler.isLoading || !!successModalOpened
+                }
                 loading={addLeadHandler.isLoading || updateLeadHandler.isLoading}
               >
                 Save
@@ -556,9 +566,9 @@ const AddLeadForm = () => {
         </form>
       </FormProvider>
       <SuccessModal
-        title={`${open} Successfully Added`}
+        title={`${successModalText} Successfully Added`}
         prompt="Close"
-        open={!!open}
+        open={successModalOpened}
         setOpenSuccessModal={setOpenSuccessModal}
       />
     </>

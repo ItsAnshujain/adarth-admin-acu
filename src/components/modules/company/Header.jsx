@@ -29,7 +29,8 @@ const updatedModalConfig = {
 
 const Header = () => {
   const modals = useModals();
-  const [open, setOpenSuccessModal] = useState(false);
+  const [successModalOpened, setOpenSuccessModal] = useState(false);
+  const [successModalText, setSuccessModalText] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
 
@@ -79,6 +80,11 @@ const Header = () => {
     setSearchParams(searchParams);
   };
 
+  const handleOnSuccess = text => {
+    setOpenSuccessModal(true);
+    setSuccessModalText(text);
+  };
+
   const toggleAddCompanyModal = () => {
     modals.openModal({
       title: 'Add Company',
@@ -89,7 +95,7 @@ const Header = () => {
           mode="add"
           tab="company"
           onCancel={() => modals.closeModal('addCompanyModal')}
-          onSuccess={() => setOpenSuccessModal('Company')}
+          onSuccess={() => handleOnSuccess('Company')}
         />
       ),
       ...updatedModalConfig,
@@ -106,7 +112,7 @@ const Header = () => {
           mode="add"
           tab="parentCompany"
           onCancel={() => modals.closeModal('addCompanyModal')}
-          onSuccess={() => setOpenSuccessModal('Parent Company')}
+          onSuccess={() => handleOnSuccess('Parent Company')}
         />
       ),
       ...updatedModalConfig,
@@ -390,9 +396,9 @@ const Header = () => {
         </Tabs.Panel>
       </Tabs>
       <SuccessModal
-        title={`${open} Successfully Added`}
+        title={`${successModalText} Successfully Added`}
         prompt="Close"
-        open={!!open}
+        open={successModalOpened}
         setOpenSuccessModal={setOpenSuccessModal}
       />
     </div>
