@@ -47,11 +47,13 @@ const LeadsList = () => {
 
   const leadsQuery = useLeads(searchParams.toString());
 
-  const toggleAddFollowUp = () =>
+  const toggleAddFollowUp = id =>
     modals.openModal({
       title: 'Add Follow Up',
       modalId: 'addFollowUpModal',
-      children: <AddFollowUpContent onCancel={() => modals.closeModal('addFollowUpModal')} />,
+      children: (
+        <AddFollowUpContent onCancel={() => modals.closeModal('addFollowUpModal')} leadId={id} />
+      ),
       ...updatedModalConfig,
     });
 
@@ -180,7 +182,7 @@ const LeadsList = () => {
             () => (
               <LeadMenuPopover
                 itemId={original._id}
-                toggleAddFollowUp={toggleAddFollowUp}
+                toggleAddFollowUp={() => toggleAddFollowUp(original._id)}
                 toggleViewLead={viewLeadDrawerActions.toggle}
               />
             ),
