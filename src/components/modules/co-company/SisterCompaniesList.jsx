@@ -84,6 +84,11 @@ const SisterCompaniesList = () => {
       {
         Header: 'CONTACT NUMBER',
         accessor: 'contactNumber',
+        Cell: ({
+          row: {
+            original: { contactNumber },
+          },
+        }) => useMemo(() => <p>{contactNumber ? `+91 ${contactNumber}` : '-'}</p>, []),
       },
       {
         Header: 'PAN',
