@@ -1,4 +1,4 @@
-import { Button, Menu, Tabs } from '@mantine/core';
+import { Button, Tabs } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { IconChevronDown } from '@tabler/icons';
 import classNames from 'classnames';

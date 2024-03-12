@@ -102,7 +102,10 @@ const ViewCompanyHeader = ({ type, tab }) => {
         <Tabs.List className="border-b">
           <div className="flex justify-between w-full pb-0">
             <div className="flex gap-4 mb-0">
-              <ActionIcon component={Link} to={`/repository/${type}?tab=${tab}`}>
+              <ActionIcon
+                component={Link}
+                to={`/repository/${type === 'parent-company' ? 'company' : type}?tab=${tab}`}
+              >
                 <IconArrowLeft color="black" />
               </ActionIcon>
               <Tabs.Tab
