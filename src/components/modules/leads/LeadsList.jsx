@@ -25,7 +25,7 @@ const updatedModalConfig = {
   ...modalConfig,
   classNames: {
     title: 'font-dmSans text-2xl font-bold px-4',
-    header: 'px-4 py-4 border-b border-gray-450',
+    header: 'p-4 border-b border-gray-450',
     body: 'px-8',
     close: 'mr-4',
   },

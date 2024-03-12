@@ -20,7 +20,7 @@ const updatedModalConfig = {
   size: '1000px',
   classNames: {
     title: 'font-dmSans text-2xl font-bold px-4',
-    header: 'px-4 py-4 border-b border-gray-450',
+    header: 'p-4 border-b border-gray-450',
     body: '',
     close: 'mr-4',
   },
