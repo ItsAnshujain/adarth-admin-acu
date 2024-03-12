@@ -239,7 +239,7 @@ const Header = () => {
                 type="co-company"
                 tab={tab}
                 toggleEdit={() =>
-                  tab === 'sisterCompany'
+                  tab === 'sisterCompanies'
                     ? toggleEditSisterCompanyModal(original)
                     : toggleEditParentCompanyModal(original)
                 }
