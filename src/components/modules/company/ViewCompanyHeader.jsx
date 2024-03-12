@@ -9,6 +9,7 @@ import DeleteCompanyContent from './DeleteCompanyContent';
 import modalConfig from '../../../utils/modalConfig';
 import AddCompanyContent from './AddCompanyContent';
 import { useCompanyById } from '../../../apis/queries/companies.queries';
+import AddSisterCompanyContent from '../co-company/AddSisterCompanyContent';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -77,6 +78,22 @@ const ViewCompanyHeader = ({ type, tab }) => {
     });
   };
 
+  const toggleEditSisterCompanyModal = () => {
+    modals.openModal({
+      title: 'Edit Sister Company',
+      modalId: 'editSisterCompanyModal',
+      children: (
+        <AddSisterCompanyContent
+          type={type}
+          tab="sisterCompany"
+          onCancel={() => modals.closeModal('editSisterCompanyModal')}
+          companyData={companyQuery?.data}
+        />
+      ),
+      ...updatedModalConfig,
+    });
+  };
+
   return (
     <div className="flex justify-between pb-4 pt-2">
       <Tabs className="w-full" value={activeTab}>
@@ -102,7 +119,11 @@ const ViewCompanyHeader = ({ type, tab }) => {
             <div className="flex">
               <ActionIcon
                 onClick={() =>
-                  type === 'company' ? toggleEditCompanyModal() : toggleEditParentCompanyModal()
+                  type === 'company' && tab !== 'sister-companies'
+                    ? toggleEditCompanyModal()
+                    : tab === 'sister-companies'
+                    ? toggleEditSisterCompanyModal()
+                    : toggleEditParentCompanyModal()
                 }
                 disabled={companyQuery.isLoading}
               >
@@ -117,6 +138,7 @@ const ViewCompanyHeader = ({ type, tab }) => {
         <Tabs.Panel value="overview">
           <ViewCompany
             type={type}
+            tab={tab}
             companyData={companyQuery?.data}
             isLoading={companyQuery.isLoading}
           />

@@ -190,6 +190,10 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
       ...companyData?.parentCompany,
       ...companyData?.bankAccountDetails?.[0],
       companyType: companyData?.companyType,
+      contactNumber: companyData?.contactNumber,
+      fax: companyData?.fax,
+      companyPanNumber: companyData?.companyPanNumber,
+      companyGstNumber: companyData?.companyGstNumber,
       parentCompany: companyData?.parentCompany?._id || companyData?.parentCompany,
       stateAndStateCode: `(${companyData?.companyAddress?.stateCode}) ${companyData?.companyAddress?.state}`,
     });
@@ -210,7 +214,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
       <form onSubmit={onSubmit}>
         <div className="px-8 pt-4">
           <div className="text-2xl font-bold">Basic information</div>
-          <div className="grid grid-cols-2 py-4 gap-2">
+          <div className="grid grid-cols-2 pt-4 gap-2">
             <ControlledTextInput
               name="companyName"
               label="Company Name"

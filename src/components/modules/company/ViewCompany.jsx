@@ -1,7 +1,7 @@
 import { Divider, Loader } from '@mantine/core';
 import { CompanyTypeOptions } from '../../../utils/constants';
 
-const ViewCompany = ({ type, companyData, isLoading }) => {
+const ViewCompany = ({ type, tab, companyData, isLoading }) => {
   if (isLoading) {
     return <Loader className="mx-auto my-4" />;
   }
@@ -9,7 +9,7 @@ const ViewCompany = ({ type, companyData, isLoading }) => {
   return (
     <div className="py-4">
       <div className="text-lg font-bold">Basic Information</div>
-      <div className="grid grid-cols-2 py-4 gap-4">
+      <div className="grid grid-cols-2 pt-4 gap-4">
         <div>
           <div className="text-base text-gray-400 font-normal">
             Company Name <span className="text-red-450">*</span>
@@ -22,12 +22,23 @@ const ViewCompany = ({ type, companyData, isLoading }) => {
         </div>
         <div>
           <div className="text-base text-gray-400 font-normal">Contact Number</div>
-          <div>{companyData?.contactNumber || '-'} </div>
+          <div> {companyData?.contactNumber ? `+91${companyData?.contactNumber}` : '-'} </div>
         </div>
-        <div>
-          <div className="text-base text-gray-400 font-normal">Fax Number</div>
-          <div>{companyData?.fax || '-'} </div>
-        </div>
+        {tab === 'sister-companies' ? (
+          <div>
+            <div className="text-base text-gray-400 font-normal">Company Type</div>
+            <div>
+              {CompanyTypeOptions?.filter(({ value }) => value === companyData?.companyType)?.[0]
+                ?.label || '-'}
+            </div>
+          </div>
+        ) : null}
+        {tab !== 'sister-companies' ? (
+          <div>
+            <div className="text-base text-gray-400 font-normal">Fax Number</div>
+            <div>{companyData?.fax || '-'} </div>
+          </div>
+        ) : null}
         <div>
           <div className="text-base text-gray-400 font-normal">PAN</div>
           <div>{companyData?.companyPanNumber || '-'} </div>
@@ -39,20 +50,34 @@ const ViewCompany = ({ type, companyData, isLoading }) => {
         {type === 'company' ? (
           <div>
             <div className="text-base text-gray-400 font-normal">Parent Company</div>
-            <div>{companyData?.parentCompany || '-'} </div>
+            <div>{companyData?.parentCompany?.companyName || '-'} </div>
           </div>
         ) : null}
-        <div>
-          <div className="text-base text-gray-400 font-normal">Nature of Account</div>
-          <div>{companyData?.natureOfAccount || '-'} </div>
-        </div>
-        <div>
-          <div className="text-base text-gray-400 font-normal">Company Type</div>
+
+        {tab !== 'sister-companies' ? (
           <div>
-            {CompanyTypeOptions?.filter(({ value }) => value === companyData?.companyType)?.[0]
-              ?.label || '-'}
+            <div className="text-base text-gray-400 font-normal">Nature of Account</div>
+            <div>{companyData?.natureOfAccount || '-'} </div>
           </div>
+        ) : null}
+
+        {tab !== 'sister-companies' ? (
+          <div>
+            <div className="text-base text-gray-400 font-normal">Company Type</div>
+            <div>
+              {CompanyTypeOptions?.filter(({ value }) => value === companyData?.companyType)?.[0]
+                ?.label || '-'}
+            </div>
+          </div>
+        ) : null}
+      </div>
+      {tab === 'sister-companies' ? (
+        <div className="pt-4">
+          <div className="text-base text-gray-400 font-normal">Address</div>
+          <div>{companyData?.companyAddress?.address || '-'} </div>
         </div>
+      ) : null}
+      <div className="grid grid-cols-2 py-4 gap-4">
         <div>
           <div className="text-base text-gray-400 font-normal">City</div>
           <div>{companyData?.companyAddress?.city || '-'} </div>
@@ -71,14 +96,16 @@ const ViewCompany = ({ type, companyData, isLoading }) => {
             <div>{companyData?.parentCompany?.name || '-'} </div>
           </div>
         ) : null}
+      </div>
 
+      {tab !== 'sister-companies' ? (
         <div>
           <div className="text-base text-gray-400 font-normal">Address</div>
           <div>{companyData?.companyAddress?.address || '-'} </div>
         </div>
-      </div>
+      ) : null}
 
-      <Divider className="mb-4" />
+      <Divider className="my-4" />
       <div className="text-lg font-bold">Bank Information</div>
       <div className="grid grid-cols-2 py-4 gap-4">
         <div>

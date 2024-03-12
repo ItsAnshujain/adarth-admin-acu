@@ -15,6 +15,8 @@ import AddCoCompanyContent from './AddCoCompanyContent';
 import useCompanies from '../../../apis/queries/companies.queries';
 import SuccessModal from '../../shared/Modal';
 import { CompanyTypeOptions } from '../../../utils/constants';
+import SisterCompaniesList from './SisterCompaniesList';
+import AddSisterCompanyContent from './AddSisterCompanyContent';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -54,7 +56,7 @@ const Header = () => {
     sortOrder,
     search: debouncedSearch,
     type: 'co-company',
-    isParent: tab === 'parent-companies',
+    isParent: true,
   });
 
   const handleSortByColumn = colId => {
@@ -100,7 +102,7 @@ const Header = () => {
       title: 'Add Sister Company',
       modalId: 'addCompanyModal',
       children: (
-        <AddCoCompanyContent
+        <AddSisterCompanyContent
           mode="add"
           type="sisterCompany"
           onCancel={() => modals.closeModal('addCompanyModal')}
@@ -127,43 +129,23 @@ const Header = () => {
     });
   };
 
-  const toggleEditSisterCompanyModal = companyData => {
-    modals.openModal({
-      title: 'Edit Sister Company',
-      modalId: 'editCompanyModal',
-      children: (
-        <AddCoCompanyContent
-          mode="edit"
-          type="sisterCompany"
-          companyData={companyData}
-          onCancel={() => modals.closeModal('editCompanyModal')}
-        />
-      ),
-      ...updatedModalConfig,
-    });
-  };
-
   const columns = useMemo(
     () => [
       {
         Header: '#',
-        show: true,
         accessor: 'id',
         Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, 1, 10)}</p>, []),
       },
       {
         Header: 'COMPANY NAME',
-        show: true,
         accessor: 'companyName',
       },
       {
         Header: 'CITY',
-        show: true,
         accessor: 'companyAddress.city',
       },
       {
         Header: 'STATE & STATE CODE',
-        show: true,
         Cell: ({
           row: {
             original: {
@@ -174,13 +156,11 @@ const Header = () => {
       },
       {
         Header: 'GSTIN',
-        show: true,
         accessor: 'companyGstNumber',
         disableSortBy: true,
       },
       {
         Header: 'COMPANY TYPE',
-        show: true,
         accessor: 'companyType',
         Cell: ({
           row: {
@@ -198,30 +178,31 @@ const Header = () => {
           ),
       },
       {
-        Header: 'PARENT COMPANY',
-        show: tab === 'sister-companies',
-        accessor: 'parentCompany.companyName',
-      },
-      {
         Header: 'NATURE OF ACCOUNT',
-        show: true,
         accessor: 'natureOfAccount',
       },
       {
         Header: 'CONTACT NUMBER',
-        show: true,
         accessor: 'contactNumber',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { contactNumber },
+          },
+        }) => useMemo(() => <p>{contactNumber ? `+91 ${contactNumber}` : '-'}</p>, []),
       },
       {
         Header: 'EMAIL',
-        show: true,
         accessor: 'email',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { email },
+          },
+        }) => useMemo(() => <p className="text-blue-350">{email || '-'}</p>, []),
       },
       {
         Header: 'ACTION',
-        show: true,
         accessor: 'action',
         disableSortBy: true,
         Cell: ({ row: { original } }) =>
@@ -231,11 +212,7 @@ const Header = () => {
                 itemId={original._id}
                 type="co-company"
                 tab={tab}
-                toggleEdit={() =>
-                  tab === 'parent-companies'
-                    ? toggleEditParentCompanyModal(original)
-                    : toggleEditSisterCompanyModal(original)
-                }
+                toggleEdit={() => toggleEditParentCompanyModal(original)}
               />
             ),
             [],
@@ -244,13 +221,6 @@ const Header = () => {
     ],
     [tab, coCompaniesQuery?.data?.docs],
   );
-
-  const memoizedColumns = useMemo(() => {
-    if (tab === 'sister-companies') {
-      return columns;
-    }
-    return columns.filter(col => col.show);
-  }, [tab, coCompaniesQuery?.data?.docs]);
 
   return (
     <div className="flex justify-between py-4">
@@ -262,7 +232,9 @@ const Header = () => {
                 value="parent-companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  tab === 'parent-companies' ? 'border border-b-2 border-purple-450' : '',
+                  tab === 'parent-companies'
+                    ? 'border border-b-2 border-purple-450 text-purple-450'
+                    : '',
                 )}
                 onClick={() => {
                   searchParams.set('tab', 'parent-companies');
@@ -276,7 +248,9 @@ const Header = () => {
                 value="sister-companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  tab === 'sister-companies' ? 'border border-b-2 border-purple-450' : '',
+                  tab === 'sister-companies'
+                    ? 'border border-b-2 border-purple-450 text-purple-450'
+                    : '',
                 )}
                 onClick={() => {
                   searchParams.set('tab', 'sister-companies');
@@ -333,7 +307,7 @@ const Header = () => {
           </div>
           <Table
             data={coCompaniesQuery?.data?.docs || []}
-            COLUMNS={memoizedColumns}
+            COLUMNS={columns}
             activePage={searchParams.get('page')}
             totalPages={coCompaniesQuery?.data?.totalPages || 1}
             setActivePage={currentPage => handlePagination('page', currentPage)}
@@ -343,26 +317,7 @@ const Header = () => {
           />
         </Tabs.Panel>
         <Tabs.Panel value="sister-companies">
-          <div className="mt-4 text-lg font-bold">Sister Companies List</div>
-          <div className="flex justify-between h-20 items-center">
-            <RowsPerPage
-              setCount={currentLimit => {
-                handlePagination('limit', currentLimit);
-              }}
-              count="10"
-            />
-            <Search search={searchInput} setSearch={setSearchInput} />
-          </div>
-          <Table
-            data={coCompaniesQuery?.data?.docs || []}
-            COLUMNS={memoizedColumns}
-            activePage={searchParams.get('page')}
-            totalPages={coCompaniesQuery?.data?.totalPages || 1}
-            setActivePage={currentPage => handlePagination('page', currentPage)}
-            rowCountLimit={10}
-            handleSorting={handleSortByColumn}
-            loading={coCompaniesQuery.isLoading}
-          />
+          <SisterCompaniesList />
         </Tabs.Panel>
       </Tabs>
       <SuccessModal

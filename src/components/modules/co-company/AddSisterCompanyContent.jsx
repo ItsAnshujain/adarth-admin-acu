@@ -22,7 +22,7 @@ import {
 import { CompanyTypeOptions, NatureOfAccountOptions } from '../../../utils/constants';
 import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler';
 
-const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = () => {} }) => {
+const AddSisterCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = () => {} }) => {
   const schema = yup.object({
     companyName: yup.string().trim().required('Company name is required'),
     companyGstNumber: yup
@@ -225,6 +225,15 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
               />
             ) : null}
 
+            <ControlledSelect
+              clearable
+              searchable
+              name="companyType"
+              label="Company Type"
+              data={CompanyTypeOptions}
+              placeholder="Select..."
+              classNames={{ label: 'font-bold' }}
+            />
             <ControlledTextInput
               name="companyPanNumber"
               label="PAN"
@@ -246,15 +255,6 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
                 classNames={{ label: 'font-bold' }}
               />
             ) : null}
-            <ControlledSelect
-              clearable
-              searchable
-              name="companyType"
-              label="Company Type"
-              data={CompanyTypeOptions}
-              placeholder="Select..."
-              classNames={{ label: 'font-bold' }}
-            />
           </div>
 
           <div className="flex flex-col gap-4">
@@ -274,10 +274,11 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
               name="address"
               label="Address"
               classNames={{ label: 'font-bold' }}
+              className="pt-2"
             />
           </div>
 
-          <div className="grid grid-cols-2 pb-4 gap-2">
+          <div className="grid grid-cols-2 pb-4 pt-2 gap-2">
             <ControlledSelect
               clearable
               searchable
@@ -321,4 +322,4 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
   );
 };
 
-export default AddCoCompanyContent;
+export default AddSisterCompanyContent;

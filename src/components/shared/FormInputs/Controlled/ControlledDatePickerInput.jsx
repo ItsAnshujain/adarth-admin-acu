@@ -8,7 +8,14 @@ const ControlledDatePickerInput = ({ name, ...props }) => {
     control: form.control,
   });
 
-  return <DatePickerInput {...props} {...field} error={fieldState.error?.message} />;
+  return (
+    <DatePickerInput
+      {...props}
+      {...field}
+      error={fieldState.error?.message}
+      classNames={{ label: 'font-medium text-primary text-base mb-2', input: 'border-gray-450' }}
+    />
+  );
 };
 
 export default ControlledDatePickerInput;

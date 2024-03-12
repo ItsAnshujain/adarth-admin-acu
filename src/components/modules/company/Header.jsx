@@ -57,7 +57,6 @@ const Header = () => {
     type: 'lead-company',
     isParent: tab === 'parent-companies',
   });
-
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
       searchParams.set('sortOrder', 'asc');
@@ -218,12 +217,22 @@ const Header = () => {
         show: true,
         accessor: 'contactNumber',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { contactNumber },
+          },
+        }) => useMemo(() => <p>{contactNumber ? `+91 ${contactNumber}` : '-'}</p>, []),
       },
       {
         Header: 'EMAIL',
         show: true,
         accessor: 'email',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { email },
+          },
+        }) => useMemo(() => <p className="text-blue-350">{email || '-'}</p>, []),
       },
       {
         Header: 'ACTION',
@@ -268,7 +277,7 @@ const Header = () => {
                 value="companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  tab === 'companies' ? 'border border-b-2 border-purple-450' : '',
+                  tab === 'companies' ? 'border border-b-2 border-purple-450 text-purple-450' : '',
                 )}
                 onClick={() => {
                   searchParams.set('tab', 'companies');
@@ -282,7 +291,9 @@ const Header = () => {
                 value="parent-companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  tab === 'parent-companies' ? 'border border-b-2 border-purple-450' : '',
+                  tab === 'parent-companies'
+                    ? 'border border-b-2 border-purple-450 text-purple-450'
+                    : '',
                 )}
                 onClick={() => {
                   searchParams.set('tab', 'parent-companies');

@@ -154,7 +154,7 @@ const Table = ({
                     {row.cells.map(cell => (
                       <td
                         className={classNames(
-                          'px-2 py-2',
+                          'p-2',
                           cell.column.sticky
                             ? 'sticky right-0 top-0 z-10 bg-inherit action text-center w-28'
                             : '',
