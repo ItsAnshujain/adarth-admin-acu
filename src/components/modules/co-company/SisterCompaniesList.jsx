@@ -60,7 +60,8 @@ const SisterCompaniesList = () => {
       children: (
         <AddSisterCompanyContent
           mode="edit"
-          type="sisterCompany"
+          type="co-company"
+          tab="sister-companies"
           companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
         />

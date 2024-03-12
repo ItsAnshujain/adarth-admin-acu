@@ -94,7 +94,8 @@ const Header = () => {
       children: (
         <AddCoCompanyContent
           mode="add"
-          type="parentCompany"
+          type="co-company"
+          tab="parent-companies"
           onCancel={() => modals.closeModal('addCompanyModal')}
           onSuccess={() => handleOnSuccess('Parent Company')}
         />
@@ -110,7 +111,8 @@ const Header = () => {
       children: (
         <AddSisterCompanyContent
           mode="add"
-          type="sisterCompany"
+          type="co-company"
+          tab="sister-companies"
           onCancel={() => modals.closeModal('addCompanyModal')}
           onSuccess={() => handleOnSuccess('Sister Company')}
         />
@@ -126,9 +128,27 @@ const Header = () => {
       children: (
         <AddCoCompanyContent
           mode="edit"
-          type="parentCompany"
+          type="co-company"
+          tab="parent-companies"
           companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
+        />
+      ),
+      ...updatedModalConfig,
+    });
+  };
+
+  const toggleEditSisterCompanyModal = companyData => {
+    modals.openModal({
+      title: 'Edit Sister Company',
+      modalId: 'editSisterCompanyModal',
+      children: (
+        <AddSisterCompanyContent
+          mode="edit"
+          type="co-company"
+          tab="sister-companies"
+          companyData={companyData}
+          onCancel={() => modals.closeModal('editSisterCompanyModal')}
         />
       ),
       ...updatedModalConfig,
@@ -218,7 +238,11 @@ const Header = () => {
                 itemId={original._id}
                 type="co-company"
                 tab={tab}
-                toggleEdit={() => toggleEditParentCompanyModal(original)}
+                toggleEdit={() =>
+                  tab === 'sisterCompany'
+                    ? toggleEditSisterCompanyModal(original)
+                    : toggleEditParentCompanyModal(original)
+                }
               />
             ),
             [],

@@ -22,7 +22,7 @@ import {
 import { CompanyTypeOptions, NatureOfAccountOptions } from '../../../utils/constants';
 import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler';
 
-const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = () => {} }) => {
+const AddCoCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess = () => {} }) => {
   const schema = yup.object({
     companyName: yup.string().trim().required('Company name is required'),
     companyGstNumber: yup
@@ -128,7 +128,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
       fax,
       companyPanNumber,
       companyGstNumber,
-      parentCompany: type === 'sisterCompany' ? parentCompany : null,
+      parentCompany: tab === 'sister-companies' ? parentCompany : null,
       natureOfAccount,
       companyType: companyType || undefined,
       type: 'co-company',
@@ -151,7 +151,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
         state: stateAndStateCode?.split(/\((\d+)\)\s*(.+)/)?.[2],
       },
       id: companyData ? companyData?._id : undefined,
-      isParent: type !== 'sisterCompany',
+      isParent: tab !== 'sister-companies',
     };
 
     if (mode === 'add') {
@@ -219,7 +219,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
               label="Contact Number"
               classNames={{ label: 'font-bold' }}
             />
-            {type !== 'sisterCompany' ? (
+            {tab !== 'sister-companies' ? (
               <ControlledTextInput
                 name="fax"
                 label="Fax Number"
@@ -237,7 +237,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
               label="GSTIN"
               classNames={{ label: 'font-bold' }}
             />
-            {type !== 'sisterCompany' ? (
+            {tab !== 'sister-companies' ? (
               <ControlledSelect
                 clearable
                 searchable
@@ -260,7 +260,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
           </div>
 
           <div className="flex flex-col gap-4 py-2">
-            {type === 'sisterCompany' ? (
+            {tab === 'sister-companies' ? (
               <ControlledSelect
                 clearable
                 searchable

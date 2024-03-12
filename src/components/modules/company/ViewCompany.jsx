@@ -24,7 +24,7 @@ const ViewCompany = ({ type, tab, companyData, isLoading }) => {
           <div className="text-base text-gray-400 font-normal">Contact Number</div>
           <div> {companyData?.contactNumber ? `+91${companyData?.contactNumber}` : '-'} </div>
         </div>
-        {tab === 'sister-companies' ? (
+        {type === 'co-company' ? (
           <div>
             <div className="text-base text-gray-400 font-normal">Company Type</div>
             <div>
@@ -33,7 +33,7 @@ const ViewCompany = ({ type, tab, companyData, isLoading }) => {
             </div>
           </div>
         ) : null}
-        {tab !== 'sister-companies' ? (
+        {type === 'company' ? (
           <div>
             <div className="text-base text-gray-400 font-normal">Fax Number</div>
             <div>{companyData?.fax || '-'} </div>
@@ -47,21 +47,21 @@ const ViewCompany = ({ type, tab, companyData, isLoading }) => {
           <div className="text-base text-gray-400 font-normal">GSTIN</div>
           <div>{companyData?.companyGstNumber || '-'} </div>
         </div>
-        {type === 'company' ? (
+        {tab === 'companies' || tab === 'sister-companies' ? (
           <div>
             <div className="text-base text-gray-400 font-normal">Parent Company</div>
             <div>{companyData?.parentCompany?.companyName || '-'} </div>
           </div>
         ) : null}
-
-        {tab !== 'sister-companies' ? (
+        {type === 'company' && tab === 'companies' ? <div /> : null}
+        {type === 'company' ? (
           <div>
             <div className="text-base text-gray-400 font-normal">Nature of Account</div>
             <div>{companyData?.natureOfAccount || '-'} </div>
           </div>
         ) : null}
 
-        {tab !== 'sister-companies' ? (
+        {type === 'company' ? (
           <div>
             <div className="text-base text-gray-400 font-normal">Company Type</div>
             <div>
@@ -71,7 +71,7 @@ const ViewCompany = ({ type, tab, companyData, isLoading }) => {
           </div>
         ) : null}
       </div>
-      {tab === 'sister-companies' ? (
+      {type === 'co-company' ? (
         <div className="pt-4">
           <div className="text-base text-gray-400 font-normal">Address</div>
           <div>{companyData?.companyAddress?.address || '-'} </div>
@@ -90,15 +90,15 @@ const ViewCompany = ({ type, tab, companyData, isLoading }) => {
           <div className="text-base text-gray-400 font-normal">State Code</div>
           <div>{companyData?.companyAddress?.stateCode || '-'} </div>
         </div>
-        {companyData?.parentCompany?.name ? (
+        {type === 'company' ? (
           <div>
             <div className="text-base text-gray-400 font-normal">Parent Account</div>
-            <div>{companyData?.parentCompany?.name || '-'} </div>
+            <div>{companyData?.parentCompany?.natureOfAccount || '-'} </div>
           </div>
         ) : null}
       </div>
 
-      {tab !== 'sister-companies' ? (
+      {type === 'company' ? (
         <div>
           <div className="text-base text-gray-400 font-normal">Address</div>
           <div>{companyData?.companyAddress?.address || '-'} </div>

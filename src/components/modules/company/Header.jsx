@@ -93,7 +93,7 @@ const Header = () => {
         <AddCompanyContent
           type="company"
           mode="add"
-          tab="company"
+          tab="companies"
           onCancel={() => modals.closeModal('addCompanyModal')}
           onSuccess={() => handleOnSuccess('Company')}
         />
@@ -110,7 +110,7 @@ const Header = () => {
         <AddCompanyContent
           type="company"
           mode="add"
-          tab="parentCompany"
+          tab="parent-companies"
           onCancel={() => modals.closeModal('addCompanyModal')}
           onSuccess={() => handleOnSuccess('Parent Company')}
         />
@@ -127,7 +127,7 @@ const Header = () => {
         <AddCompanyContent
           type="company"
           mode="edit"
-          tab="company"
+          tab="companies"
           companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
         />
@@ -144,7 +144,7 @@ const Header = () => {
         <AddCompanyContent
           type="company"
           mode="edit"
-          tab="parentCompany"
+          tab="parent-companies"
           companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
         />

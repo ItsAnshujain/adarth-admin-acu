@@ -119,7 +119,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
       fax,
       companyPanNumber,
       companyGstNumber,
-      parentCompany: tab === 'company' ? parentCompany : null,
+      parentCompany: tab === 'companies' ? parentCompany : null,
       natureOfAccount,
       companyType: companyType || undefined,
       type: type === 'company' ? 'lead-company' : 'co-company',
@@ -142,7 +142,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
         state: stateAndStateCode?.split(/\((\d+)\)\s*(.+)/)?.[2],
       },
       id: companyData ? companyData?._id : undefined,
-      isParent: tab !== 'company',
+      isParent: tab === 'parent-companies',
     };
 
     if (mode === 'add') {
@@ -264,7 +264,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
             />
           </div>
 
-          {tab === 'company' ? (
+          {tab === 'companies' ? (
             <ControlledSelect
               clearable
               searchable
