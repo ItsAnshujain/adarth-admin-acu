@@ -25,6 +25,7 @@ import ControlledDatePickerInput from '../../shared/FormInputs/Controlled/Contro
 import { useInfiniteContacts } from '../../../apis/queries/contacts.queries';
 import { useInfiniteCompanies } from '../../../apis/queries/companies.queries';
 import { useAddLead, useLeadById, useUpdateLead } from '../../../apis/queries/leads.queries';
+import SuccessModal from '../../shared/Modal';
 
 const schema = yup.object({
   leadCompany: yup
@@ -39,10 +40,31 @@ const schema = yup.object({
     .required('Contact person name is required'),
 });
 
+const multiSelectStyles = {
+  label: {
+    marginBottom: '4px',
+    fontWeight: 700,
+    fontSize: '15px',
+    letterSpacing: '0.5px',
+  },
+  value: {
+    backgroundColor: 'black',
+    color: 'white',
+    '& button svg': {
+      backgroundColor: 'white',
+      borderRadius: '50%',
+    },
+  },
+  icon: {
+    color: 'white',
+  },
+};
+
 const AddLeadForm = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
+  const [open, setOpenSuccessModal] = useState(false);
   const [brandCompetitor, setBrandCompetitor] = useState('');
   const [brandCompetitorsOptions, setBrandCompetitorsOptions] = useState([]);
   const userId = useUserStore(state => state.id);
@@ -259,7 +281,7 @@ const AddLeadForm = () => {
       updateLeadHandler.mutate(data, {
         onSuccess: () => {
           showNotification({
-            message: 'Lead added successfully',
+            message: 'Lead updated successfully',
           });
           navigate(-1);
         },
@@ -270,7 +292,10 @@ const AddLeadForm = () => {
           showNotification({
             message: 'Lead added successfully',
           });
-          navigate(-1);
+          setOpenSuccessModal('Lead');
+          setTimeout(() => {
+            navigate(-1);
+          }, 2000);
         },
       });
     }
@@ -289,245 +314,254 @@ const AddLeadForm = () => {
   };
 
   return (
-    <FormProvider {...form}>
-      <form onSubmit={onSubmit}>
-        <div className="flex items-center justify-between py-2 px-6">
-          <div className="text-xl font-bold">Create Lead</div>
-          <div className="flex gap-2">
-            <Button
-              variant="default"
-              onClick={() => navigate(-1)}
-              disabled={addLeadHandler.isLoading || updateLeadHandler.isLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              className="bg-purple-450"
-              type="submit"
-              disabled={addLeadHandler.isLoading || updateLeadHandler.isLoading}
-              loading={addLeadHandler.isLoading || updateLeadHandler.isLoading}
-            >
-              Save
-            </Button>
+    <>
+      <FormProvider {...form}>
+        <form onSubmit={onSubmit}>
+          <div className="flex items-center justify-between py-2 px-6">
+            <div className="text-xl font-bold">Create Lead</div>
+            <div className="flex gap-2">
+              <Button
+                variant="default"
+                onClick={() => navigate(-1)}
+                disabled={addLeadHandler.isLoading || updateLeadHandler.isLoading || !!open}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-purple-450"
+                type="submit"
+                disabled={addLeadHandler.isLoading || updateLeadHandler.isLoading || !!open}
+                loading={addLeadHandler.isLoading || updateLeadHandler.isLoading}
+              >
+                Save
+              </Button>
+            </div>
           </div>
-        </div>
-        <Divider />
-        <div className="py-2 px-6">
-          <div className="flex gap-3 justify-end py-4">
-            <div />
-            <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
-              <div>Primary Incharge - </div>
+          <Divider />
+          <div className="py-2 px-6">
+            <div className="flex gap-3 justify-end py-4">
+              <div />
+              <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
+                <div>Primary Incharge - </div>
+                <ControlledSelect
+                  clearable
+                  searchable
+                  placeholder="Select..."
+                  name="primaryInCharge"
+                  data={
+                    leadByIdQuery?.data?.primaryInCharge?._id &&
+                    memoizedUsers?.filter(
+                      item => item.value === leadByIdQuery?.data?.primaryInCharge?._id,
+                    ).length <= 0
+                      ? [
+                          ...memoizedUsers,
+                          {
+                            value: leadByIdQuery?.data?.primaryInCharge?._id,
+                            label: leadByIdQuery?.data?.primaryInCharge?.name,
+                          },
+                        ] || []
+                      : memoizedUsers || []
+                  }
+                  withAsterisk
+                  className="w-32"
+                  classNames={{
+                    input: 'border-none',
+                    dropdown: 'w-56',
+                  }}
+                  rightSection={<ChevronDown size={20} />}
+                  dropdownComponent={usersDropdown}
+                />
+              </div>
+              <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
+                <div>Secondary Incharge - </div>
+                <ControlledSelect
+                  clearable
+                  searchable
+                  placeholder="Select..."
+                  name="secondaryInCharge"
+                  data={
+                    leadByIdQuery?.data?.secondaryInCharge?._id &&
+                    memoizedUsers?.filter(
+                      item => item.value === leadByIdQuery?.data?.secondaryInCharge?._id,
+                    ).length <= 0
+                      ? [
+                          ...memoizedUsers,
+                          {
+                            value: leadByIdQuery?.data?.secondaryInCharge?._id,
+                            label: leadByIdQuery?.data?.secondaryInCharge?.name,
+                          },
+                        ] || []
+                      : memoizedUsers || []
+                  }
+                  withAsterisk
+                  className="w-32"
+                  classNames={{
+                    input: 'border-none',
+                    dropdown: 'w-56',
+                  }}
+                  rightSection={<ChevronDown size={20} />}
+                  dropdownComponent={usersDropdown}
+                />
+              </div>
+              <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
+                <div>Priority - </div>
+                <ControlledSelect
+                  clearable
+                  searchable
+                  placeholder="Select..."
+                  name="priority"
+                  data={leadPriorityOptions}
+                  withAsterisk
+                  className="w-32"
+                  classNames={{
+                    input: 'border-none',
+                  }}
+                  rightSection={<ChevronDown size={20} />}
+                />
+              </div>
+              <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
+                <div>Stage - </div>
+                <ControlledSelect
+                  clearable
+                  searchable
+                  placeholder="Select..."
+                  name="stage"
+                  data={leadStageOptions}
+                  withAsterisk
+                  classNames={{
+                    input: 'border-none',
+                    dropdown: 'w-44',
+                  }}
+                  rightSection={<ChevronDown size={20} />}
+                  className="w-32"
+                />
+              </div>
+            </div>
+            <div className="text-xl font-bold w-full">Basic Information</div>
+            <div className="grid grid-cols-2 pt-4 gap-2">
               <ControlledSelect
                 clearable
                 searchable
                 placeholder="Select..."
-                name="primaryInCharge"
-                data={
-                  leadByIdQuery?.data?.primaryInCharge?._id &&
-                  memoizedUsers?.filter(
-                    item => item.value === leadByIdQuery?.data?.primaryInCharge?._id,
-                  ).length <= 0
-                    ? [
-                        ...memoizedUsers,
-                        {
-                          value: leadByIdQuery?.data?.primaryInCharge?._id,
-                          label: leadByIdQuery?.data?.primaryInCharge?.name,
-                        },
-                      ] || []
-                    : memoizedUsers || []
+                name="leadCompany"
+                label="Lead Company"
+                withAsterisk
+                data={memoizedLeadCompanies}
+                dropdownComponent={leadCompaniesDropdown}
+              />
+              <ControlledSelect
+                clearable
+                searchable
+                placeholder="Select..."
+                name="companyRepresenting"
+                label="Company Representing"
+                data={memoizedRepresentingCompanies}
+                dropdownComponent={representingCompaniesDropdown}
+              />
+              <ControlledDatePickerInput
+                name="targetStartDate"
+                label="Target Start Date"
+                rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+              />
+              <ControlledDatePickerInput
+                name="targetEndDate"
+                label="Target End Date"
+                rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+              />
+              <ControlledSelect
+                clearable
+                searchable
+                placeholder="Select..."
+                name="contact"
+                label="Contact Person Name"
+                withAsterisk
+                data={memoizedContacts}
+                dropdownComponent={contactsDropdown}
+              />
+              <ControlledTextInput name="brandDisplay" label="Display Brand" />
+            </div>
+            <div className="grid grid-cols-1 py-4 gap-2">
+              <ControlledTextInput name="objective" label="Objective" />
+              <ControlledTextarea
+                minRows={3}
+                name="remarksComments"
+                label="Remarks"
+                classNames={{
+                  label: 'font-medium text-primary text-base mb-2',
+                  input: 'border-gray-450',
+                }}
+              />
+            </div>
+            <div className="text-xl font-bold mt-6">Other Information</div>
+            <div className="grid grid-cols-2 pt-4 gap-2">
+              <ControlledTextInput name="overallBudget" label="Overall Budget" />
+              <ControlledDatePickerInput
+                name="leadCloseDate"
+                label="Lead Close Date"
+                rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+              />
+            </div>
+            <div className="grid grid-cols-1 pt-4 gap-2">
+              <ControlledTextInput name="targetAudience" label="Target Audiences" />
+              <MultiSelect
+                placeholder="Select..."
+                name="brandCompetitors"
+                label="Brand Competitor"
+                data={brandCompetitorsOptions}
+                styles={multiSelectStyles}
+                clearable
+                searchable
+                size="sm"
+                onSearchChange={setBrandCompetitor}
+                searchValue={brandCompetitor}
+                value={form.watch('brandCompetitors') || []}
+                onChange={val => form.setValue('brandCompetitors', val)}
+                rightSection={
+                  <ActionIcon onClick={handleAddBrandCompetitor} className="bg-purple-450">
+                    <IconPlus color="white" />
+                  </ActionIcon>
                 }
-                withAsterisk
-                className="w-32"
-                classNames={{
-                  input: 'border-none',
-                  dropdown: 'w-56',
-                }}
-                rightSection={<ChevronDown size={20} />}
-                dropdownComponent={usersDropdown}
               />
-            </div>
-            <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
-              <div>Secondary Incharge - </div>
-              <ControlledSelect
-                clearable
-                searchable
-                placeholder="Select..."
-                name="secondaryInCharge"
-                data={
-                  leadByIdQuery?.data?.secondaryInCharge?._id &&
-                  memoizedUsers?.filter(
-                    item => item.value === leadByIdQuery?.data?.secondaryInCharge?._id,
-                  ).length <= 0
-                    ? [
-                        ...memoizedUsers,
-                        {
-                          value: leadByIdQuery?.data?.secondaryInCharge?._id,
-                          label: leadByIdQuery?.data?.secondaryInCharge?.name,
-                        },
-                      ] || []
-                    : memoizedUsers || []
-                }
-                withAsterisk
-                className="w-32"
-                classNames={{
-                  input: 'border-none',
-                  dropdown: 'w-56',
-                }}
-                rightSection={<ChevronDown size={20} />}
-                dropdownComponent={usersDropdown}
-              />
-            </div>
-            <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
-              <div>Priority - </div>
-              <ControlledSelect
-                clearable
-                searchable
-                placeholder="Select..."
-                name="priority"
-                data={leadPriorityOptions}
-                withAsterisk
-                className="w-32"
-                classNames={{
-                  input: 'border-none',
-                }}
-                rightSection={<ChevronDown size={20} />}
-              />
-            </div>
-            <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
-              <div>Stage - </div>
-              <ControlledSelect
-                clearable
-                searchable
-                placeholder="Select..."
-                name="stage"
-                data={leadStageOptions}
-                withAsterisk
-                classNames={{
-                  input: 'border-none',
-                  dropdown: 'w-44',
-                }}
-                rightSection={<ChevronDown size={20} />}
-                className="w-32"
-              />
-            </div>
-          </div>
-          <div className="text-xl font-bold w-full">Basic Information</div>
-          <div className="grid grid-cols-2 pt-4 gap-2">
-            <ControlledSelect
-              clearable
-              searchable
-              placeholder="Select..."
-              name="leadCompany"
-              label="Lead Company"
-              withAsterisk
-              data={memoizedLeadCompanies}
-              dropdownComponent={leadCompaniesDropdown}
-            />
-            <ControlledSelect
-              clearable
-              searchable
-              placeholder="Select..."
-              name="companyRepresenting"
-              label="Company Representing"
-              data={memoizedRepresentingCompanies}
-              dropdownComponent={representingCompaniesDropdown}
-            />
-            <ControlledDatePickerInput
-              name="targetStartDate"
-              label="Target Start Date"
-              rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
-            />
-            <ControlledDatePickerInput
-              name="targetEndDate"
-              label="Target End Date"
-              rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
-            />
-            <ControlledSelect
-              clearable
-              searchable
-              placeholder="Select..."
-              name="contact"
-              label="Contact Person Name"
-              withAsterisk
-              data={memoizedContacts}
-              dropdownComponent={contactsDropdown}
-            />
-            <ControlledTextInput name="brandDisplay" label="Display Brand" />
-          </div>
-          <div className="grid grid-cols-1 py-4 gap-2">
-            <ControlledTextInput name="objective" label="Objective" />
-            <ControlledTextarea
-              minRows={3}
-              name="remarksComments"
-              label="Remarks"
-              classNames={{
-                label: 'font-medium text-primary text-base mb-2',
-                input: 'border-gray-450',
-              }}
-            />
-          </div>
-          <div className="text-xl font-bold mt-6">Other Information</div>
-          <div className="grid grid-cols-2 pt-4 gap-2">
-            <ControlledTextInput name="overallBudget" label="Overall Budget" />
-            <ControlledDatePickerInput
-              name="leadCloseDate"
-              label="Lead Close Date"
-              rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
-            />
-          </div>
-          <div className="grid grid-cols-1 pt-4 gap-2">
-            <ControlledTextInput name="targetAudience" label="Target Audiences" />
-            <MultiSelect
-              placeholder="Select..."
-              name="brandCompetitors"
-              label="Brand Competitor"
-              data={brandCompetitorsOptions}
-              classNames={{ label: 'text-base mb-2' }}
-              clearable
-              searchable
-              onSearchChange={setBrandCompetitor}
-              searchValue={brandCompetitor}
-              value={form.watch('brandCompetitors') || []}
-              onChange={val => form.setValue('brandCompetitors', val)}
-              rightSection={
-                <ActionIcon onClick={handleAddBrandCompetitor} className="bg-purple-450">
-                  <IconPlus color="white" />
-                </ActionIcon>
-              }
-            />
 
-            <ControlledTextInput name="campaignTheme" label="Campaign Theme" />
-            <ControlledTextarea
-              minRows={3}
-              name="campaignObjective"
-              label="Campaign Objective"
-              classNames={{
-                label: 'font-medium text-primary text-base mb-2',
-                input: 'border-gray-450',
-              }}
-            />
+              <ControlledTextInput name="campaignTheme" label="Campaign Theme" />
+              <ControlledTextarea
+                minRows={3}
+                name="campaignObjective"
+                label="Campaign Objective"
+                classNames={{
+                  label: 'font-medium text-primary text-base mb-2',
+                  input: 'border-gray-450',
+                }}
+              />
+            </div>
+            <div className="grid grid-cols-2 py-4 gap-2">
+              <ControlledSelect
+                clearable
+                searchable
+                placeholder="Select..."
+                name="prospect"
+                label="Prospect"
+                data={leadProspectOptions}
+              />
+              <ControlledSelect
+                clearable
+                searchable
+                placeholder="Select..."
+                name="leadSource"
+                label="Lead Source"
+                data={[]}
+              />
+            </div>
           </div>
-          <div className="grid grid-cols-2 py-4 gap-2">
-            <ControlledSelect
-              clearable
-              searchable
-              placeholder="Select..."
-              name="prospect"
-              label="Prospect"
-              data={leadProspectOptions}
-            />
-            <ControlledSelect
-              clearable
-              searchable
-              placeholder="Select..."
-              name="leadSource"
-              label="Lead Source"
-              data={[]}
-            />
-          </div>
-        </div>
-      </form>
-    </FormProvider>
+        </form>
+      </FormProvider>
+      <SuccessModal
+        title={`${open} Successfully Added`}
+        prompt="Close"
+        open={!!open}
+        setOpenSuccessModal={setOpenSuccessModal}
+      />
+    </>
   );
 };
 
