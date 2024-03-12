@@ -187,10 +187,10 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
 
   useEffect(() => {
     form.reset({
-      ...companyData,
       ...companyData?.companyAddress,
       ...companyData?.parentCompany,
       ...companyData?.bankAccountDetails?.[0],
+      ...companyData,
       companyType: companyData?.companyType,
       contactNumber: companyData?.contactNumber,
       fax: companyData?.fax,

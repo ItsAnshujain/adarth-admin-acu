@@ -192,10 +192,10 @@ const AddSisterCompanyContent = ({ type, onCancel, companyData, mode, onSuccess 
 
   useEffect(() => {
     form.reset({
-      ...companyData,
       ...companyData?.companyAddress,
       ...companyData?.parentCompany,
       ...companyData?.bankAccountDetails?.[0],
+      ...companyData,
       parentCompany: companyData?.parentCompany?._id || companyData?.parentCompany,
       stateAndStateCode: `(${companyData?.companyAddress?.stateCode}) ${companyData?.companyAddress?.state}`,
     });
