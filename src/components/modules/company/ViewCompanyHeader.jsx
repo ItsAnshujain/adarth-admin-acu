@@ -38,9 +38,7 @@ const ViewCompanyHeader = ({ type, tab }) => {
           <DeleteCompanyContent
             classNames="px-8 mt-4"
             onClickCancel={() => modals.closeModal('deleteCompanyModal')}
-            onConfirm={() =>
-              navigate(`/repository/${type === 'parent-company' ? 'company' : type}?tab=${tab}`)
-            }
+            onConfirm={() => navigate(`/repository/${type}?tab=${tab}`)}
             id={companyQuery?.data?._id}
           />
         ),
@@ -55,7 +53,7 @@ const ViewCompanyHeader = ({ type, tab }) => {
       children: (
         <AddCompanyContent
           type={type}
-          tab="company"
+          tab="companies"
           onCancel={() => modals.closeModal('editCompanyModal')}
           companyData={companyQuery?.data}
         />
@@ -71,7 +69,7 @@ const ViewCompanyHeader = ({ type, tab }) => {
       children: (
         <AddCompanyContent
           type={type}
-          tab="parentCompany"
+          tab="parent-companies"
           onCancel={() => modals.closeModal('editCompanyModal')}
           companyData={companyQuery?.data}
         />
@@ -87,7 +85,7 @@ const ViewCompanyHeader = ({ type, tab }) => {
       children: (
         <AddSisterCompanyContent
           type={type}
-          tab="sisterCompany"
+          tab="sister-companies"
           onCancel={() => modals.closeModal('editSisterCompanyModal')}
           companyData={companyQuery?.data}
         />
@@ -121,7 +119,7 @@ const ViewCompanyHeader = ({ type, tab }) => {
             <div className="flex">
               <ActionIcon
                 onClick={() =>
-                  type === 'company' && tab !== 'sister-companies'
+                  type === 'company' && tab !== 'parent-companies'
                     ? toggleEditCompanyModal()
                     : tab === 'sister-companies'
                     ? toggleEditSisterCompanyModal()

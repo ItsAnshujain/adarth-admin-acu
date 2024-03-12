@@ -1,4 +1,4 @@
-import { Button, Menu, Tabs } from '@mantine/core';
+import { Button, Tabs } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { IconChevronDown } from '@tabler/icons';
 import classNames from 'classnames';
@@ -94,7 +94,8 @@ const Header = () => {
       children: (
         <AddCoCompanyContent
           mode="add"
-          type="parentCompany"
+          type="co-company"
+          tab="parent-companies"
           onCancel={() => modals.closeModal('addCompanyModal')}
           onSuccess={() => handleOnSuccess('Parent Company')}
         />
@@ -110,7 +111,8 @@ const Header = () => {
       children: (
         <AddSisterCompanyContent
           mode="add"
-          type="sisterCompany"
+          type="co-company"
+          tab="sister-companies"
           onCancel={() => modals.closeModal('addCompanyModal')}
           onSuccess={() => handleOnSuccess('Sister Company')}
         />
@@ -126,9 +128,27 @@ const Header = () => {
       children: (
         <AddCoCompanyContent
           mode="edit"
-          type="parentCompany"
+          type="co-company"
+          tab="parent-companies"
           companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
+        />
+      ),
+      ...updatedModalConfig,
+    });
+  };
+
+  const toggleEditSisterCompanyModal = companyData => {
+    modals.openModal({
+      title: 'Edit Sister Company',
+      modalId: 'editSisterCompanyModal',
+      children: (
+        <AddSisterCompanyContent
+          mode="edit"
+          type="co-company"
+          tab="sister-companies"
+          companyData={companyData}
+          onCancel={() => modals.closeModal('editSisterCompanyModal')}
         />
       ),
       ...updatedModalConfig,
@@ -218,7 +238,11 @@ const Header = () => {
                 itemId={original._id}
                 type="co-company"
                 tab={tab}
-                toggleEdit={() => toggleEditParentCompanyModal(original)}
+                toggleEdit={() =>
+                  tab === 'sisterCompanies'
+                    ? toggleEditSisterCompanyModal(original)
+                    : toggleEditParentCompanyModal(original)
+                }
               />
             ),
             [],
@@ -267,37 +291,18 @@ const Header = () => {
                 Sister Companies
               </Tabs.Tab>
             </div>
-            <Menu>
-              <Menu.Target>
-                <Button
-                  variant="default"
-                  className="bg-purple-450 text-white font-normal rounded-md mb-2"
-                  leftIcon={<IconChevronDown size={20} />}
-                >
-                  Add Co-Company
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item className="p-0 justify-start">
-                  <Button
-                    variant="default"
-                    className="w-full border-0 font-normal"
-                    onClick={toggleAddParentCompanyModal}
-                  >
-                    Add Parent Company
-                  </Button>
-                </Menu.Item>
-                <Menu.Item className="p-0 justify-start">
-                  <Button
-                    variant="default"
-                    className="w-full border-0 font-normal"
-                    onClick={toggleAddSisterCompanyModal}
-                  >
-                    Add Sister Company
-                  </Button>
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+            <Button
+              variant="default"
+              className="bg-purple-450 text-white font-normal rounded-md mb-2"
+              leftIcon={<IconChevronDown size={20} />}
+              onClick={() =>
+                tab === 'parent-companies'
+                  ? toggleAddParentCompanyModal()
+                  : toggleAddSisterCompanyModal()
+              }
+            >
+              Add Co-Company
+            </Button>
           </div>
         </Tabs.List>
         <Tabs.Panel value="parent-companies">

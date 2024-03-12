@@ -60,7 +60,8 @@ const SisterCompaniesList = () => {
       children: (
         <AddSisterCompanyContent
           mode="edit"
-          type="sisterCompany"
+          type="co-company"
+          tab="sister-companies"
           companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
         />
@@ -83,6 +84,11 @@ const SisterCompaniesList = () => {
       {
         Header: 'CONTACT NUMBER',
         accessor: 'contactNumber',
+        Cell: ({
+          row: {
+            original: { contactNumber },
+          },
+        }) => useMemo(() => <p>{contactNumber ? `+91 ${contactNumber}` : '-'}</p>, []),
       },
       {
         Header: 'PAN',

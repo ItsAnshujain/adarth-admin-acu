@@ -16,10 +16,10 @@ const ViewLeadStepper = ({ activeStep }) => (
           label="Initiate Discussion"
           className={classNames(
             'w-full p-2 stepperItem',
-            activeStep === 'InitiateDiscussion' ||
-              activeStep === 'InProgress' ||
-              activeStep === 'Converted' ||
-              activeStep === 'Lost'
+            activeStep === 'initiateDiscussion' ||
+              activeStep === 'inProgress' ||
+              activeStep === 'converted' ||
+              activeStep === 'lost'
               ? ' text-white bg-orange-350'
               : 'bg-gray-200 text-gray-400',
           )}
@@ -29,7 +29,7 @@ const ViewLeadStepper = ({ activeStep }) => (
           label="In Progress"
           className={classNames(
             'w-full p-2 pl-4 stepperItem',
-            activeStep === 'InProgress' || activeStep === 'Converted' || activeStep === 'Lost'
+            activeStep === 'inProgress' || activeStep === 'converted' || activeStep === 'lost'
               ? ' text-white bg-purple-350'
               : 'bg-gray-200 text-gray-400',
           )}
@@ -40,7 +40,7 @@ const ViewLeadStepper = ({ activeStep }) => (
           label="Converted"
           className={classNames(
             'w-full p-2 pl-4 stepperItem',
-            activeStep === 'Converted' || activeStep === 'Lost'
+            activeStep === 'converted' || activeStep === 'lost'
               ? ' text-white bg-red-350'
               : 'bg-gray-200 text-gray-400',
           )}
@@ -51,7 +51,7 @@ const ViewLeadStepper = ({ activeStep }) => (
         label="Lost"
         className={classNames(
           'w-64 p-2 pl-4 stepperItem',
-          activeStep === 'Lost' ? ' text-white bg-green-250' : 'bg-gray-200 text-gray-400',
+          activeStep === 'lost' ? ' text-white bg-green-250' : 'bg-gray-200 text-gray-400',
         )}
         classNames={{ stepWrapper: 'hidden' }}
       />

@@ -586,7 +586,7 @@ const App = () => {
             path="company/parent-companies/:id"
             element={
               <Suspense fallback={<CustomLoader />}>
-                <ViewCompanyPage type="parent-company" tab="parent-companies" />
+                <ViewCompanyPage type="company" tab="parent-companies" />
               </Suspense>
             }
           />
