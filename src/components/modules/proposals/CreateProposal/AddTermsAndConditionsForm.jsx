@@ -1,13 +1,18 @@
-import { Box, Button, Group } from '@mantine/core';
-import React, { useRef } from 'react';
+import { ActionIcon, Box, Button, Group } from '@mantine/core';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { showNotification } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
 import * as he from 'he';
+import { IconPencil, IconTrash, IconX } from '@tabler/icons';
+import classNames from 'classnames';
 import ControlledTextInput from '../../../shared/FormInputs/Controlled/ControlledTextInput';
-import { useCreateProposalTerms } from '../../../../apis/queries/proposal.queries';
+import {
+  useCreateProposalTerms,
+  useUpdateProposalTerms,
+} from '../../../../apis/queries/proposal.queries';
 import RichTextEditorComponent from '../../../shared/rte/RichTextEditorComponent';
 import htmlConverter from '../../../../utils/htmlConverter';
 
@@ -17,11 +22,19 @@ const schema = yup.object({
   descriptionHtml: yup.mixed(),
 });
 
-const AddTermsAndConditionsForm = ({ onClose }) => {
+const AddTermsAndConditionsForm = ({
+  onClose,
+  termsAndConditionData,
+  mode = 'Add',
+  onSuccess = () => {},
+  toggleDelete = () => {},
+}) => {
   const queryClient = useQueryClient();
   const form = useForm({ resolver: yupResolver(schema) });
+  const [editableForm, setEditableForm] = useState(mode === 'Add');
   const editorRef = useRef();
   const createProposalTerms = useCreateProposalTerms();
+  const updateProposalTerms = useUpdateProposalTerms();
 
   const onSubmit = form.handleSubmit(async formData => {
     const data = { ...formData };
@@ -35,20 +48,66 @@ const AddTermsAndConditionsForm = ({ onClose }) => {
       }
     }
 
-    createProposalTerms.mutate(data, {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['proposal-terms']);
-        showNotification({
-          title: 'Terms & Conditions added successfully',
-          color: 'green',
-        });
-        onClose();
-      },
-    });
+    if (termsAndConditionData?._id) {
+      updateProposalTerms.mutate(
+        { id: termsAndConditionData?._id, ...data },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(['proposal-terms']);
+            showNotification({
+              title: 'Terms & Conditions updated successfully',
+              color: 'green',
+            });
+            onClose();
+          },
+        },
+      );
+    } else {
+      createProposalTerms.mutate(data, {
+        onSuccess: () => {
+          queryClient.invalidateQueries(['proposal-terms']);
+          showNotification({
+            title: 'Terms & Conditions added successfully',
+            color: 'green',
+          });
+          onClose();
+          onSuccess();
+        },
+      });
+    }
   });
 
+  useEffect(() => {
+    if (termsAndConditionData?.name) {
+      form.reset({
+        name: termsAndConditionData?.name,
+        description: termsAndConditionData?.description?.[0],
+      });
+    }
+  }, [termsAndConditionData]);
+
   return (
-    <Box className="border-t">
+    <Box className="border-t p-2">
+      <div className="w-full flex justify-between px-3 pt-4">
+        <div className="font-bold text-xl">Terms & Conditions</div>
+        {mode === 'Edit' && !editableForm ? (
+          <div className="flex gap-2">
+            <ActionIcon onClick={toggleDelete}>
+              <IconTrash size={20} />
+            </ActionIcon>
+            <ActionIcon onClick={() => setEditableForm(true)}>
+              <IconPencil size={20} />
+            </ActionIcon>
+            <ActionIcon onClick={onClose}>
+              <IconX size={20} />
+            </ActionIcon>
+          </div>
+        ) : (
+          <ActionIcon onClick={onClose}>
+            <IconX size={20} />
+          </ActionIcon>
+        )}
+      </div>
       <FormProvider {...form}>
         <form className="px-3 pt-3" onSubmit={onSubmit}>
           <ControlledTextInput
@@ -58,12 +117,15 @@ const AddTermsAndConditionsForm = ({ onClose }) => {
             placeholder="Write..."
             maxLength={200}
             className="mb-4"
+            classNames={{ label: 'font-bold' }}
+            disabled={!editableForm}
           />
           <section className="mb-4">
-            <p className="mb-2 font-medium text-black">Description</p>
+            <p className="font-medium text-black">Description</p>
             <Controller
               name="description"
               control={form.control}
+              disabled={!editableForm}
               render={({ field }) => (
                 <RichTextEditorComponent
                   {...field}
@@ -78,6 +140,7 @@ const AddTermsAndConditionsForm = ({ onClose }) => {
                   title="Description"
                   placeholder="Write..."
                   ref={editorRef}
+                  className={classNames(!editableForm ? 'pointer-events-none' : '')}
                 />
               )}
             />
@@ -94,9 +157,9 @@ const AddTermsAndConditionsForm = ({ onClose }) => {
             <Button
               type="submit"
               className="primary-button"
-              loading={createProposalTerms.isLoading}
+              loading={createProposalTerms.isLoading || updateProposalTerms.isLoading}
             >
-              Add
+              {mode === 'Add' ? 'Add' : 'Save'}
             </Button>
           </Group>
         </form>

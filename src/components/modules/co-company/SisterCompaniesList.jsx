@@ -75,7 +75,7 @@ const SisterCompaniesList = () => {
       {
         Header: '#',
         accessor: 'id',
-        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, 1, 10)}</p>, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'COMPANY NAME',
@@ -97,7 +97,7 @@ const SisterCompaniesList = () => {
       },
       {
         Header: 'GSTIN',
-        accessor: 'companyGstinNumber',
+        accessor: 'companyGstNumber',
         disableSortBy: true,
       },
       {
@@ -120,7 +120,7 @@ const SisterCompaniesList = () => {
       },
       {
         Header: 'PARENT COMPANY',
-        accessor: 'parentCompany.name',
+        accessor: 'parentCompany.companyName',
         disableSortBy: true,
       },
       {

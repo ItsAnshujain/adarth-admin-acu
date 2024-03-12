@@ -18,6 +18,10 @@ export const generateProposalPdf = (id, queries) => http.get(`/proposal/${id}/ge
 
 export const createProposalTerms = data => http.post(urlcat('/proposal-terms'), data);
 
+export const updateProposalTerms = (id, data) => http.patch(urlcat(`/proposal-terms/${id}`), data);
+
+export const deleteProposalTerms = id => http.delete(`/proposal-terms/${id}`);
+
 export const fetchProposalTerms = payload => http.get(urlcat('/proposal-terms', payload));
 
 export const fetchProposalTermById = id => http.get(urlcat('/proposal-terms/:id', { id }));
