@@ -10,10 +10,10 @@ const ControlledDatePickerInput = ({ name, ...props }) => {
 
   return (
     <DatePickerInput
-      {...props}
       {...field}
       error={fieldState.error?.message}
       classNames={{ label: 'font-medium text-primary text-base mb-2', input: 'border-gray-450' }}
+      {...props}
     />
   );
 };

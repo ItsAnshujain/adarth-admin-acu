@@ -257,7 +257,7 @@ const AddSisterCompanyContent = ({ type, onCancel, companyData, mode, onSuccess 
             ) : null}
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col pt-2">
             {type === 'sisterCompany' ? (
               <ControlledSelect
                 clearable
@@ -291,7 +291,7 @@ const AddSisterCompanyContent = ({ type, onCancel, companyData, mode, onSuccess 
             <ControlledTextInput name="city" label="City" classNames={{ label: 'font-bold' }} />
           </div>
           <div className="text-2xl font-bold mt-8">Bank Information</div>
-          <div className="grid grid-cols-2 py-4 gap-2">
+          <div className="grid grid-cols-2 pt-4 pb-2 gap-2">
             <ControlledTextInput
               name="accountNo"
               label="Account No"

@@ -271,11 +271,11 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               dropdownComponent={parentCompaniesDropdown}
               data={parentCompanies}
               placeholder="Select..."
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold', root: 'pt-2' }}
             />
           ) : null}
 
-          <div className="grid grid-cols-1 pt-4 gap-2">
+          <div className="grid grid-cols-1 pt-2">
             <ControlledTextInput
               name="address"
               label="Address"
@@ -283,7 +283,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
             />
           </div>
 
-          <div className="grid grid-cols-2 py-4 gap-2">
+          <div className="grid grid-cols-2 pt-2 pb-4 gap-2">
             <ControlledSelect
               clearable
               searchable
@@ -297,7 +297,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
           </div>
 
           <div className="text-2xl font-bold mt-8">Bank Information</div>
-          <div className="grid grid-cols-2 py-4 gap-2">
+          <div className="grid grid-cols-2 pt-4 pb-2 gap-2">
             <ControlledTextInput
               name="accountNo"
               label="Account No"

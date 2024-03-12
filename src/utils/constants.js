@@ -247,3 +247,30 @@ export const leadPriorityOptions = [
 ];
 
 export const leadProspectOptions = ['inbound', 'outbound'];
+
+export const leadCommunicationTypeOptions = [
+  {
+    label: 'Email',
+    value: 'email',
+  },
+  {
+    label: 'Phone Call',
+    value: 'phoneCall',
+  },
+  {
+    label: 'Video Call',
+    value: 'videoCall',
+  },
+  {
+    label: 'In Person Meeting',
+    value: 'inPersonMeeting',
+  },
+  {
+    label: 'Demo Call',
+    value: 'demoCall',
+  },
+  {
+    label: 'In Person Demo',
+    value: 'inPersonDemo',
+  },
+];
