@@ -32,13 +32,15 @@ const ViewCompanyHeader = ({ type, tab }) => {
 
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
-      modalId: 'deleteTermsAndConditions',
+      modalId: 'deleteCompanyModal',
       innerProps: {
         modalBody: (
           <DeleteCompanyContent
             classNames="px-8 mt-4"
-            onClickCancel={() => modals.closeModal('deleteTermsAndConditions')}
-            onConfirm={() => navigate(`/repository/${type}?tab=${tab}`)}
+            onClickCancel={() => modals.closeModal('deleteCompanyModal')}
+            onConfirm={() =>
+              navigate(`/repository/${type === 'parent-company' ? 'company' : type}?tab=${tab}`)
+            }
             id={companyQuery?.data?._id}
           />
         ),
