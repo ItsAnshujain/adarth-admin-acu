@@ -5,7 +5,7 @@ import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { ActionIcon, Badge } from '@mantine/core';
 import { IconChevronLeft } from '@tabler/icons';
 import dayjs from 'dayjs';
-import { generateSlNo } from '../../../utils';
+import { generateSlNo, serialize } from '../../../utils';
 import Table from '../../Table/Table';
 import LeadsListHeader from './LeadsListHeader';
 import LeadMenuPopover from '../../Popovers/LeadMenuPopover';
@@ -46,7 +46,14 @@ const LeadsList = () => {
     search: debouncedSearch,
   });
 
-  const leadsQuery = useLeads(searchParams.toString());
+  const removeUnwantedQueries = removeArr => {
+    const params = [...searchParams];
+    let updatedParams = params.filter(elem => !removeArr.includes(elem[0]));
+    updatedParams = Object.fromEntries(updatedParams);
+    return serialize(updatedParams);
+  };
+
+  const leadsQuery = useLeads(removeUnwantedQueries('leadDetailTab'));
 
   const toggleAddFollowUp = id =>
     modals.openModal({
@@ -186,7 +193,9 @@ const LeadsList = () => {
                 toggleAddFollowUp={() => toggleAddFollowUp(original._id)}
                 toggleViewLead={() => {
                   setLeadId(original._id);
-                  viewLeadDrawerActions.toggle();
+                  viewLeadDrawerActions.open();
+                  searchParams.set('leadDetailTab', 'overview');
+                  setSearchParams(searchParams, { replace: true });
                 }}
               />
             ),
@@ -206,6 +215,8 @@ const LeadsList = () => {
                 onClick={() => {
                   setLeadId(original._id);
                   viewLeadDrawerActions.open();
+                  searchParams.set('leadDetailTab', 'overview');
+                  setSearchParams(searchParams, { replace: true });
                 }}
               >
                 <IconChevronLeft size={20} color="white" />

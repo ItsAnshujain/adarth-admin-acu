@@ -5,7 +5,7 @@ import modalConfig from '../../utils/modalConfig';
 import MenuIcon from '../Menu';
 import DeleteLeadContent from '../modules/leads/DeleteLeadContent';
 
-const LeadMenuPopover = ({ itemId, toggleAddFollowUp, toggleViewLead }) => {
+const LeadMenuPopover = ({ itemId, toggleAddFollowUp, toggleViewLead, onClose = () => {} }) => {
   const modals = useModals();
   const navigate = useNavigate();
 
@@ -18,7 +18,10 @@ const LeadMenuPopover = ({ itemId, toggleAddFollowUp, toggleViewLead }) => {
             id={itemId}
             classNames="px-8 mt-4"
             onClickCancel={() => modals.closeModal('deleteLead')}
-            onConfirm={() => navigate('/leads/leads-dashboard')}
+            onConfirm={() => {
+              navigate('/leads/leads-dashboard');
+              onClose();
+            }}
           />
         ),
       },

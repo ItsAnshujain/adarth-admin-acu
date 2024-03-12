@@ -115,7 +115,7 @@ const AddLeadForm = () => {
     () =>
       usersQuery.data?.pages
         .reduce((acc, { docs }) => [...acc, ...docs], [])
-        .map(doc => ({
+        ?.map(doc => ({
           ...doc,
           label: doc.name,
           value: doc._id,
@@ -127,7 +127,7 @@ const AddLeadForm = () => {
     () =>
       contactsQuery.data?.pages
         .reduce((acc, { docs }) => [...acc, ...docs], [])
-        .map(doc => ({
+        ?.map(doc => ({
           ...doc,
           label: doc.name,
           value: doc._id,
@@ -139,7 +139,7 @@ const AddLeadForm = () => {
     () =>
       leadCompaniesQuery.data?.pages
         .reduce((acc, { docs }) => [...acc, ...docs], [])
-        .map(doc => ({
+        ?.map(doc => ({
           ...doc,
           label: doc.companyName,
           value: doc._id,
@@ -151,7 +151,7 @@ const AddLeadForm = () => {
     () =>
       companyRepresentingQuery.data?.pages
         .reduce((acc, { docs }) => [...acc, ...docs], [])
-        .map(doc => ({
+        ?.map(doc => ({
           ...doc,
           label: doc.companyName,
           value: doc._id,
@@ -208,7 +208,7 @@ const AddLeadForm = () => {
       leadByIdQuery?.data?.brandCompetitors?.map(competitor => ({
         label: competitor,
         value: competitor,
-      })),
+      })) || [],
     );
     form.reset({
       ...leadByIdQuery.data,

@@ -5,7 +5,6 @@ import { useSearchParams } from 'react-router-dom';
 import { ChevronDown } from 'react-feather';
 import { useEffect, useState } from 'react';
 import { useModals } from '@mantine/modals';
-import { useClickOutside } from '@mantine/hooks';
 import Select from '../../shared/FormInputs/Select';
 import ViewLeadStepper from './ViewLeadStepper';
 import LeadsOverview from './LeadsOverview';
@@ -19,7 +18,7 @@ import { leadPriorityOptions, leadStageOptions } from '../../../utils/constants'
 const updatedModalConfig = {
   ...modalConfig,
   classNames: {
-    title: 'font-dmSans text-xl px-4',
+    title: 'font-dmSans text-2xl font-bold px-4',
     header: 'p-4 border-b border-gray-450',
     body: 'px-8',
     close: 'mr-4',
@@ -30,18 +29,19 @@ const updatedModalConfig = {
 const ViewLeadDrawer = ({ isOpened, styles, onClose, leadId }) => {
   const leadByIdQuery = useLeadById(leadId, !!leadId);
   const modals = useModals();
-  const ref = useClickOutside(() => modals.closeModal('addFollowUpModal'));
   const [searchParams, setSearchParams] = useSearchParams({
     leadDetailTab: 'overview',
   });
   const [activeStep, setActiveStep] = useState('');
   const leadDetailTab = searchParams.get('leadDetailTab');
 
-  const toggleAddFollowUp = () =>
+  const toggleAddFollowUp = id =>
     modals.openModal({
       title: 'Add Follow Up',
       modalId: 'addFollowUpModal',
-      children: <AddFollowUpContent onCancel={() => modals.closeModal('addFollowUpModal')} />,
+      children: (
+        <AddFollowUpContent onCancel={() => modals.closeModal('addFollowUpModal')} leadId={id} />
+      ),
       ...updatedModalConfig,
     });
 
@@ -62,23 +62,26 @@ const ViewLeadDrawer = ({ isOpened, styles, onClose, leadId }) => {
         closeButton: 'text-black',
         body: 'p-0',
       }}
-      closeOnClickOutside
     >
-      <div ref={ref}>
+      <div>
         <div className="flex items-center justify-between px-6 py-4">
           <div className="text-xl font-bold">Lead Details</div>
           <div className="flex items-center gap-2">
-            <LeadMenuPopover itemId={123} toggleAddFollowUp={toggleAddFollowUp} />
+            <LeadMenuPopover
+              itemId={leadId}
+              toggleAddFollowUp={() => toggleAddFollowUp(leadId)}
+              onClose={onClose}
+            />
             <ActionIcon onClick={onClose}>
               <IconX />
             </ActionIcon>
           </div>
         </div>
         <Divider />
-        <div className="p-2 px-6">
+        <div className="py-2">
           <Tabs className="w-full" value={leadDetailTab}>
             <Tabs.List className="border-b">
-              <div className="flex justify-between w-full pb-0">
+              <div className="flex justify-between w-full pb-0  px-6">
                 <div className="flex gap-4 mb-0">
                   <Tabs.Tab
                     value="overview"
@@ -155,12 +158,12 @@ const ViewLeadDrawer = ({ isOpened, styles, onClose, leadId }) => {
                 </div>
               </div>
             </Tabs.List>
-            <Tabs.Panel value="overview">
+            <Tabs.Panel value="overview" className="px-6">
               <ViewLeadStepper activeStep={activeStep?.replace(' ', '')} />
               <LeadsOverview leadData={leadByIdQuery?.data} />
             </Tabs.Panel>
-            <Tabs.Panel value="followUps">
-              <LeadFollowUps />
+            <Tabs.Panel value="followUps" className="px-6">
+              <LeadFollowUps leadId={leadByIdQuery?.data?._id} />
             </Tabs.Panel>
           </Tabs>
         </div>
