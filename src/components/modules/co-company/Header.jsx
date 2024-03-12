@@ -267,37 +267,18 @@ const Header = () => {
                 Sister Companies
               </Tabs.Tab>
             </div>
-            <Menu>
-              <Menu.Target>
-                <Button
-                  variant="default"
-                  className="bg-purple-450 text-white font-normal rounded-md mb-2"
-                  leftIcon={<IconChevronDown size={20} />}
-                >
-                  Add Co-Company
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item className="p-0 justify-start">
-                  <Button
-                    variant="default"
-                    className="w-full border-0 font-normal"
-                    onClick={toggleAddParentCompanyModal}
-                  >
-                    Add Parent Company
-                  </Button>
-                </Menu.Item>
-                <Menu.Item className="p-0 justify-start">
-                  <Button
-                    variant="default"
-                    className="w-full border-0 font-normal"
-                    onClick={toggleAddSisterCompanyModal}
-                  >
-                    Add Sister Company
-                  </Button>
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+            <Button
+              variant="default"
+              className="bg-purple-450 text-white font-normal rounded-md mb-2"
+              leftIcon={<IconChevronDown size={20} />}
+              onClick={() =>
+                tab === 'parent-companies'
+                  ? toggleAddParentCompanyModal()
+                  : toggleAddSisterCompanyModal()
+              }
+            >
+              Add Co-Company
+            </Button>
           </div>
         </Tabs.List>
         <Tabs.Panel value="parent-companies">
