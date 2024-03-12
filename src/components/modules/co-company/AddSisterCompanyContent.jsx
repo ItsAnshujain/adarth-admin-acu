@@ -163,6 +163,7 @@ const AddSisterCompanyContent = ({ type, onCancel, companyData, mode, onSuccess 
           });
           onCancel();
           onSuccess();
+          form.reset({});
         },
       });
     } else {
@@ -173,6 +174,7 @@ const AddSisterCompanyContent = ({ type, onCancel, companyData, mode, onSuccess 
             color: 'green',
           });
           onCancel();
+          form.reset({});
         },
       });
     }

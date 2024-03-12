@@ -154,6 +154,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
           });
           onCancel();
           onSuccess();
+          form.reset({});
         },
       });
     } else {
@@ -164,6 +165,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
             color: 'green',
           });
           onCancel();
+          form.reset({});
         },
       });
     }
