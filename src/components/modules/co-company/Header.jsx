@@ -23,7 +23,7 @@ const updatedModalConfig = {
   size: '1000px',
   classNames: {
     title: 'font-dmSans text-2xl font-bold px-4',
-    header: 'px-4 py-4 border-b border-gray-450',
+    header: 'p-4 border-b border-gray-450',
     body: 'h-[600px] overflow-auto',
     close: 'mr-4',
   },
@@ -31,7 +31,8 @@ const updatedModalConfig = {
 
 const Header = () => {
   const modals = useModals();
-  const [open, setOpenSuccessModal] = useState(false);
+  const [successModalOpened, setOpenSuccessModal] = useState(false);
+  const [successModalText, setSuccessModalText] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [searchParams, setSearchParams] = useSearchParams({
@@ -81,6 +82,11 @@ const Header = () => {
     setSearchParams(searchParams);
   };
 
+  const handleOnSuccess = text => {
+    setOpenSuccessModal(true);
+    setSuccessModalText(text);
+  };
+
   const toggleAddParentCompanyModal = () => {
     modals.openModal({
       title: 'Add Parent Company',
@@ -90,7 +96,7 @@ const Header = () => {
           mode="add"
           type="parentCompany"
           onCancel={() => modals.closeModal('addCompanyModal')}
-          onSuccess={() => setOpenSuccessModal('Parent Company')}
+          onSuccess={() => handleOnSuccess('Parent Company')}
         />
       ),
       ...updatedModalConfig,
@@ -106,7 +112,7 @@ const Header = () => {
           mode="add"
           type="sisterCompany"
           onCancel={() => modals.closeModal('addCompanyModal')}
-          onSuccess={() => setOpenSuccessModal('Sister Company')}
+          onSuccess={() => handleOnSuccess('Sister Company')}
         />
       ),
       ...updatedModalConfig,
@@ -321,9 +327,9 @@ const Header = () => {
         </Tabs.Panel>
       </Tabs>
       <SuccessModal
-        title={`${open} Successfully Added`}
+        title={`${successModalText} Successfully Added`}
         prompt="Close"
-        open={!!open}
+        open={successModalOpened}
         setOpenSuccessModal={setOpenSuccessModal}
       />
     </div>

@@ -20,7 +20,7 @@ const updatedModalConfig = {
   size: '1000px',
   classNames: {
     title: 'font-dmSans text-2xl font-bold px-4',
-    header: 'px-4 py-4 border-b border-gray-450',
+    header: 'p-4 border-b border-gray-450',
     body: '',
     close: 'mr-4',
   },
@@ -28,7 +28,7 @@ const updatedModalConfig = {
 
 const ContactPage = () => {
   const [searchInput, setSearchInput] = useState('');
-  const [open, setOpenSuccessModal] = useState(false);
+  const [successModalOpened, setOpenSuccessModal] = useState(false);
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
@@ -220,7 +220,7 @@ const ContactPage = () => {
       <SuccessModal
         title="Contact Successfully Added"
         prompt="Close"
-        open={!!open}
+        open={successModalOpened}
         setOpenSuccessModal={setOpenSuccessModal}
       />
     </div>

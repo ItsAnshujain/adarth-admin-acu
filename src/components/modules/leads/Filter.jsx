@@ -10,6 +10,7 @@ import {
 import { useFetchUsers } from '../../../apis/queries/users.queries';
 import { serialize } from '../../../utils';
 import useUserStore from '../../../store/user.store';
+import useCompanies from '../../../apis/queries/companies.queries';
 
 const styles = { title: { fontWeight: 'bold' } };
 
@@ -23,13 +24,13 @@ const defaultValue = {
 };
 
 const leadSourceOptions = [];
-const companyRepresentingOptions = [];
 
 const Filter = ({ isOpened, setShowFilter }) => {
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const [filterOptions, setFilterOptions] = useState(defaultValue);
-  const [activePage, setActivePage] = useState(1);
+  const [usersActivePage, setUsersActivePage] = useState(1);
+  const [companiesActivePage, setCompaniesActivePage] = useState(1);
   const meId = useUserStore(state => state.id);
   const myDetails = queryClient.getQueryData(['users-by-id', meId]);
 
@@ -42,12 +43,30 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
   const usersQuery = useFetchUsers(
     serialize({
-      page: activePage,
+      page: usersActivePage,
       limit: 10,
       sortBy: 'createdAt',
       sortOrder: 'desc',
       filter: 'team',
     }),
+  );
+
+  const companyRepresentingQuery = useCompanies({
+    page: companiesActivePage,
+    limit: 10,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+    type: 'co-company',
+  });
+
+  const memoizedRepresentingCompany = useMemo(
+    () =>
+      companyRepresentingQuery?.data?.docs?.map(doc => ({
+        ...doc,
+        label: doc.companyName,
+        value: doc._id,
+      })) || [],
+    [companyRepresentingQuery?.data],
   );
 
   const memoizedUsers = useMemo(
@@ -112,9 +131,47 @@ const Filter = ({ isOpened, setShowFilter }) => {
               fontWeight: 700,
             },
           })}
-          page={activePage}
-          onChange={setActivePage}
+          page={usersActivePage}
+          onChange={setUsersActivePage}
           total={usersQuery?.data?.totalPages || 1}
+          size="xs"
+          className="ml-auto w-fit"
+        />
+      </div>
+    ),
+    [
+      filterOptions.priority,
+      filterOptions.stage,
+      filterOptions.leadSource,
+      filterOptions.companyRepresenting,
+      filterOptions.companyType,
+      filterOptions.createdByIds,
+    ],
+  );
+
+  const renderCompanyRepresentingOptions = useCallback(
+    (data, filterKey) => (
+      <div>
+        {data?.map(item => (
+          <div className="flex gap-2 mb-2" key={item.value}>
+            <Checkbox
+              onChange={event => handleStatusArr(event.target.value, filterKey)}
+              label={item.label}
+              defaultValue={item.value}
+              checked={filterOptions[filterKey]?.includes(item.value)}
+            />
+          </div>
+        ))}
+        <Pagination
+          styles={theme => ({
+            item: {
+              color: theme.colors.gray[5],
+              fontWeight: 700,
+            },
+          })}
+          page={companiesActivePage}
+          onChange={setCompaniesActivePage}
+          total={companyRepresentingQuery?.data?.totalPages || 1}
           size="xs"
           className="ml-auto w-fit"
         />
@@ -217,7 +274,10 @@ const Filter = ({ isOpened, setShowFilter }) => {
             </Accordion.Control>
             <Accordion.Panel>
               <div className="mt-2">
-                {renderOptions(companyRepresentingOptions, 'companyRepresenting')}
+                {renderCompanyRepresentingOptions(
+                  memoizedRepresentingCompany,
+                  'companyRepresenting',
+                )}
               </div>
             </Accordion.Panel>
           </Accordion.Item>
