@@ -259,6 +259,14 @@ const AddLeadForm = () => {
       return;
     }
 
+    if (primaryInCharge === secondaryInCharge) {
+      showNotification({
+        message: 'Primary and Secondary Incharge should not be same.',
+        color: 'red',
+      });
+      return;
+    }
+
     const data = {
       leadCompany,
       contact,
