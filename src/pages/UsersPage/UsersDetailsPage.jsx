@@ -10,6 +10,7 @@ import ProposalTableView from '../../components/modules/users/View/ProposalTable
 import { useBookings } from '../../apis/queries/booking.queries';
 import { useFetchProposals } from '../../apis/queries/proposal.queries';
 import SalesViewTable from '../../components/modules/users/View/SalesViewTable';
+import LeadsTableView from '../../components/modules/users/View/LeadsTableView';
 
 const tableBookingQueries = userId => ({
   'page': 1,
@@ -132,6 +133,9 @@ const UsersDetailsPage = () => {
                 <Tabs.Tab className="hover:bg-transparent text-base" value="sales">
                   Sales
                 </Tabs.Tab>
+                <Tabs.Tab className="hover:bg-transparent text-base" value="leads">
+                  Leads
+                </Tabs.Tab>
               </Tabs.List>
 
               <Tabs.Panel value="booking">
@@ -156,6 +160,9 @@ const UsersDetailsPage = () => {
                   isLoading={isLoadingBookingData}
                   activeChildTab={activeChildTab}
                 />
+              </Tabs.Panel>
+              <Tabs.Panel value="leads">
+                <LeadsTableView userId={userId} />
               </Tabs.Panel>
             </Tabs>
           </div>

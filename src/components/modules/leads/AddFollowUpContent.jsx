@@ -113,21 +113,25 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
     form.setValue('primaryInCharge', user?._id);
     form.setValue('leadStage', leadStageOptions[0].value);
     form.setValue('communicationType', leadCommunicationTypeOptions[0].value);
+    form.setValue('followUpDate', dayjs());
   }, [user]);
+
+  const labelClass = 'font-bold text-base';
+  const datePickerClass = { icon: 'flex justify-end w-full pr-2', input: 'pl-2' };
 
   return (
     <FormProvider {...form}>
       <form onSubmit={onSubmit}>
         <div className="pb-4">
           <div className="text-xl font-bold w-full py-4">Basic Information</div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <ControlledSelect
               searchable
               placeholder="Select..."
               name="leadStage"
               label="Lead Stage"
               data={leadStageOptions}
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledSelect
               searchable
@@ -135,19 +139,19 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
               name="communicationType"
               label="Communication Type"
               data={leadCommunicationTypeOptions}
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledDatePickerInput
               name="followUpDate"
               label="Follow Up Date"
-              classNames={{ label: 'font-bold' }}
-              rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+              classNames={{ label: labelClass, ...datePickerClass }}
+              icon={<Image src={CalendarIcon} alt="icon" width={20} />}
             />
             <ControlledDatePickerInput
               name="nextFollowUpDate"
               label="Next Follow Up Date"
-              classNames={{ label: 'font-bold' }}
-              rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+              classNames={{ label: labelClass, ...datePickerClass }}
+              icon={<Image src={CalendarIcon} alt="icon" width={20} />}
             />
             <ControlledSelect
               searchable
@@ -166,7 +170,7 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
                   : memoizedUsers || []
               }
               dropdownComponent={usersDropdown}
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledSelect
               clearable
@@ -186,18 +190,23 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
                   : memoizedUsers || []
               }
               dropdownComponent={usersDropdown}
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: labelClass }}
             />
           </div>
           <ControlledTextarea
             name="notes"
             label="Notes"
             minRows={4}
-            className="pt-2"
-            classNames={{ label: 'font-bold' }}
+            className="pt-4"
+            classNames={{ label: labelClass }}
           />
           <div className="py-4 flex gap-4 justify-end">
-            <Button variant="default" color="dark" className="font-normal" onClick={onCancel}>
+            <Button
+              variant="default"
+              color="dark"
+              className="font-normal bg-black text-white"
+              onClick={onCancel}
+            >
               Cancel
             </Button>
             <Button

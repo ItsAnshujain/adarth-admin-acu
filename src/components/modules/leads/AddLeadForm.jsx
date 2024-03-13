@@ -333,13 +333,16 @@ const AddLeadForm = () => {
     }
   };
 
+  const labelClass = 'font-bold text-base';
+  const datePickerClass = { icon: 'flex justify-end w-full pr-2', input: 'pl-2' };
+
   return (
     <>
       <FormProvider {...form}>
         <form onSubmit={onSubmit}>
           <div className="flex items-center justify-between py-2 px-6">
             <div className="text-xl font-bold">Create Lead</div>
-            <div className="flex gap-2">
+            <div className="flex gap-4 gap-x-6">
               <Button
                 variant="default"
                 onClick={() => navigate(-1)}
@@ -392,7 +395,7 @@ const AddLeadForm = () => {
                     input: 'border-none',
                     dropdown: 'w-56',
                   }}
-                  rightSection={<ChevronDown size={20} />}
+                  icon={<ChevronDown size={20} />}
                   dropdownComponent={usersDropdown}
                 />
               </div>
@@ -423,7 +426,7 @@ const AddLeadForm = () => {
                     input: 'border-none',
                     dropdown: 'w-56',
                   }}
-                  rightSection={<ChevronDown size={20} />}
+                  icon={<ChevronDown size={20} />}
                   dropdownComponent={usersDropdown}
                 />
               </div>
@@ -440,7 +443,7 @@ const AddLeadForm = () => {
                   classNames={{
                     input: 'border-none',
                   }}
-                  rightSection={<ChevronDown size={20} />}
+                  icon={<ChevronDown size={20} />}
                 />
               </div>
               <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
@@ -456,13 +459,13 @@ const AddLeadForm = () => {
                     input: 'border-none',
                     dropdown: 'w-44',
                   }}
-                  rightSection={<ChevronDown size={20} />}
+                  icon={<ChevronDown size={20} />}
                   className="w-32"
                 />
               </div>
             </div>
             <div className="text-xl font-bold w-full">Basic Information</div>
-            <div className="grid grid-cols-2 pt-4 gap-2">
+            <div className="grid grid-cols-2 pt-4 gap-4 gap-x-6">
               <ControlledSelect
                 clearable
                 searchable
@@ -472,6 +475,7 @@ const AddLeadForm = () => {
                 withAsterisk
                 data={memoizedLeadCompanies}
                 dropdownComponent={leadCompaniesDropdown}
+                classNames={{ label: labelClass }}
               />
               <ControlledSelect
                 clearable
@@ -481,16 +485,25 @@ const AddLeadForm = () => {
                 label="Company Representing"
                 data={memoizedRepresentingCompanies}
                 dropdownComponent={representingCompaniesDropdown}
+                classNames={{ label: labelClass }}
               />
               <ControlledDatePickerInput
                 name="targetStartDate"
                 label="Target Start Date"
-                rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+                icon={<Image src={CalendarIcon} alt="icon" width={20} />}
+                classNames={{
+                  label: labelClass,
+                  ...datePickerClass,
+                }}
               />
               <ControlledDatePickerInput
                 name="targetEndDate"
                 label="Target End Date"
-                rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+                icon={<Image src={CalendarIcon} alt="icon" width={20} />}
+                classNames={{
+                  label: labelClass,
+                  ...datePickerClass,
+                }}
               />
               <ControlledSelect
                 clearable
@@ -501,32 +514,53 @@ const AddLeadForm = () => {
                 withAsterisk
                 data={memoizedContacts}
                 dropdownComponent={contactsDropdown}
+                classNames={{ label: labelClass }}
               />
-              <ControlledTextInput name="brandDisplay" label="Display Brand" />
+              <ControlledTextInput
+                name="brandDisplay"
+                label="Display Brand"
+                classNames={{ label: labelClass }}
+              />
             </div>
-            <div className="grid grid-cols-1 py-4 gap-2">
-              <ControlledTextInput name="objective" label="Objective" />
+            <div className="grid grid-cols-1 py-4 gap-4 gap-x-6">
+              <ControlledTextInput
+                name="objective"
+                label="Objective"
+                classNames={{ label: labelClass }}
+              />
               <ControlledTextarea
                 minRows={3}
                 name="remarksComments"
                 label="Remarks"
                 classNames={{
-                  label: 'font-medium text-primary text-base mb-2',
+                  label: 'text-primary text-base mb-2 font-bold',
                   input: 'border-gray-450',
                 }}
               />
             </div>
             <div className="text-xl font-bold mt-6">Other Information</div>
-            <div className="grid grid-cols-2 pt-4 gap-2">
-              <ControlledTextInput name="overAllBudget" label="Overall Budget" />
+            <div className="grid grid-cols-2 pt-4 gap-4 gap-x-6">
+              <ControlledTextInput
+                name="overAllBudget"
+                label="Overall Budget"
+                classNames={{ label: labelClass }}
+              />
               <ControlledDatePickerInput
                 name="leadCloseDate"
                 label="Lead Close Date"
-                rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+                icon={<Image src={CalendarIcon} alt="icon" width={20} />}
+                classNames={{
+                  label: labelClass,
+                  ...datePickerClass,
+                }}
               />
             </div>
-            <div className="grid grid-cols-1 pt-4 gap-2">
-              <ControlledTextInput name="targetAudience" label="Target Audiences" />
+            <div className="grid grid-cols-1 pt-4 gap-4 gap-x-6">
+              <ControlledTextInput
+                name="targetAudience"
+                label="Target Audiences"
+                classNames={{ label: labelClass }}
+              />
               <MultiSelect
                 placeholder="Select..."
                 name="brandCompetitors"
@@ -540,25 +574,30 @@ const AddLeadForm = () => {
                 searchValue={brandCompetitor}
                 value={form.watch('brandCompetitors') || []}
                 onChange={val => form.setValue('brandCompetitors', val)}
-                rightSection={
+                icon={
                   <ActionIcon onClick={handleAddBrandCompetitor} className="bg-purple-450">
                     <IconPlus color="white" />
                   </ActionIcon>
                 }
+                classNames={{ label: labelClass }}
               />
 
-              <ControlledTextInput name="campaignTheme" label="Campaign Theme" />
+              <ControlledTextInput
+                name="campaignTheme"
+                label="Campaign Theme"
+                classNames={{ label: labelClass }}
+              />
               <ControlledTextarea
                 minRows={3}
                 name="campaignObjective"
                 label="Campaign Objective"
                 classNames={{
-                  label: 'font-medium text-primary text-base mb-2',
+                  label: 'font-bold text-primary text-base mb-2',
                   input: 'border-gray-450',
                 }}
               />
             </div>
-            <div className="grid grid-cols-2 py-4 gap-2">
+            <div className="grid grid-cols-2 py-4 gap-4 gap-x-6">
               <ControlledSelect
                 clearable
                 searchable
@@ -566,6 +605,7 @@ const AddLeadForm = () => {
                 name="prospect"
                 label="Prospect"
                 data={leadProspectOptions}
+                classNames={{ label: labelClass }}
               />
               <ControlledSelect
                 clearable
@@ -574,6 +614,7 @@ const AddLeadForm = () => {
                 name="leadSource"
                 label="Lead Source"
                 data={[]}
+                classNames={{ label: labelClass }}
               />
             </div>
           </div>

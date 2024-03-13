@@ -1,25 +1,28 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useModals } from '@mantine/modals';
 import { useSearchParams } from 'react-router-dom';
-import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
-import { ActionIcon, Badge } from '@mantine/core';
+import { useClickOutside, useDebouncedValue, useDisclosure } from '@mantine/hooks';
+import { ActionIcon, Badge, Button } from '@mantine/core';
 import { IconChevronLeft } from '@tabler/icons';
 import dayjs from 'dayjs';
-import { generateSlNo, serialize } from '../../../utils';
-import Table from '../../Table/Table';
-import LeadsListHeader from './LeadsListHeader';
-import LeadMenuPopover from '../../Popovers/LeadMenuPopover';
-import modalConfig from '../../../utils/modalConfig';
-import AddFollowUpContent from './AddFollowUpContent';
-import RowsPerPage from '../../RowsPerPage';
-import Search from '../../Search';
-import ViewLeadDrawer from './ViewLeadDrawer';
-import useLeads from '../../../apis/queries/leads.queries';
+import { ChevronDown } from 'react-feather';
+import { generateSlNo, serialize } from '../../../../utils';
+import Table from '../../../Table/Table';
+import LeadMenuPopover from '../../../Popovers/LeadMenuPopover';
+import modalConfig from '../../../../utils/modalConfig';
+import AddFollowUpContent from '../../leads/AddFollowUpContent';
+import RowsPerPage from '../../../RowsPerPage';
+import Search from '../../../Search';
+import ViewLeadDrawer from '../../leads/ViewLeadDrawer';
+import useLeads from '../../../../apis/queries/leads.queries';
 import {
   DATE_SECOND_FORMAT,
   leadPriorityOptions,
   leadStageOptions,
-} from '../../../utils/constants';
+} from '../../../../utils/constants';
+import DateRange from '../../../DateRange';
+import Filter from '../../leads/Filter';
+import calendar from '../../../../assets/data-table.svg';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -32,18 +35,25 @@ const updatedModalConfig = {
   size: 800,
 };
 
-const LeadsList = () => {
+const LeadsTableView = ({ userId }) => {
   const modals = useModals();
   const [searchInput, setSearchInput] = useState('');
   const [leadId, setLeadId] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [viewLeadDrawerOpened, viewLeadDrawerActions] = useDisclosure();
+  const [showFilter, setShowFilter] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const ref = useClickOutside(() => setShowDatePicker(false));
+  const toggleFilter = () => setShowFilter(!showFilter);
+  const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
     limit: 10,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     search: debouncedSearch,
+    createdByIds: userId,
   });
 
   const page = searchParams.get('page');
@@ -274,27 +284,52 @@ const LeadsList = () => {
   }, [debouncedSearch]);
 
   return (
-    <div className="mx-2 px-4">
-      <LeadsListHeader />
-      <div className="flex justify-between h-20 items-center">
+    <div className="mx-2">
+      <div className="flex justify-between h-20 items-center px-2">
         <RowsPerPage
           setCount={currentLimit => {
             handlePagination('limit', currentLimit);
           }}
           count="10"
         />
-        <Search search={searchInput} setSearch={setSearchInput} />
+        <div className="flex gap-2">
+          <Search search={searchInput} setSearch={setSearchInput} />
+
+          <div ref={ref} className="relative">
+            <Button onClick={toggleDatePicker} variant="default">
+              <img src={calendar} className="h-5" alt="calendar" />
+            </Button>
+            {showDatePicker && (
+              <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
+            )}
+          </div>
+          <div>
+            <Button onClick={toggleFilter} variant="default" className="font-medium">
+              <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
+            </Button>
+            {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
+          </div>
+        </div>
       </div>
-      <Table
-        data={leadsQuery?.data?.docs || []}
-        COLUMNS={columns}
-        activePage={leadsQuery?.data?.page}
-        totalPages={leadsQuery?.data?.totalPages}
-        setActivePage={currentPage => handlePagination('page', currentPage)}
-        rowCountLimit={10}
-        handleSorting={handleSortByColumn}
-        loading={leadsQuery?.isLoading}
-      />
+
+      {!leadsQuery?.data?.docs?.length && !leadsQuery.isLoading ? (
+        <div className="w-full min-h-[380px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
+        </div>
+      ) : null}
+
+      {leadsQuery?.data?.docs?.length ? (
+        <Table
+          data={leadsQuery?.data?.docs || []}
+          COLUMNS={columns}
+          activePage={leadsQuery?.data?.page}
+          totalPages={leadsQuery?.data?.totalPages}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
+          rowCountLimit={10}
+          handleSorting={handleSortByColumn}
+          loading={leadsQuery?.isLoading}
+        />
+      ) : null}
 
       <ViewLeadDrawer
         isOpened={viewLeadDrawerOpened}
@@ -305,4 +340,4 @@ const LeadsList = () => {
   );
 };
 
-export default LeadsList;
+export default LeadsTableView;
