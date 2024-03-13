@@ -10,12 +10,12 @@ const ViewLeadStepper = ({ activeStep }) => (
       stepIcon: 'hidden',
     }}
   >
-    <div className="flex w-full">
+    <div className="flex w-full h-10">
       <div className="flex w-full bg-gray-400">
         <Stepper.Step
           label="Initiate Discussion"
           className={classNames(
-            'w-full p-2 stepperItem',
+            'w-full stepperItem',
             activeStep === 'initiateDiscussion' ||
               activeStep === 'inProgress' ||
               activeStep === 'converted' ||
@@ -28,7 +28,7 @@ const ViewLeadStepper = ({ activeStep }) => (
         <Stepper.Step
           label="In Progress"
           className={classNames(
-            'w-full p-2 pl-4 stepperItem',
+            'w-full pl-4 stepperItem',
             activeStep === 'inProgress' || activeStep === 'converted' || activeStep === 'lost'
               ? ' text-white bg-purple-350'
               : 'bg-gray-200 text-gray-400',
@@ -39,7 +39,7 @@ const ViewLeadStepper = ({ activeStep }) => (
         <Stepper.Step
           label="Converted"
           className={classNames(
-            'w-full p-2 pl-4 stepperItem',
+            'w-full pl-4 stepperItem',
             activeStep === 'converted' || activeStep === 'lost'
               ? ' text-white bg-red-350'
               : 'bg-gray-200 text-gray-400',
