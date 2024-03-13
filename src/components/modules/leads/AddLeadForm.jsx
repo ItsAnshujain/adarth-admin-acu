@@ -339,7 +339,7 @@ const AddLeadForm = () => {
         <form onSubmit={onSubmit}>
           <div className="flex items-center justify-between py-2 px-6">
             <div className="text-xl font-bold">Create Lead</div>
-            <div className="flex gap-2">
+            <div className="flex gap-4 gap-x-6">
               <Button
                 variant="default"
                 onClick={() => navigate(-1)}
@@ -462,7 +462,7 @@ const AddLeadForm = () => {
               </div>
             </div>
             <div className="text-xl font-bold w-full">Basic Information</div>
-            <div className="grid grid-cols-2 pt-4 gap-2">
+            <div className="grid grid-cols-2 pt-4 gap-4 gap-x-6">
               <ControlledSelect
                 clearable
                 searchable
@@ -472,6 +472,7 @@ const AddLeadForm = () => {
                 withAsterisk
                 data={memoizedLeadCompanies}
                 dropdownComponent={leadCompaniesDropdown}
+                classNames={{ label: 'font-bold text-base' }}
               />
               <ControlledSelect
                 clearable
@@ -481,16 +482,19 @@ const AddLeadForm = () => {
                 label="Company Representing"
                 data={memoizedRepresentingCompanies}
                 dropdownComponent={representingCompaniesDropdown}
+                classNames={{ label: 'font-bold text-base' }}
               />
               <ControlledDatePickerInput
                 name="targetStartDate"
                 label="Target Start Date"
                 rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+                classNames={{ label: 'font-bold text-base' }}
               />
               <ControlledDatePickerInput
                 name="targetEndDate"
                 label="Target End Date"
                 rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+                classNames={{ label: 'font-bold text-base' }}
               />
               <ControlledSelect
                 clearable
@@ -501,32 +505,50 @@ const AddLeadForm = () => {
                 withAsterisk
                 data={memoizedContacts}
                 dropdownComponent={contactsDropdown}
+                classNames={{ label: 'font-bold text-base' }}
               />
-              <ControlledTextInput name="brandDisplay" label="Display Brand" />
+              <ControlledTextInput
+                name="brandDisplay"
+                label="Display Brand"
+                classNames={{ label: 'font-bold text-base' }}
+              />
             </div>
-            <div className="grid grid-cols-1 py-4 gap-2">
-              <ControlledTextInput name="objective" label="Objective" />
+            <div className="grid grid-cols-1 py-4 gap-4 gap-x-6">
+              <ControlledTextInput
+                name="objective"
+                label="Objective"
+                classNames={{ label: 'font-bold text-base' }}
+              />
               <ControlledTextarea
                 minRows={3}
                 name="remarksComments"
                 label="Remarks"
                 classNames={{
-                  label: 'font-medium text-primary text-base mb-2',
+                  label: 'text-primary text-base mb-2 font-bold',
                   input: 'border-gray-450',
                 }}
               />
             </div>
             <div className="text-xl font-bold mt-6">Other Information</div>
-            <div className="grid grid-cols-2 pt-4 gap-2">
-              <ControlledTextInput name="overAllBudget" label="Overall Budget" />
+            <div className="grid grid-cols-2 pt-4 gap-4 gap-x-6">
+              <ControlledTextInput
+                name="overAllBudget"
+                label="Overall Budget"
+                classNames={{ label: 'font-bold text-base' }}
+              />
               <ControlledDatePickerInput
                 name="leadCloseDate"
                 label="Lead Close Date"
                 rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+                classNames={{ label: 'font-bold text-base' }}
               />
             </div>
-            <div className="grid grid-cols-1 pt-4 gap-2">
-              <ControlledTextInput name="targetAudience" label="Target Audiences" />
+            <div className="grid grid-cols-1 pt-4 gap-4 gap-x-6">
+              <ControlledTextInput
+                name="targetAudience"
+                label="Target Audiences"
+                classNames={{ label: 'font-bold text-base' }}
+              />
               <MultiSelect
                 placeholder="Select..."
                 name="brandCompetitors"
@@ -545,20 +567,25 @@ const AddLeadForm = () => {
                     <IconPlus color="white" />
                   </ActionIcon>
                 }
+                classNames={{ label: 'font-bold text-base' }}
               />
 
-              <ControlledTextInput name="campaignTheme" label="Campaign Theme" />
+              <ControlledTextInput
+                name="campaignTheme"
+                label="Campaign Theme"
+                classNames={{ label: 'font-bold text-base' }}
+              />
               <ControlledTextarea
                 minRows={3}
                 name="campaignObjective"
                 label="Campaign Objective"
                 classNames={{
-                  label: 'font-medium text-primary text-base mb-2',
+                  label: 'font-bold text-primary text-base mb-2',
                   input: 'border-gray-450',
                 }}
               />
             </div>
-            <div className="grid grid-cols-2 py-4 gap-2">
+            <div className="grid grid-cols-2 py-4 gap-4 gap-x-6">
               <ControlledSelect
                 clearable
                 searchable
@@ -566,6 +593,7 @@ const AddLeadForm = () => {
                 name="prospect"
                 label="Prospect"
                 data={leadProspectOptions}
+                classNames={{ label: 'font-bold text-base' }}
               />
               <ControlledSelect
                 clearable
@@ -574,6 +602,7 @@ const AddLeadForm = () => {
                 name="leadSource"
                 label="Lead Source"
                 data={[]}
+                classNames={{ label: 'font-bold text-base' }}
               />
             </div>
           </div>

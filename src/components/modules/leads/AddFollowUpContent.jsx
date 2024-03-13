@@ -120,14 +120,14 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
       <form onSubmit={onSubmit}>
         <div className="pb-4">
           <div className="text-xl font-bold w-full py-4">Basic Information</div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <ControlledSelect
               searchable
               placeholder="Select..."
               name="leadStage"
               label="Lead Stage"
               data={leadStageOptions}
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
             <ControlledSelect
               searchable
@@ -135,18 +135,18 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
               name="communicationType"
               label="Communication Type"
               data={leadCommunicationTypeOptions}
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
             <ControlledDatePickerInput
               name="followUpDate"
               label="Follow Up Date"
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
               rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
             />
             <ControlledDatePickerInput
               name="nextFollowUpDate"
               label="Next Follow Up Date"
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
               rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
             />
             <ControlledSelect
@@ -166,7 +166,7 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
                   : memoizedUsers || []
               }
               dropdownComponent={usersDropdown}
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
             <ControlledSelect
               clearable
@@ -186,15 +186,15 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
                   : memoizedUsers || []
               }
               dropdownComponent={usersDropdown}
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
           </div>
           <ControlledTextarea
             name="notes"
             label="Notes"
             minRows={4}
-            className="pt-2"
-            classNames={{ label: 'font-bold' }}
+            className="pt-4"
+            classNames={{ label: 'font-bold text-base' }}
           />
           <div className="py-4 flex gap-4 justify-end">
             <Button variant="default" color="dark" className="font-normal" onClick={onCancel}>

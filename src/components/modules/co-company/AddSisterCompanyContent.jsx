@@ -213,19 +213,23 @@ const AddSisterCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess =
               name="companyName"
               label="Company Name"
               withAsterisk
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
-            <ControlledTextInput name="email" label="Email" classNames={{ label: 'font-bold' }} />
+            <ControlledTextInput
+              name="email"
+              label="Email"
+              classNames={{ label: 'font-bold text-base' }}
+            />
             <ControlledTextInput
               name="contactNumber"
               label="Contact Number"
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
             {tab !== 'sister-companies' ? (
               <ControlledTextInput
                 name="fax"
                 label="Fax Number"
-                classNames={{ label: 'font-bold' }}
+                classNames={{ label: 'font-bold text-base' }}
               />
             ) : null}
 
@@ -236,17 +240,17 @@ const AddSisterCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess =
               label="Company Type"
               data={CompanyTypeOptions}
               placeholder="Select..."
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
             <ControlledTextInput
               name="companyPanNumber"
               label="PAN"
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
             <ControlledTextInput
               name="companyGstNumber"
               label="GSTIN"
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
             {tab !== 'sister-companies' ? (
               <ControlledSelect
@@ -256,7 +260,7 @@ const AddSisterCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess =
                 label="Nature of Account"
                 data={NatureOfAccountOptions}
                 placeholder="Select..."
-                classNames={{ label: 'font-bold' }}
+                classNames={{ label: 'font-bold text-base' }}
               />
             ) : null}
           </div>
@@ -271,13 +275,13 @@ const AddSisterCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess =
                 data={parentCompanies}
                 dropdownComponent={parentCompaniesDropdown}
                 placeholder="Select..."
-                classNames={{ label: 'font-bold' }}
+                classNames={{ label: 'font-bold text-base' }}
               />
             ) : null}
             <ControlledTextInput
               name="address"
               label="Address"
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
               className="pt-2"
             />
           </div>
@@ -290,9 +294,13 @@ const AddSisterCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess =
               label="State & State Code"
               data={memoizedStateAndStateCodeList}
               placeholder="Select..."
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
-            <ControlledTextInput name="city" label="City" classNames={{ label: 'font-bold' }} />
+            <ControlledTextInput
+              name="city"
+              label="City"
+              classNames={{ label: 'font-bold text-base' }}
+            />
           </div>
           <div className="text-2xl font-bold mt-8">Bank Information</div>
           <div className="grid grid-cols-2 pt-4 pb-2 gap-2">
@@ -300,20 +308,20 @@ const AddSisterCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess =
               name="accountNo"
               label="Account No"
               withAsterisk
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
             <ControlledTextInput
               name="accountHolderName"
               label="Account Holder Name"
               withAsterisk
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
           </div>
           <ControlledTextInput
             name="ifsc"
             label="IFSC"
             withAsterisk
-            classNames={{ label: 'font-bold' }}
+            classNames={{ label: 'font-bold text-base' }}
           />
           <div className="flex gap-2 py-4 float-right">
             <Button className="bg-black" onClick={onCancel}>

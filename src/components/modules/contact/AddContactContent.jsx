@@ -161,19 +161,23 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
               name="name"
               label="Name"
               withAsterisk
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
             <ControlledNumberInput
               type="number"
               name="contactNumber"
               label="Contact Number"
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
-            <ControlledTextInput name="email" label="Email" classNames={{ label: 'font-bold' }} />
+            <ControlledTextInput
+              name="email"
+              label="Email"
+              classNames={{ label: 'font-bold text-base' }}
+            />
             <ControlledTextInput
               name="department"
               label="Department"
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
             <ControlledSelect
               dropdownComponent={companiesDropdown}
@@ -183,13 +187,13 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
               placeholder="Select..."
               clearable
               searchable
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
             <ControlledTextInput
               name="parentCompany"
               label="Parent Company Name"
               disabled
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
 
             <ControlledSelect
@@ -199,15 +203,19 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
               placeholder="Select..."
               clearable
               searchable
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
-            <ControlledTextInput name="city" label="City" classNames={{ label: 'font-bold' }} />
+            <ControlledTextInput
+              name="city"
+              label="City"
+              classNames={{ label: 'font-bold text-base' }}
+            />
             <ControlledDatePickerInput
               label="Birthday"
               name="birthDate"
               errors={form.errors}
               clearable
-              classNames={{ label: 'font-bold' }}
+              classNames={{ label: 'font-bold text-base' }}
             />
           </div>
 
