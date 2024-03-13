@@ -117,7 +117,7 @@ const AddTermsAndConditionsForm = ({
             placeholder="Write..."
             maxLength={200}
             className="mb-4"
-            classNames={{ label: 'font-bold' }}
+            classNames={{ label: 'font-bold', inputWrapper: !editableForm ? 'bg-gray-100' : '' }}
             disabled={!editableForm}
           />
           <section className="mb-4">
@@ -140,7 +140,9 @@ const AddTermsAndConditionsForm = ({
                   title="Description"
                   placeholder="Write..."
                   ref={editorRef}
-                  className={classNames(!editableForm ? 'pointer-events-none' : '')}
+                  className={classNames(
+                    !editableForm ? 'pointer-events-none bg-gray-100 text-gray-400' : '',
+                  )}
                 />
               )}
             />
