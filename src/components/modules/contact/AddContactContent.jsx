@@ -119,6 +119,7 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
         })) || [],
     [companiesQuery?.data],
   );
+
   const companiesDropdown = useMemo(
     () =>
       DropdownWithHandler(

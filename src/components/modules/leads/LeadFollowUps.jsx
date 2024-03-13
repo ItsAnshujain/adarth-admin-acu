@@ -24,8 +24,8 @@ const LeadFollowUps = ({ leadId }) => {
   const [query] = useState({
     page: 1,
     limit: 10,
-    sortBy: 'leadFollowUpDate',
-    sortOrder: 'desc',
+    sortBy: 'followUpDate',
+    sortOrder: 'asc',
   });
 
   const followUpsQuery = useFollowUps({ ...query, id: leadId }, !!leadId);

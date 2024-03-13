@@ -247,7 +247,7 @@ const AddLeadForm = () => {
       secondaryInCharge,
       priority,
       stage,
-      overallBudget,
+      overAllBudget,
       leadCloseDate,
       targetAudience,
       brandCompetitors,
@@ -286,9 +286,9 @@ const AddLeadForm = () => {
       secondaryInCharge,
       priority,
       stage,
-      overallBudget: Number(overallBudget) ? Number(overallBudget) : undefined,
+      overAllBudget: Number(overAllBudget) ? Number(overAllBudget) : undefined,
       leadCloseDate: leadCloseDate && dayjs(leadCloseDate)?.endOf('day'),
-      targetAudience: [targetAudience],
+      targetAudience: targetAudience || [''],
       brandCompetitors: brandCompetitors || [''],
       campaignObjective,
       prospect: prospect || undefined,
@@ -518,7 +518,7 @@ const AddLeadForm = () => {
             </div>
             <div className="text-xl font-bold mt-6">Other Information</div>
             <div className="grid grid-cols-2 pt-4 gap-2">
-              <ControlledTextInput name="overallBudget" label="Overall Budget" />
+              <ControlledTextInput name="overAllBudget" label="Overall Budget" />
               <ControlledDatePickerInput
                 name="leadCloseDate"
                 label="Lead Close Date"

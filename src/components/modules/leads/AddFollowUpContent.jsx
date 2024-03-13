@@ -93,7 +93,7 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
       notes: notes || undefined,
       nextFollowUpDate: nextFollowUpDate
         ? dayjs(nextFollowUpDate).endOf('day').toISOString()
-        : undefined,
+        : null,
       primaryInCharge,
       secondaryInCharge,
       id: leadId,

@@ -164,7 +164,22 @@ const LeadsList = () => {
       },
       {
         Header: 'LAST FOLLOWUP',
-        accessor: 'lastFollowup',
+        accessor: 'lastFollowUp.followUpDate',
+        Cell: ({
+          row: {
+            original: { lastFollowUp },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div>
+                {lastFollowUp?.followUpDate
+                  ? dayjs(lastFollowUp?.followUpDate).format(DATE_SECOND_FORMAT)
+                  : '-'}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'LEAD START DATE',
@@ -173,7 +188,13 @@ const LeadsList = () => {
           row: {
             original: { targetStartDate },
           },
-        }) => useMemo(() => <div>{dayjs(targetStartDate).format(DATE_SECOND_FORMAT)}</div>, []),
+        }) =>
+          useMemo(
+            () => (
+              <div>{targetStartDate ? dayjs(targetStartDate).format(DATE_SECOND_FORMAT) : '-'}</div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'TARGET DATE',
@@ -182,7 +203,13 @@ const LeadsList = () => {
           row: {
             original: { targetEndDate },
           },
-        }) => useMemo(() => <div>{dayjs(targetEndDate).format(DATE_SECOND_FORMAT)}</div>, []),
+        }) =>
+          useMemo(
+            () => (
+              <div>{targetEndDate ? dayjs(targetEndDate).format(DATE_SECOND_FORMAT) : '-'}</div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'ACTION',

@@ -99,7 +99,7 @@ const LeadsStats = () => {
 
   return (
     <div className="mx-2 my-6 p-4 border border-gray-200 rounded-md font-bold">
-      <div className="pb-4 text-lg">Leads Stats</div>
+      <div className="pb-4 text-lg">Lead Stats</div>
       <div className="flex justify-between gap-3">
         <div className="w-full">
           <Box className="w-36">

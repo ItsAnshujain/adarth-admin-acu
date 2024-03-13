@@ -121,7 +121,6 @@ const SisterCompaniesList = () => {
       {
         Header: 'PARENT COMPANY',
         accessor: 'parentCompany.companyName',
-        disableSortBy: true,
       },
       {
         Header: 'EMAIL',
