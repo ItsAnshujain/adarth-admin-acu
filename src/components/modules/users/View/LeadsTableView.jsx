@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useModals } from '@mantine/modals';
 import { useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedValue, useDisclosure } from '@mantine/hooks';
-import { ActionIcon, Badge, Button, Image } from '@mantine/core';
+import { ActionIcon, Badge, Button } from '@mantine/core';
 import { IconChevronLeft } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
@@ -297,12 +297,10 @@ const LeadsTableView = ({ userId }) => {
 
           <div ref={ref} className="relative">
             <Button onClick={toggleDatePicker} variant="default">
-              <Image src={calendar} className="h-5" alt="calendar" />
+              <img src={calendar} className="h-5" alt="calendar" />
             </Button>
             {showDatePicker && (
-              <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
-                <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
-              </div>
+              <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
             )}
           </div>
           <div>
@@ -313,16 +311,25 @@ const LeadsTableView = ({ userId }) => {
           </div>
         </div>
       </div>
-      <Table
-        data={leadsQuery?.data?.docs || []}
-        COLUMNS={columns}
-        activePage={leadsQuery?.data?.page}
-        totalPages={leadsQuery?.data?.totalPages}
-        setActivePage={currentPage => handlePagination('page', currentPage)}
-        rowCountLimit={10}
-        handleSorting={handleSortByColumn}
-        loading={leadsQuery?.isLoading}
-      />
+
+      {!leadsQuery?.data?.docs?.length && !leadsQuery.isLoading ? (
+        <div className="w-full min-h-[380px] flex justify-center items-center">
+          <p className="text-xl">No records found</p>
+        </div>
+      ) : null}
+
+      {leadsQuery?.data?.docs?.length ? (
+        <Table
+          data={leadsQuery?.data?.docs || []}
+          COLUMNS={columns}
+          activePage={leadsQuery?.data?.page}
+          totalPages={leadsQuery?.data?.totalPages}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
+          rowCountLimit={10}
+          handleSorting={handleSortByColumn}
+          loading={leadsQuery?.isLoading}
+        />
+      ) : null}
 
       <ViewLeadDrawer
         isOpened={viewLeadDrawerOpened}
