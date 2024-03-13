@@ -58,7 +58,9 @@ const AddCoCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess = () 
         message: 'Must be a valid IFSC',
         excludeEmptyString: true,
       })
-      .notRequired(),
+      .required('IFSC is required'),
+    accountNo: yup.string().trim().required('Account No. is required'),
+    accountHolderName: yup.string().trim().required('Account Holder Name is required'),
   });
 
   const form = useForm({
@@ -296,15 +298,22 @@ const AddCoCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess = () 
             <ControlledTextInput
               name="accountNo"
               label="Account No"
+              withAsterisk
               classNames={{ label: 'font-bold' }}
             />
             <ControlledTextInput
               name="accountHolderName"
               label="Account Holder Name"
+              withAsterisk
               classNames={{ label: 'font-bold' }}
             />
           </div>
-          <ControlledTextInput name="ifsc" label="IFSC" classNames={{ label: 'font-bold' }} />
+          <ControlledTextInput
+            name="ifsc"
+            label="IFSC"
+            withAsterisk
+            classNames={{ label: 'font-bold' }}
+          />
           <div className="flex gap-2 py-4 float-right">
             <Button className="bg-black" onClick={onCancel}>
               Cancel
