@@ -160,6 +160,7 @@ const Header = () => {
       {
         Header: '#',
         accessor: 'id',
+        disableSortBy: true,
         Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {

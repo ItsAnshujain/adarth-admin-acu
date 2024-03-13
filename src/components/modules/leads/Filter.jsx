@@ -47,7 +47,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       limit: 10,
       sortBy: 'createdAt',
       sortOrder: 'desc',
-      filter: 'team',
+      filter: 'all',
     }),
   );
 
