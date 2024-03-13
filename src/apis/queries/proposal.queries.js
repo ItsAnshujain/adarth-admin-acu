@@ -16,6 +16,8 @@ import {
   restoreProposal,
   fetchProposalByVersionName,
   generatePublicProposalDoc,
+  updateProposalTerms,
+  deleteProposalTerms,
 } from '../requests/proposal.requests';
 import { onApiError } from '../../utils';
 
@@ -159,6 +161,26 @@ export const useCreateProposalTerms = () =>
     onError: onApiError,
   });
 
+export const useUpdateProposalTerms = () =>
+  useMutation({
+    mutationFn: async ({ id, ...payload }) => {
+      const res = await updateProposalTerms(id, payload);
+      return res;
+    },
+    onError: onApiError,
+  });
+
+export const useDeleteProposalTerms = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async id => {
+      const res = await deleteProposalTerms(id);
+      return res;
+    },
+    onError: onApiError,
+    onSuccess: () => queryClient.invalidateQueries(['proposal-terms']),
+  });
+};
 export const useProposalTerms = (query, enabled = true) =>
   useQuery({
     queryKey: ['proposal-terms', query],

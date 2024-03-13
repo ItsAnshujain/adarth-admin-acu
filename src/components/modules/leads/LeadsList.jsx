@@ -46,6 +46,9 @@ const LeadsList = () => {
     search: debouncedSearch,
   });
 
+  const page = searchParams.get('page');
+  const limit = searchParams.get('limit');
+
   const removeUnwantedQueries = removeArr => {
     const params = [...searchParams];
     let updatedParams = params.filter(elem => !removeArr.includes(elem[0]));
@@ -93,7 +96,7 @@ const LeadsList = () => {
       {
         Header: '#',
         accessor: 'id',
-        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, 1, 10)}</p>, []),
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'COMPANY NAME',

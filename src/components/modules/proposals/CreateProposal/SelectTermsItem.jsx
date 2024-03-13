@@ -7,7 +7,8 @@ import AddTermsAndConditionsForm from './AddTermsAndConditionsForm';
 const updatedModalConfig = {
   ...modalConfig,
   classNames: {
-    header: 'px-4 pt-4',
+    title: 'text-xl font-bold w-full',
+    header: 'hidden',
     body: 'pb-4',
   },
 };
