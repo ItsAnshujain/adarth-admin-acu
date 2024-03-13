@@ -1,4 +1,4 @@
-import { Button } from '@mantine/core';
+import { Button, Image } from '@mantine/core';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,6 +16,7 @@ import {
 import ControlledDatePickerInput from '../../shared/FormInputs/Controlled/ControlledDatePickerInput';
 import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler';
 import { mobileRegexMatch } from '../../../utils';
+import CalendarIcon from '../../../assets/calendar.svg';
 
 const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
   const schema = yup.object({
@@ -151,6 +152,10 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
       });
     }
   }, [contactData]);
+
+  const labelClass = 'font-bold text-base';
+  const datePickerClass = { icon: 'flex justify-end w-full pr-2', input: 'pl-2' };
+
   return (
     <FormProvider {...form}>
       <form onSubmit={onSubmit}>
@@ -161,23 +166,19 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
               name="name"
               label="Name"
               withAsterisk
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledNumberInput
               type="number"
               name="contactNumber"
               label="Contact Number"
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
-            <ControlledTextInput
-              name="email"
-              label="Email"
-              classNames={{ label: 'font-bold text-base' }}
-            />
+            <ControlledTextInput name="email" label="Email" classNames={{ label: labelClass }} />
             <ControlledTextInput
               name="department"
               label="Department"
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledSelect
               dropdownComponent={companiesDropdown}
@@ -187,13 +188,13 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
               placeholder="Select..."
               clearable
               searchable
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledTextInput
               name="parentCompany"
               label="Parent Company Name"
               disabled
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
 
             <ControlledSelect
@@ -203,19 +204,16 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
               placeholder="Select..."
               clearable
               searchable
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
-            <ControlledTextInput
-              name="city"
-              label="City"
-              classNames={{ label: 'font-bold text-base' }}
-            />
+            <ControlledTextInput name="city" label="City" classNames={{ label: labelClass }} />
             <ControlledDatePickerInput
               label="Birthday"
               name="birthDate"
               errors={form.errors}
               clearable
-              classNames={{ label: 'font-bold text-base' }}
+              icon={<Image src={CalendarIcon} alt="icon" width={20} />}
+              classNames={{ label: labelClass, ...datePickerClass }}
             />
           </div>
 

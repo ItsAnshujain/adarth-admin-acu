@@ -113,7 +113,11 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
     form.setValue('primaryInCharge', user?._id);
     form.setValue('leadStage', leadStageOptions[0].value);
     form.setValue('communicationType', leadCommunicationTypeOptions[0].value);
+    form.setValue('followUpDate', dayjs());
   }, [user]);
+
+  const labelClass = 'font-bold text-base';
+  const datePickerClass = { icon: 'flex justify-end w-full pr-2', input: 'pl-2' };
 
   return (
     <FormProvider {...form}>
@@ -127,7 +131,7 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
               name="leadStage"
               label="Lead Stage"
               data={leadStageOptions}
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledSelect
               searchable
@@ -135,19 +139,19 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
               name="communicationType"
               label="Communication Type"
               data={leadCommunicationTypeOptions}
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledDatePickerInput
               name="followUpDate"
               label="Follow Up Date"
-              classNames={{ label: 'font-bold text-base' }}
-              rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+              classNames={{ label: labelClass, ...datePickerClass }}
+              icon={<Image src={CalendarIcon} alt="icon" width={20} />}
             />
             <ControlledDatePickerInput
               name="nextFollowUpDate"
               label="Next Follow Up Date"
-              classNames={{ label: 'font-bold text-base' }}
-              rightSection={<Image src={CalendarIcon} alt="icon" width={20} />}
+              classNames={{ label: labelClass, ...datePickerClass }}
+              icon={<Image src={CalendarIcon} alt="icon" width={20} />}
             />
             <ControlledSelect
               searchable
@@ -166,7 +170,7 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
                   : memoizedUsers || []
               }
               dropdownComponent={usersDropdown}
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledSelect
               clearable
@@ -186,7 +190,7 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
                   : memoizedUsers || []
               }
               dropdownComponent={usersDropdown}
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
           </div>
           <ControlledTextarea
@@ -194,10 +198,15 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
             label="Notes"
             minRows={4}
             className="pt-4"
-            classNames={{ label: 'font-bold text-base' }}
+            classNames={{ label: labelClass }}
           />
           <div className="py-4 flex gap-4 justify-end">
-            <Button variant="default" color="dark" className="font-normal" onClick={onCancel}>
+            <Button
+              variant="default"
+              color="dark"
+              className="font-normal bg-black text-white"
+              onClick={onCancel}
+            >
               Cancel
             </Button>
             <Button

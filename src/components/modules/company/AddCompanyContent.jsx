@@ -213,6 +213,8 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
     [parentCompaniesQuery],
   );
 
+  const labelClass = 'font-bold text-base';
+
   return (
     <FormProvider {...form}>
       <form onSubmit={onSubmit}>
@@ -223,32 +225,24 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               name="companyName"
               label="Company Name"
               withAsterisk
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
-            <ControlledTextInput
-              name="email"
-              label="Email"
-              classNames={{ label: 'font-bold text-base' }}
-            />
+            <ControlledTextInput name="email" label="Email" classNames={{ label: labelClass }} />
             <ControlledTextInput
               name="contactNumber"
               label="Contact Number"
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
-            <ControlledTextInput
-              name="fax"
-              label="Fax Number"
-              classNames={{ label: 'font-bold text-base' }}
-            />
+            <ControlledTextInput name="fax" label="Fax Number" classNames={{ label: labelClass }} />
             <ControlledTextInput
               name="companyPanNumber"
               label="PAN"
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledTextInput
               name="companyGstNumber"
               label="GSTIN"
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledSelect
               clearable
@@ -257,7 +251,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               label="Nature of Account"
               data={NatureOfAccountOptions}
               placeholder="Select..."
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledSelect
               clearable
@@ -266,7 +260,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               label="Company Type"
               data={CompanyTypeOptions}
               placeholder="Select..."
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
           </div>
 
@@ -279,7 +273,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               dropdownComponent={parentCompaniesDropdown}
               data={parentCompanies}
               placeholder="Select..."
-              classNames={{ label: 'font-bold text-base', root: 'pt-2' }}
+              classNames={{ label: labelClass, root: 'pt-2' }}
             />
           ) : null}
 
@@ -287,7 +281,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
             <ControlledTextInput
               name="address"
               label="Address"
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
           </div>
 
@@ -299,13 +293,9 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               label="State & State Code"
               data={memoizedStateAndStateCodeList}
               placeholder="Select..."
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
-            <ControlledTextInput
-              name="city"
-              label="City"
-              classNames={{ label: 'font-bold text-base' }}
-            />
+            <ControlledTextInput name="city" label="City" classNames={{ label: labelClass }} />
           </div>
 
           <div className="text-2xl font-bold mt-8">Bank Information</div>
@@ -314,20 +304,20 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
               name="accountNo"
               label="Account No"
               withAsterisk
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
             <ControlledTextInput
               name="accountHolderName"
               label="Account Holder Name"
               withAsterisk
-              classNames={{ label: 'font-bold text-base' }}
+              classNames={{ label: labelClass }}
             />
           </div>
           <ControlledTextInput
             name="ifsc"
             label="IFSC"
             withAsterisk
-            classNames={{ label: 'font-bold text-base' }}
+            classNames={{ label: labelClass }}
           />
           <div className="flex gap-2 py-4 float-right">
             <Button className="bg-black" onClick={onCancel}>
