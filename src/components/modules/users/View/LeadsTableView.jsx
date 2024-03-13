@@ -126,10 +126,12 @@ const LeadsTableView = ({ userId }) => {
         }) =>
           useMemo(() => {
             const leadStage = leadStageOptions?.filter(({ value }) => value === stage)?.[0];
-            return (
+            return leadStage ? (
               <Badge bg={leadStage?.color} className="text-white capitalize">
                 {leadStage?.label}
               </Badge>
+            ) : (
+              '-'
             );
           }, []),
       },
@@ -153,10 +155,12 @@ const LeadsTableView = ({ userId }) => {
             const leadPriority = leadPriorityOptions?.filter(
               ({ value }) => value === priority,
             )?.[0];
-            return (
+            return leadPriority ? (
               <Badge bg={leadPriority?.color} className="text-white capitalize">
                 {leadPriority?.label}
               </Badge>
+            ) : (
+              '-'
             );
           }, []),
       },
