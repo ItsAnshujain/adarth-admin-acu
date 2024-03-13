@@ -18,7 +18,7 @@ const updatedModalConfig = {
 const SelectContactPersonItem = forwardRef(({ label, addMore, ...others }, ref) => {
   const modals = useModals();
 
-  const handleAddCompany = () =>
+  const handleAddContact = () =>
     modals.openModal({
       title: 'Add Contact',
       modalId: 'addContact',
@@ -32,7 +32,7 @@ const SelectContactPersonItem = forwardRef(({ label, addMore, ...others }, ref) 
       <Button
         className="mt-3 font-medium text-black border-gray-450"
         variant="outline"
-        onClick={handleAddCompany}
+        onClick={handleAddContact}
       >
         Add Contact
       </Button>

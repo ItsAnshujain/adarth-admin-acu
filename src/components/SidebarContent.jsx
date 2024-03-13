@@ -135,7 +135,7 @@ const SidebarContent = ({ className }) => {
           { label: 'Contact', subPath: '/contact' },
         ],
         icon: CloudIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR],
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
     ],
     [isMasterLoaded],

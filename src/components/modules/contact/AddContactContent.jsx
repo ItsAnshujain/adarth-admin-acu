@@ -64,7 +64,7 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess = () => {} }
       department,
       birthDate: birthDate && dayjs(birthDate).endOf('day')?.toISOString(),
       company,
-      parentCompany: parentCompanyId,
+      parentCompany: parentCompanyId || null,
       address: {
         address: null,
         city,
