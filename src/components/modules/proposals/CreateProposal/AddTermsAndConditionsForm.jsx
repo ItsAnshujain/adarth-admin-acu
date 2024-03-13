@@ -89,7 +89,7 @@ const AddTermsAndConditionsForm = ({
   return (
     <Box className="border-t p-2">
       <div className="w-full flex justify-between px-3 pt-4">
-        <div className="font-bold text-xl">Terms & Conditions</div>
+        <div className="font-bold text-xl">{mode === 'Add' ? 'Add ' : ''}Terms & Conditions</div>
         {mode === 'Edit' && !editableForm ? (
           <div className="flex gap-2">
             <ActionIcon onClick={toggleDelete}>

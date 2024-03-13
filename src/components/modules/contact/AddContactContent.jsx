@@ -18,7 +18,7 @@ import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler
 import { mobileRegexMatch } from '../../../utils';
 import CalendarIcon from '../../../assets/calendar.svg';
 
-const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
+const AddContactContent = ({ onCancel, mode, contactData, onSuccess = () => {} }) => {
   const schema = yup.object({
     name: yup.string().trim().required('Name is required'),
     email: yup.string().trim().email('Invalid Email'),
@@ -64,7 +64,7 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
       department,
       birthDate: birthDate && dayjs(birthDate).endOf('day')?.toISOString(),
       company,
-      parentCompany: parentCompanyId,
+      parentCompany: parentCompanyId || null,
       address: {
         address: null,
         city,

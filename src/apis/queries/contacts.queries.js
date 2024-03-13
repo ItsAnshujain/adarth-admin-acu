@@ -51,6 +51,7 @@ export const useAddContact = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['contacts']);
+        queryClient.invalidateQueries(['infinite-contacts']);
       },
       onError: onApiError,
     },

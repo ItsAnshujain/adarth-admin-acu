@@ -1,16 +1,24 @@
 import { Avatar, Badge } from '@mantine/core';
 import dayjs from 'dayjs';
-import { DATE_THIRD_FORMAT, leadStageOptions } from '../../../utils/constants';
+import {
+  DATE_THIRD_FORMAT,
+  leadCommunicationTypeOptions,
+  leadStageOptions,
+} from '../../../utils/constants';
 
 const LeadHistoryCard = ({ followUpData }) => (
   <div className="flex flex-col border border-gray-200 rounded-md w-full p-4 gap-3">
-    <Badge className="bg-purple-450 text-white font-normal w-fit capitalize">
+    <Badge className="bg-purple-350 text-white font-medium w-fit capitalize text-sm py-3">
       {leadStageOptions?.filter(({ value }) => value === followUpData?.stage)?.[0]?.label}
     </Badge>
     <div className="text-sm">{followUpData?.notes}</div>
     <div className="text-purple-450">
       {followUpData?.communicationType
-        ? `Over the ${followUpData?.communicationType} communication`
+        ? `Over the ${
+            leadCommunicationTypeOptions.filter(
+              type => type.value === followUpData?.communicationType,
+            )?.[0]?.label
+          } communication`
         : null}
     </div>
     <div className="flex">

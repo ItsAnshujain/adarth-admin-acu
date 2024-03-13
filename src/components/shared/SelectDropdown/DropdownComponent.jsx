@@ -8,13 +8,13 @@ const DropdownComponent = ({ children, onFetchMoreData, isLoading, hasNextPage, 
     <div className="px-2">
       {hasNextPage ? (
         <Button
+          variant="outline"
           loading={isLoading}
           loaderPosition="right"
           loaderProps={{ color: 'black', size: 'xs' }}
           disabled={!hasNextPage}
           size="xs"
-          variant="white"
-          className="text-xs py-2 mb-3 mt-2 text-black"
+          className="text-xs py-2 mb-3 mt-2 text-black w-full"
           leftIcon={<IconReload size={16} />}
           onClick={onFetchMoreData}
         >

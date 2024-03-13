@@ -26,6 +26,8 @@ import { useInfiniteContacts } from '../../../apis/queries/contacts.queries';
 import { useInfiniteCompanies } from '../../../apis/queries/companies.queries';
 import { useAddLead, useLeadById, useUpdateLead } from '../../../apis/queries/leads.queries';
 import SuccessModal from '../../shared/Modal';
+import SelectLeadCompanyItem from './SelectLeadCompanyItem';
+import SelectContactPersonItem from './SelectContactPersonItem';
 
 const schema = yup.object({
   leadCompany: yup
@@ -123,29 +125,33 @@ const AddLeadForm = () => {
     [usersQuery?.data],
   );
 
-  const memoizedContacts = useMemo(
-    () =>
+  const memoizedContacts = useMemo(() => {
+    const temp =
       contactsQuery.data?.pages
         .reduce((acc, { docs }) => [...acc, ...docs], [])
         ?.map(doc => ({
           ...doc,
           label: doc.name,
           value: doc._id,
-        })) || [],
-    [contactsQuery?.data],
-  );
+        })) || [];
 
-  const memoizedLeadCompanies = useMemo(
-    () =>
-      leadCompaniesQuery.data?.pages
+    temp.push({ label: '', value: '', addMore: true });
+    return temp;
+  }, [contactsQuery?.data]);
+
+  const memoizedLeadCompanies = useMemo(() => {
+    const temp =
+      leadCompaniesQuery?.data?.pages
         .reduce((acc, { docs }) => [...acc, ...docs], [])
         ?.map(doc => ({
           ...doc,
           label: doc.companyName,
           value: doc._id,
-        })) || [],
-    [leadCompaniesQuery?.data],
-  );
+        })) || [];
+
+    temp.push({ label: '', value: '', addMore: true });
+    return temp;
+  }, [leadCompaniesQuery?.data]);
 
   const memoizedRepresentingCompanies = useMemo(
     () =>
@@ -200,32 +206,50 @@ const AddLeadForm = () => {
   );
 
   useEffect(() => {
+    if (memoizedUsers?.filter(item => item.value === user?._id).length <= 0) {
+      memoizedUsers.push({
+        value: user?._id,
+        label: user?.name,
+      });
+    }
     form.setValue('primaryInCharge', user?._id);
   }, [user]);
 
   useEffect(() => {
-    setBrandCompetitorsOptions(
-      leadByIdQuery?.data?.brandCompetitors?.map(competitor => ({
-        label: competitor,
-        value: competitor,
-      })) || [],
-    );
-    form.reset({
-      ...leadByIdQuery.data,
-      companyRepresenting: leadByIdQuery?.data?.companyRepresenting?._id,
-      contact: leadByIdQuery?.data?.contact?._id,
-      leadCompany: leadByIdQuery?.data?.leadCompany?._id,
-      primaryInCharge: leadByIdQuery?.data?.primaryInCharge?._id,
-      secondaryInCharge: leadByIdQuery?.data?.secondaryInCharge?._id,
-      targetAudience: leadByIdQuery?.data?.targetAudience,
-      brandCompetitors: leadByIdQuery?.data?.brandCompetitors,
-      targetStartDate:
-        leadByIdQuery?.data?.targetStartDate && new Date(leadByIdQuery?.data?.targetStartDate),
-      targetEndDate:
-        leadByIdQuery?.data?.targetEndDate && new Date(leadByIdQuery?.data?.targetEndDate),
-      leadCloseDate:
-        leadByIdQuery?.data?.leadCloseDate && new Date(leadByIdQuery?.data?.leadCloseDate),
-    });
+    if (
+      leadByIdQuery?.data?.brandCompetitors?.length > 0 &&
+      leadByIdQuery?.data?.brandCompetitors[0].length > 0
+    ) {
+      setBrandCompetitorsOptions(
+        leadByIdQuery?.data?.brandCompetitors?.map(competitor => ({
+          label: competitor,
+          value: competitor,
+        })) || [],
+      );
+    }
+
+    if (leadByIdQuery.data) {
+      form.reset({
+        ...leadByIdQuery.data,
+        companyRepresenting: leadByIdQuery?.data?.companyRepresenting?._id,
+        contact: leadByIdQuery?.data?.contact?._id,
+        leadCompany: leadByIdQuery?.data?.leadCompany?._id,
+        primaryInCharge: leadByIdQuery?.data?.primaryInCharge?._id,
+        secondaryInCharge: leadByIdQuery?.data?.secondaryInCharge?._id,
+        targetAudience: leadByIdQuery?.data?.targetAudience?.[0],
+        brandCompetitors:
+          leadByIdQuery?.data?.brandCompetitors?.length > 0 &&
+          leadByIdQuery?.data?.brandCompetitors[0].length > 0
+            ? leadByIdQuery?.data?.brandCompetitors
+            : [],
+        targetStartDate:
+          leadByIdQuery?.data?.targetStartDate && new Date(leadByIdQuery?.data?.targetStartDate),
+        targetEndDate:
+          leadByIdQuery?.data?.targetEndDate && new Date(leadByIdQuery?.data?.targetEndDate),
+        leadCloseDate:
+          leadByIdQuery?.data?.leadCloseDate && new Date(leadByIdQuery?.data?.leadCloseDate),
+      });
+    }
   }, [leadByIdQuery.data]);
 
   const handleOnSuccess = text => {
@@ -288,7 +312,7 @@ const AddLeadForm = () => {
       stage,
       overAllBudget: Number(overAllBudget) ? Number(overAllBudget) : undefined,
       leadCloseDate: leadCloseDate && dayjs(leadCloseDate)?.endOf('day'),
-      targetAudience: targetAudience || [''],
+      targetAudience: [targetAudience] || [''],
       brandCompetitors: brandCompetitors || [''],
       campaignObjective,
       prospect: prospect || undefined,
@@ -395,7 +419,7 @@ const AddLeadForm = () => {
                     input: 'border-none',
                     dropdown: 'w-56',
                   }}
-                  icon={<ChevronDown size={20} />}
+                  rightSection={<ChevronDown size={20} />}
                   dropdownComponent={usersDropdown}
                 />
               </div>
@@ -426,7 +450,7 @@ const AddLeadForm = () => {
                     input: 'border-none',
                     dropdown: 'w-56',
                   }}
-                  icon={<ChevronDown size={20} />}
+                  rightSection={<ChevronDown size={20} />}
                   dropdownComponent={usersDropdown}
                 />
               </div>
@@ -443,7 +467,7 @@ const AddLeadForm = () => {
                   classNames={{
                     input: 'border-none',
                   }}
-                  icon={<ChevronDown size={20} />}
+                  rightSection={<ChevronDown size={20} />}
                 />
               </div>
               <div className="border border-gray-200 flex items-center text-gray-400 text-sm rounded-md px-2 w-fit">
@@ -459,7 +483,7 @@ const AddLeadForm = () => {
                     input: 'border-none',
                     dropdown: 'w-44',
                   }}
-                  icon={<ChevronDown size={20} />}
+                  rightSection={<ChevronDown size={20} />}
                   className="w-32"
                 />
               </div>
@@ -474,8 +498,9 @@ const AddLeadForm = () => {
                 label="Lead Company"
                 withAsterisk
                 data={memoizedLeadCompanies}
-                dropdownComponent={leadCompaniesDropdown}
                 classNames={{ label: labelClass }}
+                dropdownComponent={leadCompaniesDropdown}
+                itemComponent={SelectLeadCompanyItem}
               />
               <ControlledSelect
                 clearable
@@ -513,8 +538,9 @@ const AddLeadForm = () => {
                 label="Contact Person Name"
                 withAsterisk
                 data={memoizedContacts}
-                dropdownComponent={contactsDropdown}
                 classNames={{ label: labelClass }}
+                dropdownComponent={contactsDropdown}
+                itemComponent={SelectContactPersonItem}
               />
               <ControlledTextInput
                 name="brandDisplay"
@@ -574,7 +600,7 @@ const AddLeadForm = () => {
                 searchValue={brandCompetitor}
                 value={form.watch('brandCompetitors') || []}
                 onChange={val => form.setValue('brandCompetitors', val)}
-                icon={
+                rightSection={
                   <ActionIcon onClick={handleAddBrandCompetitor} className="bg-purple-450">
                     <IconPlus color="white" />
                   </ActionIcon>
