@@ -8,7 +8,16 @@ import modalConfig from '../../../utils/modalConfig';
 import ImageCard from './ImageCard';
 
 const TRANSITION_DURATION = 200;
-const updatedModalConfig = { ...modalConfig, size: 'xl' };
+const updatedModalConfig = {
+  ...modalConfig,
+  size: 'xl',
+  classNames: {
+    title: 'font-dmSans text-xl',
+    header: 'py-4 p-6',
+    body: 'overflow-auto',
+    close: 'mr-4',
+  },
+};
 
 const ImagesList = ({ imagesData, selectedImages, setSelectedImages }) => {
   const modals = useModals();
@@ -23,7 +32,6 @@ const ImagesList = ({ imagesData, selectedImages, setSelectedImages }) => {
           <Carousel
             align="center"
             height={400}
-            className="px-3"
             loop
             mx="auto"
             withControls={imagesData?.length > 0}
@@ -37,8 +45,11 @@ const ImagesList = ({ imagesData, selectedImages, setSelectedImages }) => {
           >
             {imagesData?.length &&
               imagesData?.map(item => (
-                <Carousel.Slide key={uuidv4()}>
-                  <Image src={item.url} height={400} width="100%" alt="preview" fit="contain" />
+                <Carousel.Slide key={uuidv4()} className="relative">
+                  <Image src={item.url} height={400} width="100%" alt="preview" fit="fill" />
+                  <div className="absolute bg-gradient-to-t from-black/50 to-black/0 h-full w-full top-0 flex items-end p-6 text-xl text-white">
+                    {item.name}
+                  </div>
                 </Carousel.Slide>
               ))}
           </Carousel>

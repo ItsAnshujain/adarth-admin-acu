@@ -306,33 +306,6 @@ const LeadsTableView = ({ userId }) => {
 
   return (
     <div className="mx-2">
-      <div className="flex justify-between h-20 items-center px-2">
-        <RowsPerPage
-          setCount={currentLimit => {
-            handlePagination('limit', currentLimit);
-          }}
-          count="10"
-        />
-        <div className="flex gap-2">
-          <Search search={searchInput} setSearch={setSearchInput} />
-
-          <div ref={ref} className="relative">
-            <Button onClick={toggleDatePicker} variant="default">
-              <img src={calendar} className="h-5" alt="calendar" />
-            </Button>
-            {showDatePicker && (
-              <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
-            )}
-          </div>
-          <div>
-            <Button onClick={toggleFilter} variant="default" className="font-medium">
-              <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
-            </Button>
-            {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
-          </div>
-        </div>
-      </div>
-
       {!leadsQuery?.data?.docs?.length && !leadsQuery.isLoading ? (
         <div className="w-full min-h-[380px] flex justify-center items-center">
           <p className="text-xl">No records found</p>
@@ -340,17 +313,45 @@ const LeadsTableView = ({ userId }) => {
       ) : null}
 
       {leadsQuery?.data?.docs?.length ? (
-        <Table
-          data={leadsQuery?.data?.docs || []}
-          COLUMNS={columns}
-          activePage={leadsQuery?.data?.page}
-          totalPages={leadsQuery?.data?.totalPages}
-          setActivePage={currentPage => handlePagination('page', currentPage)}
-          rowCountLimit={10}
-          handleSorting={handleSortByColumn}
-          loading={leadsQuery?.isLoading}
-          className="max-h-[47vh]"
-        />
+        <>
+          <div className="flex justify-between h-20 items-center px-2">
+            <RowsPerPage
+              setCount={currentLimit => {
+                handlePagination('limit', currentLimit);
+              }}
+              count="10"
+            />
+            <div className="flex gap-2">
+              <Search search={searchInput} setSearch={setSearchInput} />
+
+              <div ref={ref} className="relative">
+                <Button onClick={toggleDatePicker} variant="default">
+                  <img src={calendar} className="h-5" alt="calendar" />
+                </Button>
+                {showDatePicker && (
+                  <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
+                )}
+              </div>
+              <div>
+                <Button onClick={toggleFilter} variant="default" className="font-medium">
+                  <ChevronDown size={16} className="mt-[1px] mr-1" /> Filter
+                </Button>
+                {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
+              </div>
+            </div>
+          </div>
+          <Table
+            data={leadsQuery?.data?.docs || []}
+            COLUMNS={columns}
+            activePage={leadsQuery?.data?.page}
+            totalPages={leadsQuery?.data?.totalPages}
+            setActivePage={currentPage => handlePagination('page', currentPage)}
+            rowCountLimit={10}
+            handleSorting={handleSortByColumn}
+            loading={leadsQuery?.isLoading}
+            className="max-h-[47vh]"
+          />
+        </>
       ) : null}
 
       <ViewLeadDrawer

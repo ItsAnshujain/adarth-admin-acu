@@ -5,6 +5,8 @@ const fetchLeads = query => http.get(`/lead?${query}`);
 
 export const fetchLeadsStats = query => http.get(urlcat(`/lead/stats?${query}`));
 
+export const fetchLeadsStatsByUID = (id, query) => http.get(urlcat(`/lead/stats/${id}?${query}`));
+
 export const fetchLeadById = id => http.get(`/lead/${id}`);
 
 export const addLead = payload => http.post('/lead', payload);

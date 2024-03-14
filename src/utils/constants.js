@@ -255,7 +255,7 @@ export const leadCommunicationTypeOptions = [
   },
   {
     label: 'Phone Call',
-    value: 'phoneCall',
+    value: 'phone',
   },
   {
     label: 'Video Call',
