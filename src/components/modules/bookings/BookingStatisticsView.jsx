@@ -8,19 +8,34 @@ import UpcomingOrdersIcon from '../../../assets/upcoming-orders.svg';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const BookingStatisticsView = ({ bookingStats, isLoading }) => {
+const BookingStatisticsView = ({ LeadStats, isLoading }) => {
+  const directClientCount = useMemo(
+    () => LeadStats?.agency?.filter(stat => stat._id === 'directClient')?.[0]?.count || 0,
+    [LeadStats?.agency],
+  );
+
+  const localAgencyCount = useMemo(
+    () => LeadStats?.agency?.filter(stat => stat._id === 'localAgency')?.[0]?.count || 0,
+    [LeadStats?.agency],
+  );
+
+  const nationalAgencyCount = useMemo(
+    () => LeadStats?.agency?.filter(stat => stat._id === 'nationalAgency')?.[0]?.count || 0,
+    [LeadStats?.agency],
+  );
+
   const revenueBreakupData = useMemo(
     () => ({
       datasets: [
         {
-          data: [bookingStats?.offline ?? 0, bookingStats?.online ?? 0],
-          backgroundColor: ['#FF900E', '#914EFB'],
-          borderColor: ['#FF900E', '#914EFB'],
+          data: [directClientCount ?? 0, localAgencyCount ?? 0, nationalAgencyCount ?? 0],
+          backgroundColor: ['#FF900E', '#914EFB', '#4BC0C0'],
+          borderColor: ['#FF900E', '#914EFB', '#4BC0C0'],
           borderWidth: 1,
         },
       ],
     }),
-    [bookingStats],
+    [LeadStats],
   );
 
   return (
@@ -30,7 +45,7 @@ const BookingStatisticsView = ({ bookingStats, isLoading }) => {
           <div className="w-32">
             {isLoading ? (
               <Loader className="mx-auto" />
-            ) : bookingStats?.online === 0 && bookingStats?.offline === 0 ? (
+            ) : !LeadStats?.agency?.length ? (
               <p className="text-center">NA</p>
             ) : (
               <Doughnut options={{ responsive: true }} data={revenueBreakupData} />
@@ -40,24 +55,35 @@ const BookingStatisticsView = ({ bookingStats, isLoading }) => {
             <p className="font-medium">Revenue Breakup</p>
             <div className="flex gap-8 mt-6">
               <div className="flex gap-2 items-center">
-                <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+                <div className="h-2 w-1 p-2 rounded-full bg-orange-350" />
                 <div>
                   <Text size="xs" weight="200">
-                    Online Sale
+                    Direct Client
                   </Text>
                   <Text weight="bolder" size="xl">
-                    {bookingStats?.online ?? 0}
+                    {directClientCount ?? 0}
                   </Text>
                 </div>
               </div>
               <div className="flex gap-2 items-center">
-                <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+                <div className="h-2 w-1 p-2 bg-purple-350 rounded-full" />
                 <div>
                   <Text size="xs" weight="200">
-                    Offline Sale
+                    Local Agency
                   </Text>
                   <Text weight="bolder" size="xl">
-                    {bookingStats?.offline ?? 0}
+                    {localAgencyCount ?? 0}
+                  </Text>
+                </div>
+              </div>
+              <div className="flex gap-2 items-center">
+                <div className="h-2 w-1 p-2 bg-green-350 rounded-full" />
+                <div>
+                  <Text size="xs" weight="200">
+                    National Agency
+                  </Text>
+                  <Text weight="bolder" size="xl">
+                    {nationalAgencyCount ?? 0}
                   </Text>
                 </div>
               </div>
@@ -70,21 +96,21 @@ const BookingStatisticsView = ({ bookingStats, isLoading }) => {
             <Text className="my-2" size="sm" weight="200">
               Ongoing Orders
             </Text>
-            <Text weight="bold">{bookingStats?.Ongoing ?? 0}</Text>
+            <Text weight="bold">{LeadStats?.Ongoing ?? 0}</Text>
           </div>
           <div className="border rounded p-8 pr-20">
             <Image src={UpcomingOrdersIcon} alt="upcoming" height={24} width={24} fit="contain" />
             <Text className="my-2" size="sm" weight="200">
               Upcoming Orders
             </Text>
-            <Text weight="bold">{bookingStats?.Upcoming ?? 0}</Text>
+            <Text weight="bold">{LeadStats?.Upcoming ?? 0}</Text>
           </div>
           <div className="border rounded p-8 pr-20">
             <Image src={CompletedOrdersIcon} alt="completed" height={24} width={24} fit="contain" />
             <Text className="my-2" size="sm" weight="200">
               Completed Orders
             </Text>
-            <Text weight="bold">{bookingStats?.Completed ?? 0}</Text>
+            <Text weight="bold">{LeadStats?.Completed ?? 0}</Text>
           </div>
         </div>
       </div>

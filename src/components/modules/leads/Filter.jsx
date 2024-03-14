@@ -17,7 +17,7 @@ const styles = { title: { fontWeight: 'bold' } };
 const defaultValue = {
   leadSource: [],
   priority: [],
-  companyRepresenting: [],
+  companyRepresentingIds: [],
   stage: [],
   createdByIds: [],
   companyType: [],
@@ -36,7 +36,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
   const leadSource = searchParams.get('leadSource');
   const priority = searchParams.get('priority');
-  const companyRepresenting = searchParams.get('companyRepresenting');
+  const companyRepresentingIds = searchParams.get('companyRepresenting');
   const stage = searchParams.get('stage');
   const createdByIds = searchParams.get('createdByIds');
   const companyType = searchParams.get('companyType');
@@ -105,7 +105,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       filterOptions.priority,
       filterOptions.stage,
       filterOptions.leadSource,
-      filterOptions.companyRepresenting,
+      filterOptions.companyRepresentingIds,
       filterOptions.companyType,
       filterOptions.createdByIds,
     ],
@@ -143,7 +143,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       filterOptions.priority,
       filterOptions.stage,
       filterOptions.leadSource,
-      filterOptions.companyRepresenting,
+      filterOptions.companyRepresentingIds,
       filterOptions.companyType,
       filterOptions.createdByIds,
     ],
@@ -181,7 +181,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       filterOptions.priority,
       filterOptions.stage,
       filterOptions.leadSource,
-      filterOptions.companyRepresenting,
+      filterOptions.companyRepresentingIds,
       filterOptions.companyType,
       filterOptions.createdByIds,
     ],
@@ -215,7 +215,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
       ...prevState,
       leadSource: leadSource?.split(',') || [],
       priority: priority?.split(',') || [],
-      companyRepresenting: companyRepresenting?.split(',') || [],
+      companyRepresentingIds: companyRepresentingIds?.split(',') || [],
       stage: stage?.split(',') || [],
       createdByIds: createdByIds?.split(',') || [],
       companyType: companyType?.split(',') || [],
@@ -268,7 +268,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <div className="mt-2">{renderOptions(leadPriorityOptions, 'priority')}</div>
             </Accordion.Panel>
           </Accordion.Item>
-          <Accordion.Item value="companyRepresenting" className="mb-4 rounded-xl border">
+          <Accordion.Item value="companyRepresentingIds" className="mb-4 rounded-xl border">
             <Accordion.Control>
               <p className="text-lg">Company Representing</p>
             </Accordion.Control>
@@ -276,7 +276,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
               <div className="mt-2">
                 {renderCompanyRepresentingOptions(
                   memoizedRepresentingCompany,
-                  'companyRepresenting',
+                  'companyRepresentingIds',
                 )}
               </div>
             </Accordion.Panel>

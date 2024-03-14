@@ -45,6 +45,7 @@ import { useShareReport } from '../../apis/queries/report.queries';
 import modalConfig from '../../utils/modalConfig';
 import ShareContent from '../../components/modules/reports/ShareContent';
 import { DATE_FORMAT } from '../../utils/constants';
+import { useLeadAgencyStats } from '../../apis/queries/leads.queries';
 
 dayjs.extend(quarterOfYear);
 
@@ -192,6 +193,13 @@ const RevenueReportsPage = () => {
   };
 
   const { data: revenueData } = useBookingReportByRevenueStats();
+  const { data: leadStats } = useLeadAgencyStats(
+    serialize({
+      from: financialStartDate,
+      to: financialEndDate,
+    }),
+  );
+
   const {
     data: revenueGraphData,
     isLoading: isRevenueGraphLoading,
@@ -384,7 +392,7 @@ const RevenueReportsPage = () => {
       />
 
       <div className="my-5" id="revenue-pdf">
-        <RevenueStatsContent revenueData={revenueData} />
+        <RevenueStatsContent revenueData={revenueData} leadStatsData={leadStats} />
         {share !== 'report' ? (
           <div className="h-[60px] border-b border-t my-5 border-gray-450 flex justify-end items-center">
             <ViewByFilter handleViewBy={handleRevenueGraphViewBy} />

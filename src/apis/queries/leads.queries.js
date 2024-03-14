@@ -5,6 +5,7 @@ import fetchLeads, {
   deleteLead,
   fetchLeadById,
   fetchLeadsStats,
+  leadAgencyStats,
   updateLead,
 } from '../requests/leads.requests';
 
@@ -88,5 +89,17 @@ export const useDeleteLead = () => {
     },
   );
 };
+
+export const useLeadAgencyStats = (filter, enabled = true) =>
+  useQuery(
+    ['lead-agency-stats', filter],
+    async () => {
+      const res = await leadAgencyStats(filter);
+      return res?.data;
+    },
+    {
+      enabled,
+    },
+  );
 
 export default useLeads;

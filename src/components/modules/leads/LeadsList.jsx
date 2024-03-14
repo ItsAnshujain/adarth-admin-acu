@@ -133,6 +133,22 @@ const LeadsList = () => {
       {
         Header: 'OBJECTIVE',
         accessor: 'objective',
+        Cell: ({
+          row: {
+            original: { objective },
+          },
+        }) =>
+          useMemo(
+            () =>
+              objective ? (
+                <p className="w-96 truncate" title={objective}>
+                  {objective}
+                </p>
+              ) : (
+                '-'
+              ),
+            [],
+          ),
       },
       {
         Header: 'PRIORITY',
