@@ -216,6 +216,7 @@ const ContactPage = () => {
           rowCountLimit={10}
           handleSorting={handleSortByColumn}
           loading={contactsQuery.isLoading}
+          className="max-h-[72vh]"
         />
       </div>
       <SuccessModal

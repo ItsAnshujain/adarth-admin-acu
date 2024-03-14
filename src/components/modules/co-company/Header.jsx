@@ -271,6 +271,7 @@ const Header = () => {
                 onClick={() => {
                   searchParams.set('tab', 'parent-companies');
                   searchParams.set('page', 1);
+                  searchParams.set('limit', 10);
                   setSearchParams(searchParams, { replace: true });
                 }}
               >
@@ -287,6 +288,7 @@ const Header = () => {
                 onClick={() => {
                   searchParams.set('tab', 'sister-companies');
                   searchParams.set('page', 1);
+                  searchParams.set('limit', 10);
                   setSearchParams(searchParams, { replace: true });
                 }}
               >
@@ -327,6 +329,7 @@ const Header = () => {
             rowCountLimit={10}
             handleSorting={handleSortByColumn}
             loading={coCompaniesQuery.isLoading}
+            className="max-h-[65vh]"
           />
         </Tabs.Panel>
         <Tabs.Panel value="sister-companies">

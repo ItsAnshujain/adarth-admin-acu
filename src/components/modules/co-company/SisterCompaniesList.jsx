@@ -196,6 +196,7 @@ const SisterCompaniesList = () => {
         rowCountLimit={10}
         handleSorting={handleSortByColumn}
         loading={coCompaniesQuery.isLoading}
+        className="max-h-[65vh]"
       />
     </div>
   );

@@ -289,6 +289,7 @@ const Header = () => {
                 onClick={() => {
                   searchParams.set('tab', 'companies');
                   searchParams.set('page', 1);
+                  searchParams.set('limit', 10);
                   setSearchParams(searchParams, { replace: true });
                 }}
               >
@@ -305,6 +306,7 @@ const Header = () => {
                 onClick={() => {
                   searchParams.set('tab', 'parent-companies');
                   searchParams.set('page', 1);
+                  searchParams.set('limit', 10);
                   setSearchParams(searchParams, { replace: true });
                 }}
               >
@@ -345,6 +347,7 @@ const Header = () => {
               rowCountLimit={10}
               handleSorting={handleSortByColumn}
               loading={companiesQuery?.isLoading}
+              className="max-h-[65vh]"
             />
           ) : null}
         </Tabs.Panel>
@@ -369,6 +372,7 @@ const Header = () => {
               rowCountLimit={10}
               handleSorting={handleSortByColumn}
               loading={companiesQuery?.isLoading}
+              className="max-h-[65vh]"
             />
           ) : null}
         </Tabs.Panel>

@@ -253,6 +253,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
             COLUMNS={COLUMNS}
             handleSorting={handleSortByColumn}
             setActivePage={currentPage => handlePagination('page', currentPage)}
+            className="max-h-[62vh]"
           />
         ) : null}
       </div>
