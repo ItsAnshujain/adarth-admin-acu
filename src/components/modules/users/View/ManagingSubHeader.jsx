@@ -14,18 +14,16 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import dayjs from 'dayjs';
 import OwnSiteIcon from '../../../../assets/own-site-sale.svg';
 import TradedSiteIcon from '../../../../assets/traded-site-sale.svg';
 import {
-  useBookingRevenueByIndustry,
   useBookingStatByIncharge,
   useUserSalesByUserId,
 } from '../../../../apis/queries/booking.queries';
-import { LEADS_LIST } from '../../../../utils/constants';
 import { serialize, financialEndDate, financialStartDate, formatDate } from '../../../../utils';
 import SalesStatisticsCard from '../analytics/SalesStatisticsCard';
 import BookingStatisticsCard from '../analytics/BookingStatisticsCard';
-import LeadsStatisticsCard from '../analytics/LeadsStatisticsCard';
 import ProposalStatisticsCard from '../analytics/ProposalStatisticsCard';
 import OngoingBookingIcon from '../../../../assets/ongoing-booking.svg';
 import UpcomingBookingIcon from '../../../../assets/upcoming-booking.svg';
@@ -36,6 +34,9 @@ import ProposalSendIcon from '../../../../assets/proposal-send.svg';
 import OutstandingPoIcon from '../../../../assets/outstanding-po.svg';
 import ExceedChevronIcon from '../../../../assets/exceed-chevron.svg';
 import toIndianCurrency from '../../../../utils/currencyFormat';
+import LeadsStats from '../../leads/LeadsStats';
+import { useLeadStatsByUid } from '../../../../apis/queries/leads.queries';
+import { DATE_FORMAT } from '../../../../utils/constants';
 
 ChartJS.register(
   ArcElement,
@@ -62,30 +63,6 @@ const salesPieConfig = {
   },
 };
 
-const leadsPieConfig = {
-  options: {
-    responsive: true,
-    animation: {
-      duration: 0,
-    },
-  },
-  styles: {
-    backgroundColor: [
-      'rgba(75, 192, 192, 1)',
-      'rgba(145, 78, 251, 1)',
-      'rgba(255, 144, 14 , 1)',
-      'rgba(255, 99, 132, 1)',
-    ],
-    borderColor: [
-      'rgba(75, 192, 192, 1)',
-      'rgba(145, 78, 251, 1)',
-      'rgba(255, 144, 14 , 1)',
-      'rgba(255, 99, 132, 1)',
-    ],
-    borderWidth: 1,
-  },
-};
-
 const bookingPieConfig = {
   options: {
     responsive: true,
@@ -102,17 +79,17 @@ const bookingPieConfig = {
 
 const ManagingSubHeader = ({ userId }) => {
   const [showChartArrow, setShowChartArrow] = useState(true);
-  const [updatedIndustry, setUpdatedIndustry] = useState({
-    id: uuidv4(),
-    labels: [],
-    datasets: [
-      {
-        label: '',
-        data: [],
-        ...leadsPieConfig.styles,
-      },
-    ],
-  });
+
+  const leadStatsQuery = useLeadStatsByUid(
+    {
+      id: userId,
+      query: serialize({
+        from: dayjs(financialStartDate).format(DATE_FORMAT),
+        to: dayjs(financialEndDate).format(DATE_FORMAT),
+      }),
+    },
+    !!financialStartDate && !!financialEndDate,
+  );
 
   const [updatedBookingChart, setUpdatedBookingChart] = useState({
     id: uuidv4(),
@@ -131,8 +108,6 @@ const ManagingSubHeader = ({ userId }) => {
     endDate: formatDate(financialEndDate),
     userId,
   });
-
-  const revenueDataByIndustryQuery = useBookingRevenueByIndustry(['groupBy', 'by']);
 
   const revenueBreakupData = useMemo(
     () => ({
@@ -165,26 +140,6 @@ const ManagingSubHeader = ({ userId }) => {
     [userSales.data?.sales, userSales.data?.salesTarget],
   );
 
-  const handleUpdatedReveueByIndustry = useCallback(() => {
-    const tempBarData = {
-      labels: [],
-      datasets: [
-        {
-          label: '',
-          data: [],
-          ...leadsPieConfig.styles,
-        },
-      ],
-    };
-    if (revenueDataByIndustryQuery.data) {
-      tempBarData.datasets[0].data[0] = 0;
-      tempBarData.datasets[0].data[0] = 0;
-      tempBarData.datasets[0].data[2] = 0;
-      tempBarData.datasets[0].data[3] = 0;
-      setUpdatedIndustry(tempBarData);
-    }
-  }, [revenueDataByIndustryQuery.data]);
-
   const handleUpdatedBookingChart = useCallback(() => {
     const tempBarData = {
       labels: [],
@@ -203,8 +158,6 @@ const ManagingSubHeader = ({ userId }) => {
       setUpdatedBookingChart(tempBarData);
     }
   }, [bookingStatsByIncharge.data]);
-
-  useEffect(() => handleUpdatedReveueByIndustry(), [revenueDataByIndustryQuery.data]);
 
   useEffect(() => handleUpdatedBookingChart(), [bookingStatsByIncharge.data]);
   return (
@@ -273,25 +226,11 @@ const ManagingSubHeader = ({ userId }) => {
         </section>
 
         <section className="min-h-44 rounded-lg border flex flex-row items-start gap-3 p-4">
-          <Box className="w-36">
-            {updatedIndustry.datasets?.[0].data.every(item => item === 0) ? (
-              <p className="text-center font-bold text-md my-14">NA</p>
-            ) : (
-              <Pie
-                data={updatedIndustry}
-                options={leadsPieConfig.options}
-                key={updatedIndustry.id}
-              />
-            )}
-          </Box>
-          <div className="flex-1 flex flex-col gap-y-4">
-            <p className="text-md font-medium">Leads</p>
-            <Group className="grid grid-cols-4 gap-3 h-full">
-              {LEADS_LIST.map(item => (
-                <LeadsStatisticsCard key={item.label} {...item} />
-              ))}
-            </Group>
-          </div>
+          <LeadsStats
+            heading="Leads"
+            styles={{ heading: 'text-sm' }}
+            leadStatsData={leadStatsQuery?.data}
+          />
         </section>
         <section className="min-h-44 rounded-lg border flex flex-row items-start gap-3 p-4">
           <Box className="w-36">

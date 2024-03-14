@@ -5,6 +5,7 @@ import fetchLeads, {
   deleteLead,
   fetchLeadById,
   fetchLeadsStats,
+  fetchLeadsStatsByUID,
   leadAgencyStats,
   updateLead,
 } from '../requests/leads.requests';
@@ -36,6 +37,17 @@ export const useLeadStats = (query, enabled = true) =>
     queryKey: ['leads-stats', query],
     queryFn: async () => {
       const res = await fetchLeadsStats(query);
+      return res?.data;
+    },
+    enabled,
+    onError: onApiError,
+  });
+
+export const useLeadStatsByUid = ({ id, query }, enabled = true) =>
+  useQuery({
+    queryKey: ['leads-stats-by-id', id],
+    queryFn: async () => {
+      const res = await fetchLeadsStatsByUID(id, query);
       return res?.data;
     },
     enabled,
