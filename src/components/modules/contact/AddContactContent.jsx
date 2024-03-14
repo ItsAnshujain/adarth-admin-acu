@@ -17,6 +17,7 @@ import ControlledDatePickerInput from '../../shared/FormInputs/Controlled/Contro
 import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler';
 import { mobileRegexMatch } from '../../../utils';
 import CalendarIcon from '../../../assets/calendar.svg';
+import SelectLeadCompanyItem from '../leads/SelectLeadCompanyItem';
 
 const AddContactContent = ({ onCancel, mode, contactData, onSuccess = () => {} }) => {
   const schema = yup.object({
@@ -109,17 +110,19 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess = () => {} }
     [stateAndStateCodeQuery?.data],
   );
 
-  const memoizedCompanies = useMemo(
-    () =>
+  const memoizedCompanies = useMemo(() => {
+    const temp =
       companiesQuery.data?.pages
         .reduce((acc, { docs }) => [...acc, ...docs], [])
         .map(doc => ({
           ...doc,
           label: doc.companyName,
           value: doc._id,
-        })) || [],
-    [companiesQuery?.data],
-  );
+        })) || [];
+
+    temp.push({ label: '', value: '', addMore: true });
+    return temp;
+  }, [companiesQuery?.data]);
 
   const companiesDropdown = useMemo(
     () =>
@@ -181,7 +184,6 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess = () => {} }
               classNames={{ label: labelClass }}
             />
             <ControlledSelect
-              dropdownComponent={companiesDropdown}
               data={memoizedCompanies}
               name="company"
               label="Company Name"
@@ -189,6 +191,8 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess = () => {} }
               clearable
               searchable
               classNames={{ label: labelClass }}
+              dropdownComponent={companiesDropdown}
+              itemComponent={SelectLeadCompanyItem}
             />
             <ControlledTextInput
               name="parentCompany"
