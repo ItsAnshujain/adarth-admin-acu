@@ -288,6 +288,7 @@ const CampaignsDashboardPage = () => {
           totalPages={campaignData?.totalPages || 1}
           setActivePage={data => setQuery('page', data)}
           handleSorting={handleSortByColumn}
+          className="max-h-[72vh]"
         />
       ) : null}
     </div>

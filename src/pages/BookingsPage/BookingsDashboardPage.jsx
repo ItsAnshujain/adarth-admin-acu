@@ -655,6 +655,7 @@ const BookingsDashboardPage = () => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={limit}
           handleSorting={handleSortByColumn}
+          className="max-h-[53vh]"
         />
       ) : null}
       <PriceBreakdownDrawer

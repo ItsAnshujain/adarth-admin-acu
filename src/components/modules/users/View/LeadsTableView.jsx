@@ -143,6 +143,22 @@ const LeadsTableView = ({ userId }) => {
       {
         Header: 'OBJECTIVE',
         accessor: 'objective',
+        Cell: ({
+          row: {
+            original: { objective },
+          },
+        }) =>
+          useMemo(
+            () =>
+              objective ? (
+                <p className="w-96 truncate" title={objective}>
+                  {objective}
+                </p>
+              ) : (
+                '-'
+              ),
+            [],
+          ),
       },
       {
         Header: 'PRIORITY',
@@ -333,6 +349,7 @@ const LeadsTableView = ({ userId }) => {
           rowCountLimit={10}
           handleSorting={handleSortByColumn}
           loading={leadsQuery?.isLoading}
+          className="max-h-[47vh]"
         />
       ) : null}
 

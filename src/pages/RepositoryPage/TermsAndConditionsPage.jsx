@@ -187,6 +187,7 @@ const TermsAndConditionsPage = () => {
         rowCountLimit={10}
         handleSorting={handleSortByColumn}
         loading={proposalTermsQuery.isLoading || deleteProposalTerms.isLoading}
+        className="max-h-[72vh]"
       />
       <SuccessModal
         title="Terms and Conditions Successfully Added"

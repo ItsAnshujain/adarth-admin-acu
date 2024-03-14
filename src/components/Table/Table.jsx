@@ -75,12 +75,12 @@ const Table = ({
   };
   return (
     <div className={classNames('min-h-[450px] flex flex-col justify-between', classNameWrapper)}>
-      <div className={classNames('overflow-x-auto', className)}>
+      <div className={classNames('overflow-auto', className)}>
         {loading ? (
           <Loader className="mx-auto" />
         ) : (
           <table className="w-full" {...getTableProps()}>
-            <thead className="bg-gray-100">
+            <thead className="bg-gray-100 sticky top-0 z-50">
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {allowRowsSelect && (

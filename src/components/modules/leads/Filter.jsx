@@ -36,7 +36,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
   const leadSource = searchParams.get('leadSource');
   const priority = searchParams.get('priority');
-  const companyRepresentingIds = searchParams.get('companyRepresenting');
+  const companyRepresentingIds = searchParams.get('companyRepresentingIds');
   const stage = searchParams.get('stage');
   const createdByIds = searchParams.get('createdByIds');
   const companyType = searchParams.get('companyType');
