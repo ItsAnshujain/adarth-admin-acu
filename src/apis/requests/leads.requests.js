@@ -13,4 +13,6 @@ export const updateLead = (id, payload) => http.patch(`/lead/${id}`, payload);
 
 export const deleteLead = id => http.delete(`/lead/${id}`);
 
+export const leadAgencyStats = filter => http.get(`/lead/agency/stats?${filter}`);
+
 export default fetchLeads;

@@ -14,11 +14,16 @@ import Search from '../../components/Search';
 import AreaHeader from '../../components/modules/bookings/Header';
 import {
   useBookings,
-  useBookingStats,
   useUpdateBooking,
   useUpdateBookingStatus,
 } from '../../apis/queries/booking.queries';
-import { checkCampaignStats, generateSlNo, serialize } from '../../utils';
+import {
+  checkCampaignStats,
+  financialEndDate,
+  financialStartDate,
+  generateSlNo,
+  serialize,
+} from '../../utils';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import BookingStatisticsView from '../../components/modules/bookings/BookingStatisticsView';
@@ -27,6 +32,7 @@ import BookingsMenuPopover from '../../components/Popovers/BookingsMenuPopover';
 import useLayoutView from '../../store/layout.store';
 import { BOOKING_PAID_STATUS } from '../../utils/constants';
 import PriceBreakdownDrawer from '../../components/modules/bookings/ViewOrders/PriceBreakdownDrawer';
+import { useLeadAgencyStats } from '../../apis/queries/leads.queries';
 
 const statusSelectStyle = {
   rightSection: { pointerEvents: 'none' },
@@ -58,7 +64,12 @@ const BookingsDashboardPage = () => {
   const { data: bookingData, isLoading: isLoadingBookingData } = useBookings(
     searchParams.toString(),
   );
-  const { data: bookingStats, isLoading: isBookingStatsLoading } = useBookingStats('');
+  const { data: leadStats, isLoading: isLeadStatsLoading } = useLeadAgencyStats(
+    serialize({
+      from: financialStartDate,
+      to: financialEndDate,
+    }),
+  );
   const { data: campaignStatus } = useFetchMasters(
     serialize({
       type: 'booking_campaign_status',
@@ -613,7 +624,7 @@ const BookingsDashboardPage = () => {
   return (
     <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto px-5">
       <AreaHeader text="Order" />
-      <BookingStatisticsView bookingStats={bookingStats} isLoading={isBookingStatsLoading} />
+      <BookingStatisticsView LeadStats={leadStats} isLoading={isLeadStatsLoading} />
       <div className="flex justify-between h-20 items-center">
         <RowsPerPage
           setCount={currentLimit => {

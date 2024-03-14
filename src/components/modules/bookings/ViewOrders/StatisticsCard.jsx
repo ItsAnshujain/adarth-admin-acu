@@ -5,6 +5,8 @@ import { Doughnut } from 'react-chartjs-2';
 import { Loader } from '@mantine/core';
 import completed from '../../../../assets/completed.svg';
 import toIndianCurrency from '../../../../utils/currencyFormat';
+import { useLeadAgencyStats } from '../../../../apis/queries/leads.queries';
+import { financialEndDate, financialStartDate, serialize } from '../../../../utils';
 
 export const data = {
   datasets: [
@@ -27,21 +29,40 @@ const StatisticsCard = () => {
   const queryClient = useQueryClient();
   const { id: bookingId } = useParams();
   const bookingData = queryClient.getQueryData(['booking-by-id', bookingId]);
-  const bookingStats = queryClient.getQueryData(['booking-stats', '']);
+  const { data: LeadStats, isLoading: isLeadStatsLoading } = useLeadAgencyStats(
+    serialize({
+      from: financialStartDate,
+      to: financialEndDate,
+    }),
+  );
   const bookingStatsById = queryClient.getQueryData(['booking-stats-by-id', bookingId]);
+  const directClientCount = useMemo(
+    () => LeadStats?.agency?.filter(stat => stat._id === 'directClient')?.[0]?.count || 0,
+    [LeadStats?.agency],
+  );
+
+  const localAgencyCount = useMemo(
+    () => LeadStats?.agency?.filter(stat => stat._id === 'localAgency')?.[0]?.count || 0,
+    [LeadStats?.agency],
+  );
+
+  const nationalAgencyCount = useMemo(
+    () => LeadStats?.agency?.filter(stat => stat._id === 'nationalAgency')?.[0]?.count || 0,
+    [LeadStats?.agency],
+  );
 
   const healthStatusData = useMemo(
     () => ({
       datasets: [
         {
-          data: [bookingStats?.offline ?? 0, bookingStats?.online ?? 0],
-          backgroundColor: ['#FF900E', '#914EFB'],
-          borderColor: ['#FF900E', '#914EFB'],
+          data: [directClientCount ?? 0, localAgencyCount ?? 0, nationalAgencyCount ?? 0],
+          backgroundColor: ['#FF900E', '#914EFB', '#4BC0C0'],
+          borderColor: ['#FF900E', '#914EFB', '#4BC0C0'],
           borderWidth: 1,
         },
       ],
     }),
-    [bookingStats],
+    [LeadStats],
   );
 
   const outstandingBalanceData = useMemo(
@@ -67,9 +88,9 @@ const StatisticsCard = () => {
       <div className="flex flex-wrap gap-x-8">
         <div className="flex gap-x-4 p-4 border rounded-md items-center">
           <div className="w-32">
-            {!bookingStats ? (
+            {isLeadStatsLoading ? (
               <Loader className="mx-auto" />
-            ) : bookingStats?.online === 0 && bookingStats?.offline === 0 ? (
+            ) : !LeadStats?.agency?.length ? (
               <p className="text-center">NA</p>
             ) : (
               <Doughnut options={config.options} data={healthStatusData} />
@@ -79,17 +100,24 @@ const StatisticsCard = () => {
             <p className="font-medium">Booking Type</p>
             <div className="flex gap-8 mt-6">
               <div className="flex gap-2 items-center">
-                <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+                <div className="h-2 w-1 p-2 rounded-full bg-orange-350" />
                 <div>
-                  <p className="text-xs font-lighter mb-1">Online Sale</p>
-                  <p className="font-bold text-md">{bookingStats?.online ?? 0}</p>
+                  <p className="text-xs font-lighter mb-1">Direct Client</p>
+                  <p className="font-bold text-md">{directClientCount ?? 0}</p>
                 </div>
               </div>
               <div className="flex gap-2 items-center">
-                <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+                <div className="h-2 w-1 p-2 bg-purple-350 rounded-full" />
                 <div>
-                  <p className="font-lighter text-xs mb-1">Offline Sale</p>
-                  <p className="font-bold text-md">{bookingStats?.offline ?? 0}</p>
+                  <p className="font-lighter text-xs mb-1">Local Agency</p>
+                  <p className="font-bold text-md">{localAgencyCount ?? 0}</p>
+                </div>
+              </div>
+              <div className="flex gap-2 items-center">
+                <div className="h-2 w-1 p-2 bg-green-350 rounded-full" />
+                <div>
+                  <p className="font-lighter text-xs mb-1">National Agency</p>
+                  <p className="font-bold text-md">{nationalAgencyCount ?? 0}</p>
                 </div>
               </div>
             </div>

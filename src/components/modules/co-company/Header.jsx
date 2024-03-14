@@ -173,6 +173,7 @@ const Header = () => {
       },
       {
         Header: 'STATE & STATE CODE',
+        accessor: 'companyAddress.state',
         Cell: ({
           row: {
             original: {
