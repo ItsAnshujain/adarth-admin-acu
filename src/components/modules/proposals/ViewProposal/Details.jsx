@@ -21,10 +21,11 @@ import { useDisclosure } from '@mantine/hooks';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import modalConfig from '../../../../utils/modalConfig';
 import PriceBreakdownDrawer from '../../bookings/ViewOrders/PriceBreakdownDrawer';
+import InventoryPreviewImage from '../../../shared/InventoryPreviewImage';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 const TRANSITION_DURATION = 200;
-const updatedModalConfig = { ...modalConfig, size: 'xl' };
+const updatedModalConfig = { ...modalConfig, size: 'lg' };
 
 const SkeletonTopWrapper = () => (
   <div className="flex flex-row justify-between gap-2">
@@ -45,10 +46,40 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
     const tempPics = [];
     const tempArr = inventoryData;
     tempArr?.docs?.map(item => {
-      if (item?.spacePhoto) tempPics.push(item.spacePhoto);
-      if (item?.longShot) tempPics.push(item.longShot);
-      if (item?.closeShot) tempPics.push(item.closeShot);
-      if (item?.otherPhotos) tempPics.push(...item.otherPhotos);
+      if (item?.spacePhoto)
+        tempPics.push({
+          imgSrc: item?.spacePhoto,
+          location: item?.city,
+          dimension: item?.size,
+          inventoryName: item?.spaceName,
+        });
+
+      if (item?.longShot)
+        tempPics.push({
+          imgSrc: item.longShot,
+          location: item?.city,
+          dimension: item?.size,
+          inventoryName: item?.spaceName,
+        });
+
+      if (item?.closeShot)
+        tempPics.push({
+          imgSrc: item.closeShot,
+          location: item?.city,
+          dimension: item?.size,
+          inventoryName: item?.spaceName,
+        });
+
+      if (item?.otherPhotos.length > 0)
+        item?.otherPhotos?.map(otherPhoto =>
+          tempPics.push({
+            imgSrc: otherPhoto,
+            location: item?.city,
+            dimension: item?.size,
+            inventoryName: item?.spaceName,
+          }),
+        );
+
       return tempPics;
     });
 
@@ -62,7 +93,6 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
         modalBody: (
           <Carousel
             align="center"
-            height={400}
             className="px-3"
             loop
             mx="auto"
@@ -78,7 +108,12 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
             {previewSpacesPhotos.length &&
               previewSpacesPhotos.map(item => (
                 <Carousel.Slide key={uuidv4()}>
-                  <Image src={item} height={400} width="100%" alt="preview" fit="contain" />
+                  <InventoryPreviewImage
+                    imgSrc={item?.imgSrc}
+                    dimensions={item?.dimension}
+                    location={item?.location}
+                    inventoryName={item?.inventoryName}
+                  />{' '}
                 </Carousel.Slide>
               ))}
           </Carousel>
@@ -151,14 +186,14 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
             <div className="flex flex-1 flex-col">
               <div className="flex flex-row flex-wrap justify-start">
                 {previewSpacesPhotos?.map(
-                  (src, index) =>
+                  (item, index) =>
                     index < 4 && (
                       <Image
                         key={uuidv4()}
                         className="mr-2 mb-4 border-[1px] border-gray bg-slate-100 cursor-zoom-in"
                         height={index === 0 ? 300 : 96}
                         width={index === 0 ? '100%' : 112}
-                        src={src}
+                        src={item?.imgSrc}
                         fit="cover"
                         alt="poster"
                         onClick={() => toggleImagePreviewModal(index)}

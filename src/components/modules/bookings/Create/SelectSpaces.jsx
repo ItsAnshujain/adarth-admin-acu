@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Image, NumberInput, Loader, Group, Tooltip } from '@mantine/core';
+import { Button, NumberInput, Loader, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
@@ -40,16 +40,17 @@ import SubCategoryContent from '../../inventory/SubCategoryContent';
 import UploadMediaContent from '../../inventory/UploadMediaContent';
 import DimensionContent from '../../inventory/DimensionContent';
 import AddEditPriceDrawer from './AddEditPriceDrawer';
+import InventoryPreviewImage from '../../../shared/InventoryPreviewImage';
 
 dayjs.extend(isBetween);
 
 const updatedModalConfig = {
   ...modalConfig,
   classNames: {
-    title: 'font-dmSans text-xl px-4',
-    header: 'px-4 pt-4',
+    title: 'font-dmSans text-xl px-4 font-bold',
+    header: 'p-4',
     body: '',
-    close: 'mr-4',
+    close: 'mr-4 text-black',
   },
 };
 
@@ -337,11 +338,16 @@ const SelectSpace = () => {
     }
   };
 
-  const togglePreviewModal = imgSrc =>
+  const togglePreviewModal = (imgSrc, spaceName, dimensions, location) =>
     modals.openModal({
       title: 'Preview',
       children: (
-        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+        <InventoryPreviewImage
+          imgSrc={imgSrc}
+          inventoryName={spaceName}
+          dimensions={dimensions}
+          location={location}
+        />
       ),
       ...updatedModalConfig,
     });
@@ -361,14 +367,17 @@ const SelectSpace = () => {
       originalUnit,
       _id,
       basicInformation,
+      location,
+      dimension,
     } = row.original;
     const unitLeft = getAvailableUnits(bookingRange, currentDate, currentDate, originalUnit);
     const occupiedState = getOccupiedState(unitLeft, originalUnit);
-
     return (
       <SpaceNamePhotoContent
         id={_id}
-        spaceName={spaceName || basicInformation?.spaceName}
+        spaceName={spaceName}
+        dimensions={dimension}
+        location={location?.city}
         spacePhoto={photo || basicInformation?.spacePhoto}
         occupiedStateLabel={occupiedState}
         isUnderMaintenance={isUnderMaintenance}

@@ -37,14 +37,15 @@ import MarkerIcon from '../../assets/pin.svg';
 import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
 import { useFetchMasterById } from '../../apis/queries/masters.queries';
 import ViewPriceDrawer from '../../components/modules/proposals/ViewProposal/ViewPriceDrawer';
+import InventoryPreviewImage from '../../components/shared/InventoryPreviewImage';
 
 const updatedModalConfig = {
   ...modalConfig,
   classNames: {
-    title: 'font-dmSans text-xl px-4',
-    header: 'px-4 pt-4',
+    title: 'font-dmSans text-xl px-4 font-bold',
+    header: 'p-4',
     body: '',
-    close: 'mr-4',
+    close: 'mr-4 text-black',
   },
 };
 
@@ -97,11 +98,16 @@ const ProposalDetailsPage = () => {
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
-  const togglePreviewModal = imgSrc =>
+  const togglePreviewModal = (imgSrc, inventoryName, dimensions, location) =>
     modals.openModal({
       title: 'Preview',
       children: (
-        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+        <InventoryPreviewImage
+          imgSrc={imgSrc || null}
+          inventoryName={inventoryName}
+          dimensions={dimensions}
+          location={location}
+        />
       ),
       ...updatedModalConfig,
     });
@@ -136,7 +142,16 @@ const ProposalDetailsPage = () => {
         accessor: 'spaceName',
         Cell: ({
           row: {
-            original: { _id, spaceName, spacePhoto, isUnderMaintenance, bookingRange, unit },
+            original: {
+              _id,
+              spaceName,
+              spacePhoto,
+              isUnderMaintenance,
+              bookingRange,
+              unit,
+              size,
+              city,
+            },
           },
         }) =>
           useMemo(() => {
@@ -149,6 +164,8 @@ const ProposalDetailsPage = () => {
                 id={_id}
                 spaceName={spaceName}
                 spacePhoto={spacePhoto}
+                dimensions={size}
+                location={city}
                 occupiedStateLabel={occupiedState}
                 isUnderMaintenance={isUnderMaintenance}
                 togglePreviewModal={togglePreviewModal}

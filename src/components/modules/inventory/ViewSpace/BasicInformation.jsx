@@ -17,11 +17,12 @@ import {
 } from '../../../../utils';
 import modalConfig from '../../../../utils/modalConfig';
 import { DATE_FORMAT } from '../../../../utils/constants';
+import InventoryPreviewImage from '../../../shared/InventoryPreviewImage';
 
 dayjs.extend(isBetween);
 
 const TRANSITION_DURATION = 200;
-const updatedModalConfig = { ...modalConfig, size: 'xl' };
+const updatedModalConfig = { ...modalConfig, size: 'lg' };
 
 const SkeletonTopWrapper = () => (
   <div className="flex flex-col gap-2">
@@ -122,7 +123,6 @@ const BasicInfo = ({
         modalBody: (
           <Carousel
             align="center"
-            height={400}
             className="px-3"
             loop
             mx="auto"
@@ -137,7 +137,11 @@ const BasicInfo = ({
             {previewSpacesPhotos.length &&
               previewSpacesPhotos.map(item => (
                 <Carousel.Slide>
-                  <Image src={item} height={400} width="100%" alt="preview" fit="contain" />
+                  <InventoryPreviewImage
+                    imgSrc={item}
+                    dimensions={inventoryDetails?.specifications?.size}
+                    location={inventoryDetails?.location?.city}
+                  />
                 </Carousel.Slide>
               ))}
           </Carousel>
