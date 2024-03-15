@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Text, Button, Image, NumberInput, Badge, Loader, Group, Tooltip } from '@mantine/core';
+import { Text, Button, NumberInput, Badge, Loader, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
@@ -41,16 +41,17 @@ import AddEditPriceDrawer from '../bookings/Create/AddEditPriceDrawer';
 import SelectColumns from './SelectColumns';
 import { proposalColumns } from '../../../utils/constants';
 import DimensionContent from '../inventory/DimensionContent';
+import InventoryPreviewImage from '../../shared/InventoryPreviewImage';
 
 dayjs.extend(isBetween);
 
 const updatedModalConfig = {
   ...modalConfig,
   classNames: {
-    title: 'font-dmSans text-xl px-4',
-    header: 'px-4 pt-4',
+    title: 'font-dmSans text-xl px-4 font-bold',
+    header: 'p-4',
     body: '',
-    close: 'mr-4',
+    close: 'mr-4 text-black',
   },
 };
 
@@ -221,11 +222,16 @@ const Spaces = () => {
     }
   }, 500);
 
-  const togglePreviewModal = imgSrc =>
+  const togglePreviewModal = (imgSrc, inventoryName, dimensions, location) =>
     modals.openModal({
       title: 'Preview',
       children: (
-        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+        <InventoryPreviewImage
+          imgSrc={imgSrc}
+          inventoryName={inventoryName}
+          dimensions={dimensions}
+          location={location}
+        />
       ),
       ...updatedModalConfig,
     });
@@ -276,6 +282,8 @@ const Spaces = () => {
               isUnderMaintenance,
               bookingRange,
               originalUnit,
+              dimension,
+              location,
             },
           },
         }) =>
@@ -293,6 +301,8 @@ const Spaces = () => {
                 id={_id}
                 spaceName={spaceName}
                 spacePhoto={spacePhoto}
+                dimensions={dimension}
+                location={location?.city}
                 occupiedStateLabel={occupiedState}
                 isUnderMaintenance={isUnderMaintenance}
                 togglePreviewModal={togglePreviewModal}

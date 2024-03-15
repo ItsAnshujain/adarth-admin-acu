@@ -28,9 +28,10 @@ import modalConfig from '../../../../utils/modalConfig';
 import { indianMapCoordinates } from '../../../../utils';
 import PriceBreakdownDrawer from './PriceBreakdownDrawer';
 import AddEditPriceDrawer from '../Create/AddEditPriceDrawer';
+import InventoryPreviewImage from '../../../shared/InventoryPreviewImage';
 
 const TRANSITION_DURATION = 200;
-const updatedModalConfig = { ...modalConfig, size: 'xl' };
+const updatedModalConfig = { ...modalConfig, size: 'lg' };
 
 const defaultProps = {
   center: {
@@ -73,8 +74,23 @@ const Overview = ({ bookingData = {}, isLoading }) => {
     const tempPics = [];
     const tempArr = bookingData;
     tempArr?.campaign?.spaces?.map(item => {
-      if (item?.basicInformation?.spacePhoto) tempPics.push(item.basicInformation.spacePhoto);
-      if (item?.basicInformation?.otherPhotos) tempPics.push(...item.basicInformation.otherPhotos);
+      if (item?.basicInformation?.spacePhoto)
+        tempPics.push({
+          imgSrc: item?.basicInformation?.spacePhoto,
+          location: item?.location?.city,
+          dimension: item?.specifications?.size,
+          inventoryName: item?.basicInformation?.spaceName,
+        });
+      if (item?.basicInformation?.otherPhotos.length > 0)
+        item?.basicInformation?.otherPhotos?.map(otherPhoto =>
+          tempPics.push({
+            imgSrc: otherPhoto,
+            location: item?.location?.city,
+            dimension: item?.specifications?.size,
+            inventoryName: item?.basicInformation?.spaceName,
+          }),
+        );
+
       return tempPics;
     });
 
@@ -98,7 +114,6 @@ const Overview = ({ bookingData = {}, isLoading }) => {
         modalBody: (
           <Carousel
             align="center"
-            height={400}
             className="px-3"
             loop
             mx="auto"
@@ -112,13 +127,18 @@ const Overview = ({ bookingData = {}, isLoading }) => {
           >
             {previewSpacesPhotos.length &&
               previewSpacesPhotos.map(item =>
-                item && !item?.includes(['mp4']) ? (
+                item && !item?.imgSrc?.includes(['mp4']) ? (
                   <Carousel.Slide>
-                    <Image src={item} height={400} width="100%" alt="preview" fit="contain" />
+                    <InventoryPreviewImage
+                      imgSrc={item?.imgSrc}
+                      dimensions={item?.dimension}
+                      location={item?.location}
+                      inventoryName={item?.inventoryName}
+                    />
                   </Carousel.Slide>
                 ) : (
                   <Carousel.Slide>
-                    <ReactPlayer url={`${item}#t=0.1`} width="100%" height="100%" />
+                    <ReactPlayer url={`${item.imgSrc}#t=0.1`} width="100%" height="100%" />
                   </Carousel.Slide>
                 ),
               )}
@@ -170,14 +190,14 @@ const Overview = ({ bookingData = {}, isLoading }) => {
               <div className="flex flex-1 flex-col w-full">
                 <div className="flex flex-row flex-wrap justify-start">
                   {previewSpacesPhotos?.map(
-                    (src, index) =>
+                    (item, index) =>
                       index < 4 && (
                         <Image
                           key={uuidv4()}
                           className="mr-2 mb-4 border-[1px] border-gray bg-slate-100 cursor-zoom-in"
                           height={index === 0 ? 300 : 96}
                           width={index === 0 ? '100%' : 112}
-                          src={src}
+                          src={item?.imgSrc}
                           fit="cover"
                           alt="poster"
                           onClick={() => toggleImagePreviewModal(index)}

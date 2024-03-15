@@ -18,13 +18,15 @@ import { useFetchMasters } from '../../apis/queries/masters.queries';
 import useLayoutView from '../../store/layout.store';
 import CampaignsMenuPopover from '../../components/Popovers/CampaignsMenuPopover';
 import modalConfig from '../../utils/modalConfig';
+import InventoryPreviewImage from '../../components/shared/InventoryPreviewImage';
 
 const updatedModalConfig = {
   ...modalConfig,
+  size: 'xl',
   classNames: {
-    title: 'font-dmSans text-xl px-4',
-    header: 'px-4 pt-4',
-    body: '',
+    title: 'font-dmSans text-xl',
+    header: 'py-4 p-6',
+    body: 'overflow-auto',
     close: 'mr-4',
   },
 };
@@ -76,11 +78,16 @@ const CampaignsDashboardPage = () => {
     [campaignStatus],
   );
 
-  const togglePreviewModal = imgSrc =>
+  const togglePreviewModal = (imgSrc, inventoryName, dimensions, location) =>
     modals.openModal({
       title: 'Preview',
       children: (
-        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+        <InventoryPreviewImage
+          imgSrc={imgSrc}
+          inventoryName={inventoryName}
+          dimensions={dimensions}
+          location={location}
+        />
       ),
       ...updatedModalConfig,
     });
@@ -109,7 +116,7 @@ const CampaignsDashboardPage = () => {
                     'bg-white border rounded-md',
                     thumbnail ? 'cursor-zoom-in' : '',
                   )}
-                  onClick={() => (thumbnail ? togglePreviewModal(thumbnail) : null)}
+                  onClick={() => (thumbnail ? togglePreviewModal(thumbnail, name) : null)}
                 >
                   {thumbnail ? (
                     <Image src={thumbnail} alt="thumbnail" height={32} width={32} />

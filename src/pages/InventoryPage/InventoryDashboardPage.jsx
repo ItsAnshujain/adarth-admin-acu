@@ -42,16 +42,17 @@ import ShareContent from '../../components/modules/proposals/ViewProposal/ShareC
 import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
 import VacantInventoryFilter from '../../components/modules/inventory/VacantInventoryFilterContent';
 import { DATE_FORMAT } from '../../utils/constants';
+import InventoryPreviewImage from '../../components/shared/InventoryPreviewImage';
 
 dayjs.extend(isBetween);
 
 const updatedModalConfig = {
   ...modalConfig,
   classNames: {
-    title: 'font-dmSans text-xl px-4',
-    header: 'px-4 pt-4',
+    title: 'font-dmSans text-xl px-4 font-bold',
+    header: 'p-4',
     body: '',
-    close: 'mr-4',
+    close: 'mr-4 text-black',
   },
 };
 
@@ -88,11 +89,16 @@ const InventoryDashboardPage = () => {
   const limit = searchParams.get('limit');
   const isActive = searchParams.get('isActive');
 
-  const togglePreviewModal = imgSrc =>
+  const togglePreviewModal = (imgSrc, inventoryName, dimensions, location) =>
     modals.openModal({
       title: 'Preview',
       children: (
-        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+        <InventoryPreviewImage
+          imgSrc={imgSrc}
+          inventoryName={inventoryName}
+          dimensions={dimensions}
+          location={location}
+        />
       ),
       ...updatedModalConfig,
     });
@@ -121,12 +127,13 @@ const InventoryDashboardPage = () => {
               unitLeft,
               info.row.original.specifications?.unit,
             );
-
             return (
               <SpaceNamePhotoContent
                 id={info.row.original._id}
                 spaceName={info.row.original.basicInformation?.spaceName}
                 spacePhoto={info.row.original.basicInformation?.spacePhoto}
+                dimensions={info.row.original.specifications?.size}
+                location={info.row.original.location?.city}
                 occupiedStateLabel={occupiedState}
                 isUnderMaintenance={info.row.original.isUnderMaintenance}
                 togglePreviewModal={togglePreviewModal}

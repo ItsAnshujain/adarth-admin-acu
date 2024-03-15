@@ -18,8 +18,8 @@ const GalleryImagesDashboardPage = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     'page': 1,
     'limit': 10,
-    'sortBy': 'createdAt',
-    'sortOrder': 'desc',
+    'sortBy': 'name',
+    'sortOrder': 'asc',
   });
 
   const page = searchParams.get('page');

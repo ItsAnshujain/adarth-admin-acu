@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Text, Button, Image, Badge, Loader } from '@mantine/core';
+import { Text, Button, Badge, Loader } from '@mantine/core';
 import { Plus } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
@@ -15,14 +15,15 @@ import toIndianCurrency from '../../../../utils/currencyFormat';
 import modalConfig from '../../../../utils/modalConfig';
 import SpacesMenuPopover from '../../../Popovers/SpacesMenuPopover';
 import SpaceNamePhotoContent from '../../inventory/SpaceNamePhotoContent';
+import InventoryPreviewImage from '../../../shared/InventoryPreviewImage';
 
 const updatedModalConfig = {
   ...modalConfig,
   classNames: {
-    title: 'font-dmSans text-xl px-4',
-    header: 'px-4 pt-4',
+    title: 'font-dmSans text-xl px-4 font-bold',
+    header: 'p-4',
     body: '',
-    close: 'mr-4',
+    close: 'mr-4 text-black',
   },
 };
 
@@ -44,11 +45,16 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
   const page = searchParams.get('page');
   const limit = searchParams.get('limit');
 
-  const togglePreviewModal = imgSrc =>
+  const togglePreviewModal = (imgSrc, inventoryName, dimensions, location) =>
     modals.openModal({
       title: 'Preview',
       children: (
-        <Image src={imgSrc || null} height={580} alt="preview" withPlaceholder={!!imgSrc} />
+        <InventoryPreviewImage
+          imgSrc={imgSrc}
+          inventoryName={inventoryName}
+          dimensions={dimensions}
+          location={location}
+        />
       ),
       ...updatedModalConfig,
     });
@@ -66,7 +72,7 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
         accessor: 'basicInformation.spaceName',
         Cell: ({
           row: {
-            original: { basicInformation, isUnderMaintenance, _id },
+            original: { basicInformation, isUnderMaintenance, specifications, location, _id },
           },
         }) =>
           useMemo(
@@ -75,6 +81,8 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
                 id={_id}
                 spaceName={basicInformation?.spaceName}
                 spacePhoto={basicInformation?.spacePhoto}
+                dimensions={specifications?.size}
+                location={location?.city}
                 occupiedStateLabel="Available"
                 isUnderMaintenance={isUnderMaintenance}
                 togglePreviewModal={togglePreviewModal}

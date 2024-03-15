@@ -12,9 +12,10 @@ import { GOOGLE_MAPS_API_KEY } from '../../../../utils/config';
 import Places from './Places';
 import modalConfig from '../../../../utils/modalConfig';
 import { indianMapCoordinates } from '../../../../utils';
+import InventoryPreviewImage from '../../../shared/InventoryPreviewImage';
 
 const TRANSITION_DURATION = 200;
-const updatedModalConfig = { ...modalConfig, size: 'xl' };
+const updatedModalConfig = { ...modalConfig, size: 'lg' };
 
 const defaultProps = {
   center: {
@@ -54,7 +55,6 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
         modalBody: (
           <Carousel
             align="center"
-            height={400}
             className="px-3"
             loop
             mx="auto"
@@ -66,10 +66,15 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
             classNames={{ indicator: 'bg-white-200' }}
             getEmblaApi={setEmbla}
           >
-            {previewSpacesPhotos.length &&
+            {previewSpacesPhotos?.length &&
               previewSpacesPhotos.map(item => (
                 <Carousel.Slide>
-                  <Image src={item} height={400} width="100%" alt="preview" fit="contain" />
+                  <InventoryPreviewImage
+                    imgSrc={item?.imgSrc}
+                    dimensions={item?.dimension}
+                    location={item?.location}
+                    inventoryName={item?.inventoryName}
+                  />
                 </Carousel.Slide>
               ))}
           </Carousel>
@@ -90,8 +95,23 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
     const tempPics = [];
     const tempArr = spacesData;
     tempArr?.docs?.map(item => {
-      if (item?.basicInformation?.spacePhoto) tempPics.push(item.basicInformation.spacePhoto);
-      if (item?.basicInformation?.otherPhotos) tempPics.push(...item.basicInformation.otherPhotos);
+      if (item?.basicInformation?.spacePhoto)
+        tempPics.push({
+          imgSrc: item?.basicInformation?.spacePhoto,
+          location: item?.location?.city,
+          dimension: item?.specifications?.size,
+          inventoryName: item?.basicInformation?.spaceName,
+        });
+
+      if (item?.basicInformation?.otherPhotos?.length > 0)
+        item?.basicInformation?.otherPhotos?.map(otherPhoto =>
+          tempPics.push({
+            imgSrc: otherPhoto,
+            location: item?.location?.city,
+            dimension: item?.specifications?.size,
+            inventoryName: item?.basicInformation?.spaceName,
+          }),
+        );
       return tempPics;
     });
 
@@ -154,13 +174,13 @@ const Overview = ({ campaignData = {}, spacesData = {}, isCampaignDataLoading })
             ) : null}
             <div className="flex flex-row flex-wrap justify-start">
               {previewSpacesPhotos?.map(
-                (src, index) =>
+                (item, index) =>
                   index < 4 && (
                     <Image
                       key={uuidv4()}
                       height={index === 0 ? 300 : 96}
                       width={index === 0 ? '100%' : 112}
-                      src={src}
+                      src={item?.imgSrc}
                       fit="cover"
                       alt="poster"
                       className="mr-2 mb-4 border-[1px] border-gray bg-slate-100 cursor-zoom-in"

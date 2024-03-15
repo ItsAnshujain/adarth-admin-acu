@@ -10,13 +10,13 @@ import ImageCard from './ImageCard';
 const TRANSITION_DURATION = 200;
 const updatedModalConfig = {
   ...modalConfig,
-  size: 'xl',
   classNames: {
-    title: 'font-dmSans text-xl',
-    header: 'py-4 p-6',
+    title: 'font-dmSans text-xl px-4 font-bold',
+    header: 'py-4',
     body: 'overflow-auto',
-    close: 'mr-4',
+    close: 'mr-4 text-black',
   },
+  size: 'xl',
 };
 
 const ImagesList = ({ imagesData, selectedImages, setSelectedImages }) => {
@@ -38,15 +38,18 @@ const ImagesList = ({ imagesData, selectedImages, setSelectedImages }) => {
             slideGap="lg"
             controlsOffset="lg"
             initialSlide={imgIndex}
-            nextControlIcon={<ChevronRight size={40} className="bg-white rounded-full" />}
-            previousControlIcon={<ChevronLeft size={40} className="bg-white rounded-full" />}
+            nextControlIcon={<ChevronRight size={30} className="bg-white rounded-full" />}
+            previousControlIcon={<ChevronLeft size={30} className="bg-white rounded-full" />}
             classNames={{ indicator: 'bg-white-200' }}
             getEmblaApi={setEmbla}
           >
             {imagesData?.length &&
               imagesData?.map(item => (
-                <Carousel.Slide key={uuidv4()}>
+                <Carousel.Slide key={uuidv4()} className="relative">
                   <Image src={item.url} height={400} width="100%" alt="preview" fit="fill" />
+                  <div className="absolute bg-gradient-to-t from-black/70 to-black/0 h-full w-full top-0 flex items-end p-6 text-xl text-white">
+                    {item.name}
+                  </div>
                 </Carousel.Slide>
               ))}
           </Carousel>
