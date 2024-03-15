@@ -119,7 +119,22 @@ const SidebarContent = ({ className }) => {
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
       {
-        /* TODO: Remove comment for repository */
+        label: 'Leads',
+        path: '/leads/leads-dashboard',
+        icon: LeadsIcon,
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+      },
+      {
+        label: 'Repository',
+        path: '/repository',
+        nested: [
+          { label: 'Terms & Conditions', subPath: '/terms-and-conditions' },
+          { label: 'Company', subPath: '/company' },
+          { label: 'Co-Company', subPath: '/co-company' },
+          { label: 'Contact', subPath: '/contact' },
+        ],
+        icon: CloudIcon,
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
       // {
       //   label: 'Leads',

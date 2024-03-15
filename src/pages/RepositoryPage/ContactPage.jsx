@@ -20,7 +20,7 @@ const updatedModalConfig = {
   size: '1000px',
   classNames: {
     title: 'font-dmSans text-2xl font-bold px-4',
-    header: 'px-4 py-4 border-b border-gray-450',
+    header: 'p-4 border-b border-gray-450',
     body: '',
     close: 'mr-4',
   },
@@ -28,7 +28,7 @@ const updatedModalConfig = {
 
 const ContactPage = () => {
   const [searchInput, setSearchInput] = useState('');
-  const [open, setOpenSuccessModal] = useState(false);
+  const [successModalOpened, setOpenSuccessModal] = useState(false);
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
@@ -88,7 +88,8 @@ const ContactPage = () => {
       {
         Header: '#',
         accessor: 'id',
-        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, 1, 10)}</p>, []),
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'NAME',
@@ -98,6 +99,11 @@ const ContactPage = () => {
         Header: 'CONTACT NUMBER',
         accessor: 'contactNumber',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { contactNumber },
+          },
+        }) => useMemo(() => <p>{contactNumber ? `+91 ${contactNumber}` : '-'}</p>, []),
       },
       {
         Header: 'EMAIL',
@@ -140,7 +146,11 @@ const ContactPage = () => {
           },
         }) =>
           useMemo(
-            () => <p className="bg-gray-450 px-1">{dayjs(birthDate).format(DATE_SECOND_FORMAT)}</p>,
+            () => (
+              <p className="bg-gray-450 px-1">
+                {birthDate ? dayjs(birthDate).format(DATE_SECOND_FORMAT) : '-'}
+              </p>
+            ),
             [],
           ),
       },
@@ -185,8 +195,8 @@ const ContactPage = () => {
     setSearchParams(searchParams);
   };
   return (
-    <div className="overflow-y-auto px-3 col-span-10">
-      <div className="overflow-y-auto px-3 col-span-10">
+    <div className="overflow-y-auto px-2 col-span-10">
+      <div className="overflow-y-auto px-2 col-span-10">
         <Header toggleAddContact={toggleAddContact} />
         <div className="flex justify-between h-20 items-center">
           <RowsPerPage
@@ -206,12 +216,13 @@ const ContactPage = () => {
           rowCountLimit={10}
           handleSorting={handleSortByColumn}
           loading={contactsQuery.isLoading}
+          className="max-h-[72vh]"
         />
       </div>
       <SuccessModal
         title="Contact Successfully Added"
         prompt="Close"
-        open={!!open}
+        open={successModalOpened}
         setOpenSuccessModal={setOpenSuccessModal}
       />
     </div>

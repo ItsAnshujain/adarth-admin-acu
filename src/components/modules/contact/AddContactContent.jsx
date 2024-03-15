@@ -1,4 +1,4 @@
-import { Button } from '@mantine/core';
+import { Button, Image } from '@mantine/core';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -15,10 +15,19 @@ import {
 } from '../../../apis/queries/companies.queries';
 import ControlledDatePickerInput from '../../shared/FormInputs/Controlled/ControlledDatePickerInput';
 import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler';
+import { mobileRegexMatch } from '../../../utils';
+import CalendarIcon from '../../../assets/calendar.svg';
+import SelectLeadCompanyItem from '../leads/SelectLeadCompanyItem';
 
-const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
+const AddContactContent = ({ onCancel, mode, contactData, onSuccess = () => {} }) => {
   const schema = yup.object({
     name: yup.string().trim().required('Name is required'),
+    email: yup.string().trim().email('Invalid Email'),
+    contactNumber: yup
+      .string()
+      .trim()
+      .matches(mobileRegexMatch, { message: 'Must be a valid number', excludeEmptyString: true })
+      .notRequired(),
   });
 
   const form = useForm({
@@ -54,9 +63,9 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
       email: email || undefined,
       contactNumber: contactNumber ? contactNumber?.toString() : '',
       department,
-      birthDate: dayjs(birthDate).endOf('day')?.toISOString(),
+      birthDate: birthDate && dayjs(birthDate).endOf('day')?.toISOString(),
       company,
-      parentCompany: parentCompanyId,
+      parentCompany: parentCompanyId || null,
       address: {
         address: null,
         city,
@@ -101,17 +110,20 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
     [stateAndStateCodeQuery?.data],
   );
 
-  const memoizedCompanies = useMemo(
-    () =>
+  const memoizedCompanies = useMemo(() => {
+    const temp =
       companiesQuery.data?.pages
         .reduce((acc, { docs }) => [...acc, ...docs], [])
         .map(doc => ({
           ...doc,
           label: doc.companyName,
           value: doc._id,
-        })) || [],
-    [companiesQuery?.data],
-  );
+        })) || [];
+
+    temp.push({ label: '', value: '', addMore: true });
+    return temp;
+  }, [companiesQuery?.data]);
+
   const companiesDropdown = useMemo(
     () =>
       DropdownWithHandler(
@@ -138,31 +150,56 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
         parentCompanyId: contactData?.parentCompany?._id,
         company: contactData?.company?._id,
         stateAndStateCode: `(${contactData?.address?.stateCode}) ${contactData?.address?.state}`,
-        contactNumber: Number(contactData?.contactNumber),
-        birthDate: new Date(contactData?.birthDate),
+        contactNumber: Number(contactData?.contactNumber) || '',
+        birthDate: contactData?.birthDate && new Date(contactData?.birthDate),
       });
     }
   }, [contactData]);
+
+  const labelClass = 'font-bold text-base';
+  const datePickerClass = { icon: 'flex justify-end w-full pr-2', input: 'pl-2' };
+
   return (
     <FormProvider {...form}>
       <form onSubmit={onSubmit}>
         <div className="px-8 pt-4">
           <div className="text-2xl font-bold">Basic information</div>
           <div className="grid grid-cols-2 py-4 gap-2">
-            <ControlledTextInput name="name" label="Name" withAsterisk />
-            <ControlledNumberInput type="number" name="contactNumber" label="Contact Number" />
-            <ControlledTextInput name="email" label="Email" />
-            <ControlledTextInput name="department" label="Department" />
+            <ControlledTextInput
+              name="name"
+              label="Name"
+              withAsterisk
+              classNames={{ label: labelClass }}
+            />
+            <ControlledNumberInput
+              type="number"
+              name="contactNumber"
+              label="Contact Number"
+              classNames={{ label: labelClass }}
+            />
+            <ControlledTextInput name="email" label="Email" classNames={{ label: labelClass }} />
+            <ControlledTextInput
+              name="department"
+              label="Department"
+              classNames={{ label: labelClass }}
+            />
             <ControlledSelect
-              dropdownComponent={companiesDropdown}
               data={memoizedCompanies}
               name="company"
               label="Company Name"
               placeholder="Select..."
               clearable
               searchable
+              classNames={{ label: labelClass }}
+              dropdownComponent={companiesDropdown}
+              itemComponent={SelectLeadCompanyItem}
             />
-            <ControlledTextInput name="parentCompany" label="Parent Company Name" disabled />
+            <ControlledTextInput
+              name="parentCompany"
+              label="Parent Company Name"
+              disabled
+              classNames={{ label: labelClass }}
+            />
 
             <ControlledSelect
               data={memoizedStateAndStateCodeList}
@@ -171,13 +208,16 @@ const AddContactContent = ({ onCancel, mode, contactData, onSuccess }) => {
               placeholder="Select..."
               clearable
               searchable
+              classNames={{ label: labelClass }}
             />
-            <ControlledTextInput name="city" label="City" />
+            <ControlledTextInput name="city" label="City" classNames={{ label: labelClass }} />
             <ControlledDatePickerInput
               label="Birthday"
               name="birthDate"
               errors={form.errors}
               clearable
+              icon={<Image src={CalendarIcon} alt="icon" width={20} />}
+              classNames={{ label: labelClass, ...datePickerClass }}
             />
           </div>
 

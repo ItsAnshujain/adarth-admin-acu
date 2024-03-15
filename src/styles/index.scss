@@ -4,8 +4,8 @@
 
 // custom-scroll-design
 *::-webkit-scrollbar {
-  height: 4px;
-  width: 6px;
+  height: 8px;
+  width: 8px;
 }
 
 *::-webkit-scrollbar-track {
@@ -91,4 +91,34 @@
 
 .fc .fc-toolbar.fc-header-toolbar {
   margin-bottom: 0;
+}
+
+// view lead stepper style
+
+.leadStepper .stepperItem {
+  margin: 0 0 0 -19px;
+  clip-path: polygon(
+    20px 50%,
+    0% 0%,
+    calc(100% - 20px) 0%,
+    100% 50%,
+    calc(100% - 20px) 100%,
+    0% 100%
+  );
+
+  &:first-child {
+    padding: 20px;
+    clip-path: polygon(0% 0%, calc(100% - 20px) 0%, 100% 50%, calc(100% - 20px) 100%, 0% 100%);
+  }
+
+  &:last-child {
+    clip-path: polygon(
+      20px 50%,
+      0% 0%,
+      calc(100% - 20px) 0%,
+      100% 50%,
+      calc(100% - 20px) 100%,
+      0% 100%
+    );
+  }
 }

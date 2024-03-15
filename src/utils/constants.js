@@ -204,3 +204,73 @@ export const CompanyTypeOptions = [
   { label: 'Printer', value: 'printer' },
   { label: 'Others', value: 'others' },
 ];
+
+export const leadStageOptions = [
+  {
+    label: 'Initiate Discussion',
+    value: 'initiateDiscussion',
+    color: '#FF900E',
+  },
+  {
+    label: 'In Progress',
+    value: 'inProgress',
+    color: '#914EFB',
+  },
+  {
+    label: 'Converted',
+    value: 'converted',
+    color: '#4BC0C0',
+  },
+  {
+    label: 'Lost',
+    value: 'lost',
+    color: '#FD3434',
+  },
+];
+
+export const leadPriorityOptions = [
+  {
+    label: 'Low',
+    value: 'low',
+    color: '#28B446',
+  },
+  {
+    label: 'Medium',
+    value: 'medium',
+    color: '#FF900E',
+  },
+  {
+    label: 'High',
+    value: 'high',
+    color: '#FD3434',
+  },
+];
+
+export const leadProspectOptions = ['inbound', 'outbound'];
+
+export const leadCommunicationTypeOptions = [
+  {
+    label: 'Email',
+    value: 'email',
+  },
+  {
+    label: 'Phone Call',
+    value: 'phone',
+  },
+  {
+    label: 'Video Call',
+    value: 'videoCall',
+  },
+  {
+    label: 'In Person Meeting',
+    value: 'inPersonMeeting',
+  },
+  {
+    label: 'Demo Call',
+    value: 'demoCall',
+  },
+  {
+    label: 'In Person Demo',
+    value: 'inPersonDemo',
+  },
+];

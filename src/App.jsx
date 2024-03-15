@@ -24,6 +24,7 @@ import ViewCompanyPage from './pages/RepositoryPage/ViewCompanyPage';
 import ViewContactPage from './pages/RepositoryPage/ViewContactPage';
 import LeadsPage from './pages/LeadsPage';
 import LeadsDashboardPage from './pages/LeadsPage/LeadsDashboardPage';
+import AddLeadPage from './pages/LeadsPage/AddLeadPage';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -516,7 +517,7 @@ const App = () => {
           />
         </Route>
         <Route
-          path="/"
+          path="/leads"
           element={
             <Suspense fallback={<HeaderSidebarLoader />}>
               <LeadsPage />
@@ -524,18 +525,18 @@ const App = () => {
           }
         >
           <Route
-            path="/leads"
+            path="leads-dashboard"
             element={
-              <Suspense fallback={<HeaderSidebarLoader />}>
+              <Suspense fallback={<CustomLoader />}>
                 <LeadsDashboardPage />
               </Suspense>
             }
           />
           <Route
-            path="/add-lead"
+            path="add-lead"
             element={
-              <Suspense fallback={<HeaderSidebarLoader />}>
-                <LeadsDashboardPage />
+              <Suspense fallback={<CustomLoader />}>
+                <AddLeadPage />
               </Suspense>
             }
           />

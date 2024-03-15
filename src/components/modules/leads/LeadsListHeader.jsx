@@ -17,8 +17,8 @@ const LeadsListHeader = () => {
   const toggleDatePicker = () => setShowDatePicker(!showDatePicker);
 
   return (
-    <div className="flex justify-between pb-6">
-      <div>Lead List</div>
+    <div className="flex items-center justify-between">
+      <div className="font-bold text-lg">Lead List</div>
       <div className="flex">
         <div ref={ref} className="relative mr-2">
           <Button onClick={toggleDatePicker} variant="default">
@@ -26,12 +26,7 @@ const LeadsListHeader = () => {
           </Button>
           {showDatePicker && (
             <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
-              <DateRange
-                handleClose={toggleDatePicker}
-                dateKeys={['from', 'to']}
-                rangeCalendarMinDate={new Date()}
-                datePickerMinDate={new Date()}
-              />
+              <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
             </div>
           )}
         </div>
@@ -41,7 +36,12 @@ const LeadsListHeader = () => {
           </Button>
           {showFilter && <Filter isOpened={showFilter} setShowFilter={setShowFilter} />}
         </div>
-        <Button component={Link} to="/add-lead" leftIcon={<IconPlus />} className="bg-purple-450">
+        <Button
+          component={Link}
+          to="/leads/add-lead"
+          leftIcon={<IconPlus />}
+          className="bg-purple-450"
+        >
           Add Lead
         </Button>
       </div>

@@ -1,5 +1,5 @@
 import { showNotification } from '@mantine/notifications';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   addPeers,
   createUsers,
@@ -8,6 +8,7 @@ import {
   fetchUsersById,
   updateUsers,
 } from '../requests/users.requests';
+import { serialize } from '../../utils';
 
 export const useFetchUsers = (query, enabled = true, retry = true) =>
   useQuery(
@@ -21,6 +22,18 @@ export const useFetchUsers = (query, enabled = true, retry = true) =>
       retry,
     },
   );
+
+export const useInfiniteUsers = (query, enabled = true) =>
+  useInfiniteQuery({
+    queryKey: ['infinite-users', query],
+    queryFn: async ({ pageParam = 0 }) => {
+      const res = await fetchUsers(serialize({ ...query, page: pageParam || 1 }));
+
+      return res.data;
+    },
+    enabled,
+    getNextPageParam: lastPage => (lastPage.hasNextPage ? +lastPage.pagingCounter + 1 : undefined),
+  });
 
 export const useFetchUsersById = (usersById, enabled = true) =>
   useQuery(

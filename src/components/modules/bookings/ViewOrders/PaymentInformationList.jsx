@@ -199,6 +199,7 @@ const PaymentInformationList = () => {
           activePage={paymentQuery.data?.page || 1}
           totalPages={paymentQuery.data?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
+          className="max-h-[47vh]"
         />
       ) : (
         <div className="w-full min-h-[150px] flex justify-center items-center">

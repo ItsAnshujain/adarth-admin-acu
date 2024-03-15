@@ -767,6 +767,7 @@ const InventoryReportsPage = () => {
                   activePage={inventoryReportList?.page || 1}
                   totalPages={inventoryReportList?.totalPages || 1}
                   setActivePage={currentPage => handlePagination('page', currentPage)}
+                  className="max-h-[60vh]"
                 />
               </Tabs.Panel>
               <Tabs.Panel value="messages" pt="lg">
@@ -779,6 +780,7 @@ const InventoryReportsPage = () => {
                   COLUMNS={performingInventoryColumn}
                   data={inventoryStats?.best || []}
                   showPagination={false}
+                  className="max-h-[60vh]"
                 />
               </Tabs.Panel>
               <Tabs.Panel value="settings" pt="lg">
@@ -791,6 +793,7 @@ const InventoryReportsPage = () => {
                   COLUMNS={performingInventoryColumn}
                   data={inventoryStats?.worst || []}
                   showPagination={false}
+                  className="max-h-[60vh]"
                 />
               </Tabs.Panel>
             </Tabs>

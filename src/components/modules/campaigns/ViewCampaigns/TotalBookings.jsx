@@ -321,6 +321,7 @@ const TotalBookings = ({ campaignId }) => {
             setActivePage={currentPage => handlePagination('page', currentPage)}
             rowCountLimit={limit}
             handleSorting={handleSortByColumn}
+            className="max-h-[70vh]"
           />
         ) : null}
       </div>

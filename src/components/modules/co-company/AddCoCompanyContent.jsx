@@ -6,7 +6,13 @@ import { showNotification } from '@mantine/notifications';
 import { useEffect, useMemo } from 'react';
 import ControlledTextInput from '../../shared/FormInputs/Controlled/ControlledTextInput';
 import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelect';
-import { gstRegexMatch } from '../../../utils';
+import {
+  faxRegexMatch,
+  gstRegexMatch,
+  ifscRegexMatch,
+  mobileRegexMatch,
+  panRegexMatch,
+} from '../../../utils';
 import {
   useAddCompany,
   useInfiniteCompanies,
@@ -16,7 +22,7 @@ import {
 import { CompanyTypeOptions, NatureOfAccountOptions } from '../../../utils/constants';
 import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler';
 
-const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = () => {} }) => {
+const AddCoCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess = () => {} }) => {
   const schema = yup.object({
     companyName: yup.string().trim().required('Company name is required'),
     companyGstNumber: yup
@@ -24,6 +30,37 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
       .trim()
       .matches(gstRegexMatch, 'GST number must be valid and in uppercase'),
     email: yup.string().trim().email('Invalid Email'),
+    contactNumber: yup
+      .string()
+      .trim()
+      .matches(mobileRegexMatch, { message: 'Must be a valid number', excludeEmptyString: true })
+      .notRequired(),
+    companyPanNumber: yup
+      .string()
+      .trim()
+      .matches(panRegexMatch, {
+        message: 'Must be a valid PAN',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
+    fax: yup
+      .string()
+      .trim()
+      .matches(faxRegexMatch, {
+        message: 'Must be a valid Fax number',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
+    ifsc: yup
+      .string()
+      .trim()
+      .matches(ifscRegexMatch, {
+        message: 'Must be a valid IFSC',
+        excludeEmptyString: true,
+      })
+      .required('IFSC is required'),
+    accountNo: yup.string().trim().required('Account No. is required'),
+    accountHolderName: yup.string().trim().required('Account Holder Name is required'),
   });
 
   const form = useForm({
@@ -93,7 +130,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
       fax,
       companyPanNumber,
       companyGstNumber,
-      parentCompany: type === 'sisterCompany' ? parentCompany : null,
+      parentCompany: tab === 'sister-companies' ? parentCompany : null,
       natureOfAccount,
       companyType: companyType || undefined,
       type: 'co-company',
@@ -116,6 +153,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
         state: stateAndStateCode?.split(/\((\d+)\)\s*(.+)/)?.[2],
       },
       id: companyData ? companyData?._id : undefined,
+      isParent: tab !== 'sister-companies',
     };
 
     if (mode === 'add') {
@@ -127,6 +165,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
           });
           onCancel();
           onSuccess();
+          form.reset({});
         },
       });
     } else {
@@ -137,6 +176,7 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
             color: 'green',
           });
           onCancel();
+          form.reset({});
         },
       });
     }
@@ -154,35 +194,64 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
 
   useEffect(() => {
     form.reset({
-      ...companyData,
       ...companyData?.companyAddress,
       ...companyData?.parentCompany,
       ...companyData?.bankAccountDetails?.[0],
+      ...companyData,
       parentCompany: companyData?.parentCompany?._id || companyData?.parentCompany,
       stateAndStateCode: `(${companyData?.companyAddress?.stateCode}) ${companyData?.companyAddress?.state}`,
     });
   }, [companyData]);
+
+  const labelClass = 'font-bold text-base';
 
   return (
     <FormProvider {...form}>
       <form onSubmit={onSubmit}>
         <div className="px-8 pt-4">
           <div className="text-2xl font-bold">Basic information</div>
-          <div className="grid grid-cols-2 py-4 gap-2">
-            <ControlledTextInput name="companyName" label="Company Name" withAsterisk />
-            <ControlledTextInput name="email" label="Email" />
-            <ControlledTextInput name="contactNumber" label="Contact Number" />
-            <ControlledTextInput name="fax" label="Fax Number" />
-            <ControlledTextInput name="companyPanNumber" label="PAN" />
-            <ControlledTextInput name="companyGstNumber" label="GSTIN" />
-            <ControlledSelect
-              clearable
-              searchable
-              name="natureOfAccount"
-              label="Nature of Account"
-              data={NatureOfAccountOptions}
-              placeholder="Select..."
+          <div className="grid grid-cols-2 pt-4 gap-2">
+            <ControlledTextInput
+              name="companyName"
+              label="Company Name"
+              withAsterisk
+              classNames={{ label: labelClass }}
             />
+            <ControlledTextInput name="email" label="Email" classNames={{ label: labelClass }} />
+            <ControlledTextInput
+              name="contactNumber"
+              label="Contact Number"
+              classNames={{ label: labelClass }}
+            />
+            {tab !== 'sister-companies' ? (
+              <ControlledTextInput
+                name="fax"
+                label="Fax Number"
+                classNames={{ label: labelClass }}
+              />
+            ) : null}
+
+            <ControlledTextInput
+              name="companyPanNumber"
+              label="PAN"
+              classNames={{ label: labelClass }}
+            />
+            <ControlledTextInput
+              name="companyGstNumber"
+              label="GSTIN"
+              classNames={{ label: labelClass }}
+            />
+            {tab !== 'sister-companies' ? (
+              <ControlledSelect
+                clearable
+                searchable
+                name="natureOfAccount"
+                label="Nature of Account"
+                data={NatureOfAccountOptions}
+                placeholder="Select..."
+                classNames={{ label: labelClass }}
+              />
+            ) : null}
             <ControlledSelect
               clearable
               searchable
@@ -190,11 +259,12 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
               label="Company Type"
               data={CompanyTypeOptions}
               placeholder="Select..."
+              classNames={{ label: labelClass }}
             />
           </div>
 
-          <div className="flex flex-col gap-4">
-            {type === 'sisterCompany' ? (
+          <div className="flex flex-col gap-4 py-2">
+            {tab === 'sister-companies' ? (
               <ControlledSelect
                 clearable
                 searchable
@@ -203,12 +273,17 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
                 data={parentCompanies}
                 dropdownComponent={parentCompaniesDropdown}
                 placeholder="Select..."
+                classNames={{ label: labelClass }}
               />
             ) : null}
-            <ControlledTextInput name="address" label="Address" />
+            <ControlledTextInput
+              name="address"
+              label="Address"
+              classNames={{ label: labelClass }}
+            />
           </div>
 
-          <div className="grid grid-cols-2 py-4 gap-2">
+          <div className="grid grid-cols-2 pb-4 gap-2">
             <ControlledSelect
               clearable
               searchable
@@ -216,15 +291,31 @@ const AddCoCompanyContent = ({ type, onCancel, companyData, mode, onSuccess = ()
               label="State & State Code"
               data={memoizedStateAndStateCodeList}
               placeholder="Select..."
+              classNames={{ label: labelClass }}
             />
-            <ControlledTextInput name="city" label="City" />
+            <ControlledTextInput name="city" label="City" classNames={{ label: labelClass }} />
           </div>
           <div className="text-2xl font-bold mt-8">Bank Information</div>
-          <div className="grid grid-cols-2 py-4 gap-2">
-            <ControlledTextInput name="accountNo" label="Account No" />
-            <ControlledTextInput name="accountHolderName" label="Account Holder Name" />
+          <div className="grid grid-cols-2 pt-4 pb-2 gap-2">
+            <ControlledTextInput
+              name="accountNo"
+              label="Account No"
+              withAsterisk
+              classNames={{ label: labelClass }}
+            />
+            <ControlledTextInput
+              name="accountHolderName"
+              label="Account Holder Name"
+              withAsterisk
+              classNames={{ label: labelClass }}
+            />
           </div>
-          <ControlledTextInput name="ifsc" label="IFSC" />
+          <ControlledTextInput
+            name="ifsc"
+            label="IFSC"
+            withAsterisk
+            classNames={{ label: labelClass }}
+          />
           <div className="flex gap-2 py-4 float-right">
             <Button className="bg-black" onClick={onCancel}>
               Cancel

@@ -1,4 +1,4 @@
-import { Button, Menu, Tabs } from '@mantine/core';
+import { Button, Tabs } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { IconChevronDown } from '@tabler/icons';
 import classNames from 'classnames';
@@ -14,21 +14,23 @@ import modalConfig from '../../../utils/modalConfig';
 import AddCompanyContent from './AddCompanyContent';
 import useCompanies from '../../../apis/queries/companies.queries';
 import SuccessModal from '../../shared/Modal';
+import { CompanyTypeOptions } from '../../../utils/constants';
 
 const updatedModalConfig = {
   ...modalConfig,
   size: '1000px',
   classNames: {
     title: 'font-dmSans text-2xl font-bold px-4',
-    header: 'px-4 py-4 border-b border-gray-450',
-    body: '',
+    header: 'p-4 border-b border-gray-450',
+    body: 'h-[600px] overflow-auto',
     close: 'mr-4',
   },
 };
 
 const Header = () => {
   const modals = useModals();
-  const [open, setOpenSuccessModal] = useState(false);
+  const [successModalOpened, setOpenSuccessModal] = useState(false);
+  const [successModalText, setSuccessModalText] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
 
@@ -56,7 +58,6 @@ const Header = () => {
     type: 'lead-company',
     isParent: tab === 'parent-companies',
   });
-
   const handleSortByColumn = colId => {
     if (searchParams.get('sortBy') === colId && searchParams.get('sortOrder') === 'desc') {
       searchParams.set('sortOrder', 'asc');
@@ -79,6 +80,11 @@ const Header = () => {
     setSearchParams(searchParams);
   };
 
+  const handleOnSuccess = text => {
+    setOpenSuccessModal(true);
+    setSuccessModalText(text);
+  };
+
   const toggleAddCompanyModal = () => {
     modals.openModal({
       title: 'Add Company',
@@ -87,9 +93,9 @@ const Header = () => {
         <AddCompanyContent
           type="company"
           mode="add"
-          tab="company"
+          tab="companies"
           onCancel={() => modals.closeModal('addCompanyModal')}
-          onSuccess={() => setOpenSuccessModal('Company')}
+          onSuccess={() => handleOnSuccess('Company')}
         />
       ),
       ...updatedModalConfig,
@@ -104,9 +110,9 @@ const Header = () => {
         <AddCompanyContent
           type="company"
           mode="add"
-          tab="parentCompany"
+          tab="parent-companies"
           onCancel={() => modals.closeModal('addCompanyModal')}
-          onSuccess={() => setOpenSuccessModal('Parent Company')}
+          onSuccess={() => handleOnSuccess('Parent Company')}
         />
       ),
       ...updatedModalConfig,
@@ -121,7 +127,7 @@ const Header = () => {
         <AddCompanyContent
           type="company"
           mode="edit"
-          tab="company"
+          tab="companies"
           companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
         />
@@ -138,7 +144,7 @@ const Header = () => {
         <AddCompanyContent
           type="company"
           mode="edit"
-          tab="parentCompany"
+          tab="parent-companies"
           companyData={companyData}
           onCancel={() => modals.closeModal('editCompanyModal')}
         />
@@ -153,7 +159,8 @@ const Header = () => {
         Header: '#',
         show: true,
         accessor: 'id',
-        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, 1, 10)}</p>, []),
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
       },
       {
         Header: 'COMPANY NAME',
@@ -187,6 +194,20 @@ const Header = () => {
         Header: 'COMPANY TYPE',
         show: true,
         accessor: 'companyType',
+        Cell: ({
+          row: {
+            original: { companyType },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <p>
+                {CompanyTypeOptions?.filter(({ value }) => value === companyType)?.[0]?.label ||
+                  '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'PARENT COMPANY',
@@ -203,12 +224,22 @@ const Header = () => {
         show: true,
         accessor: 'contactNumber',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { contactNumber },
+          },
+        }) => useMemo(() => <p>{contactNumber ? `+91 ${contactNumber}` : '-'}</p>, []),
       },
       {
         Header: 'EMAIL',
         show: true,
         accessor: 'email',
         disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { email },
+          },
+        }) => useMemo(() => <p className="text-blue-350">{email || '-'}</p>, []),
       },
       {
         Header: 'ACTION',
@@ -253,11 +284,12 @@ const Header = () => {
                 value="companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  tab === 'companies' ? 'border border-b-2 border-purple-450' : '',
+                  tab === 'companies' ? 'border border-b-2 border-purple-450 text-purple-450' : '',
                 )}
                 onClick={() => {
                   searchParams.set('tab', 'companies');
                   searchParams.set('page', 1);
+                  searchParams.set('limit', 10);
                   setSearchParams(searchParams, { replace: true });
                 }}
               >
@@ -267,50 +299,30 @@ const Header = () => {
                 value="parent-companies"
                 className={classNames(
                   'p-0 border-0 text-lg pb-2',
-                  tab === 'parent-companies' ? 'border border-b-2 border-purple-450' : '',
+                  tab === 'parent-companies'
+                    ? 'border border-b-2 border-purple-450 text-purple-450'
+                    : '',
                 )}
                 onClick={() => {
                   searchParams.set('tab', 'parent-companies');
                   searchParams.set('page', 1);
+                  searchParams.set('limit', 10);
                   setSearchParams(searchParams, { replace: true });
                 }}
               >
                 Parent Companies
               </Tabs.Tab>
             </div>
-            <Menu>
-              <Menu.Target>
-                <Button
-                  variant="default"
-                  className="bg-purple-450 text-white font-normal rounded-md mb-2"
-                  leftIcon={<IconChevronDown size={20} />}
-                >
-                  {tab === 'companies' ? 'Add Company' : 'Add Parent Company'}
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item className="p-0 justify-start">
-                  <Button
-                    variant="default"
-                    className="w-full border-0 font-normal"
-                    classNames={{ label: 'w-full' }}
-                    onClick={toggleAddCompanyModal}
-                  >
-                    Add Company
-                  </Button>
-                </Menu.Item>
-                <Menu.Item className="p-0 justify-start">
-                  <Button
-                    variant="default"
-                    className="w-full border-0 font-normal"
-                    classNames={{ label: 'w-full' }}
-                    onClick={toggleAddParentCompanyModal}
-                  >
-                    Add Parent Company
-                  </Button>
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+            <Button
+              variant="default"
+              className="bg-purple-450 text-white font-normal rounded-md mb-2"
+              leftIcon={<IconChevronDown size={20} />}
+              onClick={() =>
+                tab === 'companies' ? toggleAddCompanyModal() : toggleAddParentCompanyModal()
+              }
+            >
+              {tab === 'companies' ? 'Add Company' : 'Add Parent Company'}
+            </Button>
           </div>
         </Tabs.List>
         <Tabs.Panel value="companies">
@@ -335,6 +347,7 @@ const Header = () => {
               rowCountLimit={10}
               handleSorting={handleSortByColumn}
               loading={companiesQuery?.isLoading}
+              className="max-h-[65vh]"
             />
           ) : null}
         </Tabs.Panel>
@@ -359,14 +372,15 @@ const Header = () => {
               rowCountLimit={10}
               handleSorting={handleSortByColumn}
               loading={companiesQuery?.isLoading}
+              className="max-h-[65vh]"
             />
           ) : null}
         </Tabs.Panel>
       </Tabs>
       <SuccessModal
-        title={`${open} Successfully Added`}
+        title={`${successModalText} Successfully Added`}
         prompt="Close"
-        open={!!open}
+        open={successModalOpened}
         setOpenSuccessModal={setOpenSuccessModal}
       />
     </div>

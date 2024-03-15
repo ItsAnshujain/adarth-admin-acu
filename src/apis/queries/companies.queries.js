@@ -52,6 +52,7 @@ export const useAddCompany = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['companies']);
+        queryClient.invalidateQueries(['infinite-companies']);
       },
       onError: onApiError,
     },

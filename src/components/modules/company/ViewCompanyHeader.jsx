@@ -9,13 +9,14 @@ import DeleteCompanyContent from './DeleteCompanyContent';
 import modalConfig from '../../../utils/modalConfig';
 import AddCompanyContent from './AddCompanyContent';
 import { useCompanyById } from '../../../apis/queries/companies.queries';
+import AddSisterCompanyContent from '../co-company/AddSisterCompanyContent';
 
 const updatedModalConfig = {
   ...modalConfig,
   size: '1000px',
   classNames: {
     title: 'font-dmSans text-2xl font-bold px-4',
-    header: 'px-4 py-4 border-b border-gray-450',
+    header: 'p-4 border-b border-gray-450',
     body: '',
     close: 'mr-4',
   },
@@ -31,12 +32,12 @@ const ViewCompanyHeader = ({ type, tab }) => {
 
   const toggleDeleteModal = () =>
     modals.openContextModal('basic', {
-      modalId: 'deleteTermsAndConditions',
+      modalId: 'deleteCompanyModal',
       innerProps: {
         modalBody: (
           <DeleteCompanyContent
             classNames="px-8 mt-4"
-            onClickCancel={() => modals.closeModal('deleteTermsAndConditions')}
+            onClickCancel={() => modals.closeModal('deleteCompanyModal')}
             onConfirm={() => navigate(`/repository/${type}?tab=${tab}`)}
             id={companyQuery?.data?._id}
           />
@@ -52,7 +53,7 @@ const ViewCompanyHeader = ({ type, tab }) => {
       children: (
         <AddCompanyContent
           type={type}
-          tab="company"
+          tab="companies"
           onCancel={() => modals.closeModal('editCompanyModal')}
           companyData={companyQuery?.data}
         />
@@ -68,8 +69,24 @@ const ViewCompanyHeader = ({ type, tab }) => {
       children: (
         <AddCompanyContent
           type={type}
-          tab="parentCompany"
+          tab="parent-companies"
           onCancel={() => modals.closeModal('editCompanyModal')}
+          companyData={companyQuery?.data}
+        />
+      ),
+      ...updatedModalConfig,
+    });
+  };
+
+  const toggleEditSisterCompanyModal = () => {
+    modals.openModal({
+      title: 'Edit Sister Company',
+      modalId: 'editSisterCompanyModal',
+      children: (
+        <AddSisterCompanyContent
+          type={type}
+          tab="sister-companies"
+          onCancel={() => modals.closeModal('editSisterCompanyModal')}
           companyData={companyQuery?.data}
         />
       ),
@@ -102,7 +119,11 @@ const ViewCompanyHeader = ({ type, tab }) => {
             <div className="flex">
               <ActionIcon
                 onClick={() =>
-                  type === 'company' ? toggleEditCompanyModal() : toggleEditParentCompanyModal()
+                  type === 'company' && tab !== 'parent-companies'
+                    ? toggleEditCompanyModal()
+                    : tab === 'sister-companies'
+                    ? toggleEditSisterCompanyModal()
+                    : toggleEditParentCompanyModal()
                 }
                 disabled={companyQuery.isLoading}
               >
@@ -117,6 +138,7 @@ const ViewCompanyHeader = ({ type, tab }) => {
         <Tabs.Panel value="overview">
           <ViewCompany
             type={type}
+            tab={tab}
             companyData={companyQuery?.data}
             isLoading={companyQuery.isLoading}
           />
