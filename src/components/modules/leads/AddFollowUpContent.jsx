@@ -12,10 +12,11 @@ import { useInfiniteUsers } from '../../../apis/queries/users.queries';
 import DropdownWithHandler from '../../shared/SelectDropdown/DropdownWithHandler';
 import ControlledDatePickerInput from '../../shared/FormInputs/Controlled/ControlledDatePickerInput';
 import CalendarIcon from '../../../assets/calendar.svg';
-import useAddFollowUp from '../../../apis/queries/followup.queries';
+import useAddFollowUp, { useUpdateFollowUp } from '../../../apis/queries/followup.queries';
 
-const AddFollowUpContent = ({ onCancel, leadId }) => {
+const AddFollowUpContent = ({ onCancel, leadId, followUpData }) => {
   const addFollowUpHandler = useAddFollowUp();
+  const updateFollowUpHandler = useUpdateFollowUp();
   const queryClient = useQueryClient();
   const form = useForm();
   const userId = useUserStore(state => state.id);
@@ -96,17 +97,28 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
         : null,
       primaryInCharge,
       secondaryInCharge,
-      id: leadId,
+      id: followUpData?._id ? followUpData?._id : leadId,
     };
 
-    addFollowUpHandler.mutate(data, {
-      onSuccess: () => {
-        showNotification({
-          message: 'Follow Up added successfully',
-        });
-        onCancel();
-      },
-    });
+    if (followUpData?._id) {
+      updateFollowUpHandler.mutate(data, {
+        onSuccess: () => {
+          showNotification({
+            message: 'Follow Up updated successfully',
+          });
+          onCancel();
+        },
+      });
+    } else {
+      addFollowUpHandler.mutate(data, {
+        onSuccess: () => {
+          showNotification({
+            message: 'Follow Up added successfully',
+          });
+          onCancel();
+        },
+      });
+    }
   });
 
   useEffect(() => {
@@ -115,6 +127,22 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
     form.setValue('communicationType', leadCommunicationTypeOptions[0].value);
     form.setValue('followUpDate', dayjs());
   }, [user]);
+
+  useEffect(() => {
+    if (followUpData) {
+      form.reset({
+        communicationType: followUpData?.communicationType,
+        followUpDate: followUpData?.followUpDate ? new Date(followUpData?.followUpDate) : null,
+        leadStage: followUpData?.leadStage,
+        primaryInCharge: followUpData?.primaryInCharge?._id,
+        secondaryInCharge: followUpData?.secondaryInCharge?._id,
+        nextFollowUpDate: followUpData?.nextFollowUpDate
+          ? new Date(followUpData?.nextFollowUpDate)
+          : null,
+        notes: followUpData?.notes,
+      });
+    }
+  }, [followUpData]);
 
   const labelClass = 'font-bold text-base';
   const datePickerClass = { icon: 'flex justify-end w-full pr-2', input: 'pl-2' };
@@ -159,12 +187,14 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
               name="primaryInCharge"
               label="Primary Incharge"
               data={
-                user._id && memoizedUsers?.filter(item => item.value === user._id).length <= 0
+                followUpData?.primaryInCharge?._id &&
+                memoizedUsers?.filter(item => item.value === followUpData?.primaryInCharge?._id)
+                  .length <= 0
                   ? [
                       ...memoizedUsers,
                       {
-                        value: user._id,
-                        label: user.name,
+                        value: followUpData?.primaryInCharge?._id,
+                        label: followUpData?.primaryInCharge?.name,
                       },
                     ] || []
                   : memoizedUsers || []
@@ -179,12 +209,14 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
               name="secondaryInCharge"
               label="Secondary Incharge"
               data={
-                user._id && memoizedUsers?.filter(item => item.value === user._id).length <= 0
+                followUpData?.secondaryInCharge?._id &&
+                memoizedUsers?.filter(item => item.value === followUpData?.secondaryInCharge?._id)
+                  .length <= 0
                   ? [
                       ...memoizedUsers,
                       {
-                        value: user._id,
-                        label: user.name,
+                        value: followUpData?.secondaryInCharge?._id,
+                        label: followUpData?.secondaryInCharge?.name,
                       },
                     ] || []
                   : memoizedUsers || []
@@ -206,6 +238,7 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
               color="dark"
               className="font-normal bg-black text-white"
               onClick={onCancel}
+              disabled={addFollowUpHandler.isLoading || updateFollowUpHandler.isLoading}
             >
               Cancel
             </Button>
@@ -213,7 +246,7 @@ const AddFollowUpContent = ({ onCancel, leadId }) => {
               type="submit"
               variant="default"
               className="bg-purple-450 font-normal text-white"
-              loading={addFollowUpHandler.isLoading}
+              loading={addFollowUpHandler.isLoading || updateFollowUpHandler.isLoading}
             >
               Save
             </Button>
