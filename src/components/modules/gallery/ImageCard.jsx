@@ -67,7 +67,7 @@ const ImageCard = ({ image, checked, setSelectedImages, selectedImages, onClick 
         height={200}
         onClick={onClick}
       />
-      <div className="p-4 flex justify-between items-center w-full">
+      <div className="p-4 flex justify-between items-center w-full" title={image.name}>
         <Checkbox
           checked={checked}
           label={image.name}
