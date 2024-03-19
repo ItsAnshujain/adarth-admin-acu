@@ -84,7 +84,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
             initialSlide={imgIndex}
             nextControlIcon={<ChevronRight size={40} className="bg-white rounded-full" />}
             previousControlIcon={<ChevronLeft size={40} className="bg-white rounded-full" />}
-            classNames={{ indicator: 'bg-white-200' }}
+            classNames={{ indicator: 'bg-white-200', control: 'border-none' }}
             getEmblaApi={setEmbla}
           >
             {previewSpacesPhotos.length &&
