@@ -274,3 +274,82 @@ export const leadCommunicationTypeOptions = [
     value: 'inPersonDemo',
   },
 ];
+
+export const leadSourceOptions = [
+  {
+    label: 'Inbound',
+    value: 'inbound',
+  },
+  {
+    label: 'Outbound',
+    value: 'outbound',
+  },
+  {
+    label: 'Website/Blog',
+    value: 'website',
+  },
+  {
+    label: 'Agency',
+    value: 'agency',
+  },
+  {
+    label: 'Old Client',
+    value: 'oldClient',
+  },
+  {
+    label: 'Social Media (e.g., Facebook, Twitter, Instagram, LinkedIn)',
+    value: 'socialMedia',
+  },
+  {
+    label: 'Search Engine (e.g., Google, Bing)',
+    value: 'searchEngine',
+  },
+  {
+    label: 'Referral/Word of Mouth',
+    value: 'referral',
+  },
+  {
+    label: 'Email Marketing',
+    value: 'emailMarketing',
+  },
+  {
+    label: 'Content Marketing (e.g., articles, videos, podcasts)',
+    value: 'contentMarketing',
+  },
+  {
+    label: 'Paid Advertising (e.g., Google Ads, Facebook Ads, display ads)',
+    value: 'paidAdvertising',
+  },
+  {
+    label: 'Events (e.g., trade shows, conferences, workshops)',
+    value: 'events',
+  },
+  {
+    label: 'Direct Mail',
+    value: 'directMail',
+  },
+  {
+    label: 'Cold Calling/Telemarketing',
+    value: 'telemarketing',
+  },
+  {
+    label: 'Partnerships/Affiliate Programs',
+    value: 'affiliate',
+  },
+  {
+    label: 'Networking Events',
+    value: 'networking',
+  },
+  {
+    label: 'Print Advertising (e.g., newspapers, magazines)',
+    value: 'printAdvertising',
+  },
+  {
+    label: 'Radio/TV Advertising',
+    value: 'tvAdvertising',
+  },
+  {
+    label: 'Other',
+    value: 'other',
+  },
+];

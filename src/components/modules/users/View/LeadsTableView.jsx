@@ -18,6 +18,7 @@ import useLeads from '../../../../apis/queries/leads.queries';
 import {
   DATE_SECOND_FORMAT,
   leadPriorityOptions,
+  leadSourceOptions,
   leadStageOptions,
 } from '../../../../utils/constants';
 import DateRange from '../../../DateRange';
@@ -184,6 +185,17 @@ const LeadsTableView = ({ userId }) => {
       {
         Header: 'LEAD SOURCE',
         accessor: 'leadSource',
+        Cell: ({
+          row: {
+            original: { leadSource },
+          },
+        }) =>
+          useMemo(() => {
+            const leadSourceOption = leadSourceOptions?.filter(
+              ({ value }) => value === leadSource,
+            )?.[0];
+            return leadSourceOption ? leadSourceOption?.label : '-';
+          }, []),
       },
       {
         Header: 'PRIMARY INCHARGE',
