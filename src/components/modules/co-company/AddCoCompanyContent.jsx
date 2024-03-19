@@ -12,6 +12,7 @@ import {
   ifscRegexMatch,
   mobileRegexMatch,
   panRegexMatch,
+  pinCodeMatch,
 } from '../../../utils';
 import {
   useAddCompany,
@@ -61,6 +62,14 @@ const AddCoCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess = () 
       .required('IFSC is required'),
     accountNo: yup.string().trim().required('Account No. is required'),
     accountHolderName: yup.string().trim().required('Account Holder Name is required'),
+    pincode: yup
+      .string()
+      .trim()
+      .matches(pinCodeMatch, {
+        message: 'Pincode must be valid',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
   });
 
   const form = useForm({
@@ -294,6 +303,11 @@ const AddCoCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess = () 
               classNames={{ label: labelClass }}
             />
             <ControlledTextInput name="city" label="City" classNames={{ label: labelClass }} />
+            <ControlledTextInput
+              name="pincode"
+              label="Pincode"
+              classNames={{ label: labelClass }}
+            />
           </div>
           <div className="text-2xl font-bold mt-8">Bank Information</div>
           <div className="grid grid-cols-2 pt-4 pb-2 gap-2">

@@ -16,6 +16,7 @@ import ControlledTextarea from '../../shared/FormInputs/Controlled/ControlledTex
 import {
   leadPriorityOptions,
   leadProspectOptions,
+  leadSourceOptions,
   leadStageOptions,
 } from '../../../utils/constants';
 import { useInfiniteUsers } from '../../../apis/queries/users.queries';
@@ -639,7 +640,7 @@ const AddLeadForm = () => {
                 placeholder="Select..."
                 name="leadSource"
                 label="Lead Source"
-                data={[]}
+                data={leadSourceOptions}
                 classNames={{ label: labelClass }}
               />
             </div>

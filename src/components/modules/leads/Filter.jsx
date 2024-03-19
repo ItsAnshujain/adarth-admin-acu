@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import {
   CompanyTypeOptions,
   leadPriorityOptions,
+  leadSourceOptions,
   leadStageOptions,
 } from '../../../utils/constants';
 import { useFetchUsers } from '../../../apis/queries/users.queries';
@@ -22,8 +23,6 @@ const defaultValue = {
   createdByIds: [],
   companyType: [],
 };
-
-const leadSourceOptions = [];
 
 const Filter = ({ isOpened, setShowFilter }) => {
   const queryClient = useQueryClient();
