@@ -47,7 +47,10 @@ const ImagesList = ({ imagesData, selectedImages, setSelectedImages }) => {
               imagesData?.map(item => (
                 <Carousel.Slide key={uuidv4()} className="relative">
                   <Image src={item.url} height={400} width="100%" alt="preview" fit="fill" />
-                  <div className="absolute bg-gradient-to-t from-black/70 to-black/0 h-full w-full top-0 flex items-end p-6 text-xl text-white">
+                  <div
+                    className="absolute bg-gradient-to-t from-black/70 to-black/0 h-full w-full top-0 flex items-end p-6 text-xl text-white"
+                    title={item.name}
+                  >
                     {item.name}
                   </div>
                 </Carousel.Slide>
