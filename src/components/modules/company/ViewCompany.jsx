@@ -90,6 +90,10 @@ const ViewCompany = ({ type, tab, companyData, isLoading }) => {
           <div className="text-base text-gray-400 font-normal">State Code</div>
           <div>{companyData?.companyAddress?.stateCode || '-'} </div>
         </div>
+        <div>
+          <div className="text-base text-gray-400 font-normal">Pincode</div>
+          <div>{companyData?.companyAddress?.pincode || '-'} </div>
+        </div>
         {type === 'company' ? (
           <div>
             <div className="text-base text-gray-400 font-normal">Parent Account</div>
