@@ -73,7 +73,7 @@ const AreaHeader = ({ text }) => {
             <Menu.Target>
               <Button variant="default" onClick={exportActions.toggle}>
                 <ChevronDown size={16} className="mt-[1px] mr-1" />
-                Export
+                Outstanding Export
               </Button>
             </Menu.Target>
 

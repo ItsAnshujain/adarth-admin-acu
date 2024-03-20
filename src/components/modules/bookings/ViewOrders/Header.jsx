@@ -1,9 +1,10 @@
-import { ActionIcon, Button } from '@mantine/core';
+import { ActionIcon, Button, Menu as MantineMenu } from '@mantine/core';
 import classNames from 'classnames';
 import { ArrowLeft } from 'react-feather';
 import { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
+import { IconChevronDown } from '@tabler/icons';
 import Menu from '../../finance/Menu';
 import { useExportBooking } from '../../../../apis/queries/booking.queries';
 import { downloadPdf } from '../../../../utils';
@@ -111,18 +112,39 @@ const Header = ({ bookingId, bookingData }) => {
       </div>
       <div className="flex gap-2 flex-wrap items-center">
         <Button
-          className="text-white cursor-pointer bg-black text-sm font-semibold py-2 px-3 rounded-md"
+          variant="default"
+          className="cursor-pointer text-sm font-semibold py-2 px-3 rounded-md text-black"
           onClick={exportBooking}
           loading={exportBookingHandler.isLoading}
         >
           Export Booking
         </Button>
         {tab === 'order-information' ? (
-          <div className="flex gap-2 flex-wrap">
-            <Menu btnLabel="Generate Purchase Order" options={purchaseOrderList} />
-            <Menu btnLabel="Generate Release Order" options={releaseOrderList} />
-            <Menu btnLabel=" Generate Invoice" options={invoiceList} />
-          </div>
+          <MantineMenu>
+            <MantineMenu.Target>
+              <Button
+                className="text-white cursor-pointer bg-purple-450 text-sm font-semibold py-2 px-3 rounded-md"
+                rightIcon={<IconChevronDown />}
+              >
+                All-in-One Billing
+              </Button>
+            </MantineMenu.Target>
+            <MantineMenu.Dropdown>
+              <div className="flex flex-col gap-2 flex-wrap">
+                <Menu
+                  btnLabel="Purchase Order"
+                  options={purchaseOrderList}
+                  className="bg-purple-450"
+                />
+                <Menu
+                  btnLabel="Release Order"
+                  options={releaseOrderList}
+                  className="bg-purple-450"
+                />
+                <Menu btnLabel="Invoice" options={invoiceList} className="bg-purple-450" />
+              </div>
+            </MantineMenu.Dropdown>
+          </MantineMenu>
         ) : (
           <>
             <div>

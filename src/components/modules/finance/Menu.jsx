@@ -2,11 +2,15 @@ import React from 'react';
 import { Button, Menu as MantineMenu } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link } from 'react-router-dom';
+import classNames from 'classnames';
 
-const Menu = ({ btnLabel, options = [] }) => (
+const Menu = ({ btnLabel, className, options = [] }) => (
   <MantineMenu shadow="md" width={200}>
     <MantineMenu.Target>
-      <Button rightIcon={<ChevronDown />} className="bg-black text-sm  text-white">
+      <Button
+        rightIcon={<ChevronDown />}
+        className={classNames('bg-black text-sm  text-white', className)}
+      >
         {btnLabel}
       </Button>
     </MantineMenu.Target>
