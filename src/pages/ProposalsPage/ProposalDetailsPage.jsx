@@ -572,7 +572,6 @@ const ProposalDetailsPage = () => {
             totalPages={proposalData?.inventories?.totalPages || 1}
             setActivePage={currentPage => handlePagination('page', currentPage)}
             handleSorting={handleSortByColumn}
-            className="max-h-[50vh]"
           />
         ) : null}
       </div>

@@ -594,7 +594,6 @@ const BookingTableView = ({ data: bookingData, isLoading, activeChildTab }) => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={bookingData?.limit || 10}
           handleSorting={handleSortByColumn}
-          className="max-h-[47vh]"
         />
       ) : null}
       <PriceBreakdownDrawer

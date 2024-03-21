@@ -279,7 +279,6 @@ const ProposalTableView = ({ data, isLoading, activeChildTab }) => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={data.limit || 10}
           handleSorting={handleSortByColumn}
-          className="max-h-[47vh]"
         />
       ) : null}
       <PriceBreakdownDrawer

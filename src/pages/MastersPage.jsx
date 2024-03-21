@@ -160,7 +160,6 @@ const MastersPage = () => {
                 setActivePage={currentPage => handlePagination('page', currentPage)}
                 rowCountLimit={limit}
                 handleSorting={handleSortByColumn}
-                className="max-h-[72vh]"
               />
             ) : null}
           </div>

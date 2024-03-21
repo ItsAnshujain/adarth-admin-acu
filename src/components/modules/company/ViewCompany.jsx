@@ -94,7 +94,7 @@ const ViewCompany = ({ type, tab, companyData, isLoading }) => {
           <div className="text-base text-gray-400 font-normal">Pincode</div>
           <div>{companyData?.companyAddress?.pincode || '-'} </div>
         </div>
-        {type === 'company' ? (
+        {tab !== 'parent-companies' ? (
           <div>
             <div className="text-base text-gray-400 font-normal">Parent Account</div>
             <div>{companyData?.parentCompany?.natureOfAccount || '-'} </div>

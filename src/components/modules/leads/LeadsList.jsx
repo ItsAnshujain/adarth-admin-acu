@@ -327,7 +327,6 @@ const LeadsList = () => {
         rowCountLimit={10}
         handleSorting={handleSortByColumn}
         loading={leadsQuery?.isLoading}
-        className="max-h-[47vh]"
       />
 
       <ViewLeadDrawer

@@ -887,7 +887,6 @@ const SelectSpace = () => {
           activePage={pagination.page}
           totalPages={pagination.totalPages}
           setActivePage={currentPage => handlePagination('page', currentPage)}
-          className="max-h-[62vh]"
         />
       ) : null}
       <AddEditPriceDrawer

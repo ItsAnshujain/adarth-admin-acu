@@ -329,7 +329,6 @@ const Header = () => {
             rowCountLimit={10}
             handleSorting={handleSortByColumn}
             loading={coCompaniesQuery.isLoading}
-            className="max-h-[65vh]"
           />
         </Tabs.Panel>
         <Tabs.Panel value="sister-companies">

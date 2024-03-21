@@ -752,7 +752,6 @@ const FinanceMonthlyDetailsPage = () => {
           activePage={financialDataByMonth?.finances?.page || 1}
           totalPages={financialDataByMonth?.finances?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
-          className="max-h-[65vh]"
         />
       ) : !isLoading && financialDataByMonth?.finances?.docs?.length && pageType === 'release' ? (
         <Table
@@ -761,7 +760,6 @@ const FinanceMonthlyDetailsPage = () => {
           activePage={financialDataByMonth?.finances?.page || 1}
           totalPages={financialDataByMonth?.finances?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
-          className="max-h-[65vh]"
         />
       ) : !isLoading && financialDataByMonth?.finances?.docs?.length && pageType === 'invoice' ? (
         <Table
@@ -770,7 +768,6 @@ const FinanceMonthlyDetailsPage = () => {
           activePage={financialDataByMonth?.finances?.page || 1}
           totalPages={financialDataByMonth?.finances?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
-          className="max-h-[65vh]"
         />
       ) : null}
     </div>
