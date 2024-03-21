@@ -381,7 +381,6 @@ const Booking = ({ inventoryId }) => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={limit}
           handleSorting={handleSortByColumn}
-          className="max-h-[64vh]"
         />
       ) : null}
       <PriceBreakdownDrawer

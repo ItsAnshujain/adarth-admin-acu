@@ -347,7 +347,6 @@ const Header = () => {
               rowCountLimit={10}
               handleSorting={handleSortByColumn}
               loading={companiesQuery?.isLoading}
-              className="max-h-[65vh]"
             />
           ) : null}
         </Tabs.Panel>
@@ -372,7 +371,6 @@ const Header = () => {
               rowCountLimit={10}
               handleSorting={handleSortByColumn}
               loading={companiesQuery?.isLoading}
-              className="max-h-[65vh]"
             />
           ) : null}
         </Tabs.Panel>

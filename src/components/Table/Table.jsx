@@ -80,7 +80,7 @@ const Table = ({
           <Loader className="mx-auto" />
         ) : (
           <table className="w-full" {...getTableProps()}>
-            <thead className="bg-gray-100 sticky top-0 z-50">
+            <thead className="bg-gray-100">
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {allowRowsSelect && (

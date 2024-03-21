@@ -550,7 +550,6 @@ const InventoryDashboardPage = () => {
               activePage={inventoryData?.page || 1}
               totalPages={inventoryData?.totalPages || 1}
               setActivePage={currentPage => handlePagination('page', currentPage)}
-              className="max-h-[72vh]"
             />
           ) : viewType.inventory === 'map' ? (
             <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">
