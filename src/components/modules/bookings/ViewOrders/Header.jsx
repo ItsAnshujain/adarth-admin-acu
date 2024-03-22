@@ -146,56 +146,70 @@ const Header = ({ bookingId, bookingData }) => {
             </MantineMenu.Dropdown>
           </MantineMenu>
         ) : (
-          <>
-            <div>
-              <a
-                href={bookingData?.purchaseOrder}
+          <MantineMenu>
+            <MantineMenu.Target>
+              <Button
                 className={classNames(
-                  bookingData?.purchaseOrder
-                    ? 'text-white cursor-pointer bg-black'
-                    : 'pointer-events-none text-black bg-gray-450',
-                  'font-medium py-2 px-3 rounded-md',
+                  'cursor-pointer  text-sm font-semibold py-2 px-3 rounded-md',
+                  !bookingData?.invoice && !bookingData?.releaseOrder && !bookingData?.purchaseOrder
+                    ? 'pointer-events-none text-black bg-gray-450'
+                    : 'bg-purple-450 text-white',
                 )}
-                target="_blank"
-                download
-                rel="noopener noreferrer"
+                rightIcon={<IconChevronDown />}
+                disabled={
+                  !bookingData?.invoice && !bookingData?.releaseOrder && !bookingData?.purchaseOrder
+                }
               >
-                Download Purchase Order
-              </a>
-            </div>
-            <div>
-              <a
-                href={bookingData?.releaseOrder}
-                className={classNames(
-                  bookingData?.releaseOrder
-                    ? 'text-white cursor-pointer bg-black'
-                    : 'pointer-events-none text-black bg-gray-450',
-                  'font-medium py-2 px-3 rounded-md',
-                )}
-                target="_blank"
-                download
-                rel="noopener noreferrer"
-              >
-                Download Release Order
-              </a>
-            </div>
-            <div>
-              <a
-                href={bookingData?.invoice}
-                className={classNames(
-                  bookingData?.invoice
-                    ? 'text-white cursor-pointer bg-black'
-                    : 'pointer-events-none text-black bg-gray-450',
-                  'font-medium py-2 px-3 rounded-md',
-                )}
-                target="_blank"
-                download
-                rel="noopener noreferrer"
-              >
-                Download Invoice
-              </a>
-            </div>
-          </>
+                Download Finances
+              </Button>
+            </MantineMenu.Target>
+            <MantineMenu.Dropdown className="w-48">
+              <div className="flex flex-col gap-1">
+                <a
+                  href={bookingData?.purchaseOrder}
+                  className={classNames(
+                    bookingData?.purchaseOrder
+                      ? 'text-white cursor-pointer bg-purple-450'
+                      : 'pointer-events-none text-black bg-gray-450',
+                    'font-medium py-2 px-3 rounded-md w-full',
+                  )}
+                  target="_blank"
+                  download
+                  rel="noopener noreferrer"
+                >
+                  Purchase Order
+                </a>
+                <a
+                  href={bookingData?.releaseOrder}
+                  className={classNames(
+                    bookingData?.releaseOrder
+                      ? 'text-white cursor-pointer bg-purple-450'
+                      : 'pointer-events-none text-black bg-gray-450',
+                    'font-medium py-2 px-3 rounded-md w-full',
+                  )}
+                  target="_blank"
+                  download
+                  rel="noopener noreferrer"
+                >
+                  Release Order
+                </a>
+                <a
+                  href={bookingData?.invoice}
+                  className={classNames(
+                    bookingData?.invoice
+                      ? 'text-white cursor-pointer bg-purple-450'
+                      : 'pointer-events-none text-black bg-gray-450',
+                    'font-medium py-2 px-3 rounded-md w-full pb-1',
+                  )}
+                  target="_blank"
+                  download
+                  rel="noopener noreferrer"
+                >
+                  Invoice
+                </a>
+              </div>
+            </MantineMenu.Dropdown>
+          </MantineMenu>
         )}
       </div>
     </div>
