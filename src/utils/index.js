@@ -574,7 +574,7 @@ export const calculateTotalMonths = (startDate, endDate) => {
   while (currDate.isSameOrBefore(end, 'month')) {
     // Checks if start and end date is of same month
     if (start.isSame(currDate) && start.month() === end.month()) {
-      totalDays += end.get('date') - currDate.get('date'); // adds selected days if same month
+      totalDays += end.get('date') + 1 - currDate.get('date'); // adds selected days if same month
     } else if (start.isSame(currDate)) {
       // checks if currDate is start Date to get date of one day before and one month after
       currDate = currDate.add(1, 'month').subtract(1, 'day');
