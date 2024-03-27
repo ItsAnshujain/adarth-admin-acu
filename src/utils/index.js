@@ -567,27 +567,40 @@ export const calculateTotalMonths = (startDate, endDate) => {
   const start = dayjs(startDate);
   const end = dayjs(endDate);
 
-  let totalMonths = 0;
+  let totalDays = 0;
 
   let currDate = start;
 
   while (currDate.isSameOrBefore(end, 'month')) {
-    const daysInMonth = currDate.daysInMonth();
-
-    if (start.isSame(end, 'month')) {
-      const daysSelectedInMonth = end.date() - start.date() + 1;
-      totalMonths += daysSelectedInMonth / daysInMonth;
-    } else if (currDate.isSame(end, 'month')) {
-      totalMonths += end.date() / daysInMonth;
-    } else {
-      const daysSelectedInStartMonth = daysInMonth - currDate.date() + 1;
-      totalMonths += daysSelectedInStartMonth / daysInMonth;
+    // Checks if start and end date is of same month
+    if (start.isSame(currDate) && start.month() === end.month()) {
+      totalDays += end.get('date') - currDate.get('date'); // adds selected days if same month
+    } else if (start.isSame(currDate)) {
+      // checks if currDate is start Date to get date of one day before and one month after
+      currDate = currDate.add(1, 'month').subtract(1, 'day');
     }
-    currDate = currDate.add(1, 'month').startOf('month');
+
+    // Checks if currDate is < endDate
+    if (
+      currDate.isSameOrBefore(end) &&
+      currDate.month() === end.month() &&
+      !start.isSame(currDate)
+    ) {
+      // adds 30 + the remaining days of endDate
+      totalDays += 30;
+      totalDays += end.get('date') - currDate.get('date');
+    } else if (currDate.isAfter(end) && currDate.month() === end.month()) {
+      // Checks if currDate is > endDate then adds the days of endDate
+      totalDays += 30 - (currDate.get('date') + 1 - end.get('date'));
+    } else if (!start.isSame(currDate)) {
+      totalDays += 30;
+    }
+
+    currDate = currDate.add(1, 'month');
   }
 
   // eslint-disable-next-line consistent-return
-  return totalMonths;
+  return totalDays / 30;
 };
 
 export const calculateTotalArea = (place, unit) =>
@@ -619,7 +632,6 @@ export const calculateTotalPrintingOrMountingCost = (item, unit, costPerSqft, gs
 
 export const calculateTotalDisplayCost = (item, startDate, endDate, gstPercentage) => {
   const totalMonths = calculateTotalMonths(startDate, endDate);
-
   const totalDisplayCost =
     calculateTotalArea(item, item?.unit) > 0 ? item.displayCostPerMonth * totalMonths : 0;
 
@@ -667,7 +679,6 @@ export const calculateTotalCostOfBooking = (item, unit, startDate, endDate) => {
       (item?.monthlyAdditionalCost || 0) * updatedTotalMonths -
       (item?.otherCharges || 0),
   );
-
   return item?.discountOn === 'totalPrice'
     ? Number(((totalCost || 0) - (totalCost || 0) * ((item?.discount || 0) / 100))?.toFixed(2) || 0)
     : Number(totalCost?.toFixed(2)) || 0;
