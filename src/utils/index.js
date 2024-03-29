@@ -591,8 +591,12 @@ export const calculateTotalMonths = (startDate, endDate) => {
       !start.isSame(currDate)
     ) {
       // for feb month
-      if (start.get('month') + 1 === 2 && end.get('date') < 30 && start.get('date') === 1) {
-        totalDays += 30 - (currDate.subtract(1, 'day').daysInMonth() - end.get('date')) + 1;
+      if (start.get('month') + 1 === 2 && start.get('date') === 1) {
+        if (end.get('date') < 30) {
+          totalDays += 30 - (currDate.subtract(1, 'day').daysInMonth() - end.get('date')) + 1;
+        } else {
+          totalDays += 30;
+        }
       } else if (currDate.date() < 30) {
         // adds 30 + the remaining days of endDate
         totalDays += 30;
@@ -613,7 +617,6 @@ export const calculateTotalMonths = (startDate, endDate) => {
 
     currDate = currDate.add(1, 'month');
   }
-
   // eslint-disable-next-line consistent-return
   return totalDays / 30;
 };
