@@ -133,7 +133,7 @@ const LeadsStats = ({ styles, leadStatsData, heading }) => {
           )}
         >
           <Image src={CompleteIcon} alt="icon" width={20} />
-          <div className={classNames('font-normal w-full', styles?.heading)}>Complete</div>
+          <div className={classNames('font-normal w-full', styles?.heading)}>Converted</div>
           <div className={classNames('text-2xl font-bold text-green-350', styles?.subHeading)}>
             {leadStatsData?.stage?.filter(({ _id }) => _id === 'converted')?.[0]?.count || 0}
           </div>

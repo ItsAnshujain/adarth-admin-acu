@@ -3,7 +3,7 @@ import { ChevronDown } from 'react-feather';
 import { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { indianCurrencyInDecimals } from '../../../utils';
-import { DATE_FORMAT, leadSourceOptions } from '../../../utils/constants';
+import { DATE_FORMAT, leadProspectOptions, leadSourceOptions } from '../../../utils/constants';
 
 const LeadsOverview = ({ leadData }) => {
   const primaryInChargeOptions = useMemo(
@@ -156,7 +156,10 @@ const LeadsOverview = ({ leadData }) => {
         </div>
         <div className="flex flex-col">
           <div className="text-base text-gray-500 pb-1">Prospect</div>
-          <div className="text-base">{leadData?.prospect || '-'}</div>
+          <div className="text-base">
+            {leadProspectOptions?.filter(prospect => prospect === leadData?.prospect)?.[0]?.label ||
+              '-'}
+          </div>
         </div>
         <div className="flex flex-col">
           <div className="text-base text-gray-500 pb-1">Lead Source</div>

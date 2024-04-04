@@ -159,11 +159,11 @@ export const aadhaarRegexMatch = /^\d{12}$/;
 
 export const mobileRegexMatch = /^[6-9]\d{9}$/;
 
+export const faxRegexMatch = /^\+?[0-9]{7,}$/;
+
 export const onlyNumbersMatch = /^[0-9]*$/;
 
 export const pinCodeMatch = /^(\d{4}|\d{6})$/;
-
-export const faxRegexMatch = /^\+?[0-9]{7,}$/;
 
 export const ifscRegexMatch = /^[A-Za-z]{4}[0-9]{6,7}$/;
 

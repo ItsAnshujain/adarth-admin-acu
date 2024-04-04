@@ -1,11 +1,10 @@
 import { Button, Stepper } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import dayjs from 'dayjs';
 import LeadHistoryCard from './LeadHistoryCard';
 import AddFollowUpContent from './AddFollowUpContent';
 import modalConfig from '../../../utils/modalConfig';
-import { useFollowUps } from '../../../apis/queries/followup.queries';
 import { DATE_SECOND_FORMAT } from '../../../utils/constants';
 
 const updatedModalConfig = {
@@ -19,16 +18,8 @@ const updatedModalConfig = {
   size: 800,
 };
 
-const LeadFollowUps = ({ leadId }) => {
+const LeadFollowUps = ({ leadId, followUpsQuery }) => {
   const modals = useModals();
-  const [query] = useState({
-    page: 1,
-    limit: 10,
-    sortBy: 'followUpDate',
-    sortOrder: 'asc',
-  });
-
-  const followUpsQuery = useFollowUps({ ...query, id: leadId }, !!leadId);
 
   const followUps = useMemo(
     () => followUpsQuery.data?.pages?.reduce((acc, { docs }) => [...acc, ...docs], []) || [],

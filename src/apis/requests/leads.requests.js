@@ -3,7 +3,7 @@ import http from '../http';
 
 const fetchLeads = query => http.get(`/lead?${query}`);
 
-export const fetchLeadsStats = query => http.get(urlcat(`/lead/stats?${query}`));
+export const fetchLeadsStats = () => http.get(urlcat('/lead/stats'));
 
 export const fetchLeadsStatsByUID = (id, query) => http.get(urlcat(`/lead/stats/${id}?${query}`));
 

@@ -33,7 +33,7 @@ const TermsAndConditionsPage = () => {
 
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
-    limit: 10,
+    limit: 20,
     sortBy: 'isGlobal',
     sortOrder: 'desc',
   });
@@ -165,7 +165,7 @@ const TermsAndConditionsPage = () => {
           setCount={currentLimit => {
             handlePagination('limit', currentLimit);
           }}
-          count="10"
+          count="20"
         />
         <Search
           search={searchInput}
@@ -184,7 +184,7 @@ const TermsAndConditionsPage = () => {
         activePage={searchParams.get('page')}
         totalPages={proposalTermsQuery?.data?.totalPages || 1}
         setActivePage={currentPage => handlePagination('page', currentPage)}
-        rowCountLimit={10}
+        rowCountLimit={20}
         handleSorting={handleSortByColumn}
         loading={proposalTermsQuery.isLoading || deleteProposalTerms.isLoading}
       />

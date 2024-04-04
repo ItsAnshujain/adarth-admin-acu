@@ -14,6 +14,7 @@ import AddFollowUpContent from './AddFollowUpContent';
 import modalConfig from '../../../utils/modalConfig';
 import { useLeadById } from '../../../apis/queries/leads.queries';
 import { leadPriorityOptions, leadStageOptions } from '../../../utils/constants';
+import { useFollowUps } from '../../../apis/queries/followup.queries';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -31,6 +32,8 @@ const ViewLeadDrawer = ({ isOpened, styles, onClose, leadId }) => {
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
     leadDetailTab: 'overview',
+    stage: 'initiateDiscussion',
+    priority: 'low',
   });
   const [activeStep, setActiveStep] = useState('');
   const leadDetailTab = searchParams.get('leadDetailTab');
@@ -44,6 +47,15 @@ const ViewLeadDrawer = ({ isOpened, styles, onClose, leadId }) => {
       ),
       ...updatedModalConfig,
     });
+
+  const [query] = useState({
+    page: 1,
+    limit: 20,
+    sortBy: 'followUpDate',
+    sortOrder: 'asc',
+  });
+
+  const followUpsQuery = useFollowUps({ ...query, id: leadId }, !!leadId);
 
   useEffect(() => setActiveStep(leadByIdQuery?.data?.stage), [leadByIdQuery?.data]);
   return (
@@ -125,11 +137,13 @@ const ViewLeadDrawer = ({ isOpened, styles, onClose, leadId }) => {
                       placeholder="Select..."
                       name="stage"
                       data={leadStageOptions}
-                      value={leadByIdQuery?.data?.stage}
+                      onChange={val => {
+                        searchParams.set('stage', val);
+                        setSearchParams(searchParams);
+                      }}
                       withAsterisk
                       rightSection={<ChevronDown size={20} />}
                       className="w-28"
-                      readOnly
                       classNames={{
                         input: 'border-none',
                         dropdown: 'w-40',
@@ -144,11 +158,13 @@ const ViewLeadDrawer = ({ isOpened, styles, onClose, leadId }) => {
                       placeholder="Select..."
                       name="priority"
                       data={leadPriorityOptions}
-                      value={leadByIdQuery?.data?.priority}
+                      onChange={val => {
+                        searchParams.set('priority', val);
+                        setSearchParams(searchParams);
+                      }}
                       withAsterisk
                       rightSection={<ChevronDown size={20} />}
                       className="w-28"
-                      readOnly
                       classNames={{
                         input: 'border-none',
                         dropdown: 'w-40',
@@ -163,7 +179,7 @@ const ViewLeadDrawer = ({ isOpened, styles, onClose, leadId }) => {
               <LeadsOverview leadData={leadByIdQuery?.data} />
             </Tabs.Panel>
             <Tabs.Panel value="followUps" className="px-6">
-              <LeadFollowUps leadId={leadByIdQuery?.data?._id} />
+              <LeadFollowUps leadId={leadByIdQuery?.data?._id} followUpsQuery={followUpsQuery} />
             </Tabs.Panel>
           </Tabs>
         </div>

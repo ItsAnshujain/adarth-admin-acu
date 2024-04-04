@@ -85,7 +85,7 @@ const AddLeadForm = () => {
 
   const usersQuery = useInfiniteUsers({
     page: 1,
-    limit: 10,
+    limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     filter: 'team',
@@ -93,14 +93,14 @@ const AddLeadForm = () => {
 
   const contactsQuery = useInfiniteContacts({
     page: 1,
-    limit: 10,
+    limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });
 
   const leadCompaniesQuery = useInfiniteCompanies({
     page: 1,
-    limit: 10,
+    limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     type: 'lead-company',
@@ -108,7 +108,7 @@ const AddLeadForm = () => {
 
   const companyRepresentingQuery = useInfiniteCompanies({
     page: 1,
-    limit: 10,
+    limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     type: 'co-company',
@@ -419,6 +419,7 @@ const AddLeadForm = () => {
                   classNames={{
                     input: 'border-none',
                     dropdown: 'w-56',
+                    rightSection: 'pointers-none',
                   }}
                   rightSection={<ChevronDown size={20} />}
                   dropdownComponent={usersDropdown}

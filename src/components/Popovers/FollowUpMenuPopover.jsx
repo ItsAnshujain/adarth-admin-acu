@@ -55,7 +55,7 @@ const FollowUpMenuPopover = ({ itemId, toggleEditFollowUp }) => {
       </Menu.Target>
       <Menu.Dropdown>
         <Card onClick={toggleEditFollowUp} className="p-0">
-          <Menu.Item>Edit Follow Up</Menu.Item>
+          <Menu.Item>Edit</Menu.Item>
         </Card>
 
         <Card onClick={toggleDeleteModal} className="p-0">
