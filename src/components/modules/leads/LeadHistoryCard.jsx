@@ -57,8 +57,13 @@ const LeadHistoryCard = ({ followUpData }) => {
       <div className="flex gap-2">
         <div className="w-1/3">
           <div className="text-sm text-gray-500">Primary Incharge</div>
-          <div className="flex items-center">
-            <Avatar />
+          <div className="flex items-center gap-x-2">
+            <Avatar
+              src={followUpData?.primaryInCharge?.image}
+              classNames={{ placeholderIcon: 'w-60 h-60' }}
+              className="rounded-full"
+              size="sm"
+            />
             <div className="text-sm max-w-sm truncate" title={followUpData?.primaryInCharge?.name}>
               {followUpData?.primaryInCharge?.name || 'None'}
             </div>
@@ -66,8 +71,13 @@ const LeadHistoryCard = ({ followUpData }) => {
         </div>
         <div className="w-1/3">
           <div className="text-sm text-gray-500">Secondary Incharge</div>
-          <div className="flex items-center">
-            <Avatar />
+          <div className="flex items-center gap-x-2">
+            <Avatar
+              src={followUpData?.secondaryInCharge?.image}
+              classNames={{ placeholderIcon: 'w-60 h-60' }}
+              className="rounded-full"
+              size="sm"
+            />
             <div className="text-sm">{followUpData?.secondaryInCharge?.name || 'None'}</div>
           </div>
         </div>

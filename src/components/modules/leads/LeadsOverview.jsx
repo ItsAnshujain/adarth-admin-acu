@@ -4,8 +4,38 @@ import { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { indianCurrencyInDecimals } from '../../../utils';
 import { DATE_FORMAT, leadProspectOptions, leadSourceOptions } from '../../../utils/constants';
+import { useUpdateLead } from '../../../apis/queries/leads.queries';
+import { useInfiniteUsers } from '../../../apis/queries/users.queries';
 
 const LeadsOverview = ({ leadData }) => {
+  const updateLeadHandler = useUpdateLead();
+
+  const handleUpdateLead = (val, key) => {
+    const data = {
+      [key]: val,
+    };
+    updateLeadHandler.mutate({ id: leadData?._id, ...data });
+  };
+
+  const usersQuery = useInfiniteUsers({
+    page: 1,
+    limit: 20,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+    filter: 'team',
+  });
+  const memoizedUsers = useMemo(
+    () =>
+      usersQuery.data?.pages
+        .reduce((acc, { docs }) => [...acc, ...docs], [])
+        ?.map(doc => ({
+          ...doc,
+          label: doc.name,
+          value: doc._id,
+        })) || [],
+    [usersQuery?.data],
+  );
+
   const primaryInChargeOptions = useMemo(
     () =>
       leadData?.primaryInCharge
@@ -30,15 +60,29 @@ const LeadsOverview = ({ leadData }) => {
             searchable
             placeholder="Select..."
             name="primaryIncharge"
-            data={primaryInChargeOptions}
+            data={
+              leadData?.primaryInCharge?._id &&
+              memoizedUsers?.filter(item => item.value === leadData?.primaryInCharge?._id).length <=
+                0
+                ? [
+                    ...memoizedUsers,
+                    {
+                      value: leadData?.primaryInCharge?._id,
+                      label: leadData?.primaryInCharge?.name,
+                    },
+                  ] || []
+                : memoizedUsers || []
+            }
             value={primaryInChargeOptions?.[0]?.value}
             withAsterisk
             rightSection={<ChevronDown size={20} />}
             className="w-28"
-            readOnly
             classNames={{
               input: 'border-none',
               dropdown: 'w-56',
+            }}
+            onChange={val => {
+              handleUpdateLead(val, 'primaryInCharge');
             }}
           />
         </div>
@@ -49,15 +93,29 @@ const LeadsOverview = ({ leadData }) => {
             searchable
             placeholder="Select..."
             name="secondaryIncharge"
-            data={secondaryInChargeOptions}
+            data={
+              leadData?.secondaryInCharge?._id &&
+              memoizedUsers?.filter(item => item.value === leadData?.secondaryInCharge?._id)
+                .length <= 0
+                ? [
+                    ...memoizedUsers,
+                    {
+                      value: leadData?.secondaryInCharge?._id,
+                      label: leadData?.secondaryInCharge?.name,
+                    },
+                  ] || []
+                : memoizedUsers || []
+            }
             value={secondaryInChargeOptions?.[0]?.value}
             withAsterisk
             rightSection={<ChevronDown size={20} />}
             className="w-28"
-            readOnly
             classNames={{
               input: 'border-none',
               dropdown: 'w-56',
+            }}
+            onChange={val => {
+              handleUpdateLead(val, 'secondaryInCharge');
             }}
           />
         </div>

@@ -78,8 +78,9 @@ export const useUpdateLead = () => {
       return res;
     },
     {
-      onSuccess: () => {
+      onSuccess: res => {
         queryClient.invalidateQueries(['leads']);
+        queryClient.invalidateQueries(['leads-by-id', res?.data?._id]);
       },
       onError: onApiError,
     },
