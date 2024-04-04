@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Text, Button, Badge, Loader } from '@mantine/core';
+import { Text, Button, Badge } from '@mantine/core';
 import { Plus } from 'react-feather';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
@@ -245,24 +245,14 @@ const SpacesList = ({ spacesData = {}, isCampaignDataLoading }) => {
           />
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
-        {isCampaignDataLoading ? (
-          <div className="flex justify-center items-center h-[400px]">
-            <Loader />
-          </div>
-        ) : null}
-        {!spacesData?.docs?.length && !isCampaignDataLoading ? (
-          <div className="w-full min-h-[400px] flex justify-center items-center">
-            <p className="text-xl">No records found</p>
-          </div>
-        ) : null}
-        {spacesData?.docs?.length ? (
-          <Table
-            data={spacesData?.docs || []}
-            COLUMNS={COLUMNS}
-            handleSorting={handleSortByColumn}
-            setActivePage={currentPage => handlePagination('page', currentPage)}
-          />
-        ) : null}
+
+        <Table
+          data={spacesData?.docs || []}
+          COLUMNS={COLUMNS}
+          handleSorting={handleSortByColumn}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
+          loading={isCampaignDataLoading}
+        />
       </div>
     </>
   );

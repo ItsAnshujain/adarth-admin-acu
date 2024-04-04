@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
-import { Loader, Select, Text, ActionIcon } from '@mantine/core';
+import { Select, Text, ActionIcon } from '@mantine/core';
 import dayjs from 'dayjs';
 import { ChevronDown } from 'react-feather';
 import shallow from 'zustand/shallow';
@@ -291,17 +291,8 @@ const ProposalDashboardPage = () => {
         />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
-      {isLoadingProposalsData && viewType.proposal === 'list' ? (
-        <div className="flex justify-center items-center h-[400px]">
-          <Loader />
-        </div>
-      ) : null}
-      {!proposalsData?.docs?.length && !isLoadingProposalsData ? (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      ) : null}
-      {viewType.proposal === 'list' && proposalsData?.docs?.length ? (
+
+      {viewType.proposal === 'list' ? (
         <Table
           data={proposalsData?.docs || []}
           COLUMNS={COLUMNS}
@@ -310,6 +301,7 @@ const ProposalDashboardPage = () => {
           setActivePage={currentPage => handlePagination('page', currentPage)}
           rowCountLimit={limit}
           handleSorting={handleSortByColumn}
+          loading={isLoadingProposalsData}
         />
       ) : viewType.proposal === 'grid' && proposalsData?.docs?.length ? (
         <GridView

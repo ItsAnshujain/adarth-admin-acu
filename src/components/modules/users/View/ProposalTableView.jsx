@@ -1,4 +1,4 @@
-import { ActionIcon, Loader, Select, Text } from '@mantine/core';
+import { ActionIcon, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import React, { useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
@@ -260,27 +260,17 @@ const ProposalTableView = ({ data, isLoading, activeChildTab }) => {
       <div className="flex justify-end h-20 items-center">
         <DateAndFilterHeader activeChildTab={activeChildTab} />
       </div>
-      {isLoading ? (
-        <div className="flex justify-center items-center h-[380px]">
-          <Loader />
-        </div>
-      ) : null}
-      {!data?.docs?.length && !isLoading ? (
-        <div className="w-full min-h-[380px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      ) : null}
-      {data?.docs?.length ? (
-        <Table
-          data={data?.docs || []}
-          COLUMNS={COLUMNS}
-          activePage={data?.page || 1}
-          totalPages={data?.totalPages || 1}
-          setActivePage={currentPage => handlePagination('page', currentPage)}
-          rowCountLimit={data.limit || 10}
-          handleSorting={handleSortByColumn}
-        />
-      ) : null}
+
+      <Table
+        data={data?.docs || []}
+        COLUMNS={COLUMNS}
+        activePage={data?.page || 1}
+        totalPages={data?.totalPages || 1}
+        setActivePage={currentPage => handlePagination('page', currentPage)}
+        rowCountLimit={data.limit || 10}
+        handleSorting={handleSortByColumn}
+        loading={isLoading}
+      />
       <PriceBreakdownDrawer
         isOpened={drawerOpened}
         onClose={drawerActions.close}

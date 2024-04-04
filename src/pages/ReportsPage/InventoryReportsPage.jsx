@@ -755,11 +755,7 @@ const InventoryReportsPage = () => {
                     <SubHeader />
                   </div>
                 </div>
-                {!inventoryReportList?.docs?.length && !inventoryReportListLoading ? (
-                  <div className="w-full min-h-[400px] flex justify-center items-center">
-                    <p className="text-xl">No records found</p>
-                  </div>
-                ) : null}
+
                 <Table
                   COLUMNS={inventoryColumn}
                   data={inventoryReportList?.docs || []}
@@ -767,6 +763,7 @@ const InventoryReportsPage = () => {
                   activePage={inventoryReportList?.page || 1}
                   totalPages={inventoryReportList?.totalPages || 1}
                   setActivePage={currentPage => handlePagination('page', currentPage)}
+                  loading={inventoryReportListLoading}
                 />
               </Tabs.Panel>
               <Tabs.Panel value="messages" pt="lg">
@@ -779,6 +776,7 @@ const InventoryReportsPage = () => {
                   COLUMNS={performingInventoryColumn}
                   data={inventoryStats?.best || []}
                   showPagination={false}
+                  loading={isInventoryStatsLoading}
                 />
               </Tabs.Panel>
               <Tabs.Panel value="settings" pt="lg">
@@ -791,6 +789,7 @@ const InventoryReportsPage = () => {
                   COLUMNS={performingInventoryColumn}
                   data={inventoryStats?.worst || []}
                   showPagination={false}
+                  loading={isInventoryStatsLoading}
                 />
               </Tabs.Panel>
             </Tabs>

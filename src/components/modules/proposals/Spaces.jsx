@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Text, Button, NumberInput, Badge, Loader, Group, Tooltip } from '@mantine/core';
+import { Text, Button, NumberInput, Badge, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayjs from 'dayjs';
@@ -826,29 +826,18 @@ const Spaces = () => {
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
-      {isLoading ? (
-        <div className="flex justify-center items-center h-[400px]">
-          <Loader />
-        </div>
-      ) : null}
-      {!inventoryData?.docs?.length && !isLoading ? (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      ) : null}
-      {inventoryData?.docs?.length ? (
-        <Table
-          data={updatedInventoryData}
-          COLUMNS={COLUMNS}
-          allowRowsSelect
-          setSelectedFlatRows={handleSelection}
-          selectedRowData={watchSpaces}
-          handleSorting={handleSortByColumn}
-          activePage={pagination.page}
-          totalPages={pagination.totalPages}
-          setActivePage={currentPage => handlePagination('page', currentPage)}
-        />
-      ) : null}
+      <Table
+        data={updatedInventoryData}
+        COLUMNS={COLUMNS}
+        allowRowsSelect
+        setSelectedFlatRows={handleSelection}
+        selectedRowData={watchSpaces}
+        handleSorting={handleSortByColumn}
+        activePage={pagination.page}
+        totalPages={pagination.totalPages}
+        setActivePage={currentPage => handlePagination('page', currentPage)}
+        loading={isLoading}
+      />
       <AddEditPriceDrawer
         isOpened={drawerOpened}
         onClose={drawerActions.close}

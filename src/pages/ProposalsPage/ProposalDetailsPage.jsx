@@ -1,11 +1,12 @@
 import { useMemo, useState, useEffect } from 'react';
-import { ActionIcon, Badge, Button, Image, Loader, Select, Text } from '@mantine/core';
+import { ActionIcon, Badge, Button, Image, Select, Text } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import classNames from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
+import dayjs from 'dayjs';
 import shallow from 'zustand/shallow';
 import GoogleMapReact from 'google-map-react';
 import { IconEye, IconX } from '@tabler/icons';
@@ -38,6 +39,7 @@ import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
 import { useFetchMasterById } from '../../apis/queries/masters.queries';
 import ViewPriceDrawer from '../../components/modules/proposals/ViewProposal/ViewPriceDrawer';
 import InventoryPreviewImage from '../../components/shared/InventoryPreviewImage';
+import { DATE_FORMAT } from '../../utils/constants';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -243,6 +245,25 @@ const ProposalDetailsPage = () => {
               </div>
             );
           }, []),
+      },
+      {
+        Header: 'START DATE',
+        accessor: 'startDate',
+        Cell: ({
+          row: {
+            original: { startDate },
+          },
+        }) =>
+          useMemo(() => <div>{startDate ? dayjs(startDate).format(DATE_FORMAT) : 'NA'}</div>, []),
+      },
+      {
+        Header: 'END DATE',
+        accessor: 'endDate',
+        Cell: ({
+          row: {
+            original: { endDate },
+          },
+        }) => useMemo(() => <div>{endDate ? dayjs(endDate).format(DATE_FORMAT) : 'NA'}</div>, []),
       },
       {
         Header: 'MEDIUM',
@@ -553,28 +574,15 @@ const ProposalDetailsPage = () => {
         />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
-      {isProposalDataLoading ? (
-        <div className="flex justify-center items-center h-[400px]">
-          <Loader />
-        </div>
-      ) : null}
-      {!proposalData?.inventories?.docs?.length && !isProposalDataLoading ? (
-        <div className="w-full min-h-[300px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      ) : null}
-      <div>
-        {proposalData?.inventories?.docs?.length ? (
-          <Table
-            COLUMNS={COLUMNS}
-            data={proposalData?.inventories?.docs || []}
-            activePage={proposalData?.inventories?.page || 1}
-            totalPages={proposalData?.inventories?.totalPages || 1}
-            setActivePage={currentPage => handlePagination('page', currentPage)}
-            handleSorting={handleSortByColumn}
-          />
-        ) : null}
-      </div>
+      <Table
+        COLUMNS={COLUMNS}
+        data={proposalData?.inventories?.docs || []}
+        activePage={proposalData?.inventories?.page || 1}
+        totalPages={proposalData?.inventories?.totalPages || 1}
+        setActivePage={currentPage => handlePagination('page', currentPage)}
+        handleSorting={handleSortByColumn}
+        loading={isProposalDataLoading}
+      />
       <VersionsDrawer
         isOpened={versionDrawerOpened}
         onClose={versionDrawerActions.close}

@@ -191,20 +191,15 @@ const PaymentInformationList = () => {
         </Button>
       </Group>
 
-      {paymentQuery.data?.docs.length ? (
-        <Table
-          COLUMNS={COLUMNS}
-          data={paymentQuery.data?.docs || []}
-          classNameWrapper="min-h-[150px]"
-          activePage={paymentQuery.data?.page || 1}
-          totalPages={paymentQuery.data?.totalPages || 1}
-          setActivePage={currentPage => handlePagination('page', currentPage)}
-        />
-      ) : (
-        <div className="w-full min-h-[150px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      )}
+      <Table
+        COLUMNS={COLUMNS}
+        data={paymentQuery.data?.docs || []}
+        classNameWrapper="min-h-[150px]"
+        activePage={paymentQuery.data?.page || 1}
+        totalPages={paymentQuery.data?.totalPages || 1}
+        setActivePage={currentPage => handlePagination('page', currentPage)}
+        loading={paymentQuery.isLoading}
+      />
 
       <Modal
         title="Delete Payment Record?"

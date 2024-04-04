@@ -2,7 +2,7 @@ import { useSearchParams, useParams } from 'react-router-dom';
 import { useMemo, useState, useEffect } from 'react';
 import { ActionIcon, Image, Select, Text } from '@mantine/core';
 import GoogleMapReact from 'google-map-react';
-import { Loader, ChevronDown } from 'react-feather';
+import { ChevronDown } from 'react-feather';
 import { useDebouncedValue } from '@mantine/hooks';
 import shallow from 'zustand/shallow';
 import dayjs from 'dayjs';
@@ -42,7 +42,7 @@ const PublicLinkPage = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     owner: 'all',
     page: 1,
-    limit: 10,
+    limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     category: '',
@@ -589,28 +589,16 @@ const PublicLinkPage = () => {
         />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
-      {isProposalDataLoading ? (
-        <div className="flex justify-center items-center h-[400px]">
-          <Loader />
-        </div>
-      ) : null}
-      {!proposalData?.inventories?.docs?.length && !isProposalDataLoading ? (
-        <div className="w-full min-h-[300px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      ) : null}
-      <div>
-        {proposalData?.inventories?.docs?.length ? (
-          <Table
-            COLUMNS={COLUMNS}
-            data={proposalData?.inventories?.docs || []}
-            activePage={proposalData?.inventories?.page || 1}
-            totalPages={proposalData?.inventories?.totalPages || 1}
-            setActivePage={currentPage => handlePagination('page', currentPage)}
-            handleSorting={handleSortByColumn}
-          />
-        ) : null}
-      </div>
+
+      <Table
+        COLUMNS={COLUMNS}
+        data={proposalData?.inventories?.docs || []}
+        activePage={proposalData?.inventories?.page || 1}
+        totalPages={proposalData?.inventories?.totalPages || 1}
+        setActivePage={currentPage => handlePagination('page', currentPage)}
+        handleSorting={handleSortByColumn}
+        loading={isProposalDataLoading}
+      />
     </div>
   );
 };
