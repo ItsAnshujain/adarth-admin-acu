@@ -571,58 +571,64 @@ export const calculateTotalMonths = (startDate, endDate) => {
 
   let currDate = start;
 
-  while (currDate.isSameOrBefore(end, 'month')) {
-    // Checks if start and end date is of same month
-    if (start.isSame(currDate) && start.month() === end.month()) {
-      const selectedDaysInMonth = end.get('date') + 1 - currDate.get('date');
-      totalDays +=
-        selectedDaysInMonth > 30 ||
-        (end.get('date') === end.daysInMonth() && start.get('date') === 1)
-          ? 30
-          : selectedDaysInMonth; // adds selected days if same month
-    } else if (start.isSame(currDate)) {
-      // checks if currDate is start Date to get date of one day before and one month after
-      currDate = currDate.add(1, 'month').subtract(1, 'day');
-    }
-    // Checks if currDate is < endDate
-    if (
-      currDate.isSameOrBefore(end) &&
-      currDate.month() === end.month() &&
-      !start.isSame(currDate)
-    ) {
-      // for feb month
-      if (start.get('month') + 1 === 2 && start.get('date') === 1) {
-        if (end.get('date') < 30) {
-          totalDays += 30 - (currDate.subtract(1, 'day').daysInMonth() - end.get('date')) + 1;
+  const differenceInDates = end.diff(start, 'days');
+  if (differenceInDates < 28) {
+    // eslint-disable-next-line consistent-return
+    totalDays += differenceInDates + 1;
+  } else
+    while (currDate.isSameOrBefore(end, 'month')) {
+      // Checks if start and end date is of same month
+      if (start.isSame(currDate) && start.month() === end.month()) {
+        const selectedDaysInMonth = end.get('date') + 1 - currDate.get('date');
+        totalDays +=
+          selectedDaysInMonth > 30 ||
+          (end.get('date') === end.daysInMonth() && start.get('date') === 1)
+            ? 30
+            : selectedDaysInMonth; // adds selected days if same month
+      } else if (start.isSame(currDate)) {
+        // checks if currDate is start Date to get date of one day before and one month after
+        currDate = currDate.add(1, 'month').subtract(1, 'day');
+      }
+      // Checks if currDate is < endDate
+      if (
+        currDate.isSameOrBefore(end) &&
+        currDate.month() === end.month() &&
+        !start.isSame(currDate)
+      ) {
+        // for feb month
+        if (start.get('month') + 1 === 2 && start.get('date') === 1) {
+          if (end.get('date') < 30) {
+            totalDays += 30 - (currDate.subtract(1, 'day').daysInMonth() - end.get('date')) + 1;
+          } else {
+            totalDays += 30;
+          }
+        } else if (currDate.date() < 30) {
+          // adds 30 + the remaining days of endDate
+          totalDays += 30;
+          totalDays += end.get('date') - currDate.get('date');
         } else {
           totalDays += 30;
         }
-      } else if (currDate.date() < 30) {
-        // adds 30 + the remaining days of endDate
-        totalDays += 30;
-        totalDays += end.get('date') - currDate.get('date');
-      } else {
-        totalDays += 30;
-      }
-    } else if (currDate.isAfter(end) && currDate.month() === end.month()) {
-      // for feb month
-      if (
-        start.get('date') === 1 &&
-        (start.get('month') + 1 === 2 || start.get('month') + 1 === 1) &&
-        end.get('date') < 30
-      ) {
-        totalDays += 30 - (currDate.get('date') - end.get('date') + 1);
-      } else if (start.get('month') + 1 === 2 && end.get('date') < 30) {
-        totalDays += 30 - (currDate.get('date') - end.get('date'));
-      }
+      } else if (currDate.isAfter(end) && currDate.month() === end.month()) {
+        // for feb month
+        if (
+          start.get('date') === 1 &&
+          (start.get('month') + 1 === 2 || start.get('month') + 1 === 1) &&
+          end.get('date') < 30
+        ) {
+          totalDays += 30 - (currDate.get('date') - end.get('date') + 1);
+        } else if (start.get('month') + 1 === 2 && end.get('date') < 30) {
+          totalDays += 30 - (currDate.get('date') - end.get('date'));
+        }
 
-      // Checks if currDate is > endDate then adds the days of endDate
-      else totalDays += 30 - (currDate.get('date') - end.get('date'));
-    } else if (!start.isSame(currDate)) {
-      totalDays += 30;
+        // Checks if currDate is > endDate then adds the days of endDate
+        else totalDays += 30 - (currDate.get('date') - end.get('date'));
+      } else if (!start.isSame(currDate)) {
+        totalDays += 30;
+      }
+      currDate = currDate.add(1, 'month');
     }
-    currDate = currDate.add(1, 'month');
-  }
+
   // eslint-disable-next-line consistent-return
   return totalDays / 30;
 };
