@@ -32,7 +32,7 @@ const ContactPage = () => {
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
-    limit: 10,
+    limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     search: debouncedSearch,
@@ -146,11 +146,12 @@ const ContactPage = () => {
           },
         }) =>
           useMemo(
-            () => (
-              <p className="bg-gray-450 px-1">
-                {birthDate ? dayjs(birthDate).format(DATE_SECOND_FORMAT) : '-'}
-              </p>
-            ),
+            () =>
+              birthDate ? (
+                <p className="bg-gray-450 px-1">{dayjs(birthDate).format(DATE_SECOND_FORMAT)}</p>
+              ) : (
+                'NA'
+              ),
             [],
           ),
       },
@@ -203,7 +204,7 @@ const ContactPage = () => {
             setCount={currentLimit => {
               handlePagination('limit', currentLimit);
             }}
-            count="10"
+            count="20"
           />
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
@@ -213,7 +214,7 @@ const ContactPage = () => {
           activePage={searchParams.get('page')}
           totalPages={contactsQuery?.data?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
-          rowCountLimit={10}
+          rowCountLimit={20}
           handleSorting={handleSortByColumn}
           loading={contactsQuery.isLoading}
         />

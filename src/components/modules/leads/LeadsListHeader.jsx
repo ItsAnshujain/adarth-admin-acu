@@ -26,7 +26,11 @@ const LeadsListHeader = () => {
           </Button>
           {showDatePicker && (
             <div className="absolute z-20 -translate-x-[450px] bg-white -top-0.3">
-              <DateRange handleClose={toggleDatePicker} dateKeys={['from', 'to']} />
+              <DateRange
+                handleClose={toggleDatePicker}
+                dateKeys={['from', 'to']}
+                dateRangeClassNames={{ root: 'h-[50vh]' }}
+              />
             </div>
           )}
         </div>

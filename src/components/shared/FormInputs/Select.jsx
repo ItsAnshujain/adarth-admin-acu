@@ -10,6 +10,7 @@ const Select = forwardRef(({ ...props }, ref) => (
       item: ' data-[selected]:bg-primary hover:data-[selected]:bg-primary',
     }}
     {...props}
+    styles={{ rightSection: { pointerEvents: 'none' } }}
   />
 ));
 

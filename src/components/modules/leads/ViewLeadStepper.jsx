@@ -41,7 +41,7 @@ const ViewLeadStepper = ({ activeStep }) => (
           className={classNames(
             'w-full pl-4 stepperItem',
             activeStep === 'converted' || activeStep === 'lost'
-              ? ' text-white bg-red-350'
+              ? ' text-white bg-green-250'
               : 'bg-gray-200 text-gray-400',
           )}
           classNames={{ stepWrapper: 'hidden' }}
@@ -51,7 +51,7 @@ const ViewLeadStepper = ({ activeStep }) => (
         label="Lost"
         className={classNames(
           'w-64 p-2 pl-4 stepperItem',
-          activeStep === 'lost' ? ' text-white bg-green-250' : 'bg-gray-200 text-gray-400',
+          activeStep === 'lost' ? ' text-white bg-red-350' : 'bg-gray-200 text-gray-400',
         )}
         classNames={{ stepWrapper: 'hidden' }}
       />

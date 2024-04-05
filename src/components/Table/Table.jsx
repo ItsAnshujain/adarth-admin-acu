@@ -18,6 +18,7 @@ const Table = ({
   setActivePage = () => {},
   selectedRowData = [],
   handleSorting = () => {},
+  handleTableRowClick = () => {},
   showPagination = true,
   className = '',
   classNameWrapper = '',
@@ -140,6 +141,7 @@ const Table = ({
                       row.original.isActive === false ? 'opacity-50' : '',
                       selection.includes(row.original._id) ? 'bg-green-100' : '',
                     )}
+                    onClick={() => handleTableRowClick(row.original?._id)}
                     {...row.getRowProps()}
                   >
                     {allowRowsSelect && (

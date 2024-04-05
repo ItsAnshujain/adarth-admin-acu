@@ -41,7 +41,7 @@ const LeadsList = () => {
   const [viewLeadDrawerOpened, viewLeadDrawerActions] = useDisclosure();
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
-    limit: 10,
+    limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     search: debouncedSearch,
@@ -57,7 +57,7 @@ const LeadsList = () => {
     return serialize(updatedParams);
   };
 
-  const leadsQuery = useLeads(removeUnwantedQueries('leadDetailTab'));
+  const leadsQuery = useLeads(removeUnwantedQueries(['leadDetailTab', 'stage', 'priority']));
 
   const toggleAddFollowUp = id =>
     modals.openModal({
@@ -140,14 +140,11 @@ const LeadsList = () => {
           },
         }) =>
           useMemo(
-            () =>
-              objective ? (
-                <p className="w-96 truncate" title={objective}>
-                  {objective}
-                </p>
-              ) : (
-                '-'
-              ),
+            () => (
+              <div className="max-w-xs truncate" title={objective}>
+                {objective || '-'}
+              </div>
+            ),
             [],
           ),
       },
@@ -184,7 +181,11 @@ const LeadsList = () => {
             const leadSourceOption = leadSourceOptions?.filter(
               ({ value }) => value === leadSource,
             )?.[0];
-            return leadSourceOption ? leadSourceOption?.label : '-';
+            return (
+              <p className="max-w-xs truncate">
+                {leadSourceOption ? leadSourceOption?.label : '-'}
+              </p>
+            );
           }, []),
       },
       {
@@ -306,6 +307,11 @@ const LeadsList = () => {
     }
   }, [debouncedSearch]);
 
+  const handleTableRowClick = id => {
+    viewLeadDrawerActions.open();
+    setLeadId(id);
+  };
+
   return (
     <div className="mx-2 px-4">
       <LeadsListHeader />
@@ -314,7 +320,7 @@ const LeadsList = () => {
           setCount={currentLimit => {
             handlePagination('limit', currentLimit);
           }}
-          count="10"
+          count="20"
         />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
@@ -324,9 +330,10 @@ const LeadsList = () => {
         activePage={leadsQuery?.data?.page}
         totalPages={leadsQuery?.data?.totalPages}
         setActivePage={currentPage => handlePagination('page', currentPage)}
-        rowCountLimit={10}
+        rowCountLimit={20}
         handleSorting={handleSortByColumn}
         loading={leadsQuery?.isLoading}
+        handleTableRowClick={handleTableRowClick}
       />
 
       <ViewLeadDrawer

@@ -2,6 +2,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Button, createStyles } from '@mantine/core';
 import dayjs from 'dayjs';
+import classNames from 'classnames';
 import { DATE_FORMAT } from '../utils/constants';
 import CustomDateRangePicker from './CustomDateRangePicker';
 
@@ -22,6 +23,7 @@ const DateRange = ({
   dateKeys = ['startDate', 'endDate'],
   rangeCalendarMinDate,
   datePickerMinDate,
+  dateRangeClassNames = {},
 }) => {
   const { classes, cx } = useStyles();
   const [value, setValue] = useState([null, null]);
@@ -77,7 +79,12 @@ const DateRange = ({
   }, []);
 
   return (
-    <div className="flex flex-col w-[605px] p-8 shadow-2xl">
+    <div
+      className={classNames(
+        'flex flex-col w-[605px] p-8 shadow-2xl overflow-auto',
+        dateRangeClassNames.root,
+      )}
+    >
       <div className="flex justify-between pb-4 border-b">
         <div>
           <p className="text-2xl font-bold">Date Range</p>
