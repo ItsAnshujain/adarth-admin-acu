@@ -41,7 +41,7 @@ const ViewLeadStepper = ({ activeStep }) => (
           className={classNames(
             'w-full pl-4 stepperItem',
             activeStep === 'converted' || activeStep === 'lost'
-              ? ' text-white bg-green-250'
+              ? ' text-white bg-green-350'
               : 'bg-gray-200 text-gray-400',
           )}
           classNames={{ stepWrapper: 'hidden' }}

@@ -1,4 +1,4 @@
-import { Button, Select } from '@mantine/core';
+import { Button, Select, Tabs } from '@mantine/core';
 import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
@@ -54,14 +54,12 @@ const FinanceMonthlyDetailsPage = () => {
   const limit = searchParams.get('limit');
   const financeRecordId = searchParams.get('id');
   const recordType = searchParams.get('recordType');
-  const [pageType, setPageType] = useState(recordType || 'purchase');
 
   const handleTabs = type => {
     searchParams.set('recordType', type);
     searchParams.set('page', 1);
     searchParams.delete('id');
     setSearchParams(searchParams);
-    setPageType(type);
   };
 
   const handleSearch = () => {
@@ -264,7 +262,7 @@ const FinanceMonthlyDetailsPage = () => {
           ),
       },
     ],
-    [financialDataByMonth?.finances?.docs],
+    [recordType, financialDataByMonth?.finances?.docs],
   );
 
   const releaseOrderColumn = useMemo(
@@ -449,7 +447,7 @@ const FinanceMonthlyDetailsPage = () => {
           ),
       },
     ],
-    [financialDataByMonth?.finances?.docs],
+    [recordType, financialDataByMonth?.finances?.docs],
   );
 
   const invoiceColumn = useMemo(
@@ -644,7 +642,7 @@ const FinanceMonthlyDetailsPage = () => {
           ),
       },
     ],
-    [financialDataByMonth?.finances?.docs],
+    [recordType, financialDataByMonth?.finances?.docs],
   );
 
   const togglePreviewModal = () =>
@@ -688,83 +686,128 @@ const FinanceMonthlyDetailsPage = () => {
         totalSales={financialDataByMonth?.cost?.totalSales}
         totalOperationlCost={financialDataByMonth?.cost?.totalOperationlCost}
       />
-      <div className="flex gap-x-5 items-center font-medium h-20 border-b">
-        <Button
-          onClick={() => handleTabs('purchase')}
-          className={classNames(
-            pageType === 'purchase'
-              ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
-              : 'text-black',
-            'px-0',
-          )}
-        >
-          Purchase Orders
-        </Button>
-        <Button
-          onClick={() => handleTabs('release')}
-          className={classNames(
-            pageType === 'release'
-              ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
-              : 'text-black',
-            'px-0',
-          )}
-        >
-          Release Orders
-        </Button>
-        <Button
-          onClick={() => handleTabs('invoice')}
-          className={classNames(
-            pageType === 'invoice'
-              ? 'text-purple-450 after:content[""] after:block after:w-full after:h-0.5 after:relative after:top-5 after:bg-purple-450'
-              : 'text-black',
-            'px-0',
-          )}
-        >
-          Invoices
-        </Button>
-      </div>
-      <div className="py-4 flex justify-end gap-2 text-right">
-        <Search search={searchInput} setSearch={setSearchInput} />
-        <div ref={ref} className=" relative">
-          <Button onClick={toggleDatePicker} variant="default">
-            <img src={calendar} className="h-5" alt="calendar" />
-          </Button>
-          {showDatePicker && (
-            <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3 right-[-400px]">
-              <DateRange handleClose={toggleDatePicker} dateKeys={['startDate', 'endDate']} />
+      <Tabs className="w-full mt-6" value={recordType}>
+        <Tabs.List className="border-b">
+          <div className="flex justify-between w-full pb-0">
+            <div className="flex gap-4 mb-0">
+              <Tabs.Tab
+                value="purchase"
+                className={classNames(
+                  'p-0 border-0 text-lg pb-2',
+                  recordType === 'purchase'
+                    ? 'border border-b-2 border-purple-450 text-purple-450'
+                    : '',
+                )}
+                onClick={() => handleTabs('purchase')}
+              >
+                Purchase Orders
+              </Tabs.Tab>
+              <Tabs.Tab
+                value="release"
+                className={classNames(
+                  'p-0 border-0 text-lg pb-2',
+                  recordType === 'release'
+                    ? 'border border-b-2 border-purple-450 text-purple-450'
+                    : '',
+                )}
+                onClick={() => handleTabs('release')}
+              >
+                Release Orders
+              </Tabs.Tab>
+              <Tabs.Tab
+                value="invoice"
+                className={classNames(
+                  'p-0 border-0 text-lg pb-2',
+                  recordType === 'invoice'
+                    ? 'border border-b-2 border-purple-450 text-purple-450'
+                    : '',
+                )}
+                onClick={() => handleTabs('invoice')}
+              >
+                Invoice
+              </Tabs.Tab>
             </div>
-          )}
-        </div>
-      </div>
-
-      {pageType === 'purchase' ? (
-        <Table
-          COLUMNS={purchaseOrderColumn}
-          data={financialDataByMonth?.finances?.docs || []}
-          activePage={financialDataByMonth?.finances?.page || 1}
-          totalPages={financialDataByMonth?.finances?.totalPages || 1}
-          setActivePage={currentPage => handlePagination('page', currentPage)}
-          loading={isLoading}
-        />
-      ) : pageType === 'release' ? (
-        <Table
-          COLUMNS={releaseOrderColumn}
-          data={financialDataByMonth?.finances?.docs || []}
-          activePage={financialDataByMonth?.finances?.page || 1}
-          totalPages={financialDataByMonth?.finances?.totalPages || 1}
-          setActivePage={currentPage => handlePagination('page', currentPage)}
-          loading={isLoading}
-        />
-      ) : pageType === 'invoice' ? (
-        <Table
-          COLUMNS={invoiceColumn}
-          data={financialDataByMonth?.finances?.docs || []}
-          activePage={financialDataByMonth?.finances?.page || 1}
-          totalPages={financialDataByMonth?.finances?.totalPages || 1}
-          setActivePage={currentPage => handlePagination('page', currentPage)}
-          loading={isLoading}
-        />
-      ) : null}
+          </div>
+        </Tabs.List>
+        <Tabs.Panel value="purchase">
+          <div className="py-4 flex justify-end gap-2 text-right">
+            <Search search={searchInput} setSearch={setSearchInput} />
+            <div ref={ref} className=" relative">
+              <Button onClick={toggleDatePicker} variant="default">
+                <img src={calendar} className="h-5" alt="calendar" />
+              </Button>
+              {showDatePicker && (
+                <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3 right-[-400px]">
+                  <DateRange handleClose={toggleDatePicker} dateKeys={['startDate', 'endDate']} />
+                </div>
+              )}
+            </div>
+          </div>
+          {recordType === 'purchase' ? (
+            <Table
+              data={financialDataByMonth?.finances?.docs || []}
+              COLUMNS={purchaseOrderColumn}
+              activePage={financialDataByMonth?.finances?.page}
+              totalPages={financialDataByMonth?.finances?.totalPages || 1}
+              setActivePage={currentPage => handlePagination('page', currentPage)}
+              rowCountLimit={20}
+              loading={isLoading}
+            />
+          ) : null}
+        </Tabs.Panel>
+        <Tabs.Panel value="release">
+          <div className="py-4 flex justify-end gap-2 text-right">
+            <Search search={searchInput} setSearch={setSearchInput} />
+            <div ref={ref} className=" relative">
+              <Button onClick={toggleDatePicker} variant="default">
+                <img src={calendar} className="h-5" alt="calendar" />
+              </Button>
+              {showDatePicker && (
+                <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3 right-[-400px]">
+                  <DateRange handleClose={toggleDatePicker} dateKeys={['startDate', 'endDate']} />
+                </div>
+              )}
+            </div>
+          </div>
+          {recordType === 'release' ? (
+            <Table
+              data={financialDataByMonth?.finances?.docs || []}
+              COLUMNS={releaseOrderColumn}
+              activePage={financialDataByMonth?.finances?.page}
+              totalPages={financialDataByMonth?.finances?.totalPages || 1}
+              setActivePage={currentPage => handlePagination('page', currentPage)}
+              rowCountLimit={20}
+              loading={isLoading}
+            />
+          ) : null}
+        </Tabs.Panel>
+        <Tabs.Panel value="invoice">
+          <div className="py-4 flex justify-end gap-2 text-right">
+            <Search search={searchInput} setSearch={setSearchInput} />
+            <div ref={ref} className=" relative">
+              <Button onClick={toggleDatePicker} variant="default">
+                <img src={calendar} className="h-5" alt="calendar" />
+              </Button>
+              {showDatePicker && (
+                <div className="absolute z-20 -translate-x-2/3 bg-white -top-0.3 right-[-400px]">
+                  <DateRange handleClose={toggleDatePicker} dateKeys={['startDate', 'endDate']} />
+                </div>
+              )}
+            </div>
+          </div>
+          {recordType === 'invoice' ? (
+            <Table
+              data={financialDataByMonth?.finances?.docs || []}
+              COLUMNS={invoiceColumn}
+              activePage={financialDataByMonth?.finances?.page}
+              totalPages={financialDataByMonth?.finances?.totalPages || 1}
+              setActivePage={currentPage => handlePagination('page', currentPage)}
+              rowCountLimit={20}
+              loading={isLoading}
+            />
+          ) : null}
+        </Tabs.Panel>
+      </Tabs>
     </div>
   );
 };

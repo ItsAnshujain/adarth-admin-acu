@@ -36,21 +36,28 @@ const LeadHistoryCard = ({ followUpData }) => {
       ),
       ...updatedModalConfig,
     });
+
+  const leadStage = leadStageOptions?.filter(({ value }) => value === followUpData?.leadStage)?.[0];
+  const leadCommunication = leadCommunicationTypeOptions.filter(
+    type => type.value === followUpData?.communicationType,
+  )?.[0];
+
   return (
     <div className="flex flex-col border border-gray-200 rounded-md w-full p-4 gap-3">
       <div className="flex justify-between items-center">
-        <Badge className="bg-purple-450 text-white font-medium w-fit capitalize text-sm py-3">
-          {leadStageOptions?.filter(({ value }) => value === followUpData?.leadStage)?.[0]?.label}
+        <Badge
+          bg={leadStage?.color}
+          className=" text-white font-medium w-fit capitalize text-sm py-3"
+        >
+          {leadStage?.label}
         </Badge>
         <FollowUpMenuPopover itemId={followUpData?._id} toggleEditFollowUp={toggleEditFollowUp} />
       </div>
       {followUpData?.notes ? <div className="text-sm">{followUpData?.notes}</div> : null}
       <div className="text-purple-450 font-medium">
         {followUpData?.communicationType
-          ? `${
-              leadCommunicationTypeOptions.filter(
-                type => type.value === followUpData?.communicationType,
-              )?.[0]?.label
+          ? `${leadCommunication?.label.split('0') !== 'In' ? 'Over the' : ''} ${
+              leadCommunication?.label
             }`
           : null}
       </div>

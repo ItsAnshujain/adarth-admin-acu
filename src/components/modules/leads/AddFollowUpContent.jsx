@@ -20,11 +20,14 @@ const validationSchema = yup.object({
   followUpDate: yup.date().required('FollowUp date is required'),
   nextFollowUpDate: yup
     .date()
+    .nullable()
     .when(
       'followUpDate',
       (followUpDate, schema) =>
-        followUpDate && schema.min(followUpDate, 'Next FollowUp date must be after FollowUp date'),
-    ),
+        followUpDate &&
+        schema.min(followUpDate, 'Next Follow Up date must be after Follow Up date'),
+    )
+    .notRequired(),
 });
 
 const AddFollowUpContent = ({ onCancel, leadId, followUpData }) => {

@@ -130,6 +130,19 @@ const LeadsList = () => {
       {
         Header: 'DISPLAY BRAND',
         accessor: 'brandDisplay',
+        Cell: ({
+          row: {
+            original: { brandDisplay },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div className="max-w-xs truncate" title={brandDisplay}>
+                {brandDisplay || '-'}
+              </div>
+            ),
+            [],
+          ),
       },
       {
         Header: 'OBJECTIVE',

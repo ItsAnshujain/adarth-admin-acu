@@ -215,8 +215,8 @@ const LeadsOverview = ({ leadData }) => {
         <div className="flex flex-col">
           <div className="text-base text-gray-500 pb-1">Prospect</div>
           <div className="text-base">
-            {leadProspectOptions?.filter(prospect => prospect === leadData?.prospect)?.[0]?.label ||
-              '-'}
+            {leadProspectOptions?.filter(prospect => prospect.value === leadData?.prospect)?.[0]
+              ?.label || '-'}
           </div>
         </div>
         <div className="flex flex-col">
