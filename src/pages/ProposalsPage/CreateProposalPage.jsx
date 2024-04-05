@@ -53,13 +53,13 @@ const CreateProposalPage = () => {
   const { id: proposalId } = useParams();
   const userId = useUserStore(state => state.id);
 
-  const [query] = useState({
+  const [query] = {
     owner: 'all',
     page: 1,
     limit: 30,
     sortBy: 'createdAt',
     sortOrder: 'asc',
-  });
+  };
 
   const { data: userData } = useFetchUsersById(userId);
   const { mutate: create, isLoading: isCreateProposalLoading } = useCreateProposal();

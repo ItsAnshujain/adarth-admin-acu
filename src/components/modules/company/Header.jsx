@@ -1,6 +1,5 @@
-import { Button, Tabs } from '@mantine/core';
+import { Tabs } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
-import { IconChevronDown } from '@tabler/icons';
 import classNames from 'classnames';
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -14,6 +13,7 @@ import modalConfig from '../../../utils/modalConfig';
 import AddCompanyContent from './AddCompanyContent';
 import useCompanies from '../../../apis/queries/companies.queries';
 import SuccessModal from '../../shared/Modal';
+import AddCompanyMenuPopover from '../../Popovers/AddCompanyMenuPopover';
 import { CompanyTypeOptions } from '../../../utils/constants';
 
 const updatedModalConfig = {
@@ -36,7 +36,7 @@ const Header = () => {
 
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
-    limit: 10,
+    limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     search: debouncedSearch,
@@ -289,7 +289,7 @@ const Header = () => {
                 onClick={() => {
                   searchParams.set('tab', 'companies');
                   searchParams.set('page', 1);
-                  searchParams.set('limit', 10);
+                  searchParams.set('limit', 20);
                   setSearchParams(searchParams, { replace: true });
                 }}
               >
@@ -306,23 +306,17 @@ const Header = () => {
                 onClick={() => {
                   searchParams.set('tab', 'parent-companies');
                   searchParams.set('page', 1);
-                  searchParams.set('limit', 10);
+                  searchParams.set('limit', 20);
                   setSearchParams(searchParams, { replace: true });
                 }}
               >
                 Parent Companies
               </Tabs.Tab>
             </div>
-            <Button
-              variant="default"
-              className="bg-purple-450 text-white font-normal rounded-md mb-2"
-              leftIcon={<IconChevronDown size={20} />}
-              onClick={() =>
-                tab === 'companies' ? toggleAddCompanyModal() : toggleAddParentCompanyModal()
-              }
-            >
-              {tab === 'companies' ? 'Add Company' : 'Add Parent Company'}
-            </Button>
+            <AddCompanyMenuPopover
+              toggleAddCompanyModal={toggleAddCompanyModal}
+              toggleAddParentCompanyModal={toggleAddParentCompanyModal}
+            />
           </div>
         </Tabs.List>
         <Tabs.Panel value="companies">
@@ -332,7 +326,7 @@ const Header = () => {
               setCount={currentLimit => {
                 handlePagination('limit', currentLimit);
               }}
-              count="10"
+              count="20"
             />
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
@@ -344,7 +338,7 @@ const Header = () => {
               activePage={companiesQuery?.data?.page}
               totalPages={companiesQuery?.data?.totalPages || 1}
               setActivePage={currentPage => handlePagination('page', currentPage)}
-              rowCountLimit={10}
+              rowCountLimit={20}
               handleSorting={handleSortByColumn}
               loading={companiesQuery?.isLoading}
             />
@@ -357,7 +351,7 @@ const Header = () => {
               setCount={currentLimit => {
                 handlePagination('limit', currentLimit);
               }}
-              count="10"
+              count="20"
             />
             <Search search={searchInput} setSearch={setSearchInput} />
           </div>
@@ -368,7 +362,7 @@ const Header = () => {
               activePage={companiesQuery?.data?.page}
               totalPages={companiesQuery?.data?.totalPages || 1}
               setActivePage={currentPage => handlePagination('page', currentPage)}
-              rowCountLimit={10}
+              rowCountLimit={20}
               handleSorting={handleSortByColumn}
               loading={companiesQuery?.isLoading}
             />

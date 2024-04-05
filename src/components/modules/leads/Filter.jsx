@@ -43,7 +43,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
   const usersQuery = useFetchUsers(
     serialize({
       page: usersActivePage,
-      limit: 10,
+      limit: 20,
       sortBy: 'createdAt',
       sortOrder: 'desc',
       filter: 'all',
@@ -52,7 +52,7 @@ const Filter = ({ isOpened, setShowFilter }) => {
 
   const companyRepresentingQuery = useCompanies({
     page: companiesActivePage,
-    limit: 10,
+    limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     type: 'co-company',

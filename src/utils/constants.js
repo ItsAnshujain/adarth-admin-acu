@@ -246,7 +246,16 @@ export const leadPriorityOptions = [
   },
 ];
 
-export const leadProspectOptions = ['inbound', 'outbound'];
+export const leadProspectOptions = [
+  {
+    label: 'Inbound',
+    value: 'inbound',
+  },
+  {
+    label: 'Outbound',
+    value: 'outbound',
+  },
+];
 
 export const leadCommunicationTypeOptions = [
   {

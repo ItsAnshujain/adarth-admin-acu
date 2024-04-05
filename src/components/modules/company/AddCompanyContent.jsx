@@ -9,7 +9,6 @@ import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelec
 import {
   faxRegexMatch,
   gstRegexMatch,
-  ifscRegexMatch,
   mobileRegexMatch,
   panRegexMatch,
   pinCodeMatch,
@@ -51,16 +50,6 @@ const schema = yup.object({
       excludeEmptyString: true,
     })
     .notRequired(),
-  ifsc: yup
-    .string()
-    .trim()
-    .matches(ifscRegexMatch, {
-      message: 'Must be a valid IFSC',
-      excludeEmptyString: true,
-    })
-    .required('IFSC is required'),
-  accountNo: yup.string().trim().required('Account No. is required'),
-  accountHolderName: yup.string().trim().required('Account Holder Name is required'),
   pincode: yup
     .string()
     .trim()
@@ -83,7 +72,7 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
 
   const parentCompaniesQuery = useInfiniteCompanies({
     page: 1,
-    limit: 10,
+    limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     type: 'lead-company',
@@ -317,22 +306,15 @@ const AddCompanyContent = ({ type, tab, onCancel, companyData, mode, onSuccess =
             <ControlledTextInput
               name="accountNo"
               label="Account No"
-              withAsterisk
               classNames={{ label: labelClass }}
             />
             <ControlledTextInput
               name="accountHolderName"
               label="Account Holder Name"
-              withAsterisk
               classNames={{ label: labelClass }}
             />
           </div>
-          <ControlledTextInput
-            name="ifsc"
-            label="IFSC"
-            withAsterisk
-            classNames={{ label: labelClass }}
-          />
+          <ControlledTextInput name="ifsc" label="IFSC" classNames={{ label: labelClass }} />
           <div className="flex gap-2 py-4 float-right">
             <Button className="bg-black" onClick={onCancel}>
               Cancel

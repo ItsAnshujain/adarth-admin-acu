@@ -14,7 +14,7 @@ const updatedModalConfig = {
   ...modalConfig,
   classNames: {
     title: 'font-dmSans text-xl px-4',
-    header: 'p-4 border-b border-gray-450',
+    header: 'p-4 border-b border-gray-800',
     body: 'px-8',
     close: 'mr-4',
   },
@@ -39,33 +39,45 @@ const LeadHistoryCard = ({ followUpData }) => {
   return (
     <div className="flex flex-col border border-gray-200 rounded-md w-full p-4 gap-3">
       <div className="flex justify-between items-center">
-        <Badge className="bg-purple-350 text-white font-medium w-fit capitalize text-sm py-3">
+        <Badge className="bg-purple-450 text-white font-medium w-fit capitalize text-sm py-3">
           {leadStageOptions?.filter(({ value }) => value === followUpData?.leadStage)?.[0]?.label}
         </Badge>
         <FollowUpMenuPopover itemId={followUpData?._id} toggleEditFollowUp={toggleEditFollowUp} />
       </div>
       {followUpData?.notes ? <div className="text-sm">{followUpData?.notes}</div> : null}
-      <div className="text-purple-450">
+      <div className="text-purple-450 font-medium">
         {followUpData?.communicationType
-          ? `Over the ${
+          ? `${
               leadCommunicationTypeOptions.filter(
                 type => type.value === followUpData?.communicationType,
               )?.[0]?.label
-            } communication`
+            }`
           : null}
       </div>
-      <div className="flex">
+      <div className="flex gap-2">
         <div className="w-1/3">
           <div className="text-sm text-gray-500">Primary Incharge</div>
-          <div className="flex items-center">
-            <Avatar />
-            <div className="text-sm">{followUpData?.primaryInCharge?.name || 'None'}</div>
+          <div className="flex items-center gap-x-2">
+            <Avatar
+              src={followUpData?.primaryInCharge?.image}
+              classNames={{ placeholderIcon: 'w-60 h-60' }}
+              className="rounded-full"
+              size="sm"
+            />
+            <div className="text-sm max-w-sm truncate" title={followUpData?.primaryInCharge?.name}>
+              {followUpData?.primaryInCharge?.name || 'None'}
+            </div>
           </div>
         </div>
         <div className="w-1/3">
           <div className="text-sm text-gray-500">Secondary Incharge</div>
-          <div className="flex items-center">
-            <Avatar />
+          <div className="flex items-center gap-x-2">
+            <Avatar
+              src={followUpData?.secondaryInCharge?.image}
+              classNames={{ placeholderIcon: 'w-60 h-60' }}
+              className="rounded-full"
+              size="sm"
+            />
             <div className="text-sm">{followUpData?.secondaryInCharge?.name || 'None'}</div>
           </div>
         </div>

@@ -14,7 +14,6 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import dayjs from 'dayjs';
 import OwnSiteIcon from '../../../../assets/own-site-sale.svg';
 import TradedSiteIcon from '../../../../assets/traded-site-sale.svg';
 import {
@@ -36,7 +35,6 @@ import ExceedChevronIcon from '../../../../assets/exceed-chevron.svg';
 import toIndianCurrency from '../../../../utils/currencyFormat';
 import LeadsStats from '../../leads/LeadsStats';
 import { useLeadStatsByUid } from '../../../../apis/queries/leads.queries';
-import { DATE_FORMAT } from '../../../../utils/constants';
 
 ChartJS.register(
   ArcElement,
@@ -80,16 +78,7 @@ const bookingPieConfig = {
 const ManagingSubHeader = ({ userId }) => {
   const [showChartArrow, setShowChartArrow] = useState(true);
 
-  const leadStatsQuery = useLeadStatsByUid(
-    {
-      id: userId,
-      query: serialize({
-        from: dayjs(financialStartDate).format(DATE_FORMAT),
-        to: dayjs(financialEndDate).format(DATE_FORMAT),
-      }),
-    },
-    !!financialStartDate && !!financialEndDate,
-  );
+  const leadStatsQuery = useLeadStatsByUid();
 
   const [updatedBookingChart, setUpdatedBookingChart] = useState({
     id: uuidv4(),

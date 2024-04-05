@@ -4,6 +4,8 @@ import { useEffect, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { showNotification } from '@mantine/notifications';
 import dayjs from 'dayjs';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelect';
 import ControlledTextarea from '../../shared/FormInputs/Controlled/ControlledTextarea';
 import { leadCommunicationTypeOptions, leadStageOptions } from '../../../utils/constants';
@@ -14,17 +16,30 @@ import ControlledDatePickerInput from '../../shared/FormInputs/Controlled/Contro
 import CalendarIcon from '../../../assets/calendar.svg';
 import useAddFollowUp, { useUpdateFollowUp } from '../../../apis/queries/followup.queries';
 
+const validationSchema = yup.object({
+  followUpDate: yup.date().required('FollowUp date is required'),
+  nextFollowUpDate: yup
+    .date()
+    .when(
+      'followUpDate',
+      (followUpDate, schema) =>
+        followUpDate && schema.min(followUpDate, 'Next FollowUp date must be after FollowUp date'),
+    ),
+});
+
 const AddFollowUpContent = ({ onCancel, leadId, followUpData }) => {
   const addFollowUpHandler = useAddFollowUp();
   const updateFollowUpHandler = useUpdateFollowUp();
   const queryClient = useQueryClient();
-  const form = useForm();
+  const form = useForm({
+    resolver: yupResolver(validationSchema),
+  });
   const userId = useUserStore(state => state.id);
   const user = queryClient.getQueryData(['users-by-id', userId]);
 
   const usersQuery = useInfiniteUsers({
     page: 1,
-    limit: 10,
+    limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     filter: 'team',
@@ -232,7 +247,7 @@ const AddFollowUpContent = ({ onCancel, leadId, followUpData }) => {
             className="pt-4"
             classNames={{ label: labelClass }}
           />
-          <div className="py-4 flex gap-4 justify-end">
+          <div className="py-4 pt-6 flex gap-4 justify-end">
             <Button
               variant="default"
               color="dark"

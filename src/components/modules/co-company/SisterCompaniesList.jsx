@@ -29,7 +29,7 @@ const SisterCompaniesList = () => {
   const [debouncedSearch] = useDebouncedValue(searchInput, 800);
   const [searchParams, setSearchParams] = useSearchParams({
     page: 1,
-    limit: 10,
+    limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
     search: debouncedSearch,
@@ -183,7 +183,7 @@ const SisterCompaniesList = () => {
           setCount={currentLimit => {
             handlePagination('limit', currentLimit);
           }}
-          count="10"
+          count="20"
         />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
@@ -193,7 +193,7 @@ const SisterCompaniesList = () => {
         activePage={searchParams.get('page')}
         totalPages={coCompaniesQuery?.data?.totalPages || 1}
         setActivePage={currentPage => handlePagination('page', currentPage)}
-        rowCountLimit={10}
+        rowCountLimit={20}
         handleSorting={handleSortByColumn}
         loading={coCompaniesQuery.isLoading}
       />

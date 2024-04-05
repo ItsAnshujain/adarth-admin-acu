@@ -12,7 +12,6 @@ import ProposalIcon from '../assets/proposal-default.svg';
 import UsersIcon from '../assets/users-default.svg';
 import MastersIcon from '../assets/masters-default.svg';
 import CampaignIcon from '../assets/campaign-default.svg';
-import CloudIcon from '../assets/cloud.svg';
 import ReportIcon from '../assets/report-default.svg';
 import FinanceIcon from '../assets/finance-default.svg';
 import GalleryIcon from '../assets/gallery-default.svg';
@@ -119,22 +118,11 @@ const SidebarContent = ({ className }) => {
         icon: GalleryIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
+
       {
         label: 'Leads',
         path: '/leads/leads-dashboard',
         icon: LeadsIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
-      },
-      {
-        label: 'Repository',
-        path: '/repository',
-        nested: [
-          { label: 'Terms & Conditions', subPath: '/terms-and-conditions' },
-          { label: 'Company', subPath: '/company' },
-          { label: 'Co-Company', subPath: '/co-company' },
-          { label: 'Contact', subPath: '/contact' },
-        ],
-        icon: CloudIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
     ],
