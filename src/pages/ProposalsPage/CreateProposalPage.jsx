@@ -53,7 +53,7 @@ const CreateProposalPage = () => {
   const { id: proposalId } = useParams();
   const userId = useUserStore(state => state.id);
 
-  const [query] = {
+  const query = {
     owner: 'all',
     page: 1,
     limit: 30,
