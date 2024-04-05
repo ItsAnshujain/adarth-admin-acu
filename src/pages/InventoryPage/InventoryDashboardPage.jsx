@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
-import { ActionIcon, Badge, Button, Image, Loader } from '@mantine/core';
+import { ActionIcon, Badge, Button, Image } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import classNames from 'classnames';
@@ -517,18 +517,7 @@ const InventoryDashboardPage = () => {
               </ActionIcon>
             </section>
           </div>
-          {isInventoryDataLoading && viewType.inventory === 'list' ? (
-            <div className="flex justify-center items-center h-[400px]">
-              <Loader />
-            </div>
-          ) : null}
-          {!inventoryData?.docs?.length &&
-          !isInventoryDataLoading &&
-          viewType.inventory !== 'map' ? (
-            <div className="w-full min-h-[400px] flex justify-center items-center">
-              <p className="text-xl">No records found</p>
-            </div>
-          ) : null}
+
           {viewType.inventory === 'grid' && inventoryData?.docs?.length ? (
             <GridView
               list={inventoryData?.docs || []}
@@ -539,7 +528,7 @@ const InventoryDashboardPage = () => {
               selectedCards={selectedCards}
               setSelectedCards={setSelectedCards}
             />
-          ) : viewType.inventory === 'list' && inventoryData?.docs?.length ? (
+          ) : viewType.inventory === 'list' ? (
             <Table
               data={inventoryData?.docs || []}
               COLUMNS={COLUMNS}
@@ -550,6 +539,7 @@ const InventoryDashboardPage = () => {
               activePage={inventoryData?.page || 1}
               totalPages={inventoryData?.totalPages || 1}
               setActivePage={currentPage => handlePagination('page', currentPage)}
+              loading={isInventoryDataLoading}
             />
           ) : viewType.inventory === 'map' ? (
             <div className="col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 overflow-y-auto">

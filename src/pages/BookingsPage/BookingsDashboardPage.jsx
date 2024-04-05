@@ -2,7 +2,7 @@ import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
-import { Loader, Button, Select, Text, ActionIcon } from '@mantine/core';
+import { Button, Select, Text, ActionIcon } from '@mantine/core';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import multiDownload from 'multi-download';
@@ -636,27 +636,16 @@ const BookingsDashboardPage = () => {
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
 
-      {isLoadingBookingData ? (
-        <div className="flex justify-center items-center h-[400px]">
-          <Loader />
-        </div>
-      ) : null}
-      {!bookingData?.docs?.length && !isLoadingBookingData ? (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      ) : null}
-      {bookingData?.docs?.length ? (
-        <Table
-          data={bookingData?.docs || []}
-          COLUMNS={column}
-          activePage={bookingData?.page || 1}
-          totalPages={bookingData?.totalPages || 1}
-          setActivePage={currentPage => handlePagination('page', currentPage)}
-          rowCountLimit={limit}
-          handleSorting={handleSortByColumn}
-        />
-      ) : null}
+      <Table
+        data={bookingData?.docs || []}
+        COLUMNS={column}
+        activePage={bookingData?.page || 1}
+        totalPages={bookingData?.totalPages || 1}
+        setActivePage={currentPage => handlePagination('page', currentPage)}
+        rowCountLimit={limit}
+        handleSorting={handleSortByColumn}
+        loading={isLoadingBookingData}
+      />
       <PriceBreakdownDrawer
         isOpened={drawerOpened}
         onClose={drawerActions.close}

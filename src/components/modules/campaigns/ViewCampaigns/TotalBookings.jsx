@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Text, Button, Loader } from '@mantine/core';
+import { Text, Button } from '@mantine/core';
 import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -301,28 +301,17 @@ const TotalBookings = ({ campaignId }) => {
           />
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
-        {isLoadingBookingData ? (
-          <div className="flex justify-center items-center h-[400px]">
-            <Loader />
-          </div>
-        ) : null}
 
-        {!bookingData?.docs?.length && !isLoadingBookingData ? (
-          <div className="w-full min-h-[400px] flex justify-center items-center">
-            <p className="text-xl">No records found</p>
-          </div>
-        ) : null}
-        {bookingData?.docs?.length ? (
-          <Table
-            data={bookingData?.docs || []}
-            COLUMNS={column}
-            activePage={bookingData?.page || 1}
-            totalPages={bookingData?.totalPages || 1}
-            setActivePage={currentPage => handlePagination('page', currentPage)}
-            rowCountLimit={limit}
-            handleSorting={handleSortByColumn}
-          />
-        ) : null}
+        <Table
+          data={bookingData?.docs || []}
+          COLUMNS={column}
+          activePage={bookingData?.page || 1}
+          totalPages={bookingData?.totalPages || 1}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
+          rowCountLimit={limit}
+          handleSorting={handleSortByColumn}
+          loading={isLoadingBookingData}
+        />
       </div>
     </>
   );

@@ -1,7 +1,7 @@
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown } from 'react-feather';
-import { ActionIcon, Group, Loader, Select, Text } from '@mantine/core';
+import { ActionIcon, Group, Select, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import { Link, useSearchParams } from 'react-router-dom';
 import { IconEye } from '@tabler/icons';
@@ -452,27 +452,16 @@ const SalesViewTable = ({ data: bookingData, isLoading, activeChildTab }) => {
         </Group>
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center items-center h-[380px]">
-          <Loader />
-        </div>
-      ) : null}
-      {!bookingData?.docs?.length && !isLoading ? (
-        <div className="w-full min-h-[380px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      ) : null}
-      {bookingData?.docs?.length ? (
-        <Table
-          data={bookingData?.docs || []}
-          COLUMNS={column}
-          activePage={bookingData?.page || 1}
-          totalPages={bookingData?.totalPages || 1}
-          setActivePage={currentPage => handlePagination('page', currentPage)}
-          rowCountLimit={bookingData?.limit || 10}
-          handleSorting={handleSortByColumn}
-        />
-      ) : null}
+      <Table
+        data={bookingData?.docs || []}
+        COLUMNS={column}
+        activePage={bookingData?.page || 1}
+        totalPages={bookingData?.totalPages || 1}
+        setActivePage={currentPage => handlePagination('page', currentPage)}
+        rowCountLimit={bookingData?.limit || 10}
+        handleSorting={handleSortByColumn}
+        loading={isLoading}
+      />
       <PriceBreakdownDrawer
         isOpened={drawerOpened}
         onClose={drawerActions.close}

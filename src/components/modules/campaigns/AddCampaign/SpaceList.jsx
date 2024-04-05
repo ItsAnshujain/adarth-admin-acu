@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Group, Image, Loader } from '@mantine/core';
+import { Badge, Button, Group, Image } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useSearchParams } from 'react-router-dom';
 import { useDebouncedValue } from '@mantine/hooks';
@@ -431,29 +431,19 @@ const SpaceList = () => {
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
-      {isLoading ? (
-        <div className="flex justify-center items-center h-[400px]">
-          <Loader />
-        </div>
-      ) : null}
-      {!inventoryData?.docs?.length && !isLoading ? (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      ) : null}
-      {inventoryData?.docs?.length ? (
-        <Table
-          data={updatedInventoryData}
-          COLUMNS={COLUMNS}
-          allowRowsSelect
-          setSelectedFlatRows={handleSelection}
-          selectedRowData={values.place}
-          handleSorting={handleSortByColumn}
-          activePage={pagination.page}
-          totalPages={pagination.totalPages}
-          setActivePage={currentPage => handlePagination('page', currentPage)}
-        />
-      ) : null}
+
+      <Table
+        data={updatedInventoryData}
+        COLUMNS={COLUMNS}
+        allowRowsSelect
+        setSelectedFlatRows={handleSelection}
+        selectedRowData={values.place}
+        handleSorting={handleSortByColumn}
+        activePage={pagination.page}
+        totalPages={pagination.totalPages}
+        setActivePage={currentPage => handlePagination('page', currentPage)}
+        loading={isLoading}
+      />
     </>
   );
 };

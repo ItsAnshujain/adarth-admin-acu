@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Text, Button, Image, Loader, ActionIcon } from '@mantine/core';
+import { Text, Button, Image, ActionIcon } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useClickOutside, useDebouncedValue, useDisclosure } from '@mantine/hooks';
@@ -362,27 +362,17 @@ const Booking = ({ inventoryId }) => {
         />
         <Search search={searchInput} setSearch={setSearchInput} />
       </div>
-      {isLoadingBookingData ? (
-        <div className="flex justify-center items-center h-[400px]">
-          <Loader />
-        </div>
-      ) : null}
-      {!bookingData?.docs?.length && !isLoadingBookingData ? (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      ) : null}
-      {bookingData?.docs?.length ? (
-        <Table
-          data={bookingData?.docs || []}
-          COLUMNS={COLUMNS}
-          activePage={bookingData?.page || 1}
-          totalPages={bookingData?.totalPages || 1}
-          setActivePage={currentPage => handlePagination('page', currentPage)}
-          rowCountLimit={limit}
-          handleSorting={handleSortByColumn}
-        />
-      ) : null}
+
+      <Table
+        data={bookingData?.docs || []}
+        COLUMNS={COLUMNS}
+        activePage={bookingData?.page || 1}
+        totalPages={bookingData?.totalPages || 1}
+        setActivePage={currentPage => handlePagination('page', currentPage)}
+        rowCountLimit={limit}
+        handleSorting={handleSortByColumn}
+        loading={isLoadingBookingData}
+      />
       <PriceBreakdownDrawer
         isOpened={drawerOpened}
         onClose={drawerActions.close}

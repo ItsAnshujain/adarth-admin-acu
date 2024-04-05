@@ -1,4 +1,4 @@
-import { Button, Loader, Select } from '@mantine/core';
+import { Button, Select } from '@mantine/core';
 import { useClickOutside, useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
@@ -737,37 +737,32 @@ const FinanceMonthlyDetailsPage = () => {
         </div>
       </div>
 
-      {isLoading ? <Loader className="w-full mt-20" /> : null}
-
-      {!financialDataByMonth?.finances?.docs?.length && !isLoading ? (
-        <div className="w-full mt-10 flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      ) : null}
-
-      {!isLoading && financialDataByMonth?.finances?.docs?.length && pageType === 'purchase' ? (
+      {pageType === 'purchase' ? (
         <Table
           COLUMNS={purchaseOrderColumn}
-          data={financialDataByMonth?.finances?.docs}
+          data={financialDataByMonth?.finances?.docs || []}
           activePage={financialDataByMonth?.finances?.page || 1}
           totalPages={financialDataByMonth?.finances?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
+          loading={isLoading}
         />
-      ) : !isLoading && financialDataByMonth?.finances?.docs?.length && pageType === 'release' ? (
+      ) : pageType === 'release' ? (
         <Table
           COLUMNS={releaseOrderColumn}
-          data={financialDataByMonth?.finances?.docs}
+          data={financialDataByMonth?.finances?.docs || []}
           activePage={financialDataByMonth?.finances?.page || 1}
           totalPages={financialDataByMonth?.finances?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
+          loading={isLoading}
         />
-      ) : !isLoading && financialDataByMonth?.finances?.docs?.length && pageType === 'invoice' ? (
+      ) : pageType === 'invoice' ? (
         <Table
           COLUMNS={invoiceColumn}
-          data={financialDataByMonth?.finances?.docs}
+          data={financialDataByMonth?.finances?.docs || []}
           activePage={financialDataByMonth?.finances?.page || 1}
           totalPages={financialDataByMonth?.finances?.totalPages || 1}
           setActivePage={currentPage => handlePagination('page', currentPage)}
+          loading={isLoading}
         />
       ) : null}
     </div>

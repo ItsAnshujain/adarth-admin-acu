@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, NumberInput, Loader, Group, Tooltip } from '@mantine/core';
+import { Button, NumberInput, Group, Tooltip } from '@mantine/core';
 import { ChevronDown } from 'react-feather';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
@@ -866,29 +866,19 @@ const SelectSpace = () => {
           <Search search={searchInput} setSearch={setSearchInput} />
         </div>
       </div>
-      {inventoryQuery.isLoading ? (
-        <div className="flex justify-center items-center h-[400px]">
-          <Loader />
-        </div>
-      ) : null}
-      {!inventoryQuery.data?.docs?.length && !inventoryQuery.isLoading ? (
-        <div className="w-full min-h-[400px] flex justify-center items-center">
-          <p className="text-xl">No records found</p>
-        </div>
-      ) : null}
-      {inventoryQuery.data?.docs?.length ? (
-        <Table
-          data={updatedInventoryData}
-          COLUMNS={COLUMNS}
-          allowRowsSelect
-          setSelectedFlatRows={handleSelection}
-          selectedRowData={watchPlace}
-          handleSorting={handleSortByColumn}
-          activePage={pagination.page}
-          totalPages={pagination.totalPages}
-          setActivePage={currentPage => handlePagination('page', currentPage)}
-        />
-      ) : null}
+
+      <Table
+        data={updatedInventoryData}
+        COLUMNS={COLUMNS}
+        allowRowsSelect
+        setSelectedFlatRows={handleSelection}
+        selectedRowData={watchPlace}
+        handleSorting={handleSortByColumn}
+        activePage={pagination.page}
+        totalPages={pagination.totalPages}
+        setActivePage={currentPage => handlePagination('page', currentPage)}
+        loading={inventoryQuery.isLoading}
+      />
       <AddEditPriceDrawer
         isOpened={drawerOpened}
         onClose={drawerActions.close}

@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useState } from 'react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Loader, Text } from '@mantine/core';
+import { Text } from '@mantine/core';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import SubHeader from '../components/modules/masters/SubHeader';
@@ -141,27 +141,17 @@ const MastersPage = () => {
 
               <Search search={searchInput} setSearch={setSearchInput} />
             </div>
-            {isMasterDataLoading ? (
-              <div className="flex justify-center items-center h-[400px]">
-                <Loader />
-              </div>
-            ) : null}
-            {!masterData?.docs?.length && !isMasterDataLoading ? (
-              <div className="w-full min-h-[400px] flex justify-center items-center">
-                <p className="text-xl">No records found</p>
-              </div>
-            ) : null}
-            {masterData?.docs?.length ? (
-              <Table
-                data={masterData?.docs || []}
-                COLUMNS={COLUMNS}
-                activePage={masterData?.page || 1}
-                totalPages={masterData?.totalPages || 1}
-                setActivePage={currentPage => handlePagination('page', currentPage)}
-                rowCountLimit={limit}
-                handleSorting={handleSortByColumn}
-              />
-            ) : null}
+
+            <Table
+              data={masterData?.docs || []}
+              COLUMNS={COLUMNS}
+              activePage={masterData?.page || 1}
+              totalPages={masterData?.totalPages || 1}
+              setActivePage={currentPage => handlePagination('page', currentPage)}
+              rowCountLimit={limit}
+              handleSorting={handleSortByColumn}
+              loading={isMasterDataLoading}
+            />
           </div>
         </div>
       </div>

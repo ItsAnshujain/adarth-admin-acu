@@ -159,7 +159,7 @@ const CampaignInformationCard = () => {
   return (
     <div>
       <p className="font-bold text-lg mb-2">Campaign Info</p>
-      <div className="flex p-4 gap-x-12 border flex-wrap">
+      <div className="grid grid-cols-5 gap-x-5 p-4 border flex-wrap">
         <div>
           <p className="text-slate-400">Campaign Id</p>
           <p className="font-bold">{bookingData.campaign?.campaignId || '--'}</p>
@@ -174,19 +174,7 @@ const CampaignInformationCard = () => {
             {bookingData?.currentStatus?.campaignStatus || <NoData type="na" />}
           </p>
         </div>
-        {userDetails && userDetails?.role === 'admin' ? (
-          <div>
-            <p className="text-slate-400">Organization</p>
-            <Select
-              styles={styles}
-              placeholder="Select..."
-              data={isOrganizationDataLoaded ? organizationList : []}
-              disabled={isOrganizationDataLoading}
-              onChange={e => handleActiveOrganization(e)}
-              value={activeOrganization}
-            />
-          </div>
-        ) : null}
+
         <div>
           <p className="text-slate-400">Campaign Incharge</p>
           {userDetails?.role === 'associate' ? (
@@ -226,6 +214,20 @@ const CampaignInformationCard = () => {
             />
           )}
         </section>
+
+        {userDetails && userDetails?.role === 'admin' ? (
+          <div>
+            <p className="text-slate-400">Organization</p>
+            <Select
+              styles={styles}
+              placeholder="Select..."
+              data={isOrganizationDataLoaded ? organizationList : []}
+              disabled={isOrganizationDataLoading}
+              onChange={e => handleActiveOrganization(e)}
+              value={activeOrganization}
+            />
+          </div>
+        ) : null}
 
         <div>
           <p className="text-slate-400">Start Date</p>
