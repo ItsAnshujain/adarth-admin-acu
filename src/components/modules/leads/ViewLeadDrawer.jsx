@@ -47,12 +47,12 @@ const ViewLeadDrawer = ({ isOpened, styles, onClose, leadId }) => {
       ...updatedModalConfig,
     });
 
-  const [query] = useState({
+  const query = {
     page: 1,
     limit: 20,
     sortBy: 'followUpDate',
     sortOrder: 'asc',
-  });
+  };
 
   const handleUpdateLead = (val, key) => {
     const data = {
