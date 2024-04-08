@@ -51,7 +51,7 @@ const ViewLeadDrawer = ({ isOpened, styles, onClose, leadId }) => {
     page: 1,
     limit: 20,
     sortBy: 'followUpDate',
-    sortOrder: 'asc',
+    sortOrder: 'desc',
   };
 
   const handleUpdateLead = (val, key) => {

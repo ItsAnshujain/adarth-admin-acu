@@ -1,13 +1,13 @@
 import { ActionIcon, Box, Button, Group } from '@mantine/core';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { showNotification } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
 import * as he from 'he';
-import { IconPencil, IconTrash, IconX } from '@tabler/icons';
-import classNames from 'classnames';
+import { IconTrash, IconX } from '@tabler/icons';
+
 import ControlledTextInput from '../../../shared/FormInputs/Controlled/ControlledTextInput';
 import {
   useCreateProposalTerms,
@@ -31,7 +31,6 @@ const AddTermsAndConditionsForm = ({
 }) => {
   const queryClient = useQueryClient();
   const form = useForm({ resolver: yupResolver(schema) });
-  const [editableForm, setEditableForm] = useState(mode === 'Add');
   const editorRef = useRef();
   const createProposalTerms = useCreateProposalTerms();
   const updateProposalTerms = useUpdateProposalTerms();
@@ -90,14 +89,12 @@ const AddTermsAndConditionsForm = ({
     <Box className="border-t p-2">
       <div className="w-full flex justify-between px-3 pt-4">
         <div className="font-bold text-xl">{mode === 'Add' ? 'Add ' : ''}Terms & Conditions</div>
-        {mode === 'Edit' && !editableForm ? (
+        {mode === 'Edit' ? (
           <div className="flex gap-2">
             <ActionIcon onClick={toggleDelete}>
               <IconTrash size={20} />
             </ActionIcon>
-            <ActionIcon onClick={() => setEditableForm(true)}>
-              <IconPencil size={20} />
-            </ActionIcon>
+
             <ActionIcon onClick={onClose}>
               <IconX size={20} />
             </ActionIcon>
@@ -117,15 +114,13 @@ const AddTermsAndConditionsForm = ({
             placeholder="Write..."
             maxLength={200}
             className="mb-4"
-            classNames={{ label: 'font-bold', inputWrapper: !editableForm ? 'bg-gray-100' : '' }}
-            disabled={!editableForm}
+            classNames={{ label: 'font-bold' }}
           />
           <section className="mb-4">
             <p className="font-medium text-black">Description</p>
             <Controller
               name="description"
               control={form.control}
-              disabled={!editableForm}
               render={({ field }) => (
                 <RichTextEditorComponent
                   {...field}
@@ -140,9 +135,6 @@ const AddTermsAndConditionsForm = ({
                   title="Description"
                   placeholder="Write..."
                   ref={editorRef}
-                  className={classNames(
-                    !editableForm ? 'pointer-events-none bg-gray-100 text-gray-400' : '',
-                  )}
                 />
               )}
             />

@@ -115,7 +115,7 @@ const unwantedQuriesForInventories = ['groupBy', 'startDate', 'endDate'];
 const InventoryReportsPage = () => {
   const modals = useModals();
   const [searchParams, setSearchParams] = useSearchParams({
-    limit: 10,
+    limit: 20,
     page: 1,
     sortOrder: 'desc',
     sortBy: 'basicInformation.spaceName',

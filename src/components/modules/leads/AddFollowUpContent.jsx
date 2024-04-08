@@ -20,11 +20,14 @@ const validationSchema = yup.object({
   followUpDate: yup.date().required('FollowUp date is required'),
   nextFollowUpDate: yup
     .date()
+    .nullable()
     .when(
       'followUpDate',
       (followUpDate, schema) =>
-        followUpDate && schema.min(followUpDate, 'Next FollowUp date must be after FollowUp date'),
-    ),
+        followUpDate &&
+        schema.min(followUpDate, 'Next Follow Up date must be after Follow Up date'),
+    )
+    .notRequired(),
 });
 
 const AddFollowUpContent = ({ onCancel, leadId, followUpData }) => {
@@ -105,11 +108,9 @@ const AddFollowUpContent = ({ onCancel, leadId, followUpData }) => {
     const data = {
       leadStage,
       communicationType,
-      followUpDate: followUpDate ? dayjs(followUpDate).endOf('day').toISOString() : undefined,
+      followUpDate: followUpDate ? dayjs(followUpDate).toISOString() : undefined,
       notes: notes || undefined,
-      nextFollowUpDate: nextFollowUpDate
-        ? dayjs(nextFollowUpDate).endOf('day').toISOString()
-        : null,
+      nextFollowUpDate: nextFollowUpDate ? dayjs(nextFollowUpDate).toISOString() : null,
       primaryInCharge,
       secondaryInCharge,
       id: followUpData?._id ? followUpData?._id : leadId,

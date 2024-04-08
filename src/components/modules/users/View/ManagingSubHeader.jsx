@@ -78,7 +78,7 @@ const bookingPieConfig = {
 const ManagingSubHeader = ({ userId }) => {
   const [showChartArrow, setShowChartArrow] = useState(true);
 
-  const leadStatsQuery = useLeadStatsByUid();
+  const leadStatsQuery = useLeadStatsByUid({ id: userId });
 
   const [updatedBookingChart, setUpdatedBookingChart] = useState({
     id: uuidv4(),
@@ -229,7 +229,7 @@ const ManagingSubHeader = ({ userId }) => {
               <Pie
                 data={updatedBookingChart}
                 options={bookingPieConfig.options}
-                key={updatedBookingChart.id}
+                key={updatedBookingChart?.id}
               />
             )}
           </Box>
