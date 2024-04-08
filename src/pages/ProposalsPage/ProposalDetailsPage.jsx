@@ -39,7 +39,7 @@ import { GOOGLE_MAPS_API_KEY } from '../../utils/config';
 import { useFetchMasterById } from '../../apis/queries/masters.queries';
 import ViewPriceDrawer from '../../components/modules/proposals/ViewProposal/ViewPriceDrawer';
 import InventoryPreviewImage from '../../components/shared/InventoryPreviewImage';
-import { DATE_THIRD_FORMAT } from '../../utils/constants';
+import { DATE_SECOND_FORMAT } from '../../utils/constants';
 
 const updatedModalConfig = {
   ...modalConfig,
@@ -255,7 +255,7 @@ const ProposalDetailsPage = () => {
           },
         }) =>
           useMemo(
-            () => <div>{startDate ? dayjs(startDate).format(DATE_THIRD_FORMAT) : 'NA'}</div>,
+            () => <div>{startDate ? dayjs(startDate).format(DATE_SECOND_FORMAT) : 'NA'}</div>,
             [],
           ),
       },
@@ -267,7 +267,10 @@ const ProposalDetailsPage = () => {
             original: { endDate },
           },
         }) =>
-          useMemo(() => <div>{endDate ? dayjs(endDate).format(DATE_THIRD_FORMAT) : 'NA'}</div>, []),
+          useMemo(
+            () => <div>{endDate ? dayjs(endDate).format(DATE_SECOND_FORMAT) : 'NA'}</div>,
+            [],
+          ),
       },
       {
         Header: 'MEDIUM',
