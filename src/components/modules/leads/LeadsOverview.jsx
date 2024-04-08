@@ -80,6 +80,7 @@ const LeadsOverview = ({ leadData }) => {
             classNames={{
               input: 'border-none',
               dropdown: 'w-56',
+              rightSection: 'pointers-none',
             }}
             onChange={val => {
               handleUpdateLead(val, 'primaryInCharge');
@@ -113,6 +114,7 @@ const LeadsOverview = ({ leadData }) => {
             classNames={{
               input: 'border-none',
               dropdown: 'w-56',
+              rightSection: 'pointers-none',
             }}
             onChange={val => {
               handleUpdateLead(val, 'secondaryInCharge');
