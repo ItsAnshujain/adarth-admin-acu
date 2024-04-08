@@ -16,6 +16,8 @@ const useAddFollowUp = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['followups']);
+        queryClient.invalidateQueries(['leads-by-id']);
+        queryClient.invalidateQueries(['leads - stats']);
       },
       onError: onApiError,
     },

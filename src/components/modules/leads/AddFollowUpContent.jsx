@@ -108,11 +108,9 @@ const AddFollowUpContent = ({ onCancel, leadId, followUpData }) => {
     const data = {
       leadStage,
       communicationType,
-      followUpDate: followUpDate ? dayjs(followUpDate).endOf('day').toISOString() : undefined,
+      followUpDate: followUpDate ? dayjs(followUpDate).toISOString() : undefined,
       notes: notes || undefined,
-      nextFollowUpDate: nextFollowUpDate
-        ? dayjs(nextFollowUpDate).endOf('day').toISOString()
-        : null,
+      nextFollowUpDate: nextFollowUpDate ? dayjs(nextFollowUpDate).toISOString() : null,
       primaryInCharge,
       secondaryInCharge,
       id: followUpData?._id ? followUpData?._id : leadId,
