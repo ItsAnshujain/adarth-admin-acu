@@ -51,7 +51,7 @@ const VacantInventoryFilter = ({ onSubmit, onClose, searchParamQueries }) => {
   }, []);
 
   return (
-    <div className=" h-[500px] relative">
+    <div className=" h-[520px] relative">
       <div className="px-6 pb-6 flex flex-col">
         <CustomDateRangePicker
           value={dateRange}

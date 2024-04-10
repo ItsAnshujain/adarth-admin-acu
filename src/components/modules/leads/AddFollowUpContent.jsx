@@ -161,14 +161,14 @@ const AddFollowUpContent = ({ onCancel, leadId, followUpData }) => {
   }, [followUpData]);
 
   const labelClass = 'font-bold text-base';
-  const datePickerClass = { icon: 'flex justify-end w-full pr-2', input: 'pl-2' };
+  const datePickerClass = { icon: 'flex justify-end w-full pr-2', input: 'pl-2', calendar: 'h-72' };
 
   return (
     <FormProvider {...form}>
       <form onSubmit={onSubmit}>
-        <div className="pb-4">
+        <div className="pb-4 pt-4">
           <div className="text-xl font-bold w-full py-4">Basic Information</div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             <ControlledSelect
               searchable
               placeholder="Select..."
@@ -248,7 +248,7 @@ const AddFollowUpContent = ({ onCancel, leadId, followUpData }) => {
             className="pt-4"
             classNames={{ label: labelClass }}
           />
-          <div className="py-4 pt-6 flex gap-4 justify-end">
+          <div className="pt-6 pb-4 flex gap-6 justify-end">
             <Button
               variant="default"
               color="dark"

@@ -43,16 +43,9 @@ const CustomDateRangePicker = ({
         styles={styles}
         disableOutsideEvents
         hideOutsideDates
-        dayClassName={(_, modifiers) =>
-          cx({
-            [classes?.outside]: modifiers.outside,
-            [classes?.weekend]: modifiers.weekend,
-            [classes?.selectedRange]: modifiers.selectedInRange,
-            [classes?.disabled]: modifiers.disabled,
-          })
-        }
         minDate={datePickerMinDate}
         placeholder="Month Day, Year"
+        classNames={{ calendar: 'h-72' }}
       />
       <p className="font-bold mt-3">Date To</p>
       <DatePickerInput
@@ -63,16 +56,9 @@ const CustomDateRangePicker = ({
         styles={styles}
         disableOutsideEvents
         hideOutsideDates
-        dayClassName={(_, modifiers) =>
-          cx({
-            [classes?.outside]: modifiers.outside,
-            [classes?.weekend]: modifiers.weekend,
-            [classes?.selectedRange]: modifiers.selectedInRange,
-            [classes?.disabled]: modifiers.disabled,
-          })
-        }
         minDate={datePickerMinDate}
         placeholder="Month Day, Year"
+        classNames={{ calendar: 'h-72' }}
       />
     </div>
   </div>
