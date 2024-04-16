@@ -74,8 +74,6 @@ const LeadsOverview = ({ leadData }) => {
                 : memoizedUsers || []
             }
             value={primaryInChargeOptions?.[0]?.value}
-            withAsterisk
-            rightSection={<ChevronDown size={20} />}
             className="w-28"
             classNames={{
               input: 'border-none',
@@ -85,6 +83,9 @@ const LeadsOverview = ({ leadData }) => {
             onChange={val => {
               handleUpdateLead(val, 'primaryInCharge');
             }}
+            withAsterisk
+            rightSection={<ChevronDown size={20} />}
+            styles={{ rightSection: { pointerEvents: 'none' } }}
           />
         </div>
         <div className="border border-gray-200 flex items-center text-gray-400 text-md rounded-md px-2 w-fit">
@@ -119,6 +120,7 @@ const LeadsOverview = ({ leadData }) => {
             onChange={val => {
               handleUpdateLead(val, 'secondaryInCharge');
             }}
+            styles={{ rightSection: { pointerEvents: 'none' } }}
           />
         </div>
       </div>
