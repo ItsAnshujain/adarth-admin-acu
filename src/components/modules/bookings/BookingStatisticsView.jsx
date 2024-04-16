@@ -25,7 +25,7 @@ const BookingStatisticsView = ({ LeadStats, isLoading }) => {
   );
 
   const governmentAgencyCount = useMemo(
-    () => LeadStats?.agency?.filter(stat => stat._id === 'governmentAgency')?.[0]?.count || 0,
+    () => LeadStats?.agency?.filter(stat => stat._id === 'government')?.[0]?.count || 0,
     [LeadStats?.agency],
   );
 
