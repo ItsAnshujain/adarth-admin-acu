@@ -56,7 +56,7 @@ const LeadHistoryCard = ({ followUpData }) => {
       {followUpData?.notes ? <div className="text-sm">{followUpData?.notes}</div> : null}
       <div className="text-purple-450 font-medium">
         {followUpData?.communicationType
-          ? `${leadCommunication?.label.split('0') !== 'In' ? 'Over the' : ''} ${
+          ? `${leadCommunication?.label.split(' ')?.[0] !== 'In' ? 'Over the' : ''} ${
               leadCommunication?.label
             }`
           : null}

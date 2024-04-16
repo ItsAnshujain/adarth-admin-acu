@@ -359,7 +359,7 @@ const AddLeadForm = () => {
   };
 
   const labelClass = 'font-bold text-base';
-  const datePickerClass = { icon: 'flex justify-end w-full pr-2', input: 'pl-2' };
+  const datePickerClass = { icon: 'flex justify-end w-full pr-2', input: 'pl-2', calendar: 'h-72' };
 
   return (
     <>

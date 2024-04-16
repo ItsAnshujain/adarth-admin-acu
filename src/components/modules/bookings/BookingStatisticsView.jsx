@@ -24,13 +24,23 @@ const BookingStatisticsView = ({ LeadStats, isLoading }) => {
     [LeadStats?.agency],
   );
 
+  const governmentAgencyCount = useMemo(
+    () => LeadStats?.agency?.filter(stat => stat._id === 'governmentAgency')?.[0]?.count || 0,
+    [LeadStats?.agency],
+  );
+
   const revenueBreakupData = useMemo(
     () => ({
       datasets: [
         {
-          data: [directClientCount ?? 0, localAgencyCount ?? 0, nationalAgencyCount ?? 0],
-          backgroundColor: ['#FF900E', '#914EFB', '#4BC0C0'],
-          borderColor: ['#FF900E', '#914EFB', '#4BC0C0'],
+          data: [
+            directClientCount ?? 0,
+            localAgencyCount ?? 0,
+            nationalAgencyCount ?? 0,
+            governmentAgencyCount ?? 0,
+          ],
+          backgroundColor: ['#FF900E', '#914EFB', '#4BC0C0', '#2938F7'],
+          borderColor: ['#FF900E', '#914EFB', '#4BC0C0', '#2938F7'],
           borderWidth: 1,
         },
       ],
@@ -84,6 +94,17 @@ const BookingStatisticsView = ({ LeadStats, isLoading }) => {
                   </Text>
                   <Text weight="bolder" size="xl">
                     {nationalAgencyCount ?? 0}
+                  </Text>
+                </div>
+              </div>
+              <div className="flex gap-2 items-center">
+                <div className="h-2 w-1 p-2 bg-blue-350 rounded-full" />
+                <div>
+                  <Text size="xs" weight="200">
+                    Government
+                  </Text>
+                  <Text weight="bolder" size="xl">
+                    {governmentAgencyCount ?? 0}
                   </Text>
                 </div>
               </div>
