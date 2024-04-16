@@ -166,7 +166,7 @@ const AddFollowUpContent = ({ onCancel, leadId, followUpData }) => {
   return (
     <FormProvider {...form}>
       <form onSubmit={onSubmit}>
-        <div className="pb-4 pt-4">
+        <div className="py-4">
           <div className="text-xl font-bold w-full py-4">Basic Information</div>
           <div className="grid grid-cols-2 gap-6">
             <ControlledSelect
