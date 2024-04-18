@@ -9,6 +9,7 @@ import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelec
 import {
   faxRegexMatch,
   gstRegexMatch,
+  ifscRegexMatch,
   mobileRegexMatch,
   panRegexMatch,
   pinCodeMatch,
@@ -55,6 +56,14 @@ const schema = yup.object({
     .trim()
     .matches(pinCodeMatch, {
       message: 'Pincode must be valid',
+      excludeEmptyString: true,
+    })
+    .notRequired(),
+  ifsc: yup
+    .string()
+    .trim()
+    .matches(ifscRegexMatch, {
+      message: 'Must be a valid IFSC',
       excludeEmptyString: true,
     })
     .notRequired(),
