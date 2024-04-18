@@ -134,7 +134,7 @@ const BasicInfo = ({
             classNames={{ indicator: 'bg-white-200', control: 'border-none' }}
             getEmblaApi={setEmbla}
           >
-            {previewSpacesPhotos.length &&
+            {previewSpacesPhotos?.length &&
               previewSpacesPhotos.map(item => (
                 <Carousel.Slide>
                   <InventoryPreviewImage
@@ -169,7 +169,7 @@ const BasicInfo = ({
           <SkeletonTopWrapper />
         ) : (
           <div className="flex flex-1 flex-col w-full">
-            {!previewSpacesPhotos.length ? (
+            {!previewSpacesPhotos?.length ? (
               <Image
                 height={300}
                 width="100%"

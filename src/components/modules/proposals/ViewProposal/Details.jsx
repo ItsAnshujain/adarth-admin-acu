@@ -70,7 +70,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
           inventoryName: item?.spaceName,
         });
 
-      if (item?.otherPhotos.length > 0)
+      if (item?.otherPhotos?.length > 0)
         item?.otherPhotos?.map(otherPhoto =>
           tempPics.push({
             imgSrc: otherPhoto,
@@ -96,7 +96,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
             className="px-3"
             loop
             mx="auto"
-            withControls={previewSpacesPhotos.length > 0}
+            withControls={previewSpacesPhotos?.length > 0}
             slideGap="lg"
             controlsOffset="lg"
             initialSlide={imgIndex}
@@ -105,7 +105,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
             classNames={{ indicator: 'bg-white-200', control: 'border-none' }}
             getEmblaApi={setEmbla}
           >
-            {previewSpacesPhotos.length &&
+            {previewSpacesPhotos?.length &&
               previewSpacesPhotos.map(item => (
                 <Carousel.Slide key={uuidv4()}>
                   <InventoryPreviewImage
@@ -205,7 +205,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData, proposalI
                     <BackgroundImage src={previewSpacesPhotos[4]} className="w-[112px] h-[96px]">
                       <Center className="h-full transparent-black">
                         <Text weight="bold" color="white">
-                          +{previewSpacesPhotos.length - 4} more
+                          +{Number(previewSpacesPhotos?.length) - 4} more
                         </Text>
                       </Center>
                     </BackgroundImage>

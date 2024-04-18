@@ -79,7 +79,7 @@ const Preview = () => {
   return (
     <div className="grid grid-cols-2 gap-8 pl-5 pt-4">
       <div className="flex flex-1 flex-col w-full">
-        {!previewSpacesPhotos.length ? (
+        {!previewSpacesPhotos?.length ? (
           <Image
             height={300}
             width="100%"
