@@ -9,6 +9,7 @@ import ControlledSelect from '../../shared/FormInputs/Controlled/ControlledSelec
 import {
   faxRegexMatch,
   gstRegexMatch,
+  ifscRegexMatch,
   mobileRegexMatch,
   panRegexMatch,
   pinCodeMatch,
@@ -56,6 +57,14 @@ const AddCoCompanyContent = ({ tab, onCancel, companyData, mode, onSuccess = () 
       .trim()
       .matches(pinCodeMatch, {
         message: 'Pincode must be valid',
+        excludeEmptyString: true,
+      })
+      .notRequired(),
+    ifsc: yup
+      .string()
+      .trim()
+      .matches(ifscRegexMatch, {
+        message: 'Must be a valid IFSC',
         excludeEmptyString: true,
       })
       .notRequired(),
