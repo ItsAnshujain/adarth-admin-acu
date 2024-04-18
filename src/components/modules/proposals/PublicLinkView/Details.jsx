@@ -78,7 +78,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
             className="px-3"
             loop
             mx="auto"
-            withControls={previewSpacesPhotos.length > 0}
+            withControls={previewSpacesPhotos?.length > 0}
             slideGap="lg"
             controlsOffset="lg"
             initialSlide={imgIndex}
@@ -87,7 +87,7 @@ const Details = ({ proposalData, isProposalDataLoading, inventoryData }) => {
             classNames={{ indicator: 'bg-white-200', control: 'border-none' }}
             getEmblaApi={setEmbla}
           >
-            {previewSpacesPhotos.length &&
+            {previewSpacesPhotos?.length &&
               previewSpacesPhotos.map(item => (
                 <Carousel.Slide key={uuidv4()}>
                   <Image src={item} height={400} width="100%" alt="preview" fit="contain" />

@@ -39,7 +39,7 @@ const Preview = ({ data = {}, place = {} }) => {
 
   const memoizedCalculateTotalPrice = useMemo(
     () => calculateTotalPrice(place?.docs),
-    [place?.docs.length],
+    [place?.docs?.length],
   );
 
   useEffect(() => {
