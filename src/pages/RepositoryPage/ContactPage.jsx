@@ -131,11 +131,13 @@ const ContactPage = () => {
         accessor: 'address.state',
         Cell: ({
           row: {
-            original: {
-              address: { state, stateCode },
-            },
+            original: { address },
           },
-        }) => useMemo(() => <p>{stateCode ? `(${stateCode}) ${state}` : '-'}</p>, []),
+        }) =>
+          useMemo(
+            () => <p>{address?.stateCode ? `(${address?.stateCode}) ${address?.state}` : '-'}</p>,
+            [],
+          ),
       },
       {
         Header: 'BIRTHDAY',

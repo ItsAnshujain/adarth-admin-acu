@@ -176,11 +176,19 @@ const Header = () => {
         accessor: 'companyAddress.state',
         Cell: ({
           row: {
-            original: {
-              companyAddress: { state, stateCode },
-            },
+            original: { companyAddress },
           },
-        }) => useMemo(() => <p>{stateCode ? `(${stateCode}) ${state}` : '-'}</p>, []),
+        }) =>
+          useMemo(
+            () => (
+              <p>
+                {companyAddress?.stateCode
+                  ? `(${companyAddress?.stateCode}) ${companyAddress?.state}`
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
       },
       {
         Header: 'GSTIN',
