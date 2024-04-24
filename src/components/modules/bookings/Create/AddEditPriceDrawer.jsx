@@ -406,10 +406,7 @@ const AddEditPriceDrawer = ({
         applyPrintingMountingCostForAll: selectedInventory.applyPrintingMountingCostForAll || false,
         subjectToExtension: selectedInventory.subjectToExtension || false,
         discountOn: selectedInventory.discountOn || 'displayCost',
-        discount:
-          mode === 'view' && type === 'bookings' && selectedInventory.discountOn === 'totalPrice'
-            ? 0
-            : selectedInventory.discount || 0,
+        discount: selectedInventory.discount || 0,
         applyDiscountForAll: selectedInventory.applyDiscountForAll || false,
         discountedDisplayCost: selectedInventory.discountedDisplayCost || 0,
         discountedPriceOverDisplayCost: calculateDiscountOnDisplayCost({
