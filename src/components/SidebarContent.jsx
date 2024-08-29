@@ -118,11 +118,42 @@ const SidebarContent = ({ className }) => {
         icon: GalleryIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
-
+      
       {
         label: 'Leads',
         path: '/leads/leads-dashboard',
         icon: LeadsIcon,
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+      },
+      {
+        label: 'Report 1',
+        path: '/report1',
+        icon: GalleryIcon,
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+      },
+      {
+        label: 'Report 2',
+        path: '/report2',
+        icon: GalleryIcon,
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+      },
+      
+      {
+        label: 'operationalcost',
+        path: '/operationalCostPage',
+        icon: GalleryIcon,
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+      },
+      {
+        label: 'Sales Revenue',
+        path: '/otherSalesPage',
+        icon: GalleryIcon,
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+      },
+      {
+        label: 'otherRevenues',
+        path: '/otherrevenues',
+        icon: GalleryIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
     ],
@@ -132,7 +163,7 @@ const SidebarContent = ({ className }) => {
   return (
     <div className={classNames('flex flex-col items-start', className)}>
       {sidebarMenuList.map(item => (
-        <RoleBased acceptedRoles={item.acceptedRoles} key={uuidv4()}>
+        // <RoleBased acceptedRoles={item.acceptedRoles} key={uuidv4()}>
           <div
             className={classNames(
               'w-full flex flex-col rounded-[4px]',
@@ -165,7 +196,7 @@ const SidebarContent = ({ className }) => {
               toggleNestedTab={toggleNestedTab}
             />
           </div>
-        </RoleBased>
+        // </RoleBased>
       ))}
     </div>
   );

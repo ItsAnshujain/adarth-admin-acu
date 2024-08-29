@@ -10,6 +10,7 @@ import { useLogin } from '../apis/queries/auth.queries';
 import useUserStore from '../store/user.store';
 import ControlledPasswordInput from '../components/shared/FormInputs/Controlled/ControlledPasswordInput';
 import ControlledTextInput from '../components/shared/FormInputs/Controlled/ControlledTextInput';
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const schema = yup.object({
   email: yup.string().trim().required('Email is required').email('Invalid Email'),
@@ -20,6 +21,9 @@ const schema = yup.object({
     .max(32, 'Password must be at most 32 characters long')
     .required('Password is required'),
 });
+console.log('Environment Variables:', import.meta.env);
+
+console.log("API URL: ", API_URL);
 
 const LoginPage = () => {
   const navigate = useNavigate();

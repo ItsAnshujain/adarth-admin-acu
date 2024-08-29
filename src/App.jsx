@@ -25,6 +25,11 @@ import ViewContactPage from './pages/RepositoryPage/ViewContactPage';
 import LeadsPage from './pages/LeadsPage';
 import LeadsDashboardPage from './pages/LeadsPage/LeadsDashboardPage';
 import AddLeadPage from './pages/LeadsPage/AddLeadPage';
+import OtherSales from './pages/OtherSales';
+import OtherOperationalCosts from './pages/OtherOperationalCosts';
+import OtherReport1 from './pages/OtherReport1';
+import OtherReport2 from './pages/OtherReport2';
+import OtherFilterwiseRevenue from './pages/OtherFilterwiseRevenue';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -42,6 +47,16 @@ const BookingsPage = lazy(() => import('./pages/BookingsPage'));
 const BookingsDashboardPage = lazy(() => import('./pages/BookingsPage/BookingsDashboardPage'));
 const CreateBookingPage = lazy(() => import('./pages/BookingsPage/CreateBookingPage'));
 const BookingDetailsPage = lazy(() => import('./pages/BookingsPage/BookingDetailsPage'));
+
+// others
+const OtherSalesPage = lazy(() => import('./pages/OtherSales/OtherSalesPage'));
+const OperationalCostsPage = lazy(() =>
+  import('./pages/OtherOperationalCosts/OperationalCostPage'),
+);
+const Report1Page = lazy(() => import('./pages/OtherReport1/Report1Page'));
+const Report2Page = lazy(() => import('./pages/OtherReport2/Report2Page'));
+const ReveuePage = lazy(() => import('./pages/OtherFilterwiseRevenue/RevenuePage'));
+// others
 
 const ProposalsPage = lazy(() => import('./pages/ProposalsPage'));
 const ProposalDashboardPage = lazy(() => import('./pages/ProposalsPage/ProposalDashboardPage'));
@@ -414,6 +429,93 @@ const App = () => {
             }
           />
         </Route>
+        {/* others */}
+        <Route
+          path="operationalCostPage"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <OtherOperationalCosts />
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <OperationalCostsPage />
+              </Suspense>
+            }
+          />
+        </Route>
+        <Route
+          path="report1"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <OtherReport1 />
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <Report1Page />
+              </Suspense>
+            }
+          />
+        </Route>
+        <Route
+          path="report2"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <OtherReport2 />
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <Report2Page />
+              </Suspense>
+            }
+          />
+        </Route>
+        <Route
+          path="otherSalesPage"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <OtherSales />
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <OtherSalesPage />
+              </Suspense>
+            }
+          />
+        </Route>
+        <Route
+          path="otherrevenues"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <OtherFilterwiseRevenue />
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <ReveuePage />
+              </Suspense>
+            }
+          />
+        </Route>
+
         <Route
           path="/masters"
           element={

@@ -373,10 +373,10 @@ const BookingsDashboardPage = () => {
       },
       {
         Header: 'PRICING',
-        accessor: 'campaign.price',
+        accessor: 'campaign.totalPrice',
         Cell: ({
           row: {
-            original: { campaign, _id },
+            original: { campaign }
           },
         }) =>
           useMemo(
@@ -393,7 +393,7 @@ const BookingsDashboardPage = () => {
                 </ActionIcon>
               </div>
             ),
-            [],
+            []
           ),
       },
       {
@@ -581,6 +581,7 @@ const BookingsDashboardPage = () => {
           },
         }) => useMemo(() => <BookingsMenuPopover itemId={_id} />, []),
       },
+      
     ],
     [bookingData?.docs, campaignStatus, paymentStatus],
   );
