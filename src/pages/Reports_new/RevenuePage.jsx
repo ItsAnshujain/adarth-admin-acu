@@ -18,7 +18,6 @@ import {
 import { useSearchParams } from 'react-router-dom';
 import { useBookings } from '../../apis/queries/booking.queries';
 import { Menu, Button } from '@mantine/core';
-import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import DateRangeSelector from '../../components/DateRangeSelector';
 
