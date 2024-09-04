@@ -929,7 +929,7 @@ const OtherNewReports = () => {
            
           </div>
         </div>
-        <div className="overflow-y-auto px-5 col-span-10 w-[60rem]">
+        <div className="overflow-y-auto px-5 col-span-10 w-[65rem]">
           <p className="font-bold pt-10">Performance Ranking Report</p>
           <p className="text-sm text-gray-600 italic py-4">
              This report shows Performance Cards with pagination controls and a sortable, paginated table.
