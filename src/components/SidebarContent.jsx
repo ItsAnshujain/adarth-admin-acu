@@ -23,7 +23,7 @@ import { useFetchMastersTypes } from '../apis/queries/masters.queries';
 const SidebarContent = ({ className }) => {
   const { pathname } = useLocation();
   const [toggleNestedTab, setToggleNestedTab] = useState(
-    pathname.includes('masters') || pathname.includes('reports') || pathname.includes('newReports') || pathname.includes('repository'),
+    pathname.includes('masters') || pathname.includes('reports') || pathname.includes('repository'),
   );
   const { data, isSuccess: isMasterLoaded } = useFetchMastersTypes();
 
@@ -126,19 +126,11 @@ const SidebarContent = ({ className }) => {
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
       {
-        label: 'Repo_new',
+        label: 'Reports_new',
         path: '/newReports',
-        nested: [
-          { label: '1. own site vs traded site', subPath: '/report1' },
-          { label: '2. Client company type', subPath: '/report2' },
-          { label: '3. Operational Costs', subPath: '/operationalCostPage' },
-          { label: '4. Sales Revenue', subPath: '/otherSalesPage' },
-          { label: '5. Other Revenues', subPath: '/otherrevenues' },
-          { label: '6. Performance Report', subPath: '/performanceReport' },
-        ],
         icon: ReportIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
-      },
+      }
       
     ],
     [isMasterLoaded],

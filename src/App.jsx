@@ -26,6 +26,7 @@ import LeadsPage from './pages/LeadsPage';
 import LeadsDashboardPage from './pages/LeadsPage/LeadsDashboardPage';
 import AddLeadPage from './pages/LeadsPage/AddLeadPage';
 import Reports_new from './pages/Reports_new';
+import OtherNewReports from './pages/Reports_new/OtherNewReports';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -43,15 +44,6 @@ const BookingsPage = lazy(() => import('./pages/BookingsPage'));
 const BookingsDashboardPage = lazy(() => import('./pages/BookingsPage/BookingsDashboardPage'));
 const CreateBookingPage = lazy(() => import('./pages/BookingsPage/CreateBookingPage'));
 const BookingDetailsPage = lazy(() => import('./pages/BookingsPage/BookingDetailsPage'));
-
-// others
-const OtherSalesPage = lazy(() => import('./pages/Reports_new/OtherSalesPage'));
-const OperationalCostsPage = lazy(() =>import('./pages/Reports_new/OperationalCostPage'));
-const Report1Page = lazy(() => import('./pages/Reports_new/Report1Page'));
-const Report2Page = lazy(() => import('./pages/Reports_new/Report2Page'));
-const ReveuePage = lazy(() => import('./pages/Reports_new/RevenuePage'));
-const PerformanceReport = lazy(() => import('./pages/Reports_new/PerformanceReport'));
-// others
 
 const ProposalsPage = lazy(() => import('./pages/ProposalsPage'));
 const ProposalDashboardPage = lazy(() => import('./pages/ProposalsPage/ProposalDashboardPage'));
@@ -426,58 +418,18 @@ const App = () => {
         </Route>
         {/* others */}
         <Route
-          path="/newReports"
+          path="newReports"
           element={
-              <Suspense fallback={<HeaderSidebarLoader />}>
-                <Reports_new />
-              </Suspense>
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <Reports_new />
+            </Suspense>
           }
         >
           <Route
-            path="report1"
+            path=""
             element={
               <Suspense fallback={<CustomLoader />}>
-                <Report1Page />
-              </Suspense>
-            }
-          />
-          <Route
-            path="report2"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <Report2Page />
-              </Suspense>
-            }
-          />
-          <Route
-            path="operationalCostPage"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <OperationalCostsPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="otherSalesPage"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <OtherSalesPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="otherrevenues"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <ReveuePage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="performanceReport"
-            element={
-              <Suspense fallback={<CustomLoader />}>
-                <PerformanceReport />
+                <OtherNewReports />
               </Suspense>
             }
           />

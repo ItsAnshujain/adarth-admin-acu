@@ -5,7 +5,8 @@ import toIndianCurrency from '../../../utils/currencyFormat';
 import { useFetchInventoryReportList } from '../../../apis/queries/inventory.queries';
 import OngoingOrdersIcon from '../../../assets/ongoing-orders.svg';
 import TotalRevenueIcon from '../../../assets/total-revenue.svg';
-
+import InitiateDiscussionIcon from '../../../assets/message-share.svg';
+import InProgressIcon from '../../../assets/git-branch.svg';
 const PerformanceCard = () => {
   const fixedSearchParams = new URLSearchParams({
     limit: 10000,
@@ -39,8 +40,9 @@ const PerformanceCard = () => {
       data: {
         name: topSpaceByBookings?.basicInformation?.spaceName || 'N/A',
         value: topSpaceByBookings?.totalBookings || 0,
-        label: 'Number of Bookings',
+        label: 'Bookings ',
         icon: OngoingOrdersIcon,
+         color:'#4C3BCF'
       },
     },
     {
@@ -48,8 +50,9 @@ const PerformanceCard = () => {
       data: {
         name: leastSpaceByBookings?.basicInformation?.spaceName || 'N/A',
         value: leastSpaceByBookings?.totalBookings || 0,
-        label: 'Number of Bookings',
-        icon: OngoingOrdersIcon,
+        label: 'Bookings ',
+        icon: InitiateDiscussionIcon,
+         color:'#FF7F3E'
       },
     },
     {
@@ -57,8 +60,9 @@ const PerformanceCard = () => {
       data: {
         name: topSpaceByRevenue?.basicInformation?.spaceName || 'N/A',
         value: toIndianCurrency((topSpaceByRevenue?.revenue || 0) / 100000), // Convert to lacs
-        label: 'Revenue Generated (In lac)',
+        label: 'Revenue (lac)',
         icon: TotalRevenueIcon,
+         color:'#059212'
       },
     },
     {
@@ -66,26 +70,27 @@ const PerformanceCard = () => {
       data: {
         name: leastSpaceByRevenue?.basicInformation?.spaceName || 'N/A',
         value: toIndianCurrency((leastSpaceByRevenue?.revenue || 0) / 100000), // Convert to lacs
-        label: 'Revenue Generated (In lac)',
-        icon: TotalRevenueIcon,
+        label: 'Revenue (lac)',
+        icon: InProgressIcon,
+        color:'#7A1CAC'
       },
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-6">
       {cardData.map(({ title, data }) => (
-        <div className="border rounded p-8 pr-20" key={title}>
+        <div className="border rounded p-8 flex-1" key={title}>
           <Image src={data.icon} alt="icon" height={24} width={24} fit="contain" />
-          <Text className="my-2" size="sm" weight="200">
+          <Text className="my-2 text-sm font-semibold " >
             {title}
           </Text>
-          <Text size="sm">
-            <span className="font-semibold">Space Name:</span> {data.name}
+          <Text size="sm" weight="200">{data.name}
           </Text>
-          <Text size="sm">
-            <span className="font-semibold">{data.label}:</span> {data.value}
-          </Text>
+          <Text size="sm" weight="200">
+  {data.label}: <span className="font-bold" style={{ color: data.color }}> {data.value}</span>
+</Text>
+
         </div>
       ))}
     </div>
