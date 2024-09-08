@@ -6,8 +6,6 @@ import {
   financialStartDate,
   serialize,
   monthsInShort,
-  categoryColors,
-  generateSlNo,
 } from '../../utils';
 import { useInfiniteCompanies } from '../../apis/queries/companies.queries';
 import useUserStore from '../../store/user.store';
@@ -16,19 +14,15 @@ import { useSearchParams } from 'react-router-dom';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
 import { useFetchOperationalCostData } from '../../apis/queries/operationalCost.queries';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Menu, Button, Badge } from '@mantine/core';
+import { Menu, Button } from '@mantine/core';
 import classNames from 'classnames';
 import DateRangeSelector from '../../components/DateRangeSelector';
-
-import { useModals } from '@mantine/modals';
 import Table from '../../components/Table/Table';
-import RowsPerPage from '../../components/RowsPerPage';
 import toIndianCurrency from '../../utils/currencyFormat';
-import { useFetchInventoryReportList } from '../../apis/queries/inventory.queries';
+import {
+  useFetchInventory,
+} from '../../apis/queries/inventory.queries';
 import modalConfig from '../../utils/modalConfig';
-import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
-import InventoryPreviewImage from '../../components/shared/InventoryPreviewImage';
-import PerformanceCard from '../../components/modules/newReports/performanceCard';
 
 import {
   Chart as ChartJS,
@@ -43,6 +37,9 @@ import {
   Title,
   LogarithmicScale,
 } from 'chart.js';
+import GaugeChart from '../../components/modules/newReports/GaugeChart';
+import InvoiceReportChart from '../../components/modules/newReports/InvoiceReportChart';
+import { groupBy } from 'lodash';
 
 ChartJS.register(
   ArcElement,
@@ -78,6 +75,21 @@ const list = [
   { label: 'Current Month', value: 'currentMonth' },
   { label: 'Past 7 Days', value: 'past7' },
   { label: 'Custom Date Range', value: 'customDate' },
+];
+
+const viewBy1 = {
+  reset: '',
+  past10Years: 'Past 10 Years',
+  past5Years: 'Past 5 Years',
+  previousYear: 'Previous Year',
+  currentYear: 'Current Year',
+};
+
+const list1 = [
+  { label: 'Past 10 Years', value: 'past10Years' },
+  { label: 'Past 5 Years', value: 'past5Years' },
+  { label: 'Previous Year', value: 'previousYear' },
+  { label: 'Current Year', value: 'currentYear' },
 ];
 
 const barDataConfigByClient = {
@@ -188,7 +200,7 @@ const OtherNewReports = () => {
 
         if (pastYears.includes(year)) {
           if (aggregated[month]) {
-            aggregated[month][year] += amount / 100000; // Convert to lacs
+            aggregated[month][year] += amount / 100000;
           }
         }
       } catch (error) {
@@ -213,20 +225,22 @@ const OtherNewReports = () => {
   const currentYear = getCurrentYear();
   const pastYears = [currentYear - 3, currentYear - 2, currentYear - 1];
 
-  const chartData = useMemo(() => {
+  const salesChartData = useMemo(() => {
+    const colors = ['#FF6384', '#36A2EB', '#FFCE56'];
+
     return {
       labels: monthsInShort,
       datasets: pastYears.map((year, idx) => ({
         label: year,
         data: salesData.map(data => data[`year${year}`]),
-        backgroundColor: `hsl(${(idx * 120) % 360}, 70%, 70%)`, // Dynamic color
-        borderColor: `hsl(${(idx * 120) % 360}, 70%, 50%)`,
+        backgroundColor: colors[idx % colors.length], // Rotate colors based on the index
+        borderColor: colors[idx % colors.length],
         borderWidth: 1,
       })),
     };
   }, [salesData, pastYears]);
 
-  const chartOptions = useMemo(
+  const salesChartOptions = useMemo(
     () => ({
       responsive: true,
       scales: {
@@ -239,10 +253,10 @@ const OtherNewReports = () => {
         y: {
           title: {
             display: true,
-            text: 'Sales Amount (INR in Lacs)',
+            text: 'Sales Amount (lac)',
           },
           ticks: {
-            callback: value => `${value} L`, // Format y-axis labels in lacs
+            callback: value => `${value} L`,
           },
         },
       },
@@ -255,7 +269,70 @@ const OtherNewReports = () => {
                 label += ': ';
               }
               if (context.parsed.y !== null) {
-                label += `${context.parsed.y} L`; // Show values in lacs in tooltip
+                label += `${context.parsed.y} L`;
+              }
+              return label;
+            },
+          },
+        },
+      },
+    }),
+    [salesData],
+  );
+
+  const percentageContributionChartData = useMemo(() => {
+    const totalPerMonth = salesData.map(monthData => {
+      return pastYears.reduce((sum, year) => sum + monthData[`year${year}`], 0);
+    });
+    const colors = ['#FF6384', '#36A2EB', '#FFCE56'];
+
+    return {
+      labels: monthsInShort,
+      datasets: pastYears.map((year, idx) => ({
+        label: year,
+        data: salesData.map((data, i) => (data[`year${year}`] / totalPerMonth[i]) * 100 || 0),
+        backgroundColor: colors[idx % colors.length], // Rotate colors based on the index
+        borderColor: colors[idx % colors.length],
+        borderWidth: 1,
+        stack: 'stack1',
+      })),
+    };
+  }, [salesData, pastYears]);
+
+  const percentageContributionChartOptions = useMemo(
+    () => ({
+      responsive: true,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Month',
+          },
+          stacked: true,
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Percentage Contribution (%)',
+          },
+          ticks: {
+            callback: value => `${value}%`,
+          },
+          stacked: true,
+          max: 100,
+          min: 0,
+        },
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: context => {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                label += `${context.parsed.y.toFixed(1)}%`; // Show values in percentage
               }
               return label;
             },
@@ -408,7 +485,7 @@ const OtherNewReports = () => {
         },
       ],
     };
-  }, [chartLabels, chartData]);
+  }, [chartLabels, chartData2]);
 
   const [filter, setFilter] = useState('');
   const [activeView, setActiveView] = useState('');
@@ -601,7 +678,7 @@ const OtherNewReports = () => {
         y: {
           title: {
             display: true,
-            text: 'Revenue (INR in Lacs)',
+            text: 'Revenue (lac)',
           },
           ticks: {
             callback: value => `${value} L`, // Format tick values in lacs
@@ -645,141 +722,240 @@ const OtherNewReports = () => {
     setEndDate(null);
   };
 
-  const modals = useModals();
-  const [searchParams1, setSearchParams1] = useSearchParams({
-    limit: 20,
+
+  // traded margin report
+  const [searchParams3, setSearchParams3] = useSearchParams({
     page: 1,
-    sortOrder: 'desc',
-    sortBy: 'revenue',
+    limit: 500,
+    sortBy: 'basicInformation.spaceName',
+    sortOrder: 'asc',
+    isActive: true,
   });
 
-  const { data: inventoryReportList, isLoading: inventoryReportListLoading } =
-    useFetchInventoryReportList(searchParams1.toString());
+  const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
+    searchParams3.toString(),
+  );
 
-  const page = searchParams1.get('page');
-  const limit = searchParams1.get('limit');
+  // Process the inventory data to group by city and calculate metrics
+  const processedData = useMemo(() => {
+    if (!inventoryData?.docs?.length) return [];
 
-  const togglePreviewModal = (imgSrc, inventoryName, dimensions, location) =>
-    modals.openModal({
-      title: 'Preview',
-      children: (
-        <InventoryPreviewImage
-          imgSrc={imgSrc}
-          inventoryName={inventoryName}
-          dimensions={dimensions}
-          location={location}
-        />
-      ),
-      ...updatedModalConfig,
+    const cityData = {};
+
+    inventoryData.docs.forEach(inventory => {
+      const city = inventory.location?.city;
+      if (!city) return;
+
+      let totalCityPrice = 0;
+      let totalCityTradedAmount = 0;
+
+      inventory.campaigns?.forEach(campaign => {
+        campaign.place?.forEach(place => {
+          totalCityPrice += place.price || 0;
+          totalCityTradedAmount += place.tradedAmount || 0;
+        });
+      });
+
+      const tradedMargin = totalCityPrice - totalCityTradedAmount;
+      const percentageMargin = totalCityPrice
+        ? ((tradedMargin / totalCityPrice) * 100).toFixed(2)
+        : 0;
+
+      if (!cityData[city]) {
+        cityData[city] = {
+          city,
+          totalPrice: totalCityPrice,
+          totalTradedAmount: totalCityTradedAmount,
+          tradedMargin,
+          percentageMargin,
+        };
+      } else {
+        cityData[city].totalPrice += totalCityPrice;
+        cityData[city].totalTradedAmount += totalCityTradedAmount;
+        cityData[city].tradedMargin += tradedMargin;
+        cityData[city].percentageMargin = (
+          (cityData[city].tradedMargin / cityData[city].totalPrice) *
+          100
+        ).toFixed(2);
+      }
     });
 
-  const inventoryColumn = [
-    {
-      Header: '#',
-      accessor: 'id',
-      disableSortBy: true,
-      Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, page, limit)}</p>, []),
-    },
-    {
-      Header: 'SPACE NAME & PHOTO',
-      accessor: 'basicInformation.spaceName',
-      Cell: info =>
-        useMemo(
-          () => (
-            <SpaceNamePhotoContent
-              id={info.row.original._id}
-              spaceName={info.row.original.basicInformation?.spaceName}
-              spacePhoto={info.row.original.basicInformation?.spacePhoto}
-              dimensions={info.row.original.specifications?.size}
-              location={info.row.original.location?.city}
-              togglePreviewModal={togglePreviewModal}
-              isTargetBlank
-            />
-          ),
-          [],
-        ),
-    },
-    {
-      Header: 'CATEGORY',
-      accessor: 'basicInformation.category.name',
-      Cell: ({
-        row: {
-          original: { basicInformation },
-        },
-      }) =>
-        useMemo(() => {
-          const colorType = Object.keys(categoryColors).find(
-            key => categoryColors[key] === basicInformation?.category?.name,
-          );
+    return Object.values(cityData);
+  }, [inventoryData]);
 
-          return (
-            <div>
-              {basicInformation?.category?.name ? (
-                <Badge color={colorType || 'gray'} size="lg" className="capitalize">
-                  {basicInformation.category.name}
-                </Badge>
-              ) : (
-                '-'
-              )}
-            </div>
-          );
-        }, []),
-    },
-    {
-      Header: 'TOTAL REVENUE (In lac)',
-      accessor: 'revenue',
-      Cell: ({
-        row: {
-          original: { revenue },
-        },
-      }) =>
-        useMemo(() => {
-          const revenueInLacs = (revenue ?? 0) / 100000; // Convert revenue to lacs
-          return <p className="w-fit mr-2">{toIndianCurrency(revenueInLacs)}</p>;
-        }, []),
-    },
-    {
-      Header: 'TOTAL BOOKING',
-      accessor: 'totalBookings',
-      Cell: ({
-        row: {
-          original: { totalBookings },
-        },
-      }) => useMemo(() => <p className="w-fit">{totalBookings}</p>, [totalBookings]),
-    },
-  ];
+  const columns3 = useMemo(
+    () => [
+      {
+        Header: 'City',
+        accessor: 'city',
+        disableSortBy: true,
+        Cell: info => <p>{info.value}</p>,
+      },
+      {
+        Header: 'Price (lac)',
+        accessor: 'totalPrice',
+        disableSortBy: true,
+        Cell: info => <p>{(info.value / 100000).toFixed(2)}</p>, // Assuming 1 lac = 100,000
+      },
+      {
+        Header: 'Traded Price (lac)',
+        accessor: 'totalTradedAmount',
+        disableSortBy: true,
+        Cell: info => <p>{(info.value / 100000).toFixed(2)}</p>,
+      },
+      {
+        Header: 'Traded Margin (lac)',
+        accessor: 'tradedMargin',
+        disableSortBy: true,
+        Cell: info => <p>{(info.value / 100000).toFixed(2)}</p>,
+      },
+      {
+        Header: 'Percentage Margin (%)',
+        accessor: 'percentageMargin',
+        disableSortBy: true,
+        Cell: info => <p>{info.value}%</p>,
+      },
+    ],
+    [],
+  );
 
-  const handleSortByColumn = colId => {
-    if (searchParams1.get('sortBy') === colId && searchParams1.get('sortOrder') === 'desc') {
-      searchParams1.set('sortOrder', 'asc');
-      setSearchParams1(searchParams1);
-      return;
-    }
-    if (searchParams1.get('sortBy') === colId && searchParams1.get('sortOrder') === 'asc') {
-      searchParams1.set('sortOrder', 'desc');
-      setSearchParams1(searchParams1);
-      return;
-    }
+  // traded margin report
 
-    searchParams1.set('sortBy', colId);
-    setSearchParams1(searchParams1);
+  // invoice report
+  const [activeView1, setActiveView1] = useState(''); // Track the active filter
+
+  // Utility function to format month and year
+  const formatMonthYear1 = date => {
+    const newDate = new Date(date);
+    const month = newDate.toLocaleString('default', { month: 'short' });
+    const year = newDate.getFullYear();
+    return `${month} ${year}`;
   };
 
-  const handlePagination = (key, val) => {
-    if (val !== '') searchParams1.set(key, val);
-    else searchParams1.delete(key);
-    setSearchParams1(searchParams1);
+  // Filter data based on active view
+  const getFilteredData1 = (data, view) => {
+    if (!data) return [];
+
+    const now = new Date();
+    let startDate, endDate;
+
+    switch (view) {
+      case 'past10Years':
+        startDate = new Date(now.getFullYear() - 10, 0, 1);
+        break;
+      case 'past5Years':
+        startDate = new Date(now.getFullYear() - 5, 0, 1);
+        break;
+      case 'previousYear':
+        startDate = new Date(now.getFullYear() - 1, 0, 1);
+        endDate = new Date(now.getFullYear() - 1, 11, 31);
+        break;
+      case 'currentYear':
+        startDate = new Date(now.getFullYear(), 0, 1);
+        endDate = new Date(now.getFullYear(), 11, 31);
+        break;
+      default:
+        startDate = null;
+        endDate = null;
+    }
+
+    const grouped1 = groupBy(data.docs, doc => {
+      const date = new Date(doc.createdAt);
+      return `${date.getFullYear()}-${date.getMonth() + 1}`;
+    });
+
+    const aggregatedData1 = Object.keys(grouped1)
+      .map(monthYearKey => {
+        const group = grouped1[monthYearKey];
+        const totalInvoiceRaised =
+          group.reduce((sum, doc) => sum + (doc.outStandingInvoice || 0), 0) / 100000;
+        const totalAmountCollected =
+          group.reduce((sum, doc) => sum + (doc.totalPayment || 0), 0) / 100000;
+        const totalOutstanding = (totalInvoiceRaised - totalAmountCollected).toFixed(2);
+
+        const date = new Date(`${monthYearKey}-01`);
+        if ((startDate && date < startDate) || (endDate && date > endDate)) {
+          return null;
+        }
+
+        if (totalInvoiceRaised >= 0 && totalAmountCollected >= 0 && totalOutstanding >= 0) {
+          return {
+            monthYearKey,
+            month: formatMonthYear1(group[0].createdAt),
+            outStandingInvoice: totalInvoiceRaised,
+            totalPayment: totalAmountCollected,
+            outstandingAmount: totalOutstanding,
+          };
+        }
+        return null;
+      })
+      .filter(item => item !== null);
+
+    return aggregatedData1.sort((a, b) => {
+      const [yearA, monthA] = a.monthYearKey.split('-').map(Number);
+      const [yearB, monthB] = b.monthYearKey.split('-').map(Number);
+
+      return yearA !== yearB ? yearA - yearB : monthA - monthB;
+    });
   };
 
-  // useEffect(() => {
-  //   setSearchParams1(searchParams1);
-  // }, [searchParams1]);
+  // Memoized grouped data
+  const groupedData1 = useMemo(
+    () => getFilteredData1(bookingData, activeView1),
+    [bookingData?.docs, activeView1],
+  );
+
+  const column1 = useMemo(
+    () => [
+      {
+        Header: 'Month',
+        accessor: 'month',
+        disableSortBy: true,
+        Cell: info => <p>{info.row.original.month}</p>,
+      },
+      {
+        Header: 'Invoice Raised (lac)',
+        accessor: 'outStandingInvoice',
+        disableSortBy: true,
+        Cell: info => <p>{toIndianCurrency(info.row.original.outStandingInvoice)}</p>,
+      },
+      {
+        Header: 'Amount Collected (lac)',
+        accessor: 'totalPayment',
+        disableSortBy: true,
+        Cell: info => <p>{toIndianCurrency(info.row.original.totalPayment)}</p>,
+      },
+      {
+        Header: 'Outstanding',
+        accessor: 'outstandingAmount (lac)',
+        disableSortBy: true,
+        Cell: info => <p>{toIndianCurrency(info.row.original.outstandingAmount)}</p>,
+      },
+    ],
+    [groupedData1],
+  );
+
+  const handleMenuItemClick1 = value => {
+    setActiveView1(value);
+  };
+
+  const handleReset1 = () => {
+    setActiveView1(''); // Clear the active view (reset)
+  };
+
+  const invoiceRaised = groupedData1?.reduce((acc, item) => acc + item.outStandingInvoice, 0); // Calculate total Invoice Raised
+
+  const amountCollected = groupedData1?.reduce((acc, item) => acc + item.totalPayment, 0); // Calculate total Amount Collected
+
+  const isFilterApplied = activeView1 !== ''; // Check if a filter is applied
+
+  // invoice report
 
   return (
-    <div className='overflow-y-auto px-3 col-span-10'>
+    <div className="overflow-y-auto px-3 col-span-10">
       <div className="flex flex-col ">
         <div className="flex flex-col md:flex-row">
-          <div className="flex flex-col p-6 w-[40rem]">
+          <div className="flex flex-col p-6 w-[30rem]">
             <p className="font-bold text-center">Sales Trends Report</p>
             <p className="text-sm text-gray-600 italic pt-3">
               This chart displays a sales trends report, featuring data for "Own Sites" and "Traded
@@ -808,84 +984,9 @@ const OtherNewReports = () => {
                 <Doughnut options={config.options} data={printStatusData} />
               )}
             </div>
-           
           </div>
-
-          <div className="flex flex-col items-center p-6 w-[40rem]">
-            <div className="flex justify-between items-center">
-              <p className="font-bold">Sales Contribution graph</p>
-            </div>
-              <p className="text-sm text-gray-600 italic pt-3">
-              This chart analyzes the sales contributions of different channels over the past three
-              years.
-            </p>
-            {isLoadingBookingData ? (
-              <div className="flex justify-center items-center h-64">
-                <Loader />
-              </div>
-            ) : (
-              <div className="relative">
-                <div className="relative w-[35rem] overflow-hidden">
-                  <div className="p-4 ">
-                    {salesData.length > 0 ? (
-                      <Bar data={chartData} options={chartOptions} />
-                    ) : (
-                      <p className="text-center text-gray-600">No data available.</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-            
-          </div>
-        </div>
-        <div className="flex flex-col gap-10">
-          <div className="flex flex-col md:flex-row gap-10  w-[60rem]">
-            <div className="flex mt-2">
-              <div className="flex flex-col gap-4 text-center">
-                <div className="flex flex-col gap-4 p-4 items-center min-h-[200px]">
-                  <p className="font-bold">Client Company Type Revenue Bifurcation</p>
-                  <p className="text-sm text-gray-600 italic">
-                    This chart visualizes the revenue distribution by different client company
-                    types.{' '}
-                  </p>
-                  <div className="w-72">
-                    {isLoadingBookingData ? (
-                      <p className="text-center">Loading...</p>
-                    ) : updatedClient.datasets[0].data.length === 0 ? (
-                      <p className="text-center">NA</p>
-                    ) : (
-                      <Pie
-                        data={updatedClient}
-                        options={barDataConfigByClient.options}
-                        height={200}
-                        width={200}
-                      />
-                    )}
-                  </div>
-                 
-                </div>
-              </div>
-            </div>
-            <div className="p-6 flex text-center">
-              <div className="mb-4 items-center flex flex-col">
-                <p className="font-bold px-4 text-center">Operational cost bifurcation</p>
-                <p className="text-sm text-gray-600 italic py-4">
-                  This chart displays the breakdown of operational costs by different cost types.
-                </p>
-                <div className="w-72 ">
-                  <Doughnut
-                    data={doughnutChartData}
-                    options={barDataConfigByClient.options}
-                    height={200}
-                    width={200}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="w-[40rem] p-10 ">
-            <p className="font-bold">Filtered Revenue Graph</p>
+          <div className="pt-6 w-[40rem]">
+            <p className="font-bold text-center">Filtered Revenue Report</p>
             <p className="text-sm text-gray-600 italic py-4">
               This chart shows the filtered revenue data over different time periods.
             </p>
@@ -925,38 +1026,142 @@ const OtherNewReports = () => {
             <div className="my-4">
               <Line data={chartData1} options={chartOptions1} />
             </div>
-
-           
           </div>
         </div>
-        <div className="overflow-y-auto px-5 col-span-10 w-[60rem]">
-          <p className="font-bold pt-10">Performance Ranking Report</p>
-          <p className="text-sm text-gray-600 italic py-4">
-             This report shows Performance Cards with pagination controls and a sortable, paginated table.
+        <div className="flex flex-col gap-10">
+          <div className="flex flex-col md:flex-row gap-10  w-[60rem]">
+            <div className="flex mt-2">
+              <div className="flex flex-col gap-4 text-center">
+                <div className="flex flex-col gap-4 p-4 items-center min-h-[200px]">
+                  <p className="font-bold">Client Company Type Revenue Bifurcation</p>
+                  <p className="text-sm text-gray-600 italic">
+                    This chart visualizes the revenue distribution by different client company
+                    types.{' '}
+                  </p>
+                  <div className="w-72">
+                    {isLoadingBookingData ? (
+                      <p className="text-center">Loading...</p>
+                    ) : updatedClient.datasets[0].data.length === 0 ? (
+                      <p className="text-center">NA</p>
+                    ) : (
+                      <Pie
+                        data={updatedClient}
+                        options={barDataConfigByClient.options}
+                        height={200}
+                        width={200}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 flex text-center">
+              <div className="mb-4 items-center flex flex-col">
+                <p className="font-bold px-4 text-center">Operational cost bifurcation</p>
+                <p className="text-sm text-gray-600 italic py-4">
+                  This chart displays the breakdown of operational costs by different cost types.
+                </p>
+                <div className="w-72 ">
+                  <Doughnut
+                    data={doughnutChartData}
+                    options={barDataConfigByClient.options}
+                    height={200}
+                    width={200}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex p-6 flex-col">
+            <div className="flex justify-between items-center">
+              <p className="font-bold">Sales Report</p>
+            </div>
+            <p className="text-sm text-gray-600 italic pt-3">
+              This chart displays total sales over the past three years.
             </p>
-          <PerformanceCard />
-
-          <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450">
-            <div className="flex justify-between h-20 items-center">
-              <RowsPerPage
-                setCount={currentLimit => handlePagination('limit', currentLimit)}
-                count={limit}
-              />
+            {isLoadingBookingData ? (
+              <div className="flex justify-center items-center h-64">
+                <Loader />
+              </div>
+            ) : (
+              <div className=" overflow-hidden">
+                {salesData.length > 0 ? (
+                  <div className="flex gap-10 ">
+                    <div className="pt-4 w-[30rem]">
+                      <Bar data={salesChartData} options={salesChartOptions} />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 italic pt-0">
+                        This chart shows the percentage contribution of each year to the total
+                        sales.
+                      </p>
+                      <div className=" w-[30rem]">
+                        <Bar
+                          data={percentageContributionChartData}
+                          options={percentageContributionChartOptions}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-center text-gray-600">No data available.</p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <div className="col-span-12 md:col-span-12 lg:col-span-10 overflow-y-auto p-5">
+          <p className="font-bold pt-10">Price and Traded Margin Report</p>
+          <p className="text-sm text-gray-600 italic py-4">
+            This report provide insights into the pricing trends, traded prices, and margins grouped
+            by cities.
+          </p>
+          <Table data={processedData} COLUMNS={columns3} loading={isLoadingInventoryData} />
+        </div>
+        <div className="col-span-12 md:col-span-12 lg:col-span-10 overflow-y-auto p-5 overflow-hidden">
+          <p className="font-bold ">Invoice and amount collected Report</p>
+          <p className="text-sm text-gray-600 italic py-4">
+            This report provide insights into the invoice raised, amount collected and outstanding
+            by table, graph and chart.
+          </p>
+          <Table data={groupedData1 || []} COLUMNS={column1} loading={isLoadingBookingData} />
+          <div className="flex">
+            <div style={{ position: 'relative', zIndex: 10 }}>
+              <Menu shadow="md" width={200}>
+                <Menu.Target>
+                  <Button className="secondary-button">
+                    View By: {viewBy1[activeView1] || 'Select'}
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {list1.map(({ label, value }) => (
+                    <Menu.Item
+                      key={value}
+                      onClick={() => handleMenuItemClick1(value)}
+                      className={classNames(activeView1 === value && 'text-purple-450 font-medium')}
+                    >
+                      {label}
+                    </Menu.Item>
+                  ))}
+                </Menu.Dropdown>
+              </Menu>
             </div>
 
-            <Table
-              COLUMNS={inventoryColumn}
-              data={inventoryReportList?.docs || []}
-              handleSorting={handleSortByColumn}
-              activePage={inventoryReportList?.page || 1}
-              totalPages={inventoryReportList?.totalPages || 1}
-              setActivePage={currentPage => handlePagination('page', currentPage)}
-              loading={inventoryReportListLoading}
-            />
+            {activeView1 && (
+              <Button onClick={handleReset1} className="mx-2 secondary-button">
+                Reset
+              </Button>
+            )}
           </div>
+          <InvoiceReportChart data={activeView1 ? groupedData1 : []} />{' '}
+          <GaugeChart
+            invoiceRaised={isFilterApplied ? invoiceRaised : 0}
+            amountCollected={isFilterApplied ? amountCollected : 0}
+          />
         </div>
       </div>
-      </div>
+    </div>
   );
 };
 

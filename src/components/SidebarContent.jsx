@@ -130,8 +130,13 @@ const SidebarContent = ({ className }) => {
         path: '/newReports',
         icon: ReportIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
-      }
-      
+      },
+      {
+        label: 'Ranking_report',
+        path: '/performanceReport',
+        icon: ReportIcon,
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+      },
     ],
     [isMasterLoaded],
   );

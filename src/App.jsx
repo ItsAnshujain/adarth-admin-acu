@@ -27,6 +27,7 @@ import LeadsDashboardPage from './pages/LeadsPage/LeadsDashboardPage';
 import AddLeadPage from './pages/LeadsPage/AddLeadPage';
 import Reports_new from './pages/Reports_new';
 import OtherNewReports from './pages/Reports_new/OtherNewReports';
+import OtherPerformanceReport from './pages/OtherPerformanceReport';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -39,6 +40,7 @@ const CreateBulkInventoriesPage = lazy(() =>
   import('./pages/InventoryPage/CreateBulkInventoriesPage'),
 );
 const InventoryDetailsPage = lazy(() => import('./pages/InventoryPage/InventoryDetailsPage'));
+const PerformanceReport = lazy(() => import('./pages/OtherPerformanceReport/PerformanceReport'));
 
 const BookingsPage = lazy(() => import('./pages/BookingsPage'));
 const BookingsDashboardPage = lazy(() => import('./pages/BookingsPage/BookingsDashboardPage'));
@@ -434,6 +436,24 @@ const App = () => {
             }
           />
         </Route>
+        <Route
+          path="performanceReport"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <OtherPerformanceReport />
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <PerformanceReport />
+              </Suspense>
+            }
+          />
+        </Route>
+      
         {/* //others */}
        
      
