@@ -907,11 +907,17 @@ const OtherNewReports = () => {
     });
   };
 
-  // Memoized grouped data
-  const groupedData1 = useMemo(
-    () => getFilteredData1(bookingData, activeView1),
-    [bookingData?.docs, activeView1],
-  );
+  const groupedData1 = useMemo(() => {
+    return getFilteredData1(bookingData, activeView1).sort((a, b) => {
+      const [yearA, monthA] = a.monthYearKey.split('-').map(Number);
+      const [yearB, monthB] = b.monthYearKey.split('-').map(Number);
+  
+      // Sorting in descending order
+      return yearA !== yearB ? yearB - yearA : monthB - monthA;
+    });
+  }, [bookingData?.docs, activeView1]);
+  
+  
 
   const column1 = useMemo(
     () => [

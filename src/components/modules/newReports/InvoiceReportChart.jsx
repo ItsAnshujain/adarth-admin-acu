@@ -31,8 +31,8 @@ const InvoiceReportChart = ({ data }) => {
         type: 'line',
         label: 'Invoice Raised',
         data: data.map(item => item.outStandingInvoice), // Convert to lac
-        borderColor: 'rgba(54, 162, 235, 1)',
-        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        borderColor: '#FF900E',
+        backgroundColor: '#FF900E',
         yAxisID: 'y1',
         tension: 0.3,
         fill: false,
@@ -41,8 +41,8 @@ const InvoiceReportChart = ({ data }) => {
         type: 'line',
         label: 'Amount Collected',
         data: data.map(item => item.totalPayment), // Convert to lac
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        borderColor: '#2938F7',
+        backgroundColor: '#2938F7',
         yAxisID: 'y1',
         tension: 0.3,
         fill: false,
