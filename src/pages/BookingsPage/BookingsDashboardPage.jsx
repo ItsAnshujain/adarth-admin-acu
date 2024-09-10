@@ -398,7 +398,7 @@ const BookingsDashboardPage = () => {
       },
       {
         Header: 'OUTSTANDING PO',
-        accessor: 'campaign.outstandingPO',
+        accessor: 'outStandingPurchaseOrder',
         Cell: ({
           row: {
             original: { outStandingPurchaseOrder },
@@ -407,7 +407,7 @@ const BookingsDashboardPage = () => {
       },
       {
         Header: 'OUTSTANDING RO',
-        accessor: 'campaign.outstandingRO',
+        accessor: 'outStandingReleaseOrder',
         Cell: ({
           row: {
             original: { outStandingReleaseOrder },
@@ -416,7 +416,7 @@ const BookingsDashboardPage = () => {
       },
       {
         Header: 'OUTSTANDING INVOICE',
-        accessor: 'campaign.outstandingInvoice',
+        accessor: 'outStandingInvoice',
         Cell: ({
           row: {
             original: { outStandingInvoice },

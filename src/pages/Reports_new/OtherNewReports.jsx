@@ -1,12 +1,7 @@
 import { useMemo, useEffect, useState } from 'react';
 import { Doughnut, Bar, Pie, Line } from 'react-chartjs-2';
 import { useUserSalesByUserId, useBookings } from '../../apis/queries/booking.queries';
-import {
-  financialEndDate,
-  financialStartDate,
-  serialize,
-  monthsInShort,
-} from '../../utils';
+import { financialEndDate, financialStartDate, serialize, monthsInShort } from '../../utils';
 import { useInfiniteCompanies } from '../../apis/queries/companies.queries';
 import useUserStore from '../../store/user.store';
 import { Loader } from 'react-feather';
@@ -19,9 +14,7 @@ import classNames from 'classnames';
 import DateRangeSelector from '../../components/DateRangeSelector';
 import Table from '../../components/Table/Table';
 import toIndianCurrency from '../../utils/currencyFormat';
-import {
-  useFetchInventory,
-} from '../../apis/queries/inventory.queries';
+import { useFetchInventory } from '../../apis/queries/inventory.queries';
 import modalConfig from '../../utils/modalConfig';
 
 import {
@@ -40,6 +33,7 @@ import {
 import GaugeChart from '../../components/modules/newReports/GaugeChart';
 import InvoiceReportChart from '../../components/modules/newReports/InvoiceReportChart';
 import { groupBy } from 'lodash';
+import PerformanceCard from '../../components/modules/newReports/performanceCard';
 
 ChartJS.register(
   ArcElement,
@@ -126,16 +120,44 @@ const updatedModalConfig = {
 const OtherNewReports = () => {
   const userId = useUserStore(state => state.id);
   const userSales = useUserSalesByUserId({
-    startDate: financialStartDate,
-    endDate: financialEndDate,
+    startDate: '2023-04-01',
+    endDate: '2024-03-31',
     userId,
   });
 
+  const [searchParams3, setSearchParams3] = useSearchParams({
+    page: 1,
+    limit: 500,
+    sortBy: 'basicInformation.spaceName',
+    sortOrder: 'asc',
+    isActive: true,
+  });
+
+  const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
+    searchParams3.toString(),
+  );
+
+  // Process the inventory data to calculate total traded amount
+  const sitesData = useMemo(() => {
+    if (!inventoryData?.docs?.length) return { totalTradedAmount: 0 };
+
+    let totalTradedAmount = 0;
+
+    inventoryData.docs.forEach(inventory => {
+      inventory.campaigns?.forEach(campaign => {
+        campaign.place?.forEach(place => {
+          totalTradedAmount += place.tradedAmount || 0;
+        });
+      });
+    });
+
+    return { totalTradedAmount };
+  }, [inventoryData]);
+
   const dummyStats = {
-    tradedsite: userSales.data?.totalTradedAmount || 0,
+    tradedsite: sitesData.totalTradedAmount || 0,
     ownsite: userSales.data?.ownSiteSales || 0,
   };
-
   const printStatusData = useMemo(
     () => ({
       datasets: [
@@ -722,19 +744,7 @@ const OtherNewReports = () => {
     setEndDate(null);
   };
 
-
   // traded margin report
-  const [searchParams3, setSearchParams3] = useSearchParams({
-    page: 1,
-    limit: 500,
-    sortBy: 'basicInformation.spaceName',
-    sortOrder: 'asc',
-    isActive: true,
-  });
-
-  const { data: inventoryData, isLoading: isLoadingInventoryData } = useFetchInventory(
-    searchParams3.toString(),
-  );
 
   // Process the inventory data to group by city and calculate metrics
   const processedData = useMemo(() => {
@@ -952,7 +962,7 @@ const OtherNewReports = () => {
   // invoice report
 
   return (
-    <div className="overflow-y-auto px-3 col-span-10">
+    <div className="overflow-y-auto px-3 col-span-10 overflow-hidden">
       <div className="flex flex-col ">
         <div className="flex flex-col md:flex-row">
           <div className="flex flex-col p-6 w-[30rem]">
@@ -1087,20 +1097,8 @@ const OtherNewReports = () => {
               <div className=" overflow-hidden">
                 {salesData.length > 0 ? (
                   <div className="flex gap-10 ">
-                    <div className="pt-4 w-[30rem]">
+                    <div className="pt-4 w-[40rem]">
                       <Bar data={salesChartData} options={salesChartOptions} />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 italic pt-0">
-                        This chart shows the percentage contribution of each year to the total
-                        sales.
-                      </p>
-                      <div className=" w-[30rem]">
-                        <Bar
-                          data={percentageContributionChartData}
-                          options={percentageContributionChartOptions}
-                        />
-                      </div>
                     </div>
                   </div>
                 ) : (
@@ -1110,14 +1108,14 @@ const OtherNewReports = () => {
             )}
           </div>
         </div>
-        
+
         <div className="col-span-12 md:col-span-12 lg:col-span-10 overflow-y-auto p-5">
           <p className="font-bold pt-10">Price and Traded Margin Report</p>
           <p className="text-sm text-gray-600 italic py-4">
             This report provide insights into the pricing trends, traded prices, and margins grouped
             by cities.
           </p>
-          <Table data={processedData} COLUMNS={columns3} loading={isLoadingInventoryData} />
+          <Table data={(processedData || []).slice(0, 10)} COLUMNS={columns3} loading={isLoadingInventoryData} />
         </div>
         <div className="col-span-12 md:col-span-12 lg:col-span-10 overflow-y-auto p-5 overflow-hidden">
           <p className="font-bold ">Invoice and amount collected Report</p>
@@ -1125,7 +1123,12 @@ const OtherNewReports = () => {
             This report provide insights into the invoice raised, amount collected and outstanding
             by table, graph and chart.
           </p>
-          <Table data={groupedData1 || []} COLUMNS={column1} loading={isLoadingBookingData} />
+          <Table
+            data={(groupedData1 || []).slice(0, 10)}
+            COLUMNS={column1}
+            loading={isLoadingInventoryData}
+          />
+          <p className="py-4 font-bold">Invoice Raised Vs Amount Collected Vs Outstanding</p>
           <div className="flex">
             <div style={{ position: 'relative', zIndex: 10 }}>
               <Menu shadow="md" width={200}>
@@ -1155,11 +1158,20 @@ const OtherNewReports = () => {
             )}
           </div>
           <InvoiceReportChart data={activeView1 ? groupedData1 : []} />{' '}
+          <p className="pt-4 font-bold">Invoice Raised Vs Amount Collected</p>
           <GaugeChart
             invoiceRaised={isFilterApplied ? invoiceRaised : 0}
             amountCollected={isFilterApplied ? amountCollected : 0}
           />
         </div>
+      </div>
+      <div className="p-5 w-[65rem]">
+        <p className="font-bold pt-10">Performance Ranking Report</p>
+        <p className="text-sm text-gray-600 italic py-4">
+          This report shows Performance Cards with pagination controls and a sortable, paginated
+          table.
+        </p>
+        <PerformanceCard />
       </div>
     </div>
   );

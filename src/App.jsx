@@ -28,6 +28,7 @@ import AddLeadPage from './pages/LeadsPage/AddLeadPage';
 import Reports_new from './pages/Reports_new';
 import OtherNewReports from './pages/Reports_new/OtherNewReports';
 import OtherPerformanceReport from './pages/OtherPerformanceReport';
+import OtherSalesReport from './pages/OtherSalesReport';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -41,6 +42,7 @@ const CreateBulkInventoriesPage = lazy(() =>
 );
 const InventoryDetailsPage = lazy(() => import('./pages/InventoryPage/InventoryDetailsPage'));
 const PerformanceReport = lazy(() => import('./pages/OtherPerformanceReport/PerformanceReport'));
+const SalesReport = lazy(() => import('./pages/OtherSalesReport/SalesReport'));
 
 const BookingsPage = lazy(() => import('./pages/BookingsPage'));
 const BookingsDashboardPage = lazy(() => import('./pages/BookingsPage/BookingsDashboardPage'));
@@ -449,6 +451,24 @@ const App = () => {
             element={
               <Suspense fallback={<CustomLoader />}>
                 <PerformanceReport />
+              </Suspense>
+            }
+          />
+        </Route>
+      
+        <Route
+          path="salesReport"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <OtherSalesReport />
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <SalesReport />
               </Suspense>
             }
           />

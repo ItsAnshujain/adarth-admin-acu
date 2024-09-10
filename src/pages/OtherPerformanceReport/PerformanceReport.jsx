@@ -11,10 +11,8 @@ import { categoryColors, generateSlNo } from '../../utils';
 import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
 import { Badge } from '@mantine/core';
 
-
-
 const PerformanceReport = () => {
-   const modals = useModals();
+  const modals = useModals();
   const [searchParams1, setSearchParams1] = useSearchParams({
     limit: 20,
     page: 1,
@@ -141,32 +139,32 @@ const PerformanceReport = () => {
   };
   return (
     <div className="overflow-y-auto px-5 col-span-10 w-[65rem]">
-          <p className="font-bold pt-10">Performance Ranking Report</p>
-          <p className="text-sm text-gray-600 italic py-4">
-            This report shows Performance Cards with pagination controls and a sortable, paginated
-            table.
-          </p>
-          <PerformanceCard />
+      <p className="font-bold pt-10">Performance Ranking Report</p>
+      <p className="text-sm text-gray-600 italic py-4">
+        This report shows Performance Cards with pagination controls and a sortable, paginated
+        table.
+      </p>
+      <PerformanceCard />
 
-          <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450">
-            <div className="flex justify-between h-20 items-center">
-              <RowsPerPage
-                setCount={currentLimit => handlePagination('limit', currentLimit)}
-                count={limit}
-              />
-            </div>
+      <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450">
+        <div className="flex justify-between h-20 items-center">
+          <RowsPerPage
+            setCount={currentLimit => handlePagination('limit', currentLimit)}
+            count={limit}
+          />
+        </div>
 
-            <Table
-              COLUMNS={inventoryColumn}
-              data={inventoryReportList?.docs || []}
-              handleSorting={handleSortByColumn}
-              activePage={inventoryReportList?.page || 1}
-              totalPages={inventoryReportList?.totalPages || 1}
-              setActivePage={currentPage => handlePagination('page', currentPage)}
-              loading={inventoryReportListLoading}
-            />
-          </div>
-        </div> 
+        <Table
+          COLUMNS={inventoryColumn}
+          data={inventoryReportList?.docs || []}
+          handleSorting={handleSortByColumn}
+          activePage={inventoryReportList?.page || 1}
+          totalPages={inventoryReportList?.totalPages || 1}
+          setActivePage={currentPage => handlePagination('page', currentPage)}
+          loading={inventoryReportListLoading}
+        />
+      </div>
+    </div>
   );
 };
 
