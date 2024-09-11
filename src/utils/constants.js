@@ -114,6 +114,7 @@ export const OBJECT_FIT_LIST = [
 export const FACING_VALUE_LIST = ['single', 'double', 'triple', 'four', 'five'];
 
 export const OBJECT_FIT_LIST_V2 = [
+  { label: 'Custom template', value: 'fill;custom' },
   { label: 'Generic Fill', value: 'fill;generic' },
   { label: 'Generic Contain', value: 'contain;generic' },
   { label: 'Long Shot / Close Shot - Fill', value: 'fill;longShotCloseShot' },

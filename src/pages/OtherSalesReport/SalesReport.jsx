@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -12,11 +11,11 @@ import {
   LinearScale,
   CategoryScale,
   Title,
-  LogarithmicScale,
 } from 'chart.js';
 import { Loader } from 'react-feather';
-import { monthsInShort } from '../../utils';
 import { useBookings } from '../../apis/queries/booking.queries';
+import { useSearchParams } from 'react-router-dom';
+import { monthsInShort } from '../../utils';
 
 ChartJS.register(
   ArcElement,
@@ -28,7 +27,6 @@ ChartJS.register(
   LinearScale,
   CategoryScale,
   Title,
-  LogarithmicScale,
 );
 
 const SalesReport = () => {
@@ -44,46 +42,59 @@ const SalesReport = () => {
     isLoading: isLoadingBookingData,
     error,
   } = useBookings(searchParams.toString());
+
   const [salesData, setSalesData] = useState([]);
+
+  const getCurrentYear = () => new Date().getFullYear();
+  const pastYears = [getCurrentYear() - 3, getCurrentYear() - 2, getCurrentYear() - 1];
+
+  // Map from database month to custom month index
+  const monthMapping = {
+    0: 9, // Jan -> Oct
+    1: 10, // Feb -> Nov
+    2: 11, // Mar -> Dec
+    3: 0, // Apr -> Jan
+    4: 1, // May -> Feb
+    5: 2, // Jun -> Mar
+    6: 3, // Jul -> Apr
+    7: 4, // Aug -> May
+    8: 5, // Sep -> Jun
+    9: 6, // Oct -> Jul
+    10: 7, // Nov -> Aug
+    11: 8, // Dec -> Sep
+  };
 
   useEffect(() => {
     if (bookingData && bookingData.docs) {
       const aggregatedData = aggregateSalesData(bookingData.docs);
       setSalesData(aggregatedData);
-      console.log('Booking Data:', bookingData);
     }
-  }, [bookingData, error]);
-
-  const getCurrentYear = () => new Date().getFullYear();
+  }, [bookingData]);
 
   const aggregateSalesData = data => {
-    const currentYear = getCurrentYear();
-    const pastYears = [currentYear - 3, currentYear - 2, currentYear - 1];
     const aggregated = {};
 
-    for (let month = 0; month < 12; month++) {
-      aggregated[month] = {};
+    // Initialize aggregated data for each month
+    monthsInShort.forEach((_, index) => {
+      aggregated[index] = {};
       pastYears.forEach(year => {
-        aggregated[month][year] = 0;
+        aggregated[index][year] = 0;
       });
-    }
+    });
 
     data.forEach(item => {
       try {
         const date = new Date(item.createdAt);
         if (isNaN(date.getTime())) throw new Error('Invalid date');
-        const month = date.getMonth();
+        const dbMonth = date.getMonth(); // Database month index
+        const month = monthMapping[dbMonth]; // Translate to custom month index
         const year = date.getFullYear();
         const amount = item.totalAmount || 0;
 
-        if (amount <= 0 || isNaN(amount)) {
-          return;
-        }
+        if (amount <= 0 || isNaN(amount)) return;
 
         if (pastYears.includes(year)) {
-          if (aggregated[month]) {
-            aggregated[month][year] += amount / 100000;
-          }
+          aggregated[month][year] += amount / 100000; // Convert to 'lac'
         }
       } catch (error) {
         console.error('Error processing date:', item.createdAt, error);
@@ -95,7 +106,7 @@ const SalesReport = () => {
       ...pastYears.reduce(
         (acc, year) => ({
           ...acc,
-          [year]: aggregated[index][year],
+          [`year${year}`]: aggregated[index][year],
         }),
         {},
       ),
@@ -104,10 +115,19 @@ const SalesReport = () => {
     return result;
   };
 
-  const currentYear = getCurrentYear();
-  const pastYears = [currentYear - 3, currentYear - 2, currentYear - 1];
+  const calculateTrendLineData = () => {
+    return salesData.map(data => {
+      const total = Object.values(data)
+        .slice(1)
+        .reduce((acc, val) => acc + val, 0);
+      return total / pastYears.length; // Average for the past 3 years
+    });
+  };
+
+  const trendLineData = useMemo(() => calculateTrendLineData(), [salesData]);
+
   const salesChartData = useMemo(() => {
-    const colors = ['#FF6384', '#36A2EB', '#FFCE56'];
+    const colors = ['#FF6384', '#914EFB', '#36A2EB'];
 
     return {
       labels: monthsInShort,
@@ -161,48 +181,41 @@ const SalesReport = () => {
     [salesData],
   );
 
-  // Calculate the average sales per month for the trend line
-  const calculateAverageSales = () => {
-    return salesData.map(monthData => {
-      const total = pastYears.reduce((sum, year) => sum + monthData[year], 0);
-      return total / pastYears.length; // Average of the past 3 years
-    });
-  };
-
-  const averageSalesData = calculateAverageSales();
-
-  // New Percentage Contribution Data
-  const percentageChartData = useMemo(() => {
-    const colors = ['#FF6384', '#36A2EB', '#FFCE56'];
-
+  // Combined bar and line chart data
+  const combinedChartData = useMemo(() => {
+    const colors = ['#FF6384', '#914EFB', '#36A2EB'];
+  
     return {
       labels: monthsInShort,
       datasets: [
         ...pastYears.map((year, idx) => ({
           label: year,
-          data: salesData.map(data => (data[year] / 100) * 100), // Example contribution percentage calculation
-          backgroundColor: colors[idx % colors.length], // Rotate colors based on the index
+          data: salesData.map(data => data[`year${year}`]),
+          backgroundColor: colors[idx % colors.length],
           borderColor: colors[idx % colors.length],
-          borderWidth: 1,
-          yAxisID: idx % 2 === 0 ? 'left' : 'right', // Assign dataset to left or right axis
+          borderWidth: 0.5, // Reduce bar border width to avoid obscuring the line
+          type: 'bar',
+          yAxisID: 'y',
+          order: 1,
         })),
         {
-          label: 'Trend (Avg)',
-          data: averageSalesData, // Use average sales data for the trend line
-          type: 'line', // Specify as a line chart
-          borderColor: 'red',
+          label: 'Trend',
+          data: trendLineData,
+          borderColor: '#EF4444',
           fill: false,
-          tension: 0.4,
-          pointRadius: 4,
-          pointBackgroundColor: 'red',
-          yAxisID: 'left', // Trend line should be on the left Y-axis
+          tension: 0.1, // Smoother curve
+          pointBackgroundColor: '#EF4444',
+          type: 'line',
+          yAxisID: 'y1',
+          borderWidth: 2, // Increase border width for better visibility
+          order: 3, // Increase the order to ensure it stays above the bars
         },
       ],
     };
-  }, [salesData, averageSalesData, pastYears]);
+  }, [salesData, trendLineData]);
+  
 
-  // Two-Sided Y-Axis Options
-  const percentageChartOptions = useMemo(
+  const combinedChartOptions = useMemo(
     () => ({
       responsive: true,
       scales: {
@@ -212,67 +225,56 @@ const SalesReport = () => {
             text: 'Month',
           },
         },
-        left: {
-          type: 'linear',
+        y: {
+          title: {
+            display: true,
+            text: 'Sales Amount (lac)',
+          },
+          ticks: {
+            callback: value => `${value} L`,
+          },
           position: 'left',
+        },
+        y1: {
           title: {
             display: true,
-            text: 'Percentage Contribution (Left)',
+            text: 'Trend Line',
           },
-        },
-        right: {
-          type: 'linear',
+          ticks: {
+            callback: value => `${value} L`,
+          },
           position: 'right',
-          title: {
-            display: true,
-            text: 'Percentage Contribution (Right)',
-          },
-        },
-      },
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: context => {
-              let label = context.dataset.label || '';
-              if (label) {
-                label += ': ';
-              }
-              if (context.parsed.y !== null) {
-                label += `${context.parsed.y}%`;
-              }
-              return label;
-            },
+          grid: {
+            drawOnChartArea: false, // Only draw grid lines for primary y-axis
           },
         },
       },
     }),
-    [salesData],
+    [],
   );
 
   return (
-    <div className="flex p-6 flex-col w-[80rem] overflow-hidden">
+    <div className="flex p-6 flex-col w-[80rem] overflow-hidden overflow-y-auto">
       <div className="flex justify-between items-center">
         <p className="font-bold">Sales Report</p>
       </div>
       <p className="text-sm text-gray-600 italic pt-3">
-        This chart displays total sales over the past three years with a trend line showing the average sales.
+        This chart displays total sales over the past three years with a trend line showing the
+        average sales.
       </p>
       {isLoadingBookingData ? (
         <div className="flex justify-center items-center h-64">
           <Loader />
         </div>
       ) : (
-        <div className="overflow-hidden">
+        <div className="">
           {salesData.length > 0 ? (
-            <div className="flex gap-10">
-              {/* Existing Sales Chart */}
-              <div className="pt-4 w-[30rem]">
+            <div className=" gap-10 ">
+              <div className="pt-4 w-[40rem]">
                 <Bar data={salesChartData} options={salesChartOptions} />
               </div>
-
-              {/* New Percentage Contribution Chart */}
-              <div className="pt-4 w-[30rem]">
-                <Bar data={percentageChartData} options={percentageChartOptions} />
+              <div className="pt-4 w-[40rem]">
+                <Bar data={combinedChartData} options={combinedChartOptions} />
               </div>
             </div>
           ) : (

@@ -154,7 +154,7 @@ const OtherNewReports = () => {
 
   const dummyStats = {
     tradedsite: sitesData.totalTradedAmount || 0,
-    ownsite: userSales.data?.ownSiteSales || 0,
+    ownsite: userSales.data?.sales || 0,
   };
   const printStatusData = useMemo(
     () => ({
@@ -184,44 +184,56 @@ const OtherNewReports = () => {
   } = useBookings(searchParams.toString());
   const [salesData, setSalesData] = useState([]);
 
+  const getCurrentYear = () => new Date().getFullYear();
+  const pastYears = [getCurrentYear() - 3, getCurrentYear() - 2, getCurrentYear() - 1];
+
+  // Map from database month to custom month index
+  const monthMapping = {
+    0: 9, // Jan -> Oct
+    1: 10, // Feb -> Nov
+    2: 11, // Mar -> Dec
+    3: 0, // Apr -> Jan
+    4: 1, // May -> Feb
+    5: 2, // Jun -> Mar
+    6: 3, // Jul -> Apr
+    7: 4, // Aug -> May
+    8: 5, // Sep -> Jun
+    9: 6, // Oct -> Jul
+    10: 7, // Nov -> Aug
+    11: 8, // Dec -> Sep
+  };
+
   useEffect(() => {
     if (bookingData && bookingData.docs) {
       const aggregatedData = aggregateSalesData(bookingData.docs);
       setSalesData(aggregatedData);
-      console.log('Booking Data:', bookingData);
     }
-  }, [bookingData, error]);
-
-  const getCurrentYear = () => new Date().getFullYear();
+  }, [bookingData]);
 
   const aggregateSalesData = data => {
-    const currentYear = getCurrentYear();
-    const pastYears = [currentYear - 3, currentYear - 2, currentYear - 1];
     const aggregated = {};
 
-    for (let month = 0; month < 12; month++) {
-      aggregated[month] = {};
+    // Initialize aggregated data for each month
+    monthsInShort.forEach((_, index) => {
+      aggregated[index] = {};
       pastYears.forEach(year => {
-        aggregated[month][year] = 0;
+        aggregated[index][year] = 0;
       });
-    }
+    });
 
     data.forEach(item => {
       try {
         const date = new Date(item.createdAt);
         if (isNaN(date.getTime())) throw new Error('Invalid date');
-        const month = date.getMonth();
+        const dbMonth = date.getMonth(); // Database month index
+        const month = monthMapping[dbMonth]; // Translate to custom month index
         const year = date.getFullYear();
         const amount = item.totalAmount || 0;
 
-        if (amount <= 0 || isNaN(amount)) {
-          return;
-        }
+        if (amount <= 0 || isNaN(amount)) return;
 
         if (pastYears.includes(year)) {
-          if (aggregated[month]) {
-            aggregated[month][year] += amount / 100000;
-          }
+          aggregated[month][year] += amount / 100000; // Convert to 'lac'
         }
       } catch (error) {
         console.error('Error processing date:', item.createdAt, error);
@@ -242,11 +254,19 @@ const OtherNewReports = () => {
     return result;
   };
 
-  const currentYear = getCurrentYear();
-  const pastYears = [currentYear - 3, currentYear - 2, currentYear - 1];
+  const calculateTrendLineData = () => {
+    return salesData.map(data => {
+      const total = Object.values(data)
+        .slice(1)
+        .reduce((acc, val) => acc + val, 0);
+      return total / pastYears.length; // Average for the past 3 years
+    });
+  };
+
+  const trendLineData = useMemo(() => calculateTrendLineData(), [salesData]);
 
   const salesChartData = useMemo(() => {
-    const colors = ['#FF6384', '#36A2EB', '#FFCE56'];
+    const colors = ['#FF6384', '#914EFB', '#36A2EB'];
 
     return {
       labels: monthsInShort,
@@ -300,26 +320,39 @@ const OtherNewReports = () => {
     [salesData],
   );
 
-  const percentageContributionChartData = useMemo(() => {
-    const totalPerMonth = salesData.map(monthData => {
-      return pastYears.reduce((sum, year) => sum + monthData[`year${year}`], 0);
-    });
-    const colors = ['#FF6384', '#36A2EB', '#FFCE56'];
+  // Combined bar and line chart data
+  const combinedChartData = useMemo(() => {
+    const colors = ['#FF6384', '#914EFB', '#36A2EB'];
 
     return {
       labels: monthsInShort,
-      datasets: pastYears.map((year, idx) => ({
-        label: year,
-        data: salesData.map((data, i) => (data[`year${year}`] / totalPerMonth[i]) * 100 || 0),
-        backgroundColor: colors[idx % colors.length], // Rotate colors based on the index
-        borderColor: colors[idx % colors.length],
-        borderWidth: 1,
-        stack: 'stack1',
-      })),
+      datasets: [
+        ...pastYears.map((year, idx) => ({
+          label: year,
+          data: salesData.map(data => data[`year${year}`]),
+          backgroundColor: colors[idx % colors.length],
+          borderColor: colors[idx % colors.length],
+          borderWidth: 1,
+          type: 'bar', // Set as bar for sales data
+          yAxisID: 'y',
+          order: 1, // Ensure bars are below the trend line
+        })),
+        {
+          label: 'Trend',
+          data: trendLineData,
+          borderColor: '#EF4444',
+          fill: false,
+          tension: 0.1, // Smoother curve
+          pointBackgroundColor: '#EF4444',
+          type: 'line', // Set as line for trend line
+          yAxisID: 'y1',
+          order: 2, // Ensure trend line is above bars
+        },
+      ],
     };
-  }, [salesData, pastYears]);
+  }, [salesData, trendLineData]);
 
-  const percentageContributionChartOptions = useMemo(
+  const combinedChartOptions = useMemo(
     () => ({
       responsive: true,
       scales: {
@@ -328,39 +361,33 @@ const OtherNewReports = () => {
             display: true,
             text: 'Month',
           },
-          stacked: true,
         },
         y: {
           title: {
             display: true,
-            text: 'Percentage Contribution (%)',
+            text: 'Sales Amount (lac)',
           },
           ticks: {
-            callback: value => `${value}%`,
+            callback: value => `${value} L`,
           },
-          stacked: true,
-          max: 100,
-          min: 0,
+          position: 'left',
         },
-      },
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: context => {
-              let label = context.dataset.label || '';
-              if (label) {
-                label += ': ';
-              }
-              if (context.parsed.y !== null) {
-                label += `${context.parsed.y.toFixed(1)}%`; // Show values in percentage
-              }
-              return label;
-            },
+        y1: {
+          title: {
+            display: true,
+            text: 'Trend Line',
+          },
+          ticks: {
+            callback: value => `${value} L`,
+          },
+          position: 'right',
+          grid: {
+            drawOnChartArea: false, // Only draw grid lines for primary y-axis
           },
         },
       },
     }),
-    [salesData],
+    [],
   );
 
   const parentCompaniesQuery = useInfiniteCompanies({
@@ -911,13 +938,11 @@ const OtherNewReports = () => {
     return getFilteredData1(bookingData, activeView1).sort((a, b) => {
       const [yearA, monthA] = a.monthYearKey.split('-').map(Number);
       const [yearB, monthB] = b.monthYearKey.split('-').map(Number);
-  
+
       // Sorting in descending order
       return yearA !== yearB ? yearB - yearA : monthB - monthA;
     });
   }, [bookingData?.docs, activeView1]);
-  
-  
 
   const column1 = useMemo(
     () => [
@@ -1086,23 +1111,27 @@ const OtherNewReports = () => {
               </div>
             </div>
           </div>
-          <div className="flex p-6 flex-col">
+          <div className="flex p-6 flex-col ">
             <div className="flex justify-between items-center">
               <p className="font-bold">Sales Report</p>
             </div>
             <p className="text-sm text-gray-600 italic pt-3">
-              This chart displays total sales over the past three years.
+              This chart displays total sales over the past three years with a trend line showing
+              the average sales.
             </p>
             {isLoadingBookingData ? (
               <div className="flex justify-center items-center h-64">
                 <Loader />
               </div>
             ) : (
-              <div className=" overflow-hidden">
+              <div className="">
                 {salesData.length > 0 ? (
-                  <div className="flex gap-10 ">
+                  <div className=" gap-10 ">
                     <div className="pt-4 w-[40rem]">
                       <Bar data={salesChartData} options={salesChartOptions} />
+                    </div>
+                    <div className="pt-4 w-[40rem]">
+                      <Bar data={combinedChartData} options={combinedChartOptions} />
                     </div>
                   </div>
                 ) : (
@@ -1119,7 +1148,11 @@ const OtherNewReports = () => {
             This report provide insights into the pricing trends, traded prices, and margins grouped
             by cities.
           </p>
-          <Table data={(processedData || []).slice(0, 10)} COLUMNS={columns3} loading={isLoadingInventoryData} />
+          <Table
+            data={(processedData || []).slice(0, 10)}
+            COLUMNS={columns3}
+            loading={isLoadingInventoryData}
+          />
         </div>
         <div className="col-span-12 md:col-span-12 lg:col-span-10 overflow-y-auto p-5 overflow-hidden">
           <p className="font-bold ">Invoice and amount collected Report</p>
