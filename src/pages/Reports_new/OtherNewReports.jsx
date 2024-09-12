@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useState } from 'react';
 import { Doughnut, Bar, Pie, Line } from 'react-chartjs-2';
 import { useUserSalesByUserId, useBookings } from '../../apis/queries/booking.queries';
-import { financialEndDate, financialStartDate, serialize, monthsInShort } from '../../utils';
+import { financialEndDate, financialStartDate, serialize, monthsInShort, generateSlNo } from '../../utils';
 import { useInfiniteCompanies } from '../../apis/queries/companies.queries';
 import useUserStore from '../../store/user.store';
 import { Loader } from 'react-feather';
@@ -345,7 +345,6 @@ const OtherNewReports = () => {
           tension: 0.1, // Smoother curve
           pointBackgroundColor: '#EF4444',
           type: 'line', // Set as line for trend line
-          yAxisID: 'y1',
           order: 2, // Ensure trend line is above bars
         },
       ],
@@ -371,19 +370,6 @@ const OtherNewReports = () => {
             callback: value => `${value} L`,
           },
           position: 'left',
-        },
-        y1: {
-          title: {
-            display: true,
-            text: 'Trend Line',
-          },
-          ticks: {
-            callback: value => `${value} L`,
-          },
-          position: 'right',
-          grid: {
-            drawOnChartArea: false, // Only draw grid lines for primary y-axis
-          },
         },
       },
     }),
@@ -821,6 +807,12 @@ const OtherNewReports = () => {
   const columns3 = useMemo(
     () => [
       {
+        Header: '#',
+        accessor: 'id',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, 1, 1000)}</p>, []),
+      },
+      {
         Header: 'City',
         accessor: 'city',
         disableSortBy: true,
@@ -946,6 +938,12 @@ const OtherNewReports = () => {
 
   const column1 = useMemo(
     () => [
+      {
+        Header: '#',
+        accessor: 'id',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, 1, 1000)}</p>, []),
+      },
       {
         Header: 'Month',
         accessor: 'month',
@@ -1148,25 +1146,17 @@ const OtherNewReports = () => {
             This report provide insights into the pricing trends, traded prices, and margins grouped
             by cities.
           </p>
-          <Table
-            data={(processedData || []).slice(0, 10)}
-            COLUMNS={columns3}
-            loading={isLoadingInventoryData}
-          />
+          <div className="overflow-y-auto h-[400px]">
+            <Table data={processedData || []} COLUMNS={columns3} loading={isLoadingInventoryData} />
+          </div>
         </div>
-        <div className="col-span-12 md:col-span-12 lg:col-span-10 overflow-y-auto p-5 overflow-hidden">
+        <div className="col-span-12 md:col-span-12 lg:col-span-10 p-5 overflow-hidden">
           <p className="font-bold ">Invoice and amount collected Report</p>
           <p className="text-sm text-gray-600 italic py-4">
             This report provide insights into the invoice raised, amount collected and outstanding
             by table, graph and chart.
           </p>
-          <Table
-            data={(groupedData1 || []).slice(0, 10)}
-            COLUMNS={column1}
-            loading={isLoadingInventoryData}
-          />
-          <p className="py-4 font-bold">Invoice Raised Vs Amount Collected Vs Outstanding</p>
-          <div className="flex">
+          <div className="flex py-4">
             <div style={{ position: 'relative', zIndex: 10 }}>
               <Menu shadow="md" width={200}>
                 <Menu.Target>
@@ -1194,12 +1184,22 @@ const OtherNewReports = () => {
               </Button>
             )}
           </div>
-          <InvoiceReportChart data={activeView1 ? groupedData1 : []} />{' '}
-          <p className="pt-4 font-bold">Invoice Raised Vs Amount Collected</p>
-          <GaugeChart
-            invoiceRaised={isFilterApplied ? invoiceRaised : 0}
-            amountCollected={isFilterApplied ? amountCollected : 0}
-          />
+          <div className="overflow-y-auto h-[400px]">
+            <Table data={groupedData1 || []} COLUMNS={column1} loading={isLoadingInventoryData} />
+          </div>
+          <div className="flex flex-col  lg:flex-row gap-10  overflow-x-auto">
+            <div className='flex flex-col'>
+              <p className="py-6 font-bold">Invoice Raised Vs Amount Collected Vs Outstanding</p>
+              <InvoiceReportChart data={activeView1 ? groupedData1 : []} />{' '}
+            </div>
+            <div className='flex flex-col'>
+              <p className="py-6 font-bold">Invoice Raised Vs Amount Collected</p>
+              <GaugeChart
+                invoiceRaised={isFilterApplied ? invoiceRaised : 0}
+                amountCollected={isFilterApplied ? amountCollected : 0}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

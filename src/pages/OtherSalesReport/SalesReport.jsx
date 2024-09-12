@@ -206,7 +206,6 @@ const SalesReport = () => {
           tension: 0.1, // Smoother curve
           pointBackgroundColor: '#EF4444',
           type: 'line',
-          yAxisID: 'y1',
           borderWidth: 2, // Increase border width for better visibility
           order: 3, // Increase the order to ensure it stays above the bars
         },
@@ -235,19 +234,7 @@ const SalesReport = () => {
           },
           position: 'left',
         },
-        y1: {
-          title: {
-            display: true,
-            text: 'Trend Line',
-          },
-          ticks: {
-            callback: value => `${value} L`,
-          },
-          position: 'right',
-          grid: {
-            drawOnChartArea: false, // Only draw grid lines for primary y-axis
-          },
-        },
+       
       },
     }),
     [],

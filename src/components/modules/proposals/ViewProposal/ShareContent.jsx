@@ -11,7 +11,10 @@ import dayjs from 'dayjs';
 import { FormProvider, useForm } from 'react-hook-form';
 import { IconCopy } from '@tabler/icons';
 import whatsapp from '../../../../assets/whatsapp.svg';
-import { useShareProposal } from '../../../../apis/queries/proposal.queries';
+import {
+  useShareCustomProposal,
+  useShareProposal,
+} from '../../../../apis/queries/proposal.queries';
 import { useShareInventory } from '../../../../apis/queries/inventory.queries';
 import { downloadPdf, serialize } from '../../../../utils';
 import { OBJECT_FIT_LIST_V2, FILE_TYPE_LIST } from '../../../../utils/constants';
@@ -155,6 +158,7 @@ const ShareContent = ({
   });
 
   const shareProposal = useShareProposal();
+  const shareCustomProposal = useShareCustomProposal();
   const shareInventory = useShareInventory();
 
   const handleActiveFileType = value => {
@@ -176,6 +180,7 @@ const ShareContent = ({
   const handleActiveShare = value => setActiveShare(value);
 
   const watchAspectRatio = form.watch('aspectRatio');
+ 
 
   const onSubmit = form.handleSubmit(async formData => {
     const data = { ...formData, clientCompanyName: formData.clientCompany || undefined };
@@ -185,6 +190,8 @@ const ShareContent = ({
       });
       return;
     }
+    const aspectRatio = watchAspectRatio.split(';')[0];
+    const templateType = watchAspectRatio.split(';')[1];
 
     data.format = activeFileType.join(',');
     data.shareVia = activeShare;
@@ -192,10 +199,10 @@ const ShareContent = ({
     data.templateType = 'generic';
 
     if (watchAspectRatio) {
-      const aspectRatio = watchAspectRatio.split(';')[0];
-      const templateType = watchAspectRatio.split(';')[1];
-      data.aspectRatio = aspectRatio;
-      data.templateType = templateType;
+      if (templateType != 'custom') {
+        data.aspectRatio = aspectRatio;
+        data.templateType = templateType;
+      } 
     }
 
     if (activeShare === 'email' && data.to.includes(',')) {
@@ -240,7 +247,9 @@ const ShareContent = ({
       return;
     }
 
+
     if (shareType === 'proposal') {
+      if (templateType != 'custom') {
       const proposalResponse = await shareProposal.mutateAsync(
         { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
         {
@@ -266,6 +275,34 @@ const ShareContent = ({
           color: 'blue',
         });
       }
+    }
+    if (templateType == 'custom') {
+      const proposalResponse1 = await shareCustomProposal.mutateAsync(
+        { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
+        {
+          onSuccess: () => {
+            setActiveFileType([]);
+            if (data.shareVia !== 'copy_link') {
+              showNotification({
+                title: 'Proposal has been shared successfully',
+                color: 'green',
+              });
+            }
+
+            form.reset();
+            setActiveShare('');
+            onClose();
+          },
+        },
+      );
+      if (activeShare === 'copy_link' && proposalResponse1?.link?.messageText) {
+        navigator.clipboard.writeText(proposalResponse1?.link?.messageText);
+        showNotification({
+          title: 'Link Copied',
+          color: 'blue',
+        });
+      }
+    }
     }
 
     if (shareType === 'inventory') {
@@ -310,7 +347,7 @@ const ShareContent = ({
       });
       return;
     }
-
+    
     if (activeFileType.length > 1) {
       showNotification({
         title: 'Please select only one file type to continue',
@@ -318,8 +355,10 @@ const ShareContent = ({
       });
       return;
     }
-
+    
     setLoaderType('download');
+    const aspectRatio = watchAspectRatio.split(';')[0];
+    const templateType = watchAspectRatio.split(';')[1];
 
     const data = {
       name: '',
@@ -333,32 +372,56 @@ const ShareContent = ({
     };
 
     if (watchAspectRatio) {
-      const aspectRatio = watchAspectRatio.split(';')[0];
-      const templateType = watchAspectRatio.split(';')[1];
-      data.aspectRatio = aspectRatio;
-      data.templateType = templateType;
+      if (templateType != 'custom') {
+        data.aspectRatio = aspectRatio;
+        data.templateType = templateType;
+      } 
     }
 
     if (shareType === 'proposal') {
-      const proposalResponse = await shareProposal.mutateAsync(
-        { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
-        {
-          onSuccess: () => {
-            setActiveFileType([]);
-            onClose();
-            setLoaderType(-1);
+      if (templateType != 'custom') {
+        const proposalResponse = await shareProposal.mutateAsync(
+          { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
+          {
+            onSuccess: () => {
+              setActiveFileType([]);
+              onClose();
+              setLoaderType(-1);
+            },
+            onError: () => {
+              setLoaderType(-1);
+            },
           },
-          onError: () => {
-            setLoaderType(-1);
+        );
+        if (proposalResponse?.link?.[data.format]) {
+          downloadPdf(proposalResponse.link[data.format]);
+          showNotification({
+            title: 'Download successful',
+            color: 'green',
+          });
+        }
+      } 
+      if (templateType == 'custom')  {
+        const proposalResponse1 = await shareCustomProposal.mutateAsync(
+          { id, queries: serialize({ utcOffset: dayjs().utcOffset() }), data },
+          {
+            onSuccess: () => {
+              setActiveFileType([]);
+              onClose();
+              setLoaderType(-1);
+            },
+            onError: () => {
+              setLoaderType(-1);
+            },
           },
-        },
-      );
-      if (proposalResponse?.link?.[data.format]) {
-        downloadPdf(proposalResponse.link[data.format]);
-        showNotification({
-          title: 'Download successful',
-          color: 'green',
-        });
+        );
+        if (proposalResponse1?.link?.[data.format]) {
+          downloadPdf(proposalResponse1.link[data.format]);
+          showNotification({
+            title: 'Download successful',
+            color: 'green',
+          });
+        }
       }
     }
 

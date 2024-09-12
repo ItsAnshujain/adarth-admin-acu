@@ -102,13 +102,13 @@ const GaugeChart = ({ invoiceRaised, amountCollected }) => {
   };
 
   return (
-    <div style={{ width: '300px', height: '150px', marginInline:"22rem" , marginTop:"1rem" }}>
+    <div className='w-[300px]'>
       <Doughnut
         data={data}
         options={options}
         plugins={[drawNeedlePlugin]} // Only apply the needle plugin to this chart
       />
-      <div style={{ textAlign: 'center', marginTop: '-30px' }}>
+      <div className='text-center mt-[-10px]'>
         <strong>{collectedPercentage.toFixed(2)}%</strong> Amount Collected
       </div>
     </div>
