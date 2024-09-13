@@ -1208,7 +1208,7 @@ const OtherNewReports = () => {
             <div className="overflow-y-auto w-[600px] h-[400px]">
               <Table data={groupedData1 || []} COLUMNS={column1} loading={isLoadingInventoryData} />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col ">
               <p className="py-6 font-bold">Invoice Raised Vs Amount Collected</p>
               <GaugeChart
                 invoiceRaised={isFilterApplied ? invoiceRaised : 0}
