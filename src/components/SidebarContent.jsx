@@ -137,12 +137,6 @@ const SidebarContent = ({ className }) => {
         icon: ReportIcon,
         acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       },
-      {
-        label: 'Sales_report',
-        path: '/salesReport',
-        icon: ReportIcon,
-        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
-      },
     ],
     [isMasterLoaded],
   );

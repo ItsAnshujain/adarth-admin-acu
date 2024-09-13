@@ -2,22 +2,21 @@ import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-
 const drawNeedlePlugin = {
   id: 'drawNeedle',
   afterDatasetDraw(chart, args, options) {
     const { ctx, data, chartArea: { width, height }, } = chart;
     const dataset = data.datasets[0];
 
-    // Validate needleValue
-    const needleValue = options.needleValue ?? 0; // Default to 0 if not provided
-    const dataTotal = dataset.data.reduce((a, b) => a + b, 0); // Total of the dataset values
-    const angle = (Math.PI + (Math.PI * (needleValue / 100))); // Based on percentage
+    const needleValue = options.needleValue ?? 0; 
+    const invoiceRaised = options.invoiceRaised ?? 0;
+    const dataTotal = dataset.data.reduce((a, b) => a + b, 0);
+    const angle = (Math.PI + (Math.PI * (needleValue / 100))); 
 
     const cx = width / 2;
     const cy = chart._metasets[0].data[0].y;
 
-    // Draw the needle
+
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(angle);
@@ -29,32 +28,51 @@ const drawNeedlePlugin = {
     ctx.fill();
     ctx.restore();
 
-    // Draw the needle center circle
+    
     ctx.beginPath();
     ctx.arc(cx, cy, 5, 0, Math.PI * 2);
     ctx.fillStyle = '#444';
     ctx.fill();
     ctx.restore();
 
-    // Draw a horizontal line from 0 to 100% on the x-axis
+  
     ctx.beginPath();
-    ctx.moveTo(0, cy); // Start from 0 on the x-axis
-    ctx.lineTo(width, cy); // End at the full width of the chart
-    ctx.strokeStyle = '#000'; // Line color
-    ctx.lineWidth = 1; // Line thickness
+    ctx.moveTo(0, cy); 
+    ctx.lineTo(width, cy); 
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 1; 
     ctx.stroke();
 
-    // Draw text on the left side (start), below the x-axis
-    const leftText = '0'; // Left text (start)
-    ctx.font = '16px Arial';
+    
+    const intervals = 5; 
+    const stepAmount = invoiceRaised / intervals; 
+    ctx.font = '12px Arial';
     ctx.fillStyle = '#000';
-    ctx.fillText(leftText, 10, cy + 20); // Position text below the x-axis
+    
+    for (let i = 0; i <= intervals; i++) {
+      const xPos = (i / intervals) * width;
+      const amount = (stepAmount * i).toFixed(2); 
+      
+      
+      ctx.fillText(amount, xPos - ctx.measureText(amount).width / 2, cy + 20); 
+      
+      
+      ctx.beginPath();
+      ctx.moveTo(xPos, cy); 
+      ctx.lineTo(xPos, cy - 10); 
+      ctx.strokeStyle = '#000'; 
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
 
-    // Draw text on the right side (end), below the x-axis
-    const rightText = options.rightText ?? `${dataTotal}`; // Right text (end), default to total amount
-    ctx.fillText(rightText, width - ctx.measureText(rightText).width - 10, cy + 20); // Position text below the x-axis
+  
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#000';
+    const label = '(INR In lac)'; 
+    ctx.fillText(label, (width / 2) - ctx.measureText(label).width / 2, cy + 50); 
   },
 };
+
 
 const GaugeChart = ({ invoiceRaised, amountCollected }) => {
   const collectedPercentage = invoiceRaised > 0 ? (amountCollected / invoiceRaised) * 100 : 0;
@@ -64,26 +82,26 @@ const GaugeChart = ({ invoiceRaised, amountCollected }) => {
     labels: ["Amount collected", "Invoice Raised"],
     datasets: [
       {
-        data: [collectedPercentage, remainingPercentage], // Collected and remaining scale
-        backgroundColor: ['#914EFB', '#E0E0E0'], // Adjust the colors accordingly
+        data: [collectedPercentage, remainingPercentage], 
+        backgroundColor: ['#914EFB', '#E0E0E0'], 
         borderWidth: 0,
-        circumference: 180, // Half-circle
-        rotation: -90, // Start at the top
+        circumference: 180, 
+        rotation: -90,
       },
     ],
   };
 
   const options = {
     responsive: true,
-    cutout: '80%', // Adjust the inner radius
-    circumference: 180, // Half-circle
-    rotation: -90, // Start from the bottom center
+    cutout: '80%', 
+    circumference: 180,
+    rotation: -90, 
     plugins: {
       tooltip: {
-        enabled: true, // Enable tooltips on hover
+        enabled: true, 
         callbacks: {
           label: (tooltipItem) => {
-            // Show actual amount instead of percentage
+            
             const label = tooltipItem.label;
             const value = tooltipItem.raw;
             if (label === "Amount collected") {
@@ -95,24 +113,26 @@ const GaugeChart = ({ invoiceRaised, amountCollected }) => {
         },
       },
       drawNeedle: {
-        needleValue: collectedPercentage, // Needle shows the collected percentage
-        rightText: `${invoiceRaised.toFixed(2)}`, // Right end side shows the total invoice raised amount
+        needleValue: collectedPercentage, 
+        rightText: `${invoiceRaised.toFixed(2)}`, 
+        invoiceRaised, 
       },
     },
   };
 
   return (
-    <div className='w-[300px]'>
+    <div className='w-[300px] overflow-x-auto'>
       <Doughnut
         data={data}
         options={options}
-        plugins={[drawNeedlePlugin]} // Only apply the needle plugin to this chart
+        plugins={[drawNeedlePlugin]}
       />
-      <div className='text-center mt-[-10px]'>
-        <strong>{collectedPercentage.toFixed(2)}%</strong> Amount Collected
+      <div className='text-center mt-[5px]'>
+        <p className='text-xs'>{collectedPercentage.toFixed(2)}% Amount Collected</p>
       </div>
     </div>
   );
 };
 
 export default GaugeChart;
+

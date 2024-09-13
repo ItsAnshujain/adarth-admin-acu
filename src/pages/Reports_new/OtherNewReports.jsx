@@ -1,7 +1,13 @@
 import { useMemo, useEffect, useState } from 'react';
 import { Doughnut, Bar, Pie, Line } from 'react-chartjs-2';
 import { useUserSalesByUserId, useBookings } from '../../apis/queries/booking.queries';
-import { financialEndDate, financialStartDate, serialize, monthsInShort, generateSlNo } from '../../utils';
+import {
+  financialEndDate,
+  financialStartDate,
+  serialize,
+  monthsInShort,
+  generateSlNo,
+} from '../../utils';
 import { useInfiniteCompanies } from '../../apis/queries/companies.queries';
 import useUserStore from '../../store/user.store';
 import { Loader } from 'react-feather';
@@ -127,7 +133,7 @@ const OtherNewReports = () => {
     page: 1,
     limit: 500,
     sortBy: 'basicInformation.spaceName',
-    sortOrder: 'asc',
+    sortOrder: 'desc',
     isActive: true,
   });
 
@@ -760,28 +766,28 @@ const OtherNewReports = () => {
   // Process the inventory data to group by city and calculate metrics
   const processedData = useMemo(() => {
     if (!inventoryData?.docs?.length) return [];
-
+  
     const cityData = {};
-
+  
     inventoryData.docs.forEach(inventory => {
       const city = inventory.location?.city;
       if (!city) return;
-
+  
       let totalCityPrice = 0;
       let totalCityTradedAmount = 0;
-
+  
       inventory.campaigns?.forEach(campaign => {
         campaign.place?.forEach(place => {
           totalCityPrice += place.price || 0;
           totalCityTradedAmount += place.tradedAmount || 0;
         });
       });
-
+  
       const tradedMargin = totalCityPrice - totalCityTradedAmount;
       const percentageMargin = totalCityPrice
         ? ((tradedMargin / totalCityPrice) * 100).toFixed(2)
         : 0;
-
+  
       if (!cityData[city]) {
         cityData[city] = {
           city,
@@ -800,9 +806,15 @@ const OtherNewReports = () => {
         ).toFixed(2);
       }
     });
-
-    return Object.values(cityData);
+  
+    // Sort by tradedMargin in descending order
+    const sortedData = Object.values(cityData).sort(
+      (a, b) => b.tradedMargin - a.tradedMargin
+    );
+  
+    return sortedData;
   }, [inventoryData]);
+  
 
   const columns3 = useMemo(
     () => [
@@ -840,8 +852,12 @@ const OtherNewReports = () => {
         Header: 'Percentage Margin (%)',
         accessor: 'percentageMargin',
         disableSortBy: true,
-        Cell: info => <p>{info.value}%</p>,
+        Cell: info => {
+          const percentageMargin = isNaN(info.value) || info.value === null ? '-' : `${info.value}%`;
+          return <p>{percentageMargin}</p>;
+        },
       },
+      
     ],
     [],
   );
@@ -1125,9 +1141,9 @@ const OtherNewReports = () => {
               <div className="">
                 {salesData.length > 0 ? (
                   <div className=" gap-10 ">
-                    <div className="pt-4 w-[40rem]">
+                    {/* <div className="pt-4 w-[40rem]">
                       <Bar data={salesChartData} options={salesChartOptions} />
-                    </div>
+                    </div> */}
                     <div className="pt-4 w-[40rem]">
                       <Bar data={combinedChartData} options={combinedChartOptions} />
                     </div>
@@ -1147,7 +1163,11 @@ const OtherNewReports = () => {
             by cities.
           </p>
           <div className="overflow-y-auto h-[400px]">
-            <Table data={processedData || []} COLUMNS={columns3} loading={isLoadingInventoryData} />
+            <Table
+              data={processedData || []}
+              COLUMNS={columns3}
+              loading={isLoadingInventoryData}
+            />
           </div>
         </div>
         <div className="col-span-12 md:col-span-12 lg:col-span-10 p-5 overflow-hidden">
@@ -1184,21 +1204,21 @@ const OtherNewReports = () => {
               </Button>
             )}
           </div>
-          <div className="overflow-y-auto h-[400px]">
-            <Table data={groupedData1 || []} COLUMNS={column1} loading={isLoadingInventoryData} />
-          </div>
-          <div className="flex flex-col  lg:flex-row gap-10  overflow-x-auto">
-            <div className='flex flex-col'>
-              <p className="py-6 font-bold">Invoice Raised Vs Amount Collected Vs Outstanding</p>
-              <InvoiceReportChart data={activeView1 ? groupedData1 : []} />{' '}
+          <div className="flex flex-col lg:flex-row gap-10  overflow-x-auto">
+            <div className="overflow-y-auto w-[600px] h-[400px]">
+              <Table data={groupedData1 || []} COLUMNS={column1} loading={isLoadingInventoryData} />
             </div>
-            <div className='flex flex-col'>
+            <div className="flex flex-col">
               <p className="py-6 font-bold">Invoice Raised Vs Amount Collected</p>
               <GaugeChart
                 invoiceRaised={isFilterApplied ? invoiceRaised : 0}
                 amountCollected={isFilterApplied ? amountCollected : 0}
               />
             </div>
+          </div>
+          <div className="flex flex-col items-center">
+            <p className="py-10 font-bold">Invoice Raised Vs Amount Collected Vs Outstanding</p>
+            <InvoiceReportChart data={activeView1 ? groupedData1 : []} />{' '}
           </div>
         </div>
       </div>

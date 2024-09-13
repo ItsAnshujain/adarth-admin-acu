@@ -22,47 +22,46 @@ ChartJS.register(
   Tooltip,
   Legend,
 );
-
 const InvoiceReportChart = ({ data }) => {
   const chartData = {
-    labels: data.length > 0 ? data.map(item => item.month) : ['No Data'], // X-axis labels (Months)
-    datasets:
-      data.length > 0
-        ? [
-            {
-              type: 'line',
-              label: 'Invoice Raised',
-              data: data.map(item => item.outStandingInvoice), // Convert to lac
-              borderColor: '#FF900E',
-              backgroundColor: '#FF900E',
-              yAxisID: 'y1',
-              tension: 0.3,
-              fill: false,
-            },
-            {
-              type: 'line',
-              label: 'Amount Collected',
-              data: data.map(item => item.totalPayment), // Convert to lac
-              borderColor: '#2938F7',
-              backgroundColor: '#2938F7',
-              yAxisID: 'y1',
-              tension: 0.3,
-              fill: false,
-            },
-            {
-              type: 'bar',
-              label: 'Outstanding',
-              data: data.map(item => item.outstandingAmount), // Convert to lac
-              backgroundColor: 'rgba(255, 99, 132, 0.5)',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              yAxisID: 'y2',
-            },
-          ]
-        : [], // Empty datasets when no data
+    labels: data.length > 0 ? data.map(item => item.month) : ['No Data'],
+    datasets: data.length > 0
+      ? [
+          {
+            type: 'line',
+            label: 'Invoice Raised',
+            data: data.map(item => item.outStandingInvoice),
+            borderColor: '#FF900E',
+            backgroundColor: '#FF900E',
+            yAxisID: 'y1',
+            tension: 0.3,
+            fill: false,
+          },
+          {
+            type: 'line',
+            label: 'Amount Collected',
+            data: data.map(item => item.totalPayment),
+            borderColor: '#2938F7',
+            backgroundColor: '#2938F7',
+            yAxisID: 'y1',
+            tension: 0.3,
+            fill: false,
+          },
+          {
+            type: 'bar',
+            label: 'Outstanding',
+            data: data.map(item => item.outstandingAmount),
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            yAxisID: 'y2',
+          },
+        ]
+      : [],
   };
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     interaction: {
       mode: 'index',
       intersect: false,
@@ -83,7 +82,7 @@ const InvoiceReportChart = ({ data }) => {
         },
         ticks: {
           callback: value => `${value} L`,
-          beginAtZero: true, // y-axis starts from 0
+          beginAtZero: true,
         },
       },
       y2: {
@@ -95,7 +94,7 @@ const InvoiceReportChart = ({ data }) => {
         },
         ticks: {
           callback: value => `${value} L`,
-          beginAtZero: true, // y-axis starts from 0
+          beginAtZero: true,
         },
         grid: {
           drawOnChartArea: false,
@@ -109,12 +108,15 @@ const InvoiceReportChart = ({ data }) => {
     },
   };
 
+
   return (
-    <div className="w-[1000px] overflow-x-auto">
-      {' '}
-      <Chart type="bar" data={chartData} options={chartOptions} />
+    <div className="w-[70%] overflow-x-auto"> {/* Use flex-grow to fill available space */}
+      <div className="w-[1200px] h-[400px]">
+        <Chart type="bar" data={chartData} options={chartOptions} />
+      </div>
     </div>
   );
 };
 
 export default InvoiceReportChart;
+
