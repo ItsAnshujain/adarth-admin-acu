@@ -39,6 +39,7 @@ import {
 import GaugeChart from '../../components/modules/newReports/GaugeChart';
 import InvoiceReportChart from '../../components/modules/newReports/InvoiceReportChart';
 import { groupBy } from 'lodash';
+import PerformanceCard from '../../components/modules/newReports/performanceCard';
 ChartJS.register(
   ArcElement,
   Tooltip,
@@ -1208,8 +1209,8 @@ const OtherNewReports = () => {
             <div className="overflow-y-auto w-[600px] h-[400px]">
               <Table data={groupedData1 || []} COLUMNS={column1} loading={isLoadingInventoryData} />
             </div>
-            <div className="flex flex-col ">
-              <p className="py-6 font-bold">Invoice Raised Vs Amount Collected</p>
+            <div className="flex flex-col">
+              <p className="pb-6 font-bold text-center">Invoice Raised Vs Amount Collected</p>
               <GaugeChart
                 invoiceRaised={isFilterApplied ? invoiceRaised : 0}
                 amountCollected={isFilterApplied ? amountCollected : 0}
@@ -1222,6 +1223,14 @@ const OtherNewReports = () => {
           </div>
         </div>
       </div>
+      <div className="overflow-y-auto px-5 col-span-10 w-[65rem]">
+      <p className="font-bold pt-10">Performance Ranking Report</p>
+      <p className="text-sm text-gray-600 italic py-4">
+        This report shows Performance Cards with pagination controls and a sortable, paginated
+        table.
+      </p>
+      <PerformanceCard />
+    </div>
     </div>
   );
 };

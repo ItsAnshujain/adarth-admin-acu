@@ -2,13 +2,11 @@ import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
+
 const drawNeedlePlugin = {
   id: 'drawNeedle',
   afterDatasetDraw(chart, args, options) {
-    const {
-      ctx,
-      chartArea: { width, height },
-    } = chart;
+    const { ctx, chartArea: { width, height } } = chart;
 
     const needleValue = options.needleValue ?? 0;
     const invoiceRaised = options.invoiceRaised ?? 0;
@@ -16,24 +14,23 @@ const drawNeedlePlugin = {
     const stepAngle = Math.PI / intervals; // Step angle for each interval
     const stepAmount = invoiceRaised / intervals; // Amount for each step (based on total invoiceRaised)
 
-    const cx = width / 2; // Center x
-    const cy = chart._metasets[0].data[0].y; // Center y
+    const cx = width / 1.7; // Center x
+    const cy = height * 0.82; // Adjust center y to be closer to the bottom of the chart
     const radius = height / 2.5; // Radius for the tick marks
 
-    // Draw tick marks along the circular portion (ring)
-    // Adjust the radius for the tick marks and labels to be outside the chart
-    const outerTickRadius = radius + 50; // Move tick marks outside
-    const innerTickRadius = radius + 40; // Slightly shorter tick marks
-    const labelRadius = radius + 50; // Move labels further outside
+    // Adjust the radius for tick marks and labels to be spaced properly
+    const outerTickRadius = radius + 35; // Slightly reduce the outer radius to avoid overlapping
+    const innerTickRadius = radius + 20; // Adjust inner radius accordingly
+    const labelRadius = radius + 50; // Keep labels further from the chart
 
     ctx.save();
     for (let i = 0; i <= intervals; i++) {
       const angle = Math.PI + stepAngle * i; // Calculate the angle for each tick mark
 
       // Tick mark start and end coordinates
-      const xStart = cx + outerTickRadius * Math.cos(angle); // Outer radius for tick marks
+      const xStart = cx + outerTickRadius * Math.cos(angle);
       const yStart = cy + outerTickRadius * Math.sin(angle);
-      const xEnd = cx + innerTickRadius * Math.cos(angle); // Inner radius for tick marks
+      const xEnd = cx + innerTickRadius * Math.cos(angle);
       const yEnd = cy + innerTickRadius * Math.sin(angle);
 
       // Draw the tick mark
@@ -49,9 +46,9 @@ const drawNeedlePlugin = {
       const xText = cx + labelRadius * Math.cos(angle); // Move the text further outside the ring
       const yText = cy + labelRadius * Math.sin(angle);
 
-      ctx.font = '12px Arial';
+      ctx.font = '10px Arial'; // Adjust font size for readability
       ctx.fillStyle = '#000';
-      ctx.fillText(`${invoiceAmount}`, xText - 10, yText - 10); // Position the amount above the tick
+      ctx.fillText(`${invoiceAmount}`, xText - 10, yText + 5); // Position the amount below the tick
     }
     ctx.restore();
 
@@ -78,7 +75,7 @@ const drawNeedlePlugin = {
     ctx.font = '12px Arial';
     ctx.fillStyle = '#000';
     const label = '(Amount In lac)';
-    ctx.fillText(label, width / 2 - ctx.measureText(label).width / 2, cy - radius - 80);
+    ctx.fillText(label, width / 1.7 - ctx.measureText(label).width / 2, cy - radius - 80);
   },
 };
 
@@ -103,7 +100,13 @@ const GaugeChart = ({ invoiceRaised, amountCollected }) => {
     responsive: true,
     cutout: '80%',
     circumference: 180,
-    rotation: -85,
+    rotation: -90,
+    layout: {
+      padding: {
+        left: 30,   // Increase padding to space out content
+        right: 30,  
+      },
+    },
     plugins: {
       tooltip: {
         enabled: true,
@@ -128,10 +131,10 @@ const GaugeChart = ({ invoiceRaised, amountCollected }) => {
   };
 
   return (
-    <div className="w-[300px] overflow-x-auto">
+    <div className="w-[400px] overflow-x-auto overflow-y-hidden">
       <Doughnut data={data} options={options} plugins={[drawNeedlePlugin]} />
-      <div className="text-center mt-[-15px]">
-        <p className="text-xs">{collectedPercentage.toFixed(2)}% Amount Collected</p>
+      <div className="text-center">
+        <p className="text-xs mt-[-70px]">{collectedPercentage.toFixed(2)}% Amount Collected</p>
       </div>
     </div>
   );
