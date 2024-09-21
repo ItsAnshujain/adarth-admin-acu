@@ -1,32 +1,30 @@
 import { useMemo, useState } from 'react';
-import { Line } from 'react-chartjs-2';
-import { useBookings, useBookingsNew } from '../../apis/queries/booking.queries';
+import { useBookingsNew } from '../../apis/queries/booking.queries';
 import { useSearchParams } from 'react-router-dom';
-import 'react-datepicker/dist/react-datepicker.css';
-import { Menu, Button } from '@mantine/core';
+import { Menu, Button, Checkbox, Group, Paper, Select, MultiSelect } from '@mantine/core';
 import classNames from 'classnames';
 import DateRangeSelector from '../../components/DateRangeSelector';
-import Table from '../../components/Table/Table';
-
+import { useDistinctAdditionalTags } from '../../apis/queries/inventory.queries';
 import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
   Legend,
   LineElement,
-  BarElement,
   PointElement,
   LinearScale,
   CategoryScale,
   Title,
   LogarithmicScale,
 } from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import Table from '../../components/Table/Table';
+
 ChartJS.register(
   ArcElement,
   Tooltip,
   Legend,
   LineElement,
-  BarElement,
   PointElement,
   LinearScale,
   CategoryScale,
@@ -56,6 +54,7 @@ const list = [
   { label: 'Past 7 Days', value: 'past7' },
   { label: 'Custom Date Range', value: 'customDate' },
 ];
+
 const TagsWiseReport = () => {
   const [searchParams] = useSearchParams({
     page: 1,
@@ -68,27 +67,17 @@ const TagsWiseReport = () => {
     data: bookingData,
     isLoading: isLoadingBookingData,
     error,
-  } = useBookings(searchParams.toString());
-  
-  const [searchParams1] = useSearchParams({
-    page: 1,
-    limit: 1000,
-    sortBy: 'createdAt',
-    sortOrder: 'asc',
-  });
+  } = useBookingsNew(searchParams.toString());
 
-  const {
-    data: bookingDataNew,
-    isLoading: isLoadingBookingDataNew,
-  } = useBookingsNew(searchParams1.toString());
-
-  console.log("new booking data", bookingDataNew);
-  
-
+  const additionalTagsQuery = useDistinctAdditionalTags();
+  const [selectedTags, setSelectedTags] = useState([]);
   const [filter, setFilter] = useState('');
   const [activeView, setActiveView] = useState('');
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate1, setStartDate1] = useState(null);
+  const [endDate1, setEndDate1] = useState(null);
+  const today = new Date();
+  const threeMonthsAgo = new Date();
+  threeMonthsAgo.setMonth(today.getMonth() - 3);
 
   const generateYearRange = (startYear, endYear) => {
     const years = [];
@@ -98,180 +87,151 @@ const TagsWiseReport = () => {
     return years;
   };
 
-  const sortMonths = (a, b) => {
-    const monthOrder = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return monthOrder.indexOf(a) - monthOrder.indexOf(b);
+  const currentYear = new Date().getFullYear(); // Define currentYear at the start
+  const generatePast7Days = () => {
+    const past7Days = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      past7Days.push(`${date.toLocaleString('default', { month: 'short' })} ${date.getDate()}`);
+    }
+    return past7Days;
   };
-
   const transformedData = useMemo(() => {
-    if (!bookingData || !bookingData.docs) return {};
-
+    if (!bookingData || !selectedTags.length) return {};
+  
     const currentYear = new Date().getFullYear();
-    const past10YearsRange = generateYearRange(currentYear - 10, currentYear - 1);
-    const past5YearsRange = generateYearRange(currentYear - 5, currentYear - 1);
-
-    const groupedData = bookingData.docs.reduce((acc, booking) => {
-      const date = new Date(booking.createdAt);
-      const year = date.getFullYear();
-      const month = date.toLocaleString('default', { month: 'short' });
-      const day = date.getDate();
-      const revenue = booking.totalAmount;
-
-      if (!acc.past10Years) acc.past10Years = {};
-      if (!acc.past5Years) acc.past5Years = {};
-      if (!acc.previousYear) acc.previousYear = {};
-      if (!acc.currentYear) acc.currentYear = {};
-      if (!acc.quarter) acc.quarter = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
-      if (!acc.currentMonth) acc.currentMonth = {};
-      if (!acc.past7) acc.past7 = {};
-      if (!acc.customDate) acc.customDate = {};
-
-      if (year >= currentYear - 10 && year < currentYear) {
-        if (!acc.past10Years[year]) acc.past10Years[year] = 0;
-        acc.past10Years[year] += revenue;
-      }
-
-      if (year >= currentYear - 5 && year < currentYear) {
-        if (!acc.past5Years[year]) acc.past5Years[year] = 0;
-        acc.past5Years[year] += revenue;
-      }
-
-      if (year === currentYear - 1) {
-        if (!acc.previousYear[month]) acc.previousYear[month] = 0;
-        acc.previousYear[month] += revenue;
-      }
-
-      if (year === currentYear) {
-        if (!acc.currentYear[month]) acc.currentYear[month] = 0;
-        acc.currentYear[month] += revenue;
-      }
-
-      if (year === currentYear && date.getMonth() === new Date().getMonth()) {
-        if (!acc.currentMonth[day]) acc.currentMonth[day] = 0;
-        acc.currentMonth[day] += revenue;
-      }
-
-      const last7DaysDate = new Date();
-      last7DaysDate.setDate(last7DaysDate.getDate() - 7);
-      if (date >= last7DaysDate) {
-        if (!acc.past7[day]) acc.past7[day] = 0;
-        acc.past7[day] += revenue;
-      }
-
-      if (['Jan', 'Feb', 'Mar'].includes(month)) acc.quarter.Q1 += revenue;
-      if (['Apr', 'May', 'Jun'].includes(month)) acc.quarter.Q2 += revenue;
-      if (['Jul', 'Aug', 'Sep'].includes(month)) acc.quarter.Q3 += revenue;
-      if (['Oct', 'Nov', 'Dec'].includes(month)) acc.quarter.Q4 += revenue;
-
-      if (startDate && endDate && date >= startDate && date <= endDate) {
-        const key = `${month} ${day}`;
-        if (!acc.customDate[key]) acc.customDate[key] = 0;
-        acc.customDate[key] += revenue;
-      }
-
+    const past7DaysRange = generatePast7Days(); // Assumes this generates an array of 'MMM DD' format
+  
+    const groupedData = bookingData.reduce((acc, booking) => {
+      const detailsWithTags = booking.details.filter(detail => {
+        const campaign = detail.campaign;
+        if (!campaign || !campaign.spaces || !Array.isArray(campaign.spaces)) return false;
+  
+        return campaign.spaces.some(space => {
+          const spaceTags = space.specifications?.additionalTags || [];
+          return Array.isArray(spaceTags) && selectedTags.some(tag => spaceTags.includes(tag));
+        });
+      });
+  
+      if (detailsWithTags.length === 0) return acc;
+  
+      detailsWithTags.forEach(detail => {
+        const date = new Date(detail.createdAt);
+        const year = date.getFullYear();
+        const month = date.toLocaleString('default', { month: 'short' });
+        const day = date.getDate();
+        const formattedDay = `${month} ${day}`;
+        const revenue = booking.totalAmount;
+  
+        selectedTags.forEach(tag => {
+          const tagMatches = detail.campaign.spaces.some(space =>
+            space.specifications?.additionalTags?.includes(tag)
+          );
+          if (!tagMatches) return;
+  
+          let timeUnit;
+          // Filter-based time unit logic
+          if (filter === 'past10Years' && year >= currentYear - 10) {
+            timeUnit = year;
+          } else if (filter === 'past5Years' && year >= currentYear - 5) {
+            timeUnit = year;
+          } else if (filter === 'previousYear' && year === currentYear - 1) {
+            timeUnit = month;
+          } else if (filter === 'currentYear' && year === currentYear) {
+            timeUnit = month;
+          } else if (filter === 'currentMonth' && date.getMonth() === new Date().getMonth() && year === currentYear) {
+            timeUnit = day;
+          } else if (filter === 'past7' && past7DaysRange.includes(formattedDay)) {
+            timeUnit = formattedDay;
+          } else if (filter === 'customDate' && date.getTime() >= new Date(startDate1).getTime() && date.getTime() <= new Date(endDate1).getTime()) {
+            timeUnit = formattedDay;
+          } else if (filter === 'quarter') {
+            const quarterly = Math.ceil((date.getMonth() + 1) / 3);
+            const quarterNames = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
+            timeUnit = quarterNames[quarterly - 1];
+          }
+  
+          if (!timeUnit) return;
+  
+          // Initialize objects if necessary
+          if (!acc[timeUnit]) acc[timeUnit] = {};
+          if (!acc[timeUnit][tag]) acc[timeUnit][tag] = 0;
+  
+          // Accumulate revenue
+          acc[timeUnit][tag] += revenue;
+        });
+      });
+  
       return acc;
     }, {});
-
-    groupedData.past10Years = past10YearsRange.map(year => ({
-      year,
-      revenue: groupedData.past10Years[year] || 0,
-    }));
-
-    groupedData.past5Years = past5YearsRange.map(year => ({
-      year,
-      revenue: groupedData.past5Years[year] || 0,
-    }));
-
-    groupedData.previousYear = Object.keys(groupedData.previousYear)
-      .sort(sortMonths)
-      .map(month => ({
-        month,
-        revenue: groupedData.previousYear[month],
-      }));
-
-    groupedData.currentYear = Object.keys(groupedData.currentYear)
-      .sort(sortMonths)
-      .map(month => ({
-        month,
-        revenue: groupedData.currentYear[month],
-      }));
-
-    groupedData.currentMonth = Object.keys(groupedData.currentMonth).map(day => ({
-      day,
-      revenue: groupedData.currentMonth[day],
-    }));
-
-    groupedData.past7 = Object.keys(groupedData.past7)
-      .sort((a, b) => new Date(a) - new Date(b))
-      .map(day => ({
-        day,
-        revenue: groupedData.past7[day],
-      }));
-
-    groupedData.customDate = Object.keys(groupedData.customDate).map(key => ({
-      day: key,
-      revenue: groupedData.customDate[key],
-    }));
-
-    groupedData.quarter = Object.keys(groupedData.quarter).map(quarter => ({
-      quarter,
-      revenue: groupedData.quarter[quarter],
-    }));
-
+  
     return groupedData;
-  }, [bookingData, startDate, endDate]);
-
-  const chartData1 = useMemo(() => {
-    let selectedData = transformedData[filter] || [];
-    const filteredData = selectedData.map(d => ({
-      ...d,
-      revenue: d.revenue > 0 ? d.revenue / 100000 : 0, // Convert to lacs
-    }));
-
-    if (filter === 'customDate') {
-      filteredData.sort((a, b) => new Date(a.day) - new Date(b.day));
+  }, [bookingData, selectedTags, filter, startDate1, endDate1]);
+  
+  const chartData3 = useMemo(() => {
+    const selectedData = transformedData || {};
+  
+    if (!selectedData || Object.keys(selectedData).length === 0) {
+      return {
+        labels: [],
+        datasets: [],
+      };
     }
-
+  
+    let labels = Object.keys(selectedData);
+  
+    // Ensure the quarters are sorted correctly if the 'quarter' filter is active
+    if (filter === 'quarter') {
+      labels = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
+    }
+  
+    // For each selected tag, create a dataset
+    const datasets = selectedTags.map((tag, index) => {
+      const data = labels.map(label => {
+        const tagRevenue = selectedData[label]?.[tag] || 0;
+        return tagRevenue > 0 ? tagRevenue / 100000 : 0; // Convert to lacs
+      });
+  
+      const hue = ((index * 360) / selectedTags.length) % 360; // Ensure hue is within 0-360 range
+      const color = `hsl(${hue}, 70%, 50%)`; // Border color
+      const colorRGBA = `hsla(${hue}, 70%, 50%, 0.2)`; // Background color with transparency
+  
+      return {
+        label: ` ${tag} `,
+        data,
+        borderColor: color,
+        backgroundColor: colorRGBA,
+        tension: 0.1,
+      };
+    });
+  
     return {
-      labels: filteredData.map(d => d.year || d.month || d.quarter || d.day),
-      datasets: [
-        {
-          label: 'Revenue (in Lacs)',
-          data: filteredData.map(d => d.revenue),
-          borderColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          tension: 0.1,
-        },
-      ],
+      labels,
+      datasets,
     };
-  }, [transformedData, filter]);
+  }, [transformedData, selectedTags, filter]);
+  
 
-  const chartOptions1 = useMemo(
+  const chartOptions3 = useMemo(
     () => ({
       responsive: true,
       scales: {
         x: {
           title: {
             display: true,
-            text: filter.includes('Year')
-              ? 'Year'
-              : filter === 'past7' || filter === 'customDate'
-              ? 'Date'
-              : 'Month',
+            text: filter === 'year' // Check specifically for 'year'
+              ? 'Years'
+              : filter === 'quarter'
+              ? 'Quarters'
+              : filter === 'currentYear' || filter === 'previousYear'
+              ? 'Months'
+              : ['past7', 'customDate', 'currentMonth'].includes(filter)
+              ? 'Days'
+              : '',
           },
+          
+          
         },
         y: {
           title: {
@@ -303,97 +263,288 @@ const TagsWiseReport = () => {
     [filter, transformedData],
   );
 
-  const onDateChange = val => {
-    setStartDate(val[0]);
-    setEndDate(val[1]);
+  const onDateChange3 = val => {
+    setStartDate1(val[0]);
+    setEndDate1(val[1]);
   };
 
-  const handleMenuItemClick = value => {
+  const handleReset3 = () => {
+    setFilter('');
+    setActiveView('');
+    setStartDate1(null);
+    setEndDate1(null);
+    setSelectedTags([]);
+  };
+
+  const handleMenuItemClick3 = value => {
     setFilter(value);
     setActiveView(value);
   };
+  const tags = additionalTagsQuery.data || [];
+  const options = tags.map(tag => ({ value: tag, label: tag }));
 
-  const handleReset = () => {
-    setFilter('');
-    setActiveView('');
-    setStartDate(null);
-    setEndDate(null);
-  };
+  const tableData3 = useMemo(() => {
+    if (!transformedData || Object.keys(transformedData).length === 0) {
+      return [];
+    }
 
-  // Table Columns
-  // const columns4 = useMemo(
-  //   () => [
-  //     {
-  //       Header: '#',
-  //       accessor: 'id',
-  //       disableSortBy: true,
-  //       Cell: info => <p>{info.row.index + 1}</p>,
-  //     },
-  //     { Header: 'Tags', accessor: 'tag', disableSortBy: true, Cell: info => <p>{}</p> },
-  //     { Header: 'January', accessor: 'January', disableSortBy: true, Cell: info => <p>{}</p> },
-  //     { Header: 'February', accessor: 'February', disableSortBy: true, Cell: info => <p>{}</p>  },
-  //     { Header: 'March', accessor: 'March', disableSortBy: true, Cell: info => <p>{}</p>  },
-  //     { Header: 'April', accessor: 'April', disableSortBy: true, Cell: info => <p>{}</p>  },
-  //     { Header: 'May', accessor: 'May', disableSortBy: true, Cell: info => <p>{}</p>  },
-  //     { Header: 'June', accessor: 'June', disableSortBy: true, Cell: info => <p>{}</p>  },
-  //     { Header: 'July', accessor: 'July', disableSortBy: true, Cell: info => <p>{}</p>  },
-  //     { Header: 'August', accessor: 'August', disableSortBy: true, Cell: info => <p>{}</p>  },
-  //     { Header: 'September', accessor: 'September', disableSortBy: true, Cell: info => <p>{}</p>  },
-  //     { Header: 'October', accessor: 'October', disableSortBy: true, Cell: info => <p>{}</p>  },
-  //     { Header: 'November', accessor: 'November', disableSortBy: true, Cell: info => <p>{}</p>  },
-  //     { Header: 'December', accessor: 'December', disableSortBy: true, Cell: info => <p>{}</p>  },
-  //     { Header: 'Grand Total', accessor: 'grandTotal', disableSortBy: true, Cell: info => <p>{}</p>  },
-  //   ],
-  //   [],
-  // );
+    let timeUnits = [];
+
+    if (filter === 'past10Years' || filter === 'past5Years') {
+      timeUnits =
+        filter === 'past10Years'
+          ? generateYearRange(currentYear - 10, currentYear - 1)
+          : generateYearRange(currentYear - 5, currentYear - 1);
+    } else if (filter === 'previousYear' || filter === 'currentYear') {
+      timeUnits = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+    } else if (filter === 'currentMonth') {
+      const daysInMonth = new Date(currentYear, new Date().getMonth() + 1, 0).getDate();
+      timeUnits = Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString());
+    } else if (filter === 'past7') {
+      const past7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        return date.toLocaleString('default', { month: 'short', day: 'numeric' });
+      }).reverse();
+      timeUnits = past7Days;
+    } else if (filter === 'customDate' && startDate1 && endDate1) {
+      const customRangeDates = [];
+      let currentDate = new Date(startDate1);
+      while (currentDate <= new Date(endDate1)) {
+        customRangeDates.push(
+          currentDate.toLocaleString('default', { month: 'short', day: 'numeric' }),
+        );
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      timeUnits = customRangeDates;
+    } else if (filter === 'quarter') {
+      // Define quarterly time units
+      
+      timeUnits = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
+    }
+
+    const tableRows3 = selectedTags.map(tag => {
+      const row = { tag };
+      let totalForTag = 0;
+
+      // Populate data for each time unit
+      timeUnits.forEach(timeUnit => {
+        const revenue = transformedData[timeUnit]?.[tag] || 0;
+        row[timeUnit] = revenue > 0 ? (revenue / 100000).toFixed(2) : '-';
+        totalForTag += revenue;
+      });
+
+      // Add grand total for the tag
+      row['Grand Total'] = totalForTag > 0 ? (totalForTag / 100000).toFixed(2) : '-';
+      return row;
+    });
+
+    // Create grand total row for all tags across all time units
+    const grandTotalRow = { tag: 'Grand Total' };
+    let overallTotal = 0;
+
+    timeUnits.forEach(timeUnit => {
+      const total = selectedTags.reduce((sum, tag) => {
+        return sum + (transformedData[timeUnit]?.[tag] || 0);
+      }, 0);
+      grandTotalRow[timeUnit] = total > 0 ? (total / 100000).toFixed(2) : '-';
+      overallTotal += total;
+    });
+
+    grandTotalRow['Grand Total'] = overallTotal > 0 ? (overallTotal / 100000).toFixed(2) : 0;
+
+    return [...tableRows3, grandTotalRow];
+  }, [transformedData, selectedTags, filter, startDate1, endDate1]);
+
+  const tableColumns3 = useMemo(() => {
+    // Dynamic columns based on the current filter
+    const dynamicColumns = [];
+
+    if (filter === 'past10Years' || filter === 'past5Years') {
+      const yearRange =
+        filter === 'past10Years'
+          ? generateYearRange(currentYear - 10, currentYear - 1)
+          : generateYearRange(currentYear - 5, currentYear - 1);
+      yearRange.forEach(year => {
+        dynamicColumns.push({
+          Header: year.toString(),
+          accessor: year.toString(),
+          disableSortBy: true,
+        });
+      });
+    } else if (filter === 'previousYear' || filter === 'currentYear') {
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+      months.forEach(month => {
+        dynamicColumns.push({
+          Header: month,
+          accessor: month,
+          disableSortBy: true,
+        });
+      });
+    } else if (filter === 'currentMonth') {
+      // Show days for the current month
+      const daysInMonth = new Date(currentYear, new Date().getMonth() + 1, 0).getDate();
+      for (let i = 1; i <= daysInMonth; i++) {
+        dynamicColumns.push({
+          Header: i.toString(),
+          accessor: i.toString(),
+          disableSortBy: true,
+        });
+      }
+    } else if (filter === 'past7') {
+      // Show only the last 7 days
+      const past7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        return date.toLocaleString('default', { month: 'short', day: 'numeric' });
+      }).reverse();
+
+      past7Days.forEach(day => {
+        dynamicColumns.push({
+          Header: day,
+          accessor: day,
+          disableSortBy: true,
+        });
+      });
+    } else if (filter === 'customDate') {
+      // Show days for custom date range
+      const customRangeDates = [];
+      let currentDate = new Date(startDate1);
+      while (currentDate <= new Date(endDate1)) {
+        customRangeDates.push(
+          currentDate.toLocaleString('default', { month: 'short', day: 'numeric' }),
+        );
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      customRangeDates.forEach(date => {
+        dynamicColumns.push({
+          Header: date,
+          accessor: date,
+          disableSortBy: true,
+        });
+      });
+    } else if (filter === 'quarter') {
+      // Add full quarter names as columns
+      const quarters = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
+      quarters.forEach(quarter => {
+        dynamicColumns.push({
+          Header: quarter,
+          accessor: quarter,
+          disableSortBy: true,
+        });
+      });
+    }
+    
+
+    return [
+      {
+        Header: 'Tag',
+        accessor: 'tag',
+        disableSortBy: true,
+      },
+      ...dynamicColumns,
+      {
+        Header: 'Grand Total',
+        accessor: 'Grand Total',
+        disableSortBy: true,
+      },
+    ];
+  }, [filter, currentYear, startDate1, endDate1]);
 
   return (
-    <>
-      <div className="pt-6 w-[40rem]">
-        {/* <div className="col-span-12 md:col-span-12 lg:col-span-10 overflow-y-auto p-5">
-          <p className="font-bold pb-4">Revenue Report with Tag Filtering</p>
-          <Table COLUMNS={columns4} loading={isLoadingBookingData} />
-        </div> */}
-        <p className="font-bold text-center">Filtered Revenue Report</p>
+    <div className="flex flex-col col-span-10 overflow-x-hidden">
+      <div className="pt-6 w-[50rem] mx-10">
+        <p className="font-bold ">Filtered Revenue Report</p>
         <p className="text-sm text-gray-600 italic py-4">
           This chart shows the filtered revenue data over different time periods.
         </p>
-        <Menu shadow="md" width={130}>
-          <Menu.Target>
-            <Button className="secondary-button">View By: {viewBy[activeView] || 'Select'}</Button>
-          </Menu.Target>
-          <Menu.Dropdown>
-            {list.map(({ label, value }) => (
-              <Menu.Item
-                key={value}
-                onClick={() => handleMenuItemClick(value)}
-                className={classNames(
-                  activeView === value && label !== 'Reset' && 'text-purple-450 font-medium',
-                )}
-              >
-                {label}
-              </Menu.Item>
-            ))}
-          </Menu.Dropdown>
-        </Menu>
-
-        {filter && (
-          <Button onClick={handleReset} className="mx-2 secondary-button">
-            Reset
-          </Button>
-        )}
+        <div className="flex">
+          <div>
+            {/* View By Dropdown */}
+            <Menu shadow="md" width={130}>
+              <Menu.Target>
+                <Button className="secondary-button">
+                  View By: {viewBy[activeView] || 'Select'}
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {list.map(({ label, value }) => (
+                  <Menu.Item
+                    key={value}
+                    onClick={() => handleMenuItemClick3(value)}
+                    className={classNames(
+                      activeView === value && label !== 'Reset' && 'text-purple-450 font-medium',
+                    )}
+                  >
+                    {label}
+                  </Menu.Item>
+                ))}
+              </Menu.Dropdown>
+            </Menu>
+          </div>
+          <div className="mx-2">
+            <MultiSelect
+              data={options}
+              value={selectedTags}
+              onChange={setSelectedTags}
+              placeholder="Select tags"
+              searchable
+              clearable
+            />
+          </div>
+          <div>
+            {filter && (
+              <Button onClick={handleReset3} className="mx-2 secondary-button">
+                Reset
+              </Button>
+            )}
+          </div>
+        </div>
 
         {filter === 'customDate' && (
-          <div className="flex flex-col items-start space-y-4 py-2">
-            <DateRangeSelector dateValue={[startDate, endDate]} onChange={onDateChange} />
+          <div className="flex flex-col items-start space-y-4 py-2 ">
+            <DateRangeSelector
+              dateValue={[startDate1, endDate1]}
+              onChange={onDateChange3}
+              minDate={threeMonthsAgo} // Set minimum date to 3 months ago
+              maxDate={today}
+            />
           </div>
         )}
-
         <div className="my-4">
-          <Line data={chartData1} options={chartOptions1} />
+          <Line data={chartData3} options={chartOptions3} />
         </div>
       </div>
-    </>
+      <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mx-10">
+        <Table COLUMNS={tableColumns3} data={tableData3} />
+      </div>
+    </div>
   );
 };
 

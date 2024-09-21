@@ -29,6 +29,8 @@ import Reports_new from './pages/Reports_new';
 import OtherNewReports from './pages/Reports_new/OtherNewReports';
 import OtherPerformanceReport from './pages/OtherPerformanceReport';
 import OtherTagsWiseReport from './pages/OtherTagsWiseReport';
+import OtherMediaReport from './pages/OtherMediaReport';
+import OtherSampleReport from './pages/OtherSampleReport';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
@@ -41,8 +43,11 @@ const CreateBulkInventoriesPage = lazy(() =>
   import('./pages/InventoryPage/CreateBulkInventoriesPage'),
 );
 const InventoryDetailsPage = lazy(() => import('./pages/InventoryPage/InventoryDetailsPage'));
+
 const PerformanceReport = lazy(() => import('./pages/OtherPerformanceReport/PerformanceReport'));
 const TagsWiseReport = lazy(() => import('./pages/OtherTagsWiseReport/TagsWiseReport'));
+const MediaWiseReport = lazy(() => import('./pages/OtherMediaReport/MediaWiseReport'));
+const SampleReport = lazy(() => import('./pages/OtherSampleReport/SampleReport'));
 
 const BookingsPage = lazy(() => import('./pages/BookingsPage'));
 const BookingsDashboardPage = lazy(() => import('./pages/BookingsPage/BookingsDashboardPage'));
@@ -469,6 +474,42 @@ const App = () => {
             element={
               <Suspense fallback={<CustomLoader />}>
                 <TagsWiseReport />
+              </Suspense>
+            }
+          />
+        </Route>
+
+        <Route
+          path="mediaWiseReport"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <OtherMediaReport />
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <MediaWiseReport />
+              </Suspense>
+            }
+          />
+        </Route>
+      
+        <Route
+          path="sampleReport"
+          element={
+            <Suspense fallback={<HeaderSidebarLoader />}>
+              <OtherSampleReport />
+            </Suspense>
+          }
+        >
+          <Route
+            path=""
+            element={
+              <Suspense fallback={<CustomLoader />}>
+                <SampleReport />
               </Suspense>
             }
           />

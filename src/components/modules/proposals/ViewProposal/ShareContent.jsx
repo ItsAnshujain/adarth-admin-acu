@@ -505,7 +505,7 @@ const ShareContent = ({
               placeholder="Select..."
               rightSection={<ChevronDown size={16} />}
               className="mb-2"
-              defaultValue="fill;generic"
+              defaultValue=";"
             />
           </div>
 

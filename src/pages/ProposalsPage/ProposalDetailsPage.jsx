@@ -92,8 +92,6 @@ const ProposalDetailsPage = () => {
   const userData = queryClient.getQueryData(['users-by-id', userId]);
   // validation
 
-  console.log("user", userData)
-
   const toggleFilter = () => setShowFilter(!showFilter);
 
   const [versionDrawerOpened, versionDrawerActions] = useDisclosure();

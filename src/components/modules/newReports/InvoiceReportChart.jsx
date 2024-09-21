@@ -53,7 +53,7 @@ const InvoiceReportChart = ({ data }) => {
             data: data.map(item => item.outstandingAmount),
             backgroundColor: 'rgba(255, 99, 132, 0.5)',
             borderColor: 'rgba(255, 99, 132, 1)',
-            yAxisID: 'y2',
+            yAxisID: 'y1',
           },
         ]
       : [],
@@ -85,21 +85,7 @@ const InvoiceReportChart = ({ data }) => {
           beginAtZero: true,
         },
       },
-      y2: {
-        type: 'linear',
-        position: 'right',
-        title: {
-          display: true,
-          text: 'Outstanding (lac)',
-        },
-        ticks: {
-          callback: value => `${value} L`,
-          beginAtZero: true,
-        },
-        grid: {
-          drawOnChartArea: false,
-        },
-      },
+      
     },
     plugins: {
       legend: {

@@ -10,8 +10,14 @@ import RowsPerPage from '../../components/RowsPerPage';
 import { categoryColors, generateSlNo } from '../../utils';
 import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
 import { Badge } from '@mantine/core';
+import { Button } from '@mantine/core';
+import { Download } from 'react-feather';
+import { downloadExcel } from '../../apis/requests/report.requests';
+import { useDownloadExcel } from '../../apis/queries/report.queries';
+import { showNotification } from '@mantine/notifications';
 
 const PerformanceReport = () => {
+ 
   const modals = useModals();
   const [searchParams1, setSearchParams1] = useSearchParams({
     limit: 20,
@@ -138,9 +144,10 @@ const PerformanceReport = () => {
     setSearchParams1(searchParams1);
   };
   return (
-    <div className="overflow-y-auto px-5 col-span-10 w-[65rem]">
-      <p className="font-bold pt-10">Performance Ranking Report</p>
-      <p className="text-sm text-gray-600 italic py-4">
+    <div className="overflow-y-auto p-5 col-span-10 w-[65rem]">
+      
+      <p className="font-bold pt-6">Performance Ranking Report</p>
+      <p className="text-sm text-gray-600 italic pt-2">
         This report shows Performance Cards with pagination controls and a sortable, paginated
         table.
       </p>
