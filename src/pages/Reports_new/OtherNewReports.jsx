@@ -241,8 +241,8 @@ const OtherNewReports = () => {
   }, [inventoryData, financialStartDate, financialEndDate]);
 
   const dummyStats = {
-    tradedsite: sitesData.totalTradedAmount || 0,
-    ownsite: userSales.data?.sales - sitesData.totalTradedAmount || 0,
+    tradedsite: userSales.data?.totalTradedAmount || 0,
+    ownsite: userSales.data?.ownSiteSales || 0,
   };
 
   const printStatusData = useMemo(
