@@ -1820,7 +1820,7 @@ const sortFiscalMonths = (a, b) => {
         </div>
       </div>
       <div className="border-2 p-5 border-black">
-        <p className="font-bold py-5 text-lg">Total Revenue Box</p>
+        <p className="font-bold py-5 text-lg">Total Revenue </p>
         <div className="flex flex-col md:flex-row">
           <div className="flex flex-col p-6 w-[30rem]">
             <p className="font-bold text-center">Sales Trends Report</p>
