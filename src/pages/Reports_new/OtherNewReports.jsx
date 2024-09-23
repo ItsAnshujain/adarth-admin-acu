@@ -1806,7 +1806,7 @@ const sortFiscalMonths = (a, b) => {
   return (
     <div className="overflow-y-auto px-3 col-span-10 overflow-hidden">
       <div className="flex justify-between ">
-        <p className="font-bold py-5 text-lg">Total Revenue Box</p>
+        
         <div className="py-5 flex items-start">
           <Button
             leftIcon={<Download size="20" color="white" />}
@@ -1820,6 +1820,7 @@ const sortFiscalMonths = (a, b) => {
         </div>
       </div>
       <div className="border-2 p-5 border-black">
+        <p className="font-bold py-5 text-lg">Total Revenue Box</p>
         <div className="flex flex-col md:flex-row">
           <div className="flex flex-col p-6 w-[30rem]">
             <p className="font-bold text-center">Sales Trends Report</p>
