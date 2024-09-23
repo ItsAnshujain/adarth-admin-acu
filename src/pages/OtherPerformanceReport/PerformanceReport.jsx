@@ -1,7 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import {  useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Table from '../../components/Table/Table';
-import { useBookings } from '../../apis/queries/booking.queries';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { useModals } from '@mantine/modals';
 import { useFetchInventoryReportList } from '../../apis/queries/inventory.queries';
@@ -10,11 +9,6 @@ import RowsPerPage from '../../components/RowsPerPage';
 import { categoryColors, generateSlNo } from '../../utils';
 import SpaceNamePhotoContent from '../../components/modules/inventory/SpaceNamePhotoContent';
 import { Badge } from '@mantine/core';
-import { Button } from '@mantine/core';
-import { Download } from 'react-feather';
-import { downloadExcel } from '../../apis/requests/report.requests';
-import { useDownloadExcel } from '../../apis/queries/report.queries';
-import { showNotification } from '@mantine/notifications';
 
 const PerformanceReport = () => {
  

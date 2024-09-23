@@ -29,7 +29,6 @@ import DateRangeSelector from '../../components/DateRangeSelector';
 import Table from '../../components/Table/Table';
 import toIndianCurrency from '../../utils/currencyFormat';
 import { useDistinctAdditionalTags, useFetchInventory } from '../../apis/queries/inventory.queries';
-import modalConfig from '../../utils/modalConfig';
 import GaugeChart from '../../components/modules/newReports/GaugeChart';
 import InvoiceReportChart from '../../components/modules/newReports/InvoiceReportChart';
 import PerformanceCard from '../../components/modules/newReports/performanceCard';
@@ -99,11 +98,6 @@ const barDataConfigByIndustry = {
     ],
     borderWidth: 1,
   },
-};
-
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
 };
 
 export const pieData = {
@@ -282,20 +276,19 @@ const OtherNewReports = () => {
   const getCurrentYear = () => new Date().getFullYear();
   const pastYears = [getCurrentYear() - 3, getCurrentYear() - 2, getCurrentYear() - 1];
 
-  // Map from database month to custom month index
   const monthMapping = {
-    0: 9, // Jan -> Oct
-    1: 10, // Feb -> Nov
-    2: 11, // Mar -> Dec
-    3: 0, // Apr -> Jan
-    4: 1, // May -> Feb
-    5: 2, // Jun -> Mar
-    6: 3, // Jul -> Apr
-    7: 4, // Aug -> May
-    8: 5, // Sep -> Jun
-    9: 6, // Oct -> Jul
-    10: 7, // Nov -> Aug
-    11: 8, // Dec -> Sep
+    0: 9,
+    1: 10,
+    2: 11,
+    3: 0,
+    4: 1,
+    5: 2,
+    6: 3,
+    7: 4,
+    8: 5,
+    9: 6,
+    10: 7,
+    11: 8,
   };
 
   useEffect(() => {
@@ -308,7 +301,6 @@ const OtherNewReports = () => {
   const aggregateSalesData = data => {
     const aggregated = {};
 
-    // Initialize aggregated data for each month
     monthsInShort.forEach((_, index) => {
       aggregated[index] = {};
       pastYears.forEach(year => {
@@ -320,15 +312,15 @@ const OtherNewReports = () => {
       try {
         const date = new Date(item.createdAt);
         if (isNaN(date.getTime())) throw new Error('Invalid date');
-        const dbMonth = date.getMonth(); // Database month index
-        const month = monthMapping[dbMonth]; // Translate to custom month index
+        const dbMonth = date.getMonth();
+        const month = monthMapping[dbMonth];
         const year = date.getFullYear();
         const amount = item.totalAmount || 0;
 
         if (amount <= 0 || isNaN(amount)) return;
 
         if (pastYears.includes(year)) {
-          aggregated[month][year] += amount / 100000; // Convert to 'lac'
+          aggregated[month][year] += amount / 100000;
         }
       } catch (error) {}
     });
@@ -352,13 +344,12 @@ const OtherNewReports = () => {
       const total = Object.values(data)
         .slice(1)
         .reduce((acc, val) => acc + val, 0);
-      return total / pastYears.length; // Average for the past 3 years
+      return total / pastYears.length;
     });
   };
 
   const trendLineData = useMemo(() => calculateTrendLineData(), [salesData]);
 
-  // Combined bar and line chart data
   const combinedChartData = useMemo(() => {
     const colors = ['#FF6384', '#914EFB', '#36A2EB'];
 
@@ -371,19 +362,19 @@ const OtherNewReports = () => {
           backgroundColor: colors[idx % colors.length],
           borderColor: colors[idx % colors.length],
           borderWidth: 1,
-          type: 'bar', // Set as bar for sales data
+          type: 'bar',
           yAxisID: 'y',
-          order: 1, // Ensure bars are below the trend line
+          order: 1,
         })),
         {
           label: 'Trend',
           data: trendLineData,
           borderColor: '#EF4444',
           fill: false,
-          tension: 0.1, // Smoother curve
+          tension: 0.1,
           pointBackgroundColor: '#EF4444',
-          type: 'line', // Set as line for trend line
-          order: 2, // Ensure trend line is above bars
+          type: 'line',
+          order: 2,
         },
       ],
     };
@@ -561,6 +552,9 @@ const OtherNewReports = () => {
   const [startDate, setStartDate] = useState(financialStartDate);
   const [endDate, setEndDate] = useState(financialEndDate);
 
+  const [startDate2, setStartDate2] = useState(null);
+  const [endDate2, setEndDate2] = useState(null);
+
   const generateYearRange = (startYear, endYear) => {
     const years = [];
     for (let year = startYear; year <= endYear; year++) {
@@ -586,21 +580,27 @@ const OtherNewReports = () => {
     ];
     return monthOrder.indexOf(a) - monthOrder.indexOf(b);
   };
-
+// Sorting logic for fiscal months (April to March)
+const sortFiscalMonths = (a, b) => {
+  const fiscalOrder = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
+  return fiscalOrder.indexOf(a) - fiscalOrder.indexOf(b);
+};
   const transformedData = useMemo(() => {
     if (!bookingData || !bookingData.docs) return {};
-
+  
     const currentYear = new Date().getFullYear();
+    const fiscalStartMonth = 3; // April is month 3 (0-indexed)
+  
     const past10YearsRange = generateYearRange(currentYear - 10, currentYear - 1);
     const past5YearsRange = generateYearRange(currentYear - 5, currentYear - 1);
-
+  
     const groupedData = bookingData.docs.reduce((acc, booking) => {
       const date = new Date(booking.createdAt);
       const year = date.getFullYear();
-      const month = date.toLocaleString('default', { month: 'short' });
+      const month = date.getMonth(); // Month is 0-indexed
       const day = date.getDate();
       const revenue = booking.totalAmount;
-
+  
       if (!acc.past10Years) acc.past10Years = {};
       if (!acc.past5Years) acc.past5Years = {};
       if (!acc.previousYear) acc.previousYear = {};
@@ -609,107 +609,129 @@ const OtherNewReports = () => {
       if (!acc.currentMonth) acc.currentMonth = {};
       if (!acc.past7) acc.past7 = {};
       if (!acc.customDate) acc.customDate = {};
-
+  
+      const fiscalYearStart = new Date(year, fiscalStartMonth, 1);
+      const fiscalYearEnd = new Date(year + 1, fiscalStartMonth - 1, 31);
+  
+      // Past 10 years
       if (year >= currentYear - 10 && year < currentYear) {
         if (!acc.past10Years[year]) acc.past10Years[year] = 0;
         acc.past10Years[year] += revenue;
       }
-
+  
+      // Past 5 years
       if (year >= currentYear - 5 && year < currentYear) {
         if (!acc.past5Years[year]) acc.past5Years[year] = 0;
         acc.past5Years[year] += revenue;
       }
-
-      if (year === currentYear - 1) {
-        if (!acc.previousYear[month]) acc.previousYear[month] = 0;
-        acc.previousYear[month] += revenue;
+  
+      // Previous fiscal year (April to March)
+      if (year === currentYear - 1 || (year === currentYear && month < fiscalStartMonth)) {
+        const fiscalMonth = (month + 12 - fiscalStartMonth) % 12; // Adjust month to fiscal year
+        const fiscalMonthName = new Date(0, fiscalMonth).toLocaleString('default', { month: 'short' });
+  
+        if (!acc.previousYear[fiscalMonthName]) acc.previousYear[fiscalMonthName] = 0;
+        acc.previousYear[fiscalMonthName] += revenue;
       }
-
-      if (year === currentYear) {
-        if (!acc.currentYear[month]) acc.currentYear[month] = 0;
-        acc.currentYear[month] += revenue;
+  
+      // Current fiscal year (April to March)
+      if (year === currentYear && month >= fiscalStartMonth) {
+        const fiscalMonthName = new Date(0, month).toLocaleString('default', { month: 'short' });
+  
+        if (!acc.currentYear[fiscalMonthName]) acc.currentYear[fiscalMonthName] = 0;
+        acc.currentYear[fiscalMonthName] += revenue;
       }
-
-      if (year === currentYear && date.getMonth() === new Date().getMonth()) {
+  
+      // Current month
+      if (year === currentYear && month === new Date().getMonth()) {
         if (!acc.currentMonth[day]) acc.currentMonth[day] = 0;
         acc.currentMonth[day] += revenue;
       }
-
+  
+      // Past 7 days
       const last7DaysDate = new Date();
       last7DaysDate.setDate(last7DaysDate.getDate() - 7);
       if (date >= last7DaysDate) {
         if (!acc.past7[day]) acc.past7[day] = 0;
         acc.past7[day] += revenue;
       }
-
-      if (['Jan', 'Feb', 'Mar'].includes(month)) acc.quarter.Q1 += revenue;
-      if (['Apr', 'May', 'Jun'].includes(month)) acc.quarter.Q2 += revenue;
-      if (['Jul', 'Aug', 'Sep'].includes(month)) acc.quarter.Q3 += revenue;
-      if (['Oct', 'Nov', 'Dec'].includes(month)) acc.quarter.Q4 += revenue;
-
-      if (startDate && endDate && date >= startDate && date <= endDate) {
-        const key = `${month} ${day}`;
+  
+      // Quarter based on fiscal year
+      if (month >= 3 && month <= 5) acc.quarter.Q1 += revenue;
+      if (month >= 6 && month <= 8) acc.quarter.Q2 += revenue;
+      if (month >= 9 && month <= 11) acc.quarter.Q3 += revenue;
+      if ((month >= 0 && month <= 2) || month === 12) acc.quarter.Q4 += revenue;
+  
+      // Custom Date Range
+      if (startDate2 && endDate2 && date >= startDate2 && date <= endDate2) {
+        const key = `${month + 1}/${day}`;
         if (!acc.customDate[key]) acc.customDate[key] = 0;
         acc.customDate[key] += revenue;
       }
-
+  
       return acc;
     }, {});
-
+  
+    // Post-process grouped data
     groupedData.past10Years = past10YearsRange.map(year => ({
       year,
       revenue: groupedData.past10Years[year] || 0,
     }));
-
+  
     groupedData.past5Years = past5YearsRange.map(year => ({
       year,
       revenue: groupedData.past5Years[year] || 0,
     }));
-
+  
     groupedData.previousYear = Object.keys(groupedData.previousYear)
-      .sort(sortMonths)
+      .sort(sortFiscalMonths)
       .map(month => ({
         month,
         revenue: groupedData.previousYear[month],
       }));
-
+  
     groupedData.currentYear = Object.keys(groupedData.currentYear)
-      .sort(sortMonths)
+      .sort(sortFiscalMonths)
       .map(month => ({
         month,
         revenue: groupedData.currentYear[month],
       }));
-
+  
     groupedData.currentMonth = Object.keys(groupedData.currentMonth).map(day => ({
       day,
       revenue: groupedData.currentMonth[day],
     }));
-
+  
     groupedData.past7 = Object.keys(groupedData.past7)
       .sort((a, b) => new Date(a) - new Date(b))
       .map(day => ({
         day,
         revenue: groupedData.past7[day],
       }));
-
+  
     groupedData.customDate = Object.keys(groupedData.customDate).map(key => ({
       day: key,
       revenue: groupedData.customDate[key],
     }));
-
-    groupedData.quarter = Object.keys(groupedData.quarter).map(quarter => ({
-      quarter,
-      revenue: groupedData.quarter[quarter],
-    }));
-
+  
+    groupedData.quarter = [
+      { quarter: 'First Quarter', revenue: groupedData.quarter.Q1 },
+      { quarter: 'Second Quarter', revenue: groupedData.quarter.Q2 },
+      { quarter: 'Third Quarter', revenue: groupedData.quarter.Q3 },
+      { quarter: 'Fourth Quarter', revenue: groupedData.quarter.Q4 },
+    ];
+  
+    
     return groupedData;
-  }, [bookingData, startDate, endDate]);
+  }, [bookingData, startDate2, endDate2]);
+  
+  
 
   const chartData1 = useMemo(() => {
     let selectedData = transformedData[filter] || [];
     const filteredData = selectedData.map(d => ({
       ...d,
-      revenue: d.revenue > 0 ? d.revenue / 100000 : 0, // Convert to lacs
+      revenue: d.revenue > 0 ? d.revenue / 100000 : 0,
     }));
 
     if (filter === 'customDate') {
@@ -737,11 +759,24 @@ const OtherNewReports = () => {
         x: {
           title: {
             display: true,
-            text: filter.includes('Year')
-              ? 'Year'
-              : filter === 'past7' || filter === 'customDate'
-              ? 'Date'
-              : 'Month',
+            text:
+              filter === 'year'
+                ? 'Years'
+                : filter === 'quarter'
+                ? 'Quarters'
+                : filter === 'currentYear' || filter === 'previousYear'
+                ? 'Months'
+                : ['past7', 'customDate', 'currentMonth'].includes(filter)
+                ? 'Days'
+                : '',
+          },
+          ticks: {
+            callback: function (value, index, values) {
+              if (filter === 'quarter') {
+                return ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'][index];
+              }
+              return this.getLabelForValue(value);
+            },
           },
         },
         y: {
@@ -750,7 +785,7 @@ const OtherNewReports = () => {
             text: 'Revenue (lac)',
           },
           ticks: {
-            callback: value => `${value} L`, // Format tick values in lacs
+            callback: value => `${value} L`,
           },
         },
       },
@@ -771,12 +806,12 @@ const OtherNewReports = () => {
         },
       },
     }),
-    [filter, transformedData],
+    [filter, transformedData]
   );
-
+  
   const onDateChange = val => {
-    setStartDate(val[0]);
-    setEndDate(val[1]);
+    setStartDate2(val[0]);
+    setEndDate2(val[1]);
   };
 
   const handleMenuItemClick = value => {
@@ -787,13 +822,12 @@ const OtherNewReports = () => {
   const handleReset = () => {
     setFilter('');
     setActiveView('');
-    setStartDate(null);
-    setEndDate(null);
+    setStartDate2(null);
+    setEndDate2(null);
   };
 
   // traded margin report
 
-  // Process the inventory data to group by city and calculate metrics
   const processedData = useMemo(() => {
     if (!inventoryData?.docs?.length) return [];
 
@@ -837,7 +871,6 @@ const OtherNewReports = () => {
       }
     });
 
-    // Sort by tradedMargin in descending order
     const sortedData = Object.values(cityData).sort((a, b) => b.tradedMargin - a.tradedMargin);
 
     return sortedData;
@@ -861,7 +894,7 @@ const OtherNewReports = () => {
         Header: 'Price (lac)',
         accessor: 'totalPrice',
         disableSortBy: true,
-        Cell: info => <p>{(info.value / 100000).toFixed(2)}</p>, // Assuming 1 lac = 100,000
+        Cell: info => <p>{(info.value / 100000).toFixed(2)}</p>,
       },
       {
         Header: 'Traded Price (lac)',
@@ -892,9 +925,8 @@ const OtherNewReports = () => {
   // traded margin report
 
   // invoice report
-  const [activeView1, setActiveView1] = useState(''); // Track the active filter
+  const [activeView1, setActiveView1] = useState('');
 
-  // Utility function to format month and year
   const formatMonthYear1 = date => {
     const newDate = new Date(date);
     const month = newDate.toLocaleString('default', { month: 'short' });
@@ -902,7 +934,6 @@ const OtherNewReports = () => {
     return `${month} ${year}`;
   };
 
-  // Filter data based on active view
   const getFilteredData1 = (data, view) => {
     if (!data) return [];
 
@@ -931,7 +962,6 @@ const OtherNewReports = () => {
 
     const grouped1 = {};
 
-    // Grouping the data manually
     data.docs.forEach(doc => {
       const date = new Date(doc.createdAt);
       const monthYearKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
@@ -982,7 +1012,6 @@ const OtherNewReports = () => {
       const [yearA, monthA] = a.monthYearKey.split('-').map(Number);
       const [yearB, monthB] = b.monthYearKey.split('-').map(Number);
 
-      // Sorting in descending order
       return yearA !== yearB ? yearB - yearA : monthB - monthA;
     });
   }, [bookingData?.docs, activeView1]);
@@ -1028,14 +1057,14 @@ const OtherNewReports = () => {
   };
 
   const handleReset1 = () => {
-    setActiveView1(''); // Clear the active view (reset)
+    setActiveView1('');
   };
 
-  const invoiceRaised = groupedData1?.reduce((acc, item) => acc + item.outStandingInvoice, 0); // Calculate total Invoice Raised
+  const invoiceRaised = groupedData1?.reduce((acc, item) => acc + item.outStandingInvoice, 0);
 
-  const amountCollected = groupedData1?.reduce((acc, item) => acc + item.totalPayment, 0); // Calculate total Amount Collected
+  const amountCollected = groupedData1?.reduce((acc, item) => acc + item.totalPayment, 0);
 
-  const isFilterApplied = activeView1 !== ''; // Check if a filter is applied
+  const isFilterApplied = activeView1 !== '';
 
   // invoice report
 
@@ -1121,8 +1150,8 @@ const OtherNewReports = () => {
 
       switch (groupBy) {
         case 'dayOfWeek':
-          tempData.labels = daysInAWeek; // Predefined labels for the week
-          tempData.datasets[0].data = Array(7).fill(0); // 7 days in a week
+          tempData.labels = daysInAWeek;
+          tempData.datasets[0].data = Array(7).fill(0);
           break;
         case 'dayOfMonth':
           tempData.labels = Array.from({ length: dayjs().daysInMonth() }, (_, i) => i + 1);
@@ -1130,10 +1159,9 @@ const OtherNewReports = () => {
           break;
         case 'quarter':
           tempData.labels = quarters;
-          tempData.datasets[0].data = Array(4).fill(0); // 4 quarters in a year
+          tempData.datasets[0].data = Array(4).fill(0);
           break;
-        default: // For 'month' and 'year' views
-          // 12 months in a year
+        default:
           tempData.labels = monthsInShort;
           tempData.datasets[0].data = Array(12).fill(0);
           break;
@@ -1150,7 +1178,6 @@ const OtherNewReports = () => {
         } else if (groupBy === 'quarter' && id <= 4) {
           tempData.datasets[0].data[id - 1] = total;
         } else if (groupBy === 'month' || groupBy === 'year') {
-          // Handle months based on financial year
           if (id < 4) {
             tempData.datasets[0].data[id + 8] = total;
           } else {
@@ -1177,8 +1204,8 @@ const OtherNewReports = () => {
 
     if (revenueDataByIndustry) {
       revenueDataByIndustry.forEach((item, index) => {
-        tempBarData.labels.push(item._id); // Industry names
-        tempBarData.datasets[0].data.push(Number(item.total) || 0); // Revenue totals
+        tempBarData.labels.push(item._id);
+        tempBarData.datasets[0].data.push(Number(item.total) || 0);
       });
       setUpdatedIndustry(tempBarData);
     }
@@ -1186,11 +1213,11 @@ const OtherNewReports = () => {
 
   useEffect(() => {
     handleUpdateRevenueGraph();
-  }, [revenueGraphData, groupBy]); // Update when data or groupBy changes
+  }, [revenueGraphData, groupBy]);
 
   useEffect(() => {
     handleUpdatedReveueByIndustry();
-  }, [revenueDataByIndustry]); // Update when industry data changes
+  }, [revenueDataByIndustry]);
 
   // other components
 
@@ -1208,7 +1235,7 @@ const OtherNewReports = () => {
   const threeMonthsAgo = new Date();
   threeMonthsAgo.setMonth(today.getMonth() - 3);
 
-  const currentYear = new Date().getFullYear(); // Define currentYear at the start
+  const currentYear = new Date().getFullYear();
   const generatePast7Days = () => {
     const past7Days = [];
     for (let i = 0; i < 7; i++) {
@@ -1221,7 +1248,7 @@ const OtherNewReports = () => {
   const transformedData3 = useMemo(() => {
     if (!bookingData2 || !selectedTags.length) return {};
 
-    const past7DaysRange = generatePast7Days(); // Assumes this generates an array of 'MMM DD' format
+    const past7DaysRange = generatePast7Days();
 
     const groupedData = bookingData2.reduce((acc, booking) => {
       const detailsWithTags = booking.details.filter(detail => {
@@ -1251,7 +1278,7 @@ const OtherNewReports = () => {
           if (!tagMatches) return;
 
           let timeUnit;
-          // Filter-based time unit logic
+
           if (filter3 === 'past10Years' && year >= currentYear - 10) {
             timeUnit = year;
           } else if (filter3 === 'past5Years' && year >= currentYear - 5) {
@@ -1287,11 +1314,9 @@ const OtherNewReports = () => {
 
           if (!timeUnit) return;
 
-          // Initialize objects if necessary
           if (!acc[timeUnit]) acc[timeUnit] = {};
           if (!acc[timeUnit][tag]) acc[timeUnit][tag] = 0;
 
-          // Accumulate revenue
           acc[timeUnit][tag] += revenue;
         });
       });
@@ -1351,7 +1376,7 @@ const OtherNewReports = () => {
           title: {
             display: true,
             text:
-              filter3 === 'year' // Check specifically for 'year'
+              filter3 === 'year'
                 ? 'Years'
                 : filter3 === 'quarter'
                 ? 'Quarters'
@@ -1368,7 +1393,7 @@ const OtherNewReports = () => {
             text: 'Revenue (lac)',
           },
           ticks: {
-            callback: value => `${value} L`, // Format tick values in lacs
+            callback: value => `${value} L`,
           },
         },
       },
@@ -1466,20 +1491,16 @@ const OtherNewReports = () => {
     const tableRows3 = selectedTags.map(tag => {
       const row = { tag };
       let totalForTag = 0;
-
-      // Populate data for each time unit
       timeUnits.forEach(timeUnit => {
         const revenue = transformedData3[timeUnit]?.[tag] || 0;
         row[timeUnit] = revenue > 0 ? (revenue / 100000).toFixed(2) : '-';
         totalForTag += revenue;
       });
 
-      // Add grand total for the tag
       row['Grand Total'] = totalForTag > 0 ? (totalForTag / 100000).toFixed(2) : '-';
       return row;
     });
 
-    // Create grand total row for all tags across all time units
     const grandTotalRow = { tag: 'Grand Total' };
     let overallTotal = 0;
 
@@ -1497,7 +1518,6 @@ const OtherNewReports = () => {
   }, [transformedData3, selectedTags, filter3, startDate1, endDate1]);
 
   const tableColumns3 = useMemo(() => {
-    // Dynamic columns based on the current filter3
     const dynamicColumns = [];
 
     if (filter3 === 'past10Years' || filter3 === 'past5Years') {
@@ -1535,7 +1555,6 @@ const OtherNewReports = () => {
         });
       });
     } else if (filter3 === 'currentMonth') {
-      // Show days for the current month
       const daysInMonth = new Date(currentYear, new Date().getMonth() + 1, 0).getDate();
       for (let i = 1; i <= daysInMonth; i++) {
         dynamicColumns.push({
@@ -1545,7 +1564,6 @@ const OtherNewReports = () => {
         });
       }
     } else if (filter3 === 'past7') {
-      // Show only the last 7 days
       const past7Days = Array.from({ length: 7 }, (_, i) => {
         const date = new Date();
         date.setDate(date.getDate() - i);
@@ -1560,7 +1578,6 @@ const OtherNewReports = () => {
         });
       });
     } else if (filter3 === 'customDate') {
-      // Show days for custom date range
       const customRangeDates = [];
       let currentDate = new Date(startDate1);
       while (currentDate <= new Date(endDate1)) {
@@ -1577,7 +1594,6 @@ const OtherNewReports = () => {
         });
       });
     } else if (filter3 === 'quarter') {
-      // Add full quarter names as columns
       const quarters = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
       quarters.forEach(quarter => {
         dynamicColumns.push({
@@ -1627,11 +1643,10 @@ const OtherNewReports = () => {
           const year = date.getFullYear();
           const month = date.toLocaleString('default', { month: 'short' });
           const day = date.getDate();
-          const formattedDay = `${month} ${day}`; // Use formatted day for specific filters
+          const formattedDay = `${month} ${day}`;
           const revenue = booking.totalAmount;
 
           let timeUnit;
-          // Filter-based time unit logic
           if (filter4 === 'past10Years' && year >= currentYear - 10 && year < currentYear) {
             timeUnit = year;
           } else if (filter4 === 'past5Years' && year >= currentYear - 5 && year < currentYear) {
@@ -1647,15 +1662,14 @@ const OtherNewReports = () => {
           ) {
             timeUnit = day;
           } else if (filter4 === 'past7' && past7DaysRange.includes(formattedDay)) {
-            timeUnit = formattedDay; // Use day and month for past 7 days
+            timeUnit = formattedDay;
           } else if (
             filter4 === 'customDate' &&
             date.getTime() >= new Date(startDate).getTime() &&
             date.getTime() <= new Date(endDate).getTime()
           ) {
-            timeUnit = formattedDay; // Use day and month for custom date range
+            timeUnit = formattedDay;
           } else if (filter4 === 'quarter') {
-            // Assign quarter based on month
             const quarterly = Math.ceil((date.getMonth() + 1) / 3);
             timeUnit = `Q${quarterly}`;
           }
@@ -1665,11 +1679,10 @@ const OtherNewReports = () => {
           const groupKey = secondFilter === 'mediaType' ? mediaType : category;
           if (!groupKey) return;
 
-          // Ensure structure for mediaType/category and timeUnit
           if (!acc[groupKey]) acc[groupKey] = {};
           if (!acc[groupKey][timeUnit]) acc[groupKey][timeUnit] = 0;
 
-          acc[groupKey][timeUnit] += revenue; // Aggregate revenue
+          acc[groupKey][timeUnit] += revenue;
         });
       });
       return acc;
@@ -1691,12 +1704,11 @@ const OtherNewReports = () => {
         totalRevenue += revenueData[timeUnit] || 0;
       });
 
-      return totalRevenue / 100000; // Convert to lakhs
+      return totalRevenue / 100000;
     });
 
-    // Check if all data points are zero
     if (data.every(value => value === 0)) {
-      return { labels: [], datasets: [] }; // Return empty data if all are zero
+      return { labels: [], datasets: [] };
     }
 
     const colors = [
@@ -1762,40 +1774,40 @@ const OtherNewReports = () => {
   };
   // media type wise
 
-   // excel
-   const { mutateAsync, isLoading: isDownloadLoading } = useDownloadExcel();
-  
-   const handleDownloadExcel = async () => {
-     const activeUrl = new URL(window.location.href);
-   
-     await mutateAsync(
-       { s3url: activeUrl.toString() },
-       {
-         onSuccess: data => {
-           showNotification({
-             title: 'Report has been downloaded successfully',
-             color: 'green',
-           });
-           if (data?.link) {
-             downloadExcel(data.link); 
-           }
-         },
-         onError: err => {
-           showNotification({
-             title: err?.message,
-             color: 'red',
-           });
-         }
-       },
-     );
-   };
-   // excel
+  // excel
+  const { mutateAsync, isLoading: isDownloadLoading } = useDownloadExcel();
+
+  const handleDownloadExcel = async () => {
+    const activeUrl = new URL(window.location.href);
+
+    await mutateAsync(
+      { s3url: activeUrl.toString() },
+      {
+        onSuccess: data => {
+          showNotification({
+            title: 'Report has been downloaded successfully',
+            color: 'green',
+          });
+          if (data?.link) {
+            downloadExcel(data.link);
+          }
+        },
+        onError: err => {
+          showNotification({
+            title: err?.message,
+            color: 'red',
+          });
+        },
+      },
+    );
+  };
+  // excel
 
   return (
     <div className="overflow-y-auto px-3 col-span-10 overflow-hidden">
-      <div className='flex justify-between '>
+      <div className="flex justify-between ">
         <p className="font-bold py-5 text-lg">Total Revenue Box</p>
-        <div className='py-5 flex items-start'>
+        <div className="py-5 flex items-start">
           <Button
             leftIcon={<Download size="20" color="white" />}
             className="primary-button "
@@ -1865,51 +1877,82 @@ const OtherNewReports = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-10 px-6 overflow-hidden">
-          <div className="flex flex-col md:flex-row gap-4  w-[60rem]">
-            <div className="pt-6 w-[50rem]">
-              <p className="font-bold text-center">Filtered Revenue Report</p>
+        <div className="flex flex-col px-2 overflow-hidden">
+          <div className="flex flex-col md:flex-row  w-[60rem]">
+            <div className="pt-6 w-[40rem]">
+              <p className="font-bold ">Media Type / Category Wise Filtered Revenue Report</p>
               <p className="text-sm text-gray-600 italic py-4">
                 This chart shows the filtered revenue data over different time periods.
               </p>
-              <Menu shadow="md" width={130}>
-                <Menu.Target>
-                  <Button className="secondary-button">
-                    View By: {viewBy[activeView] || 'Select'}
-                  </Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  {list.map(({ label, value }) => (
-                    <Menu.Item
-                      key={value}
-                      onClick={() => handleMenuItemClick(value)}
-                      className={classNames(
-                        activeView === value && label !== 'Reset' && 'text-purple-450 font-medium',
-                      )}
-                    >
-                      {label}
-                    </Menu.Item>
-                  ))}
-                </Menu.Dropdown>
-              </Menu>
-
-              {filter && (
-                <Button onClick={handleReset} className="mx-2 secondary-button">
-                  Reset
-                </Button>
-              )}
-
-              {filter === 'customDate' && (
+              <div className="flex">
+                <div>
+                  <Menu shadow="md" width={130}>
+                    <Menu.Target>
+                      <Button className="secondary-button">
+                        View By: {viewBy[activeView4] || 'Select'}
+                      </Button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      {list.map(({ label, value }) => (
+                        <Menu.Item
+                          key={value}
+                          onClick={() => handleMenuItemClick4(value)}
+                          className={classNames(
+                            activeView4 === value && 'text-purple-450 font-medium',
+                          )}
+                        >
+                          {label}
+                        </Menu.Item>
+                      ))}
+                    </Menu.Dropdown>
+                  </Menu>
+                </div>
+                <div className="mx-2">
+                  <Menu shadow="md" width={130}>
+                    <Menu.Target>
+                      <Button className="secondary-button">
+                        View By: {viewBy2[secondFilter] || 'Select'}
+                      </Button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      {list2.map(({ label, value }) => (
+                        <Menu.Item
+                          key={value}
+                          onClick={() => setSecondFilter(value)}
+                          className={classNames(
+                            secondFilter === value && 'text-purple-450 font-medium',
+                          )}
+                        >
+                          {label}
+                        </Menu.Item>
+                      ))}
+                    </Menu.Dropdown>
+                  </Menu>
+                </div>
+                <div>
+                  {filter4 && (
+                    <Button onClick={handleReset4} className="mx-2 secondary-button">
+                      Reset
+                    </Button>
+                  )}
+                </div>
+              </div>
+              {filter4 === 'customDate' && (
                 <div className="flex flex-col items-start space-y-4 py-2 ">
-                  <DateRangeSelector dateValue={[startDate, endDate]} onChange={onDateChange} />
+                  <DateRangeSelector
+                    dateValue={[startDate1, endDate1]}
+                    onChange={onDateChange4}
+                    minDate={threeMonthsAgo}
+                    maxDate={today}
+                  />
                 </div>
               )}
 
-              <div className="my-4">
-                <Line data={chartData1} options={chartOptions1} />
+              <div className=" my-4">
+                <Bar data={chartData4} options={chartOptions4} />
               </div>
             </div>
-            <div className="p-6 flex text-center">
+            <div className=" flex text-center">
               <div className="mb-4 items-center flex flex-col">
                 <p className="font-bold px-4 text-center">Operational cost bifurcation</p>
                 <p className="text-sm text-gray-600 italic py-4">
@@ -1918,7 +1961,25 @@ const OtherNewReports = () => {
                 <div className=" w-96 ">
                   <Doughnut
                     data={doughnutChartData}
-                    options={barDataConfigByClient.options}
+                    options={{
+                      ...barDataConfigByClient.options,
+                      plugins: {
+                        legend: {
+                          display: true,
+                          position: 'right', // Move the legend to the right of the chart
+                          align: 'center', // Align the legends centrally
+                          labels: {
+                            boxWidth: 10, // Adjust the size of the color box
+                            padding: 15, // Add padding between labels and boxes
+                          },
+                        },
+                      },
+                      layout: {
+                        padding: {
+                          right: 0, // Add some padding on the right side
+                        },
+                      },
+                    }}
                     height={400}
                     width={400}
                   />
@@ -1927,6 +1988,7 @@ const OtherNewReports = () => {
             </div>
           </div>
         </div>
+
         <div className={classNames('overflow-y-auto px-5 col-span-10 overflow-x-hidden')}>
           <div className="my-6 w-[60rem]" id="revenue-pdf">
             <div className="h-[60px] border-b my-5 border-gray-450 flex justify-end items-center">
@@ -1977,150 +2039,101 @@ const OtherNewReports = () => {
             </div>
           </div>
         </div>
-
-        <div className="flex p-6 flex-col ">
-          <div className="flex justify-between items-center">
-            <p className="font-bold">Sales Report</p>
-          </div>
-          <p className="text-sm text-gray-600 italic pt-3">
-            This chart displays total sales over the past three years with a trend line showing the
-            average sales.
-          </p>
-          {isLoadingBookingData ? (
-            <div className="flex justify-center items-center h-64">
-              <Loader />
-            </div>
-          ) : (
-            <div className="">
-              {salesData.length > 0 ? (
-                <div className=" gap-10 ">
-                  {/* <div className="pt-4 w-[40rem]">
-                      <Bar data={salesChartData} options={salesChartOptions} />
-                    </div> */}
-                  <div className="pt-4 w-[40rem]">
-                    <Bar data={combinedChartData} options={combinedChartOptions} />
-                  </div>
-                </div>
-              ) : (
-                <p className="text-center text-gray-600">No data available.</p>
-              )}
-            </div>
-          )}
-        </div>
-        <div className="flex flex-col col-span-10 overflow-x-hidden">
-          <div className="pt-6 w-[50rem] mx-10">
-            <p className="font-bold ">Tag Wise Filtered Revenue Report</p>
-            <p className="text-sm text-gray-600 italic py-4">
-              This chart shows the filtered revenue data over different time periods.
-            </p>
-            <div className="flex">
-              <div>
-                {/* View By Dropdown */}
-                <Menu shadow="md" width={130}>
-                  <Menu.Target>
-                    <Button className="secondary-button">
-                      View By: {viewBy[activeView3] || 'Select'}
-                    </Button>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    {list.map(({ label, value }) => (
-                      <Menu.Item
-                        key={value}
-                        onClick={() => handleMenuItemClick3(value)}
-                        className={classNames(
-                          activeView3 === value &&
-                            label !== 'Reset' &&
-                            'text-purple-450 font-medium',
-                        )}
-                      >
-                        {label}
-                      </Menu.Item>
-                    ))}
-                  </Menu.Dropdown>
-                </Menu>
-              </div>
-              <div className="mx-2">
-                <MultiSelect
-                  data={options}
-                  value={selectedTags}
-                  onChange={setSelectedTags}
-                  placeholder="Select Additional Tags"
-                  searchable
-                  clearable
-                />
-              </div>
-              <div>
-                {filter3 && (
-                  <Button onClick={handleReset3} className="mx-2 secondary-button">
-                    Reset
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {filter3 === 'customDate' && (
-              <div className="flex flex-col items-start space-y-4 py-2 ">
-                <DateRangeSelector
-                  dateValue={[startDate1, endDate1]}
-                  onChange={onDateChange3}
-                  minDate={threeMonthsAgo} // Set minimum date to 3 months ago
-                  maxDate={today}
-                />
-              </div>
-            )}
-            <div className="my-4">
-              <Line data={chartData3} options={chartOptions3} />
-            </div>
-          </div>
-          <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mx-10">
-            <Table COLUMNS={tableColumns3} data={tableData3} />
-          </div>
-        </div>
         <div className="overflow-hidden px-5 ">
           <RevenueCards />
         </div>
       </div>
+      <div className="flex p-6 flex-col ">
+        <div className="flex justify-between items-center">
+          <p className="font-bold">Sales Report</p>
+        </div>
+        <p className="text-sm text-gray-600 italic pt-3">
+          This chart displays total sales over the past three years with a trend line showing the
+          average sales.
+        </p>
+        {isLoadingBookingData ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader />
+          </div>
+        ) : (
+          <div className="">
+            {salesData.length > 0 ? (
+              <div className=" gap-10 ">
+                {/* <div className="pt-4 w-[40rem]">
+                      <Bar data={salesChartData} options={salesChartOptions} />
+                    </div> */}
+                <div className="pt-4 w-[40rem]">
+                  <Bar data={combinedChartData} options={combinedChartOptions} />
+                </div>
+              </div>
+            ) : (
+              <p className="text-center text-gray-600">No data available.</p>
+            )}
+          </div>
+        )}
+      </div>
+      <div className="p-6 w-[50rem]">
+        <p className="font-bold ">Filtered Revenue Report</p>
+        <p className="text-sm text-gray-600 italic py-4">
+          This chart shows the filtered revenue data over different time periods.
+        </p>
+        <Menu shadow="md" width={130}>
+          <Menu.Target>
+            <Button className="secondary-button">View By: {viewBy[activeView] || 'Select'}</Button>
+          </Menu.Target>
+          <Menu.Dropdown>
+            {list.map(({ label, value }) => (
+              <Menu.Item
+                key={value}
+                onClick={() => handleMenuItemClick(value)}
+                className={classNames(
+                  activeView === value && label !== 'Reset' && 'text-purple-450 font-medium',
+                )}
+              >
+                {label}
+              </Menu.Item>
+            ))}
+          </Menu.Dropdown>
+        </Menu>
+
+        {filter && (
+          <Button onClick={handleReset} className="mx-2 secondary-button">
+            Reset
+          </Button>
+        )}
+
+        {filter === 'customDate' && (
+          <div className="flex flex-col items-start space-y-4 py-2 ">
+            <DateRangeSelector dateValue={[startDate2, endDate2]} onChange={onDateChange} />
+          </div>
+        )}
+
+        <div className="my-4">
+          <Line data={chartData1} options={chartOptions1} />
+        </div>
+      </div>
       <div className="flex flex-col col-span-10 overflow-x-hidden">
         <div className="pt-6 w-[50rem] mx-10">
-          <p className="font-bold ">Media Type / Category Wise Filtered Revenue Report</p>
+          <p className="font-bold ">Tag Wise Filtered Revenue Report</p>
           <p className="text-sm text-gray-600 italic py-4">
             This chart shows the filtered revenue data over different time periods.
           </p>
           <div className="flex">
             <div>
+              {/* View By Dropdown */}
               <Menu shadow="md" width={130}>
                 <Menu.Target>
                   <Button className="secondary-button">
-                    View By: {viewBy[activeView4] || 'Select'}
+                    View By: {viewBy[activeView3] || 'Select'}
                   </Button>
                 </Menu.Target>
                 <Menu.Dropdown>
                   {list.map(({ label, value }) => (
                     <Menu.Item
                       key={value}
-                      onClick={() => handleMenuItemClick4(value)}
-                      className={classNames(activeView4 === value && 'text-purple-450 font-medium')}
-                    >
-                      {label}
-                    </Menu.Item>
-                  ))}
-                </Menu.Dropdown>
-              </Menu>
-            </div>
-            <div className="mx-2">
-              <Menu shadow="md" width={130}>
-                <Menu.Target>
-                  <Button className="secondary-button">
-                    View By: {viewBy2[secondFilter] || 'Select'}
-                  </Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  {list2.map(({ label, value }) => (
-                    <Menu.Item
-                      key={value}
-                      onClick={() => setSecondFilter(value)}
+                      onClick={() => handleMenuItemClick3(value)}
                       className={classNames(
-                        secondFilter === value && 'text-purple-450 font-medium',
+                        activeView3 === value && label !== 'Reset' && 'text-purple-450 font-medium',
                       )}
                     >
                       {label}
@@ -2129,28 +2142,41 @@ const OtherNewReports = () => {
                 </Menu.Dropdown>
               </Menu>
             </div>
+            <div className="mx-2">
+              <MultiSelect
+                data={options}
+                value={selectedTags}
+                onChange={setSelectedTags}
+                placeholder="Select Additional Tags"
+                searchable
+                clearable
+              />
+            </div>
             <div>
-              {filter4 && (
-                <Button onClick={handleReset4} className="mx-2 secondary-button">
+              {filter3 && (
+                <Button onClick={handleReset3} className="mx-2 secondary-button">
                   Reset
                 </Button>
               )}
             </div>
           </div>
-          {filter4 === 'customDate' && (
+
+          {filter3 === 'customDate' && (
             <div className="flex flex-col items-start space-y-4 py-2 ">
               <DateRangeSelector
                 dateValue={[startDate1, endDate1]}
-                onChange={onDateChange4}
-                minDate={threeMonthsAgo} // Set minimum date to 3 months ago
+                onChange={onDateChange3}
+                minDate={threeMonthsAgo}
                 maxDate={today}
               />
             </div>
           )}
+          <div className="my-4">
+            <Line data={chartData3} options={chartOptions3} />
+          </div>
         </div>
-
-        <div className=" m-4 w-[42rem]">
-          <Bar data={chartData4} options={chartOptions4} />
+        <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mx-10">
+          <Table COLUMNS={tableColumns3} data={tableData3} />
         </div>
       </div>
 
