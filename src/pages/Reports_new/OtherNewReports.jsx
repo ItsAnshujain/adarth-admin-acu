@@ -581,151 +581,152 @@ const OtherNewReports = () => {
     return monthOrder.indexOf(a) - monthOrder.indexOf(b);
   };
 // Sorting logic for fiscal months (April to March)
+
 const sortFiscalMonths = (a, b) => {
   const fiscalOrder = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
   return fiscalOrder.indexOf(a) - fiscalOrder.indexOf(b);
 };
-  const transformedData = useMemo(() => {
-    if (!bookingData || !bookingData.docs) return {};
-  
-    const currentYear = new Date().getFullYear();
-    const fiscalStartMonth = 3; // April is month 3 (0-indexed)
-  
-    const past10YearsRange = generateYearRange(currentYear - 10, currentYear - 1);
-    const past5YearsRange = generateYearRange(currentYear - 5, currentYear - 1);
-  
-    const groupedData = bookingData.docs.reduce((acc, booking) => {
-      const date = new Date(booking.createdAt);
-      const year = date.getFullYear();
-      const month = date.getMonth(); // Month is 0-indexed
-      const day = date.getDate();
-      const revenue = booking.totalAmount;
-  
-      if (!acc.past10Years) acc.past10Years = {};
-      if (!acc.past5Years) acc.past5Years = {};
-      if (!acc.previousYear) acc.previousYear = {};
-      if (!acc.currentYear) acc.currentYear = {};
-      if (!acc.quarter) acc.quarter = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
-      if (!acc.currentMonth) acc.currentMonth = {};
-      if (!acc.past7) acc.past7 = {};
-      if (!acc.customDate) acc.customDate = {};
-  
-      const fiscalYearStart = new Date(year, fiscalStartMonth, 1);
-      const fiscalYearEnd = new Date(year + 1, fiscalStartMonth - 1, 31);
-  
-      // Past 10 years
-      if (year >= currentYear - 10 && year < currentYear) {
-        if (!acc.past10Years[year]) acc.past10Years[year] = 0;
-        acc.past10Years[year] += revenue;
-      }
-  
-      // Past 5 years
-      if (year >= currentYear - 5 && year < currentYear) {
-        if (!acc.past5Years[year]) acc.past5Years[year] = 0;
-        acc.past5Years[year] += revenue;
-      }
-  
-      // Previous fiscal year (April to March)
-      if (year === currentYear - 1 || (year === currentYear && month < fiscalStartMonth)) {
-        const fiscalMonth = (month + 12 - fiscalStartMonth) % 12; // Adjust month to fiscal year
-        const fiscalMonthName = new Date(0, fiscalMonth).toLocaleString('default', { month: 'short' });
-  
-        if (!acc.previousYear[fiscalMonthName]) acc.previousYear[fiscalMonthName] = 0;
-        acc.previousYear[fiscalMonthName] += revenue;
-      }
-  
-      // Current fiscal year (April to March)
-      if (year === currentYear && month >= fiscalStartMonth) {
-        const fiscalMonthName = new Date(0, month).toLocaleString('default', { month: 'short' });
-  
-        if (!acc.currentYear[fiscalMonthName]) acc.currentYear[fiscalMonthName] = 0;
-        acc.currentYear[fiscalMonthName] += revenue;
-      }
-  
-      // Current month
-      if (year === currentYear && month === new Date().getMonth()) {
-        if (!acc.currentMonth[day]) acc.currentMonth[day] = 0;
-        acc.currentMonth[day] += revenue;
-      }
-  
-      // Past 7 days
-      const last7DaysDate = new Date();
-      last7DaysDate.setDate(last7DaysDate.getDate() - 7);
-      if (date >= last7DaysDate) {
-        if (!acc.past7[day]) acc.past7[day] = 0;
-        acc.past7[day] += revenue;
-      }
-  
-      // Quarter based on fiscal year
-      if (month >= 3 && month <= 5) acc.quarter.Q1 += revenue;
-      if (month >= 6 && month <= 8) acc.quarter.Q2 += revenue;
-      if (month >= 9 && month <= 11) acc.quarter.Q3 += revenue;
-      if ((month >= 0 && month <= 2) || month === 12) acc.quarter.Q4 += revenue;
-  
-      // Custom Date Range
-      if (startDate2 && endDate2 && date >= startDate2 && date <= endDate2) {
-        const key = `${month + 1}/${day}`;
-        if (!acc.customDate[key]) acc.customDate[key] = 0;
-        acc.customDate[key] += revenue;
-      }
-  
-      return acc;
-    }, {});
-  
-    // Post-process grouped data
-    groupedData.past10Years = past10YearsRange.map(year => ({
-      year,
-      revenue: groupedData.past10Years[year] || 0,
-    }));
-  
-    groupedData.past5Years = past5YearsRange.map(year => ({
-      year,
-      revenue: groupedData.past5Years[year] || 0,
-    }));
-  
-    groupedData.previousYear = Object.keys(groupedData.previousYear)
-      .sort(sortFiscalMonths)
-      .map(month => ({
-        month,
-        revenue: groupedData.previousYear[month],
-      }));
-  
-    groupedData.currentYear = Object.keys(groupedData.currentYear)
-      .sort(sortFiscalMonths)
-      .map(month => ({
-        month,
-        revenue: groupedData.currentYear[month],
-      }));
-  
-    groupedData.currentMonth = Object.keys(groupedData.currentMonth).map(day => ({
-      day,
-      revenue: groupedData.currentMonth[day],
-    }));
-  
-    groupedData.past7 = Object.keys(groupedData.past7)
-      .sort((a, b) => new Date(a) - new Date(b))
-      .map(day => ({
-        day,
-        revenue: groupedData.past7[day],
-      }));
-  
-    groupedData.customDate = Object.keys(groupedData.customDate).map(key => ({
-      day: key,
-      revenue: groupedData.customDate[key],
-    }));
-  
-    groupedData.quarter = [
-      { quarter: 'First Quarter', revenue: groupedData.quarter.Q1 },
-      { quarter: 'Second Quarter', revenue: groupedData.quarter.Q2 },
-      { quarter: 'Third Quarter', revenue: groupedData.quarter.Q3 },
-      { quarter: 'Fourth Quarter', revenue: groupedData.quarter.Q4 },
-    ];
-  
+const transformedData = useMemo(() => {
+  if (!bookingData || !bookingData.docs) return {};
+
+  const currentYear = new Date().getFullYear();
+  const fiscalStartMonth = 3; // Fiscal year starts in April
+
+  const past10YearsRange = generateYearRange(currentYear - 10, currentYear - 1);
+  const past5YearsRange = generateYearRange(currentYear - 5, currentYear - 1);
+
+  // Calculate start and end dates for the current fiscal year
+  const fiscalYearStart = new Date(currentYear, fiscalStartMonth, 1); // April 1st, current year
+  const fiscalYearEnd = new Date(currentYear + 1, fiscalStartMonth - 1, 31); // March 31st, next year
+
+  // Initialize accumulator with default values
+  const groupedData = bookingData.docs.reduce((acc, booking) => {
+    const date = new Date(booking.createdAt);
+    const year = date.getFullYear();
+    const month = date.getMonth(); // Month is 0-indexed
+    const day = date.getDate();
+    const revenue = parseFloat(booking.totalAmount) || 0; // Ensure revenue is a number, default to 0 if not valid
+
+    // Initialize nested properties to avoid undefined errors
+    if (!acc.past10Years) acc.past10Years = {};
+    if (!acc.past5Years) acc.past5Years = {};
+    if (!acc.previousYear) acc.previousYear = {};
+    if (!acc.currentYear) acc.currentYear = {};
+    if (!acc.quarter) acc.quarter = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 }; // Explicitly initialize quarters to 0
+    if (!acc.currentMonth)acc.currentMonth = acc.currentMonth || {};
+    if (!acc.past7)acc.past7 = acc.past7 || {};
+    if (!acc.customDate)acc.customDate = acc.customDate || {};
+    // Calculate fiscal year months
+    const fiscalMonth = (month + 12 - fiscalStartMonth) % 12;
     
-    return groupedData;
-  }, [bookingData, startDate2, endDate2]);
-  
-  
+    // Only calculate quarters if the booking falls within the current financial year
+    if (date >= fiscalYearStart && date <= fiscalYearEnd) {
+      if (fiscalMonth >= 0 && fiscalMonth <= 2) {
+        acc.quarter.Q1 += revenue;
+      } else if (fiscalMonth >= 3 && fiscalMonth <= 5) {
+        acc.quarter.Q2 += revenue;
+      } else if (fiscalMonth >= 6 && fiscalMonth <= 8) {
+        acc.quarter.Q3 += revenue;
+      } else if (fiscalMonth >= 9 && fiscalMonth <= 11) {
+        acc.quarter.Q4 += revenue;
+      }
+    }
+
+    // Past 10 years
+    if (year >= currentYear - 10 && year < currentYear) {
+      acc.past10Years[year] = (acc.past10Years[year] || 0) + revenue;
+    }
+
+    // Past 5 years
+    if (year >= currentYear - 5 && year < currentYear) {
+      acc.past5Years[year] = (acc.past5Years[year] || 0) + revenue;
+    }
+
+    if (year === currentYear && month === new Date().getMonth()) {
+      acc.currentMonth[day] = (acc.currentMonth[day] || 0) + revenue;
+    }
+    const last7DaysDate = new Date();
+    last7DaysDate.setDate(last7DaysDate.getDate() - 7);
+    if (date >= last7DaysDate) {
+      acc.past7[day] = (acc.past7[day] || 0) + revenue;
+    }
+    if (startDate2 && endDate2 && date >= startDate2 && date <= endDate2) {
+      const key = `${month + 1}/${day}`;
+      acc.customDate[key] = (acc.customDate[key] || 0) + revenue;
+    }
+            
+    // Previous fiscal year (April to March)
+    if (year === currentYear - 1 || (year === currentYear && month < fiscalStartMonth)) {
+      const fiscalMonthName = new Date(0, fiscalMonth).toLocaleString('default', { month: 'short' });
+      acc.previousYear[fiscalMonthName] = (acc.previousYear[fiscalMonthName] || 0) + revenue;
+    }
+
+    // Current fiscal year (April to March)
+    if (year === currentYear && month >= fiscalStartMonth) {
+      const fiscalMonthName = new Date(0, month).toLocaleString('default', { month: 'short' });
+      acc.currentYear[fiscalMonthName] = (acc.currentYear[fiscalMonthName] || 0) + revenue;
+    }
+
+    return acc;
+  }, {});
+
+  // Ensure past10Years and past5Years are populated properly
+  groupedData.past10Years = past10YearsRange.map(year => ({
+    year,
+    revenue: groupedData.past10Years[year] || 0,
+  }));
+
+  groupedData.past5Years = past5YearsRange.map(year => ({
+    year,
+    revenue: groupedData.past5Years[year] || 0,
+  }));
+
+  // Sort and map previousYear and currentYear data
+  groupedData.previousYear = Object.keys(groupedData.previousYear || {})
+    .sort(sortFiscalMonths)
+    .map(month => ({
+      month,
+      revenue: groupedData.previousYear[month] || 0,
+    }));
+
+  groupedData.currentYear = Object.keys(groupedData.currentYear || {})
+    .sort(sortFiscalMonths)
+    .map(month => ({
+      month,
+      revenue: groupedData.currentYear[month] || 0,
+    }));
+
+   // Map currentMonth data
+  groupedData.currentMonth = Object.keys(groupedData.currentMonth || {}).map(day => ({
+    day,
+    revenue: groupedData.currentMonth[day] || 0,
+  }));
+
+  // Sort and map past7 days data
+  groupedData.past7 = Object.keys(groupedData.past7 || {})
+    .sort((a, b) => new Date(a) - new Date(b))
+    .map(day => ({
+      day,
+      revenue: groupedData.past7[day] || 0,
+    }));
+
+  // Map customDate range data
+  groupedData.customDate = Object.keys(groupedData.customDate || {}).map(key => ({
+    day: key,
+    revenue: groupedData.customDate[key] || 0,
+  }));
+
+  // Format quarter data for the current financial year only
+  groupedData.quarter = [
+    { quarter: 'First Quarter', revenue: groupedData.quarter.Q1 || 0 },
+    { quarter: 'Second Quarter', revenue: groupedData.quarter.Q2 || 0 },
+    { quarter: 'Third Quarter', revenue: groupedData.quarter.Q3 || 0 },
+    { quarter: 'Fourth Quarter', revenue: groupedData.quarter.Q4 || 0 },
+  ];
+
+  return groupedData;
+}, [bookingData, startDate2, endDate2]);
+
 
   const chartData1 = useMemo(() => {
     let selectedData = transformedData[filter] || [];
@@ -1247,112 +1248,119 @@ const sortFiscalMonths = (a, b) => {
   };
   const transformedData3 = useMemo(() => {
     if (!bookingData2 || !selectedTags.length) return {};
-
-    const past7DaysRange = generatePast7Days();
-
+  
+    const past7DaysRange = generatePast7Days(); // Ensure this returns dates in a consistent format
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth(); // 0-indexed month
+    const fiscalStartMonth = 3; // Fiscal year starts in April (0-indexed)
+  
     const groupedData = bookingData2.reduce((acc, booking) => {
       const detailsWithTags = booking.details.filter(detail => {
         const campaign = detail.campaign;
         if (!campaign || !campaign.spaces || !Array.isArray(campaign.spaces)) return false;
-
+  
         return campaign.spaces.some(space => {
           const spaceTags = space.specifications?.additionalTags || [];
           return Array.isArray(spaceTags) && selectedTags.some(tag => spaceTags.includes(tag));
         });
       });
-
+  
       if (detailsWithTags.length === 0) return acc;
-
+  
       detailsWithTags.forEach(detail => {
         const date = new Date(detail.createdAt);
         const year = date.getFullYear();
-        const month = date.toLocaleString('default', { month: 'short' });
+        const month = date.getMonth(); // 0-indexed
         const day = date.getDate();
-        const formattedDay = `${month} ${day}`;
+        const formattedDay = `${month + 1}/${day}`; // e.g., '4/5' for April 5
         const revenue = booking.totalAmount;
-
+  
         selectedTags.forEach(tag => {
           const tagMatches = detail.campaign.spaces.some(space =>
             space.specifications?.additionalTags?.includes(tag),
           );
           if (!tagMatches) return;
-
+  
           let timeUnit;
-
-          if (filter3 === 'past10Years' && year >= currentYear - 10) {
-            timeUnit = year;
-          } else if (filter3 === 'past5Years' && year >= currentYear - 5) {
-            timeUnit = year;
-          } else if (filter3 === 'previousYear' && year === currentYear - 1) {
-            timeUnit = month;
-          } else if (filter3 === 'currentYear' && year === currentYear) {
-            timeUnit = month;
+  
+          // Handle fiscal year and quarter logic
+          const fiscalYear = (month >= fiscalStartMonth) ? year : year - 1; // Fiscal year starts in April
+          const fiscalMonth = (month + 12 - fiscalStartMonth) % 12; // Shift months according to fiscal year
+          const fiscalQuarter = Math.ceil((fiscalMonth + 1) / 3); // Quarterly calculation based on fiscal month
+  
+          // TimeUnit Assignments for Different Filters
+          if (filter3 === 'past10Years' && fiscalYear >= currentYear - 10) {
+            timeUnit = fiscalYear;
+          } else if (filter3 === 'past5Years' && fiscalYear >= currentYear - 5) {
+            timeUnit = fiscalYear;
+          } else if (filter3 === 'previousYear' && fiscalYear === currentYear - 1) {
+            timeUnit = date.toLocaleString('default', { month: 'short' });
+          } else if (filter3 === 'currentYear' && fiscalYear === currentYear) {
+            timeUnit = date.toLocaleString('default', { month: 'short' });
           } else if (
             filter3 === 'currentMonth' &&
-            date.getMonth() === new Date().getMonth() &&
-            year === currentYear
+            year === currentYear &&
+            month === currentMonth
           ) {
             timeUnit = day;
-          } else if (filter3 === 'past7' && past7DaysRange.includes(formattedDay)) {
+          } else if (filter3 === 'past7' && past7DaysRange.includes(date.toLocaleDateString())) {
+            // Match bookings in the past 7 days
             timeUnit = formattedDay;
           } else if (
             filter3 === 'customDate' &&
-            date.getTime() >= new Date(startDate1).getTime() &&
-            date.getTime() <= new Date(endDate1).getTime()
+            startDate1 &&
+            endDate1 &&
+            date.getTime() >= new Date(startDate1).setHours(0, 0, 0, 0) && // Start of the day
+            date.getTime() <= new Date(endDate1).setHours(23, 59, 59, 999) // End of the day
           ) {
             timeUnit = formattedDay;
-          } else if (filter3 === 'quarter') {
-            const quarterly = Math.ceil((date.getMonth() + 1) / 3);
-            const quarterNames = [
-              'First Quarter',
-              'Second Quarter',
-              'Third Quarter',
-              'Fourth Quarter',
-            ];
-            timeUnit = quarterNames[quarterly - 1];
+          } else if (filter3 === 'quarter' && fiscalYear === currentYear) {
+            // Handle fiscal year quarters
+            const quarterNames = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
+            timeUnit = quarterNames[fiscalQuarter - 1];
           }
-
+  
           if (!timeUnit) return;
-
+  
           if (!acc[timeUnit]) acc[timeUnit] = {};
           if (!acc[timeUnit][tag]) acc[timeUnit][tag] = 0;
-
+  
           acc[timeUnit][tag] += revenue;
         });
       });
-
+  
       return acc;
     }, {});
-
+  
     return groupedData;
   }, [bookingData2, selectedTags, filter3, startDate1, endDate1]);
-
+  
   const chartData3 = useMemo(() => {
     const selectedData = transformedData3 || {};
-
+  
     if (!selectedData || Object.keys(selectedData).length === 0) {
       return {
         labels: [],
         datasets: [],
       };
     }
-
+  
     let labels = Object.keys(selectedData);
-
+  
     if (filter3 === 'quarter') {
       labels = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
     }
-
+  
     const datasets = selectedTags.map((tag, index) => {
       const data = labels.map(label => {
         const tagRevenue = selectedData[label]?.[tag] || 0;
         return tagRevenue > 0 ? tagRevenue / 100000 : 0;
       });
-
+  
       const hue = ((index * 360) / selectedTags.length) % 360;
       const color = `hsl(${hue}, 70%, 50%)`;
       const colorRGBA = `hsla(${hue}, 70%, 50%, 0.2)`;
-
+  
       return {
         label: ` ${tag} `,
         data,
@@ -1361,13 +1369,13 @@ const sortFiscalMonths = (a, b) => {
         tension: 0.1,
       };
     });
-
+  
     return {
       labels,
       datasets,
     };
   }, [transformedData3, selectedTags, filter3]);
-
+  
   const chartOptions3 = useMemo(
     () => ({
       responsive: true,
@@ -1416,6 +1424,7 @@ const sortFiscalMonths = (a, b) => {
     }),
     [filter3, transformedData3],
   );
+  
 
   const onDateChange3 = val => {
     setStartDate1(val[0]);
@@ -1437,13 +1446,14 @@ const sortFiscalMonths = (a, b) => {
   const tags = additionalTagsQuery.data || [];
   const options = tags.map(tag => ({ value: tag, label: tag }));
 
+  console.log("transformed data", transformedData3)
   const tableData3 = useMemo(() => {
     if (!transformedData3 || Object.keys(transformedData3).length === 0) {
       return [];
     }
-
+  
     let timeUnits = [];
-
+  
     if (filter3 === 'past10Years' || filter3 === 'past5Years') {
       timeUnits =
         filter3 === 'past10Years'
@@ -1451,18 +1461,8 @@ const sortFiscalMonths = (a, b) => {
           : generateYearRange(currentYear - 5, currentYear - 1);
     } else if (filter3 === 'previousYear' || filter3 === 'currentYear') {
       timeUnits = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
       ];
     } else if (filter3 === 'currentMonth') {
       const daysInMonth = new Date(currentYear, new Date().getMonth() + 1, 0).getDate();
@@ -1478,32 +1478,34 @@ const sortFiscalMonths = (a, b) => {
       const customRangeDates = [];
       let currentDate = new Date(startDate1);
       while (currentDate <= new Date(endDate1)) {
-        customRangeDates.push(
-          currentDate.toLocaleString('default', { month: 'short', day: 'numeric' }),
-        );
+        // Format as M/D
+        const formattedDate = `${currentDate.getMonth() + 1}/${currentDate.getDate()}`;
+        customRangeDates.push(formattedDate);
         currentDate.setDate(currentDate.getDate() + 1);
       }
       timeUnits = customRangeDates;
     } else if (filter3 === 'quarter') {
       timeUnits = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
     }
-
+  
     const tableRows3 = selectedTags.map(tag => {
       const row = { tag };
       let totalForTag = 0;
+  
       timeUnits.forEach(timeUnit => {
+        // Directly use timeUnit since it's already formatted as M/D
         const revenue = transformedData3[timeUnit]?.[tag] || 0;
         row[timeUnit] = revenue > 0 ? (revenue / 100000).toFixed(2) : '-';
         totalForTag += revenue;
       });
-
+  
       row['Grand Total'] = totalForTag > 0 ? (totalForTag / 100000).toFixed(2) : '-';
       return row;
     });
-
+  
     const grandTotalRow = { tag: 'Grand Total' };
     let overallTotal = 0;
-
+  
     timeUnits.forEach(timeUnit => {
       const total = selectedTags.reduce((sum, tag) => {
         return sum + (transformedData3[timeUnit]?.[tag] || 0);
@@ -1511,12 +1513,13 @@ const sortFiscalMonths = (a, b) => {
       grandTotalRow[timeUnit] = total > 0 ? (total / 100000).toFixed(2) : '-';
       overallTotal += total;
     });
-
+  
     grandTotalRow['Grand Total'] = overallTotal > 0 ? (overallTotal / 100000).toFixed(2) : 0;
-
+  
     return [...tableRows3, grandTotalRow];
   }, [transformedData3, selectedTags, filter3, startDate1, endDate1]);
-
+  
+  
   const tableColumns3 = useMemo(() => {
     const dynamicColumns = [];
 
@@ -1624,93 +1627,107 @@ const sortFiscalMonths = (a, b) => {
   const [filter4, setFilter4] = useState('');
   const [activeView4, setActiveView4] = useState('');
   const [secondFilter, setSecondFilter] = useState('');
-
   const transformedData4 = useMemo(() => {
     if (!bookingData2 || !secondFilter) return {};
-
-    const past7DaysRange = generatePast7Days();
+  
+    const past7DaysRange = generatePast7Days(); // Ensure it returns dates in 'MM/DD/YYYY' format
     const currentYear = new Date().getFullYear();
-
+    const currentMonth = new Date().getMonth();
+    const fiscalStartMonth = 3; // Fiscal year starts in April (0-indexed)
+  
     const groupedData = bookingData2.reduce((acc, booking) => {
       booking.details.forEach(detail => {
         const campaign = detail.campaign;
         if (!campaign || !campaign.spaces || !Array.isArray(campaign.spaces)) return;
-
+  
         campaign.spaces.forEach(space => {
           const mediaType = space.basicInformation?.mediaType?.name;
           const category = space.basicInformation?.category?.[0]?.name;
           const date = new Date(detail.createdAt);
           const year = date.getFullYear();
-          const month = date.toLocaleString('default', { month: 'short' });
+          const month = date.getMonth(); // 0-indexed
           const day = date.getDate();
-          const formattedDay = `${month} ${day}`;
+          const formattedDay = `${month + 1}/${day}`; // e.g., '4/5' for April 5
           const revenue = booking.totalAmount;
-
+  
           let timeUnit;
-          if (filter4 === 'past10Years' && year >= currentYear - 10 && year < currentYear) {
-            timeUnit = year;
-          } else if (filter4 === 'past5Years' && year >= currentYear - 5 && year < currentYear) {
-            timeUnit = year;
-          } else if (filter4 === 'previousYear' && year === currentYear - 1) {
-            timeUnit = month;
-          } else if (filter4 === 'currentYear' && year === currentYear) {
-            timeUnit = month;
+  
+          // Handle fiscal year and quarter logic
+          const fiscalYear = (month >= fiscalStartMonth) ? year : year - 1; // Fiscal year starts in April
+          const fiscalMonth = (month + 12 - fiscalStartMonth) % 12;
+          const fiscalQuarter = Math.ceil((fiscalMonth + 1) / 3); // Quarterly calculation based on fiscal month
+  
+          if (filter4 === 'past10Years' && fiscalYear >= currentYear - 10 && fiscalYear < currentYear) {
+            timeUnit = fiscalYear;
+          } else if (filter4 === 'past5Years' && fiscalYear >= currentYear - 5 && fiscalYear < currentYear) {
+            timeUnit = fiscalYear;
+          } else if (filter4 === 'previousYear' && fiscalYear === currentYear - 1) {
+            timeUnit = new Date(0, month).toLocaleString('default', { month: 'short' });
+          } else if (filter4 === 'currentYear' && fiscalYear === currentYear) {
+            timeUnit = new Date(0, month).toLocaleString('default', { month: 'short' });
           } else if (
             filter4 === 'currentMonth' &&
-            date.getMonth() === new Date().getMonth() &&
-            year === currentYear
+            year === currentYear &&
+            month === currentMonth
           ) {
+            // Filter for current month
             timeUnit = day;
-          } else if (filter4 === 'past7' && past7DaysRange.includes(formattedDay)) {
+          } else if (filter4 === 'past7' && past7DaysRange.includes(date.toLocaleDateString())) {
+            // Match bookings in the past 7 days
             timeUnit = formattedDay;
           } else if (
             filter4 === 'customDate' &&
-            date.getTime() >= new Date(startDate).getTime() &&
-            date.getTime() <= new Date(endDate).getTime()
+            startDate1 &&
+            endDate1 &&
+            date.getTime() >= new Date(startDate1).setHours(0, 0, 0, 0) && // Start of the day for startDate1
+            date.getTime() <= new Date(endDate1).setHours(23, 59, 59, 999) // End of the day for endDate1
           ) {
+            // Match bookings in the custom date range
             timeUnit = formattedDay;
-          } else if (filter4 === 'quarter') {
+          } else if (filter4 === 'quarter' && fiscalYear === currentYear) {
+            // Match bookings in the current fiscal year and group by quarter
             const quarterly = Math.ceil((date.getMonth() + 1) / 3);
             timeUnit = `Q${quarterly}`;
           }
-
+  
           if (!timeUnit) return;
-
+  
           const groupKey = secondFilter === 'mediaType' ? mediaType : category;
           if (!groupKey) return;
-
+  
           if (!acc[groupKey]) acc[groupKey] = {};
           if (!acc[groupKey][timeUnit]) acc[groupKey][timeUnit] = 0;
-
+  
           acc[groupKey][timeUnit] += revenue;
         });
       });
       return acc;
     }, {});
-
+  
     return groupedData;
   }, [bookingData2, filter4, secondFilter, startDate1, endDate1]);
+  
   const chartData4 = useMemo(() => {
     if (!transformedData4 || Object.keys(transformedData4).length === 0) {
       return { labels: [], datasets: [] };
     }
-
+  
     const labels = Object.keys(transformedData4);
     const data = labels.map(key => {
       const revenueData = transformedData4[key];
       let totalRevenue = 0;
-
+  
       Object.keys(revenueData).forEach(timeUnit => {
         totalRevenue += revenueData[timeUnit] || 0;
       });
-
-      return totalRevenue / 100000;
+  
+      return totalRevenue / 100000; // Convert to lac
     });
-
+  
     if (data.every(value => value === 0)) {
       return { labels: [], datasets: [] };
     }
-
+  
     const colors = [
       'rgba(255, 99, 132, 1)',
       'rgba(54, 162, 235, 1)',
@@ -1719,9 +1736,9 @@ const sortFiscalMonths = (a, b) => {
       'rgba(153, 102, 255, 1)',
       'rgba(255, 159, 64, 1)',
     ];
-
+  
     const datasetColors = labels.map((_, index) => colors[index % colors.length]);
-
+  
     return {
       labels,
       datasets: [
@@ -1735,7 +1752,7 @@ const sortFiscalMonths = (a, b) => {
       ],
     };
   }, [transformedData4, secondFilter, filter4]);
-
+  
   const chartOptions4 = useMemo(
     () => ({
       scales: {
@@ -1743,7 +1760,7 @@ const sortFiscalMonths = (a, b) => {
           beginAtZero: true,
           ticks: {
             callback: function (value) {
-              return value + ' L';
+              return value + ' L'; // Display as lac
             },
           },
           title: {
@@ -1754,8 +1771,7 @@ const sortFiscalMonths = (a, b) => {
       },
     }),
     [filter4, transformedData4, secondFilter],
-  );
-
+  )
   const onDateChange4 = val => {
     setStartDate1(val[0]);
     setEndDate1(val[1]);
@@ -1804,9 +1820,8 @@ const sortFiscalMonths = (a, b) => {
   // excel
 
   return (
-    <div className="overflow-y-auto px-3 col-span-10 overflow-hidden">
-      <div className="flex justify-between ">
-        <p className="font-bold py-5 text-lg">Total Revenue Box</p>
+    <div className="overflow-y-auto p-3 col-span-10 overflow-hidden">
+      {/* <div className="flex justify-between ">
         <div className="py-5 flex items-start">
           <Button
             leftIcon={<Download size="20" color="white" />}
@@ -1818,8 +1833,9 @@ const sortFiscalMonths = (a, b) => {
             Download Income Statement
           </Button>
         </div>
-      </div>
+      </div> */}
       <div className="border-2 p-5 border-black">
+        <p className="font-bold text-lg">Total Revenue </p>
         <div className="flex flex-col md:flex-row">
           <div className="flex flex-col p-6 w-[30rem]">
             <p className="font-bold text-center">Sales Trends Report</p>
@@ -2175,8 +2191,8 @@ const sortFiscalMonths = (a, b) => {
             <Line data={chartData3} options={chartOptions3} />
           </div>
         </div>
-        <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mx-10">
-          <Table COLUMNS={tableColumns3} data={tableData3} />
+        <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mx-10  h-[400px]">
+          <Table COLUMNS={tableColumns3} data={tableData3} showPagination={false}/>
         </div>
       </div>
 
@@ -2187,7 +2203,7 @@ const sortFiscalMonths = (a, b) => {
           by cities.
         </p>
         <div className="overflow-y-auto h-[400px]">
-          <Table data={processedData || []} COLUMNS={columns3} loading={isLoadingInventoryData} />
+          <Table data={processedData || []} COLUMNS={columns3} loading={isLoadingInventoryData} showPagination={false}/>
         </div>
       </div>
       <div className="col-span-12 md:col-span-12 lg:col-span-10 p-5 overflow-hidden">
@@ -2226,7 +2242,7 @@ const sortFiscalMonths = (a, b) => {
         </div>
         <div className="flex flex-col lg:flex-row gap-10  overflow-x-auto">
           <div className="overflow-y-auto w-[600px] h-[400px]">
-            <Table data={groupedData1 || []} COLUMNS={column1} loading={isLoadingInventoryData} />
+            <Table data={groupedData1 || []} COLUMNS={column1} loading={isLoadingInventoryData} showPagination={false}/>
           </div>
           <div className="flex flex-col">
             <p className="pb-6 font-bold text-center">Invoice Raised Vs Amount Collected</p>
