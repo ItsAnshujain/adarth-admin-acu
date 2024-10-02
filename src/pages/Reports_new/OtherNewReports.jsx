@@ -23,7 +23,6 @@ import { Loader } from 'react-feather';
 import { useSearchParams } from 'react-router-dom';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
 import { useFetchOperationalCostData } from '../../apis/queries/operationalCost.queries';
-import 'react-datepicker/dist/react-datepicker.css';
 import { Menu, Button, MultiSelect } from '@mantine/core';
 import DateRangeSelector from '../../components/DateRangeSelector';
 import Table from '../../components/Table/Table';
@@ -39,7 +38,6 @@ import {
   useBookingRevenueByIndustry,
 } from '../../apis/queries/booking.queries';
 
-import { Download } from 'react-feather';
 import { downloadExcel } from '../../apis/requests/report.requests';
 import { useDownloadExcel } from '../../apis/queries/report.queries';
 import { showNotification } from '@mantine/notifications';
@@ -48,6 +46,7 @@ import ViewByFilter from '../../components/modules/reports/ViewByFilter';
 import { DATE_FORMAT } from '../../utils/constants';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 dayjs.extend(quarterOfYear);
+
 import {
   Chart as ChartJS,
   ArcElement,
@@ -166,16 +165,7 @@ const list1 = [
   { label: 'Previous Year', value: 'previousYear' },
   { label: 'Current Year', value: 'currentYear' },
 ];
-const viewBy2 = {
-  reset: '',
-  mediaType: 'Media Type',
-  category: 'Category',
-};
 
-const list2 = [
-  { label: 'Media Type', value: 'mediaType' },
-  { label: 'Category', value: 'category' },
-];
 
 const barDataConfigByClient = {
   styles: {
@@ -1206,27 +1196,75 @@ const combinedChartOptions = useMemo(() => ({
     }
   }, [revenueGraphData, groupBy]);
 
+  
+  const filterBookingDataByDate = useCallback(() => {
+    if (!bookingData || !Array.isArray(bookingData.docs)) {
+      return [];
+    }
+  
+    const start = dayjs(startDate, DATE_FORMAT);
+    const end = dayjs(endDate, DATE_FORMAT);
+  
+    const filteredBookings = bookingData.docs.filter((booking) => {
+      const bookingDate = dayjs(booking.createdAt);
+      const isWithinRange = bookingDate.isBetween(start, end, 'day', '[]');
+     
+      return isWithinRange;
+    });
+
+    return filteredBookings;
+  }, [bookingData, startDate, endDate]);
+  
   const handleUpdatedReveueByIndustry = useCallback(() => {
+    const filteredData = filterBookingDataByDate();
+  
+    if (filteredData.length === 0) {
+      setUpdatedIndustry(prevState => ({
+        ...prevState,
+        labels: [],
+        datasets: [{ ...prevState.datasets[0], data: [] }],
+      }));
+      return;
+    }
+  
+    const industryRevenueMap = filteredData.reduce((acc, booking) => {
+      const industryName = booking?.campaign?.industry?.name; // Don't assign 'Unknown Industry'
+      const totalAmount = booking?.totalAmount || 0;
+  
+      // Skip if the industry name is undefined or if the total amount is 0
+      if (!industryName || totalAmount === 0) {
+        return acc;
+      }
+  
+      if (!acc[industryName]) {
+        acc[industryName] = 0;
+      }
+      acc[industryName] += totalAmount;
+  
+      return acc;
+    }, {});
+  
+    // Convert the amounts to lacs
+    const industryRevenueInLacs = Object.fromEntries(
+      Object.entries(industryRevenueMap).map(([industry, revenue]) => [industry, revenue / 100000])
+    );
+  
     const tempBarData = {
-      labels: [],
+      labels: Object.keys(industryRevenueInLacs),
       datasets: [
         {
-          label: 'Revenue by Industry',
-          data: [],
+          label: 'Revenue by Industry (in Lacs)',
+          data: Object.values(industryRevenueInLacs),
           ...barDataConfigByIndustry.styles,
         },
       ],
     };
-
-    if (revenueDataByIndustry) {
-      revenueDataByIndustry.forEach((item, index) => {
-        tempBarData.labels.push(item._id);
-        tempBarData.datasets[0].data.push(Number(item.total) || 0);
-      });
-      setUpdatedIndustry(tempBarData);
-    }
-  }, [revenueDataByIndustry]);
-
+  
+    setUpdatedIndustry(tempBarData);
+  }, [filterBookingDataByDate]);
+  
+  
+  
   useEffect(() => {
     handleUpdateRevenueGraph();
   }, [revenueGraphData, groupBy]);
@@ -1242,11 +1280,11 @@ const combinedChartOptions = useMemo(() => ({
   const { data: bookingData2 } = useBookingsNew(searchParams.toString());
 
   const additionalTagsQuery = useDistinctAdditionalTags();
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState(['best', 'ASTC']);
   const [startDate1, setStartDate1] = useState(null);
   const [endDate1, setEndDate1] = useState(null);
-  const [filter3, setFilter3] = useState('');
-  const [activeView3, setActiveView3] = useState('');
+  const [filter3, setFilter3] = useState('currentYear');
+  const [activeView3, setActiveView3] = useState('currentYear');
   const today = new Date();
   const threeMonthsAgo = new Date();
   threeMonthsAgo.setMonth(today.getMonth() - 3);
@@ -1350,33 +1388,39 @@ const combinedChartOptions = useMemo(() => ({
 
     return groupedData;
   }, [bookingData2, selectedTags, filter3, startDate1, endDate1]);
-
   const chartData3 = useMemo(() => {
     const selectedData = transformedData3 || {};
-
+  
     if (!selectedData || Object.keys(selectedData).length === 0) {
       return {
         labels: [],
         datasets: [],
       };
     }
-
+  
     let labels = Object.keys(selectedData);
-
+  
+    // Define the fiscal year month order (April to March)
+    const fiscalMonthLabels = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
+  
+    // Adjust the labels based on filter3
     if (filter3 === 'quarter') {
       labels = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
+    } else if (filter3 === 'previousYear' || filter3 === 'currentYear') {
+      // For fiscal years, reorder the months to start from April
+      labels = fiscalMonthLabels;
     }
-
+  
     const datasets = selectedTags.map((tag, index) => {
       const data = labels.map(label => {
         const tagRevenue = selectedData[label]?.[tag] || 0;
         return tagRevenue > 0 ? tagRevenue / 100000 : 0;
       });
-
+  
       const hue = ((index * 360) / selectedTags.length) % 360;
       const color = `hsl(${hue}, 70%, 50%)`;
       const colorRGBA = `hsla(${hue}, 70%, 50%, 0.2)`;
-
+  
       return {
         label: ` ${tag} `,
         data,
@@ -1385,7 +1429,7 @@ const combinedChartOptions = useMemo(() => ({
         tension: 0.1,
       };
     });
-
+  
     return {
       labels,
       datasets,
@@ -1447,11 +1491,11 @@ const combinedChartOptions = useMemo(() => ({
   };
 
   const handleReset3 = () => {
-    setFilter3('');
-    setActiveView3('');
+    setFilter3('currentYear');
+    setActiveView3('currentYear');
     setStartDate1(null);
     setEndDate1(null);
-    setSelectedTags([]);
+    setSelectedTags(['best', 'ASTC']);
   };
 
   const handleMenuItemClick3 = value => {
@@ -1646,102 +1690,117 @@ const combinedChartOptions = useMemo(() => ({
   }, [filter3, currentYear, startDate1, endDate1]);
   // tagwise report
 
-  // media type wise
-  const [filter4, setFilter4] = useState('');
-  const [activeView4, setActiveView4] = useState('');
-  const [secondFilter, setSecondFilter] = useState('');
+  // category type wise
+  const [filter4, setFilter4] = useState('currentYear');
+  const [activeView4, setActiveView4] = useState('currentYear');
+  const [secondFilter, setSecondFilter] = useState('category');
+  const [categoryList, setCategoryList] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('Billboards');
+  
+  useEffect(() => {
+    if (bookingData2) {
+      const categories = new Set();
+      bookingData2.forEach(booking => {
+        if (booking?.details && Array.isArray(booking.details)) {
+          booking.details.forEach(detail => {
+            const campaign = detail.campaign;
+            if (campaign?.spaces && Array.isArray(campaign.spaces)) {
+              campaign.spaces.forEach(space => {
+                const category = space.basicInformation?.category?.[0]?.name;
+                if (category) categories.add(category);
+              });
+            }
+          });
+        }
+      });
+      setCategoryList([...categories]);  // Only update the state if the category list changes
+    }
+  }, [bookingData2]);
+  
   const transformedData4 = useMemo(() => {
-    if (!bookingData2 || !secondFilter) return {};
-
+    if (!bookingData2 || !secondFilter || !selectedCategory) return {};
+  
+    console.log('Filtering for:', selectedCategory, 'with filter:', filter4);
+  
     const past7DaysRange = generatePast7Days(); // Ensure it returns dates in 'MM/DD/YYYY' format
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth();
     const fiscalStartMonth = 3; // Fiscal year starts in April (0-indexed)
-
+  
     const groupedData = bookingData2.reduce((acc, booking) => {
       booking.details.forEach(detail => {
         const campaign = detail.campaign;
         if (!campaign || !campaign.spaces || !Array.isArray(campaign.spaces)) return;
-
+  
         campaign.spaces.forEach(space => {
-          const mediaType = space.basicInformation?.mediaType?.name;
           const category = space.basicInformation?.category?.[0]?.name;
+          const subCategory = space.basicInformation?.subCategory?.name || 'Other Subcategory';  
           const date = new Date(detail.createdAt);
           const year = date.getFullYear();
-          const month = date.getMonth(); // 0-indexed
+          const month = date.getMonth();
           const day = date.getDate();
-          const formattedDay = `${month + 1}/${day}`; // e.g., '4/5' for April 5
+          const formattedDay = `${month + 1}/${day}`;
           const revenue = booking.totalAmount;
-
+  
+          if (category !== selectedCategory) return;
+  
           let timeUnit;
-
-          // Handle fiscal year and quarter logic
-          const fiscalYear = month >= fiscalStartMonth ? year : year - 1; // Fiscal year starts in April
+  
+          const fiscalYear = month >= fiscalStartMonth ? year : year - 1;
           const fiscalMonth = (month + 12 - fiscalStartMonth) % 12;
-          const fiscalQuarter = Math.ceil((fiscalMonth + 1) / 3); // Quarterly calculation based on fiscal month
-
-          if (
-            filter4 === 'past10Years' &&
-            fiscalYear >= currentYear - 10 &&
-            fiscalYear < currentYear
-          ) {
+          const fiscalQuarter = Math.ceil((fiscalMonth + 1) / 3);
+  
+          if (filter4 === 'past10Years' && fiscalYear >= currentYear - 10 && fiscalYear < currentYear) {
             timeUnit = fiscalYear;
-          } else if (
-            filter4 === 'past5Years' &&
-            fiscalYear >= currentYear - 5 &&
-            fiscalYear < currentYear
-          ) {
+          } else if (filter4 === 'past5Years' && fiscalYear >= currentYear - 5 && fiscalYear < currentYear) {
             timeUnit = fiscalYear;
           } else if (filter4 === 'previousYear' && fiscalYear === currentYear - 1) {
             timeUnit = new Date(0, month).toLocaleString('default', { month: 'short' });
           } else if (filter4 === 'currentYear' && fiscalYear === currentYear) {
             timeUnit = new Date(0, month).toLocaleString('default', { month: 'short' });
           } else if (filter4 === 'currentMonth' && year === currentYear && month === currentMonth) {
-            // Filter for current month
             timeUnit = day;
           } else if (filter4 === 'past7' && past7DaysRange.includes(date.toLocaleDateString())) {
-            // Match bookings in the past 7 days
             timeUnit = formattedDay;
           } else if (
             filter4 === 'customDate' &&
             startDate1 &&
             endDate1 &&
-            date.getTime() >= new Date(startDate1).setHours(0, 0, 0, 0) && // Start of the day for startDate1
-            date.getTime() <= new Date(endDate1).setHours(23, 59, 59, 999) // End of the day for endDate1
+            date.getTime() >= new Date(startDate1).setHours(0, 0, 0, 0) && 
+            date.getTime() <= new Date(endDate1).setHours(23, 59, 59, 999)
           ) {
-            // Match bookings in the custom date range
             timeUnit = formattedDay;
           } else if (filter4 === 'quarter' && fiscalYear === currentYear) {
-            // Match bookings in the current fiscal year and group by quarter
             const quarterly = Math.ceil((date.getMonth() + 1) / 3);
             timeUnit = `Q${quarterly}`;
           }
-
+  
           if (!timeUnit) return;
-
-          const groupKey = secondFilter === 'mediaType' ? mediaType : category;
-          if (!groupKey) return;
-
-          if (!acc[groupKey]) acc[groupKey] = {};
-          if (!acc[groupKey][timeUnit]) acc[groupKey][timeUnit] = 0;
-
-          acc[groupKey][timeUnit] += revenue;
+  
+          if (!acc[subCategory]) acc[subCategory] = {};
+          if (!acc[subCategory][timeUnit]) acc[subCategory][timeUnit] = 0;
+  
+          acc[subCategory][timeUnit] += revenue;
         });
       });
       return acc;
     }, {});
-
+  
+    console.log('Grouped Data:', groupedData);
+  
     return groupedData;
-  }, [bookingData2, filter4, secondFilter, startDate1, endDate1]);
-
+  }, [bookingData2, filter4, secondFilter, selectedCategory, startDate1, endDate1]);
+  
+  
+ 
   const chartData4 = useMemo(() => {
     if (!transformedData4 || Object.keys(transformedData4).length === 0) {
       return { labels: [], datasets: [] };
     }
 
     const labels = Object.keys(transformedData4);
-    const data = labels.map(key => {
-      const revenueData = transformedData4[key];
+    const data = labels.map(subCategory => {
+      const revenueData = transformedData4[subCategory];
       let totalRevenue = 0;
 
       Object.keys(revenueData).forEach(timeUnit => {
@@ -1763,17 +1822,16 @@ const combinedChartOptions = useMemo(() => ({
       'rgba(153, 102, 255, 1)',
       'rgba(255, 159, 64, 1)',
     ];
-
-    const datasetColors = labels.map((_, index) => colors[index % colors.length]);
+    
 
     return {
       labels,
       datasets: [
         {
-          label: `Revenue by ${secondFilter === 'category' ? 'Category' : 'Media Type'}`,
+          label: `Revenue by Subcategory`,
           data,
-          backgroundColor: datasetColors,
-          borderColor: datasetColors.map(color => color.replace('1)', '0.8)')),
+          backgroundColor: colors,
+          borderColor: colors.map(color => color.replace('1)', '0.8)')),
           borderWidth: 1,
         },
       ],
@@ -1796,26 +1854,64 @@ const combinedChartOptions = useMemo(() => ({
           },
         },
       },
+      plugins: {
+        datalabels: {
+          display: true,
+          anchor: 'end',
+          align: 'end',
+          formatter: (value, context) => {
+            // Removing the context.dataset.type condition to ensure it works for Bar charts
+            if (value > 0) {
+              return `${value.toFixed(0)}`; // Format the value as "X.XX L"
+            }
+            return ''; // Do not show labels for 0 or trend line
+          },
+          color: '#000', // Label color
+          font: {
+            weight: 'light',
+            size: 12, // Increase the size for visibility
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: context => {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                label += `${context.parsed.y.toFixed(2)} L`; // Tooltip formatting with two decimal places
+              }
+              return label;
+            },
+          },
+        },
+      },
     }),
     [filter4, transformedData4, secondFilter],
   );
+
   const onDateChange4 = val => {
     setStartDate1(val[0]);
     setEndDate1(val[1]);
   };
+
   const handleReset4 = () => {
-    setFilter4('');
-    setActiveView4('');
-    setSecondFilter('');
+    setFilter4('currentYear');
+    setActiveView4('currentYear');
+    setSecondFilter('category');
+    setSelectedCategory('Billboards');
     setStartDate1(null);
     setEndDate1(null);
+    setCategoryList([]);  // Trigger chart re-render
   };
+  
 
   const handleMenuItemClick4 = value => {
     setFilter4(value);
     setActiveView4(value);
   };
-  // media type wise
+  // category type wise
 
   // excel
   const { mutateAsync, isLoading: isDownloadLoading } = useDownloadExcel();
@@ -1997,14 +2093,15 @@ const combinedChartOptions = useMemo(() => ({
       </div>
       <div className={classNames('overflow-y-auto px-5 col-span-10 overflow-x-hidden')}>
           <div className="my-6 w-[60rem]" id="revenue-pdf">
-            <div className="h-[60px] border-b my-5 border-gray-450 flex ">
-              <ViewByFilter handleViewBy={handleRevenueGraphViewBy} />
-            </div>
+          
             <div className="flex gap-8">
               <div className="w-[70%] flex flex-col justify-between min-h-[300px]">
                 <div className="flex justify-between items-center">
                   <p className="font-bold">Revenue Graph</p>
                 </div>
+                <div className="h-[60px] mt-5 border-gray-450 flex ">
+              <ViewByFilter handleViewBy={handleRevenueGraphViewBy} />
+            </div>
                 {isRevenueGraphLoading ? (
                   <Loader className="m-auto" />
                 ) : (
@@ -2024,9 +2121,9 @@ const combinedChartOptions = useMemo(() => ({
                   </div>
                 )}
               </div>
-              <div className="w-[30%] flex flex-col">
+              <div className="w-[30%] flex flex-col mt-10">
                 <div className="flex justify-between items-start">
-                  <p className="font-bold">Industry wise revenue graph</p>
+                  <p className="font-bold ml-9">Industry wise revenue graph</p>
                 </div>
                 <div className="w-80 m-auto">
                   {isByIndustryLoading ? (
@@ -2044,120 +2141,76 @@ const combinedChartOptions = useMemo(() => ({
               </div>
             </div>
           </div>
-        </div>
+      </div>
 
-        <div className="flex flex-col px-2 overflow-hidden">
-          <div className="flex flex-col md:flex-row  w-[60rem]">
-            <div className="pt-6 w-[40rem]">
-              <p className="font-bold ">Media Type / Category Wise Filtered Revenue Report</p>
-              <p className="text-sm text-gray-600 italic py-4">
-                This chart shows the filtered revenue data over different time periods.
-              </p>
-              <div className="flex">
-                <div>
-                  <Menu shadow="md" width={130}>
-                    <Menu.Target>
-                      <Button className="secondary-button">
-                        View By: {viewBy[activeView4] || 'Select'}
-                      </Button>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                      {list.map(({ label, value }) => (
-                        <Menu.Item
-                          key={value}
-                          onClick={() => handleMenuItemClick4(value)}
-                          className={classNames(
-                            activeView4 === value && 'text-purple-450 font-medium',
-                          )}
-                        >
-                          {label}
-                        </Menu.Item>
-                      ))}
-                    </Menu.Dropdown>
-                  </Menu>
-                </div>
-                <div className="mx-2">
-                  <Menu shadow="md" width={130}>
-                    <Menu.Target>
-                      <Button className="secondary-button">
-                        View By: {viewBy2[secondFilter] || 'Select'}
-                      </Button>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                      {list2.map(({ label, value }) => (
-                        <Menu.Item
-                          key={value}
-                          onClick={() => setSecondFilter(value)}
-                          className={classNames(
-                            secondFilter === value && 'text-purple-450 font-medium',
-                          )}
-                        >
-                          {label}
-                        </Menu.Item>
-                      ))}
-                    </Menu.Dropdown>
-                  </Menu>
-                </div>
-                <div>
-                  {filter4 && (
-                    <Button onClick={handleReset4} className="mx-2 secondary-button">
-                      Reset
-                    </Button>
-                  )}
-                </div>
-              </div>
-              {filter4 === 'customDate' && (
-                <div className="flex flex-col items-start space-y-4 py-2 ">
-                  <DateRangeSelector
-                    dateValue={[startDate1, endDate1]}
-                    onChange={onDateChange4}
-                    minDate={threeMonthsAgo}
-                    maxDate={today}
-                  />
-                </div>
-              )}
-
-              <div className=" my-4">
-                <Bar data={chartData4} options={chartOptions4} />
-              </div>
+        <div className="flex flex-col md:flex-row  w-[60rem] px-4">
+        <div className="pt-6 w-[40rem]">
+          <p className="font-bold "> Category Wise Filtered Revenue Report</p>
+          <p className="text-sm text-gray-600 italic py-4">
+            This chart shows the filtered revenue data over different time periods.
+          </p>
+          <div className="flex">
+            <div>
+              <Menu shadow="md" width={130}>
+                <Menu.Target>
+                  <Button className="secondary-button">
+                    View By: {viewBy[activeView4] || 'Select'}
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {list.map(({ label, value }) => (
+                    <Menu.Item
+                      key={value}
+                      onClick={() => handleMenuItemClick4(value)}
+                      className={classNames(activeView4 === value && 'text-purple-450 font-medium')}
+                    >
+                      {label}
+                    </Menu.Item>
+                  ))}
+                </Menu.Dropdown>
+              </Menu>
             </div>
-            <div className=" flex text-center">
-              <div className="mb-4 items-center flex flex-col">
-                <p className="font-bold px-4 text-center">Operational cost bifurcation</p>
-                <p className="text-sm text-gray-600 italic py-4">
-                  This chart displays the breakdown of operational costs by different cost types.
-                </p>
-                <div className=" w-96 ">
-                  <Doughnut
-                    data={doughnutChartData}
-                    options={{
-                      ...barDataConfigByClient.options,
-                      plugins: {
-                        legend: {
-                          display: true,
-                          position: 'right', // Move the legend to the right of the chart
-                          align: 'center', // Align the legends centrally
-                          labels: {
-                            boxWidth: 10, // Adjust the size of the color box
-                            padding: 15, // Add padding between labels and boxes
-                          },
-                        },
-                      },
-                      layout: {
-                        padding: {
-                          right: 0, // Add some padding on the right side
-                        },
-                      },
-                    }}
-                    height={400}
-                    width={400}
-                  />
-                </div>
-              </div>
+            <div className="mx-2">
+            <Menu shadow="md" width={130}>
+              <Menu.Target>
+                <Button className="secondary-button">
+                  {selectedCategory ? `Category: ${selectedCategory}` : 'Select Category'}
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {categoryList.map(category => (
+                  <Menu.Item key={category} onClick={() => setSelectedCategory(category)}>
+                    {category}
+                  </Menu.Item>
+                ))}
+              </Menu.Dropdown>
+            </Menu>
+            </div>
+            <div>
+              {filter4 && (
+                <Button onClick={handleReset4} className="mx-2 secondary-button">
+                  Reset
+                </Button>
+              )}
             </div>
           </div>
-        </div>
+          {filter4 === 'customDate' && (
+            <div className="flex flex-col items-start space-y-4 py-2 ">
+              <DateRangeSelector
+                dateValue={[startDate1, endDate1]}
+                onChange={onDateChange4}
+                minDate={threeMonthsAgo}
+                maxDate={today}
+              />
+            </div>
+          )}
 
+          <div className=" my-4">
+            <Bar  ref={chartRef} data={chartData4} options={chartOptions4}  plugins={[ChartDataLabels]}/>
+          </div>
+        </div>
+        
+      </div>
        
         
       </div>
