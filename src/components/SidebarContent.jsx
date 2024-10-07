@@ -149,12 +149,12 @@ const SidebarContent = ({ className }) => {
       //   icon: ReportIcon,
       //   acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
       // },
-      // {
-      //   label: 'SampleRepo',
-      //   path: '/sampleReport',
-      //   icon: ReportIcon,
-      //   acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
-      // },
+      {
+        label: 'SampleRepo',
+        path: '/sampleReport',
+        icon: ReportIcon,
+        acceptedRoles: [ROLES.ADMIN, ROLES.MANAGEMENT, ROLES.SUPERVISOR, ROLES.ASSOCIATE],
+      },
     ],
     [isMasterLoaded],
   );

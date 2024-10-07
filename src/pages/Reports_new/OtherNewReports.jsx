@@ -20,10 +20,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { useInfiniteCompanies } from '../../apis/queries/companies.queries';
 import useUserStore from '../../store/user.store';
 import { Loader } from 'react-feather';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
 import { useFetchOperationalCostData } from '../../apis/queries/operationalCost.queries';
-import { Menu, Button, MultiSelect } from '@mantine/core';
+import { Menu, Button, MultiSelect, Text } from '@mantine/core';
 import DateRangeSelector from '../../components/DateRangeSelector';
 import Table from '../../components/Table/Table';
 import toIndianCurrency from '../../utils/currencyFormat';
@@ -47,6 +47,7 @@ import { DATE_FORMAT } from '../../utils/constants';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 dayjs.extend(quarterOfYear);
 
+import NoData from '../../components/shared/NoData';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -77,9 +78,72 @@ ChartJS.register(
   LogarithmicScale,
 );
 Chart.register(...registerables);
+const customLinesPlugin = {
+  id: 'customLines',
+  afterDraw(chart) {
+    const ctx = chart.ctx;
+    if (!ctx) return;
+
+    const dataset = chart.getDatasetMeta(0).data;
+
+    dataset.forEach((arc, index) => {
+      const { startAngle, endAngle, outerRadius, x, y } = arc.getProps(
+        ['startAngle', 'endAngle', 'outerRadius', 'x', 'y'],
+        true,
+      );
+
+      const angle = (startAngle + endAngle) / 2;
+      const xEdge = Math.cos(angle) * outerRadius;
+      const yEdge = Math.sin(angle) * outerRadius;
+
+      const xLine = xEdge + Math.cos(angle) * 20;
+      const yLine = yEdge + Math.sin(angle) * 20;
+
+      const xEnd = x + xLine;
+      const yEnd = y + yLine;
+
+      const labelOffset = xLine > 0 ? 40 : -40;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x + xEdge, y + yEdge); // Starting from the edge of the arc
+      ctx.lineTo(xEnd, yEnd);
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
+    });
+  },
+};
+
 const barDataConfigByIndustry = {
   options: {
     responsive: true,
+    plugins: {
+      datalabels: {
+        color: '#333',
+        formatter: value => {
+          // Convert value to lacs and format accordingly
+          const valueInLacs = value / 100000;
+          return valueInLacs >= 1 ? Math.floor(valueInLacs) : valueInLacs.toFixed(1);
+        },
+        anchor: 'end', // Anchor position for the data labels
+        align: 'end', // Alignment of the data labels
+        offset: 10, // Offset for the data labels
+      },
+      customLines: true, // Adding custom lines plugin
+      tooltip: {
+        callbacks: {
+          label: function(tooltipItem) {
+            // Access the value and convert it to lacs
+            const value = tooltipItem.raw;
+            const valueInLacs = value / 100000;
+            const formattedValue = `${valueInLacs.toFixed(2)}L`; // Show value in lacs with two decimal places
+            return `Revenue: ${formattedValue}`;
+          }
+        }
+      }
+    },
   },
   styles: {
     backgroundColor: [
@@ -166,7 +230,6 @@ const list1 = [
   { label: 'Current Year', value: 'currentYear' },
 ];
 
-
 const barDataConfigByClient = {
   styles: {
     backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
@@ -181,12 +244,6 @@ const barDataConfigByClient = {
 const normalizeString = str => {
   if (!str) return '';
   return str.trim().toLowerCase().replace(/\s+/g, ' ');
-};
-const config = {
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-  },
 };
 
 const OtherNewReports = () => {
@@ -210,8 +267,8 @@ const OtherNewReports = () => {
   );
 
   const dummyStats = {
-    tradedsite: userSales.data?.totalTradedAmount || 0,
-    ownsite: userSales.data?.ownSiteSales || 0,
+    tradedsite: (userSales.data?.totalTradedAmount / 100000).toFixed(2) || 0,
+    ownsite: (userSales.data?.ownSiteSales / 100000).toFixed(2) || 0,
   };
 
   const printSitesData = useMemo(
@@ -227,6 +284,37 @@ const OtherNewReports = () => {
     }),
     [dummyStats.tradedsite, dummyStats.ownsite],
   );
+  const config = {
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+      
+        datalabels: {
+          color: '#333',
+          formatter: value => {
+            return `${value}L`; // Append 'L' to the value
+          },
+          anchor: 'end',
+          align: 'end',
+          offset: 20,
+        },
+        customLines: true, // Custom lines plugin activation
+      },
+      layout: {
+        padding: {
+          top: 70,
+          bottom: 70,
+        },
+      },
+      elements: {
+        arc: {
+          borderWidth: 1,
+        },
+      },
+      cutout: '65%', // Doughnut cutout
+    },
+  };
 
   const [searchParams] = useSearchParams({
     page: 1,
@@ -267,22 +355,21 @@ const OtherNewReports = () => {
     }
   }, [bookingData]);
 
-  
   const aggregateSalesData = data => {
     const aggregated = {};
-    
+
     monthsInShort.forEach((_, index) => {
       aggregated[index] = {};
       pastYears.forEach(year => {
         aggregated[index][year] = 0;
       });
     });
-    
+
     data.forEach(item => {
       try {
         const date = new Date(item.createdAt);
         if (isNaN(date.getTime())) throw new Error('Invalid date');
-        
+
         const dbMonth = date.getMonth();
         const month = monthMapping[dbMonth];
         const year = date.getFullYear();
@@ -322,92 +409,93 @@ const OtherNewReports = () => {
   const trendLineData = useMemo(() => calculateTrendLineData(), [salesData]);
 
   const chartRef = useRef(null); // Reference to the chart instance
-      
- 
+
   const combinedChartData = useMemo(() => {
     const colors = ['#FF6384', '#914EFB', '#36A2EB'];
 
     return {
-        labels: monthsInShort,
-        datasets: [
-            ...pastYears.map((year, idx) => ({
-                label: year,
-                data: salesData.map(data => data[`year${year}`] || 0), // Fallback to 0 if data not present
-                backgroundColor: colors[idx % colors.length],
-                borderColor: colors[idx % colors.length],
-                borderWidth: 1,
-                type: 'bar',
-                yAxisID: 'y',
-            })),
-            {
-                label: 'Trend',
-                data: trendLineData,
-                borderColor: '#EF4444',
-                fill: false,
-                tension: 0.1,
-                pointBackgroundColor: '#EF4444',
-                type: 'line',
-            },
-        ],
+      labels: monthsInShort,
+      datasets: [
+        ...pastYears.map((year, idx) => ({
+          label: year,
+          data: salesData.map(data => data[`year${year}`] || 0), // Fallback to 0 if data not present
+          backgroundColor: colors[idx % colors.length],
+          borderColor: colors[idx % colors.length],
+          borderWidth: 1,
+          type: 'bar',
+          yAxisID: 'y',
+        })),
+        {
+          label: 'Trend',
+          data: trendLineData,
+          borderColor: '#EF4444',
+          fill: false,
+          tension: 0.1,
+          pointBackgroundColor: '#EF4444',
+          type: 'line',
+        },
+      ],
     };
-}, [salesData, trendLineData]);
+  }, [salesData, trendLineData]);
 
-const combinedChartOptions = useMemo(() => ({
-  responsive: true,
-  scales: {
-      x: {
+  const combinedChartOptions = useMemo(
+    () => ({
+      responsive: true,
+      scales: {
+        x: {
           title: {
-              display: true,
-              text: 'Month',
+            display: true,
+            text: 'Month',
           },
-      },
-      y: {
+        },
+        y: {
           title: {
-              display: true,
-              text: 'Sales Amount (lac)',
+            display: true,
+            text: 'Sales Amount (lac)',
           },
           ticks: {
-              callback: value => `${value.toFixed(2)} L`, // Ensure two decimal places on Y-axis
+            callback: value => `${value.toFixed(2)} L`, // Ensure two decimal places on Y-axis
           },
           beginAtZero: true,
           position: 'left',
           max: Math.max(...salesData.map(d => Math.max(d.year2021, d.year2022, d.year2023))) + 5, // Adjust max value
+        },
       },
-  },
-  plugins: {
-      datalabels: {
+      plugins: {
+        datalabels: {
           display: true,
           anchor: 'end',
           align: 'end',
           formatter: (value, context) => {
-              if (context.dataset.type === 'bar' && value > 0) {
-                  return `${value.toFixed(0)}`; // Format the value as "X.XX L"
-              }
-              return ''; // Do not show labels for 0 or trend line
+            if (context.dataset.type === 'bar' && value > 0) {
+              return `${value.toFixed(0)}`; // Format the value as "X.XX L"
+            }
+            return ''; // Do not show labels for 0 or trend line
           },
           color: '#000', // Label color
           font: {
-              weight: 'light',
-              size: 10,
+            weight: 'light',
+            size: 10,
           },
-      },
-      tooltip: {
+        },
+        tooltip: {
           callbacks: {
-              label: context => {
-                  let label = context.dataset.label || '';
-                  if (label) {
-                      label += ': ';
-                  }
-                  if (context.parsed.y !== null) {
-                      label += `${context.parsed.y.toFixed(2)} L`; // Tooltip formatting with two decimal places
-                  }
-                  return label;
-              },
+            label: context => {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                label += `${context.parsed.y.toFixed(2)} L`; // Tooltip formatting with two decimal places
+              }
+              return label;
+            },
           },
+        },
       },
-  },
-}), [salesData]);
-
+    }),
+    [salesData],
+  );
 
   const parentCompaniesQuery = useInfiniteCompanies({
     page: 1,
@@ -492,7 +580,7 @@ const combinedChartOptions = useMemo(() => ({
     }),
   );
 
-  const { data: operationalCostData } = useFetchOperationalCostData();
+  const { data: operationalCostData, isLoading: isStatsLoading } = useFetchOperationalCostData();
 
   const totalAmountsByType = useMemo(() => {
     if (!operationalCostData || !operationalCostTypes) return {};
@@ -550,6 +638,55 @@ const combinedChartOptions = useMemo(() => ({
       ],
     };
   }, [chartLabels, chartData2]);
+
+  const doughnutChartOptions = {
+    plugins: {
+      legend: {
+        display: true,
+        position: 'right',
+        align: 'center',
+        labels: {
+          boxWidth: 20,
+          padding: 20,
+        },
+      },
+      datalabels: {
+        color: '#333',
+        formatter: value => {
+          const inLacs = value / 100000;
+          return inLacs >= 1 ? Math.floor(inLacs) : inLacs.toFixed(1); // Keep 2 decimal places
+        },
+        anchor: 'end',
+        align: 'end',
+        offset: 20,
+      },
+      customLines: true, // Custom plugin if needed
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          label: function (tooltipItem) {
+            const value = tooltipItem.raw;
+            const valueInLacs = value / 100000;
+            const formattedValue = `${valueInLacs.toFixed(2)}L`;
+            return `Operational Costs: ${formattedValue}`;
+          },
+        },
+      },
+    },
+    layout: {
+      padding: {
+        left: 70,
+        right: 70,
+      },
+    },
+    elements: {
+      arc: {
+        borderWidth: 1,
+      },
+    },
+    cutout: '65%',
+    events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
+  };
 
   const [filter, setFilter] = useState('currentYear');
   const [activeView, setActiveView] = useState('currentYear');
@@ -730,18 +867,18 @@ const combinedChartOptions = useMemo(() => ({
   const chartData1 = useMemo(() => {
     // Default to 'currentYear' if no valid filter is set
     let selectedData = transformedData[filter] || transformedData.currentYear || [];
-  
+
     // Format the selected data based on the filter
     const filteredData = selectedData.map(d => ({
       ...d,
       revenue: d.revenue > 0 ? d.revenue / 100000 : 0, // Convert revenue to lacs
     }));
-  
+
     // If filter is 'customDate', ensure data is sorted by date
     if (filter === 'customDate') {
       filteredData.sort((a, b) => new Date(a.day) - new Date(b.day));
     }
-  
+
     // Return the chart data
     return {
       labels: filteredData.map(d => d.year || d.month || d.quarter || d.day),
@@ -756,7 +893,7 @@ const combinedChartOptions = useMemo(() => ({
       ],
     };
   }, [transformedData, filter]);
-  
+
   const chartOptions1 = useMemo(
     () => ({
       responsive: true,
@@ -765,7 +902,7 @@ const combinedChartOptions = useMemo(() => ({
           title: {
             display: true,
             text:
-              filter === 'past10Years' || filter==='past5Years'
+              filter === 'past10Years' || filter === 'past5Years'
                 ? 'Years'
                 : filter === 'quarter'
                 ? 'Quarters'
@@ -778,7 +915,9 @@ const combinedChartOptions = useMemo(() => ({
           ticks: {
             callback: function (value, index, values) {
               if (filter === 'quarter') {
-                return ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'][index];
+                return ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'][
+                  index
+                ];
               }
               return this.getLabelForValue(value);
             },
@@ -795,6 +934,19 @@ const combinedChartOptions = useMemo(() => ({
         },
       },
       plugins: {
+        datalabels: {
+          display: true,
+          anchor: 'end',
+          align: 'end',
+          formatter: (value, context) => {
+          return value >= 1 ? Math.floor(value) : value.toFixed(1); 
+          },
+          color: '#000', // Label color
+          font: {
+            weight: 'light',
+            size: 10,
+          },
+        },
         tooltip: {
           callbacks: {
             label: context => {
@@ -803,7 +955,7 @@ const combinedChartOptions = useMemo(() => ({
                 label += ': ';
               }
               if (context.parsed.y !== null) {
-                label += `${context.parsed.y} L`; // Format the tooltip to show Lacs
+                label += `${context.parsed.y.toFixed(2)} L`; // Format the tooltip to show Lacs
               }
               return label;
             },
@@ -811,9 +963,8 @@ const combinedChartOptions = useMemo(() => ({
         },
       },
     }),
-    [filter, transformedData] // Dynamically update when filter or data changes
+    [filter, transformedData], // Dynamically update when filter or data changes
   );
-  
 
   const onDateChange = val => {
     setStartDate2(val[0]);
@@ -897,19 +1048,19 @@ const combinedChartOptions = useMemo(() => ({
         Cell: info => <p>{info.value}</p>,
       },
       {
-        Header: 'Price (lac)',
+        Header: 'Price ',
         accessor: 'totalPrice',
         disableSortBy: true,
         Cell: info => <p>{(info.value / 100000).toFixed(2)}</p>,
       },
       {
-        Header: 'Traded Price (lac)',
+        Header: 'Traded Price',
         accessor: 'totalTradedAmount',
         disableSortBy: true,
         Cell: info => <p>{(info.value / 100000).toFixed(2)}</p>,
       },
       {
-        Header: 'Traded Margin (lac)',
+        Header: 'Traded Margin',
         accessor: 'tradedMargin',
         disableSortBy: true,
         Cell: info => <p>{(info.value / 100000).toFixed(2)}</p>,
@@ -1037,13 +1188,13 @@ const combinedChartOptions = useMemo(() => ({
         Cell: info => <p>{info.row.original.month}</p>,
       },
       {
-        Header: 'Invoice Raised (lac)',
+        Header: 'Invoice Raised ',
         accessor: 'outStandingInvoice',
         disableSortBy: true,
         Cell: info => <p>{toIndianCurrency(info.row.original.outStandingInvoice)}</p>,
       },
       {
-        Header: 'Amount Collected (lac)',
+        Header: 'Amount Collected ',
         accessor: 'totalPayment',
         disableSortBy: true,
         Cell: info => <p>{toIndianCurrency(info.row.original.totalPayment)}</p>,
@@ -1091,6 +1242,47 @@ const combinedChartOptions = useMemo(() => ({
       },
     ],
   });
+  const options3 = {
+    scales: {
+      y: {
+        ticks: {
+          callback: function (value) {
+            return `${(value / 100000).toFixed(2)} L`; // Format y-axis labels in "Lac"
+          },
+        },
+      },
+    },
+    plugins: {
+      datalabels: {
+        display: true,
+        anchor: 'end',
+        align: 'end',
+        formatter: (value, context) => {
+          const inLacs = value / 100000;
+          return inLacs >= 1 ? Math.floor(inLacs) : inLacs.toFixed(1);
+        },
+        color: '#000', // Label color
+        font: {
+          weight: 'light',
+          size: 10,
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.y !== null) {
+              label += `${(context.parsed.y / 100000).toFixed(2)} L`; // Format tooltips in "Lac"
+            }
+            return label;
+          },
+        },
+      },
+    },
+  };
 
   const [updatedIndustry, setUpdatedIndustry] = useState({
     id: uuidv4(),
@@ -1107,8 +1299,8 @@ const combinedChartOptions = useMemo(() => ({
   const { data: revenueGraphData, isLoading: isRevenueGraphLoading } =
     useBookingReportByRevenueGraph(
       serialize({
-        startDate,
-        endDate,
+        startDate: startDate,
+        endDate: endDate,
         groupBy,
       }),
     );
@@ -1139,6 +1331,7 @@ const combinedChartOptions = useMemo(() => ({
       setGroupBy('quarter');
     }
   };
+
   const handleUpdateRevenueGraph = useCallback(() => {
     if (revenueGraphData) {
       const tempData = {
@@ -1196,82 +1389,55 @@ const combinedChartOptions = useMemo(() => ({
     }
   }, [revenueGraphData, groupBy]);
 
-  
   const filterBookingDataByDate = useCallback(() => {
     if (!bookingData || !Array.isArray(bookingData.docs)) {
-      return [];
+      return []; // Return an empty array if bookingData is undefined or not an array
     }
-  
-    const start = dayjs(startDate, DATE_FORMAT);
-    const end = dayjs(endDate, DATE_FORMAT);
-  
-    const filteredBookings = bookingData.docs.filter((booking) => {
-      const bookingDate = dayjs(booking.createdAt);
-      const isWithinRange = bookingDate.isBetween(start, end, 'day', '[]');
-     
-      return isWithinRange;
-    });
 
-    return filteredBookings;
+    return bookingData.docs.filter(booking => {
+      const bookingDate = dayjs(booking.createdAt);
+      return bookingDate.isBetween(dayjs(startDate), dayjs(endDate), 'day', '[]');
+    });
   }, [bookingData, startDate, endDate]);
-  
+
   const handleUpdatedReveueByIndustry = useCallback(() => {
     const filteredData = filterBookingDataByDate();
-  
-    if (filteredData.length === 0) {
-      setUpdatedIndustry(prevState => ({
-        ...prevState,
-        labels: [],
-        datasets: [{ ...prevState.datasets[0], data: [] }],
-      }));
-      return;
-    }
-  
+
     const industryRevenueMap = filteredData.reduce((acc, booking) => {
-      const industryName = booking?.campaign?.industry?.name; // Don't assign 'Unknown Industry'
+      const industryName = booking?.campaign?.industry?.name || 'Unknown Industry';
       const totalAmount = booking?.totalAmount || 0;
-  
-      // Skip if the industry name is undefined or if the total amount is 0
-      if (!industryName || totalAmount === 0) {
-        return acc;
-      }
-  
+
       if (!acc[industryName]) {
         acc[industryName] = 0;
       }
       acc[industryName] += totalAmount;
-  
+
       return acc;
     }, {});
-  
-    // Convert the amounts to lacs
-    const industryRevenueInLacs = Object.fromEntries(
-      Object.entries(industryRevenueMap).map(([industry, revenue]) => [industry, revenue / 100000])
-    );
-  
+
     const tempBarData = {
-      labels: Object.keys(industryRevenueInLacs),
+      labels: Object.keys(industryRevenueMap),
       datasets: [
         {
-          label: 'Revenue by Industry (in Lacs)',
-          data: Object.values(industryRevenueInLacs),
+          label: 'Revenue by Industry',
+          data: Object.values(industryRevenueMap),
           ...barDataConfigByIndustry.styles,
         },
       ],
     };
-  
+
     setUpdatedIndustry(tempBarData);
   }, [filterBookingDataByDate]);
-  
-  
-  
+
+  useEffect(() => {
+    if (!isLoadingBookingData && bookingData) {
+      handleUpdatedReveueByIndustry(); // Only process data once it's fully loaded
+    }
+  }, [handleUpdatedReveueByIndustry, isLoadingBookingData, bookingData]);
+
   useEffect(() => {
     handleUpdateRevenueGraph();
   }, [revenueGraphData, groupBy]);
-
-  useEffect(() => {
-    handleUpdatedReveueByIndustry();
-  }, [revenueDataByIndustry]);
 
   // other components
 
@@ -1390,19 +1556,32 @@ const combinedChartOptions = useMemo(() => ({
   }, [bookingData2, selectedTags, filter3, startDate1, endDate1]);
   const chartData3 = useMemo(() => {
     const selectedData = transformedData3 || {};
-  
+
     if (!selectedData || Object.keys(selectedData).length === 0) {
       return {
         labels: [],
         datasets: [],
       };
     }
-  
+
     let labels = Object.keys(selectedData);
-  
+
     // Define the fiscal year month order (April to March)
-    const fiscalMonthLabels = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
-  
+    const fiscalMonthLabels = [
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+    ];
+
     // Adjust the labels based on filter3
     if (filter3 === 'quarter') {
       labels = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
@@ -1410,17 +1589,17 @@ const combinedChartOptions = useMemo(() => ({
       // For fiscal years, reorder the months to start from April
       labels = fiscalMonthLabels;
     }
-  
+
     const datasets = selectedTags.map((tag, index) => {
       const data = labels.map(label => {
         const tagRevenue = selectedData[label]?.[tag] || 0;
         return tagRevenue > 0 ? tagRevenue / 100000 : 0;
       });
-  
+
       const hue = ((index * 360) / selectedTags.length) % 360;
       const color = `hsl(${hue}, 70%, 50%)`;
       const colorRGBA = `hsla(${hue}, 70%, 50%, 0.2)`;
-  
+
       return {
         label: ` ${tag} `,
         data,
@@ -1429,7 +1608,7 @@ const combinedChartOptions = useMemo(() => ({
         tension: 0.1,
       };
     });
-  
+
     return {
       labels,
       datasets,
@@ -1466,6 +1645,22 @@ const combinedChartOptions = useMemo(() => ({
         },
       },
       plugins: {
+        datalabels: {
+          display: true,
+          anchor: 'end',
+          align: 'end',
+          formatter: (value, context) => {
+            if(value==0){
+              return ''
+            }
+          return value >= 1 ? Math.floor(value) : value.toFixed(2); 
+          },
+          color: '#000', // Label color
+          font: {
+            weight: 'light',
+            size: 10,
+          },
+        },
         tooltip: {
           callbacks: {
             label: context => {
@@ -1696,7 +1891,7 @@ const combinedChartOptions = useMemo(() => ({
   const [secondFilter, setSecondFilter] = useState('category');
   const [categoryList, setCategoryList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('Billboards');
-  
+
   useEffect(() => {
     if (bookingData2) {
       const categories = new Set();
@@ -1713,46 +1908,52 @@ const combinedChartOptions = useMemo(() => ({
           });
         }
       });
-      setCategoryList([...categories]);  // Only update the state if the category list changes
+      setCategoryList([...categories]); // Only update the state if the category list changes
     }
   }, [bookingData2]);
-  
+
   const transformedData4 = useMemo(() => {
     if (!bookingData2 || !secondFilter || !selectedCategory) return {};
-  
-    console.log('Filtering for:', selectedCategory, 'with filter:', filter4);
-  
+
     const past7DaysRange = generatePast7Days(); // Ensure it returns dates in 'MM/DD/YYYY' format
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth();
     const fiscalStartMonth = 3; // Fiscal year starts in April (0-indexed)
-  
+
     const groupedData = bookingData2.reduce((acc, booking) => {
       booking.details.forEach(detail => {
         const campaign = detail.campaign;
         if (!campaign || !campaign.spaces || !Array.isArray(campaign.spaces)) return;
-  
+
         campaign.spaces.forEach(space => {
           const category = space.basicInformation?.category?.[0]?.name;
-          const subCategory = space.basicInformation?.subCategory?.name || 'Other Subcategory';  
+          const subCategory = space.basicInformation?.subCategory?.name || 'Other Subcategory';
           const date = new Date(detail.createdAt);
           const year = date.getFullYear();
           const month = date.getMonth();
           const day = date.getDate();
           const formattedDay = `${month + 1}/${day}`;
           const revenue = booking.totalAmount;
-  
+
           if (category !== selectedCategory) return;
-  
+
           let timeUnit;
-  
+
           const fiscalYear = month >= fiscalStartMonth ? year : year - 1;
           const fiscalMonth = (month + 12 - fiscalStartMonth) % 12;
           const fiscalQuarter = Math.ceil((fiscalMonth + 1) / 3);
-  
-          if (filter4 === 'past10Years' && fiscalYear >= currentYear - 10 && fiscalYear < currentYear) {
+
+          if (
+            filter4 === 'past10Years' &&
+            fiscalYear >= currentYear - 10 &&
+            fiscalYear < currentYear
+          ) {
             timeUnit = fiscalYear;
-          } else if (filter4 === 'past5Years' && fiscalYear >= currentYear - 5 && fiscalYear < currentYear) {
+          } else if (
+            filter4 === 'past5Years' &&
+            fiscalYear >= currentYear - 5 &&
+            fiscalYear < currentYear
+          ) {
             timeUnit = fiscalYear;
           } else if (filter4 === 'previousYear' && fiscalYear === currentYear - 1) {
             timeUnit = new Date(0, month).toLocaleString('default', { month: 'short' });
@@ -1766,7 +1967,7 @@ const combinedChartOptions = useMemo(() => ({
             filter4 === 'customDate' &&
             startDate1 &&
             endDate1 &&
-            date.getTime() >= new Date(startDate1).setHours(0, 0, 0, 0) && 
+            date.getTime() >= new Date(startDate1).setHours(0, 0, 0, 0) &&
             date.getTime() <= new Date(endDate1).setHours(23, 59, 59, 999)
           ) {
             timeUnit = formattedDay;
@@ -1774,25 +1975,21 @@ const combinedChartOptions = useMemo(() => ({
             const quarterly = Math.ceil((date.getMonth() + 1) / 3);
             timeUnit = `Q${quarterly}`;
           }
-  
+
           if (!timeUnit) return;
-  
+
           if (!acc[subCategory]) acc[subCategory] = {};
           if (!acc[subCategory][timeUnit]) acc[subCategory][timeUnit] = 0;
-  
+
           acc[subCategory][timeUnit] += revenue;
         });
       });
       return acc;
     }, {});
-  
-    console.log('Grouped Data:', groupedData);
-  
+
     return groupedData;
   }, [bookingData2, filter4, secondFilter, selectedCategory, startDate1, endDate1]);
-  
-  
- 
+
   const chartData4 = useMemo(() => {
     if (!transformedData4 || Object.keys(transformedData4).length === 0) {
       return { labels: [], datasets: [] };
@@ -1822,7 +2019,6 @@ const combinedChartOptions = useMemo(() => ({
       'rgba(153, 102, 255, 1)',
       'rgba(255, 159, 64, 1)',
     ];
-    
 
     return {
       labels,
@@ -1860,11 +2056,7 @@ const combinedChartOptions = useMemo(() => ({
           anchor: 'end',
           align: 'end',
           formatter: (value, context) => {
-            // Removing the context.dataset.type condition to ensure it works for Bar charts
-            if (value > 0) {
-              return `${value.toFixed(0)}`; // Format the value as "X.XX L"
-            }
-            return ''; // Do not show labels for 0 or trend line
+          return value >= 1 ? Math.floor(value) : value.toFixed(1); 
           },
           color: '#000', // Label color
           font: {
@@ -1903,9 +2095,8 @@ const combinedChartOptions = useMemo(() => ({
     setSelectedCategory('Billboards');
     setStartDate1(null);
     setEndDate1(null);
-    setCategoryList([]);  // Trigger chart re-render
+    setCategoryList([]); // Trigger chart re-render
   };
-  
 
   const handleMenuItemClick4 = value => {
     setFilter4(value);
@@ -1943,36 +2134,305 @@ const combinedChartOptions = useMemo(() => ({
   // excel
 
   // existing campaing card
-  const { data: stats, isLoading: isStatsLoading } = useCampaignStats();
-  const printStatusData = useMemo(
-    () => ({
-      datasets: [
-        {
-          data: [stats?.printCompleted ?? 0, stats?.printOngoing ?? 0],
-          backgroundColor: ['#914EFB', '#FF900E'],
-          borderColor: ['#914EFB', '#FF900E'],
-          borderWidth: 1,
-        },
-      ],
-    }),
-    [stats],
-  );
+  // const { data: stats, isLoading: isStatsLoading } = useCampaignStats();
+  // const printStatusData = useMemo(
+  //   () => ({
+  //     datasets: [
+  //       {
+  //         data: [stats?.printCompleted ?? 0, stats?.printOngoing ?? 0],
+  //         backgroundColor: ['#914EFB', '#FF900E'],
+  //         borderColor: ['#914EFB', '#FF900E'],
+  //         borderWidth: 1,
+  //       },
+  //     ],
+  //   }),
+  //   [stats],
+  // );
 
-  const mountStatusData = useMemo(
-    () => ({
-      datasets: [
-        {
-          data: [stats?.mountCompleted ?? 0, stats?.mountOngoing ?? 0],
-          backgroundColor: ['#914EFB', '#FF900E'],
-          borderColor: ['#914EFB', '#FF900E'],
-          borderWidth: 1,
-        },
-      ],
-    }),
-    [stats],
-  );
+  // const mountStatusData = useMemo(
+  //   () => ({
+  //     datasets: [
+  //       {
+  //         data: [stats?.mountCompleted ?? 0, stats?.mountOngoing ?? 0],
+  //         backgroundColor: ['#914EFB', '#FF900E'],
+  //         borderColor: ['#914EFB', '#FF900E'],
+  //         borderWidth: 1,
+  //       },
+  //     ],
+  //   }),
+  //   [stats],
+  // );
   // existing campaing card
 
+  // existing campagin details
+  const { data: campaignStatus } = useFetchMasters(
+    serialize({
+      type: 'booking_campaign_status',
+      parentId: null,
+      page: 1,
+      limit: 100,
+      sortBy: 'name',
+      sortOrder: 'desc',
+    }),
+  );
+  const { data: paymentStatus } = useFetchMasters(
+    serialize({
+      type: 'payment_status',
+      parentId: null,
+      page: 1,
+      limit: 100,
+      sortBy: 'name',
+      sortOrder: 'desc',
+    }),
+  );
+
+  const column5 = useMemo(
+    () => [
+      {
+        Header: '#',
+        accessor: 'id',
+        disableSortBy: true,
+        Cell: info => useMemo(() => <p>{generateSlNo(info.row.index, 1, 1000)}</p>, []),
+      },
+      {
+        Header: 'CAMPAIGN NAME',
+        accessor: 'campaign.name',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { campaign, _id },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <Link to={`/bookings/view-details/${_id}`} className="text-purple-450 font-medium">
+                <Text
+                  className="overflow-hidden text-ellipsis max-w-[180px] underline"
+                  lineClamp={1}
+                  title={campaign?.name}
+                >
+                  {campaign?.name || '-'}
+                </Text>
+              </Link>
+            ),
+            [],
+          ),
+      },
+
+      {
+        Header: 'CLIENT',
+        accessor: 'client.name',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { client },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
+                {client?.name}
+              </Text>
+            ),
+            [],
+          ),
+      },
+
+      {
+        Header: 'CAMPAIGN INCHARGE',
+        accessor: 'campaign.incharge.name',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) => useMemo(() => <p>{campaign?.incharge?.name || '-'}</p>, []),
+      },
+
+      {
+        Header: 'OUTSTANDING AMOUNT',
+        accessor: 'outstandingAmount',
+        disableSortBy: true,
+        Cell: info =>
+          useMemo(
+            () => (
+              <p>
+                {info.row.original.unpaidAmount
+                  ? toIndianCurrency(info.row.original.unpaidAmount)
+                  : '-'}
+              </p>
+            ),
+            [],
+          ),
+      },
+      {
+        Header: 'CAMPAIGN AMOUNT',
+        accessor: 'campaign.totalPrice',
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center justify-between max-w-min">
+                {toIndianCurrency(campaign?.totalPrice || 0)}
+              </div>
+            ),
+            [],
+          ),
+      },
+
+      {
+        Header: 'BOOKING DURATION',
+        accessor: 'schedule',
+        disableSortBy: true,
+        Cell: ({
+          row: {
+            original: { campaign },
+          },
+        }) =>
+          useMemo(
+            () => (
+              <div className="flex items-center w-max">
+                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
+                  {campaign?.startDate ? (
+                    dayjs(campaign?.startDate).format(DATE_FORMAT)
+                  ) : (
+                    <NoData type="na" />
+                  )}
+                </p>
+                <span className="px-2">&gt;</span>
+                <p className="font-medium bg-gray-450 px-2 rounded-sm min-w-[120px] text-center">
+                  {campaign?.endDate ? (
+                    dayjs(campaign?.endDate).format(DATE_FORMAT)
+                  ) : (
+                    <NoData type="na" />
+                  )}
+                </p>
+              </div>
+            ),
+            [],
+          ),
+      },
+    ],
+    [bookingData?.docs, campaignStatus, paymentStatus],
+  );
+  const sortedBookingData = useMemo(() => {
+    if (!bookingData?.docs) return [];
+
+    // Safely sort the data, handling undefined campaign or totalPrice values
+    return bookingData.docs.sort((a, b) => {
+      const aPrice = a?.campaign?.totalPrice || 0; // Use 0 if campaign or totalPrice is missing
+      const bPrice = b?.campaign?.totalPrice || 0;
+
+      return bPrice - aPrice; // Sort in descending order
+    });
+  }, [bookingData?.docs]);
+
+  // existing campagin details
+
+  // printing and mounting
+
+  const config1 = {
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        datalabels: {
+          color: '#333',
+          formatter: value => {
+            const valueInLacs = value / 100000; // Convert to lakhs
+            return valueInLacs >= 1 ? Math.floor(valueInLacs) : valueInLacs.toFixed(1) ; // Append 'L'
+          },
+          anchor: 'end',
+          align: 'end',
+          offset: 20,
+        },
+        customLines: true, // Custom lines plugin activation
+        tooltip: {
+          callbacks: {
+            label: (tooltipItem) => {
+              const dataset = tooltipItem.dataset;
+              const value = dataset.data[tooltipItem.dataIndex];
+              const valueInLacs = (value / 100000).toFixed(2); // Convert to lakhs and format to 2 decimal places
+              return `Revenue: ${valueInLacs}L`; // Format tooltip label
+            },
+          },
+        },
+      },
+      layout: {
+        padding: {
+          top: 20,
+          bottom: 20,
+          left: 35,
+          right: 35,
+        },
+      },
+      elements: {
+        arc: {
+          borderWidth: 1,
+        },
+      },
+      cutout: '65%', // Doughnut cutout
+    },
+  };
+  
+
+  // Extract and filter relevant data
+
+  const costData = useMemo(() => {
+    if (!operationalCostData) return {};
+
+    const relevantTypes = ['Printing', 'Mounting', 'Reprinting', 'Remounting'];
+
+    // Initialize totals for each type
+    const totals = {
+      Printing: 0,
+      Mounting: 0,
+      Reprinting: 0,
+      Remounting: 0,
+    };
+
+    // Calculate the total for each type
+    operationalCostData.forEach(item => {
+      const typeName = item?.type?.name;
+      if (relevantTypes.includes(typeName)) {
+        totals[typeName] += item.amount || 0;
+      }
+    });
+
+    return totals;
+  }, [operationalCostData]);
+
+  const printingMountingData = useMemo(
+    () => ({
+      datasets: [
+        {
+          data: [costData.Printing, costData.Mounting],
+          backgroundColor: ['#FF900E', '#914EFB'],
+          borderColor: ['#FF900E', '#914EFB'],
+        },
+      ],
+    }),
+    [costData], // Add costData as a dependency
+  );
+
+  const reprintingRemountingData = useMemo(
+    () => ({
+      datasets: [
+        {
+          data: [costData.Reprinting, costData.Remounting],
+          backgroundColor: ['#FF900E', '#914EFB'],
+          borderColor: ['#FF900E', '#914EFB'],
+        },
+      ],
+    }),
+    [costData], // Add costData as a dependency
+  );
+  // printing and mounting
+  const showOwnSites = dummyStats.ownsite > 0;
+  const showTradedSites = dummyStats.tradedsite > 0;
   return (
     <div className="overflow-y-auto p-3 col-span-10 overflow-hidden">
       {/* <div className="flex justify-between ">
@@ -1997,133 +2457,164 @@ const combinedChartOptions = useMemo(() => ({
           <RevenueCards />
         </div>
         <div className="flex flex-col md:flex-row">
-          <div className="flex flex-col p-6 w-[30rem]">
-            <p className="font-bold text-center">Source Distribution</p>
-            <p className="text-sm text-gray-600 italic pt-3">
-            This chart shows the revenue split between "Own Sites" and "Traded Sites".
-            </p>
-            <div className="flex gap-8 mt-6 justify-center">
-              <div className="flex gap-2 items-center">
-                <div className="h-4 w-4 rounded-full bg-orange-350" />
-                <div>
-                  <p className="my-2 text-xs font-light">Own Sites</p>
-                  <p className="text-sm">₹{dummyStats.ownsite}</p>
-                </div>
-              </div>
-              <div className="flex gap-2 items-center">
-                <div className="h-4 w-4 rounded-full bg-purple-350" />
-                <div>
-                  <p className="my-2 text-xs font-light">Traded sites</p>
-                  <p className="text-sm">₹ {dummyStats.tradedsite}</p>
-                </div>
-              </div>
+        <div className="flex flex-col p-6 w-[30rem] gap-4">
+                <p className="font-bold text-center">Source Distribution</p>
+                <p className="text-sm text-gray-600 italic">
+                    This chart shows the revenue split between "Own Sites" and "Traded Sites".
+                </p>
+                {(!showOwnSites && !showTradedSites) ? (
+                    <p className="text-center">NA</p>
+                ) : (
+                    <>
+                        <div className="flex gap-8 mt-6 justify-center">
+                            {showOwnSites && (
+                                <div className="flex gap-2 items-center">
+                                    <div className="h-4 w-4 rounded-full bg-orange-350" />
+                                    <div>
+                                        <p className="my-2 text-xs font-light">Own Sites</p>
+                                        <p className="text-sm">{dummyStats.ownsite} L</p>
+                                    </div>
+                                </div>
+                            )}
+                            {showTradedSites && (
+                                <div className="flex gap-2 items-center">
+                                    <div className="h-4 w-4 rounded-full bg-purple-350" />
+                                    <div>
+                                        <p className="my-2 text-xs font-light">Traded Sites</p>
+                                        <p className="text-sm">{dummyStats.tradedsite} L</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        {showOwnSites || showTradedSites ? (
+                            <div className="w-[200px] m-6">
+                                <Doughnut
+                                    options={config}
+                                    data={printSitesData}
+                                    plugins={[ChartDataLabels]}
+                                />
+                            </div>
+                        ) : null}
+                    </>
+                )}
             </div>
-            <div className="w-80 mt-4 ">
-              {printSitesData.datasets[0].data.length === 0 ? (
-                <p className="text-center">NA</p>
-              ) : (
-                <Doughnut options={config.options} data={printSitesData} />
-              )}
-            </div>
-          </div>
           <div className="flex mt-2">
             <div className="flex flex-col gap-4 text-center">
               <div className="flex flex-col gap-4 p-4 items-center min-h-[200px]">
                 <p className="font-bold">Client Type Distribution</p>
                 <p className="text-sm text-gray-600 italic">
-                This chart breaks down revenue by client type, including "Direct Clients", "Local Agencies", "National Agencies", and "Government".
+                  This chart breaks down revenue by client type, including "Direct Clients", "Local
+                  Agencies", "National Agencies", and "Government".
                 </p>
                 <div className="w-72">
                   {isLoadingBookingData ? (
                     <p className="text-center">Loading...</p>
-                  ) : updatedClient.datasets[0].data.length === 0 ? (
+                  ) :  (
                     <p className="text-center">NA</p>
-                  ) : (
-                    <Pie
-                      data={updatedClient}
-                      options={barDataConfigByClient.options}
-                      height={200}
-                      width={200}
-                    />
-                  )}
+                   ) 
+                  
+                  // : (
+                  //   <Pie
+                  //     data={updatedClient}
+                  //     options={barDataConfigByClient.options}
+                  //     height={200}
+                  //     width={200}
+                  //     ref={chartRef}
+                  //     plugins={[ChartDataLabels]}
+                  //   />
+                  // )
+                  }
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div className="p-6 w-[50rem]">
-        <p className="font-bold ">Revenue Distribution</p>
-        <p className="text-sm text-gray-600 italic py-4">
-        This line chart shows revenue trends over selected time periods, with revenue displayed in lakhs.
-        </p>
-        <Menu shadow="md" width={130}>
-          <Menu.Target>
-            <Button className="secondary-button">View By: {viewBy[activeView] || 'Select'}</Button>
-          </Menu.Target>
-          <Menu.Dropdown>
-            {list.map(({ label, value }) => (
-              <Menu.Item
-                key={value}
-                onClick={() => handleMenuItemClick(value)}
-                className={classNames(
-                  activeView === value && label !== 'Reset' && 'text-purple-450 font-medium',
-                )}
-              >
-                {label}
-              </Menu.Item>
-            ))}
-          </Menu.Dropdown>
-        </Menu>
+          <p className="font-bold ">Revenue Distribution</p>
+          <p className="text-sm text-gray-600 italic py-4">
+            This line chart shows revenue trends over selected time periods, with revenue displayed
+            in lakhs.
+          </p>
+          <Menu shadow="md" width={130}>
+            <Menu.Target>
+              <Button className="secondary-button">
+                View By: {viewBy[activeView] || 'Select'}
+              </Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+              {list.map(({ label, value }) => (
+                <Menu.Item
+                  key={value}
+                  onClick={() => handleMenuItemClick(value)}
+                  className={classNames(
+                    activeView === value && label !== 'Reset' && 'text-purple-450 font-medium',
+                  )}
+                >
+                  {label}
+                </Menu.Item>
+              ))}
+            </Menu.Dropdown>
+          </Menu>
 
-        {filter && (
-          <Button onClick={handleReset} className="mx-2 secondary-button">
-            Reset
-          </Button>
-        )}
+          {filter && (
+            <Button onClick={handleReset} className="mx-2 secondary-button">
+              Reset
+            </Button>
+          )}
 
-        {filter === 'customDate' && (
-          <div className="flex flex-col items-start space-y-4 py-2 ">
-            <DateRangeSelector dateValue={[startDate2, endDate2]} onChange={onDateChange} />
+          {filter === 'customDate' && (
+            <div className="flex flex-col items-start space-y-4 py-2 ">
+              <DateRangeSelector dateValue={[startDate2, endDate2]} onChange={onDateChange} />
+            </div>
+          )}
+
+          <div className="my-4">
+            <Line
+              data={chartData1}
+              options={chartOptions1}
+              ref={chartRef}
+              plugins={[ChartDataLabels]}
+            />
           </div>
-        )}
-
-        <div className="my-4">
-          <Line data={chartData1} options={chartOptions1} />
         </div>
-      </div>
-      <div className={classNames('overflow-y-auto px-5 col-span-10 overflow-x-hidden')}>
+        <div className={classNames('overflow-y-auto px-5 col-span-10 overflow-x-hidden')}>
           <div className="my-6 w-[60rem]" id="revenue-pdf">
-          
             <div className="flex gap-8">
               <div className="w-[70%] flex flex-col justify-between min-h-[300px]">
                 <div className="flex justify-between items-center">
                   <p className="font-bold">Revenue Graph</p>
                 </div>
                 <div className="h-[60px] mt-5 border-gray-450 flex ">
-              <ViewByFilter handleViewBy={handleRevenueGraphViewBy} />
-            </div>
+                  <ViewByFilter handleViewBy={handleRevenueGraphViewBy} />
+                </div>
                 {isRevenueGraphLoading ? (
                   <Loader className="m-auto" />
                 ) : (
                   <div className="flex flex-col pl-7 relative">
                     <p className="transform rotate-[-90deg] absolute left-[-38px] top-[40%] text-sm">
-                      Amount in INR &gt;
+                      Amount in Lac &gt;
                     </p>
                     <div className="max-h-[350px]">
                       <Line
                         data={updatedReveueGraph}
-                        options={options}
+                        options={options3}
                         key={updatedReveueGraph.id}
                         className="w-full"
+                        ref={chartRef}
+                        plugins={[ChartDataLabels]}
                       />
                     </div>
                     <p className="text-center text-sm">{timeLegend[groupBy]} &gt;</p>
                   </div>
                 )}
               </div>
-              <div className="w-[30%] flex flex-col mt-10">
-                <div className="flex justify-between items-start">
-                  <p className="font-bold ml-9">Industry wise revenue graph</p>
+              <div className="w-[30%] flex flex-col">
+                <div className="flex justify-between items-start flex-col">
+                  <p className="font-bold ml-9"> Industry Type Distribution</p>
+                  <p className="text-sm text-gray-600 italic py-4">
+                    This pie chart shows the percentage split of revenue generated across various
+                    industries
+                  </p>
                 </div>
                 <div className="w-80 m-auto">
                   {isByIndustryLoading ? (
@@ -2132,188 +2623,336 @@ const combinedChartOptions = useMemo(() => ({
                     <p className="text-center">NA</p>
                   ) : (
                     <Pie
-                      data={updatedIndustry}
-                      options={barDataConfigByIndustry.options}
-                      key={updatedIndustry.id}
-                    />
+                    data={updatedIndustry}
+                    options={barDataConfigByIndustry.options}
+                    key={updatedIndustry.id}
+                    ref={chartRef}
+                    plugins={[ChartDataLabels, customLinesPlugin]} // Ensure custom lines plugin is included
+                  />
                   )}
                 </div>
               </div>
             </div>
           </div>
-      </div>
+        </div>
 
         <div className="flex flex-col md:flex-row  w-[60rem] px-4">
-        <div className="pt-6 w-[40rem]">
-          <p className="font-bold "> Category Wise Filtered Revenue Report</p>
-          <p className="text-sm text-gray-600 italic py-4">
-            This chart shows the filtered revenue data over different time periods.
-          </p>
-          <div className="flex">
-            <div>
-              <Menu shadow="md" width={130}>
-                <Menu.Target>
-                  <Button className="secondary-button">
-                    View By: {viewBy[activeView4] || 'Select'}
+          <div className="pt-6 w-[40rem]">
+            <p className="font-bold "> Category Wise Distribution</p>
+            <p className="text-sm text-gray-600 italic py-4">
+              This chart displays revenue data over different time periods, filtered by category of
+              inventory.
+            </p>
+            <div className="flex">
+              <div>
+                <Menu shadow="md" width={130}>
+                  <Menu.Target>
+                    <Button className="secondary-button">
+                      View By: {viewBy[activeView4] || 'Select'}
+                    </Button>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    {list.map(({ label, value }) => (
+                      <Menu.Item
+                        key={value}
+                        onClick={() => handleMenuItemClick4(value)}
+                        className={classNames(
+                          activeView4 === value && 'text-purple-450 font-medium',
+                        )}
+                      >
+                        {label}
+                      </Menu.Item>
+                    ))}
+                  </Menu.Dropdown>
+                </Menu>
+              </div>
+              <div className="mx-2">
+                <Menu shadow="md" width={130}>
+                  <Menu.Target>
+                    <Button className="secondary-button">
+                      {selectedCategory ? `Category: ${selectedCategory}` : 'Select Category'}
+                    </Button>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    {categoryList.map(category => (
+                      <Menu.Item key={category} onClick={() => setSelectedCategory(category)}>
+                        {category}
+                      </Menu.Item>
+                    ))}
+                  </Menu.Dropdown>
+                </Menu>
+              </div>
+              <div>
+                {filter4 && (
+                  <Button onClick={handleReset4} className="mx-2 secondary-button">
+                    Reset
                   </Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  {list.map(({ label, value }) => (
-                    <Menu.Item
-                      key={value}
-                      onClick={() => handleMenuItemClick4(value)}
-                      className={classNames(activeView4 === value && 'text-purple-450 font-medium')}
-                    >
-                      {label}
-                    </Menu.Item>
-                  ))}
-                </Menu.Dropdown>
-              </Menu>
+                )}
+              </div>
             </div>
-            <div className="mx-2">
-            <Menu shadow="md" width={130}>
-              <Menu.Target>
-                <Button className="secondary-button">
-                  {selectedCategory ? `Category: ${selectedCategory}` : 'Select Category'}
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                {categoryList.map(category => (
-                  <Menu.Item key={category} onClick={() => setSelectedCategory(category)}>
-                    {category}
-                  </Menu.Item>
-                ))}
-              </Menu.Dropdown>
-            </Menu>
-            </div>
-            <div>
-              {filter4 && (
-                <Button onClick={handleReset4} className="mx-2 secondary-button">
-                  Reset
-                </Button>
-              )}
-            </div>
-          </div>
-          {filter4 === 'customDate' && (
-            <div className="flex flex-col items-start space-y-4 py-2 ">
-              <DateRangeSelector
-                dateValue={[startDate1, endDate1]}
-                onChange={onDateChange4}
-                minDate={threeMonthsAgo}
-                maxDate={today}
+            {filter4 === 'customDate' && (
+              <div className="flex flex-col items-start space-y-4 py-2 ">
+                <DateRangeSelector
+                  dateValue={[startDate1, endDate1]}
+                  onChange={onDateChange4}
+                  minDate={threeMonthsAgo}
+                  maxDate={today}
+                />
+              </div>
+            )}
+
+            <div className=" my-4">
+              <Bar
+                ref={chartRef}
+                plugins={[ChartDataLabels]}
+                data={chartData4}
+                options={chartOptions4}
               />
             </div>
-          )}
+          </div>
+        </div>
+      </div>
+      <div className="border-2 p-5 border-black my-2">
+        <p className="font-bold text-lg"> Trends </p>
+        <div className="flex flex-col col-span-10 overflow-hidden">
+          <div className="pt-6 w-[50rem] mx-10">
+            <p className="font-bold "> Additional Filter Distribution</p>
+            <p className="text-sm text-gray-600 italic py-4">
+              This line chart displays the revenue trends over different time periods, filtered by
+              specific tags.
+            </p>
+            <div className="flex">
+              <div>
+                <Menu shadow="md" width={130}>
+                  <Menu.Target>
+                    <Button className="secondary-button">
+                      View By: {viewBy[activeView3] || 'Select'}
+                    </Button>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    {list.map(({ label, value }) => (
+                      <Menu.Item
+                        key={value}
+                        onClick={() => handleMenuItemClick3(value)}
+                        className={classNames(
+                          activeView3 === value &&
+                            label !== 'Reset' &&
+                            'text-purple-450 font-medium',
+                        )}
+                      >
+                        {label}
+                      </Menu.Item>
+                    ))}
+                  </Menu.Dropdown>
+                </Menu>
+              </div>
+              <div className="mx-2">
+                <MultiSelect
+                  data={options}
+                  value={selectedTags}
+                  onChange={setSelectedTags}
+                  placeholder="Select Additional Tags"
+                  searchable
+                  clearable
+                />
+              </div>
+              <div>
+                {filter3 && (
+                  <Button onClick={handleReset3} className="mx-2 secondary-button">
+                    Reset
+                  </Button>
+                )}
+              </div>
+            </div>
 
-          <div className=" my-4">
-            <Bar  ref={chartRef} data={chartData4} options={chartOptions4}  plugins={[ChartDataLabels]}/>
+            {filter3 === 'customDate' && (
+              <div className="flex flex-col items-start space-y-4 py-2 ">
+                <DateRangeSelector
+                  dateValue={[startDate1, endDate1]}
+                  onChange={onDateChange3}
+                  minDate={threeMonthsAgo}
+                  maxDate={today}
+                />
+              </div>
+            )}
+            <div className="my-4">
+              <Line
+                data={chartData3}
+                options={chartOptions3}
+                ref={chartRef}
+                plugins={[ChartDataLabels]}
+              />
+            </div>
+          </div>
+          <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mx-10  h-[300px] overflow-y-auto">
+            <Table COLUMNS={tableColumns3} data={tableData3} showPagination={false} />
           </div>
         </div>
-        
-      </div>
-       
-        
-      </div>
-      <div className="flex p-6 flex-col ">
-        <div className="flex justify-between items-center">
-          <p className="font-bold">Sales Report</p>
-        </div>
-        <p className="text-sm text-gray-600 italic pt-3">
-          This chart displays total sales over the past three years with a trend line showing the
-          average sales.
-        </p>
-        {isLoadingBookingData ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader />
+        <div className="flex p-6 flex-col ">
+          <div className="flex justify-between items-center">
+            <p className="font-bold"> Sales Comparison</p>
           </div>
-        ) : (
-          <div className="">
-            {salesData.length > 0 ? (
-              <div className=" gap-10 ">
-                <div className="pt-4 w-[50rem]">
-                  <Bar ref={chartRef} data={combinedChartData} options={combinedChartOptions} plugins={[ChartDataLabels]}/>
+          <p className="text-sm text-gray-600 italic pt-3">
+            This bar chart shows the sales trends for selected time duration
+          </p>
+          {isLoadingBookingData ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader />
+            </div>
+          ) : (
+            <div className="">
+              {salesData.length > 0 ? (
+                <div className=" gap-10 ">
+                  <div className="pt-4 w-[50rem]">
+                    <Bar
+                      ref={chartRef}
+                      data={combinedChartData}
+                      options={combinedChartOptions}
+                      plugins={[ChartDataLabels]}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <p className="text-center text-gray-600">No data available.</p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="border-2 p-5 border-black my-2">
+        <p className="font-bold text-lg"> Operational Cost </p>
+        <div className="mb-4 flex flex-col p-6">
+          <p className="font-bold  ">Operational cost bifurcation</p>
+          <p className="text-sm text-gray-600 italic pt-4">
+            This chart displays the breakdown of operational costs by different cost types.
+          </p>
+          <div className="w-[600px]">
+            <Doughnut
+              data={doughnutChartData}
+              options={doughnutChartOptions}
+              height={550}
+              width={600}
+              ref={chartRef}
+              plugins={[ChartDataLabels, customLinesPlugin]} // Register the plugin here
+            />
+          </div>
+        </div>
+        <div className="px-5">
+          <div className="mb-4 flex flex-col">
+            <p className="font-bold">Printing & Mounting Costs</p>
+            <p className="text-sm text-gray-600 italic py-4">
+              This chart compares costs for printing, mounting, reprinting, and remounting
+              activities.
+            </p>
+          </div>
+
+          <div className="flex w-1/3 gap-4 h-[200px] ">
+            {/* Printing & Mounting Revenue Split */}
+            <div className="flex gap-4 p-4 border rounded-md items-center min-h-[200px]">
+              <div className="w-32">
+                {isStatsLoading ? (
+                  <Loader className="mx-auto" />
+                ) : costData.Printing === 0 && costData.Mounting === 0 ? (
+                  <p className="text-center">NA</p>
+                ) : (
+                  <Doughnut
+                    options={config1.options}
+                    data={printingMountingData}
+                    ref={chartRef}
+                    plugins={[ChartDataLabels, customLinesPlugin]}
+                  />
+                )}
+              </div>
+              <div>
+                <div className="flex gap-8 mt-6 flex-wrap">
+                  <div className="flex gap-2 items-center">
+                    <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+                    <div>
+                      <p className="my-2 text-xs font-light text-slate-400">Printing</p>
+                      <p className="font-bold text-md">{(costData.Printing/ 100000).toFixed(2) ?? 0} L</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+                    <div>
+                      <p className="my-2 text-xs font-light text-slate-400">Mounting</p>
+                      <p className="font-bold text-md">{(costData.Mounting/ 100000).toFixed(2) ?? 0} L</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ) : (
-              <p className="text-center text-gray-600">No data available.</p>
-            )}
-          </div>
-        )}
-      </div>
-      
-      <div className="flex flex-col col-span-10 overflow-x-hidden">
-        <div className="pt-6 w-[50rem] mx-10">
-          <p className="font-bold ">Tag Wise Filtered Revenue Report</p>
-          <p className="text-sm text-gray-600 italic py-4">
-            This chart shows the filtered revenue data over different time periods.
-          </p>
-          <div className="flex">
-            <div>
-              {/* View By Dropdown */}
-              <Menu shadow="md" width={130}>
-                <Menu.Target>
-                  <Button className="secondary-button">
-                    View By: {viewBy[activeView3] || 'Select'}
-                  </Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  {list.map(({ label, value }) => (
-                    <Menu.Item
-                      key={value}
-                      onClick={() => handleMenuItemClick3(value)}
-                      className={classNames(
-                        activeView3 === value && label !== 'Reset' && 'text-purple-450 font-medium',
-                      )}
-                    >
-                      {label}
-                    </Menu.Item>
-                  ))}
-                </Menu.Dropdown>
-              </Menu>
             </div>
-            <div className="mx-2">
-              <MultiSelect
-                data={options}
-                value={selectedTags}
-                onChange={setSelectedTags}
-                placeholder="Select Additional Tags"
-                searchable
-                clearable
-              />
-            </div>
-            <div>
-              {filter3 && (
-                <Button onClick={handleReset3} className="mx-2 secondary-button">
-                  Reset
-                </Button>
-              )}
-            </div>
-          </div>
 
-          {filter3 === 'customDate' && (
-            <div className="flex flex-col items-start space-y-4 py-2 ">
-              <DateRangeSelector
-                dateValue={[startDate1, endDate1]}
-                onChange={onDateChange3}
-                minDate={threeMonthsAgo}
-                maxDate={today}
-              />
+            {/* Reprinting & Remounting Revenue Split */}
+            <div className="flex gap-4 p-4 border rounded-md items-center min-h-[200px]">
+              <div className="w-32">
+                {isStatsLoading ? (
+                  <Loader className="mx-auto" />
+                ) : costData.Remounting === 0 && costData.Reprinting === 0 ? (
+                  <p className="text-center">NA</p>
+                ) : (
+                  <Doughnut
+                    options={config1.options}
+                    data={reprintingRemountingData}
+                    ref={chartRef}
+                    plugins={[ChartDataLabels, customLinesPlugin]}
+                  />
+                )}
+              </div>
+              <div>
+                <div className="flex gap-8 mt-6 flex-wrap">
+                  <div className="flex gap-2 items-center">
+                    <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+                    <div>
+                      <p className="my-2 text-xs font-light text-slate-400">Reprinting</p>
+                      <p className="font-bold text-md">{(costData.Reprinting/ 100000).toFixed(2) ?? 0} L</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+                    <div>
+                      <p className="my-2 text-xs font-light text-slate-400">Remounting</p>
+                      <p className="font-bold text-md">{(costData.Remounting/ 100000).toFixed(2) ?? 0} L</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
-          <div className="my-4">
-            <Line data={chartData3} options={chartOptions3} />
           </div>
         </div>
-        <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mx-10  h-[400px]">
-          <Table COLUMNS={tableColumns3} data={tableData3} showPagination={false} />
-        </div>
       </div>
+      {/* <div className="border-2 p-5 border-black my-2">
+        <p className="font-bold text-lg"> Client Data</p>
+
+        <div className="flex flex-col col-span-10 overflow-hidden">
+          <div className="py-6 w-[50rem] mx-10">
+            <p className="font-bold ">Campaign Details</p>
+          </div>
+        </div>
+        <div className="mx-10 col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 h-[400px] overflow-auto">
+          <Table
+            data={sortedBookingData} // Use manually sorted data
+            COLUMNS={column5}
+            loading={isLoadingBookingData}
+            showPagination={false}
+            initialState={{
+              sortBy: [
+                {
+                  id: 'campaign.totalPrice',
+                  desc: true,
+                },
+              ],
+            }}
+          />
+        </div>
+      </div> */}
 
       <div className="col-span-12 md:col-span-12 lg:col-span-10 overflow-y-auto p-5">
         <p className="font-bold pt-10">Price and Traded Margin Report</p>
         <p className="text-sm text-gray-600 italic py-4">
           This report provide insights into the pricing trends, traded prices, and margins grouped
-          by cities.
+          by cities. (Amounts in Lacs)
         </p>
         <div className="overflow-y-auto h-[400px]">
           <Table
@@ -2324,6 +2963,7 @@ const combinedChartOptions = useMemo(() => ({
           />
         </div>
       </div>
+
       <div className="col-span-12 md:col-span-12 lg:col-span-10 p-5 overflow-hidden">
         <p className="font-bold ">Invoice and amount collected Report</p>
         <p className="text-sm text-gray-600 italic py-4">
@@ -2357,6 +2997,10 @@ const combinedChartOptions = useMemo(() => ({
               Reset
             </Button>
           )}
+          <div>
+            {' '}
+            <p className="text-sm text-gray-600 italic ml-[450px]"> (Amounts in Lacs)</p>
+          </div>
         </div>
         <div className="flex flex-col lg:flex-row gap-10  overflow-x-auto">
           <div className="overflow-y-auto w-[600px] h-[400px]">
@@ -2367,6 +3011,7 @@ const combinedChartOptions = useMemo(() => ({
               showPagination={false}
             />
           </div>
+
           <div className="flex flex-col">
             <p className="pb-6 font-bold text-center">Invoice Raised Vs Amount Collected</p>
             <GaugeChart
@@ -2388,72 +3033,71 @@ const combinedChartOptions = useMemo(() => ({
         </p>
         <PerformanceCard />
       </div>
-      <div className='px-5'>
-      <p className="font-bold py-4">Campaigns stats report</p>
-      <div className="flex w-1/3 gap-4 h-[250px] ">
-      
-        <div className="flex gap-4 p-4 border rounded-md items-center min-h-[200px]">
-          <div className="w-32">
-            {isStatsLoading ? (
-              <Loader className="mx-auto" />
-            ) : stats?.printOngoing === 0 && stats?.printCompleted === 0 ? (
-              <p className="text-center">NA</p>
-            ) : (
-              <Doughnut options={config.options} data={printStatusData} />
-            )}
-          </div>
-          <div>
-            <p className="font-medium">Printing Status</p>
-            <div className="flex gap-8 mt-6 flex-wrap">
-              <div className="flex gap-2 items-center">
-                <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
-                <div>
-                  <p className="my-2 text-xs font-light text-slate-400">Ongoing</p>
-                  <p className="font-bold text-lg">{stats?.printOngoing ?? 0}</p>
+      {/* <div className="px-5">
+        <p className="font-bold py-4">Campaigns stats report</p>
+        <div className="flex w-1/3 gap-4 h-[250px] ">
+          <div className="flex gap-4 p-4 border rounded-md items-center min-h-[200px]">
+            <div className="w-32">
+              {isStatsLoading ? (
+                <Loader className="mx-auto" />
+              ) : stats?.printOngoing === 0 && stats?.printCompleted === 0 ? (
+                <p className="text-center">NA</p>
+              ) : (
+                <Doughnut options={config.options} data={printStatusData} />
+              )}
+            </div>
+            <div>
+              <p className="font-medium">Printing Status</p>
+              <div className="flex gap-8 mt-6 flex-wrap">
+                <div className="flex gap-2 items-center">
+                  <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+                  <div>
+                    <p className="my-2 text-xs font-light text-slate-400">Ongoing</p>
+                    <p className="font-bold text-lg">{stats?.printOngoing ?? 0}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+                  <div>
+                    <p className="my-2 text-xs font-light text-slate-400">Completed</p>
+                    <p className="font-bold text-lg">{stats?.printCompleted ?? 0}</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex gap-2 items-center">
-                <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
-                <div>
-                  <p className="my-2 text-xs font-light text-slate-400">Completed</p>
-                  <p className="font-bold text-lg">{stats?.printCompleted ?? 0}</p>
+            </div>
+          </div>
+          <div className="flex gap-4 p-4 border rounded-md items-center min-h-[200px]">
+            <div className="w-32">
+              {isStatsLoading ? (
+                <Loader className="mx-auto" />
+              ) : stats?.mountOngoing === 0 && stats?.mountCompleted === 0 ? (
+                <p className="text-center">NA</p>
+              ) : (
+                <Doughnut options={config.options} data={mountStatusData} />
+              )}
+            </div>
+            <div>
+              <p className="font-medium">Mounting Status</p>
+              <div className="flex gap-8 mt-6 flex-wrap">
+                <div className="flex gap-2 items-center">
+                  <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
+                  <div>
+                    <p className="my-2 text-xs font-light text-slate-400">Ongoing</p>
+                    <p className="font-bold text-lg">{stats?.mountOngoing ?? 0}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
+                  <div>
+                    <p className="my-2 text-xs font-light text-slate-400">Completed</p>
+                    <p className="font-bold text-lg">{stats?.mountCompleted ?? 0}</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex gap-4 p-4 border rounded-md items-center min-h-[200px]">
-          <div className="w-32">
-            {isStatsLoading ? (
-              <Loader className="mx-auto" />
-            ) : stats?.mountOngoing === 0 && stats?.mountCompleted === 0 ? (
-              <p className="text-center">NA</p>
-            ) : (
-              <Doughnut options={config.options} data={mountStatusData} />
-            )}
-          </div>
-          <div>
-            <p className="font-medium">Mounting Status</p>
-            <div className="flex gap-8 mt-6 flex-wrap">
-              <div className="flex gap-2 items-center">
-                <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
-                <div>
-                  <p className="my-2 text-xs font-light text-slate-400">Ongoing</p>
-                  <p className="font-bold text-lg">{stats?.mountOngoing ?? 0}</p>
-                </div>
-              </div>
-              <div className="flex gap-2 items-center">
-                <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
-                <div>
-                  <p className="my-2 text-xs font-light text-slate-400">Completed</p>
-                  <p className="font-bold text-lg">{stats?.mountCompleted ?? 0}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      </div>
+      </div> */}
     </div>
   );
 };
