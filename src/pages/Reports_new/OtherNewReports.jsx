@@ -2491,7 +2491,7 @@ const OtherNewReports = () => {
                                 <Doughnut
                                     options={config}
                                     data={printSitesData}
-                                    plugins={[ChartDataLabels]}
+                                    // plugins={[ChartDataLabels]}
                                 />
                             </div>
                         ) : null}
@@ -2572,8 +2572,8 @@ const OtherNewReports = () => {
             <Line
               data={chartData1}
               options={chartOptions1}
-              ref={chartRef}
-              plugins={[ChartDataLabels]}
+              // ref={chartRef}
+              // plugins={[ChartDataLabels]}
             />
           </div>
         </div>
@@ -2600,8 +2600,8 @@ const OtherNewReports = () => {
                         options={options3}
                         key={updatedReveueGraph.id}
                         className="w-full"
-                        ref={chartRef}
-                        plugins={[ChartDataLabels]}
+                        // ref={chartRef}
+                        // plugins={[ChartDataLabels]}
                       />
                     </div>
                     <p className="text-center text-sm">{timeLegend[groupBy]} &gt;</p>
@@ -2626,8 +2626,8 @@ const OtherNewReports = () => {
                     data={updatedIndustry}
                     options={barDataConfigByIndustry.options}
                     key={updatedIndustry.id}
-                    ref={chartRef}
-                    plugins={[ChartDataLabels, customLinesPlugin]} // Ensure custom lines plugin is included
+                    // ref={chartRef}
+                    // plugins={[ChartDataLabels, customLinesPlugin]} // Ensure custom lines plugin is included
                   />
                   )}
                 </div>
@@ -2703,8 +2703,8 @@ const OtherNewReports = () => {
 
             <div className=" my-4">
               <Bar
-                ref={chartRef}
-                plugins={[ChartDataLabels]}
+                // ref={chartRef}
+                // plugins={[ChartDataLabels]}
                 data={chartData4}
                 options={chartOptions4}
               />
@@ -2779,8 +2779,8 @@ const OtherNewReports = () => {
               <Line
                 data={chartData3}
                 options={chartOptions3}
-                ref={chartRef}
-                plugins={[ChartDataLabels]}
+                // ref={chartRef}
+                // plugins={[ChartDataLabels]}
               />
             </div>
           </div>
@@ -2805,10 +2805,10 @@ const OtherNewReports = () => {
                 <div className=" gap-10 ">
                   <div className="pt-4 w-[50rem]">
                     <Bar
-                      ref={chartRef}
+                      // ref={chartRef}
                       data={combinedChartData}
                       options={combinedChartOptions}
-                      plugins={[ChartDataLabels]}
+                      // plugins={[ChartDataLabels]}
                     />
                   </div>
                 </div>
@@ -2833,8 +2833,8 @@ const OtherNewReports = () => {
               options={doughnutChartOptions}
               height={550}
               width={600}
-              ref={chartRef}
-              plugins={[ChartDataLabels, customLinesPlugin]} // Register the plugin here
+              // ref={chartRef}
+              // plugins={[ChartDataLabels, customLinesPlugin]} // Register the plugin here
             />
           </div>
         </div>
@@ -2859,8 +2859,8 @@ const OtherNewReports = () => {
                   <Doughnut
                     options={config1.options}
                     data={printingMountingData}
-                    ref={chartRef}
-                    plugins={[ChartDataLabels, customLinesPlugin]}
+                    // ref={chartRef}
+                    // plugins={[ChartDataLabels, customLinesPlugin]}
                   />
                 )}
               </div>
@@ -2895,8 +2895,8 @@ const OtherNewReports = () => {
                   <Doughnut
                     options={config1.options}
                     data={reprintingRemountingData}
-                    ref={chartRef}
-                    plugins={[ChartDataLabels, customLinesPlugin]}
+                    // ref={chartRef}
+                    // plugins={[ChartDataLabels, customLinesPlugin]}
                   />
                 )}
               </div>
