@@ -1,146 +1,333 @@
-import { useMemo } from 'react';
-import { Doughnut } from 'react-chartjs-2';
-import { useFetchOperationalCostData } from '../../apis/queries/operationalCost.queries';
-import { Loader } from 'react-feather';
+import { useMemo, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useBookingsNew } from '../../apis/queries/booking.queries';
+import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  LineElement,
+  BarElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Title,
+  registerables,
+} from 'chart.js';
+import { monthsInShort } from '../../utils'; 
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { Chart } from 'chart.js';
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  LineElement,
+  BarElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Title,
+);
 
-
-const config = {
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-  },
-};
-
+Chart.register(...registerables);
 const MediaWiseReport = () => {
-  const { data: operationalCostData, isLoading: isStatsLoading, error } = useFetchOperationalCostData();
+  const chartRef = useRef(null); 
+  const [searchParams] = useSearchParams({
+    page: 1,
+    limit: 1000,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+  });
 
-  // Extract and filter relevant data
-  const costData = useMemo(() => {
-    if (!operationalCostData) return {};
+  
+  const { data: bookingData2, isLoading: isLoadingBookingData } = useBookingsNew(searchParams.toString());
 
-    const relevantTypes = ['Printing', 'Mounting', 'Reprinting', 'Remounting'];
+  const currentFinancialYear = date => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; 
+    return month >= 4 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+  };
 
-    // Initialize totals for each type
-    const totals = {
-      Printing: 0,
-      Mounting: 0,
-      Reprinting: 0,
-      Remounting: 0,
+  
+  const aggregatedData3 = useMemo(() => {
+    if (!bookingData2) {
+      return {
+        sales: monthsInShort.reduce((acc, month) => {
+          acc[month] = { government: 0, nationalagency: 0, localagency: 0, directclient: 0 };
+          return acc;
+        }, {}),
+      };
+    }
+
+    const result = {
+      sales: monthsInShort.reduce((acc, month) => {
+        acc[month] = { government: 0, nationalagency: 0, localagency: 0, directclient: 0 };
+        return acc;
+      }, {}),
     };
 
-    // Calculate the total for each type
-    operationalCostData.forEach(item => {
-      const typeName = item?.type?.name;
-      if (relevantTypes.includes(typeName)) {
-        totals[typeName] += item.amount || 0;
+    bookingData2.forEach(booking => {
+      const bookingDate = new Date(booking.createdAt);
+      const fy = currentFinancialYear(bookingDate);
+
+      if (fy === currentFinancialYear(new Date())) {
+        const totalAmount = booking?.totalAmount || 0;
+
+        if (Array.isArray(booking.details) && booking.details.length > 0) {
+          booking.details.forEach(detail => {
+            const clientType = detail?.client?.clientType?.toLowerCase().replace(/\s/g, '');
+
+            const monthKey = bookingDate.toLocaleString('default', { month: 'short' });
+            if (result.sales[monthKey] && clientType) {
+              result.sales[monthKey][clientType] += totalAmount / 100000; 
+            }
+          });
+        }
       }
     });
 
-    return totals;
-  }, [operationalCostData]);
+    return result;
+  }, [bookingData2]);
 
-  const printingMountingData =  useMemo(
-    () => ({
+  const totalSalesByMonth = useMemo(() => 
+    Object.values(aggregatedData3.sales).map(
+      item => item.government + item.nationalagency + item.localagency + item.directclient
+    ),
+  [aggregatedData3]);
+
+
+  const barChartOptions = useMemo(() => ({
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Month',
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Sales (lac)',
+        },
+        ticks: {
+          callback: value => `${value.toFixed(2)} L`,
+        },
+        beginAtZero: true,
+        position: 'left',
+      },
+    },
+    plugins: {
+      datalabels: {
+        display: true,
+        anchor: 'end',
+        align: 'end',
+        formatter: (value, context) => {
+          if(value === 0) {
+            return ''
+          }
+          return value >= 1 ? Math.floor(value) : value.toFixed(2);
+        },
+        color: '#000',
+        font: {
+          weight: 'light',
+          size: 10,
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: context => {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.y !== null) {
+              label += `${context.parsed.y.toFixed(2)} L`;
+            }
+            return label;
+          },
+        },
+      },
+    },
+  }), []);
+
+  const stackedBarOptions = useMemo(() => ({
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Month',
+        },
+        stacked: true, 
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Percentage Contribution (%)',
+        },
+        stacked: true, 
+        beginAtZero: true,
+        ticks: {
+          callback: value => `${value}%`, 
+        },
+      },
+    },
+    plugins: {
+      datalabels: {
+        display: true, 
+        anchor: 'center', 
+        align: 'center',  
+        formatter: (value) => {
+          const parsedValue = parseFloat(value);
+          if (parsedValue > 0) {
+            return `${parsedValue.toFixed(0)}%`; 
+          } else {
+            return ''; 
+          }
+        },
+        color: '#000', 
+        font: {
+          size: 12, 
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: context => {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.raw !== null) {
+              label += `${context.raw}%`;
+            }
+            return label;
+          },
+        },
+      },
+    },
+  }), []);
+  const barData = useMemo(() => ({
+    labels: monthsInShort,
     datasets: [
       {
-        data: [costData.Printing, costData.Mounting],
-        backgroundColor: [ '#FF900E', '#914EFB'],
-          borderColor: [ '#FF900E', '#914EFB'],
+        label: 'Government',
+        data: Object.values(aggregatedData3.sales).map(item => item.government),
+        backgroundColor: '#FF6384',
+      },
+      {
+        label: 'National Agency',
+        data: Object.values(aggregatedData3.sales).map(item => item.nationalagency),
+        backgroundColor: '#36A2EB',
+      },
+      {
+        label: 'Local Agency',
+        data: Object.values(aggregatedData3.sales).map(item => item.localagency),
+        backgroundColor: '#FFCE56',
+      },
+      {
+        label: 'Direct Client',
+        data: Object.values(aggregatedData3.sales).map(item => item.directclient),
+        backgroundColor: '#4BC0C0',
       },
     ],
-  }),
-  [],
-);
+  }), [aggregatedData3]);
 
-
-  const reprintingRemountingData = useMemo(
-    () => ({
+  const percentageBarData = useMemo(() => ({
+    labels: monthsInShort,
     datasets: [
       {
-        data: [costData.Reprinting, costData.Remounting],
-        backgroundColor: [ '#FF900E', '#914EFB'],
-          borderColor: [ '#FF900E', '#914EFB'],
+        label: 'Government',
+        data: Object.values(aggregatedData3.sales).map((item, idx) =>
+          totalSalesByMonth[idx]
+            ? ((item.government / totalSalesByMonth[idx]) * 100).toFixed(2)
+            : 0
+        ),
+        backgroundColor: '#FF6384',
+      },
+      {
+        label: 'National Agency',
+        data: Object.values(aggregatedData3.sales).map((item, idx) =>
+          totalSalesByMonth[idx]
+            ? ((item.nationalagency / totalSalesByMonth[idx]) * 100).toFixed(2)
+            : 0
+        ),
+        backgroundColor: '#36A2EB',
+      },
+      {
+        label: 'Local Agency',
+        data: Object.values(aggregatedData3.sales).map((item, idx) =>
+          totalSalesByMonth[idx]
+            ? ((item.localagency / totalSalesByMonth[idx]) * 100).toFixed(2)
+            : 0
+        ),
+        backgroundColor: '#FFCE56',
+      },
+      {
+        label: 'Direct Client',
+        data: Object.values(aggregatedData3.sales).map((item, idx) =>
+          totalSalesByMonth[idx]
+            ? ((item.directclient / totalSalesByMonth[idx]) * 100).toFixed(2)
+            : 0
+        ),
+        backgroundColor: '#4BC0C0',
       },
     ],
-  }),
-  [],
-);
+  }), [aggregatedData3, totalSalesByMonth]);
+
+
 
   return (
     <div className="overflow-y-auto p-3 col-span-10 overflow-hidden">
-      <div className="px-5">
-        <div className="mb-4 flex flex-col">
-          <p className="font-bold">Printing & Mounting Costs</p>
-          <p className="text-sm text-gray-600 italic py-4">
-            This chart compares costs for printing, mounting, reprinting, and remounting activities.
+      <div className="flex p-6 flex-col">
+        <div>
+          <div className="flex justify-between items-center">
+            <p className="font-bold">Amount Sales Bar Chart</p>
+          </div>
+          <p className="text-sm text-gray-600 italic pt-3">
+            This bar chart shows total sales by client type over the months of the financial year,
           </p>
+          {isLoadingBookingData ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader />
+            </div>
+          ) : (
+            <div className="gap-10">
+              <div className="pt-4 w-[50rem]">
+                <Bar
+                  ref={chartRef}
+                  data={barData}
+                  options={barChartOptions}
+                  plugins={[ChartDataLabels]}
+                />
+              </div>
+            </div>
+          )}
         </div>
-
-        <div className="flex w-1/3 gap-4 h-[300px] ">
-          {/* Printing & Mounting Revenue Split */}
-          <div className="flex gap-4 p-4 border rounded-md items-center min-h-[200px]">
-            <div className="w-32">
-              {isStatsLoading ? (
-                <Loader className="mx-auto" />
-              ) : costData.Printing === 0 && costData.Mounting === 0 ? (
-                <p className="text-center">NA</p>
-              ) :
-                <Doughnut options={config.options} data={printingMountingData} />
-              }
+        <div className="mt-10">
+          <div className="flex justify-between items-center">
+            <p className="font-bold">Monthly Percentage Contribution Bar Chart</p>
+          </div>
+          <p className="text-sm text-gray-600 italic pt-3">
+            This bar chart shows the percentage contribution of each client type to total sales for each month,
+          </p>
+          {isLoadingBookingData ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader />
             </div>
-            <div>
-              <p className="font-medium"> Printing, Mounting Revenue Split </p>
-              <div className="flex gap-8 mt-6 flex-wrap">
-                <div className="flex gap-2 items-center">
-                  <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
-                  <div>
-                    <p className="my-2 text-xs font-light text-slate-400">Printing</p>
-                    <p className="font-bold text-lg">{costData.Printing ?? 0}</p>
-                  </div>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
-                  <div>
-                    <p className="my-2 text-xs font-light text-slate-400">Mounting</p>
-                    <p className="font-bold text-lg">{costData.Mounting ?? 0}</p>
-                  </div>
-                </div>
+          ) : (
+            <div className="gap-10">
+              <div className="pt-4 w-[50rem]">
+                <Bar
+                  ref={chartRef}
+                  data={percentageBarData}
+                  options={stackedBarOptions}
+                  plugins={[ChartDataLabels]}
+                />
               </div>
             </div>
-          </div>
-
-          {/* Reprinting & Remounting Revenue Split */}
-          <div className="flex gap-4 p-4 border rounded-md items-center min-h-[200px]">
-            <div className="w-32">
-              {isStatsLoading ? (
-                <Loader className="mx-auto" />
-           
-              ) : costData.Remounting === 0 && costData.Reprinting === 0 ? (
-                <p className="text-center">NA</p>
-              ) :
-                <Doughnut options={config.options} data={reprintingRemountingData} />
-              }
-            </div>
-            <div>
-              <p className="font-medium"> Reprinting, Remounting Revenue Split </p>
-              <div className="flex gap-8 mt-6 flex-wrap">
-                <div className="flex gap-2 items-center">
-                  <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
-                  <div>
-                    <p className="my-2 text-xs font-light text-slate-400">Reprinting</p>
-                    <p className="font-bold text-lg">{costData.Reprinting ?? 0}</p>
-                  </div>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
-                  <div>
-                    <p className="my-2 text-xs font-light text-slate-400">Remounting</p>
-                    <p className="font-bold text-lg">{costData.Remounting ?? 0}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

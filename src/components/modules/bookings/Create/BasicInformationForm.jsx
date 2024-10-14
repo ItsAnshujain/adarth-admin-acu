@@ -66,7 +66,7 @@ const BasicInformationForm = () => (
             label="Client Type"
             name="client.clientType"
             withAsterisk
-            data={["Direct client", "Local Agency", "National Agency", "Goverment"]}
+            data={["Direct client", "Local Agency", "National Agency", "Government"]}
             placeholder="Select..."
             rightSection={<ChevronDown size={16} />}
             className="mb-7"

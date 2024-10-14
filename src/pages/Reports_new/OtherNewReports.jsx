@@ -31,13 +31,15 @@ import { useDistinctAdditionalTags, useFetchInventory } from '../../apis/queries
 import GaugeChart from '../../components/modules/newReports/GaugeChart';
 import InvoiceReportChart from '../../components/modules/newReports/InvoiceReportChart';
 import PerformanceCard from '../../components/modules/newReports/performanceCard';
+
+import ProposalSentIcon from '../../assets/proposal-sent.svg';
 import RevenueCards from '../../components/modules/newReports/RevenueCards';
 import classNames from 'classnames';
 import {
   useBookingReportByRevenueGraph,
   useBookingRevenueByIndustry,
 } from '../../apis/queries/booking.queries';
-
+import { Image } from '@mantine/core';
 import { downloadExcel } from '../../apis/requests/report.requests';
 import { useDownloadExcel } from '../../apis/queries/report.queries';
 import { showNotification } from '@mantine/notifications';
@@ -45,6 +47,9 @@ import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import ViewByFilter from '../../components/modules/reports/ViewByFilter';
 import { DATE_FORMAT } from '../../utils/constants';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import OngoingOrdersIcon from '../../assets/ongoing-orders.svg';
+import CompletedOrdersIcon from '../../assets/completed-orders.svg';
+import UpcomingOrdersIcon from '../../assets/upcoming-orders.svg';
 dayjs.extend(quarterOfYear);
 
 import NoData from '../../components/shared/NoData';
@@ -64,6 +69,7 @@ import {
 } from 'chart.js';
 import { useCampaignStats } from '../../apis/queries/campaigns.queries';
 import { registerables } from 'chart.js';
+import { useFetchProposals } from '../../apis/queries/proposal.queries';
 
 ChartJS.register(
   ArcElement,
@@ -96,17 +102,15 @@ const customLinesPlugin = {
       const xEdge = Math.cos(angle) * outerRadius;
       const yEdge = Math.sin(angle) * outerRadius;
 
-      const xLine = xEdge + Math.cos(angle) * 20;
-      const yLine = yEdge + Math.sin(angle) * 20;
+      const xLine = xEdge + Math.cos(angle) * 10;
+      const yLine = yEdge + Math.sin(angle) * 10;
 
       const xEnd = x + xLine;
       const yEnd = y + yLine;
 
-      const labelOffset = xLine > 0 ? 40 : -40;
-
       ctx.save();
       ctx.beginPath();
-      ctx.moveTo(x + xEdge, y + yEdge); // Starting from the edge of the arc
+      ctx.moveTo(x + xEdge, y + yEdge);
       ctx.lineTo(xEnd, yEnd);
       ctx.strokeStyle = '#000000';
       ctx.lineWidth = 1;
@@ -123,26 +127,24 @@ const barDataConfigByIndustry = {
       datalabels: {
         color: '#333',
         formatter: value => {
-          // Convert value to lacs and format accordingly
           const valueInLacs = value / 100000;
           return valueInLacs >= 1 ? Math.floor(valueInLacs) : valueInLacs.toFixed(1);
         },
-        anchor: 'end', // Anchor position for the data labels
-        align: 'end', // Alignment of the data labels
-        offset: 10, // Offset for the data labels
+        anchor: 'end',
+        align: 'end',
+        offset: 8,
       },
-      customLines: true, // Adding custom lines plugin
+      customLines: true,
       tooltip: {
         callbacks: {
-          label: function(tooltipItem) {
-            // Access the value and convert it to lacs
+          label: function (tooltipItem) {
             const value = tooltipItem.raw;
             const valueInLacs = value / 100000;
-            const formattedValue = `${valueInLacs.toFixed(2)}L`; // Show value in lacs with two decimal places
+            const formattedValue = `${valueInLacs.toFixed(2)}L`;
             return `Revenue: ${formattedValue}`;
-          }
-        }
-      }
+          },
+        },
+      },
     },
   },
   styles: {
@@ -221,6 +223,7 @@ const viewBy1 = {
   past5Years: 'Past 5 Years',
   previousYear: 'Previous Year',
   currentYear: 'Current Year',
+  customDate: 'Custom Date Range',
 };
 
 const list1 = [
@@ -228,17 +231,38 @@ const list1 = [
   { label: 'Past 5 Years', value: 'past5Years' },
   { label: 'Previous Year', value: 'previousYear' },
   { label: 'Current Year', value: 'currentYear' },
+  { label: 'Custom Date Range', value: 'customDate' },
 ];
-
 const barDataConfigByClient = {
   styles: {
     backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+    borderColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
     hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
   },
   options: {
     responsive: true,
     maintainAspectRatio: false,
+    radius: '80%', // Shrinks the pie chart to add space around it
+    plugins: {
+      datalabels: {
+        formatter: value => {
+          return value >= 1 ? Math.floor(value) : value.toFixed(1);
+        },
+        color: '#000',
+        anchor: 'end',
+        align: 'end',
+        offset: 2,
+        // This keeps the data labels unaffected by chart size adjustments
+      },
+    },
   },
+};
+
+const clientTypeLabels = {
+  government: 'Government',
+  nationalagency: 'National Agency',
+  localagency: 'Local Agency',
+  directclient: 'Direct Client',
 };
 
 const normalizeString = str => {
@@ -289,7 +313,6 @@ const OtherNewReports = () => {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-      
         datalabels: {
           color: '#333',
           formatter: value => {
@@ -328,6 +351,9 @@ const OtherNewReports = () => {
     isLoading: isLoadingBookingData,
     error,
   } = useBookings(searchParams.toString());
+
+  const { data: bookingData2 } = useBookingsNew(searchParams.toString());
+
   const [salesData, setSalesData] = useState([]);
 
   const getCurrentYear = () => new Date().getFullYear();
@@ -496,58 +522,41 @@ const OtherNewReports = () => {
     }),
     [salesData],
   );
-
-  const parentCompaniesQuery = useInfiniteCompanies({
-    page: 1,
-    limit: 100,
-    sortBy: 'createdAt',
-    sortOrder: 'desc',
-    type: 'lead-company',
-    isParent: false,
-  });
-
-  const parentCompanies = useMemo(
-    () =>
-      parentCompaniesQuery.data?.pages
-        .reduce((acc, { docs }) => [...acc, ...docs], [])
-        .map(doc => ({
-          ...doc,
-          label: doc.company,
-          value: doc._id,
-        })) || [],
-    [parentCompaniesQuery?.data],
-  );
-
+  // client details
   const aggregatedData = useMemo(() => {
-    if (!bookingData || !parentCompanies.length) return {};
+    if (!bookingData2) return {};
 
-    const validCompanyTypes = ['government', 'nationalAgency', 'localAgency', 'directClient'];
+    const validClientTypes = Object.keys(clientTypeLabels);
 
-    const companyTypeMap = parentCompanies.reduce((acc, company) => {
-      const normalizedCompanyName = normalizeString(company.company);
-      acc[normalizedCompanyName] = company.companyType;
-      return acc;
-    }, {});
+    const result = {
+      government: 0,
+      nationalagency: 0,
+      localagency: 0,
+      directclient: 0,
+    };
 
-    const aggregatedAmount = validCompanyTypes.reduce((acc, type) => {
-      acc[type] = 0;
-      return acc;
-    }, {});
+    bookingData2.forEach(booking => {
+      const totalAmount = booking?.totalAmount || 0;
 
-    bookingData.docs.forEach(booking => {
-      const normalizedBookingCompany = normalizeString(booking.company);
-      const companyType = companyTypeMap[normalizedBookingCompany];
+      if (Array.isArray(booking.details) && booking.details.length > 0) {
+        booking.details.forEach(detail => {
+          const clientType = detail?.client?.clientType;
 
-      if (companyType && validCompanyTypes.includes(companyType)) {
-        aggregatedAmount[companyType] += booking.totalAmount || 0;
+          if (clientType) {
+            const normalizedClientType = clientType.toLowerCase().replace(/\s/g, '');
+            if (validClientTypes.includes(normalizedClientType)) {
+              result[normalizedClientType] += totalAmount / 100000;
+            }
+          }
+        });
       }
     });
 
-    return aggregatedAmount;
-  }, [bookingData, parentCompanies]);
+    return result;
+  }, [bookingData2]);
 
   const pieChartData = useMemo(() => {
-    const labels = Object.keys(aggregatedData);
+    const labels = Object.keys(aggregatedData).map(clientType => clientTypeLabels[clientType]); // Use the mapping for labels
     const data = Object.values(aggregatedData);
 
     return {
@@ -565,10 +574,11 @@ const OtherNewReports = () => {
   const [updatedClient, setUpdatedClient] = useState(pieChartData);
 
   useEffect(() => {
-    if (bookingData && parentCompanies) {
+    if (bookingData2) {
       setUpdatedClient(pieChartData);
     }
-  }, [pieChartData, bookingData, parentCompanies]);
+  }, [pieChartData, bookingData2]);
+  // client details
 
   const { data: operationalCostTypes } = useFetchMasters(
     serialize({
@@ -654,13 +664,13 @@ const OtherNewReports = () => {
         color: '#333',
         formatter: value => {
           const inLacs = value / 100000;
-          return inLacs >= 1 ? Math.floor(inLacs) : inLacs.toFixed(1); // Keep 2 decimal places
+          return inLacs >= 1 ? Math.floor(inLacs) : inLacs.toFixed(1);
         },
         anchor: 'end',
         align: 'end',
-        offset: 20,
+        offset: 10,
       },
-      customLines: true, // Custom plugin if needed
+      customLines: true,
       tooltip: {
         enabled: true,
         callbacks: {
@@ -730,24 +740,21 @@ const OtherNewReports = () => {
     const past10YearsRange = generateYearRange(currentYear - 10, currentYear - 1);
     const past5YearsRange = generateYearRange(currentYear - 5, currentYear - 1);
 
-    // Calculate start and end dates for the current fiscal year
-    const fiscalYearStart = new Date(currentYear, fiscalStartMonth, 1); // April 1st, current year
-    const fiscalYearEnd = new Date(currentYear + 1, fiscalStartMonth - 1, 31); // March 31st, next year
+    const fiscalYearStart = new Date(currentYear, fiscalStartMonth, 1);
+    const fiscalYearEnd = new Date(currentYear + 1, fiscalStartMonth - 1, 31);
 
-    // Initialize accumulator with default values
     const groupedData = bookingData.docs.reduce((acc, booking) => {
       const date = new Date(booking.createdAt);
       const year = date.getFullYear();
       const month = date.getMonth(); // Month is 0-indexed
       const day = date.getDate();
-      const revenue = parseFloat(booking.totalAmount) || 0; // Ensure revenue is a number, default to 0 if not valid
+      const revenue = parseFloat(booking.totalAmount) || 0;
 
-      // Initialize nested properties to avoid undefined errors
       if (!acc.past10Years) acc.past10Years = {};
       if (!acc.past5Years) acc.past5Years = {};
       if (!acc.previousYear) acc.previousYear = {};
       if (!acc.currentYear) acc.currentYear = {};
-      if (!acc.quarter) acc.quarter = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 }; // Explicitly initialize quarters to 0
+      if (!acc.quarter) acc.quarter = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
       if (!acc.currentMonth) acc.currentMonth = acc.currentMonth || {};
       if (!acc.past7) acc.past7 = acc.past7 || {};
       if (!acc.customDate) acc.customDate = acc.customDate || {};
@@ -871,7 +878,7 @@ const OtherNewReports = () => {
     // Format the selected data based on the filter
     const filteredData = selectedData.map(d => ({
       ...d,
-      revenue: d.revenue > 0 ? d.revenue / 100000 : 0, // Convert revenue to lacs
+      revenue: d.revenue > 0 ? d.revenue / 100000 : 0,
     }));
 
     // If filter is 'customDate', ensure data is sorted by date
@@ -939,7 +946,7 @@ const OtherNewReports = () => {
           anchor: 'end',
           align: 'end',
           formatter: (value, context) => {
-          return value >= 1 ? Math.floor(value) : value.toFixed(1); 
+            return value >= 1 ? Math.floor(value) : value.toFixed(1);
           },
           color: '#000', // Label color
           font: {
@@ -1088,29 +1095,49 @@ const OtherNewReports = () => {
     const newDate = new Date(date);
     const month = newDate.toLocaleString('default', { month: 'short' });
     const year = newDate.getFullYear();
-    return `${month} ${year}`;
+    const financialYear = newDate.getMonth() + 1 >= 4 ? year : year - 1; // Financial year logic
+
+    return `${month} ${financialYear}`;
   };
 
-  const getFilteredData1 = (data, view) => {
+  const getFinancialYear = date => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // Months are 0-indexed
+
+    // Financial year starts in April
+    if (month >= 4) {
+      return { startYear: year, endYear: year + 1 };
+    } else {
+      return { startYear: year - 1, endYear: year };
+    }
+  };
+
+  const getFilteredData1 = (data, view, startDate2, endDate2) => {
     if (!data) return [];
 
     const now = new Date();
+    const { startYear: currentFYStartYear } = getFinancialYear(now);
+
     let startDate, endDate;
 
     switch (view) {
       case 'past10Years':
-        startDate = new Date(now.getFullYear() - 10, 0, 1);
+        startDate = new Date(currentFYStartYear - 10, 3, 1);
         break;
       case 'past5Years':
-        startDate = new Date(now.getFullYear() - 5, 0, 1);
+        startDate = new Date(currentFYStartYear - 5, 3, 1);
         break;
       case 'previousYear':
-        startDate = new Date(now.getFullYear() - 1, 0, 1);
-        endDate = new Date(now.getFullYear() - 1, 11, 31);
+        startDate = new Date(currentFYStartYear - 1, 3, 1);
+        endDate = new Date(currentFYStartYear, 2, 31);
         break;
       case 'currentYear':
-        startDate = new Date(now.getFullYear(), 0, 1);
-        endDate = new Date(now.getFullYear(), 11, 31);
+        startDate = new Date(currentFYStartYear, 3, 1);
+        endDate = new Date(currentFYStartYear + 1, 2, 31);
+        break;
+      case 'customDate':
+        startDate = startDate2;
+        endDate = endDate2;
         break;
       default:
         startDate = null;
@@ -1165,13 +1192,13 @@ const OtherNewReports = () => {
   };
 
   const groupedData1 = useMemo(() => {
-    return getFilteredData1(bookingData, activeView1).sort((a, b) => {
+    return getFilteredData1(bookingData, activeView1, startDate2, endDate2).sort((a, b) => {
       const [yearA, monthA] = a.monthYearKey.split('-').map(Number);
       const [yearB, monthB] = b.monthYearKey.split('-').map(Number);
 
       return yearA !== yearB ? yearB - yearA : monthB - monthA;
     });
-  }, [bookingData?.docs, activeView1]);
+  }, [bookingData?.docs, activeView1, startDate2, endDate2]);
 
   const column1 = useMemo(
     () => [
@@ -1215,6 +1242,13 @@ const OtherNewReports = () => {
 
   const handleReset1 = () => {
     setActiveView1('currentYear');
+    setStartDate2(null);
+    setEndDate2(null);
+  };
+
+  const onDateChange5 = val => {
+    setStartDate2(val[0]);
+    setEndDate2(val[1]);
   };
 
   const invoiceRaised = groupedData1?.reduce((acc, item) => acc + item.outStandingInvoice, 0);
@@ -1443,8 +1477,6 @@ const OtherNewReports = () => {
 
   // tagwise report
 
-  const { data: bookingData2 } = useBookingsNew(searchParams.toString());
-
   const additionalTagsQuery = useDistinctAdditionalTags();
   const [selectedTags, setSelectedTags] = useState(['best', 'ASTC']);
   const [startDate1, setStartDate1] = useState(null);
@@ -1465,6 +1497,8 @@ const OtherNewReports = () => {
     }
     return past7Days;
   };
+  console.log('Booking Data:', bookingData);
+
   const transformedData3 = useMemo(() => {
     if (!bookingData2 || !selectedTags.length) return {};
 
@@ -1502,12 +1536,10 @@ const OtherNewReports = () => {
 
           let timeUnit;
 
-          // Handle fiscal year and quarter logic
-          const fiscalYear = month >= fiscalStartMonth ? year : year - 1; // Fiscal year starts in April
-          const fiscalMonth = (month + 12 - fiscalStartMonth) % 12; // Shift months according to fiscal year
-          const fiscalQuarter = Math.ceil((fiscalMonth + 1) / 3); // Quarterly calculation based on fiscal month
+          const fiscalYear = month >= fiscalStartMonth ? year : year - 1;
+          const fiscalMonth = (month + 12 - fiscalStartMonth) % 12;
+          const fiscalQuarter = Math.ceil((fiscalMonth + 1) / 3);
 
-          // TimeUnit Assignments for Different Filters
           if (filter3 === 'past10Years' && fiscalYear >= currentYear - 10) {
             timeUnit = fiscalYear;
           } else if (filter3 === 'past5Years' && fiscalYear >= currentYear - 5) {
@@ -1650,10 +1682,10 @@ const OtherNewReports = () => {
           anchor: 'end',
           align: 'end',
           formatter: (value, context) => {
-            if(value==0){
-              return ''
+            if (value == 0) {
+              return '';
             }
-          return value >= 1 ? Math.floor(value) : value.toFixed(2); 
+            return value >= 1 ? Math.floor(value) : value.toFixed(2);
           },
           color: '#000', // Label color
           font: {
@@ -2004,7 +2036,7 @@ const OtherNewReports = () => {
         totalRevenue += revenueData[timeUnit] || 0;
       });
 
-      return totalRevenue / 100000; // Convert to lac
+      return totalRevenue / 100000;
     });
 
     if (data.every(value => value === 0)) {
@@ -2056,7 +2088,7 @@ const OtherNewReports = () => {
           anchor: 'end',
           align: 'end',
           formatter: (value, context) => {
-          return value >= 1 ? Math.floor(value) : value.toFixed(1); 
+            return value >= 1 ? Math.floor(value) : value.toFixed(1);
           },
           color: '#000', // Label color
           font: {
@@ -2342,21 +2374,21 @@ const OtherNewReports = () => {
         datalabels: {
           color: '#333',
           formatter: value => {
-            const valueInLacs = value / 100000; // Convert to lakhs
-            return valueInLacs >= 1 ? Math.floor(valueInLacs) : valueInLacs.toFixed(1) ; // Append 'L'
+            const valueInLacs = value / 100000;
+            return valueInLacs >= 1 ? Math.floor(valueInLacs) : valueInLacs.toFixed(1);
           },
           anchor: 'end',
           align: 'end',
-          offset: 20,
+          offset: 8,
         },
-        customLines: true, // Custom lines plugin activation
+        customLines: true,
         tooltip: {
           callbacks: {
-            label: (tooltipItem) => {
+            label: tooltipItem => {
               const dataset = tooltipItem.dataset;
               const value = dataset.data[tooltipItem.dataIndex];
-              const valueInLacs = (value / 100000).toFixed(2); // Convert to lakhs and format to 2 decimal places
-              return `Revenue: ${valueInLacs}L`; // Format tooltip label
+              const valueInLacs = (value / 100000).toFixed(2);
+              return `Revenue: ${valueInLacs}L`;
             },
           },
         },
@@ -2365,8 +2397,8 @@ const OtherNewReports = () => {
         padding: {
           top: 20,
           bottom: 20,
-          left: 35,
-          right: 35,
+          left: 25,
+          right: 25,
         },
       },
       elements: {
@@ -2374,10 +2406,9 @@ const OtherNewReports = () => {
           borderWidth: 1,
         },
       },
-      cutout: '65%', // Doughnut cutout
+      cutout: '65%',
     },
   };
-  
 
   // Extract and filter relevant data
 
@@ -2431,8 +2462,349 @@ const OtherNewReports = () => {
     [costData], // Add costData as a dependency
   );
   // printing and mounting
+
+  // ongoing orders
+  const calculateTotalRevenue = status => {
+    if (!bookingData2) return 0;
+    return bookingData2.reduce((total, booking) => {
+      if (booking.currentStatus?.campaignStatus === status) {
+        return total + (booking.totalAmount || 0); // Replace `totalAmount` with the correct field if needed
+      }
+      return total;
+    }, 0);
+  };
+
+  // Calculate total revenue for each order status (only if data is available)
+  const ongoingRevenue = bookingData2 ? calculateTotalRevenue('Ongoing') : null;
+  const upcomingRevenue = bookingData2 ? calculateTotalRevenue('Upcoming') : null;
+  const completedRevenue = bookingData2 ? calculateTotalRevenue('Completed') : null;
+
+  // ongoing orders
   const showOwnSites = dummyStats.ownsite > 0;
   const showTradedSites = dummyStats.tradedsite > 0;
+
+  // proposals data
+  const [searchParams4, setSearchParams4] = useSearchParams({
+    page: 1,
+    limit: 500,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+  });
+
+  const { data: proposalsData, isLoading: isLoadingProposalsData } = useFetchProposals(
+    searchParams4.toString(),
+  );
+
+  const proposalsArray = Array.isArray(proposalsData?.docs) ? proposalsData.docs : [];
+
+  const totalProposalsCreated = proposalsArray.length;
+  const totalPrice = proposalsArray.reduce((acc, proposal) => acc + (proposal.price || 0), 0);
+
+  const totalPriceInLacs = (totalPrice / 100000).toFixed(2);
+
+  // proposals data
+
+  // revenue breakup according to client type
+  const aggregatedData2 = useMemo(() => {
+    if (!bookingData2) return {};
+
+    const validClientTypes = ['government', 'nationalagency', 'localagency', 'directclient']; // Define valid client types
+
+    const result = {
+      government: 0,
+      nationalagency: 0,
+      localagency: 0,
+      directclient: 0,
+    };
+
+    bookingData2.forEach(booking => {
+      const totalAmount = booking?.totalAmount || 0;
+
+      if (Array.isArray(booking.details) && booking.details.length > 0) {
+        booking.details.forEach(detail => {
+          const clientType = detail?.client?.clientType;
+
+          if (clientType) {
+            const normalizedClientType = clientType.toLowerCase().replace(/\s/g, '');
+            if (validClientTypes.includes(normalizedClientType)) {
+              result[normalizedClientType] += totalAmount / 100000;
+            }
+          }
+        });
+      }
+    });
+
+    return result;
+  }, [bookingData2]);
+
+  const revenueBreakupData = useMemo(
+    () => ({
+      datasets: [
+        {
+          data: [
+            aggregatedData2.directclient ?? 0,
+            aggregatedData2.localagency ?? 0,
+            aggregatedData2.nationalagency ?? 0,
+            aggregatedData2.government ?? 0,
+          ],
+          backgroundColor: ['#FF900E', '#914EFB', '#4BC0C0', '#2938F7'],
+          borderColor: ['#FF900E', '#914EFB', '#4BC0C0', '#2938F7'],
+          borderWidth: 1,
+        },
+      ],
+    }),
+    [aggregatedData2],
+  );
+  // revenue breakup according to client type
+
+  // month wise contribution of client type
+  const currentFinancialYear = date => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    return month >= 4 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+  };
+
+  const aggregatedData3 = useMemo(() => {
+    if (!bookingData2) {
+      return {
+        sales: monthsInShort.reduce((acc, month) => {
+          acc[month] = { government: 0, nationalagency: 0, localagency: 0, directclient: 0 };
+          return acc;
+        }, {}),
+      };
+    }
+
+    const result = {
+      sales: monthsInShort.reduce((acc, month) => {
+        acc[month] = { government: 0, nationalagency: 0, localagency: 0, directclient: 0 };
+        return acc;
+      }, {}),
+    };
+
+    bookingData2.forEach(booking => {
+      const bookingDate = new Date(booking.createdAt);
+      const fy = currentFinancialYear(bookingDate);
+
+      if (fy === currentFinancialYear(new Date())) {
+        const totalAmount = booking?.totalAmount || 0;
+
+        if (Array.isArray(booking.details) && booking.details.length > 0) {
+          booking.details.forEach(detail => {
+            const clientType = detail?.client?.clientType?.toLowerCase().replace(/\s/g, '');
+
+            const monthKey = bookingDate.toLocaleString('default', { month: 'short' });
+            if (result.sales[monthKey] && clientType) {
+              result.sales[monthKey][clientType] += totalAmount / 100000;
+            }
+          });
+        }
+      }
+    });
+
+    return result;
+  }, [bookingData2]);
+
+  const totalSalesByMonth = useMemo(
+    () =>
+      Object.values(aggregatedData3.sales).map(
+        item => item.government + item.nationalagency + item.localagency + item.directclient,
+      ),
+    [aggregatedData3],
+  );
+
+  const barChartOptions = useMemo(
+    () => ({
+      responsive: true,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Month',
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Sales (lac)',
+          },
+          ticks: {
+            callback: value => `${value.toFixed(2)} L`,
+          },
+          beginAtZero: true,
+          position: 'left',
+        },
+      },
+      plugins: {
+        datalabels: {
+          display: true,
+          anchor: 'end',
+          align: 'end',
+          formatter: (value, context) => {
+            if (value === 0) {
+              return '';
+            }
+            return value >= 1 ? Math.floor(value) : value.toFixed(2);
+          },
+          color: '#000',
+          font: {
+            weight: 'light',
+            size: 10,
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: context => {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                label += `${context.parsed.y.toFixed(2)} L`;
+              }
+              return label;
+            },
+          },
+        },
+      },
+    }),
+    [],
+  );
+
+  const stackedBarOptions = useMemo(
+    () => ({
+      responsive: true,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Month',
+          },
+          stacked: true,
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Percentage Contribution (%)',
+          },
+          stacked: true,
+          beginAtZero: true,
+          ticks: {
+            callback: value => `${value}%`,
+          },
+        },
+      },
+      plugins: {
+        datalabels: {
+          display: true,
+          anchor: 'center',
+          align: 'center',
+          formatter: value => {
+            const parsedValue = parseFloat(value);
+            if (parsedValue > 0) {
+              return `${parsedValue.toFixed(0)}%`;
+            } else {
+              return '';
+            }
+          },
+          color: '#000',
+          font: {
+            size: 12,
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: context => {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.raw !== null) {
+                label += `${context.raw}%`;
+              }
+              return label;
+            },
+          },
+        },
+      },
+    }),
+    [],
+  );
+  const barData = useMemo(
+    () => ({
+      labels: monthsInShort,
+      datasets: [
+        {
+          label: 'Government',
+          data: Object.values(aggregatedData3.sales).map(item => item.government),
+          backgroundColor: '#FF6384',
+        },
+        {
+          label: 'National Agency',
+          data: Object.values(aggregatedData3.sales).map(item => item.nationalagency),
+          backgroundColor: '#36A2EB',
+        },
+        {
+          label: 'Local Agency',
+          data: Object.values(aggregatedData3.sales).map(item => item.localagency),
+          backgroundColor: '#FFCE56',
+        },
+        {
+          label: 'Direct Client',
+          data: Object.values(aggregatedData3.sales).map(item => item.directclient),
+          backgroundColor: '#4BC0C0',
+        },
+      ],
+    }),
+    [aggregatedData3],
+  );
+
+  const percentageBarData = useMemo(
+    () => ({
+      labels: monthsInShort,
+      datasets: [
+        {
+          label: 'Government',
+          data: Object.values(aggregatedData3.sales).map((item, idx) =>
+            totalSalesByMonth[idx]
+              ? ((item.government / totalSalesByMonth[idx]) * 100).toFixed(2)
+              : 0,
+          ),
+          backgroundColor: '#FF6384',
+        },
+        {
+          label: 'National Agency',
+          data: Object.values(aggregatedData3.sales).map((item, idx) =>
+            totalSalesByMonth[idx]
+              ? ((item.nationalagency / totalSalesByMonth[idx]) * 100).toFixed(2)
+              : 0,
+          ),
+          backgroundColor: '#36A2EB',
+        },
+        {
+          label: 'Local Agency',
+          data: Object.values(aggregatedData3.sales).map((item, idx) =>
+            totalSalesByMonth[idx]
+              ? ((item.localagency / totalSalesByMonth[idx]) * 100).toFixed(2)
+              : 0,
+          ),
+          backgroundColor: '#FFCE56',
+        },
+        {
+          label: 'Direct Client',
+          data: Object.values(aggregatedData3.sales).map((item, idx) =>
+            totalSalesByMonth[idx]
+              ? ((item.directclient / totalSalesByMonth[idx]) * 100).toFixed(2)
+              : 0,
+          ),
+          backgroundColor: '#4BC0C0',
+        },
+      ],
+    }),
+    [aggregatedData3, totalSalesByMonth],
+  );
+
+  // month wise contribution of client type
+
   return (
     <div className="overflow-y-auto p-3 col-span-10 overflow-hidden">
       {/* <div className="flex justify-between ">
@@ -2457,47 +2829,43 @@ const OtherNewReports = () => {
           <RevenueCards />
         </div>
         <div className="flex flex-col md:flex-row">
-        <div className="flex flex-col p-6 w-[30rem] gap-4">
-                <p className="font-bold text-center">Source Distribution</p>
-                <p className="text-sm text-gray-600 italic">
-                    This chart shows the revenue split between "Own Sites" and "Traded Sites".
-                </p>
-                {(!showOwnSites && !showTradedSites) ? (
-                    <p className="text-center">NA</p>
-                ) : (
-                    <>
-                        <div className="flex gap-8 mt-6 justify-center">
-                            {showOwnSites && (
-                                <div className="flex gap-2 items-center">
-                                    <div className="h-4 w-4 rounded-full bg-orange-350" />
-                                    <div>
-                                        <p className="my-2 text-xs font-light">Own Sites</p>
-                                        <p className="text-sm">{dummyStats.ownsite} L</p>
-                                    </div>
-                                </div>
-                            )}
-                            {showTradedSites && (
-                                <div className="flex gap-2 items-center">
-                                    <div className="h-4 w-4 rounded-full bg-purple-350" />
-                                    <div>
-                                        <p className="my-2 text-xs font-light">Traded Sites</p>
-                                        <p className="text-sm">{dummyStats.tradedsite} L</p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                        {showOwnSites || showTradedSites ? (
-                            <div className="w-[200px] m-6">
-                                <Doughnut
-                                    options={config}
-                                    data={printSitesData}
-                                    plugins={[ChartDataLabels]}
-                                />
-                            </div>
-                        ) : null}
-                    </>
-                )}
-            </div>
+          <div className="flex flex-col p-6 w-[30rem] gap-4">
+            <p className="font-bold text-center">Source Distribution</p>
+            <p className="text-sm text-gray-600 italic">
+              This chart shows the revenue split between "Own Sites" and "Traded Sites".
+            </p>
+            {!showOwnSites && !showTradedSites ? (
+              <p className="text-center">NA</p>
+            ) : (
+              <>
+                <div className="flex gap-8 mt-6 justify-center">
+                  {showOwnSites && (
+                    <div className="flex gap-2 items-center">
+                      <div className="h-4 w-4 rounded-full bg-orange-350" />
+                      <div>
+                        <p className="my-2 text-xs font-light">Own Sites</p>
+                        <p className="text-sm">{dummyStats.ownsite} L</p>
+                      </div>
+                    </div>
+                  )}
+                  {showTradedSites && (
+                    <div className="flex gap-2 items-center">
+                      <div className="h-4 w-4 rounded-full bg-purple-350" />
+                      <div>
+                        <p className="my-2 text-xs font-light">Traded Sites</p>
+                        <p className="text-sm">{dummyStats.tradedsite} L</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {showOwnSites || showTradedSites ? (
+                  <div className="w-[200px] m-6">
+                    <Doughnut options={config} data={printSitesData} plugins={[ChartDataLabels]} />
+                  </div>
+                ) : null}
+              </>
+            )}
+          </div>
           <div className="flex mt-2">
             <div className="flex flex-col gap-4 text-center">
               <div className="flex flex-col gap-4 p-4 items-center min-h-[200px]">
@@ -2509,21 +2877,18 @@ const OtherNewReports = () => {
                 <div className="w-72">
                   {isLoadingBookingData ? (
                     <p className="text-center">Loading...</p>
-                  ) :  (
+                  ) : updatedClient && updatedClient.datasets[0].data.length > 0 ? (
+                    <Pie
+                      data={updatedClient}
+                      options={barDataConfigByClient.options}
+                      height={200}
+                      width={200}
+                      ref={chartRef}
+                      plugins={[ChartDataLabels, customLinesPlugin]}
+                    />
+                  ) : (
                     <p className="text-center">NA</p>
-                   ) 
-                  
-                  // : (
-                  //   <Pie
-                  //     data={updatedClient}
-                  //     options={barDataConfigByClient.options}
-                  //     height={200}
-                  //     width={200}
-                  //     ref={chartRef}
-                  //     plugins={[ChartDataLabels]}
-                  //   />
-                  // )
-                  }
+                  )}
                 </div>
               </div>
             </div>
@@ -2623,12 +2988,12 @@ const OtherNewReports = () => {
                     <p className="text-center">NA</p>
                   ) : (
                     <Pie
-                    data={updatedIndustry}
-                    options={barDataConfigByIndustry.options}
-                    key={updatedIndustry.id}
-                    ref={chartRef}
-                    plugins={[ChartDataLabels, customLinesPlugin]} // Ensure custom lines plugin is included
-                  />
+                      data={updatedIndustry}
+                      options={barDataConfigByIndustry.options}
+                      key={updatedIndustry.id}
+                      ref={chartRef}
+                      plugins={[ChartDataLabels, customLinesPlugin]} // Ensure custom lines plugin is included
+                    />
                   )}
                 </div>
               </div>
@@ -2870,14 +3235,18 @@ const OtherNewReports = () => {
                     <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                     <div>
                       <p className="my-2 text-xs font-light text-slate-400">Printing</p>
-                      <p className="font-bold text-md">{(costData.Printing/ 100000).toFixed(2) ?? 0} L</p>
+                      <p className="font-bold text-md">
+                        {(costData.Printing / 100000).toFixed(2) ?? 0} L
+                      </p>
                     </div>
                   </div>
                   <div className="flex gap-2 items-center">
                     <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                     <div>
                       <p className="my-2 text-xs font-light text-slate-400">Mounting</p>
-                      <p className="font-bold text-md">{(costData.Mounting/ 100000).toFixed(2) ?? 0} L</p>
+                      <p className="font-bold text-md">
+                        {(costData.Mounting / 100000).toFixed(2) ?? 0} L
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -2906,14 +3275,18 @@ const OtherNewReports = () => {
                     <div className="h-2 w-1 p-2 bg-orange-350 rounded-full" />
                     <div>
                       <p className="my-2 text-xs font-light text-slate-400">Reprinting</p>
-                      <p className="font-bold text-md">{(costData.Reprinting/ 100000).toFixed(2) ?? 0} L</p>
+                      <p className="font-bold text-md">
+                        {(costData.Reprinting / 100000).toFixed(2) ?? 0} L
+                      </p>
                     </div>
                   </div>
                   <div className="flex gap-2 items-center">
                     <div className="h-2 w-1 p-2 rounded-full bg-purple-350" />
                     <div>
                       <p className="my-2 text-xs font-light text-slate-400">Remounting</p>
-                      <p className="font-bold text-md">{(costData.Remounting/ 100000).toFixed(2) ?? 0} L</p>
+                      <p className="font-bold text-md">
+                        {(costData.Remounting / 100000).toFixed(2) ?? 0} L
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -2922,7 +3295,7 @@ const OtherNewReports = () => {
           </div>
         </div>
       </div>
-      {/* <div className="border-2 p-5 border-black my-2">
+      <div className="border-2 p-5 border-black my-2">
         <p className="font-bold text-lg"> Client Data</p>
 
         <div className="flex flex-col col-span-10 overflow-hidden">
@@ -2946,7 +3319,7 @@ const OtherNewReports = () => {
             }}
           />
         </div>
-      </div> */}
+      </div>
 
       <div className="col-span-12 md:col-span-12 lg:col-span-10 overflow-y-auto p-5">
         <p className="font-bold pt-10">Price and Traded Margin Report</p>
@@ -3002,6 +3375,16 @@ const OtherNewReports = () => {
             <p className="text-sm text-gray-600 italic ml-[450px]"> (Amounts in Lacs)</p>
           </div>
         </div>
+        {activeView1 === 'customDate' && (
+          <div className="flex flex-col items-start space-y-4 py-2 ">
+            <DateRangeSelector
+              dateValue={[startDate2, endDate2]}
+              onChange={onDateChange5}
+              minDate={threeMonthsAgo}
+              maxDate={today}
+            />
+          </div>
+        )}
         <div className="flex flex-col lg:flex-row gap-10  overflow-x-auto">
           <div className="overflow-y-auto w-[600px] h-[400px]">
             <Table
@@ -3025,6 +3408,7 @@ const OtherNewReports = () => {
           <InvoiceReportChart data={activeView1 ? groupedData1 : []} />{' '}
         </div>
       </div>
+
       <div className="overflow-y-auto px-5 col-span-10 w-[65rem]">
         <p className="font-bold pt-10">Performance Ranking Report</p>
         <p className="text-sm text-gray-600 italic py-4">
@@ -3033,6 +3417,168 @@ const OtherNewReports = () => {
         </p>
         <PerformanceCard />
       </div>
+
+      {/* <div className="flex gap-4 px-5 flex-wrap">
+        <div className="border rounded p-8 pr-20">
+          <Image src={OngoingOrdersIcon} alt="ongoing" height={24} width={24} fit="contain" />
+          <Text className="my-2" size="sm" weight="200">
+            Ongoing Orders
+          </Text>
+          <Text weight="bold">
+            {ongoingRevenue !== null && !isNaN(ongoingRevenue)
+              ? `${(ongoingRevenue / 100000).toFixed(2)} L`
+              : ''}
+          </Text>
+        </div>
+
+        <div className="border rounded p-8 pr-20">
+          <Image src={UpcomingOrdersIcon} alt="upcoming" height={24} width={24} fit="contain" />
+          <Text className="my-2" size="sm" weight="200">
+            Upcoming Orders
+          </Text>
+          <Text weight="bold">
+            {upcomingRevenue !== null && !isNaN(upcomingRevenue)
+              ? `${(upcomingRevenue / 100000).toFixed(2)} L`
+              : ''}
+          </Text>
+        </div>
+
+        <div className="border rounded p-8 pr-20">
+          <Image src={CompletedOrdersIcon} alt="completed" height={24} width={24} fit="contain" />
+          <Text className="my-2" size="sm" weight="200">
+            Completed Orders
+          </Text>
+          <Text weight="bold">
+            {completedRevenue !== null && !isNaN(completedRevenue)
+              ? `${(completedRevenue / 100000).toFixed(2)} L`
+              : ''}
+          </Text>
+        </div>
+      </div> */}
+      {/* <div className="p-5">
+        <div className="border rounded p-8 flex-1 w-72">
+          <Image src={ProposalSentIcon} alt="folder" fit="contain" height={24} width={24} />
+          <p className="my-2 text-sm">
+            Total Proposals Created :{' '}
+            <span className="font-bold text-[17px]">{totalProposalsCreated}</span>
+          </p>
+
+          <p className="font-bold">{totalPriceInLacs} L</p>
+        </div>
+      </div>
+      <div className="p-5">
+        <div className="flex justify-between gap-4 flex-wrap">
+          <div className="flex gap-4 p-4 border rounded-md items-center">
+            <div className="w-32">
+              {isLoadingBookingData ? (
+                <Loader className="mx-auto" />
+              ) : (
+                <Doughnut options={{ responsive: true }} data={revenueBreakupData} />
+              )}
+            </div>
+            <div>
+              <p className="font-medium">Revenue Breakup</p>
+              <div className="flex gap-8 mt-6">
+                <div className="flex gap-2 items-center">
+                  <div className=" p-2 rounded-full bg-orange-350" />
+                  <div>
+                    <Text size="sm" weight="200">
+                      Direct Client
+                    </Text>
+                    <Text weight="bolder" size="md">
+                      {aggregatedData2.directclient?.toFixed(2) || 0} L
+                    </Text>
+                  </div>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <div className="h-2 w-1 p-2 bg-purple-350 rounded-full" />
+                  <div>
+                    <Text size="sm" weight="200">
+                      Local Agency
+                    </Text>
+                    <Text weight="bolder" size="md">
+                      {aggregatedData2.localagency?.toFixed(2) || 0} L
+                    </Text>
+                  </div>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <div className="h-2 w-1 p-2 bg-green-350 rounded-full" />
+                  <div>
+                    <Text size="sm" weight="200">
+                      National Agency
+                    </Text>
+                    <Text weight="bolder" size="md">
+                      {aggregatedData2.nationalagency?.toFixed(2) || 0} L
+                    </Text>
+                  </div>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <div className="h-2 w-1 p-2 bg-blue-350 rounded-full" />
+                  <div>
+                    <Text size="sm" weight="200">
+                      Government
+                    </Text>
+                    <Text weight="bolder" size="md">
+                      {aggregatedData2.government?.toFixed(2) || 0} L
+                    </Text>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex p-6 flex-col">
+        <div>
+          <div className="flex justify-between items-center">
+            <p className="font-bold">Amount Sales Bar Chart</p>
+          </div>
+          <p className="text-sm text-gray-600 italic pt-3">
+            This bar chart shows total sales by client type over the months of the financial year,
+          </p>
+          {isLoadingBookingData ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader />
+            </div>
+          ) : (
+            <div className="gap-10">
+              <div className="pt-4 w-[50rem]">
+                <Bar
+                  ref={chartRef}
+                  data={barData}
+                  options={barChartOptions}
+                  plugins={[ChartDataLabels]}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="mt-10">
+          <div className="flex justify-between items-center">
+            <p className="font-bold">Monthly Percentage Contribution Bar Chart</p>
+          </div>
+          <p className="text-sm text-gray-600 italic pt-3">
+            This bar chart shows the percentage contribution of each client type to total sales for
+            each month,
+          </p>
+          {isLoadingBookingData ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader />
+            </div>
+          ) : (
+            <div className="gap-10">
+              <div className="pt-4 w-[50rem]">
+                <Bar
+                  ref={chartRef}
+                  data={percentageBarData}
+                  options={stackedBarOptions}
+                  plugins={[ChartDataLabels]}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div> */}
       {/* <div className="px-5">
         <p className="font-bold py-4">Campaigns stats report</p>
         <div className="flex w-1/3 gap-4 h-[250px] ">
