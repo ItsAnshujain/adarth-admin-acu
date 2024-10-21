@@ -71,6 +71,7 @@ import {
 import { useCampaignStats } from '../../apis/queries/campaigns.queries';
 import { registerables } from 'chart.js';
 import { useFetchProposals } from '../../apis/queries/proposal.queries';
+import MediaWiseReport from '../OtherMediaReport/MediaWiseReport';
 
 ChartJS.register(
   ArcElement,
@@ -3349,7 +3350,7 @@ const OtherNewReports = () => {
         Download PDF
       </Button> */}
 
-      <div className="flex justify-between ">
+      <div className="flex flex-end justify-end ">
         <div className="py-5 flex items-start">
           <Button
             leftIcon={<Download size="20" color="white" />}
@@ -3358,7 +3359,7 @@ const OtherNewReports = () => {
             loading={isDownloadExcelLoading}
             disabled={isDownloadExcelLoading}
           >
-            Download Income Statement
+             Income Statement
           </Button>
         </div>
       </div>
@@ -4192,7 +4193,7 @@ const OtherNewReports = () => {
           </div>
         </div>
       </div>
-
+<MediaWiseReport/>
       {/* <div className="px-5">
         <p className="font-bold py-4">Campaigns stats report</p>
         <div className="flex w-1/3 gap-4 h-[250px] ">
