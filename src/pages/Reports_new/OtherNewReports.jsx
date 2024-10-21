@@ -14,12 +14,13 @@ import {
   quarters,
   serialize,
   timeLegend,
+  downloadPdf,
 } from '../../utils';
 import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import { useInfiniteCompanies } from '../../apis/queries/companies.queries';
 import useUserStore from '../../store/user.store';
-import { Loader } from 'react-feather';
+import { Download, Loader } from 'react-feather';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useFetchMasters } from '../../apis/queries/masters.queries';
 import { useFetchOperationalCostData } from '../../apis/queries/operationalCost.queries';
@@ -41,7 +42,7 @@ import {
 } from '../../apis/queries/booking.queries';
 import { Image } from '@mantine/core';
 import { downloadExcel } from '../../apis/requests/report.requests';
-import { useDownloadExcel } from '../../apis/queries/report.queries';
+import { useDownloadExcel, useShareReport } from '../../apis/queries/report.queries';
 import { showNotification } from '@mantine/notifications';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import ViewByFilter from '../../components/modules/reports/ViewByFilter';
@@ -233,6 +234,26 @@ const list1 = [
   { label: 'Current Year', value: 'currentYear' },
   { label: 'Custom Date Range', value: 'customDate' },
 ];
+const viewBy3 = {
+  reset: '',
+  revenue: 'Revenue',
+  profitability: 'Profitability',
+};
+
+const list3 = [
+  { label: 'Revenue', value: 'revenue' },
+  { label: 'Profitability', value: 'profitability' },
+];
+const viewBy2 = {
+  reset: '',
+  newInclusion: 'New Inclusion',
+  oldRetention: 'Old Retention',
+};
+
+const list2 = [
+  { label: 'New Inclusion', value: 'newInclusion' },
+  { label: 'Old Retention', value: 'oldRetention' },
+];
 const barDataConfigByClient = {
   styles: {
     backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
@@ -263,11 +284,6 @@ const clientTypeLabels = {
   nationalagency: 'National Agency',
   localagency: 'Local Agency',
   directclient: 'Direct Client',
-};
-
-const normalizeString = str => {
-  if (!str) return '';
-  return str.trim().toLowerCase().replace(/\s+/g, ' ');
 };
 
 const OtherNewReports = () => {
@@ -1438,13 +1454,17 @@ const OtherNewReports = () => {
     const filteredData = filterBookingDataByDate();
 
     const industryRevenueMap = filteredData.reduce((acc, booking) => {
-      const industryName = booking?.campaign?.industry?.name || 'Unknown Industry';
-      const totalAmount = booking?.totalAmount || 0;
+      const industryName = booking?.campaign?.industry?.name;
 
-      if (!acc[industryName]) {
-        acc[industryName] = 0;
+      // Check if the industry name is defined and not an empty string
+      if (industryName) {
+        const totalAmount = booking?.totalAmount || 0;
+
+        if (!acc[industryName]) {
+          acc[industryName] = 0;
+        }
+        acc[industryName] += totalAmount;
       }
-      acc[industryName] += totalAmount;
 
       return acc;
     }, {});
@@ -1483,6 +1503,8 @@ const OtherNewReports = () => {
   const [endDate1, setEndDate1] = useState(null);
   const [filter3, setFilter3] = useState('currentYear');
   const [activeView3, setActiveView3] = useState('currentYear');
+  const [activeView5, setActiveView5] = useState('revenue');
+
   const today = new Date();
   const threeMonthsAgo = new Date();
   threeMonthsAgo.setMonth(today.getMonth() - 3);
@@ -1497,15 +1519,14 @@ const OtherNewReports = () => {
     }
     return past7Days;
   };
-  console.log('Booking Data:', bookingData);
 
-  const transformedData3 = useMemo(() => {
+  const transformedRevenueData = useMemo(() => {
     if (!bookingData2 || !selectedTags.length) return {};
 
-    const past7DaysRange = generatePast7Days(); // Ensure this returns dates in a consistent format
+    const past7DaysRange = generatePast7Days();
     const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth(); // 0-indexed month
-    const fiscalStartMonth = 3; // Fiscal year starts in April (0-indexed)
+    const currentMonth = new Date().getMonth();
+    const fiscalStartMonth = 3;
 
     const groupedData = bookingData2.reduce((acc, booking) => {
       const detailsWithTags = booking.details.filter(detail => {
@@ -1523,9 +1544,9 @@ const OtherNewReports = () => {
       detailsWithTags.forEach(detail => {
         const date = new Date(detail.createdAt);
         const year = date.getFullYear();
-        const month = date.getMonth(); // 0-indexed
+        const month = date.getMonth();
         const day = date.getDate();
-        const formattedDay = `${month + 1}/${day}`; // e.g., '4/5' for April 5
+        const formattedDay = `${month + 1}/${day}`;
         const revenue = booking.totalAmount;
 
         selectedTags.forEach(tag => {
@@ -1551,18 +1572,16 @@ const OtherNewReports = () => {
           } else if (filter3 === 'currentMonth' && year === currentYear && month === currentMonth) {
             timeUnit = day;
           } else if (filter3 === 'past7' && past7DaysRange.includes(date.toLocaleDateString())) {
-            // Match bookings in the past 7 days
             timeUnit = formattedDay;
           } else if (
             filter3 === 'customDate' &&
             startDate1 &&
             endDate1 &&
-            date.getTime() >= new Date(startDate1).setHours(0, 0, 0, 0) && // Start of the day
-            date.getTime() <= new Date(endDate1).setHours(23, 59, 59, 999) // End of the day
+            date.getTime() >= new Date(startDate1).setHours(0, 0, 0, 0) &&
+            date.getTime() <= new Date(endDate1).setHours(23, 59, 59, 999)
           ) {
             timeUnit = formattedDay;
           } else if (filter3 === 'quarter' && fiscalYear === currentYear) {
-            // Handle fiscal year quarters
             const quarterNames = [
               'First Quarter',
               'Second Quarter',
@@ -1586,8 +1605,8 @@ const OtherNewReports = () => {
 
     return groupedData;
   }, [bookingData2, selectedTags, filter3, startDate1, endDate1]);
-  const chartData3 = useMemo(() => {
-    const selectedData = transformedData3 || {};
+  const chartDataRevenue = useMemo(() => {
+    const selectedData = transformedRevenueData || {};
 
     if (!selectedData || Object.keys(selectedData).length === 0) {
       return {
@@ -1598,7 +1617,6 @@ const OtherNewReports = () => {
 
     let labels = Object.keys(selectedData);
 
-    // Define the fiscal year month order (April to March)
     const fiscalMonthLabels = [
       'Apr',
       'May',
@@ -1614,11 +1632,9 @@ const OtherNewReports = () => {
       'Mar',
     ];
 
-    // Adjust the labels based on filter3
     if (filter3 === 'quarter') {
       labels = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
     } else if (filter3 === 'previousYear' || filter3 === 'currentYear') {
-      // For fiscal years, reorder the months to start from April
       labels = fiscalMonthLabels;
     }
 
@@ -1645,9 +1661,9 @@ const OtherNewReports = () => {
       labels,
       datasets,
     };
-  }, [transformedData3, selectedTags, filter3]);
+  }, [transformedRevenueData, selectedTags, filter3]);
 
-  const chartOptions3 = useMemo(
+  const chartOptionsRevenue = useMemo(
     () => ({
       responsive: true,
       scales: {
@@ -1687,7 +1703,7 @@ const OtherNewReports = () => {
             }
             return value >= 1 ? Math.floor(value) : value.toFixed(2);
           },
-          color: '#000', // Label color
+          color: '#000',
           font: {
             weight: 'light',
             size: 10,
@@ -1709,7 +1725,406 @@ const OtherNewReports = () => {
         },
       },
     }),
-    [filter3, transformedData3],
+    [filter3, transformedRevenueData],
+  );
+  const tableDataRevenue = useMemo(() => {
+    if (!transformedRevenueData || Object.keys(transformedRevenueData).length === 0) {
+      return [];
+    }
+
+    let timeUnits = [];
+
+    if (filter3 === 'past10Years' || filter3 === 'past5Years') {
+      timeUnits =
+        filter3 === 'past10Years'
+          ? generateYearRange(currentYear - 10, currentYear - 1)
+          : generateYearRange(currentYear - 5, currentYear - 1);
+    } else if (filter3 === 'previousYear' || filter3 === 'currentYear') {
+      timeUnits = [
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+        'Jan',
+        'Feb',
+        'Mar',
+      ];
+    } else if (filter3 === 'currentMonth') {
+      const daysInMonth = new Date(currentYear, new Date().getMonth() + 1, 0).getDate();
+      timeUnits = Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString());
+    } else if (filter3 === 'past7') {
+      const past7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        return date.toLocaleString('default', { month: 'short', day: 'numeric' });
+      }).reverse();
+      timeUnits = past7Days;
+    } else if (filter3 === 'customDate' && startDate1 && endDate1) {
+      const customRangeDates = [];
+      let currentDate = new Date(startDate1);
+      while (currentDate <= new Date(endDate1)) {
+        const formattedDate = `${currentDate.getMonth() + 1}/${currentDate.getDate()}`;
+        customRangeDates.push(formattedDate);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      timeUnits = customRangeDates;
+    } else if (filter3 === 'quarter') {
+      timeUnits = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
+    }
+
+    const tableRows3 = selectedTags.map(tag => {
+      const row = { tag };
+      let totalForTag = 0;
+
+      timeUnits.forEach(timeUnit => {
+        const revenue = transformedRevenueData[timeUnit]?.[tag] || 0;
+        row[timeUnit] = revenue > 0 ? (revenue / 100000).toFixed(2) : '-';
+        totalForTag += revenue;
+      });
+
+      row['Grand Total'] = totalForTag > 0 ? (totalForTag / 100000).toFixed(2) : '-';
+      return row;
+    });
+
+    const grandTotalRow = { tag: 'Grand Total' };
+    let overallTotal = 0;
+
+    timeUnits.forEach(timeUnit => {
+      const total = selectedTags.reduce((sum, tag) => {
+        return sum + (transformedRevenueData[timeUnit]?.[tag] || 0);
+      }, 0);
+      grandTotalRow[timeUnit] = total > 0 ? (total / 100000).toFixed(2) : '-';
+      overallTotal += total;
+    });
+
+    grandTotalRow['Grand Total'] = overallTotal > 0 ? (overallTotal / 100000).toFixed(2) : 0;
+
+    return [...tableRows3, grandTotalRow];
+  }, [transformedRevenueData, selectedTags, filter3, startDate1, endDate1]);
+
+  const tableColumnsRevenue = useMemo(() => {
+    const dynamicColumns = [];
+
+    if (filter3 === 'past10Years' || filter3 === 'past5Years') {
+      const yearRange =
+        filter3 === 'past10Years'
+          ? generateYearRange(currentYear - 10, currentYear - 1)
+          : generateYearRange(currentYear - 5, currentYear - 1);
+      yearRange.forEach(year => {
+        dynamicColumns.push({
+          Header: year.toString(),
+          accessor: year.toString(),
+          disableSortBy: true,
+        });
+      });
+    } else if (filter3 === 'previousYear' || filter3 === 'currentYear') {
+      const months = [
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+        'Jan',
+        'Feb',
+        'Mar',
+      ];
+      months.forEach(month => {
+        dynamicColumns.push({
+          Header: month,
+          accessor: month,
+          disableSortBy: true,
+        });
+      });
+    } else if (filter3 === 'currentMonth') {
+      const daysInMonth = new Date(currentYear, new Date().getMonth() + 1, 0).getDate();
+      for (let i = 1; i <= daysInMonth; i++) {
+        dynamicColumns.push({
+          Header: i.toString(),
+          accessor: i.toString(),
+          disableSortBy: true,
+        });
+      }
+    } else if (filter3 === 'past7') {
+      const past7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        return date.toLocaleString('default', { month: 'short', day: 'numeric' });
+      }).reverse();
+
+      past7Days.forEach(day => {
+        dynamicColumns.push({
+          Header: day,
+          accessor: day,
+          disableSortBy: true,
+        });
+      });
+    } else if (filter3 === 'customDate') {
+      const customRangeDates = [];
+      let currentDate = new Date(startDate1);
+      while (currentDate <= new Date(endDate1)) {
+        customRangeDates.push(
+          currentDate.toLocaleString('default', { month: 'short', day: 'numeric' }),
+        );
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      customRangeDates.forEach(date => {
+        dynamicColumns.push({
+          Header: date,
+          accessor: date,
+          disableSortBy: true,
+        });
+      });
+    } else if (filter3 === 'quarter') {
+      const quarters = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
+      quarters.forEach(quarter => {
+        dynamicColumns.push({
+          Header: quarter,
+          accessor: quarter,
+          disableSortBy: true,
+        });
+      });
+    }
+
+    return [
+      {
+        Header: 'Tag',
+        accessor: 'tag',
+        disableSortBy: true,
+      },
+      ...dynamicColumns,
+      {
+        Header: 'Grand Total',
+        accessor: 'Grand Total',
+        disableSortBy: true,
+      },
+    ];
+  }, [filter3, currentYear, startDate1, endDate1]);
+
+  const transformedProfitabilityData = useMemo(() => {
+    if (!bookingData2 || !selectedTags.length) return {};
+
+    const past7DaysRange = generatePast7Days();
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+    const fiscalStartMonth = 3;
+
+    const groupedData = bookingData2.reduce((acc, booking) => {
+      const totalOperationalCost = (booking?.campaign?.spaces?.operationalCosts || []).reduce(
+        (sum, cost) => sum + cost.amount,
+        0,
+      );
+
+      const detailsWithTags = booking.details.filter(detail => {
+        const campaign = detail.campaign;
+        if (!campaign || !campaign.spaces || !Array.isArray(campaign.spaces)) return false;
+
+        return campaign.spaces.some(space => {
+          const spaceTags = space.specifications?.additionalTags || [];
+          return Array.isArray(spaceTags) && selectedTags.some(tag => spaceTags.includes(tag));
+        });
+      });
+
+      if (detailsWithTags.length === 0) return acc;
+
+      detailsWithTags.forEach(detail => {
+        const date = new Date(detail.createdAt);
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const day = date.getDate();
+        const formattedDay = `${month + 1}/${day}`;
+
+        const revenue = booking.totalAmount;
+
+        const profitability =
+          revenue > 0 ? (((revenue - totalOperationalCost) / revenue) * 100).toFixed(2) : 0;
+
+        selectedTags.forEach(tag => {
+          const tagMatches = detail.campaign.spaces.some(space =>
+            space.specifications?.additionalTags?.includes(tag),
+          );
+          if (!tagMatches) return;
+
+          let timeUnit;
+
+          const fiscalYear = month >= fiscalStartMonth ? year : year - 1;
+          const fiscalMonth = (month + 12 - fiscalStartMonth) % 12;
+          const fiscalQuarter = Math.ceil((fiscalMonth + 1) / 3);
+
+          if (filter3 === 'past10Years' && fiscalYear >= currentYear - 10) {
+            timeUnit = fiscalYear;
+          } else if (filter3 === 'past5Years' && fiscalYear >= currentYear - 5) {
+            timeUnit = fiscalYear;
+          } else if (filter3 === 'previousYear' && fiscalYear === currentYear - 1) {
+            timeUnit = date.toLocaleString('default', { month: 'short' });
+          } else if (filter3 === 'currentYear' && fiscalYear === currentYear) {
+            timeUnit = date.toLocaleString('default', { month: 'short' });
+          } else if (filter3 === 'currentMonth' && year === currentYear && month === currentMonth) {
+            timeUnit = day;
+          } else if (filter3 === 'past7' && past7DaysRange.includes(date.toLocaleDateString())) {
+            timeUnit = formattedDay;
+          } else if (
+            filter3 === 'customDate' &&
+            startDate1 &&
+            endDate1 &&
+            date.getTime() >= new Date(startDate1).setHours(0, 0, 0, 0) &&
+            date.getTime() <= new Date(endDate1).setHours(23, 59, 59, 999)
+          ) {
+            timeUnit = formattedDay;
+          } else if (filter3 === 'quarter' && fiscalYear === currentYear) {
+            const quarterNames = [
+              'First Quarter',
+              'Second Quarter',
+              'Third Quarter',
+              'Fourth Quarter',
+            ];
+            timeUnit = quarterNames[fiscalQuarter - 1];
+          }
+
+          if (!timeUnit) return;
+
+          if (!acc[timeUnit]) acc[timeUnit] = {};
+          if (!acc[timeUnit][tag]) acc[timeUnit][tag] = 0;
+
+          acc[timeUnit][tag] += parseFloat(profitability);
+        });
+      });
+
+      return acc;
+    }, {});
+
+    return groupedData;
+  }, [bookingData2, selectedTags, filter3, startDate1, endDate1]);
+
+  const chartDataProfitability = useMemo(() => {
+    const selectedData = transformedProfitabilityData || {};
+
+    if (!selectedData || Object.keys(selectedData).length === 0) {
+      return {
+        labels: [],
+        datasets: [],
+      };
+    }
+
+    let labels = Object.keys(selectedData);
+
+    const fiscalMonthLabels = [
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+    ];
+
+    if (filter3 === 'quarter') {
+      labels = ['First Quarter', 'Second Quarter', 'Third Quarter', 'Fourth Quarter'];
+    } else if (filter3 === 'previousYear' || filter3 === 'currentYear') {
+      labels = fiscalMonthLabels;
+    }
+
+    const datasets = selectedTags.map((tag, index) => {
+      const data = labels.map(label => {
+        const tagProfitability = selectedData[label]?.[tag] || 0;
+        return tagProfitability > 0 ? tagProfitability : 0;
+      });
+
+      const hue = ((index * 360) / selectedTags.length) % 360;
+      const color = `hsl(${hue}, 70%, 50%)`;
+      const colorRGBA = `hsla(${hue}, 70%, 50%, 0.2)`;
+
+      return {
+        label: ` ${tag} `,
+        data,
+        borderColor: color,
+        backgroundColor: colorRGBA,
+        tension: 0.1,
+      };
+    });
+
+    return {
+      labels,
+      datasets,
+    };
+  }, [transformedProfitabilityData, selectedTags, filter3]);
+
+  const chartOptionsProfitability = useMemo(
+    () => ({
+      responsive: true,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text:
+              filter3 === 'year'
+                ? 'Years'
+                : filter3 === 'quarter'
+                ? 'Quarters'
+                : filter3 === 'currentYear' || filter3 === 'previousYear'
+                ? 'Months'
+                : ['past7', 'customDate', 'currentMonth'].includes(filter3)
+                ? 'Days'
+                : '',
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Profitability (%)',
+          },
+          ticks: {
+            callback: value => `${value}%`,
+          },
+        },
+      },
+      plugins: {
+        datalabels: {
+          display: true,
+          anchor: 'end',
+          align: 'end',
+          formatter: (value, context) => {
+            if (value == 0) {
+              return '';
+            }
+            return value >= 1 ? Math.floor(value) + '%' : value.toFixed(2) + '%';
+          },
+          color: '#000',
+          font: {
+            weight: 'light',
+            size: 10,
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: context => {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                label += `${context.parsed.y}%`;
+              }
+              return label;
+            },
+          },
+        },
+      },
+    }),
+    [filter3, transformedProfitabilityData],
   );
 
   const onDateChange3 = val => {
@@ -1720,6 +2135,7 @@ const OtherNewReports = () => {
   const handleReset3 = () => {
     setFilter3('currentYear');
     setActiveView3('currentYear');
+    setActiveView5('revenue');
     setStartDate1(null);
     setEndDate1(null);
     setSelectedTags(['best', 'ASTC']);
@@ -1729,11 +2145,14 @@ const OtherNewReports = () => {
     setFilter3(value);
     setActiveView3(value);
   };
+  const handleMenuItemClick5 = value => {
+    setActiveView5(value);
+  };
   const tags = additionalTagsQuery.data || [];
   const options = tags.map(tag => ({ value: tag, label: tag }));
 
-  const tableData3 = useMemo(() => {
-    if (!transformedData3 || Object.keys(transformedData3).length === 0) {
+  const tableDataProfitability = useMemo(() => {
+    if (!transformedProfitabilityData || Object.keys(transformedProfitabilityData).length === 0) {
       return [];
     }
 
@@ -1773,7 +2192,6 @@ const OtherNewReports = () => {
       const customRangeDates = [];
       let currentDate = new Date(startDate1);
       while (currentDate <= new Date(endDate1)) {
-        // Format as M/D
         const formattedDate = `${currentDate.getMonth() + 1}/${currentDate.getDate()}`;
         customRangeDates.push(formattedDate);
         currentDate.setDate(currentDate.getDate() + 1);
@@ -1788,33 +2206,32 @@ const OtherNewReports = () => {
       let totalForTag = 0;
 
       timeUnits.forEach(timeUnit => {
-        // Directly use timeUnit since it's already formatted as M/D
-        const revenue = transformedData3[timeUnit]?.[tag] || 0;
-        row[timeUnit] = revenue > 0 ? (revenue / 100000).toFixed(2) : '-';
-        totalForTag += revenue;
+        const profitability = transformedProfitabilityData[timeUnit]?.[tag] || 0;
+        row[timeUnit] = profitability > 0 ? `${profitability.toFixed(2)}%` : '-';
+        totalForTag += profitability;
       });
 
-      row['Grand Total'] = totalForTag > 0 ? (totalForTag / 100000).toFixed(2) : '-';
+      row['Grand Total'] = totalForTag > 0 ? `${totalForTag.toFixed(2)}%` : '-';
       return row;
     });
-
     const grandTotalRow = { tag: 'Grand Total' };
     let overallTotal = 0;
 
     timeUnits.forEach(timeUnit => {
       const total = selectedTags.reduce((sum, tag) => {
-        return sum + (transformedData3[timeUnit]?.[tag] || 0);
+        return sum + (transformedProfitabilityData[timeUnit]?.[tag] || 0);
       }, 0);
-      grandTotalRow[timeUnit] = total > 0 ? (total / 100000).toFixed(2) : '-';
+
+      grandTotalRow[timeUnit] = total > 0 ? `${total.toFixed(2)}%` : '-';
       overallTotal += total;
     });
 
-    grandTotalRow['Grand Total'] = overallTotal > 0 ? (overallTotal / 100000).toFixed(2) : 0;
+    grandTotalRow['Grand Total'] = overallTotal > 0 ? `${overallTotal.toFixed(2)}%` : 0;
 
     return [...tableRows3, grandTotalRow];
-  }, [transformedData3, selectedTags, filter3, startDate1, endDate1]);
+  }, [transformedProfitabilityData, selectedTags, filter3, startDate1, endDate1]);
 
-  const tableColumns3 = useMemo(() => {
+  const tableColumnsProfitability = useMemo(() => {
     const dynamicColumns = [];
 
     if (filter3 === 'past10Years' || filter3 === 'past5Years') {
@@ -2136,35 +2553,6 @@ const OtherNewReports = () => {
   };
   // category type wise
 
-  // excel
-  const { mutateAsync, isLoading: isDownloadLoading } = useDownloadExcel();
-
-  const handleDownloadExcel = async () => {
-    const activeUrl = new URL(window.location.href);
-
-    await mutateAsync(
-      { s3url: activeUrl.toString() },
-      {
-        onSuccess: data => {
-          showNotification({
-            title: 'Report has been downloaded successfully',
-            color: 'green',
-          });
-          if (data?.link) {
-            downloadExcel(data.link);
-          }
-        },
-        onError: err => {
-          showNotification({
-            title: err?.message,
-            color: 'red',
-          });
-        },
-      },
-    );
-  };
-  // excel
-
   // existing campaing card
   // const { data: stats, isLoading: isStatsLoading } = useCampaignStats();
   // const printStatusData = useMemo(
@@ -2252,8 +2640,8 @@ const OtherNewReports = () => {
       },
 
       {
-        Header: 'CLIENT',
-        accessor: 'client.name',
+        Header: 'CLIENT TYPE',
+        accessor: 'client.clientType',
         disableSortBy: true,
         Cell: ({
           row: {
@@ -2263,24 +2651,12 @@ const OtherNewReports = () => {
           useMemo(
             () => (
               <Text className="overflow-hidden text-ellipsis max-w-[180px]" lineClamp={1}>
-                {client?.name}
+                {client?.clientType || '-'}
               </Text>
             ),
             [],
           ),
       },
-
-      {
-        Header: 'CAMPAIGN INCHARGE',
-        accessor: 'campaign.incharge.name',
-        disableSortBy: true,
-        Cell: ({
-          row: {
-            original: { campaign },
-          },
-        }) => useMemo(() => <p>{campaign?.incharge?.name || '-'}</p>, []),
-      },
-
       {
         Header: 'OUTSTANDING AMOUNT',
         accessor: 'outstandingAmount',
@@ -2300,6 +2676,7 @@ const OtherNewReports = () => {
       {
         Header: 'CAMPAIGN AMOUNT',
         accessor: 'campaign.totalPrice',
+        disableSortBy: true,
         Cell: ({
           row: {
             original: { campaign },
@@ -2805,24 +3182,186 @@ const OtherNewReports = () => {
 
   // month wise contribution of client type
 
+  // client details
+  const getFinancialYear1 = date => {
+    const fiscalYearStartMonth = 4; // April
+    const currentDate = new Date();
+    const fiscalYearStart = new Date(currentDate.getFullYear(), fiscalYearStartMonth - 1, 1);
+    return date >= fiscalYearStart ? 'newInclusion' : 'oldRetention';
+  };
+  const [filter2, setFilter2] = useState('');
+  const [activeView2, setActiveView2] = useState('');
+
+  const handleReset2 = () => {
+    setFilter2('');
+    setActiveView2('');
+  };
+
+  const handleMenuItemClick2 = value => {
+    setFilter2(value);
+    setActiveView2(value);
+  };
+
+  const tableData4 = useMemo(() => {
+    if (!bookingData2) return [];
+
+    return bookingData2
+      .map(booking => {
+        const { totalAmount, details, campaign } = booking;
+        const firstDetail = details[0] || {};
+        const client = firstDetail.client || {};
+
+        if (!client.clientType) return null;
+
+        const firstBookingDate = new Date(booking.createdAt);
+        const revenue = (totalAmount / 100000).toFixed(2) || 0;
+
+        const totalOperationalCost = (campaign?.spaces?.operationalCosts || []).reduce(
+          (sum, cost) => sum + cost.amount,
+          0,
+        );
+
+        const profitability =
+          revenue > 0
+            ? (((revenue * 100000 - totalOperationalCost) / (revenue * 100000)) * 100).toFixed(2) +
+              '%'
+            : '0%';
+
+        const retentionStatus = getFinancialYear1(firstBookingDate);
+        if (filter2 && retentionStatus !== filter2) {
+          return null;
+        }
+
+        const timeline = firstBookingDate.toLocaleString('en-US', {
+          month: 'short',
+          year: 'numeric',
+        });
+
+        return {
+          clientCategory: client.clientType,
+          name: client.name || 'N/A',
+          timeline,
+          retentionStatus: viewBy2[retentionStatus],
+          revenue,
+          profitability,
+        };
+      })
+      .filter(Boolean);
+  }, [bookingData2, filter2]);
+
+  const tableColumns4 = useMemo(() => {
+    return [
+      {
+        Header: 'Client Type Category',
+        accessor: 'clientCategory',
+        disableSortBy: true,
+      },
+      {
+        Header: 'Names',
+        accessor: 'name',
+        disableSortBy: true,
+      },
+      {
+        Header: 'TimeLine',
+        accessor: 'timeline',
+        disableSortBy: true,
+      },
+      {
+        Header: 'Retention Status',
+        accessor: 'retentionStatus',
+        disableSortBy: true,
+      },
+      {
+        Header: 'Revenue (lac)',
+        accessor: 'revenue',
+        disableSortBy: true,
+      },
+      {
+        Header: 'Profitability (%)',
+        accessor: 'profitability',
+        disableSortBy: true,
+      },
+    ];
+  }, []);
+
+  // client details
+
+  // For PDF Download
+  const { mutateAsync: mutateAsyncPdf, isLoading: isDownloadPdfLoading } = useShareReport();
+
+  const handleDownloadPdf = async () => {
+    const activeUrl = new URL(window.location.href);
+    activeUrl.searchParams.append('share', 'report');
+
+    await mutateAsyncPdf(
+      { url: activeUrl.toString() },
+      {
+        onSuccess: data => {
+          showNotification({
+            title: 'Report has been downloaded successfully',
+            color: 'green',
+          });
+          if (data?.link) {
+            downloadPdf(data.link);
+          }
+        },
+      },
+    );
+  };
+
+  // For Excel Download
+  const { mutateAsync: mutateAsyncExcel, isLoading: isDownloadExcelLoading } = useDownloadExcel();
+
+  const handleDownloadExcel = async () => {
+    const activeUrl = new URL(window.location.href);
+
+    await mutateAsyncExcel(
+      { s3url: activeUrl.toString() },
+      {
+        onSuccess: data => {
+          showNotification({
+            title: 'Report has been downloaded successfully',
+            color: 'green',
+          });
+          if (data?.link) {
+            downloadExcel(data.link);
+          }
+        },
+        onError: err => {
+          showNotification({
+            title: err?.message,
+            color: 'red',
+          });
+        },
+      },
+    );
+  };
+
   return (
     <div className="overflow-y-auto p-3 col-span-10 overflow-hidden">
-      {/* <div className="flex justify-between ">
-    <div className="overflow-y-auto px-3 col-span-10 overflow-hidden">
+      {/* <Button
+        leftIcon={<Download size="20" color="white" />}
+        className="primary-button mx-3"
+        onClick={handleDownloadPdf}
+        loading={isDownloadPdfLoading}
+        disabled={isDownloadPdfLoading}
+      >
+        Download PDF
+      </Button> */}
+
       <div className="flex justify-between ">
-        
         <div className="py-5 flex items-start">
           <Button
             leftIcon={<Download size="20" color="white" />}
-            className="primary-button "
+            className="primary-button"
             onClick={handleDownloadExcel}
-            loading={isDownloadLoading}
-            disabled={isDownloadLoading}
+            loading={isDownloadExcelLoading}
+            disabled={isDownloadExcelLoading}
           >
             Download Income Statement
           </Button>
         </div>
-      </div> */}
+      </div>
       <div className="border-2 p-5 border-black">
         <p className="font-bold text-lg"> Revenue </p>
         <div className="overflow-hidden p-5 ">
@@ -2830,7 +3369,7 @@ const OtherNewReports = () => {
         </div>
         <div className="flex flex-col md:flex-row">
           <div className="flex flex-col p-6 w-[30rem] gap-4">
-            <p className="font-bold text-center">Source Distribution</p>
+            <p className="font-bold">Source Distribution</p>
             <p className="text-sm text-gray-600 italic">
               This chart shows the revenue split between "Own Sites" and "Traded Sites".
             </p>
@@ -2867,14 +3406,14 @@ const OtherNewReports = () => {
             )}
           </div>
           <div className="flex mt-2">
-            <div className="flex flex-col gap-4 text-center">
-              <div className="flex flex-col gap-4 p-4 items-center min-h-[200px]">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 p-4  min-h-[200px]">
                 <p className="font-bold">Client Type Distribution</p>
                 <p className="text-sm text-gray-600 italic">
                   This chart breaks down revenue by client type, including "Direct Clients", "Local
                   Agencies", "National Agencies", and "Government".
                 </p>
-                <div className="w-72">
+                <div className="w-72 justify-center mx-40">
                   {isLoadingBookingData ? (
                     <p className="text-center">Loading...</p>
                   ) : updatedClient && updatedClient.datasets[0].data.length > 0 ? (
@@ -2973,15 +3512,15 @@ const OtherNewReports = () => {
                   </div>
                 )}
               </div>
-              <div className="w-[30%] flex flex-col">
-                <div className="flex justify-between items-start flex-col">
-                  <p className="font-bold ml-9"> Industry Type Distribution</p>
+              <div className="w-[40%] flex flex-col">
+                <div className="flex flex-col">
+                  <p className="font-bold"> Industry Type Distribution</p>
                   <p className="text-sm text-gray-600 italic py-4">
                     This pie chart shows the percentage split of revenue generated across various
                     industries
                   </p>
                 </div>
-                <div className="w-80 m-auto">
+                <div className="w-72 m-auto">
                   {isByIndustryLoading ? (
                     <Loader className="mx-auto" />
                   ) : !updatedIndustry.datasets[0].data.length ? (
@@ -3079,78 +3618,151 @@ const OtherNewReports = () => {
       </div>
       <div className="border-2 p-5 border-black my-2">
         <p className="font-bold text-lg"> Trends </p>
-        <div className="flex flex-col col-span-10 overflow-hidden">
-          <div className="pt-6 w-[50rem] mx-10">
-            <p className="font-bold "> Additional Filter Distribution</p>
-            <p className="text-sm text-gray-600 italic py-4">
-              This line chart displays the revenue trends over different time periods, filtered by
-              specific tags.
-            </p>
-            <div className="flex">
-              <div>
-                <Menu shadow="md" width={130}>
-                  <Menu.Target>
-                    <Button className="secondary-button">
-                      View By: {viewBy[activeView3] || 'Select'}
-                    </Button>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    {list.map(({ label, value }) => (
-                      <Menu.Item
-                        key={value}
-                        onClick={() => handleMenuItemClick3(value)}
-                        className={classNames(
-                          activeView3 === value &&
-                            label !== 'Reset' &&
-                            'text-purple-450 font-medium',
-                        )}
-                      >
-                        {label}
-                      </Menu.Item>
-                    ))}
-                  </Menu.Dropdown>
-                </Menu>
-              </div>
-              <div className="mx-2">
-                <MultiSelect
-                  data={options}
-                  value={selectedTags}
-                  onChange={setSelectedTags}
-                  placeholder="Select Additional Tags"
-                  searchable
-                  clearable
-                />
-              </div>
-              <div>
-                {filter3 && (
-                  <Button onClick={handleReset3} className="mx-2 secondary-button">
-                    Reset
-                  </Button>
-                )}
-              </div>
-            </div>
+        <div className="col-span-10 overflow-y-auto overflow-hidden">
+      <div className="pt-6 w-[50rem] mx-10">
+        <p className="font-bold "> Additional Filter Distribution</p>
+        <p className="text-sm text-gray-600 italic py-4">
+          This line chart displays the{' '}
+          {activeView5 === 'revenue' ? 'revenue trends' : 'profitability'} over different time
+          periods, filtered by specific tags.
+        </p>
+        <div className="flex">
+          <div>
+            <Menu shadow="md" width={130}>
+              <Menu.Target>
+                <Button className="mr-2 secondary-button">
+                  View By: {viewBy3[activeView5] || 'Select'}
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {list3.map(({ label, value }) => (
+                  <Menu.Item
+                    key={value}
+                    onClick={() => handleMenuItemClick5(value)}
+                    className={classNames(activeView5 === value && 'text-purple-450 font-medium')}
+                  >
+                    {label}
+                  </Menu.Item>
+                ))}
+              </Menu.Dropdown>
+            </Menu>
+          </div>
+          <div>
+            <Menu shadow="md" width={130}>
+              <Menu.Target>
+                <Button className="secondary-button">
+                  View By: {viewBy[activeView3] || 'Select'}
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {list.map(({ label, value }) => (
+                  <Menu.Item
+                    key={value}
+                    onClick={() => handleMenuItemClick3(value)}
+                    className={classNames(
+                      activeView3 === value && label !== 'Reset' && 'text-purple-450 font-medium',
+                    )}
+                  >
+                    {label}
+                  </Menu.Item>
+                ))}
+              </Menu.Dropdown>
+            </Menu>
+          </div>
+          <div className="mx-2">
+            <MultiSelect
+              data={options}
+              value={selectedTags}
+              onChange={setSelectedTags}
+              placeholder="Select Additional Tags"
+              searchable
+              clearable
+            />
+          </div>
+          <div>
+            {filter3 && (
+              <Button onClick={handleReset3} className="mx-2 secondary-button">
+                Reset
+              </Button>
+            )}
+          </div>
+        </div>
 
-            {filter3 === 'customDate' && (
-              <div className="flex flex-col items-start space-y-4 py-2 ">
-                <DateRangeSelector
-                  dateValue={[startDate1, endDate1]}
-                  onChange={onDateChange3}
-                  minDate={threeMonthsAgo}
-                  maxDate={today}
-                />
+        {filter3 === 'customDate' && (
+          <div className="flex flex-col items-start space-y-4 py-2 ">
+            <DateRangeSelector
+              dateValue={[startDate1, endDate1]}
+              onChange={onDateChange3}
+              minDate={threeMonthsAgo}
+              maxDate={today}
+            />
+          </div>
+        )}
+        <div className="my-4">
+          <Line
+            data={activeView5 === 'revenue' ? chartDataRevenue : chartDataProfitability}
+            options={activeView5 === 'revenue' ? chartOptionsRevenue : chartOptionsProfitability}
+            ref={chartRef}
+            plugins={[ChartDataLabels]}
+          />
+        </div>
+      </div>
+      <div className="col-span-12 lg:col-span-10 border-gray-450 mx-10  h-[300px] overflow-y-auto">
+        <Table
+          COLUMNS={activeView5 === 'revenue' ? tableColumnsRevenue : tableColumnsProfitability}
+          data={activeView5 === 'revenue' ? tableDataRevenue : tableDataProfitability}
+          showPagination={false}
+        />
+      </div>
+    </div>
+        <div className="flex p-6 flex-col">
+          <div>
+            <div className="flex justify-between items-center">
+              <p className="font-bold">Monthly Sales Distribution</p>
+            </div>
+            <p className="text-sm text-gray-600 italic pt-3">
+              This bar chart shows the monthly revenue distribution between different clients types.
+            </p>
+            {isLoadingBookingData ? (
+              <div className="flex justify-center items-center h-64">
+                <Loader />
+              </div>
+            ) : (
+              <div className="gap-10">
+                <div className="pt-4 w-[50rem]">
+                  <Bar
+                    ref={chartRef}
+                    data={barData}
+                    options={barChartOptions}
+                    plugins={[ChartDataLabels]}
+                  />
+                </div>
               </div>
             )}
-            <div className="my-4">
-              <Line
-                data={chartData3}
-                options={chartOptions3}
-                ref={chartRef}
-                plugins={[ChartDataLabels]}
-              />
-            </div>
           </div>
-          <div className="col-span-12 md:col-span-12 lg:col-span-10 border-gray-450 mx-10  h-[300px] overflow-y-auto">
-            <Table COLUMNS={tableColumns3} data={tableData3} showPagination={false} />
+          <div className="mt-10">
+            <div className="flex justify-between items-center">
+              <p className="font-bold">Monthly Percentage Contribution</p>
+            </div>
+            <p className="text-sm text-gray-600 italic pt-3">
+              This chart visualizes the percentage contribution of different client types.
+            </p>
+            {isLoadingBookingData ? (
+              <div className="flex justify-center items-center h-64">
+                <Loader />
+              </div>
+            ) : (
+              <div className="gap-10">
+                <div className="pt-4 w-[50rem]">
+                  <Bar
+                    ref={chartRef}
+                    data={percentageBarData}
+                    options={stackedBarOptions}
+                    plugins={[ChartDataLabels]}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <div className="flex p-6 flex-col ">
@@ -3299,11 +3911,11 @@ const OtherNewReports = () => {
         <p className="font-bold text-lg"> Client Data</p>
 
         <div className="flex flex-col col-span-10 overflow-hidden">
-          <div className="py-6 w-[50rem] mx-10">
+          <div className="py-6 w-[50rem] ml-8">
             <p className="font-bold ">Campaign Details</p>
           </div>
         </div>
-        <div className="mx-10 col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 h-[400px] overflow-auto">
+        <div className="ml-8 col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 h-[400px] overflow-auto">
           <Table
             data={sortedBookingData} // Use manually sorted data
             COLUMNS={column5}
@@ -3319,10 +3931,59 @@ const OtherNewReports = () => {
             }}
           />
         </div>
+        <div className="flex flex-col col-span-10 overflow-x-hidden">
+          <div className="pt-10 w-[50rem] ml-8">
+            <p className="font-bold ">Client Details</p>
+            <p className="text-sm text-gray-600 italic py-4">
+              This report shows the client details based on retention status.
+            </p>
+            <div className="flex">
+              <div>
+                <Menu shadow="md" width={130}>
+                  <Menu.Target>
+                    <Button className="secondary-button">
+                      View By: {viewBy2[activeView2] || 'Retention Status'}
+                    </Button>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    {list2.map(({ label, value }) => (
+                      <Menu.Item
+                        key={value}
+                        onClick={() => handleMenuItemClick2(value)}
+                        className={
+                          activeView2 === value && label !== 'Reset'
+                            ? 'text-purple-450 font-medium'
+                            : ''
+                        }
+                      >
+                        {label}
+                      </Menu.Item>
+                    ))}
+                  </Menu.Dropdown>
+                </Menu>
+              </div>
+              <div>
+                {filter2 && (
+                  <Button onClick={handleReset2} className="mx-2 secondary-button">
+                    Reset
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="ml-8 my-5 col-span-12 md:col-span-12 lg:col-span-10 border-l border-gray-450 h-[400px] overflow-auto">
+            <Table
+              COLUMNS={tableColumns4}
+              data={tableData4}
+              loading={isLoadingBookingData}
+              showPagination={false}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="col-span-12 md:col-span-12 lg:col-span-10 overflow-y-auto p-5">
-        <p className="font-bold pt-10">Price and Traded Margin Report</p>
+        <p className="font-bold">Price and Traded Margin Report</p>
         <p className="text-sm text-gray-600 italic py-4">
           This report provide insights into the pricing trends, traded prices, and margins grouped
           by cities. (Amounts in Lacs)
@@ -3405,7 +4066,10 @@ const OtherNewReports = () => {
         </div>
         <div className="flex flex-col items-center">
           <p className="py-10 font-bold">Invoice Raised Vs Amount Collected Vs Outstanding</p>
-          <InvoiceReportChart data={activeView1 ? groupedData1 : []} />{' '}
+          <InvoiceReportChart
+            data={activeView1 ? groupedData1 : []}
+            chartDataLabels={[ChartDataLabels]}
+          />{' '}
         </div>
       </div>
 
@@ -3418,7 +4082,7 @@ const OtherNewReports = () => {
         <PerformanceCard />
       </div>
 
-      {/* <div className="flex gap-4 px-5 flex-wrap">
+      <div className="flex gap-4 px-5 flex-wrap">
         <div className="border rounded p-8 pr-20">
           <Image src={OngoingOrdersIcon} alt="ongoing" height={24} width={24} fit="contain" />
           <Text className="my-2" size="sm" weight="200">
@@ -3454,8 +4118,8 @@ const OtherNewReports = () => {
               : ''}
           </Text>
         </div>
-      </div> */}
-      {/* <div className="p-5">
+      </div>
+      <div className="p-5">
         <div className="border rounded p-8 flex-1 w-72">
           <Image src={ProposalSentIcon} alt="folder" fit="contain" height={24} width={24} />
           <p className="my-2 text-sm">
@@ -3528,57 +4192,7 @@ const OtherNewReports = () => {
           </div>
         </div>
       </div>
-      <div className="flex p-6 flex-col">
-        <div>
-          <div className="flex justify-between items-center">
-            <p className="font-bold">Amount Sales Bar Chart</p>
-          </div>
-          <p className="text-sm text-gray-600 italic pt-3">
-            This bar chart shows total sales by client type over the months of the financial year,
-          </p>
-          {isLoadingBookingData ? (
-            <div className="flex justify-center items-center h-64">
-              <Loader />
-            </div>
-          ) : (
-            <div className="gap-10">
-              <div className="pt-4 w-[50rem]">
-                <Bar
-                  ref={chartRef}
-                  data={barData}
-                  options={barChartOptions}
-                  plugins={[ChartDataLabels]}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="mt-10">
-          <div className="flex justify-between items-center">
-            <p className="font-bold">Monthly Percentage Contribution Bar Chart</p>
-          </div>
-          <p className="text-sm text-gray-600 italic pt-3">
-            This bar chart shows the percentage contribution of each client type to total sales for
-            each month,
-          </p>
-          {isLoadingBookingData ? (
-            <div className="flex justify-center items-center h-64">
-              <Loader />
-            </div>
-          ) : (
-            <div className="gap-10">
-              <div className="pt-4 w-[50rem]">
-                <Bar
-                  ref={chartRef}
-                  data={percentageBarData}
-                  options={stackedBarOptions}
-                  plugins={[ChartDataLabels]}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      </div> */}
+
       {/* <div className="px-5">
         <p className="font-bold py-4">Campaigns stats report</p>
         <div className="flex w-1/3 gap-4 h-[250px] ">
