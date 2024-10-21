@@ -3616,6 +3616,8 @@ const OtherNewReports = () => {
             </div>
           </div>
         </div>
+        
+<MediaWiseReport/>
       </div>
       <div className="border-2 p-5 border-black my-2">
         <p className="font-bold text-lg"> Trends </p>
@@ -4193,7 +4195,6 @@ const OtherNewReports = () => {
           </div>
         </div>
       </div>
-<MediaWiseReport/>
       {/* <div className="px-5">
         <p className="font-bold py-4">Campaigns stats report</p>
         <div className="flex w-1/3 gap-4 h-[250px] ">

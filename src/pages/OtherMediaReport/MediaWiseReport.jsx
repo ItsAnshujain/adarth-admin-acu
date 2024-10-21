@@ -627,7 +627,10 @@ const MediaWiseReport = () => {
     <div className="col-span-12 lg:col-span-10 border-gray-450 overflow-auto">
       <div className="p-5 w-[50rem] ">
         <p className="font-bold pb-4">Sales Overview</p>
-
+        <p className="text-sm text-gray-600 italic pb-4">
+              
+This report summarizes sales performance across various metrics and timeframes
+            </p>
         <div className="flex">
           <div>
             <Menu shadow="md" width={130}>
