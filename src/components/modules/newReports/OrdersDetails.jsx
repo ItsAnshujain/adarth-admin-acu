@@ -5,7 +5,7 @@ import UpcomingOrdersIcon from '../../../assets/upcoming-orders.svg';
 import CompletedOrdersIcon from '../../../assets/completed-orders.svg';
 import { useSearchParams } from 'react-router-dom';
 import { useBookingsNew } from '../../../apis/queries/booking.queries';
-import dayjs from 'dayjs'; // Assuming you're using dayjs for date handling
+import dayjs from 'dayjs'; 
 
 const OrderDetails = () => {
   const [searchParams] = useSearchParams({
@@ -21,10 +21,7 @@ const OrderDetails = () => {
     error,
   } = useBookingsNew(searchParams.toString());
 
-  // Get today's date
   const today = dayjs();
-
-  // Calculate revenue based on status
   const calculateTotalRevenueAndCount = (status) => {
     if (!bookingData2) return { total: 0, count: 0 };
 
