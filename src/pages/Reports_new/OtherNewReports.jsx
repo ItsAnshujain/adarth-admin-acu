@@ -78,7 +78,7 @@ const OtherNewReports = () => {
   };
 
   return (
-    <div className="overflow-y-auto p-3 col-span-10 overflow-hidden">
+    <div className="overflow-y-auto p-3 col-span-10 overflow-hidden" id="New_reports">
       <div className="flex flex-end justify-end ">
         <div className="py-5 flex items-start">
           <Button
