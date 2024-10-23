@@ -29,7 +29,7 @@ const ProposalDetails = () => {
 
   return (
     <div className="p-5">
-      <div className="border rounded p-8 flex-1 w-72">
+      <div className="border rounded p-8 flex-1 w-72" id="Proposal_details">
         <Image src={ProposalSentIcon} alt="folder" fit="contain" height={24} width={24} />
         <p className="my-2 text-sm">
           Total Proposals Created :{' '}

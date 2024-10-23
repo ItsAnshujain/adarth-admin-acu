@@ -503,7 +503,7 @@ const SalesOverview = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
 
   return (
-    <div className="col-span-12 lg:col-span-10 border-gray-450 overflow-y-auto">
+    <div className="col-span-12 lg:col-span-10 border-gray-450 overflow-y-auto" id="Sales_overview">
       <div className="p-5 w-[50rem]">
         <p className="font-bold pb-4">Sales Overview</p>
         <p className="text-sm text-gray-600 italic pb-4">
@@ -618,7 +618,6 @@ const SalesOverview = () => {
       </div>
     </div>
 
-    // </div>
   );
 };
 

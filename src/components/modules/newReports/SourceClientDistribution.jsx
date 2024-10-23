@@ -171,7 +171,6 @@ const SourceClientDistribution = () => {
           offset: 2,
           // This keeps the data labels unaffected by chart size adjustments
         },
-
       },
       layout: {
         padding: {
@@ -181,7 +180,6 @@ const SourceClientDistribution = () => {
           right: 15,
         },
       },
-      
     },
   };
   const aggregatedData = useMemo(() => {
@@ -246,7 +244,7 @@ const SourceClientDistribution = () => {
         <p className="text-sm text-gray-600 italic">
           This chart shows the revenue split between "Own Sites" and "Traded Sites".
         </p>
-        <div className=" ">
+        <div className=" " id="Source_Distribution">
           {isLoadingBookingData ? (
             <Loader className="mx-auto" />
           ) : (
@@ -267,7 +265,7 @@ const SourceClientDistribution = () => {
               This chart breaks down revenue by client type, including "Direct Clients", "Local
               Agencies", "National Agencies", and "Government".
             </p>
-            <div className="w-72 justify-center mx-40">
+            <div className="w-72 justify-center mx-40" id="Client_Distribution">
               {isLoadingBookingData ? (
                 <Loader className="mx-auto" />
               ) : updatedClient && updatedClient.datasets[0].data.length > 0 ? (

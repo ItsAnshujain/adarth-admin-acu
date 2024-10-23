@@ -103,7 +103,7 @@ const RevenueCards = () => {
     <div className="overflow-y-auto px-5 pt-5 col-span-10 w-[65rem]">
       <p className="font-bold"> Revenue Cards</p>
       <p className="text-sm text-gray-600 italic py-4">This report shows total revenue Cards.</p>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6" id="Revenue_cards">
         <div className="border rounded p-8 flex-1">
           <Image src={TotalRevenueIcon} alt="folder" fit="contain" height={24} width={24} />
           <p className="my-2 text-sm font-light text-slate-400">Total Revenue (till date)</p>

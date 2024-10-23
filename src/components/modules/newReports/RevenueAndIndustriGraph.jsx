@@ -386,7 +386,7 @@ const RevenueAndIndustriGraph = () => {
     <div className={classNames('overflow-y-auto px-5 col-span-10 overflow-x-hidden')}>
           <div className="my-6 w-[60rem]" id="revenue-pdf">
             <div className="flex gap-8">
-              <div className="w-[70%] flex flex-col justify-between min-h-[300px]">
+              <div className="w-[70%] flex flex-col justify-between min-h-[300px]" id="Revenue_graph">
                 <div className="flex justify-between items-center">
                   <p className="font-bold">Revenue Graph</p>
                 </div>
@@ -414,7 +414,7 @@ const RevenueAndIndustriGraph = () => {
                   </div>
                 )}
               </div>
-              <div className="w-[40%] flex flex-col">
+              <div className="w-[40%] flex flex-col" id="Industry_distribution">
                 <div className="flex flex-col">
                   <p className="font-bold"> Industry Type Distribution</p>
                   <p className="text-sm text-gray-600 italic py-4">

@@ -63,7 +63,7 @@ const OrderDetails = () => {
     : { total: 0, count: 0 };
 
   return (
-    <div className="flex gap-4 px-5 flex-wrap">
+    <div className="flex gap-4 px-5 flex-wrap" id="order_details">
       <div className="border rounded p-8 pr-20">
         <Image src={OngoingOrdersIcon} alt="ongoing" height={24} width={24} fit="contain" />
         <Text className="my-2" size="sm" weight="200">

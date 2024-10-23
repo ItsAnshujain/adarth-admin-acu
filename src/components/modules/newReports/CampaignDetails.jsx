@@ -184,7 +184,7 @@ const CampaignDetails = () => {
   // existing campagin details
 
   return (
-    <>
+    <div id='Campaign_details'>
       <div className="flex flex-col overflow-hidden px-5">
         <div className="py-6 w-[50rem]">
           <p className="font-bold ">Campaign Details</p>
@@ -206,7 +206,7 @@ const CampaignDetails = () => {
           }}
         />
       </div>
-    </>
+    </div>
   );
 };
 

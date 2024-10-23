@@ -78,12 +78,12 @@ const OtherNewReports = () => {
   };
 
   return (
-    <div className="overflow-y-auto p-3 col-span-10 overflow-hidden" id="New_reports">
+    <div className="overflow-y-auto p-3 col-span-10 overflow-hidden">
       <div className="flex flex-end justify-end ">
         <div className="py-5 flex items-start">
           <Button
             leftIcon={<Download size="20" color="white" />}
-            className="primary-button mx-3"
+            className="primary-button mx-3 pdf_download_button"
             onClick={handleDownloadPdf}
             loading={isDownloadPdfLoading}
             disabled={isDownloadPdfLoading}
@@ -103,49 +103,51 @@ const OtherNewReports = () => {
           </Button>
         </div>
       </div>
-      <div className="border-2 p-5 border-black">
-        <p className="font-bold text-lg"> Revenue </p>
+      <div id="New_reports">
+        <div className="border-2 p-5 border-black">
+          <p className="font-bold text-lg"> Revenue </p>
 
-        <RevenueBreakup />
-        <OrderDetails />
-        <RevenueCards />
+          <RevenueBreakup />
+          <OrderDetails />
+          <RevenueCards />
 
-        <ProposalDetails />
-        <SourceClientDistribution />
-        <RevenueDistribution />
-        <RevenueAndIndustriGraph />
-        <CategoryWiseReport />
-        <SalesOverview />
-      </div>
-      <div className="border-2 p-5 border-black my-2">
-        <p className="font-bold text-lg"> Trends </p>
-        <TagwiseReport />
-        <SalesDistribution />
-        <SalesComparision />
-      </div>
-      <div className="border-2 p-5 border-black my-2">
-        <OperationalCosts />
-        <PrintingMountingCosts />
-      </div>
+          <ProposalDetails />
+          <SourceClientDistribution />
+          <RevenueDistribution />
+          <RevenueAndIndustriGraph />
+          <CategoryWiseReport />
+          <SalesOverview />
+        </div>
+        <div className="border-2 p-5 border-black my-2">
+          <p className="font-bold text-lg"> Trends </p>
+          <TagwiseReport />
+          <SalesDistribution />
+          <SalesComparision />
+        </div>
+        <div className="border-2 p-5 border-black my-2">
+          <OperationalCosts />
+          <PrintingMountingCosts />
+        </div>
 
-      <div className="border-2 p-5 border-black my-2">
-        <p className="font-bold text-lg"> Client Data</p>
+        <div className="border-2 p-5 border-black my-2">
+          <p className="font-bold text-lg"> Client Data</p>
 
-        <CampaignCards />
-        <CampaignDetails />
-        <ClientDetails />
-        <PriceTradedMargin />
-      </div>
+          <CampaignCards />
+          <CampaignDetails />
+          <ClientDetails />
+          <PriceTradedMargin />
+        </div>
 
-      <InvoiceAmountCollReport />
+        <InvoiceAmountCollReport />
 
-      <div className="overflow-y-auto px-5 col-span-10 w-[65rem]">
-        <p className="font-bold pt-10">Performance Ranking Report</p>
-        <p className="text-sm text-gray-600 italic py-4">
-          This report shows Performance Cards with pagination controls and a sortable, paginated
-          table.
-        </p>
-        <PerformanceCard />
+        <div className="overflow-y-auto px-5 col-span-10 w-[65rem]">
+          <p className="font-bold pt-10">Performance Ranking Report</p>
+          <p className="text-sm text-gray-600 italic py-4">
+            This report shows Performance Cards with pagination controls and a sortable, paginated
+            table.
+          </p>
+          <PerformanceCard />
+        </div>
       </div>
     </div>
   );
